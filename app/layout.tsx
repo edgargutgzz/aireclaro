@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex h-screen flex-col-reverse lg:flex-row">
+        <div className="flex h-screen w-full flex-col-reverse lg:flex-row">
           {/* Navbar */}
           <div className="w-full lg:w-1/5">
             <Navbar />
