@@ -44,7 +44,7 @@ export default function Navlinks() {
       {links.map((link) => (
         <div
           key={link.name}
-          className="rounded-lg lg:mb-4 lg:w-full lg:pr-6 lg:hover:bg-gray-100"
+          className="mb-4 w-full rounded-lg hover:bg-gray-100"
         >
           <Link href={link.href}>
             <div className="flex flex-col items-center text-xs lg:flex-row lg:p-4 lg:py-3 lg:text-base">
