@@ -43,8 +43,8 @@ export default function Navlinks() {
     <>
       {links.map((link) => (
         <Link key={link.name} href={link.href}>
-          <div className="mb-3 flex w-full items-center rounded-lg p-4 hover:bg-gray-100">
-            {/* Ícono */}
+          <div className="flex w-full flex-col items-center py-2 lg:mb-3 lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
+            {/* Icon */}
             <Image
               src={
                 pathname === link.href
@@ -52,13 +52,13 @@ export default function Navlinks() {
                   : link.unselectedImage
               }
               alt={link.alt}
-              width={22}
-              height={22}
+              width={24}
+              height={24}
               className="h-6 w-6"
             />
-            {/* Nombre */}
+            {/* Name */}
             <span
-              className={clsx("pl-4", {
+              className={clsx("mt-1 text-xs lg:ml-4 lg:mt-0 lg:text-base", {
                 "font-bold": pathname === link.href,
               })}
             >
