@@ -3,14 +3,12 @@ import Navbar from "@/components/navbar";
 export default function Acerca() {
   return (
     <>
-      <div className="flex h-screen">
+      <div className="flex h-screen flex-col bg-slate-50 lg:flex-row">
         {/* Navbar */}
         <Navbar />
         {/* Acerca */}
-        <div className="flex w-4/5 justify-center bg-slate-50">
-          <div className="flex w-2/3 justify-center">
-            <h1>Acerca</h1>
-          </div>
+        <div className="pb-20 pt-4 lg:ml-40 lg:mr-40 lg:mt-10 lg:w-9/12 lg:flex-grow lg:pt-0">
+          <h1>Acerca</h1>
         </div>
       </div>
     </>
