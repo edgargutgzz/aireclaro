@@ -42,35 +42,30 @@ export default function Navlinks() {
   return (
     <>
       {links.map((link) => (
-        <div
-          key={link.name}
-          className="mb-4 w-full rounded-lg hover:bg-gray-100"
-        >
-          <Link href={link.href}>
-            <div className="flex flex-col items-center text-xs lg:flex-row lg:p-4 lg:py-3 lg:text-base">
-              {/* Ícono */}
-              <Image
-                src={
-                  pathname === link.href
-                    ? link.selectedImage
-                    : link.unselectedImage
-                }
-                alt={link.alt}
-                width={22}
-                height={22}
-                className="lg:h-6 lg:w-6"
-              />
-              {/* Nombre */}
-              <span
-                className={clsx("mt-0 pt-1 lg:ml-4 lg:mt-0", {
-                  "font-bold": pathname === link.href,
-                })}
-              >
-                {link.name}
-              </span>
-            </div>
-          </Link>
-        </div>
+        <Link key={link.name} href={link.href}>
+          <div className="mb-3 flex w-full items-center rounded-lg p-4 hover:bg-gray-100">
+            {/* Ícono */}
+            <Image
+              src={
+                pathname === link.href
+                  ? link.selectedImage
+                  : link.unselectedImage
+              }
+              alt={link.alt}
+              width={22}
+              height={22}
+              className="h-6 w-6"
+            />
+            {/* Nombre */}
+            <span
+              className={clsx("pl-4", {
+                "font-bold": pathname === link.href,
+              })}
+            >
+              {link.name}
+            </span>
+          </div>
+        </Link>
       ))}
     </>
   );
