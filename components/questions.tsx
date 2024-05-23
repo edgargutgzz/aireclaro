@@ -93,7 +93,7 @@ export default function Questions() {
             <div className="pb-5">iPhone </div>
             <div className="pb-4">
               <iframe
-                src="https://www.youtube.com/watch?v=B7fKs4dTeu0&t=64s"
+                src="https://www.youtube.com/embed/B7fKs4dTeu0?si=4Mw_dG18vhEHvijY"
                 title="Aire Claro - iPhone"
                 allowFullScreen
                 className="h-96 w-full rounded-xl shadow-lg"
@@ -104,7 +104,7 @@ export default function Questions() {
             <div className="pb-5">Android </div>
             <div className="pb-4">
               <iframe
-                src="https://www.youtube.com/watch?v=O1xEXKB6tNg"
+                src="https://www.youtube.com/embed/O1xEXKB6tNg?si=igIrmGK7rimI2Vl0"
                 title="Aire Claro - Android"
                 allowFullScreen
                 className="h-96 w-full rounded-xl shadow-lg"
@@ -112,6 +112,12 @@ export default function Questions() {
             </div>
           </div>
         </span>
+      ),
+    },
+    {
+      question: "¿Tienes más preguntas o comentarios?",
+      answer: (
+        <span>Envíanos un correo a contacto@observatoriodelaire.com</span>
       ),
     },
   ];
