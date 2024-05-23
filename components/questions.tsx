@@ -1,4 +1,15 @@
+"use client";
+
+import React, { useState } from "react";
+
+interface Question {
+  question: string;
+  answer: JSX.Element;
+}
+
 export default function Questions() {
+  const [openQuestion, setOpenQuestion] = useState<string | null>(null);
+
   const questions = [
     {
       question: "¿Qué es Aire Claro?",
@@ -122,15 +133,26 @@ export default function Questions() {
     },
   ];
 
+  const toggleQuestion = (question: string): void => {
+    if (openQuestion === question) {
+      setOpenQuestion(null); // If clicked again, close it
+    } else {
+      setOpenQuestion(question); // Otherwise, open the clicked question
+    }
+  };
+
   return (
     <div>
       {questions.map((q) => (
         <div
           key={q.question}
           className="mb-8 rounded-lg bg-white p-4 shadow-lg"
+          onClick={() => toggleQuestion(q.question)}
         >
-          <h3 className="font-bold">{q.question}</h3>
-          <div className="mt-6">{q.answer}</div>
+          <h3 className="cursor-pointer font-bold">{q.question}</h3>
+          {openQuestion === q.question && (
+            <div className="mt-6">{q.answer}</div>
+          )}
         </div>
       ))}
     </div>
