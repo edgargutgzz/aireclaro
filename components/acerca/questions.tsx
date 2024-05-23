@@ -153,7 +153,7 @@ export default function Questions() {
           onClick={() => toggleQuestion(q.question)}
         >
           <div className="flex items-center justify-between">
-            <h3 className="font-bold">{q.question}</h3>
+            <h3 className="pr-2 font-bold">{q.question}</h3>
             {openQuestion === q.question ? (
               <ChevronUp size={24} className="flex-shrink-0" />
             ) : (
