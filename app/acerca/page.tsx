@@ -1,9 +1,16 @@
-import Navbar from "@/components/navbar";
+import Questions from "@/components/questions";
 
 export default function Acerca() {
   return (
-    <div className="">
-      <h1>Acerca</h1>
+    <div className="mx-40 h-screen">
+      {/* Header */}
+      <div className="pt-10 ">
+        <h1 className="text-3xl font-bold">Preguntas Frecuentes</h1>
+      </div>
+      {/* Questions */}
+      <div className="py-10">
+        <Questions />
+      </div>
     </div>
   );
 }
