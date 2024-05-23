@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface Question {
   question: string;
@@ -148,12 +149,19 @@ export default function Questions() {
       {questions.map((q) => (
         <div
           key={q.question}
-          className="mb-8 rounded-lg bg-white p-4 shadow-lg"
+          className="mb-8 cursor-pointer rounded-lg bg-white p-4 shadow-lg"
           onClick={() => toggleQuestion(q.question)}
         >
-          <h3 className="cursor-pointer font-bold">{q.question}</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold">{q.question}</h3>
+            {openQuestion === q.question ? (
+              <ChevronUp size={24} className="flex-shrink-0" />
+            ) : (
+              <ChevronDown size={24} className="flex-shrink-0" />
+            )}
+          </div>
           {openQuestion === q.question && (
-            <div className="mt-6">{q.answer}</div>
+            <div className="mt-4 w-full">{q.answer}</div>
           )}
         </div>
       ))}
