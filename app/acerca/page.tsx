@@ -28,7 +28,7 @@ export default function Acerca() {
         </div>
       </div>
       {/* Footer */}
-      <div className="flex items-center justify-center pt-20 text-center text-sm">
+      <div className="flex items-center justify-center pt-0 text-center text-sm lg:pt-20">
         <div className="text-gray-400">Un proyecto del</div>
         <div>
           <Image
