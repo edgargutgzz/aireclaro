@@ -9,7 +9,9 @@ export default function Acerca() {
       <div className="space-y-10">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">Preguntas Frecuentes</h1>
+          <h1 className="text-2xl font-bold lg:text-3xl">
+            Preguntas Frecuentes
+          </h1>
         </div>
         {/* Questions */}
         <div>
@@ -20,7 +22,7 @@ export default function Acerca() {
       <div className="space-y-10">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">Equipo</h1>
+          <h1 className="text-2xl font-bold lg:text-3xl">Equipo</h1>
         </div>
         {/* Integrantes */}
         <div>
