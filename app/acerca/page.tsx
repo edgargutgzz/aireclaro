@@ -1,19 +1,44 @@
 import Questions from "@/components/acerca/questions";
+import Equipo from "@/components/acerca/equipo";
+import Image from "next/image";
 
 export default function Acerca() {
   return (
-    <div className="mx-40 h-screen">
+    <div className="mx-40 flex flex-col space-y-20 py-20">
       {/* Preguntas Frecuentes */}
-      <div className="pt-10 ">
-        <h1 className="text-3xl font-bold">Preguntas Frecuentes</h1>
-      </div>
-      {/* Questions */}
-      <div className="py-10">
-        <Questions />
+      <div className="space-y-10">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold">Preguntas Frecuentes</h1>
+        </div>
+        {/* Questions */}
+        <div>
+          <Questions />
+        </div>
       </div>
       {/* Equipo */}
-      <div className="pt-10 ">
-        <h1 className="text-3xl font-bold">Equipo</h1>
+      <div className="space-y-10">
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold">Equipo</h1>
+        </div>
+        {/* Integrantes */}
+        <div>
+          <Equipo />
+        </div>
+      </div>
+      {/* Footer */}
+      <div className="flex items-center justify-center pt-20 text-center text-sm">
+        <div className="text-gray-400">Un proyecto del</div>
+        <div>
+          <Image
+            src="/logo-occamm.png"
+            alt="Observatorio del Aire"
+            width={200}
+            height={37}
+            className="ml-4"
+          />
+        </div>
       </div>
     </div>
   );
