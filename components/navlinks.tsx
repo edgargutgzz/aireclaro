@@ -52,9 +52,8 @@ export default function Navlinks() {
                   : link.unselectedImage
               }
               alt={link.alt}
-              width={24}
-              height={24}
-              className="h-6 w-6"
+              width={22}
+              height={22}
             />
             {/* Name */}
             <span
