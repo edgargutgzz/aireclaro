@@ -1,4 +1,4 @@
-import Questions from "@/components/questions";
+import Questions from "@/components/acerca/questions";
 
 export default function Acerca() {
   return (

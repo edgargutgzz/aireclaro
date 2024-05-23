@@ -8,8 +8,6 @@ interface Question {
 }
 
 export default function Questions() {
-  const [openQuestion, setOpenQuestion] = useState<string | null>(null);
-
   const questions = [
     {
       question: "¿Qué es Aire Claro?",
@@ -132,6 +130,10 @@ export default function Questions() {
       ),
     },
   ];
+
+  const [openQuestion, setOpenQuestion] = useState<string | null>(
+    questions[0].question,
+  );
 
   const toggleQuestion = (question: string): void => {
     if (openQuestion === question) {
