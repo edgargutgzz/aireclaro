@@ -24,13 +24,6 @@ export default function Navlinks() {
       alt: "Mapa",
     },
     {
-      name: "Datos",
-      href: "/datos",
-      selectedImage: "/datos-on.png",
-      unselectedImage: "/datos-off.png",
-      alt: "Datos",
-    },
-    {
       name: "Acerca",
       href: "/acerca",
       selectedImage: "/acerca-on.png",
