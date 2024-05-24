@@ -6,7 +6,7 @@ export default function Acerca() {
   return (
     <div className="mx-4 flex flex-col space-y-20 py-10 lg:mx-40">
       {/* Preguntas Frecuentes */}
-      <div className="space-y-10">
+      <div className="space-y-5 lg:space-y-10">
         {/* Header */}
         <div>
           <h1 className="text-xl font-bold lg:text-3xl">
@@ -19,7 +19,7 @@ export default function Acerca() {
         </div>
       </div>
       {/* Equipo */}
-      <div className="space-y-10">
+      <div className="space-y-5 lg:space-y-10">
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold lg:text-3xl">Equipo</h1>
