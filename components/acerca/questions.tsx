@@ -149,7 +149,7 @@ export default function Questions() {
       {questions.map((q) => (
         <div
           key={q.question}
-          className="mb-8 cursor-pointer rounded-lg bg-white p-4 shadow-lg"
+          className="mb-8 cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base"
           onClick={() => toggleQuestion(q.question)}
         >
           <div className="flex items-center justify-between">
