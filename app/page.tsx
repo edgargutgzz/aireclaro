@@ -9,7 +9,7 @@ export default function Inicio() {
           CALIDAD DEL AIRE
         </div>
         <div className="mt-1 text-left text-4xl font-semibold lg:text-5xl">
-          Mala
+          Buena
         </div>
         <div className="mt-2 text-left text-base lg:text-lg">
           Es posible realizar actividades al aire libre. Si presentas síntomas
