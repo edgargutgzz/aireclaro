@@ -3,7 +3,7 @@ import Navlinks from "@/components/navlinks";
 
 export default function Navbar() {
   return (
-    <div className="fixed bottom-0 w-full bg-white shadow-lg lg:relative lg:flex-col lg:pt-14 lg:shadow-none">
+    <div className="fixed bottom-0 z-10 w-full bg-white shadow-lg lg:relative lg:flex-col lg:pt-14 lg:shadow-none">
       {/* Logo */}
       <div className="hidden lg:block lg:px-8 lg:pb-12">
         <Image
@@ -14,7 +14,7 @@ export default function Navbar() {
         />
       </div>
       {/* Links */}
-      <div className="flex w-full justify-center space-x-14 py-2 lg:flex-col lg:space-x-0 lg:px-4">
+      <div className="flex w-full justify-center space-x-20 py-2 lg:flex-col lg:space-x-0 lg:px-4">
         <Navlinks />
       </div>
     </div>
