@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Acerca() {
   return (
-    <div className="mx-4 flex flex-col space-y-20 py-10 lg:mx-40">
+    <div className="mx-4 flex flex-col space-y-10 py-10 lg:mx-40 lg:space-y-20">
       {/* Preguntas Frecuentes */}
       <div className="space-y-5 lg:space-y-10">
         {/* Header */}
