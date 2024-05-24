@@ -1,3 +1,5 @@
+import PurpleAir from "@/components/purpleair";
+
 export default function Inicio() {
   return (
     <div className="mx-4 flex flex-col space-y-10 py-10 lg:mx-40 lg:space-y-20">
@@ -14,6 +16,10 @@ export default function Inicio() {
           como tos o falta de aire, toma más descansos y realiza actividades
           menos vigorosas.
         </div>
+      </div>
+      {/* PurpleAir */}
+      <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
+        <PurpleAir />
       </div>
     </div>
   );
