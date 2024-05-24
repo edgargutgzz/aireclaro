@@ -9,7 +9,7 @@ export default function Acerca() {
       <div className="space-y-10">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold lg:text-3xl">
+          <h1 className="text-xl font-bold lg:text-3xl">
             Preguntas Frecuentes
           </h1>
         </div>
