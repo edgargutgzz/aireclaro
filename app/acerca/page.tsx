@@ -30,7 +30,7 @@ export default function Acerca() {
         </div>
       </div>
       {/* Footer */}
-      <div className="flex items-center justify-center pt-0 text-center text-sm lg:pt-20">
+      <div className="flex items-center justify-center pb-20 pt-0 text-center text-sm lg:pb-0 lg:pt-20">
         <div className="text-gray-400">Un proyecto del</div>
         <div>
           <Image
