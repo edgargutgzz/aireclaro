@@ -15,33 +15,8 @@ export default function Questions() {
       answer: (
         <p>
           Aire Claro muestra la calidad del aire de la Zona Metropolitana de
-          Monterrey y brinda recomendaciones oportunas para cuidar tu salud.
+          Monterrey para brindar recomendaciones oportunas que cuiden tu salud.
         </p>
-      ),
-    },
-    {
-      question: "¿Cómo garantizan la precisión de las recomendaciones?",
-      answer: (
-        <span>
-          Compartimos de forma oportuna las concentraciones de las partículas
-          respirables más dañinas para tu salud (PM2.5) y el riesgo a la salud
-          asociado por respirarlas, con base en el{" "}
-          <a
-            href="https://www.gob.mx/cms/uploads/attachment/file/554425/comunicado_indice_calidad_aire_05_2020_FINAL_v3.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            Índice de Aire y Salud
-          </a>{" "}
-          mexicano.
-          <br />
-          <br />
-          Adicionalmente, utilizamos los rangos de color de los valores más
-          protectores para PM2.5 del nuevo Índice Mexicano de Calidad del Aire y
-          Riesgos a la Salud (NOM-172-SEMARNAT-2023) que entrarán en vigor a
-          partir de enero de 2026.
-        </span>
       ),
     },
     {
@@ -73,6 +48,31 @@ export default function Questions() {
       ),
     },
     {
+      question: "¿Cómo garantizan la precisión de las recomendaciones?",
+      answer: (
+        <span>
+          Compartimos de forma oportuna las concentraciones de las partículas
+          respirables más dañinas para tu salud (PM2.5) y el riesgo a la salud
+          asociado por respirarlas, con base en el{" "}
+          <a
+            href="https://www.gob.mx/cms/uploads/attachment/file/554425/comunicado_indice_calidad_aire_05_2020_FINAL_v3.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            Índice de Aire y Salud
+          </a>{" "}
+          mexicano.
+          <br />
+          <br />
+          Adicionalmente, utilizamos los rangos de color de los valores más
+          protectores para PM2.5 del nuevo Índice Mexicano de Calidad del Aire y
+          Riesgos a la Salud (NOM-172-SEMARNAT-2023) que entrarán en vigor a
+          partir de enero de 2026.
+        </span>
+      ),
+    },
+    {
       question: "¿Quién es el Observatorio Ciudadano de la Calidad del Aire?",
       answer: (
         <span>
@@ -88,10 +88,6 @@ export default function Questions() {
           es un organización de la sociedad civil que promueve información sobre
           el estado, causas y efectos de la contaminación del aire en la Zona
           Metropolitana de Monterrey.
-          <br />
-          <br />
-          El Observatorio es también quién evalúa la información que utiliza
-          Aire Claro para brindar mejores recomendaciones.
         </span>
       ),
     },
@@ -99,33 +95,19 @@ export default function Questions() {
       question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
       answer: (
         <span>
-          <div className="pb-10">
-            <div className="pb-5">iPhone </div>
-            <div className="pb-4">
-              <iframe
-                src="https://www.youtube.com/embed/B7fKs4dTeu0?si=4Mw_dG18vhEHvijY"
-                title="Aire Claro - iPhone"
-                allowFullScreen
-                className="h-96 w-full rounded-xl shadow-lg"
-              ></iframe>
-            </div>
-          </div>
           <div>
-            <div className="pb-5">Android </div>
-            <div className="pb-4">
-              <iframe
-                src="https://www.youtube.com/embed/O1xEXKB6tNg?si=igIrmGK7rimI2Vl0"
-                title="Aire Claro - Android"
-                allowFullScreen
-                className="h-96 w-full rounded-xl shadow-lg"
-              ></iframe>
-            </div>
+            <iframe
+              src="https://www.youtube.com/embed/B7fKs4dTeu0?si=4Mw_dG18vhEHvijY"
+              title="Aire Claro - iPhone"
+              allowFullScreen
+              className="h-96 w-full rounded-xl shadow-lg"
+            ></iframe>
           </div>
         </span>
       ),
     },
     {
-      question: "¿Tienes más preguntas o comentarios?",
+      question: "¿Tienes más preguntas?",
       answer: (
         <span>Envíanos un correo a contacto@observatoriodelaire.com</span>
       ),
