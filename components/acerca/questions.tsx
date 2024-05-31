@@ -127,11 +127,11 @@ export default function Questions() {
   };
 
   return (
-    <div>
+    <>
       {questions.map((q) => (
         <div
           key={q.question}
-          className="mb-8 cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base"
+          className="my-4 cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base"
           onClick={() => toggleQuestion(q.question)}
         >
           <div className="flex items-center justify-between">
@@ -147,6 +147,6 @@ export default function Questions() {
           )}
         </div>
       ))}
-    </div>
+    </>
   );
 }
