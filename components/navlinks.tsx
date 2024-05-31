@@ -36,7 +36,7 @@ export default function Navlinks() {
     <>
       {links.map((link) => (
         <Link key={link.name} href={link.href}>
-          <div className="flex flex-col lg:mb-3 lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
+          <div className="flex flex-col lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
             {/* Icon */}
             <Image
               src={
@@ -45,9 +45,8 @@ export default function Navlinks() {
                   : link.unselectedImage
               }
               alt={link.alt}
-              width={26}
-              height={26}
-              className="lg:h-6 lg:w-6"
+              width={24}
+              height={24}
             />
             {/* Name */}
             <span
