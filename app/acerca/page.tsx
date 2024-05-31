@@ -6,7 +6,7 @@ export default function Acerca() {
   return (
     <div className="mx-4 flex flex-col space-y-10 pb-16 pt-6 lg:mx-40 lg:space-y-20">
       {/* Preguntas Frecuentes */}
-      <div>
+      <div className="flex flex-col">
         {/* Header */}
         <h1 className="py-4 text-2xl font-bold lg:text-3xl">
           Preguntas Frecuentes
