@@ -3,11 +3,6 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-interface Question {
-  question: string;
-  answer: JSX.Element;
-}
-
 export default function Questions() {
   const questions = [
     {
