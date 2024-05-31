@@ -15,15 +15,13 @@ export default function Acerca() {
         <Questions />
       </div>
       {/* Equipo */}
-      <div className="space-y-5 lg:space-y-10">
+      <div className="flex flex-col bg-red-100">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold lg:text-3xl">Equipo</h1>
-        </div>
+        <h1 className="bg-blue-100 py-4 text-2xl font-bold lg:text-3xl">
+          Equipo
+        </h1>
         {/* Integrantes */}
-        <div>
-          <Equipo />
-        </div>
+        <Equipo />
       </div>
       {/* Footer */}
       <div className="flex items-center justify-center pt-10 text-center text-sm lg:pt-20">

@@ -28,11 +28,11 @@ export default function Equipo() {
     },
   ];
   return (
-    <div className="space-y-6">
+    <>
       {integrantes.map((integrante) => (
         <div
           key={integrante.name}
-          className="flex items-center rounded-lg bg-white p-4 shadow-lg"
+          className="my-4 flex items-center rounded-lg bg-white p-4 shadow-lg"
         >
           <Image
             src={integrante.image}
@@ -47,6 +47,6 @@ export default function Equipo() {
           </div>
         </div>
       ))}
-    </div>
+    </>
   );
 }
