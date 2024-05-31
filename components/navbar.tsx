@@ -14,7 +14,7 @@ export default function Navbar() {
         />
       </div>
       {/* Links */}
-      <div className="flex w-full justify-between px-12 py-2 lg:flex-col lg:px-4">
+      <div className="flex w-full justify-between px-12 py-2.5 lg:flex-col lg:px-4">
         <Navlinks />
       </div>
     </div>
