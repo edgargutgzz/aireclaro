@@ -24,7 +24,7 @@ export default function RootLayout({
             <Navbar />
           </div>
           {/* Content */}
-          <div className="w-full flex-grow overflow-y-auto bg-gray-50 pb-16 lg:w-4/5 lg:pb-0">
+          <div className="w-full flex-grow overflow-y-auto bg-gray-50 lg:w-4/5">
             {children}
           </div>
         </div>
