@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Acerca() {
   return (
-    <div className="mx-4 flex flex-col space-y-10 pb-16 pt-6 lg:mx-40 lg:space-y-20">
+    <div className="mx-4 flex flex-col space-y-10 pb-24 pt-6 lg:mx-40 lg:space-y-20">
       {/* Preguntas Frecuentes */}
       <div className="flex flex-col">
         {/* Header */}
@@ -29,7 +29,7 @@ export default function Acerca() {
           alt="Observatorio del Aire Logo"
           width={170}
           height={31}
-          className="ml-4"
+          className="ml-5"
         />
       </div>
     </div>
