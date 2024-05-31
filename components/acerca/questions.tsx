@@ -88,8 +88,7 @@ export default function Questions() {
       ),
     },
     {
-      question:
-        "¿Cómo agrego un ícono de enlace directo a la página en mi celular?",
+      question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
       answer: (
         <span>
           <div>
@@ -131,14 +130,16 @@ export default function Questions() {
           className="my-4 cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base"
           onClick={() => toggleQuestion(q.question)}
         >
+          {/* Header */}
           <div className="flex items-center justify-between">
             <h3 className="pr-2 font-bold">{q.question}</h3>
             {openQuestion === q.question ? (
-              <ChevronUp size={24} className="flex-shrink-0" />
+              <ChevronUp size={24} />
             ) : (
-              <ChevronDown size={24} className="flex-shrink-0" />
+              <ChevronDown size={24} />
             )}
           </div>
+          {/* Answer */}
           {openQuestion === q.question && (
             <div className="mt-4 w-full">{q.answer}</div>
           )}
