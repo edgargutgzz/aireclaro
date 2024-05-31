@@ -4,9 +4,9 @@ import Image from "next/image";
 
 export default function Acerca() {
   return (
-    <div className="mx-4 flex flex-col space-y-10 pb-24 pt-6 lg:mx-40 lg:space-y-20">
+    <div className="mx-4 flex flex-col pb-16 pt-6 lg:mx-40 lg:space-y-20">
       {/* Preguntas Frecuentes */}
-      <div className="flex flex-col">
+      <div className="flex flex-col pb-10">
         {/* Header */}
         <h1 className="py-4 text-2xl font-bold lg:text-3xl">
           Preguntas Frecuentes
@@ -15,7 +15,7 @@ export default function Acerca() {
         <Questions />
       </div>
       {/* Equipo */}
-      <div className="flex flex-col">
+      <div className="flex flex-col pb-10">
         {/* Header */}
         <h1 className="py-4 text-2xl font-bold lg:text-3xl">Equipo</h1>
         {/* Integrantes */}
