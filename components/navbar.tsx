@@ -3,7 +3,10 @@ import Navlinks from "@/components/navlinks";
 
 export default function Navbar() {
   return (
-    <div className="fixed bottom-0 z-10 w-full bg-white shadow-lg lg:relative lg:flex-col lg:pt-14 lg:shadow-none">
+    <div
+      style={{ boxShadow: "0 -4px 5px -2px rgba(0, 0, 0, 0.1)" }}
+      className="fixed bottom-0 z-10 w-full bg-white lg:relative lg:flex-col lg:pt-14 lg:shadow-none"
+    >
       {/* Logo */}
       <div className="hidden lg:block lg:px-8 lg:pb-12">
         <Image
