@@ -134,9 +134,9 @@ export default function Questions() {
           <div className="flex items-center justify-between">
             <h3 className="pr-2 font-bold">{q.question}</h3>
             {openQuestion === q.question ? (
-              <ChevronUp size={24} />
+              <ChevronUp size={24} className="flex-shrink-0" />
             ) : (
-              <ChevronDown size={24} />
+              <ChevronDown size={24} className="flex-shrink-0" />
             )}
           </div>
           {/* Answer */}
