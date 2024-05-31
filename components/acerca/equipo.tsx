@@ -17,13 +17,13 @@ export default function Equipo() {
     {
       name: "Lucía Barrera",
       image: "/profile-lucia.JPG",
-      puesto: "Miembro del Consejo Juv. del OCCAMM",
+      puesto: "Miembro del Consejo Juvenil del OCCAMM",
       alt: "Lucía Barrera",
     },
     {
       name: "Carlos R. García",
       image: "/profile-carlos.jpg",
-      puesto: "Miembro del Consejo Juv. del OCCAMM",
+      puesto: "Miembro del Consejo Juvenil del OCCAMM",
       alt: "Carlos R. García",
     },
   ];
@@ -32,7 +32,7 @@ export default function Equipo() {
       {integrantes.map((integrante) => (
         <div
           key={integrante.name}
-          className="my-4 flex items-center rounded-lg bg-white p-4 shadow-lg"
+          className="my-3 flex items-center rounded-lg bg-white p-4 shadow-lg"
         >
           <Image
             src={integrante.image}
