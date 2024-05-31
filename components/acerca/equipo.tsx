@@ -11,7 +11,7 @@ export default function Equipo() {
     {
       name: "Edgar Gutiérrez",
       image: "/profile-edgar.jpeg",
-      puesto: "Diseño y Desarrollo Web de Aire Claro",
+      puesto: "Diseño y Desarrollo de Aire Claro",
       alt: "Edgar Gutiérrez",
     },
     {
