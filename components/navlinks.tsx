@@ -45,8 +45,9 @@ export default function Navlinks() {
                   : link.unselectedImage
               }
               alt={link.alt}
-              width={22}
-              height={22}
+              width={28} // Width for mobile
+              height={28} // Height for mobile
+              className="lg:h-6 lg:w-6" // Tailwind classes for larger screens
             />
             {/* Name */}
             <span
