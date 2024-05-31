@@ -17,17 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="flex h-screen flex-col-reverse lg:flex-row">
-          {/* Navbar */}
-          <div className="w-full lg:w-1/5">
-            <Navbar />
-          </div>
-          {/* Content */}
-          <div className="w-full flex-grow overflow-y-auto bg-gray-50 pb-16 lg:w-4/5 lg:pb-0">
-            {children}
-          </div>
-        </div>
+      <body className={`${inter.className} flex h-screen flex-col lg:flex-row`}>
+        <Navbar />
+        <div className="flex-grow overflow-y-auto bg-gray-50">{children}</div>
       </body>
     </html>
   );
