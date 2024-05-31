@@ -88,7 +88,8 @@ export default function Questions() {
       ),
     },
     {
-      question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
+      question:
+        "¿Cómo agrego un ícono de enlace directo a la página en mi celular?",
       answer: (
         <span>
           <div>
