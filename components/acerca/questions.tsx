@@ -10,7 +10,8 @@ export default function Questions() {
       answer: (
         <p>
           Aire Claro muestra la calidad del aire de la Zona Metropolitana de
-          Monterrey para brindar recomendaciones oportunas que cuiden tu salud.
+          Monterrey para brindarte recomendaciones oportunas que cuiden tu
+          salud.
         </p>
       ),
     },
@@ -73,7 +74,7 @@ export default function Questions() {
         <span>
           El{" "}
           <a
-            href="https://www.gob.mx/cms/uploads/attachment/file/554425/comunicado_indice_calidad_aire_05_2020_FINAL_v3.pdf"
+            href="https://observatoriodelaire.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
