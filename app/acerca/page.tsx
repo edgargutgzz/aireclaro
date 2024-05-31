@@ -6,10 +6,10 @@ export default function Acerca() {
   return (
     <div className="mx-4 flex flex-col space-y-10 pb-16 pt-8 lg:mx-40 lg:space-y-20">
       {/* Preguntas Frecuentes */}
-      <div className="space-y-5 lg:space-y-10">
+      <div className="space-y-5 bg-red-100 lg:space-y-10">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold lg:text-3xl">
+          <h1 className="bg-blue-100 py-4 text-2xl font-bold lg:text-3xl">
             Preguntas Frecuentes
           </h1>
         </div>
