@@ -15,11 +15,9 @@ export default function Acerca() {
         <Questions />
       </div>
       {/* Equipo */}
-      <div className="flex flex-col bg-red-100">
+      <div className="flex flex-col">
         {/* Header */}
-        <h1 className="bg-blue-100 py-4 text-2xl font-bold lg:text-3xl">
-          Equipo
-        </h1>
+        <h1 className="py-4 text-2xl font-bold lg:text-3xl">Equipo</h1>
         {/* Integrantes */}
         <Equipo />
       </div>
