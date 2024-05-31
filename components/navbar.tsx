@@ -5,7 +5,7 @@ export default function Navbar() {
   return (
     <div
       style={{ boxShadow: "0 -4px 5px -2px rgba(0, 0, 0, 0.1)" }}
-      className="fixed bottom-0 w-full bg-white lg:relative lg:flex-col lg:pt-14 lg:shadow-none"
+      className="fixed bottom-0 w-full bg-white lg:relative lg:flex-col lg:pt-14"
     >
       {/* Logo */}
       <div className="hidden lg:block lg:px-8 lg:pb-12">

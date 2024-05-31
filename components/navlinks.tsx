@@ -50,9 +50,12 @@ export default function Navlinks() {
             />
             {/* Name */}
             <span
-              className={clsx("mt-1 text-xs lg:ml-4 lg:mt-0 lg:text-base", {
-                "font-bold": pathname === link.href,
-              })}
+              className={clsx(
+                "mt-1 hidden text-xs lg:ml-4 lg:mt-0 lg:inline lg:text-base",
+                {
+                  "font-bold": pathname === link.href,
+                },
+              )}
             >
               {link.name}
             </span>
