@@ -17,13 +17,13 @@ export default function Equipo() {
     {
       name: "Lucía Barrera",
       image: "/profile-lucia.JPG",
-      puesto: "Miembro del Consejo Juvenil del OCCAMM",
+      puesto: "Miembro del Consejo Juv. del OCCAMM",
       alt: "Lucía Barrera",
     },
     {
       name: "Carlos R. García",
       image: "/profile-carlos.jpg",
-      puesto: "Miembro del Consejo Juvenil del OCCAMM",
+      puesto: "Miembro del Consejo Juv. del OCCAMM",
       alt: "Carlos R. García",
     },
   ];
