@@ -15,7 +15,7 @@ export default function Acerca() {
         <Questions />
       </div>
       {/* Equipo */}
-      <div className="mb-10 flex flex-col lg:mb-32">
+      <div className="mb-20 flex flex-col lg:mb-32">
         {/* Header */}
         <h1 className="py-4 text-2xl font-bold lg:py-6 lg:text-3xl">Equipo</h1>
         {/* Integrantes */}
