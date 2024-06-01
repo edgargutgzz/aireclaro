@@ -27,8 +27,8 @@ export default function Acerca() {
         <Image
           src="/logo-occamm.png"
           alt="Observatorio del Aire Logo"
-          width={160}
-          height={30}
+          width={150}
+          height={28}
           className="ml-5 lg:ml-8 lg:h-[38px] lg:w-[200px]"
         />
       </div>
