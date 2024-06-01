@@ -32,7 +32,7 @@ export default function Equipo() {
       {integrantes.map((integrante) => (
         <div
           key={integrante.name}
-          className="my-3 flex items-center rounded-lg bg-white p-4 shadow-lg"
+          className="my-3 flex items-center rounded-lg bg-white p-4 shadow-lg lg:my-4"
         >
           <Image
             src={integrante.image}
