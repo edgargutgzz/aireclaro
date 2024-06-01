@@ -7,16 +7,14 @@ export default async function Inicio() {
   const sensors = await fetchSensors();
 
   return (
-    <div className="mx-4 flex flex-col space-y-10 py-10 lg:mx-40 lg:space-y-20">
+    <div className="mx-4 flex flex-col pb-20 pt-6 lg:mx-36">
       {/* Main Recommendation */}
-      <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
-        <div className="text-left text-xs text-gray-400 lg:text-sm">
+      <div className="flex flex-col rounded-lg bg-white p-4 text-left shadow-lg">
+        <div className="py-1 text-xs text-gray-400 lg:text-sm">
           CALIDAD DEL AIRE
         </div>
-        <div className="mt-1 text-left text-4xl font-semibold lg:text-5xl">
-          Buena
-        </div>
-        <div className="mt-2 text-left text-base lg:text-lg">
+        <div className="py-1 text-4xl font-semibold lg:text-5xl">Buena</div>
+        <div className="py-1 text-left text-base lg:text-lg">
           Es posible realizar actividades al aire libre. Si presentas síntomas
           como tos o falta de aire, toma más descansos y realiza actividades
           menos vigorosas.
