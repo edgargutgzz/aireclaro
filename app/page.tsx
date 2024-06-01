@@ -23,17 +23,17 @@ export default async function Inicio() {
         </div>
       </div>
       {/* Location */}
-      <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
+      {/* <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
         <GeolocationComponent sensors={sensors} />
-      </div>
+      </div> */}
       {/* PurpleAir - Sensores */}
-      <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
+      {/* <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
         <PurpleAirSensores />
-      </div>
+      </div> */}
       {/* PurpleAir */}
-      <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
+      {/* <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
         <PurpleAir />
-      </div>
+      </div> */}
     </div>
   );
 }

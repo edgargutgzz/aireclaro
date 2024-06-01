@@ -34,6 +34,7 @@ export default function Equipo() {
           key={integrante.name}
           className="my-3 flex items-center rounded-lg bg-white p-4 shadow-lg lg:my-4"
         >
+          {/* Profile Image */}
           <Image
             src={integrante.image}
             alt={integrante.alt}
@@ -41,6 +42,7 @@ export default function Equipo() {
             height={48}
             className="mr-4 h-12 w-12 rounded-full"
           />
+          {/* Name and Job */}
           <div>
             <p className="text-sm font-bold lg:text-base">{integrante.name}</p>
             <p className="text-sm lg:text-base">{integrante.puesto}</p>
