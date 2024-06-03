@@ -43,9 +43,9 @@ export default function Equipo() {
             className="mr-4 h-12 w-12 rounded-full"
           />
           {/* Name and Job */}
-          <div>
-            <p className="text-sm font-bold lg:text-base">{integrante.name}</p>
-            <p className="text-sm lg:text-base">{integrante.puesto}</p>
+          <div className="md-text-base text-sm">
+            <p className="font-bold">{integrante.name}</p>
+            <p>{integrante.puesto}</p>
           </div>
         </div>
       ))}
