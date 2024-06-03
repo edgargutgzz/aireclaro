@@ -1,8 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 
-export default async function PurpleAir() {
+export default async function PurpleAirData() {
   const supabase = createClient();
-  const { data: calidad_aire, error } = await supabase
+  const { data, error } = await supabase
     .from("calidad_aire")
     .select()
     .order("time_stamp", { ascending: false })
@@ -13,5 +13,5 @@ export default async function PurpleAir() {
     return <pre>Error: {JSON.stringify(error, null, 2)}</pre>;
   }
 
-  return <pre>{JSON.stringify(calidad_aire, null, 2)}</pre>;
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }

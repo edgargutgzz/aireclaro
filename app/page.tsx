@@ -1,13 +1,10 @@
-import { fetchSensors } from "@/components/purpleair_sensores";
-import GeolocationComponent from "@/components/location";
-import PurpleAirSensores from "@/components/purpleair_sensores";
-import PurpleAir from "@/components/purpleair";
+import PurpleAirSensors from "@/components/purple-air-sensors";
+import ClosestSensor from "@/components/closest-sensor";
 
 export default async function Inicio() {
-  const sensors = await fetchSensors();
-
+  const sensors = await PurpleAirSensors();
   return (
-    <div className="mx-4 flex flex-col pb-20 pt-6 lg:mx-36">
+    <div className="mx-4 flex flex-col space-y-10 pb-20 pt-6 lg:mx-36">
       {/* Main Recommendation */}
       <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-4">
         <div className="text-xs text-gray-400 lg:text-sm">CALIDAD DEL AIRE</div>
@@ -18,18 +15,10 @@ export default async function Inicio() {
           menos vigorosas.
         </div>
       </div>
-      {/* Location */}
-      {/* <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
-        <GeolocationComponent sensors={sensors} />
-      </div> */}
-      {/* PurpleAir - Sensores */}
-      {/* <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
-        <PurpleAirSensores />
-      </div> */}
-      {/* PurpleAir */}
-      {/* <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
-        <PurpleAir />
-      </div> */}
+      {/* User Location */}
+      <div className="rounded-lg bg-white p-4 text-sm shadow-lg lg:text-base">
+        <ClosestSensor sensors={sensors} />
+      </div>
     </div>
   );
 }
