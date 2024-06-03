@@ -11,13 +11,22 @@ interface Sensor {
   lon: number;
 }
 
+// Define the Data interface
+interface Data {
+  id: number;
+  sensor_id: number;
+  pm25: number;
+  time_stamp: string;
+}
+
 // Define the props interface for the component
 interface ClosestSensorProps {
   sensors: Sensor[];
+  data: Data[];
 }
 
 // Define the ClosestSensor component
-export default function ClosestSensor({ sensors }: ClosestSensorProps) {
+export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
   // State for storing the user's current location
   const [location, setLocation] = useState<{
     latitude: number | null;
@@ -26,6 +35,12 @@ export default function ClosestSensor({ sensors }: ClosestSensorProps) {
 
   // State for storing the closest sensor
   const [closestSensor, setClosestSensor] = useState<Sensor | null>(null);
+
+  // State for storing the pm25 value for the closest sensor
+  const [pm25, setPm25] = useState<number | null>(null);
+
+  // State for storing the timestamp for the closest sensor
+  const [timestamp, setTimestamp] = useState<string | null>(null);
 
   // State for storing any error messages
   const [error, setError] = useState<string | null>(null);
@@ -78,8 +93,13 @@ export default function ClosestSensor({ sensors }: ClosestSensorProps) {
       });
       // Update the state with the closest sensor
       setClosestSensor(closest);
+
+      // Find the pm25 value and timestamp for the closest sensor
+      const sensorData = data.find((d) => d.sensor_id === closest.sensor_id);
+      setPm25(sensorData ? sensorData.pm25 : null);
+      setTimestamp(sensorData ? sensorData.time_stamp : null);
     }
-  }, [location, sensors]);
+  }, [location, sensors, data]);
 
   // Function to calculate the distance between two geographic points using the Haversine formula
   const getDistance = (
@@ -125,6 +145,8 @@ export default function ClosestSensor({ sensors }: ClosestSensorProps) {
               <p>
                 Latitude: {closestSensor.lat}, Longitude: {closestSensor.lon}
               </p>
+              <p>PM2.5 Value: {pm25 !== null ? pm25 : "Loading..."}</p>
+              <p>Timestamp: {timestamp !== null ? timestamp : "Loading..."}</p>
             </div>
           ) : (
             // Display a message while finding the closest sensor

@@ -10,8 +10,8 @@ export default async function PurpleAirData() {
 
   if (error) {
     console.error("Error:", error);
-    return <pre>Error: {JSON.stringify(error, null, 2)}</pre>;
+    return [];
   }
 
-  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+  return data;
 }
