@@ -8,7 +8,7 @@ export default function Acerca() {
       {/* Preguntas Frecuentes */}
       <div className="mb-10 flex flex-col lg:mb-20">
         {/* Header */}
-        <h1 className="py-4 text-2xl font-bold lg:py-6 lg:text-3xl">
+        <h1 className="py-4 text-2xl font-bold md:text-3xl lg:py-6">
           Preguntas Frecuentes
         </h1>
         {/* Questions */}
