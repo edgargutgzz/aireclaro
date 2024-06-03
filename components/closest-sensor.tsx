@@ -45,11 +45,10 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
       // If geolocation is supported, get the current position
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const newLocation = {
+          setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-          };
-          setLocation(newLocation);
+          });
         },
         (error) => {
           // Handle any errors from the geolocation API
@@ -62,7 +61,7 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
     }
   }, []);
 
-  // useEffect to find the closest sensor whenever the location or sensors change
+  // useEffect to find the pm25 value for the closest sensor whenever the location or sensors change
   useEffect(() => {
     if (
       location.latitude !== null &&
