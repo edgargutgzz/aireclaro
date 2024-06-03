@@ -25,7 +25,6 @@ interface ClosestSensorProps {
   data: Data[];
 }
 
-// Define the ClosestSensor component
 export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
   // State for storing the user's current location
   const [location, setLocation] = useState<{
@@ -114,15 +113,25 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
     return R * c;
   };
 
-  // Render the component
+  // Function to get the quality text based on the pm25 value
+  const getQualityText = () => {
+    if (pm25 === null) return "No Disponible";
+    if (pm25 <= 15) return "Buena";
+    if (pm25 > 15 && pm25 <= 25) return "Aceptable";
+    if (pm25 > 25 && pm25 <= 79) return "Mala";
+    if (pm25 > 79 && pm25 <= 130) return "Muy Mala";
+    if (pm25 > 130) return "Extremadamente Mala";
+    return "No Disponible"; // default text in case the value is null or undefined
+  };
+
   return (
     <div>
       {error ? (
         // Display the error message if there's an error
         <p>Error: {error}</p>
       ) : (
-        // Display the pm25 value if found
-        <p>PM2.5 Value: {pm25 !== null ? pm25 : "Loading..."}</p>
+        // Display the pm25 value and quality text if found
+        <p>Quality: {getQualityText()}</p>
       )}
     </div>
   );
