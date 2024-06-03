@@ -33,14 +33,8 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
     longitude: number | null;
   }>({ latitude: null, longitude: null });
 
-  // State for storing the closest sensor
-  const [closestSensor, setClosestSensor] = useState<Sensor | null>(null);
-
   // State for storing the pm25 value for the closest sensor
   const [pm25, setPm25] = useState<number | null>(null);
-
-  // State for storing the timestamp for the closest sensor
-  const [timestamp, setTimestamp] = useState<string | null>(null);
 
   // State for storing any error messages
   const [error, setError] = useState<string | null>(null);
@@ -91,13 +85,10 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
         );
         return currDistance < prevDistance ? curr : prev;
       });
-      // Update the state with the closest sensor
-      setClosestSensor(closest);
 
-      // Find the pm25 value and timestamp for the closest sensor
+      // Find the pm25 value for the closest sensor
       const sensorData = data.find((d) => d.sensor_id === closest.sensor_id);
       setPm25(sensorData ? sensorData.pm25 : null);
-      setTimestamp(sensorData ? sensorData.time_stamp : null);
     }
   }, [location, sensors, data]);
 
@@ -131,28 +122,8 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
         // Display the error message if there's an error
         <p>Error: {error}</p>
       ) : (
-        <div>
-          {/* Display the user's current location */}
-          <p>
-            Latitude: {location.latitude}, Longitude: {location.longitude}
-          </p>
-          {closestSensor ? (
-            // Display the closest sensor if found
-            <div>
-              <h2>Closest Sensor:</h2>
-              <p>Sensor ID: {closestSensor.sensor_id}</p>
-              <p>Name: {closestSensor.nombre}</p>
-              <p>
-                Latitude: {closestSensor.lat}, Longitude: {closestSensor.lon}
-              </p>
-              <p>PM2.5 Value: {pm25 !== null ? pm25 : "Loading..."}</p>
-              <p>Timestamp: {timestamp !== null ? timestamp : "Loading..."}</p>
-            </div>
-          ) : (
-            // Display a message while finding the closest sensor
-            <p>Finding closest sensor...</p>
-          )}
-        </div>
+        // Display the pm25 value if found
+        <p>PM2.5 Value: {pm25 !== null ? pm25 : "Loading..."}</p>
       )}
     </div>
   );
