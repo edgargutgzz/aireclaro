@@ -47,6 +47,7 @@ export default function Navlinks() {
               alt={link.alt}
               width={24}
               height={24}
+              className="md:h-8 md:w-8"
             />
             {/* Name */}
             <span
