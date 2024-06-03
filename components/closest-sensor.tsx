@@ -25,6 +25,15 @@ interface ClosestSensorProps {
   data: Data[];
 }
 
+// Define a type for the quality text
+type QualityText =
+  | "Buena"
+  | "Aceptable"
+  | "Mala"
+  | "Muy Mala"
+  | "Extremadamente Mala"
+  | "No Disponible";
+
 export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
   // State for storing the user's current location
   const [location, setLocation] = useState<{
@@ -114,7 +123,7 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
   };
 
   // Function to get the quality text based on the pm25 value
-  const getQualityText = () => {
+  const getQualityText = (): QualityText => {
     if (pm25 === null) return "No Disponible";
     if (pm25 <= 15) return "Buena";
     if (pm25 > 15 && pm25 <= 25) return "Aceptable";
@@ -124,6 +133,21 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
     return "No Disponible"; // default text in case the value is null or undefined
   };
 
+  // Function to get the recommended text based on the quality text
+  const getRecommendedText = (): string => {
+    const textMap: { [key in QualityText]?: string } = {
+      Buena: "Disfruta las actividades al aire libre.",
+      Aceptable:
+        "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
+      Mala: "Es posible realizar actividades al aire libre. Si presentas síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas.",
+      "Muy Mala":
+        "Reduce las actividades físicas al aire libre. Evita la actividad física vigorosa o prolongada en exteriores.",
+      "Extremadamente Mala":
+        "Permanece en interiores. Reprograma tus actividades al aire libre y si presentas síntomas respiratorios o cardiacos acude al médico.",
+    };
+    return textMap[getQualityText()] || "No Disponible"; // Default text in case of unexpected input
+  };
+
   return (
     <div>
       {error ? (
@@ -131,7 +155,12 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
         <p>Error: {error}</p>
       ) : (
         // Display the pm25 value and quality text if found
-        <p>Quality: {getQualityText()}</p>
+        <div>
+          <div className="text-4xl font-semibold lg:text-5xl">
+            {getQualityText()}
+          </div>
+          <div className="mt-4 text-lg">{getRecommendedText()}</div>
+        </div>
       )}
     </div>
   );
