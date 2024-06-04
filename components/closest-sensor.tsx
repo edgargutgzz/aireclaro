@@ -65,13 +65,13 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
         },
         (error) => {
           // Handle any errors from the geolocation API
-          setError("Ubicación no encontrada");
+          setError("Ubicación no disponible");
           setLoading(false);
         },
       );
     } else {
       // If geolocation is not supported, set an error message
-      setError("Ubicación no encontrada");
+      setError("Ubicación no disponible");
       setLoading(false);
     }
   }, []);
@@ -171,7 +171,7 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
     <div>
       {error ? (
         // Display the error message if there's an error
-        <p>Error: {error}</p>
+        <p>{error}</p>
       ) : loading ? (
         // Display a loading message while fetching data
         <div className="flex flex-col space-y-5">
