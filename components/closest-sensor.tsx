@@ -180,6 +180,9 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
             <Skeleton className="h-5 w-full" />
             <Skeleton className="h-5 w-1/2" />
           </div>
+          <div className="pb-1 pt-2">
+            <Skeleton className="h-5 w-full" />
+          </div>
         </div>
       ) : (
         // Air Quality Title, Text and Bar
