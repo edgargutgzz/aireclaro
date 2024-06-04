@@ -47,6 +47,9 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
   // State for storing any error messages
   const [error, setError] = useState<string | null>(null);
 
+  // State for tracking the loading status
+  const [loading, setLoading] = useState(true);
+
   // useEffect to get the user's current location on component mount
   useEffect(() => {
     if (navigator.geolocation) {
@@ -57,15 +60,18 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
+          setLoading(false);
         },
         (error) => {
           // Handle any errors from the geolocation API
           setError(error.message);
+          setLoading(false);
         },
       );
     } else {
       // If geolocation is not supported, set an error message
       setError("Geolocation is not supported by this browser.");
+      setLoading(false);
     }
   }, []);
 
@@ -76,6 +82,7 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
       location.longitude !== null &&
       sensors.length > 0
     ) {
+      setLoading(true);
       // Calculate the closest sensor
       const closest = sensors.reduce((prev, curr) => {
         const prevDistance = getDistance(
@@ -96,6 +103,7 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
       // Find the pm25 value for the closest sensor
       const sensorData = data.find((d) => d.sensor_id === closest.sensor_id);
       setPm25(sensorData ? sensorData.pm25 : null);
+      setLoading(false);
     }
   }, [location, sensors, data]);
 
@@ -153,6 +161,9 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
       {error ? (
         // Display the error message if there's an error
         <p>Error: {error}</p>
+      ) : loading ? (
+        // Display a loading message while fetching data
+        <p>Loading...</p>
       ) : (
         // Display the pm25 value and quality text if found
         <div>
