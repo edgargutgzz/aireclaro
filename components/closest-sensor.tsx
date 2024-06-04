@@ -107,26 +107,35 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
       sensors.length > 0
     ) {
       setLoading(true);
-      // Calculate the closest sensor
-      const closest = sensors.reduce((prev, curr) => {
-        const prevDistance = getDistance(
+      // Sort the sensors based on their distance to the user's location
+      const sortedSensors = [...sensors].sort((a, b) => {
+        const aDistance = getDistance(
           location.latitude!,
           location.longitude!,
-          prev.lat,
-          prev.lon,
+          a.lat,
+          a.lon,
         );
-        const currDistance = getDistance(
+        const bDistance = getDistance(
           location.latitude!,
           location.longitude!,
-          curr.lat,
-          curr.lon,
+          b.lat,
+          b.lon,
         );
-        return currDistance < prevDistance ? curr : prev;
+        return aDistance - bDistance;
       });
 
-      // Find the pm25 value for the closest sensor
-      const sensorData = data.find((d) => d.sensor_id === closest.sensor_id);
-      setPm25(sensorData ? sensorData.pm25 : null);
+      // Iterate over the sorted sensors until you find one with a valid pm25 value
+      for (const sensor of sortedSensors) {
+        const sensorData = data.find((d) => d.sensor_id === sensor.sensor_id);
+        if (sensorData && sensorData.pm25 !== null && sensorData.pm25 !== 0) {
+          setPm25(sensorData.pm25);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // If no sensor with a valid pm25 value was found, set pm25 to null
+      setPm25(null);
       setLoading(false);
     }
   }, [location, sensors, data]);
