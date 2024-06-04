@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define the Sensor interface
 interface Sensor {
@@ -64,18 +65,41 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
         },
         (error) => {
           // Handle any errors from the geolocation API
-          setError(error.message);
+          setError("Ubicación no encontrada");
           setLoading(false);
         },
       );
     } else {
       // If geolocation is not supported, set an error message
-      setError("Geolocation is not supported by this browser.");
+      setError("Ubicación no encontrada");
       setLoading(false);
     }
   }, []);
 
-  // useEffect to find the pm25 value for the closest sensor whenever the location or sensors change
+  // Function to calculate the distance between two geographic points using the Haversine formula
+  const getDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ) => {
+    const toRad = (value: number) => (value * Math.PI) / 180;
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const lat1Rad = toRad(lat1);
+    const lat2Rad = toRad(lat2);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) *
+        Math.sin(dLon / 2) *
+        Math.cos(lat1Rad) *
+        Math.cos(lat2Rad);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  // useEffect to find the pm25 value for the closest sensor whenever the location, sensors or data changes
   useEffect(() => {
     if (
       location.latitude !== null &&
@@ -106,29 +130,6 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
       setLoading(false);
     }
   }, [location, sensors, data]);
-
-  // Function to calculate the distance between two geographic points using the Haversine formula
-  const getDistance = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ) => {
-    const toRad = (value: number) => (value * Math.PI) / 180;
-    const R = 6371; // Radius of the Earth in kilometers
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const lat1Rad = toRad(lat1);
-    const lat2Rad = toRad(lat2);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.sin(dLon / 2) *
-        Math.sin(dLon / 2) *
-        Math.cos(lat1Rad) *
-        Math.cos(lat2Rad);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
 
   // Function to get the quality text based on the pm25 value
   const getQualityText = (): QualityText => {
@@ -163,7 +164,15 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
         <p>Error: {error}</p>
       ) : loading ? (
         // Display a loading message while fetching data
-        <p>Loading...</p>
+        <div className="flex flex-col space-y-5">
+          <div>
+            <Skeleton className="h-10 w-1/3" />
+          </div>
+          <div className="flex flex-col space-y-2">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-1/2" />
+          </div>
+        </div>
       ) : (
         // Display the pm25 value and quality text if found
         <div>
