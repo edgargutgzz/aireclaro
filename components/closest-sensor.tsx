@@ -157,6 +157,16 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
     return textMap[getQualityText()] || "No Disponible"; // Default text in case of unexpected input
   };
 
+  // Function to get the marker position for the quality bar based on the pm25 value
+  const getMarkerPosition = () => {
+    if (pm25 === null) return 0; // return a default value when pm25 is null
+    if (pm25 <= 15) return (pm25 / 15) * 10 + 6;
+    if (pm25 <= 25) return 16 + ((pm25 - 16) / 10) * 10 + 6;
+    if (pm25 <= 79) return 32 + ((pm25 - 26) / 54) * 20 + 6;
+    if (pm25 <= 130) return 58 + ((pm25 - 80) / 51) * 20 + 6;
+    return 84 + 6;
+  };
+
   return (
     <div>
       {error ? (
@@ -165,21 +175,51 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
       ) : loading ? (
         // Display a loading message while fetching data
         <div className="flex flex-col space-y-5">
-          <div>
-            <Skeleton className="h-10 w-1/3" />
-          </div>
+          <Skeleton className="h-10 w-1/3" />
           <div className="flex flex-col space-y-2">
             <Skeleton className="h-5 w-full" />
             <Skeleton className="h-5 w-1/2" />
           </div>
         </div>
       ) : (
-        // Display the pm25 value and quality text if found
-        <div>
+        // Air Quality Title, Text and Bar
+        <div className="flex flex-col space-y-4">
           <div className="text-4xl font-semibold lg:text-5xl">
             {getQualityText()}
           </div>
-          <div className="mt-4 text-lg">{getRecommendedText()}</div>
+          <div className="text-lg">{getRecommendedText()}</div>
+          <div className="pb-1 pt-2">
+            <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
+              <div style={{ flexBasis: "12%" }} className="bg-green-400" />
+              <div
+                style={{ flexBasis: "10%" }}
+                className="bg-gradient-to-r from-green-400 to-yellow-400"
+              />
+              <div style={{ flexBasis: "12%" }} className="bg-yellow-400" />
+              <div
+                style={{ flexBasis: "10%" }}
+                className="bg-gradient-to-r from-yellow-400 to-orange-400"
+              />
+              <div style={{ flexBasis: "12%" }} className="bg-orange-400" />
+              <div
+                style={{ flexBasis: "10%" }}
+                className="bg-gradient-to-r from-orange-400 to-red-400"
+              />
+              <div style={{ flexBasis: "12%" }} className="bg-red-400" />
+              <div
+                style={{ flexBasis: "10%" }}
+                className="bg-gradient-to-r from-red-400 to-purple-400"
+              />
+              <div style={{ flexBasis: "12%" }} className="bg-purple-400" />
+              <div
+                style={{
+                  left: `${getMarkerPosition()}%`,
+                  borderColor: "white",
+                }}
+                className="absolute top-1/2 h-4 w-4 -translate-y-1/2 transform rounded-full border-4 bg-gray-200"
+              ></div>
+            </div>
+          </div>
         </div>
       )}
     </div>
