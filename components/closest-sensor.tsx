@@ -24,7 +24,7 @@ interface Data {
 interface ClosestSensorProps {
   sensors: Sensor[];
   data: Data[];
-  showEmbarazadasRecommendation?: boolean;
+  showMenoresRecommendation?: boolean;
 }
 
 // Define a type for the quality text
@@ -39,7 +39,7 @@ type QualityText =
 export default function ClosestSensor({
   sensors,
   data,
-  showEmbarazadasRecommendation = false,
+  showMenoresRecommendation = false,
 }: ClosestSensorProps) {
   // State for storing the user's current location
   const [location, setLocation] = useState<{
@@ -181,19 +181,30 @@ export default function ClosestSensor({
     return 84 + 6;
   };
 
-  // Embarazadas recommendation
-  const getEmbarazadasRecommendation = (pm25: number | null): string => {
+  // Menores de 12 años recommendation
+  const getMenoresRecommendation = (pm25: number | null): string => {
     if (pm25 === null) return "No Disponible";
     if (pm25 <= 15) return "Disfruta las actividades al aire libre.";
     if (pm25 > 15 && pm25 <= 25)
-      return "Disfruta las actividades al aire libre.";
+      return "Reduce las actividades físicas vigorosas al aire libre.";
     if (pm25 > 25 && pm25 <= 79)
-      return "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.";
+      return "Evita las actividades físicas moderadas y vigorosas al aire libre.";
     if (pm25 > 79 && pm25 <= 130)
-      return "Evita la actividad física vigorosa o prolongada al aire libre. Si presentas algún síntoma, busca el consejo de tu médico.";
+      return "No realices actividades al aire libre. Acude al médico si presentas síntomas respiratorios o cardiacos.";
     if (pm25 > 130)
       return "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.";
     return "No Disponible"; // default text in case the value is null or undefined
+  };
+
+  // Border color
+  const getBorderColor = (pm25: number | null): string => {
+    if (pm25 === null) return "white-400";
+    if (pm25 <= 15) return "green-400";
+    if (pm25 > 15 && pm25 <= 25) return "yellow-400";
+    if (pm25 > 25 && pm25 <= 79) return "orange-400";
+    if (pm25 > 79 && pm25 <= 130) return "red-400";
+    if (pm25 > 130) return "purple-400";
+    return "white-400"; // default color in case the value is null or undefined
   };
 
   return (
@@ -202,8 +213,8 @@ export default function ClosestSensor({
         // Display the error message if there's an error
         <p>{error}</p>
       ) : loading ? (
-        showEmbarazadasRecommendation ? (
-          // Display a single skeleton bar for Embarazadas recommendation
+        showMenoresRecommendation ? (
+          // Display a single skeleton bar for Menores recommendation
           <Skeleton className="h-5 w-full" />
         ) : (
           // Display a loading message while fetching data
@@ -218,9 +229,9 @@ export default function ClosestSensor({
             </div>
           </div>
         )
-      ) : showEmbarazadasRecommendation ? (
-        // Display only the Embarazadas recommendation
-        <div className="text-lg">{getEmbarazadasRecommendation(pm25)}</div>
+      ) : showMenoresRecommendation ? (
+        // Display only the Menores recommendation
+        <div>{getMenoresRecommendation(pm25)}</div>
       ) : (
         // Air Quality Title, Text and Bar with general recommendation
         <div className="flex flex-col space-y-4">
