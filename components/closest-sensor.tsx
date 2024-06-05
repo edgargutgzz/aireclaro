@@ -24,6 +24,7 @@ interface Data {
 interface ClosestSensorProps {
   sensors: Sensor[];
   data: Data[];
+  showEmbarazadasRecommendation?: boolean;
 }
 
 // Define a type for the quality text
@@ -35,7 +36,11 @@ type QualityText =
   | "Extremadamente Mala"
   | "No Disponible";
 
-export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
+export default function ClosestSensor({
+  sensors,
+  data,
+  showEmbarazadasRecommendation = false,
+}: ClosestSensorProps) {
   // State for storing the user's current location
   const [location, setLocation] = useState<{
     latitude: number | null;
@@ -176,25 +181,48 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
     return 84 + 6;
   };
 
+  // Embarazadas recommendation
+  const getEmbarazadasRecommendation = (pm25: number | null): string => {
+    if (pm25 === null) return "No Disponible";
+    if (pm25 <= 15) return "Disfruta las actividades al aire libre.";
+    if (pm25 > 15 && pm25 <= 25)
+      return "Disfruta las actividades al aire libre.";
+    if (pm25 > 25 && pm25 <= 79)
+      return "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.";
+    if (pm25 > 79 && pm25 <= 130)
+      return "Evita la actividad física vigorosa o prolongada al aire libre. Si presentas algún síntoma, busca el consejo de tu médico.";
+    if (pm25 > 130)
+      return "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.";
+    return "No Disponible"; // default text in case the value is null or undefined
+  };
+
   return (
-    <div>
+    <>
       {error ? (
         // Display the error message if there's an error
         <p>{error}</p>
       ) : loading ? (
-        // Display a loading message while fetching data
-        <div className="flex flex-col space-y-5">
-          <Skeleton className="h-10 w-1/3" />
-          <div className="flex flex-col space-y-2">
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-1/2" />
+        showEmbarazadasRecommendation ? (
+          // Display a single skeleton bar for Embarazadas recommendation
+          <Skeleton className="h-5 w-full" />
+        ) : (
+          // Display a loading message while fetching data
+          <div className="flex flex-col space-y-4">
+            <Skeleton className="h-10 w-1/3" />
+            <div className="flex flex-col space-y-2">
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-1/2" />
+            </div>
+            <div className="pb-1 pt-2">
+              <Skeleton className="h-5 w-full" />
+            </div>
           </div>
-          <div className="pb-1 pt-2">
-            <Skeleton className="h-5 w-full" />
-          </div>
-        </div>
+        )
+      ) : showEmbarazadasRecommendation ? (
+        // Display only the Embarazadas recommendation
+        <div className="text-lg">{getEmbarazadasRecommendation(pm25)}</div>
       ) : (
-        // Air Quality Title, Text and Bar
+        // Air Quality Title, Text and Bar with general recommendation
         <div className="flex flex-col space-y-4">
           <div className="text-4xl font-semibold lg:text-5xl">
             {getQualityText()}
@@ -234,6 +262,6 @@ export default function ClosestSensor({ sensors, data }: ClosestSensorProps) {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
