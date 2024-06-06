@@ -320,7 +320,7 @@ export default function ClosestSensor({
       ) : (
         // 4. Display air quality text, población general recommendation and quality bar
         <div className="flex flex-col space-y-4">
-          <div className="text-4xl font-semibold lg:text-5xl">
+          <div className="text-4xl font-semibold lg:text-6xl">
             {getQualityText()}
           </div>
           <div className="text-lg">{getRecommendedText()}</div>
