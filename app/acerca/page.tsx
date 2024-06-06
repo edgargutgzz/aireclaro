@@ -22,14 +22,14 @@ export default function Acerca() {
         <Equipo />
       </div>
       {/* Un proyecto del OCCAMM */}
-      <div className="flex items-center justify-center py-4 text-sm md:text-base lg:py-6">
+      <div className="flex items-center justify-center py-4 text-sm md:text-base lg:pb-12 lg:pt-6">
         <div className="text-gray-400">Un proyecto del</div>
         <Image
           src="/logo-occamm.png"
           alt="Observatorio del Aire Logo"
           width={150}
           height={28}
-          className="ml-5 md:ml-7 md:h-[38px] md:w-[200px]"
+          className="ml-5 md:ml-8 md:h-[46px] md:w-[250px]"
         />
       </div>
     </div>
