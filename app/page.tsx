@@ -19,7 +19,7 @@ export default async function Inicio() {
           <ClosestSensor sensors={sensors} data={data} />
         </div>
       </div>
-      {/* Población sensible recommendation */}
+      {/* Población sensible recommendations */}
       <div className="flex flex-col space-y-5">
         <div className="flex justify-center text-sm text-gray-400">
           POBLACIÓN SENSIBLE
@@ -27,7 +27,7 @@ export default async function Inicio() {
         {/* Menores y Adultos Mayores recommendation */}
         <div className="flex justify-between space-x-8">
           {/* Menores de 12 */}
-          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-4">
+          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <Image
               src="/menores.png"
               width={32}
@@ -42,7 +42,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Mayores de 60 años */}
-          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-4">
+          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <Image
               src="/adultos_mayores.png"
               width={32}
@@ -60,7 +60,7 @@ export default async function Inicio() {
         {/* Embarazadas y Enfermedades recommendation */}
         <div className="flex justify-between space-x-8">
           {/* Embarazadas */}
-          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-4">
+          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <Image
               src="/embarazadas.png"
               width={26}
@@ -75,7 +75,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Enfermedades */}
-          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-4">
+          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <div className="flex flex-row space-x-2">
               <Image
                 src="/enfermedades-corazon.png"

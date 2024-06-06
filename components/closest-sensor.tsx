@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Define the Sensor interface
+// Sensor interface
 interface Sensor {
   id: number;
   sensor_id: number;
@@ -12,7 +12,7 @@ interface Sensor {
   lon: number;
 }
 
-// Define the Data interface
+// Air Quality Data interface
 interface Data {
   id: number;
   sensor_id: number;
@@ -20,7 +20,7 @@ interface Data {
   time_stamp: string;
 }
 
-// Define the props interface for the component
+// Props interface for the ClosestSensor component
 interface ClosestSensorProps {
   sensors: Sensor[];
   data: Data[];
@@ -30,7 +30,7 @@ interface ClosestSensorProps {
   showEnfermedadesRecommendation?: boolean;
 }
 
-// Define a type for the quality text
+// Type for the air quality text
 type QualityText =
   | "Buena"
   | "Aceptable"
@@ -62,7 +62,7 @@ export default function ClosestSensor({
   // State for tracking the loading status
   const [loading, setLoading] = useState(true);
 
-  // useEffect to get the user's current location on component mount
+  // 1. Get the user's current location on component mount
   useEffect(() => {
     if (navigator.geolocation) {
       // If geolocation is supported, get the current position
@@ -87,7 +87,7 @@ export default function ClosestSensor({
     }
   }, []);
 
-  // Function to calculate the distance between two geographic points using the Haversine formula
+  // 2. Calculate the distance between two geographic points using the Haversine formula
   const getDistance = (
     lat1: number,
     lon1: number,
@@ -110,7 +110,7 @@ export default function ClosestSensor({
     return R * c;
   };
 
-  // useEffect to find the pm25 value for the closest sensor whenever the location, sensors or data changes
+  // 3. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
   useEffect(() => {
     if (
       location.latitude !== null &&
@@ -151,7 +151,7 @@ export default function ClosestSensor({
     }
   }, [location, sensors, data]);
 
-  // Function to get the quality text based on the pm25 value
+  // Air Quality text
   const getQualityText = (): QualityText => {
     if (pm25 === null) return "No Disponible";
     if (pm25 <= 15) return "Buena";
@@ -162,7 +162,7 @@ export default function ClosestSensor({
     return "No Disponible"; // default text in case the value is null or undefined
   };
 
-  // Function to get the recommended text based on the quality text
+  // Población General recommendation
   const getRecommendedText = (): string => {
     const textMap: { [key in QualityText]?: string } = {
       Buena: "Disfruta las actividades al aire libre.",
@@ -177,7 +177,7 @@ export default function ClosestSensor({
     return textMap[getQualityText()] || "No Disponible"; // Default text in case of unexpected input
   };
 
-  // Function to get the marker position for the quality bar based on the pm25 value
+  // Marker position for the quality bar
   const getMarkerPosition = () => {
     if (pm25 === null) return 0; // return a default value when pm25 is null
     if (pm25 <= 15) return (pm25 / 15) * 10 + 6;
@@ -247,12 +247,24 @@ export default function ClosestSensor({
     return "No Disponible"; // default text in case the value is null or undefined
   };
 
+  // Población sensible border colors
+  const getBorderColor = (pm25: number | null): string => {
+    if (pm25 === null) return "border-white-400";
+    if (pm25 <= 15) return "border-green-400";
+    if (pm25 > 15 && pm25 <= 25) return "border-yellow-400";
+    if (pm25 > 25 && pm25 <= 79) return "border-orange-400";
+    if (pm25 > 79 && pm25 <= 130) return "border-red-400";
+    if (pm25 > 130) return "border-purple-400";
+    return "border-white-400"; // default color in case the value is null or undefined
+  };
+
   return (
     <>
       {error ? (
-        // Display the error message if there's an error
+        // 1. Display error message
         <p>{error}</p>
       ) : loading ? (
+        // 2. Display loading skeleton
         showMenoresRecommendation ||
         showAdultosMayoresRecommendation ||
         showEmbarazadasRecommendation ||
@@ -260,7 +272,7 @@ export default function ClosestSensor({
           // Display a single skeleton bar for specific recommendation
           <Skeleton className="h-5 w-full" />
         ) : (
-          // Display a loading message while fetching data
+          // Display a loading skeleton while fetching data
           <div className="flex flex-col space-y-4">
             <Skeleton className="h-10 w-1/3" />
             <div className="flex flex-col space-y-2">
@@ -272,20 +284,41 @@ export default function ClosestSensor({
             </div>
           </div>
         )
-      ) : showMenoresRecommendation ? (
+      ) : // 3. Display población sensible recommendations
+      showMenoresRecommendation ? (
         // Display only the Menores recommendation
-        <div>{getMenoresRecommendation(pm25)}</div>
+        <div className="flex flex-col">
+          <div
+            className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+          />
+          {getMenoresRecommendation(pm25)}
+        </div>
       ) : showAdultosMayoresRecommendation ? (
         // Display only the Adultos Mayores recommendation
-        <div>{getAdultosMayoresRecommendation(pm25)}</div>
+        <div>
+          <div
+            className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+          />
+          {getAdultosMayoresRecommendation(pm25)}
+        </div>
       ) : showEmbarazadasRecommendation ? (
         // Display only the Embarazadas recommendation
-        <div>{getEmbarazadasRecommendation(pm25)}</div>
+        <div>
+          <div
+            className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+          />
+          {getEmbarazadasRecommendation(pm25)}
+        </div>
       ) : showEnfermedadesRecommendation ? (
         // Display only the Embarazadas recommendation
-        <div>{getEnfermedadesRecommendation(pm25)}</div>
+        <div>
+          <div
+            className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+          />
+          {getEnfermedadesRecommendation(pm25)}
+        </div>
       ) : (
-        // Air Quality Title, Text and Bar with general recommendation
+        // 4. Display air quality text, población general recommendation and quality bar
         <div className="flex flex-col space-y-4">
           <div className="text-4xl font-semibold lg:text-5xl">
             {getQualityText()}
