@@ -2,6 +2,7 @@ import PurpleAirSensors from "@/components/purple-air-sensors";
 import ClosestSensor from "@/components/closest-sensor";
 import PurpleAirData from "@/components/purple-air-data";
 import Image from "next/image";
+import { Navigation } from "lucide-react";
 
 export default async function Inicio() {
   const sensors = await PurpleAirSensors();
@@ -11,9 +12,11 @@ export default async function Inicio() {
     <div className="mx-4 flex flex-col space-y-16 pb-20 pt-10 lg:mx-36">
       {/* Población general recommendation */}
       <div className="flex flex-col space-y-5">
+        {/* Title */}
         <div className="flex justify-center text-sm text-gray-400">
           POBLACIÓN GENERAL
         </div>
+        {/* Air Quality text, recommendation and quality bar */}
         <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-4">
           <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
           <ClosestSensor sensors={sensors} data={data} />
@@ -21,6 +24,7 @@ export default async function Inicio() {
       </div>
       {/* Población sensible recommendations */}
       <div className="flex flex-col space-y-5">
+        {/* Title */}
         <div className="flex justify-center text-sm text-gray-400">
           POBLACIÓN SENSIBLE
         </div>
@@ -99,6 +103,19 @@ export default async function Inicio() {
               showEnfermedadesRecommendation
             />
           </div>
+        </div>
+      </div>
+      {/* Ubicación y Hora */}
+      <div className="flex flex-col space-y-5">
+        {/* Title */}
+        <div className="flex justify-center text-sm text-gray-400">
+          UBICACIÓN Y HORA
+        </div>
+        {/* Ubicación */}
+        <div className="flex items-center rounded-lg bg-white p-5 text-sm shadow-lg">
+          <Navigation width={20} height={20} />
+          <div className="pl-4 pr-1">Calidad de aire en</div>
+          <ClosestSensor sensors={sensors} data={data} showAddress />
         </div>
       </div>
     </div>

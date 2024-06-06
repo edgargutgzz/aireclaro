@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 
 // Sensor interface
 interface Sensor {
@@ -28,6 +29,7 @@ interface ClosestSensorProps {
   showAdultosMayoresRecommendation?: boolean;
   showEmbarazadasRecommendation?: boolean;
   showEnfermedadesRecommendation?: boolean;
+  showAddress?: boolean;
 }
 
 // Type for the air quality text
@@ -39,6 +41,11 @@ type QualityText =
   | "Extremadamente Mala"
   | "No Disponible";
 
+// Mapbox Geocoding Client
+const geocodingClient = mbxGeocoding({
+  accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
+});
+
 export default function ClosestSensor({
   sensors,
   data,
@@ -46,12 +53,16 @@ export default function ClosestSensor({
   showAdultosMayoresRecommendation = false,
   showEmbarazadasRecommendation = false,
   showEnfermedadesRecommendation = false,
+  showAddress = false,
 }: ClosestSensorProps) {
   // State for storing the user's current location
   const [location, setLocation] = useState<{
     latitude: number | null;
     longitude: number | null;
   }>({ latitude: null, longitude: null });
+
+  // State for storing the address of the closest sensor
+  const [address, setAddress] = useState<string | null>(null);
 
   // State for storing the pm25 value for the closest sensor
   const [pm25, setPm25] = useState<number | null>(null);
@@ -87,7 +98,39 @@ export default function ClosestSensor({
     }
   }, []);
 
-  // 2. Calculate the distance between two geographic points using the Haversine formula
+  // 2. Mapbox Geocoding Client
+  useEffect(() => {
+    if (
+      location.latitude !== null &&
+      location.longitude !== null &&
+      showAddress
+    ) {
+      const fetchAddress = async () => {
+        try {
+          const response = await geocodingClient
+            .reverseGeocode({
+              query: [
+                location.longitude as number,
+                location.latitude as number,
+              ],
+              limit: 1,
+            })
+            .send();
+
+          if (response.body.features.length > 0) {
+            setAddress(response.body.features[0].place_name);
+          } else {
+            setError("Dirección no disponible");
+          }
+        } catch (error) {
+          setError("Error al obtener la dirección");
+        }
+      };
+      fetchAddress();
+    }
+  }, [location, showAddress]);
+
+  // 3. Calculate the distance between two geographic points using the Haversine formula
   const getDistance = (
     lat1: number,
     lon1: number,
@@ -110,7 +153,7 @@ export default function ClosestSensor({
     return R * c;
   };
 
-  // 3. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
+  // 4. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
   useEffect(() => {
     if (
       location.latitude !== null &&
@@ -265,98 +308,108 @@ export default function ClosestSensor({
         <p>{error}</p>
       ) : loading ? (
         // 2. Display loading skeleton
-        showMenoresRecommendation ||
-        showAdultosMayoresRecommendation ||
-        showEmbarazadasRecommendation ||
-        showEnfermedadesRecommendation ? (
-          // Display a single skeleton bar for specific recommendation
-          <Skeleton className="h-5 w-full" />
-        ) : (
-          // Display a loading skeleton while fetching data
-          <div className="flex flex-col space-y-4">
-            <Skeleton className="h-10 w-1/3" />
-            <div className="flex flex-col space-y-2">
-              <Skeleton className="h-5 w-full" />
-              <Skeleton className="h-5 w-1/2" />
-            </div>
-            <div className="pb-1 pt-2">
-              <Skeleton className="h-5 w-full" />
-            </div>
+        <div className="flex flex-col space-y-4">
+          <Skeleton className="h-10 w-1/3" />
+          <div className="flex flex-col space-y-2">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-1/2" />
           </div>
-        )
-      ) : // 3. Display población sensible recommendations
-      showMenoresRecommendation ? (
-        // Display only the Menores recommendation
-        <div className="flex flex-col">
-          <div
-            className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
-          />
-          {getMenoresRecommendation(pm25)}
-        </div>
-      ) : showAdultosMayoresRecommendation ? (
-        // Display only the Adultos Mayores recommendation
-        <div>
-          <div
-            className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
-          />
-          {getAdultosMayoresRecommendation(pm25)}
-        </div>
-      ) : showEmbarazadasRecommendation ? (
-        // Display only the Embarazadas recommendation
-        <div>
-          <div
-            className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
-          />
-          {getEmbarazadasRecommendation(pm25)}
-        </div>
-      ) : showEnfermedadesRecommendation ? (
-        // Display only the Embarazadas recommendation
-        <div>
-          <div
-            className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
-          />
-          {getEnfermedadesRecommendation(pm25)}
+          <div className="pb-1 pt-2">
+            <Skeleton className="h-5 w-full" />
+          </div>
         </div>
       ) : (
-        // 4. Display air quality text, población general recommendation and quality bar
-        <div className="flex flex-col space-y-4">
-          <div className="text-4xl font-semibold lg:text-5xl">
-            {getQualityText()}
-          </div>
-          <div className="text-lg">{getRecommendedText()}</div>
-          <div className="pb-1 pt-2">
-            <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
-              <div style={{ flexBasis: "12%" }} className="bg-green-400" />
+        <>
+          {showAddress && <div>{address || "ubicación no disponible"}</div>}
+          {showMenoresRecommendation && (
+            <div className="flex flex-col">
               <div
-                style={{ flexBasis: "10%" }}
-                className="bg-gradient-to-r from-green-400 to-yellow-400"
+                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
-              <div style={{ flexBasis: "12%" }} className="bg-yellow-400" />
-              <div
-                style={{ flexBasis: "10%" }}
-                className="bg-gradient-to-r from-yellow-400 to-orange-400"
-              />
-              <div style={{ flexBasis: "12%" }} className="bg-orange-400" />
-              <div
-                style={{ flexBasis: "10%" }}
-                className="bg-gradient-to-r from-orange-400 to-red-400"
-              />
-              <div style={{ flexBasis: "12%" }} className="bg-red-400" />
-              <div
-                style={{ flexBasis: "10%" }}
-                className="bg-gradient-to-r from-red-400 to-purple-400"
-              />
-              <div style={{ flexBasis: "12%" }} className="bg-purple-400" />
-              <div
-                style={{
-                  left: `${getMarkerPosition()}%`,
-                  borderColor: "white",
-                }}
-                className="absolute top-1/2 h-4 w-4 -translate-y-1/2 transform rounded-full border-4 bg-gray-200"
-              ></div>
+              {getMenoresRecommendation(pm25)}
             </div>
-          </div>
-        </div>
+          )}
+          {showAdultosMayoresRecommendation && (
+            <div>
+              <div
+                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+              />
+              {getAdultosMayoresRecommendation(pm25)}
+            </div>
+          )}
+          {showEmbarazadasRecommendation && (
+            <div>
+              <div
+                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+              />
+              {getEmbarazadasRecommendation(pm25)}
+            </div>
+          )}
+          {showEnfermedadesRecommendation && (
+            <div>
+              <div
+                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+              />
+              {getEnfermedadesRecommendation(pm25)}
+            </div>
+          )}
+          {!showAddress &&
+            !showMenoresRecommendation &&
+            !showAdultosMayoresRecommendation &&
+            !showEmbarazadasRecommendation &&
+            !showEnfermedadesRecommendation && (
+              <div className="flex flex-col space-y-4">
+                <div className="text-4xl font-semibold lg:text-5xl">
+                  {getQualityText()}
+                </div>
+                <div className="text-lg">{getRecommendedText()}</div>
+                <div className="pb-1 pt-2">
+                  <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-green-400"
+                    />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-green-400 to-yellow-400"
+                    />
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-yellow-400"
+                    />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-yellow-400 to-orange-400"
+                    />
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-orange-400"
+                    />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-orange-400 to-red-400"
+                    />
+                    <div style={{ flexBasis: "12%" }} className="bg-red-400" />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-red-400 to-purple-400"
+                    />
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-purple-400"
+                    />
+                    <div
+                      style={{
+                        left: `${getMarkerPosition()}%`,
+                        borderColor: "white",
+                      }}
+                      className="absolute top-1/2 h-4 w-4 -translate-y-1/2 transform rounded-full border-4 bg-gray-200"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            )}
+        </>
       )}
     </>
   );
