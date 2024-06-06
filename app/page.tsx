@@ -90,7 +90,9 @@ export default async function Inicio() {
                 alt="Adultos mayores Icon"
               />
             </div>
-            <div className="font-semibold">Mayores de 60 años</div>
+            <div className="font-semibold">
+              Enfermedades cardiovasculares y respiratorias
+            </div>
             <ClosestSensor
               sensors={sensors}
               data={data}
