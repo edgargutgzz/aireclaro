@@ -348,12 +348,15 @@ export default function ClosestSensor({
             !showAdultosMayoresRecommendation &&
             !showEmbarazadasRecommendation &&
             !showEnfermedadesRecommendation && (
-              <div className="flex flex-col space-y-0">
-                <div className="text-4xl font-semibold lg:text-5xl">
+              <div className="flex flex-col">
+                {/* Air Quality Title */}
+                <div className="py-2 text-4xl font-semibold lg:text-5xl">
                   {getQualityText()}
                 </div>
-                <div>{getRecommendedText()}</div>
-                <div className="pb-1 pt-2">
+                {/* Air Quality Text */}
+                <div className="pb-4">{getRecommendedText()}</div>
+                {/* Air Quality Bar */}
+                <div>
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
                     <div
                       style={{ flexBasis: "12%" }}
