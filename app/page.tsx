@@ -109,7 +109,7 @@ export default async function Inicio() {
         </div>
       </div>
       {/* Ubicación y Hora */}
-      <div className="flex flex-col">
+      <div className="flex flex-col space-y-8">
         {/* Title */}
         <div className="flex justify-center pb-3 text-sm text-gray-400">
           UBICACIÓN Y HORA
