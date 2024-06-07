@@ -11,9 +11,9 @@ export default async function Inicio() {
   return (
     <div className="mx-4 flex flex-col space-y-16 pb-20 pt-4 lg:mx-36 lg:pt-10">
       {/* Población general recommendation */}
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center text-sm text-gray-400">
+        <div className="flex justify-center pb-2 text-sm text-gray-400">
           POBLACIÓN GENERAL
         </div>
         {/* Air Quality text, recommendation and quality bar */}
