@@ -9,7 +9,7 @@ export default async function Inicio() {
   const data = await PurpleAirData();
 
   return (
-    <div className="mx-4 flex flex-col space-y-12 pb-20 pt-4 lg:mx-36 lg:pt-10">
+    <div className="mx-4 flex flex-col space-y-20 pb-20 pt-4 lg:mx-36 lg:pt-10">
       {/* Población general recommendation */}
       <div className="flex flex-col">
         {/* Title */}
@@ -29,16 +29,17 @@ export default async function Inicio() {
           POBLACIÓN SENSIBLE
         </div>
         {/* Menores y Adultos Mayores recommendation */}
-        <div className="flex flex-col space-y-8">
+        <div className="flex flex-col space-y-6">
           {/* Menores de 12 */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-3">
             <Image
               src="/menores.png"
               width={32}
               height={32}
               alt="Menores Icon"
+              className="pb-2"
             />
-            <div className="font-semibold">Menores de 12 años</div>
+            <div className="pb-2 font-semibold">Menores de 12 años</div>
             <ClosestSensor
               sensors={sensors}
               data={data}
@@ -46,7 +47,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Mayores de 60 años */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-3">
             <Image
               src="/adultos-mayores.png"
               width={32}

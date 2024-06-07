@@ -313,7 +313,7 @@ export default function ClosestSensor({
           {showMenoresRecommendation && (
             <div className="flex flex-col">
               <div
-                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getMenoresRecommendation(pm25)}
             </div>
@@ -321,7 +321,7 @@ export default function ClosestSensor({
           {showAdultosMayoresRecommendation && (
             <div>
               <div
-                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getAdultosMayoresRecommendation(pm25)}
             </div>
@@ -329,7 +329,7 @@ export default function ClosestSensor({
           {showEmbarazadasRecommendation && (
             <div>
               <div
-                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getEmbarazadasRecommendation(pm25)}
             </div>
@@ -337,7 +337,7 @@ export default function ClosestSensor({
           {showEnfermedadesRecommendation && (
             <div>
               <div
-                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getEnfermedadesRecommendation(pm25)}
             </div>
