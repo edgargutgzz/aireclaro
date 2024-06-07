@@ -104,7 +104,7 @@ export default function ClosestSensor({
     }
   }, []);
 
-  // 2. Mapbox Geocoding Client
+  // 2. Get the user's address based on their location
   useEffect(() => {
     if (
       location.latitude !== null &&
@@ -330,7 +330,12 @@ export default function ClosestSensor({
         // 3. Display air quality data
         <>
           {showAddress && <div>{address || "ubicación no disponible"}</div>}
-          {showTime && timestamp && format(new Date(timestamp), "p")}
+          {showTime &&
+            timestamp &&
+            format(new Date(timestamp.replace(" ", "T")), "h:mm a").replace(
+              /:\d{2}/,
+              ":00",
+            )}
           {showMenoresRecommendation && (
             <div className="flex flex-col">
               <div
