@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
+import { format } from "date-fns";
 
 // Sensor interface
 interface Sensor {
@@ -30,6 +31,7 @@ interface ClosestSensorProps {
   showEmbarazadasRecommendation?: boolean;
   showEnfermedadesRecommendation?: boolean;
   showAddress?: boolean;
+  showTime?: boolean;
 }
 
 // Type for the air quality text
@@ -54,6 +56,7 @@ export default function ClosestSensor({
   showEmbarazadasRecommendation = false,
   showEnfermedadesRecommendation = false,
   showAddress = false,
+  showTime = false,
 }: ClosestSensorProps) {
   // State for storing the user's current location
   const [location, setLocation] = useState<{
@@ -63,6 +66,9 @@ export default function ClosestSensor({
 
   // State for storing the address of the closest sensor
   const [address, setAddress] = useState<string | null>(null);
+
+  // State for storing the timestamp of the closest sensor
+  const [timestamp, setTimestamp] = useState<string | null>(null);
 
   // State for storing the pm25 value for the closest sensor
   const [pm25, setPm25] = useState<number | null>(null);
@@ -183,6 +189,7 @@ export default function ClosestSensor({
         const sensorData = data.find((d) => d.sensor_id === sensor.sensor_id);
         if (sensorData && sensorData.pm25 !== null && sensorData.pm25 !== 0) {
           setPm25(sensorData.pm25);
+          setTimestamp(sensorData.time_stamp);
           setLoading(false);
           return;
         }
@@ -190,6 +197,7 @@ export default function ClosestSensor({
 
       // If no sensor with a valid pm25 value was found, set pm25 to null
       setPm25(null);
+      setTimestamp(null);
       setLoading(false);
     }
   }, [location, sensors, data]);
@@ -307,7 +315,7 @@ export default function ClosestSensor({
         // 1. Display error message
         <p>{error}</p>
       ) : loading ? (
-        // 2. Display loading skeleton
+        // 2. Display loading skeletons
         <div className="flex flex-col space-y-4">
           <Skeleton className="h-10 w-1/3" />
           <div className="flex flex-col space-y-2">
@@ -319,8 +327,10 @@ export default function ClosestSensor({
           </div>
         </div>
       ) : (
+        // 3. Display air quality data
         <>
           {showAddress && <div>{address || "ubicación no disponible"}</div>}
+          {showTime && timestamp && format(new Date(timestamp), "p")}
           {showMenoresRecommendation && (
             <div className="flex flex-col">
               <div
@@ -354,6 +364,7 @@ export default function ClosestSensor({
             </div>
           )}
           {!showAddress &&
+            !showTime &&
             !showMenoresRecommendation &&
             !showAdultosMayoresRecommendation &&
             !showEmbarazadasRecommendation &&

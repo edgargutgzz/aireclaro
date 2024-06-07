@@ -2,7 +2,7 @@ import PurpleAirSensors from "@/components/purple-air-sensors";
 import ClosestSensor from "@/components/closest-sensor";
 import PurpleAirData from "@/components/purple-air-data";
 import Image from "next/image";
-import { Navigation } from "lucide-react";
+import { Navigation, Clock } from "lucide-react";
 
 export default async function Inicio() {
   const sensors = await PurpleAirSensors();
@@ -116,6 +116,12 @@ export default async function Inicio() {
           <Navigation width={20} height={20} />
           <div className="pl-4 pr-1">Calidad de aire en</div>
           <ClosestSensor sensors={sensors} data={data} showAddress />
+        </div>
+        {/* Hora */}
+        <div className="flex items-center rounded-lg bg-white p-5 text-sm shadow-lg">
+          <Clock width={20} height={20} />
+          <div className="pl-4 pr-1">Última actualización a las</div>
+          <ClosestSensor sensors={sensors} data={data} showTime />
         </div>
       </div>
     </div>
