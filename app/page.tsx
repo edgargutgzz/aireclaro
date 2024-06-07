@@ -29,7 +29,7 @@ export default async function Inicio() {
           POBLACIÓN SENSIBLE
         </div>
         {/* Menores y Adultos Mayores recommendation */}
-        <div className="flex flex-col space-y-6 pb-6">
+        <div className="flex flex-col space-y-8 pb-6">
           {/* Menores de 12 */}
           <div className="flex flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-3">
             <Image
