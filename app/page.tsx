@@ -23,9 +23,9 @@ export default async function Inicio() {
         </div>
       </div>
       {/* Población sensible recommendations */}
-      <div className="flex flex-col space-y-5">
+      <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center text-sm text-gray-400">
+        <div className="flex justify-center pb-3 text-sm text-gray-400">
           POBLACIÓN SENSIBLE
         </div>
         {/* Menores y Adultos Mayores recommendation */}
