@@ -37,7 +37,7 @@ export default async function Inicio() {
               width={32}
               height={32}
               alt="Menores Icon"
-              className="pb-4"
+              className="pb-4 pt-1"
             />
             <div className="pb-4 font-semibold">Menores de 12 años</div>
             <ClosestSensor
