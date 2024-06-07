@@ -2,7 +2,7 @@ import PurpleAirSensors from "@/components/purple-air-sensors";
 import ClosestSensor from "@/components/inicio";
 import PurpleAirData from "@/components/purple-air-data";
 import Image from "next/image";
-import { Navigation, Clock } from "lucide-react";
+import { Navigation, Clock, TriangleAlert } from "lucide-react";
 
 export default async function Inicio() {
   const sensors = await PurpleAirSensors();
@@ -122,6 +122,15 @@ export default async function Inicio() {
           <Clock width={20} height={20} />
           <div className="pl-4 pr-1">Última actualización a las</div>
           <ClosestSensor sensors={sensors} data={data} showTime />
+        </div>
+        {/* Nota aclaratoria */}
+        <div className="flex items-center rounded-lg bg-white p-5 text-sm shadow-lg">
+          <TriangleAlert />
+          <div className="pl-4 pr-1">
+            En condiciones de alta humedad o viento fuerte, los sensores
+            sobreestiman o subestiman las concentraciones de partículas finas,
+            respectivamente.
+          </div>
         </div>
       </div>
     </div>
