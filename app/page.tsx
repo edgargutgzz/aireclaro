@@ -13,11 +13,11 @@ export default async function Inicio() {
       {/* Población general */}
       <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center pb-3 text-sm text-gray-400">
+        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-4">
           POBLACIÓN GENERAL
         </div>
         {/* Air Quality text, recommendation and quality bar */}
-        <div className="flex flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-4">
+        <div className="flex flex-col rounded-lg bg-white px-4 py-4 text-left shadow-lg lg:px-4 lg:py-5">
           <div className="pt-1 text-sm text-gray-400">CALIDAD DEL AIRE</div>
           <ClosestSensor sensors={sensors} data={data} />
         </div>
@@ -25,13 +25,13 @@ export default async function Inicio() {
       {/* Población sensible */}
       <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center pb-3 text-sm text-gray-400">
+        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-4">
           POBLACIÓN SENSIBLE
         </div>
         {/* Menores y Adultos Mayores recommendation */}
-        <div className="flex flex-col space-y-8 pb-6">
+        <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0">
           {/* Menores de 12 */}
-          <div className="flex flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-3">
+          <div className="flex w-1/2 flex-col rounded-lg bg-white p-4 text-left shadow-lg">
             <Image
               src="/menores.png"
               width={32}
@@ -47,7 +47,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Mayores de 60 años */}
-          <div className="flex flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-3">
+          <div className="flex w-1/2 flex-col rounded-lg bg-white p-4 text-left shadow-lg">
             <Image
               src="/adultos-mayores.png"
               width={32}
@@ -64,9 +64,9 @@ export default async function Inicio() {
           </div>
         </div>
         {/* Embarazadas y Enfermedades recommendation */}
-        <div className="flex flex-col space-y-8">
+        <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0">
           {/* Embarazadas */}
-          <div className="flex flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex w-1/2 flex-col rounded-lg bg-white p-5 text-left shadow-lg">
             <Image
               src="/embarazadas.png"
               width={26}
@@ -82,7 +82,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Enfermedades */}
-          <div className="flex flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex w-1/2 flex-col rounded-lg bg-white p-5 text-left shadow-lg">
             <div className="flex flex-row space-x-2 pb-4 pt-1">
               <Image
                 src="/enfermedades-corazon.png"
@@ -111,7 +111,7 @@ export default async function Inicio() {
       {/* Ubicación y Hora */}
       <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center pb-3 text-sm text-gray-400">
+        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-4">
           UBICACIÓN Y HORA
         </div>
         {/* Cards */}

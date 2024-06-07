@@ -354,7 +354,7 @@ export default function ClosestSensor({
                   {getQualityText()}
                 </div>
                 {/* Air Quality Text */}
-                <div className="pb-5">{getRecommendedText()}</div>
+                <div className="pb-5 lg:text-lg">{getRecommendedText()}</div>
                 {/* Air Quality Bar */}
                 <div className="pb-1">
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
