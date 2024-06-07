@@ -13,7 +13,7 @@ export default async function Inicio() {
       {/* Población general recommendation */}
       <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center pb-2 text-sm text-gray-400">
+        <div className="flex justify-center pb-3 text-sm text-gray-400">
           POBLACIÓN GENERAL
         </div>
         {/* Air Quality text, recommendation and quality bar */}
