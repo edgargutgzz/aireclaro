@@ -13,7 +13,7 @@ export default async function Inicio() {
       {/* Población general recommendation */}
       <div className="flex flex-col space-y-4">
         {/* Title */}
-        <div className="flex justify-center text-xs text-gray-400">
+        <div className="flex justify-center text-sm text-gray-400">
           POBLACIÓN GENERAL
         </div>
         {/* Air Quality text, recommendation and quality bar */}
@@ -25,7 +25,7 @@ export default async function Inicio() {
       {/* Población sensible recommendations */}
       <div className="flex flex-col space-y-5">
         {/* Title */}
-        <div className="flex justify-center text-xs text-gray-400">
+        <div className="flex justify-center text-sm text-gray-400">
           POBLACIÓN SENSIBLE
         </div>
         {/* Menores y Adultos Mayores recommendation */}
