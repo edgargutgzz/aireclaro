@@ -348,7 +348,7 @@ export default function ClosestSensor({
             !showAdultosMayoresRecommendation &&
             !showEmbarazadasRecommendation &&
             !showEnfermedadesRecommendation && (
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-0">
                 <div className="text-4xl font-semibold lg:text-5xl">
                   {getQualityText()}
                 </div>
