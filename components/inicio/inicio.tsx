@@ -319,25 +319,25 @@ export default function ClosestSensor({
             </div>
           )}
           {showAdultosMayoresRecommendation && (
-            <div>
+            <div className="flex flex-col pb-1">
               <div
-                className={`mb-3 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getAdultosMayoresRecommendation(pm25)}
             </div>
           )}
           {showEmbarazadasRecommendation && (
-            <div>
+            <div className="flex flex-col pb-1">
               <div
-                className={`mb-3 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getEmbarazadasRecommendation(pm25)}
             </div>
           )}
           {showEnfermedadesRecommendation && (
-            <div>
+            <div className="flex flex-col pb-1">
               <div
-                className={`mb-3 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getEnfermedadesRecommendation(pm25)}
             </div>

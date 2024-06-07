@@ -53,9 +53,9 @@ export default async function Inicio() {
               width={32}
               height={32}
               alt="Adultos mayores Icon"
-              className="pb-3"
+              className="pb-4 pt-1"
             />
-            <div className="pb-3 font-semibold">Mayores de 60 años</div>
+            <div className="pb-4 font-semibold">Mayores de 60 años</div>
             <ClosestSensor
               sensors={sensors}
               data={data}
@@ -72,9 +72,9 @@ export default async function Inicio() {
               width={26}
               height={26}
               alt="Personas Embarazadas Icon"
-              className="pb-3"
+              className="pb-4 pt-1"
             />
-            <div className="pb-3 font-semibold">Personas embarazadas</div>
+            <div className="pb-4 font-semibold">Personas embarazadas</div>
             <ClosestSensor
               sensors={sensors}
               data={data}
@@ -83,7 +83,7 @@ export default async function Inicio() {
           </div>
           {/* Enfermedades */}
           <div className="flex flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
-            <div className="flex flex-row space-x-2 pb-3">
+            <div className="flex flex-row space-x-2 pb-4 pt-1">
               <Image
                 src="/enfermedades-corazon.png"
                 width={32}
@@ -97,7 +97,7 @@ export default async function Inicio() {
                 alt="Adultos mayores Icon"
               />
             </div>
-            <div className="pb-3 font-semibold">
+            <div className="pb-4 font-semibold">
               Enfermedades cardiovasculares y respiratorias
             </div>
             <ClosestSensor
