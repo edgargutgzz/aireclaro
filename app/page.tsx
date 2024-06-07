@@ -122,7 +122,7 @@ export default async function Inicio() {
             <ClosestSensor sensors={sensors} data={data} showAddress />
           </div>
           {/* Hora */}
-          <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg">
+          <div className="flex flex-col space-y-4 rounded-lg bg-white px-4 py-5 text-sm shadow-lg">
             <Clock />
             <div className="flex">
               <div className="pr-1">Última actualización a las</div>
