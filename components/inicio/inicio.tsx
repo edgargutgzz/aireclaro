@@ -313,7 +313,7 @@ export default function ClosestSensor({
           {showMenoresRecommendation && (
             <div className="flex flex-col">
               <div
-                className={`mb-3 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getMenoresRecommendation(pm25)}
             </div>
