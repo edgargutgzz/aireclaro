@@ -29,7 +29,7 @@ export default async function Inicio() {
           POBLACIÓN SENSIBLE
         </div>
         {/* Menores y Adultos Mayores recommendation */}
-        <div className="flex flex-col space-y-6">
+        <div className="flex flex-col space-y-6 pb-6">
           {/* Menores de 12 */}
           <div className="flex flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-3">
             <Image
@@ -53,8 +53,9 @@ export default async function Inicio() {
               width={32}
               height={32}
               alt="Adultos mayores Icon"
+              className="pb-3"
             />
-            <div className="font-semibold">Mayores de 60 años</div>
+            <div className="pb-3 font-semibold">Mayores de 60 años</div>
             <ClosestSensor
               sensors={sensors}
               data={data}
@@ -65,14 +66,15 @@ export default async function Inicio() {
         {/* Embarazadas y Enfermedades recommendation */}
         <div className="flex flex-col space-y-8">
           {/* Embarazadas */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <Image
               src="/embarazadas.png"
               width={26}
               height={26}
               alt="Personas Embarazadas Icon"
+              className="pb-3"
             />
-            <div className="font-semibold">Personas embarazadas</div>
+            <div className="pb-3 font-semibold">Personas embarazadas</div>
             <ClosestSensor
               sensors={sensors}
               data={data}
@@ -80,8 +82,8 @@ export default async function Inicio() {
             />
           </div>
           {/* Enfermedades */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
-            <div className="flex flex-row space-x-2">
+          <div className="flex flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+            <div className="flex flex-row space-x-2 pb-3">
               <Image
                 src="/enfermedades-corazon.png"
                 width={32}
@@ -95,7 +97,7 @@ export default async function Inicio() {
                 alt="Adultos mayores Icon"
               />
             </div>
-            <div className="font-semibold">
+            <div className="pb-3 font-semibold">
               Enfermedades cardiovasculares y respiratorias
             </div>
             <ClosestSensor
