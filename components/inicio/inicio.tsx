@@ -297,10 +297,12 @@ export default function ClosestSensor({
           {showAddress &&
             location.latitude !== null &&
             location.longitude !== null && (
-              <Address
-                latitude={location.latitude}
-                longitude={location.longitude}
-              />
+              <div className="flex items-center">
+                <Address
+                  latitude={location.latitude}
+                  longitude={location.longitude}
+                />
+              </div>
             )}
           {showTime &&
             timestamp &&

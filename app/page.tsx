@@ -112,9 +112,8 @@ export default async function Inicio() {
           UBICACIÓN Y HORA
         </div>
         {/* Ubicación */}
-        <div className="flex items-center rounded-lg bg-white p-5 text-sm shadow-lg">
-          <Navigation width={20} height={20} />
-          <div className="pl-4 pr-1">Calidad de aire en</div>
+        <div className="flex items-center space-x-4 rounded-lg bg-white p-5 text-sm shadow-lg">
+          <Navigation />
           <ClosestSensor sensors={sensors} data={data} showAddress />
         </div>
         {/* Hora */}
