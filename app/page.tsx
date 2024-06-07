@@ -1,5 +1,5 @@
 import PurpleAirSensors from "@/components/purple-air-sensors";
-import ClosestSensor from "@/components/inicio";
+import ClosestSensor from "@/components/inicio/inicio";
 import PurpleAirData from "@/components/purple-air-data";
 import Image from "next/image";
 import { Navigation, Clock, TriangleAlert } from "lucide-react";

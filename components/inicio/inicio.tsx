@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
-import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 import { format } from "date-fns";
+
+// Dynamic import of the Address component
+const Address = dynamic(() => import("@/components/inicio/address"), {
+  ssr: false,
+});
 
 // Sensor interface
 interface Sensor {
@@ -43,11 +48,6 @@ type QualityText =
   | "Extremadamente Mala"
   | "No Disponible";
 
-// Mapbox Geocoding Client
-const geocodingClient = mbxGeocoding({
-  accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
-});
-
 export default function ClosestSensor({
   sensors,
   data,
@@ -63,9 +63,6 @@ export default function ClosestSensor({
     latitude: number | null;
     longitude: number | null;
   }>({ latitude: null, longitude: null });
-
-  // State for storing the address of the closest sensor
-  const [address, setAddress] = useState<string | null>(null);
 
   // State for storing the timestamp of the closest sensor
   const [timestamp, setTimestamp] = useState<string | null>(null);
@@ -104,39 +101,7 @@ export default function ClosestSensor({
     }
   }, []);
 
-  // 2. Get the user's address based on their location
-  useEffect(() => {
-    if (
-      location.latitude !== null &&
-      location.longitude !== null &&
-      showAddress
-    ) {
-      const fetchAddress = async () => {
-        try {
-          const response = await geocodingClient
-            .reverseGeocode({
-              query: [
-                location.longitude as number,
-                location.latitude as number,
-              ],
-              limit: 1,
-            })
-            .send();
-
-          if (response.body.features.length > 0) {
-            setAddress(response.body.features[0].place_name);
-          } else {
-            setError("Dirección no disponible");
-          }
-        } catch (error) {
-          setError("Error al obtener la dirección");
-        }
-      };
-      fetchAddress();
-    }
-  }, [location, showAddress]);
-
-  // 3. Calculate the distance between two geographic points using the Haversine formula
+  // 2. Calculate the distance between two geographic points using the Haversine formula
   const getDistance = (
     lat1: number,
     lon1: number,
@@ -159,7 +124,7 @@ export default function ClosestSensor({
     return R * c;
   };
 
-  // 4. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
+  // 3. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
   useEffect(() => {
     if (
       location.latitude !== null &&
@@ -329,7 +294,14 @@ export default function ClosestSensor({
       ) : (
         // 3. Display air quality data
         <>
-          {showAddress && <div>{address || "ubicación no disponible"}</div>}
+          {showAddress &&
+            location.latitude !== null &&
+            location.longitude !== null && (
+              <Address
+                latitude={location.latitude}
+                longitude={location.longitude}
+              />
+            )}
           {showTime &&
             timestamp &&
             format(new Date(timestamp.replace(" ", "T")), "h:mm a").replace(
