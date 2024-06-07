@@ -117,20 +117,22 @@ export default async function Inicio() {
         {/* Cards */}
         <div className="flex flex-col space-y-8">
           {/* Ubicación */}
-          <div className="flex items-center space-x-4 rounded-lg bg-white p-4 text-sm shadow-lg">
+          <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg">
             <Navigation />
             <ClosestSensor sensors={sensors} data={data} showAddress />
           </div>
           {/* Hora */}
-          <div className="flex items-center rounded-lg bg-white p-4 text-sm shadow-lg">
-            <Clock width={20} height={20} />
-            <div className="pl-4 pr-1">Última actualización a las</div>
-            <ClosestSensor sensors={sensors} data={data} showTime />
+          <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg">
+            <Clock />
+            <div className="flex">
+              <div className="pr-1">Última actualización a las</div>
+              <ClosestSensor sensors={sensors} data={data} showTime />
+            </div>
           </div>
           {/* Nota aclaratoria */}
-          <div className="flex items-center rounded-lg bg-white p-4 text-sm shadow-lg">
+          <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg">
             <TriangleAlert />
-            <div className="pl-4 pr-1">
+            <div>
               En condiciones de alta humedad o viento fuerte, los sensores
               sobreestiman o subestiman las concentraciones de partículas finas,
               respectivamente.
