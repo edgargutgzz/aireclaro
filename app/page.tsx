@@ -17,7 +17,7 @@ export default async function Inicio() {
           POBLACIÓN GENERAL
         </div>
         {/* Air Quality text, recommendation and quality bar */}
-        <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-4">
+        <div className="flex flex-col space-y-0 rounded-lg bg-white p-4 text-left shadow-lg lg:space-y-4">
           <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
           <ClosestSensor sensors={sensors} data={data} />
         </div>
