@@ -350,7 +350,7 @@ export default function ClosestSensor({
                 <div className="text-4xl font-semibold lg:text-5xl">
                   {getQualityText()}
                 </div>
-                <div className="text-lg">{getRecommendedText()}</div>
+                <div>{getRecommendedText()}</div>
                 <div className="pb-1 pt-2">
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
                     <div
