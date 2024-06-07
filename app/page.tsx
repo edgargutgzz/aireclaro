@@ -10,7 +10,7 @@ export default async function Inicio() {
 
   return (
     <div className="mx-4 flex flex-col space-y-20 pb-20 pt-4 lg:mx-36 lg:pt-10">
-      {/* Población general recommendation */}
+      {/* Población general */}
       <div className="flex flex-col">
         {/* Title */}
         <div className="flex justify-center pb-3 text-sm text-gray-400">
@@ -22,7 +22,7 @@ export default async function Inicio() {
           <ClosestSensor sensors={sensors} data={data} />
         </div>
       </div>
-      {/* Población sensible recommendations */}
+      {/* Población sensible */}
       <div className="flex flex-col">
         {/* Title */}
         <div className="flex justify-center pb-3 text-sm text-gray-400">

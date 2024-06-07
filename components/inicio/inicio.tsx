@@ -350,7 +350,7 @@ export default function ClosestSensor({
             !showEnfermedadesRecommendation && (
               <div className="flex flex-col">
                 {/* Air Quality Title */}
-                <div className="py-2 text-4xl font-semibold lg:text-5xl">
+                <div className="py-3 text-4xl font-semibold lg:text-5xl">
                   {getQualityText()}
                 </div>
                 {/* Air Quality Text */}
