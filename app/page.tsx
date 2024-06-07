@@ -29,9 +29,9 @@ export default async function Inicio() {
           POBLACIÓN SENSIBLE
         </div>
         {/* Menores y Adultos Mayores recommendation */}
-        <div className="flex justify-between space-x-8">
+        <div className="flex flex-col space-y-8">
           {/* Menores de 12 */}
-          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <Image
               src="/menores.png"
               width={32}
@@ -46,7 +46,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Mayores de 60 años */}
-          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <Image
               src="/adultos-mayores.png"
               width={32}
@@ -62,7 +62,7 @@ export default async function Inicio() {
           </div>
         </div>
         {/* Embarazadas y Enfermedades recommendation */}
-        <div className="flex justify-between space-x-8">
+        <div className="flex flex-col space-y-8">
           {/* Embarazadas */}
           <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <Image
