@@ -109,29 +109,32 @@ export default async function Inicio() {
         </div>
       </div>
       {/* Ubicación y Hora */}
-      <div className="flex flex-col space-y-8">
+      <div className="flex flex-col">
         {/* Title */}
         <div className="flex justify-center pb-3 text-sm text-gray-400">
           UBICACIÓN Y HORA
         </div>
-        {/* Ubicación */}
-        <div className="flex items-center space-x-4 rounded-lg bg-white p-5 text-sm shadow-lg">
-          <Navigation />
-          <ClosestSensor sensors={sensors} data={data} showAddress />
-        </div>
-        {/* Hora */}
-        <div className="flex items-center rounded-lg bg-white p-5 text-sm shadow-lg">
-          <Clock width={20} height={20} />
-          <div className="pl-4 pr-1">Última actualización a las</div>
-          <ClosestSensor sensors={sensors} data={data} showTime />
-        </div>
-        {/* Nota aclaratoria */}
-        <div className="flex items-center rounded-lg bg-white p-5 text-sm shadow-lg">
-          <TriangleAlert />
-          <div className="pl-4 pr-1">
-            En condiciones de alta humedad o viento fuerte, los sensores
-            sobreestiman o subestiman las concentraciones de partículas finas,
-            respectivamente.
+        {/* Cards */}
+        <div className="flex flex-col space-y-8">
+          {/* Ubicación */}
+          <div className="flex items-center space-x-4 rounded-lg bg-white p-4 text-sm shadow-lg">
+            <Navigation />
+            <ClosestSensor sensors={sensors} data={data} showAddress />
+          </div>
+          {/* Hora */}
+          <div className="flex items-center rounded-lg bg-white p-4 text-sm shadow-lg">
+            <Clock width={20} height={20} />
+            <div className="pl-4 pr-1">Última actualización a las</div>
+            <ClosestSensor sensors={sensors} data={data} showTime />
+          </div>
+          {/* Nota aclaratoria */}
+          <div className="flex items-center rounded-lg bg-white p-4 text-sm shadow-lg">
+            <TriangleAlert />
+            <div className="pl-4 pr-1">
+              En condiciones de alta humedad o viento fuerte, los sensores
+              sobreestiman o subestiman las concentraciones de partículas finas,
+              respectivamente.
+            </div>
           </div>
         </div>
       </div>
