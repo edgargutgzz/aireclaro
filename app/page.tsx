@@ -64,7 +64,7 @@ export default async function Inicio() {
         {/* Embarazadas y Enfermedades recommendation */}
         <div className="flex flex-col space-y-8">
           {/* Embarazadas */}
-          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <Image
               src="/embarazadas.png"
               width={26}
@@ -79,7 +79,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Enfermedades */}
-          <div className="flex w-1/2 flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-5 text-left shadow-lg lg:space-y-3">
             <div className="flex flex-row space-x-2">
               <Image
                 src="/enfermedades-corazon.png"
