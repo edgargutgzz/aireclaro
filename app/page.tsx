@@ -31,15 +31,14 @@ export default async function Inicio() {
         {/* Menores y Adultos Mayores recommendation */}
         <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0">
           {/* Menores de 12 */}
-          <div className="flex w-full flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2">
+          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:w-1/2">
             <Image
               src="/menores.png"
               width={32}
               height={32}
               alt="Menores Icon"
-              className="pb-4 pt-1"
             />
-            <div className="pb-4 font-semibold">Menores de 12 años</div>
+            <div className="font-semibold">Menores de 12 años</div>
             <ClosestSensor
               sensors={sensors}
               data={data}

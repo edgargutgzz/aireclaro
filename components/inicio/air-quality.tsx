@@ -312,9 +312,9 @@ export default function AirQuality({
               ":00",
             )}
           {showMenoresRecommendation && (
-            <div className="flex flex-col pb-1">
+            <div className="flex flex-col">
               <div
-                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getMenoresRecommendation(pm25)}
             </div>
