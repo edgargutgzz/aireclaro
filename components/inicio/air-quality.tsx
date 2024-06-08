@@ -314,7 +314,7 @@ export default function AirQuality({
           {showMenoresRecommendation && (
             <div className="flex flex-col">
               <div
-                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(pm25)}`}
               />
               {getMenoresRecommendation(pm25)}
             </div>
@@ -322,7 +322,7 @@ export default function AirQuality({
           {showAdultosMayoresRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(pm25)}`}
               />
               {getAdultosMayoresRecommendation(pm25)}
             </div>
@@ -330,7 +330,7 @@ export default function AirQuality({
           {showEmbarazadasRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(pm25)}`}
               />
               {getEmbarazadasRecommendation(pm25)}
             </div>
@@ -338,7 +338,7 @@ export default function AirQuality({
           {showEnfermedadesRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(pm25)}`}
               />
               {getEnfermedadesRecommendation(pm25)}
             </div>
@@ -357,7 +357,7 @@ export default function AirQuality({
                 {/* Air Quality Text */}
                 <div className="lg:text-lg">{getRecommendedText()}</div>
                 {/* Air Quality Bar */}
-                <div className="pt-2 lg:pt-4">
+                <div className="pt-2 lg:pt-3">
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
                     <div
                       style={{ flexBasis: "12%" }}

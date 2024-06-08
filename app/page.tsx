@@ -13,7 +13,7 @@ export default async function Inicio() {
       {/* Población general */}
       <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-4">
+        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-6">
           POBLACIÓN GENERAL
         </div>
         {/* Air Quality text, recommendation and quality bar */}
@@ -25,13 +25,13 @@ export default async function Inicio() {
       {/* Población sensible */}
       <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-4">
+        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-6">
           POBLACIÓN SENSIBLE
         </div>
         {/* Menores y Adultos Mayores recommendation */}
-        <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0">
+        <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0 lg:pb-10">
           {/* Menores de 12 */}
-          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2">
+          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
             <Image
               src="/menores.png"
               width={32}
@@ -46,7 +46,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Mayores de 60 años */}
-          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2">
+          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
             <Image
               src="/adultos-mayores.png"
               width={32}
@@ -64,7 +64,7 @@ export default async function Inicio() {
         {/* Embarazadas y Enfermedades recommendation */}
         <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0">
           {/* Embarazadas */}
-          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2">
+          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
             <Image
               src="/embarazadas.png"
               width={26}
@@ -79,7 +79,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Enfermedades */}
-          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2">
+          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
             <div className="flex flex-row space-x-2">
               <Image
                 src="/enfermedades-corazon.png"
@@ -108,18 +108,18 @@ export default async function Inicio() {
       {/* Ubicación y Hora */}
       <div className="flex flex-col">
         {/* Title */}
-        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-4">
+        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-6">
           UBICACIÓN Y HORA
         </div>
         {/* Cards */}
         <div className="flex flex-col space-y-8">
           {/* Ubicación */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
             <Navigation />
             <ClosestSensor sensors={sensors} data={data} showAddress />
           </div>
           {/* Hora */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
             <Clock />
             <div className="flex">
               <div className="pr-1">Última actualización a las</div>
@@ -127,7 +127,7 @@ export default async function Inicio() {
             </div>
           </div>
           {/* Nota aclaratoria */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
             <TriangleAlert />
             <div>
               En condiciones de alta humedad o viento fuerte, los sensores
