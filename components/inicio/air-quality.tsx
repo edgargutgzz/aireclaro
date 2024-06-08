@@ -322,7 +322,7 @@ export default function AirQuality({
           {showAdultosMayoresRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getAdultosMayoresRecommendation(pm25)}
             </div>
@@ -330,7 +330,7 @@ export default function AirQuality({
           {showEmbarazadasRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getEmbarazadasRecommendation(pm25)}
             </div>
@@ -338,7 +338,7 @@ export default function AirQuality({
           {showEnfermedadesRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-4 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 ${getBorderColor(pm25)}`}
               />
               {getEnfermedadesRecommendation(pm25)}
             </div>

@@ -46,15 +46,14 @@ export default async function Inicio() {
             />
           </div>
           {/* Mayores de 60 años */}
-          <div className="flex w-full flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2">
+          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:w-1/2">
             <Image
               src="/adultos-mayores.png"
               width={32}
               height={32}
               alt="Adultos mayores Icon"
-              className="pb-4 pt-1"
             />
-            <div className="pb-4 font-semibold">Mayores de 60 años</div>
+            <div className="font-semibold">Mayores de 60 años</div>
             <ClosestSensor
               sensors={sensors}
               data={data}
@@ -65,15 +64,14 @@ export default async function Inicio() {
         {/* Embarazadas y Enfermedades recommendation */}
         <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0">
           {/* Embarazadas */}
-          <div className="flex w-full flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:w-1/2">
+          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:w-1/2">
             <Image
               src="/embarazadas.png"
               width={26}
               height={26}
               alt="Personas Embarazadas Icon"
-              className="pb-4 pt-1"
             />
-            <div className="pb-4 font-semibold">Personas embarazadas</div>
+            <div className="font-semibold">Personas embarazadas</div>
             <ClosestSensor
               sensors={sensors}
               data={data}
@@ -81,8 +79,8 @@ export default async function Inicio() {
             />
           </div>
           {/* Enfermedades */}
-          <div className="flex w-full flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:w-1/2">
-            <div className="flex flex-row space-x-2 pb-4 pt-1">
+          <div className="flex w-full flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:w-1/2">
+            <div className="flex flex-row space-x-2">
               <Image
                 src="/enfermedades-corazon.png"
                 width={32}
@@ -96,7 +94,7 @@ export default async function Inicio() {
                 alt="Adultos mayores Icon"
               />
             </div>
-            <div className="pb-4 font-semibold">
+            <div className="font-semibold">
               Enfermedades cardiovasculares y respiratorias
             </div>
             <ClosestSensor
