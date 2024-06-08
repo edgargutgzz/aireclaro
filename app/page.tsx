@@ -114,12 +114,12 @@ export default async function Inicio() {
         {/* Cards */}
         <div className="flex flex-col space-y-8">
           {/* Ubicación */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-sm shadow-lg">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg">
             <Navigation />
             <ClosestSensor sensors={sensors} data={data} showAddress />
           </div>
           {/* Hora */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-sm shadow-lg">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg">
             <Clock />
             <div className="flex">
               <div className="pr-1">Última actualización a las</div>
@@ -127,7 +127,7 @@ export default async function Inicio() {
             </div>
           </div>
           {/* Nota aclaratoria */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-sm shadow-lg">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg">
             <TriangleAlert />
             <div>
               En condiciones de alta humedad o viento fuerte, los sensores
