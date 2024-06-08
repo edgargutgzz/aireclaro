@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { Skeleton } from "@/components/ui/skeleton";
+import SkeletonGeneral from "./skeleton-general";
+import SkeletonSensible from "./skeleton-sensible";
 import { format } from "date-fns";
 
 // Dynamic import of the Address component
@@ -48,7 +49,7 @@ type QualityText =
   | "Extremadamente Mala"
   | "No Disponible";
 
-export default function ClosestSensor({
+export default function AirQuality({
   sensors,
   data,
   showMenoresRecommendation = false,
@@ -281,16 +282,16 @@ export default function ClosestSensor({
         <p>{error}</p>
       ) : loading ? (
         // 2. Display loading skeletons
-        <div className="flex flex-col space-y-4">
-          <Skeleton className="h-10 w-1/3" />
-          <div className="flex flex-col space-y-2">
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-1/2" />
-          </div>
-          <div className="pb-1 pt-2">
-            <Skeleton className="h-5 w-full" />
-          </div>
-        </div>
+        <>
+          {showMenoresRecommendation ||
+          showAdultosMayoresRecommendation ||
+          showEmbarazadasRecommendation ||
+          showEnfermedadesRecommendation ? (
+            <SkeletonSensible />
+          ) : (
+            <SkeletonGeneral />
+          )}
+        </>
       ) : (
         // 3. Display air quality data
         <>

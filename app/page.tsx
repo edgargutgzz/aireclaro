@@ -1,5 +1,5 @@
 import PurpleAirSensors from "@/components/purple-air-sensors";
-import ClosestSensor from "@/components/inicio/inicio";
+import ClosestSensor from "@/components/inicio/air-quality";
 import PurpleAirData from "@/components/purple-air-data";
 import Image from "next/image";
 import { Navigation, Clock, TriangleAlert } from "lucide-react";
@@ -31,7 +31,7 @@ export default async function Inicio() {
         {/* Menores y Adultos Mayores recommendation */}
         <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0">
           {/* Menores de 12 */}
-          <div className="flex w-1/2 flex-col rounded-lg bg-white p-4 text-left shadow-lg">
+          <div className="flex w-1/2 flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:w-full">
             <Image
               src="/menores.png"
               width={32}
@@ -47,7 +47,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Mayores de 60 años */}
-          <div className="flex w-1/2 flex-col rounded-lg bg-white p-4 text-left shadow-lg">
+          <div className="flex w-1/2 flex-col rounded-lg bg-white p-4 text-left shadow-lg lg:w-full">
             <Image
               src="/adultos-mayores.png"
               width={32}
@@ -66,7 +66,7 @@ export default async function Inicio() {
         {/* Embarazadas y Enfermedades recommendation */}
         <div className="flex flex-col space-y-8 pb-6 lg:flex-row lg:space-x-8 lg:space-y-0">
           {/* Embarazadas */}
-          <div className="flex w-1/2 flex-col rounded-lg bg-white p-5 text-left shadow-lg">
+          <div className="flex w-1/2 flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:w-full">
             <Image
               src="/embarazadas.png"
               width={26}
@@ -82,7 +82,7 @@ export default async function Inicio() {
             />
           </div>
           {/* Enfermedades */}
-          <div className="flex w-1/2 flex-col rounded-lg bg-white p-5 text-left shadow-lg">
+          <div className="flex w-1/2 flex-col rounded-lg bg-white p-5 text-left shadow-lg lg:w-full">
             <div className="flex flex-row space-x-2 pb-4 pt-1">
               <Image
                 src="/enfermedades-corazon.png"
