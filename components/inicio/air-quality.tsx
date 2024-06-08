@@ -349,15 +349,15 @@ export default function AirQuality({
             !showAdultosMayoresRecommendation &&
             !showEmbarazadasRecommendation &&
             !showEnfermedadesRecommendation && (
-              <div className="flex flex-col">
+              <div className="flex flex-col space-y-4">
                 {/* Air Quality Title */}
-                <div className="py-3 text-4xl font-semibold lg:text-5xl">
+                <div className="text-4xl font-semibold lg:text-5xl">
                   {getQualityText()}
                 </div>
                 {/* Air Quality Text */}
-                <div className="pb-5 lg:text-lg">{getRecommendedText()}</div>
+                <div className="lg:text-lg">{getRecommendedText()}</div>
                 {/* Air Quality Bar */}
-                <div className="pb-1">
+                <div>
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
                     <div
                       style={{ flexBasis: "12%" }}
