@@ -39,11 +39,15 @@ export default function Navbar() {
           <Navlinks />
         </div>
       </div>
-      {showScrollDiv && (
-        <div className="fixed left-0 top-0 h-12 w-full bg-white lg:hidden">
-          {/* Content of the white div */}
-        </div>
-      )}
+      <div
+        className={`fixed left-0 w-full bg-white transition-transform duration-300 lg:hidden ${
+          showScrollDiv
+            ? "translate-y-full transform"
+            : "-translate-y-full transform"
+        }`}
+      >
+        <div className="h-12">{/* Content of the white div */}</div>
+      </div>
     </>
   );
 }
