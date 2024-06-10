@@ -9,7 +9,7 @@ export default async function Inicio() {
   const data = await PurpleAirData();
 
   return (
-    <div className="mx-4 flex flex-col space-y-20 pb-20 pt-4 md:mx-16 lg:mx-36 lg:pt-10">
+    <div className="mx-4 flex flex-col space-y-20 pb-20 pt-4 md:mx-16 md:pb-28 lg:mx-36 lg:pt-10">
       {/* Población general */}
       <div className="flex flex-col">
         {/* Title */}
