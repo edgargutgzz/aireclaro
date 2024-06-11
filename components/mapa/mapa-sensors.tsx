@@ -144,7 +144,9 @@ export default function MapaSensors({
       <div className="absolute bottom-10 left-10 rounded-lg bg-white bg-opacity-75 p-4 text-sm shadow-lg">
         <h3 className="mb-2 flex justify-between font-bold">
           <span>Calidad del Aire</span>
-          <span className="font-normal">Medición a las {latestUpdateTime}</span>
+          <span className="text-xs font-normal text-gray-400">
+            Actualización a las {latestUpdateTime}
+          </span>
         </h3>
 
         <div className="flex space-x-4">
