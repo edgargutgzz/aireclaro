@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
+// Initialize Mapbox
 (mapboxgl as any).accessToken =
   process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "";
 
@@ -24,24 +25,30 @@ interface Data {
   time_stamp: string;
 }
 
-// Function to get border color based on pm25 value
-const getBorderColor = (pm25: number | null): string => {
-  if (pm25 === null || pm25 < 5) return "bg-gray-400"; // gray
-  if (pm25 <= 15) return "bg-green-400"; // green
-  if (pm25 > 15 && pm25 <= 25) return "bg-yellow-400"; // yellow
-  if (pm25 > 25 && pm25 <= 79) return "bg-orange-400"; // orange
-  if (pm25 > 79 && pm25 <= 130) return "bg-red-400"; // red
-  if (pm25 > 130) return "bg-purple-400"; // purple
-  return "bg-white"; // default color (white)
-};
+// Function to get marker color based on pm25 value
+const createMarker = (pm25: number | null): HTMLElement | null => {
+  let markerColor = "bg-white"; // default color
 
-// Function to create a custom marker element
-const createCustomMarker = (colorClass: string): HTMLElement | null => {
-  if (colorClass === "bg-gray-400" || colorClass === "bg-green-400") {
-    return null; // Do not create marker if color is gray or green
+  if (pm25 === null || pm25 === 0) {
+    markerColor = "bg-gray-400"; // gray
+  } else if (pm25 > 0 && pm25 <= 15) {
+    markerColor = "bg-green-400"; // green
+  } else if (pm25 > 15 && pm25 <= 25) {
+    markerColor = "bg-yellow-400"; // yellow
+  } else if (pm25 > 25 && pm25 <= 79) {
+    markerColor = "bg-orange-400"; // orange
+  } else if (pm25 > 79 && pm25 <= 130) {
+    markerColor = "bg-red-400"; // red
+  } else if (pm25 > 130) {
+    markerColor = "bg-purple-400"; // purple
   }
+
+  if (markerColor === "bg-gray-400") {
+    return null; // Do not create marker if color is gray
+  }
+
   const marker = document.createElement("div");
-  marker.className = `marker ${colorClass} bg-opacity-75 w-12 h-12 rounded-full flex items-center justify-center`;
+  marker.className = `marker ${markerColor} bg-opacity-75 w-12 h-12 rounded-full flex items-center justify-center`;
   return marker;
 };
 
@@ -63,97 +70,46 @@ export default function MapaSensors({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
       center: [-100.32098588977951, 25.676269873872855],
-      zoom: 11,
+      zoom: 10,
     });
 
     map.current.on("load", () => {
-      console.log("Map loaded"); // Log when the map is loaded
+      sensors.forEach((sensor) => {
+        const latestData = data.find(
+          (dataItem) => dataItem.sensor_id === sensor.sensor_id,
+        );
 
-      if (sensors && sensors.length > 0) {
-        sensors.forEach((sensor) => {
-          // Find the latest data for the current sensor
-          const latestData = data.find(
-            (dataItem) => dataItem.sensor_id === sensor.sensor_id,
-          );
+        const markerElement = createMarker(latestData ? latestData.pm25 : null);
 
-          // Get the border color based on pm25 value
-          const colorClass = getBorderColor(
-            latestData ? latestData.pm25 : null,
-          );
+        if (!markerElement) return; // Skip if marker is not created
 
-          // Create a custom marker with the specific border color
-          const markerElement = createCustomMarker(colorClass);
+        const popupContent = `
+        <h3><strong>${sensor.nombre}</strong></h3>
+        ${
+          latestData
+            ? `<p>PM2.5: ${latestData.pm25}</p>`
+            : "<p>No data available</p>"
+        }
+        <p>Lat: ${sensor.lat}</p>
+        <p>Lon: ${sensor.lon}</p>
+      `;
+        const popup = new Popup({ offset: 25, closeButton: false }).setHTML(
+          popupContent,
+        );
 
-          if (!markerElement) return; // Skip if marker is not created
-
-          // Create a popup
-          const popupContent = `
-            <h3>${sensor.nombre}</h3>
-            <p>ID: ${sensor.sensor_id}</p>
-            <p>Lat: ${sensor.lat}</p>
-            <p>Lon: ${sensor.lon}</p>
-            ${
-              latestData
-                ? `<p>PM2.5: ${latestData.pm25}</p><p>Timestamp: ${latestData.time_stamp}</p>`
-                : "<p>No data available</p>"
-            }
-          `;
-          const popup = new Popup({ offset: 25 }).setHTML(popupContent);
-
-          try {
-            const marker = new Marker({
-              element: markerElement, // Set the custom marker element
-            })
-              .setLngLat([sensor.lon, sensor.lat])
-              .setPopup(popup) // Bind the popup to the marker
-              .addTo(map.current!); // Use non-null assertion
-
-            console.log("Marker added with popup for:", sensor);
-          } catch (error) {
-            console.error("Error adding marker:", error, sensor);
-          }
-        });
-      } else {
-        console.log("No sensors available");
-      }
+        new Marker({
+          element: markerElement, // Set the custom marker element
+        })
+          .setLngLat([sensor.lon, sensor.lat])
+          .setPopup(popup) // Bind the popup to the marker
+          .addTo(map.current!); // Use non-null assertion
+      });
     });
   }, [sensors, data]);
-
-  // Function to render the legend
-  const renderLegend = () => {
-    return (
-      <div className="absolute bottom-10 left-10 rounded-lg bg-white bg-opacity-75 p-4 text-sm shadow-lg">
-        <h3 className="mb-2 font-bold">Calidad del Aire</h3>
-        <div className="flex space-x-4">
-          <div className="flex items-center">
-            <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
-            <span>Buena</span>
-          </div>
-          <div className="flex items-center">
-            <div className="mr-2 h-4 w-4 rounded-full bg-yellow-400"></div>
-            <span>Aceptable</span>
-          </div>
-          <div className="flex items-center">
-            <div className="mr-2 h-4 w-4 rounded-full bg-orange-400"></div>
-            <span>Mala</span>
-          </div>
-          <div className="flex items-center">
-            <div className="mr-2 h-4 w-4 rounded-full bg-red-400"></div>
-            <span>Muy mala</span>
-          </div>
-          <div className="flex items-center">
-            <div className="mr-2 h-4 w-4 rounded-full bg-purple-400"></div>
-            <span>Extremadamente mala</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="relative h-full">
       <div ref={mapContainer} className="absolute left-0 top-0 h-full w-full" />
-      {renderLegend()}
     </div>
   );
 }

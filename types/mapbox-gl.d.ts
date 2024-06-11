@@ -17,7 +17,7 @@ declare module "mapbox-gl" {
   }
 
   export class Marker {
-    constructor(options?: { color?: string });
+    constructor(options?: { color?: string; element?: HTMLElement });
 
     setLngLat(lngLat: [number, number]): this;
     setPopup(popup: Popup): this;
@@ -26,7 +26,10 @@ declare module "mapbox-gl" {
   }
 
   export class Popup {
-    constructor(options?: { offset?: number | [number, number] });
+    constructor(options?: {
+      offset?: number | [number, number];
+      closeButton?: boolean;
+    });
 
     setLngLat(lngLat: [number, number]): this;
     setHTML(html: string): this;

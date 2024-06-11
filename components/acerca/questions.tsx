@@ -93,8 +93,8 @@ export default function Questions() {
         <span>
           <div>
             <iframe
-              src="https://www.youtube.com/embed/B7fKs4dTeu0?si=4Mw_dG18vhEHvijY"
-              title="Aire Claro - iPhone"
+              src="https://www.youtube.com/embed/dx0NLeoR3cs"
+              title="YouTube Short"
               allowFullScreen
               className="h-96 w-full rounded-xl shadow-lg"
             ></iframe>
