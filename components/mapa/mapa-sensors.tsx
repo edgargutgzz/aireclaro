@@ -122,10 +122,17 @@ export default function MapaSensors({
           .setLngLat([sensor.lon, sensor.lat]) // Set the marker coordinates
           .setPopup(popup) // Bind the popup to the marker
           .addTo(map.current!); // Add the marker to the map
-
-        // Log a message indicating that the marker was added
-        console.log("Marker added with popup for:", sensor);
       });
+
+      // Get the timestamp from the first data element and format it
+      const firstDataTimestamp = data[0].time_stamp;
+      const formattedTime = format(
+        new Date(firstDataTimestamp.replace(" ", "T")),
+        "h:mm a",
+      ).replace(/:\d{2}/, ":00");
+
+      // Update the state with the formatted time
+      setLatestUpdateTime(formattedTime);
     });
   }, [sensors, data]); // Dependencies: re-run if sensors or data change
 
@@ -135,12 +142,11 @@ export default function MapaSensors({
       <div ref={mapContainer} className="absolute left-0 top-0 h-full w-full" />
       {/* Legend */}
       <div className="absolute bottom-10 left-10 rounded-lg bg-white bg-opacity-75 p-4 text-sm shadow-lg">
-        <h3 className="mb-2 font-bold">
-          Calidad del Aire{" "}
-          <span className="font-normal">
-            : última actualización a las 12:00 PM
-          </span>
+        <h3 className="mb-2 flex justify-between font-bold">
+          <span>Calidad del Aire</span>
+          <span className="font-normal">Medición a las {latestUpdateTime}</span>
         </h3>
+
         <div className="flex space-x-4">
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
