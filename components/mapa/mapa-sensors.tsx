@@ -100,15 +100,15 @@ export default function MapaSensors({
 
         // Create the popup content
         const popupContent = `
-        <h3><strong>${sensor.nombre}</strong></h3>
-        ${
-          latestData
-            ? `<p>PM2.5: ${latestData.pm25}</p>`
-            : "<p>No data available</p>"
-        }
-        <p>Lat: ${sensor.lat}</p>
-        <p>Lon: ${sensor.lon}</p>
-      `;
+          <h3><strong>${sensor.nombre}</strong></h3>
+          ${
+            latestData
+              ? `<p>PM2.5: <span class="text-gray-400">${latestData.pm25}</span></p>`
+              : "<p>No data available</p>"
+          }
+          <p>Lat: <span class="text-gray-400">${sensor.lat}</span></p>
+          <p>Lon: <span class="text-gray-400">${sensor.lon}</span></p>
+        `;
 
         // Create a new popup instance
         const popup = new Popup({ offset: 25, closeButton: false }).setHTML(
