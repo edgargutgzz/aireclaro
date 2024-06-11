@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { format } from "date-fns";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -60,29 +61,44 @@ export default function MapaSensors({
   sensors: Sensor[];
   data: Data[];
 }) {
+  // Reference to the map container
   const mapContainer = useRef<HTMLDivElement>(null);
+
+  // Reference to the map instance
   const map = useRef<Map | null>(null);
 
+  // State to hold the latest update time
+  const [latestUpdateTime, setLatestUpdateTime] = useState<string>("");
+
+  // useEffect hook to initialize the map and add markers
   useEffect(() => {
+    // Check if the map is already initialized
     if (map.current) return; // Initialize map only once
 
+    // Create a new Mapbox map instance
     map.current = new Map({
-      container: mapContainer.current!,
-      style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
-      center: [-100.32098588977951, 25.676269873872855],
-      zoom: 10,
+      container: mapContainer.current!, // Set the map container
+      style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd", // Set the map style
+      center: [-100.32098588977951, 25.676269873872855], // Set the initial center coordinates
+      zoom: 10, // Set the initial zoom level
     });
 
+    // Event listener for when the map has loaded
     map.current.on("load", () => {
+      // Iterate over each sensor
       sensors.forEach((sensor) => {
+        // Find the latest data for the sensor
         const latestData = data.find(
           (dataItem) => dataItem.sensor_id === sensor.sensor_id,
         );
 
+        // Create a marker element based on the PM2.5 value
         const markerElement = createMarker(latestData ? latestData.pm25 : null);
 
-        if (!markerElement) return; // Skip if marker is not created
+        // Skip if no marker is created
+        if (!markerElement) return;
 
+        // Create the popup content
         const popupContent = `
         <h3><strong>${sensor.nombre}</strong></h3>
         ${
@@ -93,27 +109,38 @@ export default function MapaSensors({
         <p>Lat: ${sensor.lat}</p>
         <p>Lon: ${sensor.lon}</p>
       `;
+
+        // Create a new popup instance
         const popup = new Popup({ offset: 25, closeButton: false }).setHTML(
           popupContent,
         );
 
+        // Create a new marker instance
         new Marker({
           element: markerElement, // Set the custom marker element
         })
-          .setLngLat([sensor.lon, sensor.lat])
+          .setLngLat([sensor.lon, sensor.lat]) // Set the marker coordinates
           .setPopup(popup) // Bind the popup to the marker
-          .addTo(map.current!); // Use non-null assertion
+          .addTo(map.current!); // Add the marker to the map
 
+        // Log a message indicating that the marker was added
         console.log("Marker added with popup for:", sensor);
       });
     });
-  }, [sensors, data]);
+  }, [sensors, data]); // Dependencies: re-run if sensors or data change
 
   return (
     <div className="relative h-full">
+      {/* Map container */}
       <div ref={mapContainer} className="absolute left-0 top-0 h-full w-full" />
+      {/* Legend */}
       <div className="absolute bottom-10 left-10 rounded-lg bg-white bg-opacity-75 p-4 text-sm shadow-lg">
-        <h3 className="mb-2 font-bold">Calidad del Aire</h3>
+        <h3 className="mb-2 font-bold">
+          Calidad del Aire{" "}
+          <span className="font-normal">
+            : última actualización a las 12:00 PM
+          </span>
+        </h3>
         <div className="flex space-x-4">
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
