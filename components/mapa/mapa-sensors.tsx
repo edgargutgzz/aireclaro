@@ -103,6 +103,8 @@ export default function MapaSensors({
           .setLngLat([sensor.lon, sensor.lat])
           .setPopup(popup) // Bind the popup to the marker
           .addTo(map.current!); // Use non-null assertion
+
+        console.log("Marker added with popup for:", sensor);
       });
     });
   }, [sensors, data]);
@@ -110,6 +112,31 @@ export default function MapaSensors({
   return (
     <div className="relative h-full">
       <div ref={mapContainer} className="absolute left-0 top-0 h-full w-full" />
+      <div className="absolute bottom-10 left-10 rounded-lg bg-white bg-opacity-75 p-4 text-sm shadow-lg">
+        <h3 className="mb-2 font-bold">Calidad del Aire</h3>
+        <div className="flex space-x-4">
+          <div className="flex items-center">
+            <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
+            <span>Buena</span>
+          </div>
+          <div className="flex items-center">
+            <div className="mr-2 h-4 w-4 rounded-full bg-yellow-400"></div>
+            <span>Aceptable</span>
+          </div>
+          <div className="flex items-center">
+            <div className="mr-2 h-4 w-4 rounded-full bg-orange-400"></div>
+            <span>Mala</span>
+          </div>
+          <div className="flex items-center">
+            <div className="mr-2 h-4 w-4 rounded-full bg-red-400"></div>
+            <span>Muy mala</span>
+          </div>
+          <div className="flex items-center">
+            <div className="mr-2 h-4 w-4 rounded-full bg-purple-400"></div>
+            <span>Extremadamente mala</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
