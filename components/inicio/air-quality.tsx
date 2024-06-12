@@ -78,32 +78,6 @@ export default function AirQuality({
   // State for tracking the loading status
   const [loading, setLoading] = useState(true);
 
-  // 1. Get the user's current location on component mount
-  useEffect(() => {
-    if (navigator.geolocation) {
-      // If geolocation is supported, get the current position
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          setLoading(false);
-        },
-        (error) => {
-          // Handle any errors from the geolocation API
-          setError("Ubicación no disponible");
-          setLoading(false);
-        },
-      );
-    } else {
-      // If geolocation is not supported, set an error message
-      setError("Ubicación no disponible");
-      setLoading(false);
-    }
-  }, []);
-
-  // 2. Calculate the distance between two geographic points using the Haversine formula
   const getDistance = useCallback(
     (lat1: number, lon1: number, lat2: number, lon2: number) => {
       const toRad = (value: number) => (value * Math.PI) / 180;
@@ -124,51 +98,51 @@ export default function AirQuality({
     [],
   );
 
-  // Memoized sortedSensors array
-  const sortedSensors = useMemo(() => {
-    if (
-      location.latitude !== null &&
-      location.longitude !== null &&
-      sensors.length > 0
-    ) {
-      return [...sensors].sort((a, b) => {
-        const aDistance = getDistance(
-          location.latitude!,
-          location.longitude!,
-          a.lat,
-          a.lon,
-        );
-        const bDistance = getDistance(
-          location.latitude!,
-          location.longitude!,
-          b.lat,
-          b.lon,
-        );
-        return aDistance - bDistance;
-      });
-    }
-    return [];
-  }, [location, sensors, getDistance]);
-
-  // 3. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
   useEffect(() => {
-    if (sortedSensors.length > 0) {
-      setLoading(true);
-      for (const sensor of sortedSensors) {
-        const sensorData = data.find((d) => d.sensor_id === sensor.sensor_id);
-        if (sensorData && sensorData.pm25 !== null && sensorData.pm25 !== 0) {
-          setPm25(sensorData.pm25);
-          setTimestamp(sensorData.time_stamp);
-          setLoading(false);
-          return;
-        }
-      }
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation({ latitude, longitude });
 
-      setPm25(null);
-      setTimestamp(null);
+          if (latitude !== null && longitude !== null && sensors.length > 0) {
+            const sortedSensors = [...sensors].sort((a, b) => {
+              const aDistance = getDistance(latitude, longitude, a.lat, a.lon);
+              const bDistance = getDistance(latitude, longitude, b.lat, b.lon);
+              return aDistance - bDistance;
+            });
+
+            for (const sensor of sortedSensors) {
+              const sensorData = data.find(
+                (d) => d.sensor_id === sensor.sensor_id,
+              );
+              if (
+                sensorData &&
+                sensorData.pm25 !== null &&
+                sensorData.pm25 !== 0
+              ) {
+                setPm25(sensorData.pm25);
+                setTimestamp(sensorData.time_stamp);
+                setLoading(false);
+                return;
+              }
+            }
+
+            setPm25(null);
+            setTimestamp(null);
+            setLoading(false);
+          }
+        },
+        () => {
+          setError("Ubicación no disponible");
+          setLoading(false);
+        },
+      );
+    } else {
+      setError("Ubicación no disponible");
       setLoading(false);
     }
-  }, [sortedSensors, data]);
+  }, [sensors, data, getDistance]);
 
   // Air Quality text
   const getQualityText = (): QualityText => {
