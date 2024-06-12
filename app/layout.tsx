@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="flex flex-col-reverse lg:h-screen lg:flex-row">
           {/* Navbar */}
-          <div className="w-full lg:w-1/5">
+          <div className="fixed bottom-0 z-10 w-full lg:static lg:bottom-auto lg:w-1/5">
             <Navbar />
           </div>
           {/* Content */}
