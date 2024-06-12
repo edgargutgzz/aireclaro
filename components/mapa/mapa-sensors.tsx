@@ -151,26 +151,26 @@ export default function MapaSensors({
             Actualización a las {latestUpdateTime}
           </span>
         </div>
-        <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 md:flex md:flex-row md:space-x-4 md:space-y-0">
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
-            <span>Buena</span>
+            <span className="text-sm md:text-base">Buena</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-yellow-400"></div>
-            <span>Aceptable</span>
+            <span className="text-sm md:text-base">Aceptable</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-orange-400"></div>
-            <span>Mala</span>
+            <span className="text-sm md:text-base">Mala</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-red-400"></div>
-            <span>Muy mala</span>
+            <span className="text-sm md:text-base">Muy mala</span>
           </div>
-          <div className="flex items-center">
+          <div className="mt-2 flex items-center md:mt-0">
             <div className="mr-2 h-4 w-4 rounded-full bg-purple-400"></div>
-            <span>Extremadamente mala</span>
+            <span className="text-sm md:text-base">Extremadamente mala</span>
           </div>
         </div>
       </div>
