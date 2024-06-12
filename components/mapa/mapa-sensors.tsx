@@ -144,15 +144,14 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
       {/* Legend */}
-      <div className="absolute bottom-10 left-10 rounded-lg bg-white bg-opacity-75 p-4 text-sm shadow-lg">
-        <h3 className="mb-2 flex justify-between font-bold">
+      <div className="absolute bottom-10 left-2 rounded-lg bg-white bg-opacity-75 p-4 text-sm shadow-lg md:left-10">
+        <div className="mb-2 flex flex-col font-bold md:flex-row md:justify-between">
           <span>Calidad del Aire</span>
-          <span className="text-xs font-normal text-gray-400">
+          <span className="mt-0 text-xs font-normal text-gray-400 md:ml-4 md:mt-0">
             Actualización a las {latestUpdateTime}
           </span>
-        </h3>
-
-        <div className="flex space-x-4">
+        </div>
+        <div className="flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
             <span>Buena</span>
