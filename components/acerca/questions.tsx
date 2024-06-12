@@ -19,6 +19,10 @@ export default function Questions() {
       question: "¿Qué información utilizan para medir la calidad del aire?",
       answer: (
         <span>
+          Utilizamos el promedio de la concentración de PM2.5 de cada hora,
+          proveniente de 2 fuentes principales:
+          <br />
+          <br />
           1. Las estaciones de monitoreo{" "}
           <a
             href="http://aire.nl.gob.mx/"
