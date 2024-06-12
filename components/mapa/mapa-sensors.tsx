@@ -154,23 +154,23 @@ export default function MapaSensors({
         <div className="grid grid-cols-2 gap-x-4 gap-y-2 md:flex md:flex-row md:space-x-4 md:space-y-0">
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
-            <span className="text-sm md:text-base">Buena</span>
+            <span className="text-xs md:text-base">Buena</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-yellow-400"></div>
-            <span className="text-sm md:text-base">Aceptable</span>
+            <span className="text-xs md:text-base">Aceptable</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-orange-400"></div>
-            <span className="text-sm md:text-base">Mala</span>
+            <span className="text-xs md:text-base">Mala</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-red-400"></div>
-            <span className="text-sm md:text-base">Muy mala</span>
+            <span className="text-xs md:text-base">Muy mala</span>
           </div>
           <div className="col-span-2 mt-0 flex items-center md:col-span-1 md:mt-0">
             <div className="mr-2 h-4 w-4 rounded-full bg-purple-400"></div>
-            <span className="text-sm md:text-base">Extremadamente mala</span>
+            <span className="text-xs md:text-base">Extremadamente mala</span>
           </div>
         </div>
       </div>
