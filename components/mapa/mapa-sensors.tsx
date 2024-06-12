@@ -137,9 +137,12 @@ export default function MapaSensors({
   }, [sensors, data]); // Dependencies: re-run if sensors or data change
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-screen">
       {/* Map container */}
-      <div ref={mapContainer} className="absolute left-0 top-0 h-full w-full" />
+      <div
+        ref={mapContainer}
+        className="absolute left-0 top-0 h-full w-full md:h-screen"
+      />
       {/* Legend */}
       <div className="absolute bottom-10 left-10 rounded-lg bg-white bg-opacity-75 p-4 text-sm shadow-lg">
         <h3 className="mb-2 flex justify-between font-bold">
