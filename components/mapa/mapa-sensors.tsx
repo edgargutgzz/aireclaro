@@ -168,7 +168,7 @@ export default function MapaSensors({
             <div className="mr-2 h-4 w-4 rounded-full bg-red-400"></div>
             <span className="text-sm md:text-base">Muy mala</span>
           </div>
-          <div className="mt-2 flex items-center md:mt-0">
+          <div className="col-span-2 mt-2 flex items-center md:col-span-1 md:mt-0">
             <div className="mr-2 h-4 w-4 rounded-full bg-purple-400"></div>
             <span className="text-sm md:text-base">Extremadamente mala</span>
           </div>
