@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 import SkeletonGeneral from "./skeleton-general";
 import SkeletonSensible from "./skeleton-sensible";
@@ -103,38 +104,34 @@ export default function AirQuality({
   }, []);
 
   // 2. Calculate the distance between two geographic points using the Haversine formula
-  const getDistance = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-  ) => {
-    const toRad = (value: number) => (value * Math.PI) / 180;
-    const R = 6371; // Radius of the Earth in kilometers
-    const dLat = toRad(lat2 - lat1);
-    const dLon = toRad(lon2 - lon1);
-    const lat1Rad = toRad(lat1);
-    const lat2Rad = toRad(lat2);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.sin(dLon / 2) *
+  const getDistance = useCallback(
+    (lat1: number, lon1: number, lat2: number, lon2: number) => {
+      const toRad = (value: number) => (value * Math.PI) / 180;
+      const R = 6371; // Radius of the Earth in kilometers
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const lat1Rad = toRad(lat1);
+      const lat2Rad = toRad(lat2);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.sin(dLon / 2) *
-        Math.cos(lat1Rad) *
-        Math.cos(lat2Rad);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
+          Math.sin(dLon / 2) *
+          Math.cos(lat1Rad) *
+          Math.cos(lat2Rad);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    },
+    [],
+  );
 
-  // 3. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
-  useEffect(() => {
+  // Memoized sortedSensors array
+  const sortedSensors = useMemo(() => {
     if (
       location.latitude !== null &&
       location.longitude !== null &&
       sensors.length > 0
     ) {
-      setLoading(true);
-      // Sort the sensors based on their distance to the user's location
-      const sortedSensors = [...sensors].sort((a, b) => {
+      return [...sensors].sort((a, b) => {
         const aDistance = getDistance(
           location.latitude!,
           location.longitude!,
@@ -149,8 +146,14 @@ export default function AirQuality({
         );
         return aDistance - bDistance;
       });
+    }
+    return [];
+  }, [location, sensors, getDistance]);
 
-      // Iterate over the sorted sensors until you find one with a valid pm25 value
+  // 3. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
+  useEffect(() => {
+    if (sortedSensors.length > 0) {
+      setLoading(true);
       for (const sensor of sortedSensors) {
         const sensorData = data.find((d) => d.sensor_id === sensor.sensor_id);
         if (sensorData && sensorData.pm25 !== null && sensorData.pm25 !== 0) {
@@ -161,12 +164,11 @@ export default function AirQuality({
         }
       }
 
-      // If no sensor with a valid pm25 value was found, set pm25 to null
       setPm25(null);
       setTimestamp(null);
       setLoading(false);
     }
-  }, [location, sensors, data]);
+  }, [sortedSensors, data]);
 
   // Air Quality text
   const getQualityText = (): QualityText => {

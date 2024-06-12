@@ -1,6 +1,6 @@
 import PurpleAirSensors from "@/components/purple-air-sensors";
-import ClosestSensor from "@/components/inicio/air-quality";
 import PurpleAirData from "@/components/purple-air-data";
+import AirQuality from "@/components/inicio/air-quality";
 import Image from "next/image";
 import { Navigation, Clock, TriangleAlert } from "lucide-react";
 
@@ -19,7 +19,7 @@ export default async function Inicio() {
         {/* Air Quality text, recommendation and quality bar */}
         <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
-          <ClosestSensor sensors={sensors} data={data} />
+          <AirQuality sensors={sensors} data={data} />
         </div>
       </div>
       {/* Población sensible */}
@@ -39,7 +39,7 @@ export default async function Inicio() {
               alt="Menores Icon"
             />
             <div className="font-semibold">Menores de 12 años</div>
-            <ClosestSensor
+            <AirQuality
               sensors={sensors}
               data={data}
               showMenoresRecommendation
@@ -54,7 +54,7 @@ export default async function Inicio() {
               alt="Adultos mayores Icon"
             />
             <div className="font-semibold">Mayores de 60 años</div>
-            <ClosestSensor
+            <AirQuality
               sensors={sensors}
               data={data}
               showAdultosMayoresRecommendation
@@ -72,7 +72,7 @@ export default async function Inicio() {
               alt="Personas Embarazadas Icon"
             />
             <div className="font-semibold">Personas embarazadas</div>
-            <ClosestSensor
+            <AirQuality
               sensors={sensors}
               data={data}
               showEmbarazadasRecommendation
@@ -97,7 +97,7 @@ export default async function Inicio() {
             <div className="font-semibold">
               Enfermedades cardiovasculares y respiratorias
             </div>
-            <ClosestSensor
+            <AirQuality
               sensors={sensors}
               data={data}
               showEnfermedadesRecommendation
@@ -116,14 +116,14 @@ export default async function Inicio() {
           {/* Ubicación */}
           <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
             <Navigation />
-            <ClosestSensor sensors={sensors} data={data} showAddress />
+            <AirQuality sensors={sensors} data={data} showAddress />
           </div>
           {/* Hora */}
           <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
             <Clock />
             <div className="flex">
               <div className="pr-1">Última actualización a las</div>
-              <ClosestSensor sensors={sensors} data={data} showTime />
+              <AirQuality sensors={sensors} data={data} showTime />
             </div>
           </div>
           {/* Nota aclaratoria */}

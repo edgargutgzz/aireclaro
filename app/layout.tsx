@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Aire Claro",
-  description: "Mejor información de calidad de aire para cuidar tu salud",
+  description: "Mejor información de calidad del aire para cuidar tu salud.",
 };
 
 export default function RootLayout({
