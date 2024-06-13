@@ -1,15 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import dynamic from "next/dynamic";
 import SkeletonGeneral from "./skeleton-general";
 import SkeletonSensible from "./skeleton-sensible";
 import { format } from "date-fns";
-
-// Dynamic import of the Address component
-const Address = dynamic(() => import("@/components/inicio/address"), {
-  ssr: false,
-});
+import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 
 // Sensor interface
 interface Sensor {
@@ -49,6 +44,11 @@ type QualityText =
   | "Extremadamente Mala"
   | "No Disponible";
 
+// Geocoding client
+const geocodingClient = mbxGeocoding({
+  accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
+});
+
 export default function AirQuality({
   sensors,
   data,
@@ -69,25 +69,58 @@ export default function AirQuality({
       pm25: null as number | null,
       timestamp: null as string | null,
     },
+    address: null as string | null,
     error: null as string | null,
     loading: true,
   });
 
   // Get the user's current location on component mount
+  const fetchAddress = useCallback(
+    async (latitude: number, longitude: number) => {
+      try {
+        const response = await geocodingClient
+          .reverseGeocode({
+            query: [longitude, latitude],
+            limit: 1,
+          })
+          .send();
+
+        if (response.body.features.length > 0) {
+          setState((prevState) => ({
+            ...prevState,
+            address: response.body.features[0].place_name,
+          }));
+        } else {
+          setState((prevState) => ({
+            ...prevState,
+            address: "Dirección no disponible",
+          }));
+        }
+      } catch {
+        setState((prevState) => ({
+          ...prevState,
+          address: "Error al obtener la dirección",
+        }));
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          const { latitude, longitude } = position.coords;
           setState((prevState) => ({
             ...prevState,
-            location: {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            },
+            location: { latitude, longitude },
             loading: false,
           }));
+
+          // Fetch the address for the given coordinates
+          fetchAddress(latitude, longitude);
         },
-        (error) => {
+        () => {
           setState((prevState) => ({
             ...prevState,
             error: "Ubicación no disponible",
@@ -102,7 +135,7 @@ export default function AirQuality({
         loading: false,
       }));
     }
-  }, []);
+  }, [fetchAddress]);
 
   // Calculate the distance between two geographic points using the Haversine formula
   const getDistance = useCallback(
@@ -300,10 +333,11 @@ export default function AirQuality({
             state.location.latitude !== null &&
             state.location.longitude !== null && (
               <div className="flex items-center">
-                <Address
-                  latitude={state.location.latitude}
-                  longitude={state.location.longitude}
-                />
+                {state.address ? (
+                  <div>{state.address}</div>
+                ) : (
+                  <div>Loading...</div>
+                )}
               </div>
             )}
           {showTime &&
