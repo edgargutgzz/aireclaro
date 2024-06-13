@@ -74,36 +74,35 @@ export default function AirQuality({
     loading: true,
   });
 
-  // Get the user's current location on component mount
   const fetchAddress = useCallback(
-    async (latitude: number, longitude: number) => {
+    async (latitude: number, longitude: number): Promise<void> => {
       try {
         const response = await geocodingClient
           .reverseGeocode({
-            query: [longitude, latitude],
-            limit: 1,
+            query: [longitude, latitude], // Query with the given longitude and latitude
+            limit: 1, // Limit the response to 1 result
           })
           .send();
 
         if (response.body.features.length > 0) {
           setState((prevState) => ({
             ...prevState,
-            address: response.body.features[0].place_name,
+            address: response.body.features[0].place_name, // Update state with the place name
           }));
         } else {
           setState((prevState) => ({
             ...prevState,
-            address: "Dirección no disponible",
+            address: "Dirección no disponible", // Address not available
           }));
         }
       } catch {
         setState((prevState) => ({
           ...prevState,
-          address: "Error al obtener la dirección",
+          address: "Error al obtener la dirección", // Error obtaining the address
         }));
       }
     },
-    [],
+    [], // Empty dependency array means this function is created once and won't change
   );
 
   useEffect(() => {
