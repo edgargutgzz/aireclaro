@@ -28,8 +28,8 @@ interface Data {
   time_stamp: string;
 }
 
-// Props interface for the ClosestSensor component
-interface ClosestSensorProps {
+// Props interface for the Air Quality component
+interface AirQualityProps {
   sensors: Sensor[];
   data: Data[];
   showMenoresRecommendation?: boolean;
@@ -58,7 +58,7 @@ export default function AirQuality({
   showEnfermedadesRecommendation = false,
   showAddress = false,
   showTime = false,
-}: ClosestSensorProps) {
+}: AirQualityProps) {
   // Consolidated state for location, air quality data, error, and loading status
   const [state, setState] = useState({
     location: {
