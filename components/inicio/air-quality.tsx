@@ -170,7 +170,7 @@ export default function AirQuality({
     [],
   );
 
-  // Memoized sortedSensors array
+  // Sort sensors by distance to the user's location
   const sortedSensors = useMemo(() => {
     if (
       state.location.latitude !== null &&
@@ -196,7 +196,7 @@ export default function AirQuality({
     return [];
   }, [state.location, sensors, getDistance]);
 
-  // Find the pm25 value for the closest sensor whenever the location, sensors or data changes
+  // Find the pm25 and timestamp value for the closest sensor
   useEffect(() => {
     if (sortedSensors.length > 0) {
       setState((prevState) => ({ ...prevState, loading: true }));
@@ -222,7 +222,7 @@ export default function AirQuality({
     }
   }, [sortedSensors, data]);
 
-  // Air Quality text
+  // Air Quality text based on pm25 value
   const getQualityText = useCallback((): QualityText => {
     const { pm25 } = state.airQuality;
     if (pm25 === null) return "No Disponible";
@@ -234,7 +234,7 @@ export default function AirQuality({
     return "No Disponible";
   }, [state.airQuality]);
 
-  // Recommendation text based on air quality
+  // Población general recommendation based on the air quality text
   const recommendationText = useMemo(() => {
     const { pm25 } = state.airQuality;
     const textMap: { [key in QualityText]?: string } = {
@@ -250,7 +250,7 @@ export default function AirQuality({
     return textMap[getQualityText()] || "No Disponible";
   }, [state.airQuality, getQualityText]);
 
-  // Additional recommendations
+  // Población sensible recommendations based on the air quality text
   const getAdditionalRecommendation = (type: string): string => {
     const { pm25 } = state.airQuality;
     const recommendationMap: {
@@ -313,7 +313,7 @@ export default function AirQuality({
     return "border-white-400"; // default color in case the value is null or undefined
   };
 
-  // Marker position for the quality bar
+  // Marker position for the air quality bar
   const getMarkerPosition = () => {
     const { pm25 } = state.airQuality;
     if (pm25 === null) return 0; // return a default value when pm25 is null
