@@ -359,11 +359,9 @@ export default function AirQuality({
               "h:mm a",
             ).replace(/:\d{2}/, ":00")}
           {showMenoresRecommendation && (
-            <div className="flex flex-col">
+            <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(
-                  state.airQuality.pm25,
-                )}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
               {getAdditionalRecommendation("menores")}
             </div>
@@ -371,9 +369,7 @@ export default function AirQuality({
           {showAdultosMayoresRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(
-                  state.airQuality.pm25,
-                )}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
               {getAdditionalRecommendation("adultosMayores")}
             </div>
@@ -381,9 +377,7 @@ export default function AirQuality({
           {showEmbarazadasRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(
-                  state.airQuality.pm25,
-                )}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
               {getAdditionalRecommendation("embarazadas")}
             </div>
@@ -391,9 +385,7 @@ export default function AirQuality({
           {showEnfermedadesRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(
-                  state.airQuality.pm25,
-                )}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
               {getAdditionalRecommendation("enfermedades")}
             </div>
