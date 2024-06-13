@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 import SkeletonGeneral from "./skeleton-general";
 import SkeletonSensible from "./skeleton-sensible";
