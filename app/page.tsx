@@ -114,18 +114,18 @@ export default async function Inicio() {
         {/* Cards */}
         <div className="flex flex-col space-y-8">
           {/* Ubicación */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+          {/* <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
             <Navigation />
             <AirQuality sensors={sensors} data={data} showAddress />
-          </div>
+          </div> */}
           {/* Hora */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+          {/* <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
             <Clock />
             <div className="flex">
               <div className="pr-1">Última actualización a las</div>
               <AirQuality sensors={sensors} data={data} showTime />
             </div>
-          </div>
+          </div> */}
           {/* Nota aclaratoria */}
           <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
             <TriangleAlert />
