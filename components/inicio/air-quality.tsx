@@ -59,50 +59,52 @@ export default function AirQuality({
   showAddress = false,
   showTime = false,
 }: ClosestSensorProps) {
-  // State for storing the user's current location
-  const [location, setLocation] = useState<{
-    latitude: number | null;
-    longitude: number | null;
-  }>({ latitude: null, longitude: null });
+  // Consolidated state for location, air quality data, error, and loading status
+  const [state, setState] = useState({
+    location: {
+      latitude: null as number | null,
+      longitude: null as number | null,
+    },
+    airQuality: {
+      pm25: null as number | null,
+      timestamp: null as string | null,
+    },
+    error: null as string | null,
+    loading: true,
+  });
 
-  // State for storing the timestamp of the closest sensor
-  const [timestamp, setTimestamp] = useState<string | null>(null);
-
-  // State for storing the pm25 value for the closest sensor
-  const [pm25, setPm25] = useState<number | null>(null);
-
-  // State for storing any error messages
-  const [error, setError] = useState<string | null>(null);
-
-  // State for tracking the loading status
-  const [loading, setLoading] = useState(true);
-
-  // 1. Get the user's current location on component mount
+  // Get the user's current location on component mount
   useEffect(() => {
     if (navigator.geolocation) {
-      // If geolocation is supported, get the current position
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          setLoading(false);
+          setState((prevState) => ({
+            ...prevState,
+            location: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+            loading: false,
+          }));
         },
         (error) => {
-          // Handle any errors from the geolocation API
-          setError("Ubicación no disponible");
-          setLoading(false);
+          setState((prevState) => ({
+            ...prevState,
+            error: "Ubicación no disponible",
+            loading: false,
+          }));
         },
       );
     } else {
-      // If geolocation is not supported, set an error message
-      setError("Ubicación no disponible");
-      setLoading(false);
+      setState((prevState) => ({
+        ...prevState,
+        error: "Ubicación no disponible",
+        loading: false,
+      }));
     }
   }, []);
 
-  // 2. Calculate the distance between two geographic points using the Haversine formula
+  // Calculate the distance between two geographic points using the Haversine formula
   const getDistance = useCallback(
     (lat1: number, lon1: number, lat2: number, lon2: number) => {
       const toRad = (value: number) => (value * Math.PI) / 180;
@@ -126,20 +128,20 @@ export default function AirQuality({
   // Memoized sortedSensors array
   const sortedSensors = useMemo(() => {
     if (
-      location.latitude !== null &&
-      location.longitude !== null &&
+      state.location.latitude !== null &&
+      state.location.longitude !== null &&
       sensors.length > 0
     ) {
       return [...sensors].sort((a, b) => {
         const aDistance = getDistance(
-          location.latitude!,
-          location.longitude!,
+          state.location.latitude!,
+          state.location.longitude!,
           a.lat,
           a.lon,
         );
         const bDistance = getDistance(
-          location.latitude!,
-          location.longitude!,
+          state.location.latitude!,
+          state.location.longitude!,
           b.lat,
           b.lon,
         );
@@ -147,41 +149,49 @@ export default function AirQuality({
       });
     }
     return [];
-  }, [location, sensors, getDistance]);
+  }, [state.location, sensors, getDistance]);
 
-  // 3. Find the pm25 value for the closest sensor whenever the location, sensors or data changes
+  // Find the pm25 value for the closest sensor whenever the location, sensors or data changes
   useEffect(() => {
     if (sortedSensors.length > 0) {
-      setLoading(true);
+      setState((prevState) => ({ ...prevState, loading: true }));
       for (const sensor of sortedSensors) {
         const sensorData = data.find((d) => d.sensor_id === sensor.sensor_id);
         if (sensorData && sensorData.pm25 !== null && sensorData.pm25 !== 0) {
-          setPm25(sensorData.pm25);
-          setTimestamp(sensorData.time_stamp);
-          setLoading(false);
+          setState((prevState) => ({
+            ...prevState,
+            airQuality: {
+              pm25: sensorData.pm25,
+              timestamp: sensorData.time_stamp,
+            },
+            loading: false,
+          }));
           return;
         }
       }
-
-      setPm25(null);
-      setTimestamp(null);
-      setLoading(false);
+      setState((prevState) => ({
+        ...prevState,
+        airQuality: { pm25: null, timestamp: null },
+        loading: false,
+      }));
     }
   }, [sortedSensors, data]);
 
   // Air Quality text
-  const getQualityText = (): QualityText => {
+  const getQualityText = useCallback((): QualityText => {
+    const { pm25 } = state.airQuality;
     if (pm25 === null) return "No Disponible";
     if (pm25 <= 15) return "Buena";
     if (pm25 > 15 && pm25 <= 25) return "Aceptable";
     if (pm25 > 25 && pm25 <= 79) return "Mala";
     if (pm25 > 79 && pm25 <= 130) return "Muy Mala";
     if (pm25 > 130) return "Extremadamente Mala";
-    return "No Disponible"; // default text in case the value is null or undefined
-  };
+    return "No Disponible";
+  }, [state.airQuality]);
 
-  // Población General recommendation
-  const getRecommendedText = (): string => {
+  // Recommendation text based on air quality
+  const recommendationText = useMemo(() => {
+    const { pm25 } = state.airQuality;
     const textMap: { [key in QualityText]?: string } = {
       Buena: "Disfruta las actividades al aire libre.",
       Aceptable:
@@ -192,77 +202,59 @@ export default function AirQuality({
       "Extremadamente Mala":
         "Permanece en interiores. Reprograma tus actividades al aire libre y si presentas síntomas respiratorios o cardiacos acude al médico.",
     };
-    return textMap[getQualityText()] || "No Disponible"; // Default text in case of unexpected input
-  };
+    return textMap[getQualityText()] || "No Disponible";
+  }, [state.airQuality, getQualityText]);
 
-  // Marker position for the quality bar
-  const getMarkerPosition = () => {
-    if (pm25 === null) return 0; // return a default value when pm25 is null
-    if (pm25 <= 15) return (pm25 / 15) * 10 + 6;
-    if (pm25 <= 25) return 16 + ((pm25 - 16) / 10) * 10 + 6;
-    if (pm25 <= 79) return 32 + ((pm25 - 26) / 54) * 20 + 6;
-    if (pm25 <= 130) return 58 + ((pm25 - 80) / 51) * 20 + 6;
-    return 84 + 6;
-  };
-
-  // Menores de 12 años recommendation
-  const getMenoresRecommendation = (pm25: number | null): string => {
-    if (pm25 === null) return "No Disponible";
-    if (pm25 <= 15) return "Disfruta las actividades al aire libre.";
-    if (pm25 > 15 && pm25 <= 25)
-      return "Disfruta las actividades al aire libre.";
-    if (pm25 > 25 && pm25 <= 79)
-      return "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.";
-    if (pm25 > 79 && pm25 <= 130)
-      return "Evita la actividad física vigorosa o prolongada al aire libre. Si presentas algún síntoma, busca el consejo de tu médico.";
-    if (pm25 > 130)
-      return "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.";
-    return "No Disponible"; // default text in case the value is null or undefined
-  };
-
-  // Adultos Mayores recommendation
-  const getAdultosMayoresRecommendation = (pm25: number | null): string => {
-    if (pm25 === null) return "No Disponible";
-    if (pm25 <= 15) return "Disfruta las actividades al aire libre.";
-    if (pm25 > 15 && pm25 <= 25)
-      return "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.";
-    if (pm25 > 25 && pm25 <= 79)
-      return "Reduce las actividades físicas vigorosas al aire libre.";
-    if (pm25 > 79 && pm25 <= 130)
-      return "Evita las actividades físicas y el tiempo de estancia al aire libre. Acude al médico si presentas síntomas respiratorios o cardiacos.";
-    if (pm25 > 130)
-      return "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.";
-    return "No Disponible"; // default text in case the value is null or undefined
-  };
-
-  // Embarazadas recommendation
-  const getEmbarazadasRecommendation = (pm25: number | null): string => {
-    if (pm25 === null) return "No Disponible";
-    if (pm25 <= 15) return "Disfruta las actividades al aire libre.";
-    if (pm25 > 15 && pm25 <= 25)
-      return "Disfruta las actividades al aire libre.";
-    if (pm25 > 25 && pm25 <= 79)
-      return "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.";
-    if (pm25 > 79 && pm25 <= 130)
-      return "Evita la actividad física vigorosa o prolongada al aire libre. Si presentas algún síntoma, busca el consejo de tu médico.";
-    if (pm25 > 130)
-      return "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.";
-    return "No Disponible"; // default text in case the value is null or undefined
-  };
-
-  // Enfermedades recommendation
-  const getEnfermedadesRecommendation = (pm25: number | null): string => {
-    if (pm25 === null) return "No Disponible";
-    if (pm25 <= 15) return "Disfruta las actividades al aire libre.";
-    if (pm25 > 15 && pm25 <= 25)
-      return "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.";
-    if (pm25 > 25 && pm25 <= 79)
-      return "Reduce las actividades físicas vigorosas al aire libre.";
-    if (pm25 > 79 && pm25 <= 130)
-      return "Evita las actividades físicas y el tiempo de estancia al aire libre. Acude al médico si presentas síntomas respiratorios o cardiacos.";
-    if (pm25 > 130)
-      return "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.";
-    return "No Disponible"; // default text in case the value is null or undefined
+  // Additional recommendations
+  const getAdditionalRecommendation = (type: string): string => {
+    const { pm25 } = state.airQuality;
+    const recommendationMap: {
+      [key: string]: { [key in QualityText]: string };
+    } = {
+      menores: {
+        Buena: "Disfruta las actividades al aire libre.",
+        Aceptable: "Disfruta las actividades al aire libre.",
+        Mala: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
+        "Muy Mala":
+          "Evita la actividad física vigorosa o prolongada al aire libre. Si presentas algún síntoma, busca el consejo de tu médico.",
+        "Extremadamente Mala":
+          "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.",
+        "No Disponible": "No Disponible",
+      },
+      adultosMayores: {
+        Buena: "Disfruta las actividades al aire libre.",
+        Aceptable:
+          "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
+        Mala: "Reduce las actividades físicas vigorosas al aire libre.",
+        "Muy Mala":
+          "Evita las actividades físicas y el tiempo de estancia al aire libre. Acude al médico si presentas síntomas respiratorios o cardiacos.",
+        "Extremadamente Mala":
+          "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.",
+        "No Disponible": "No Disponible",
+      },
+      embarazadas: {
+        Buena: "Disfruta las actividades al aire libre.",
+        Aceptable: "Disfruta las actividades al aire libre.",
+        Mala: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
+        "Muy Mala":
+          "Evita la actividad física vigorosa o prolongada al aire libre. Si presentas algún síntoma, busca el consejo de tu médico.",
+        "Extremadamente Mala":
+          "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.",
+        "No Disponible": "No Disponible",
+      },
+      enfermedades: {
+        Buena: "Disfruta las actividades al aire libre.",
+        Aceptable:
+          "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
+        Mala: "Reduce las actividades físicas vigorosas al aire libre.",
+        "Muy Mala":
+          "Evita las actividades físicas y el tiempo de estancia al aire libre. Acude al médico si presentas síntomas respiratorios o cardiacos.",
+        "Extremadamente Mala":
+          "Permanece en interiores. Acude al médico si presentas síntomas respiratorios o cardiacos.",
+        "No Disponible": "No Disponible",
+      },
+    };
+    return recommendationMap[type][getQualityText()];
   };
 
   // Población sensible border colors
@@ -276,13 +268,22 @@ export default function AirQuality({
     return "border-white-400"; // default color in case the value is null or undefined
   };
 
+  // Marker position for the quality bar
+  const getMarkerPosition = () => {
+    const { pm25 } = state.airQuality;
+    if (pm25 === null) return 0; // return a default value when pm25 is null
+    if (pm25 <= 15) return (pm25 / 15) * 10 + 6;
+    if (pm25 <= 25) return 16 + ((pm25 - 16) / 10) * 10 + 6;
+    if (pm25 <= 79) return 32 + ((pm25 - 26) / 54) * 20 + 6;
+    if (pm25 <= 130) return 58 + ((pm25 - 80) / 51) * 20 + 6;
+    return 84 + 6;
+  };
+
   return (
     <>
-      {error ? (
-        // 1. Display error message
-        <p>{error}</p>
-      ) : loading ? (
-        // 2. Display loading skeletons
+      {state.error ? (
+        <p>{state.error}</p>
+      ) : state.loading ? (
         <>
           {showMenoresRecommendation ||
           showAdultosMayoresRecommendation ||
@@ -294,54 +295,61 @@ export default function AirQuality({
           )}
         </>
       ) : (
-        // 3. Display air quality data
         <>
           {showAddress &&
-            location.latitude !== null &&
-            location.longitude !== null && (
+            state.location.latitude !== null &&
+            state.location.longitude !== null && (
               <div className="flex items-center">
                 <Address
-                  latitude={location.latitude}
-                  longitude={location.longitude}
+                  latitude={state.location.latitude}
+                  longitude={state.location.longitude}
                 />
               </div>
             )}
           {showTime &&
-            timestamp &&
-            format(new Date(timestamp.replace(" ", "T")), "h:mm a").replace(
-              /:\d{2}/,
-              ":00",
-            )}
+            state.airQuality.timestamp &&
+            format(
+              new Date(state.airQuality.timestamp.replace(" ", "T")),
+              "h:mm a",
+            ).replace(/:\d{2}/, ":00")}
           {showMenoresRecommendation && (
             <div className="flex flex-col">
               <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(
+                  state.airQuality.pm25,
+                )}`}
               />
-              {getMenoresRecommendation(pm25)}
+              {getAdditionalRecommendation("menores")}
             </div>
           )}
           {showAdultosMayoresRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(
+                  state.airQuality.pm25,
+                )}`}
               />
-              {getAdultosMayoresRecommendation(pm25)}
+              {getAdditionalRecommendation("adultosMayores")}
             </div>
           )}
           {showEmbarazadasRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(
+                  state.airQuality.pm25,
+                )}`}
               />
-              {getEmbarazadasRecommendation(pm25)}
+              {getAdditionalRecommendation("embarazadas")}
             </div>
           )}
           {showEnfermedadesRecommendation && (
             <div className="flex flex-col pb-1">
               <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(pm25)}`}
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(
+                  state.airQuality.pm25,
+                )}`}
               />
-              {getEnfermedadesRecommendation(pm25)}
+              {getAdditionalRecommendation("enfermedades")}
             </div>
           )}
           {!showAddress &&
@@ -356,7 +364,7 @@ export default function AirQuality({
                   {getQualityText()}
                 </div>
                 {/* Air Quality Text */}
-                <div className="lg:text-lg">{getRecommendedText()}</div>
+                <div className="lg:text-lg">{recommendationText}</div>
                 {/* Air Quality Bar */}
                 <div className="pt-2 lg:pt-3">
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
