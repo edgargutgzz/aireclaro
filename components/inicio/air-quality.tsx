@@ -149,7 +149,7 @@ export default function AirQuality({
     }
   }, [fetchAddress]); // Dependency array ensures this effect runs only once on mount
 
-  // Calculate the distance between two geographic points using the Haversine formula
+  // Calculate the distance between two sets of coordinates
   const getDistance = useCallback(
     (lat1: number, lon1: number, lat2: number, lon2: number) => {
       const toRad = (value: number) => (value * Math.PI) / 180;
@@ -170,7 +170,7 @@ export default function AirQuality({
     [],
   );
 
-  // Sort sensors by distance to the user's location
+  // Sort sensors by distance to the user's location using the getDistance function above
   const sortedSensors = useMemo(() => {
     if (
       state.location.latitude !== null &&
