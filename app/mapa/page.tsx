@@ -1,6 +1,6 @@
 import MapaSensors from "@/components/mapa/mapa-sensors";
-import PurpleAirSensors from "@/components/purple-air-sensors";
-import PurpleAirData from "@/components/purple-air-data";
+import PurpleAirSensors from "@/components/data/purple-air-sensors";
+import PurpleAirData from "@/components/data/purple-air-data";
 
 export default async function Mapa() {
   const sensors = await PurpleAirSensors();

@@ -1,5 +1,5 @@
-import PurpleAirSensors from "@/components/purple-air-sensors";
-import PurpleAirData from "@/components/purple-air-data";
+import PurpleAirSensors from "@/components/data/purple-air-sensors";
+import PurpleAirData from "@/components/data/purple-air-data";
 import AirQuality from "@/components/inicio/air-quality";
 import Image from "next/image";
 import { Navigation, Clock, TriangleAlert } from "lucide-react";
