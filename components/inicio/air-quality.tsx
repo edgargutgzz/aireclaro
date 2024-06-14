@@ -170,63 +170,57 @@ export default function AirQuality({
     [],
   );
 
-  // Find the closest sensor to the user's location
-  const closestSensor = useMemo(() => {
+  // Sort sensors by distance to the user's location
+  const sortedSensors = useMemo(() => {
     if (
       state.location.latitude !== null &&
       state.location.longitude !== null &&
       sensors.length > 0
     ) {
-      let closest = sensors[0];
-      let minDistance = getDistance(
-        state.location.latitude,
-        state.location.longitude,
-        sensors[0].lat,
-        sensors[0].lon,
-      );
-
-      for (const sensor of sensors) {
-        const distance = getDistance(
-          state.location.latitude,
-          state.location.longitude,
-          sensor.lat,
-          sensor.lon,
+      return [...sensors].sort((a, b) => {
+        const aDistance = getDistance(
+          state.location.latitude!,
+          state.location.longitude!,
+          a.lat,
+          a.lon,
         );
-        if (distance < minDistance) {
-          closest = sensor;
-          minDistance = distance;
-        }
-      }
-      return closest;
+        const bDistance = getDistance(
+          state.location.latitude!,
+          state.location.longitude!,
+          b.lat,
+          b.lon,
+        );
+        return aDistance - bDistance;
+      });
     }
-    return null;
+    return [];
   }, [state.location, sensors, getDistance]);
 
-  // Update the air quality data based on the closest sensor
+  // Find the pm25 and timestamp value for the closest sensor
   useEffect(() => {
-    if (closestSensor) {
+    if (sortedSensors.length > 0) {
       setState((prevState) => ({ ...prevState, loading: true }));
-      const sensorData = data.find(
-        (d) => d.sensor_id === closestSensor.sensor_id,
-      );
-      if (sensorData && sensorData.pm25 !== null && sensorData.pm25 !== 0) {
-        setState((prevState) => ({
-          ...prevState,
-          airQuality: {
-            pm25: sensorData.pm25,
-            timestamp: sensorData.time_stamp,
-          },
-          loading: false,
-        }));
-      } else {
-        setState((prevState) => ({
-          ...prevState,
-          airQuality: { pm25: null, timestamp: null },
-          loading: false,
-        }));
+      for (const sensor of sortedSensors) {
+        const sensorData = data.find((d) => d.sensor_id === sensor.sensor_id);
+        if (sensorData && sensorData.pm25 !== null && sensorData.pm25 !== 0) {
+          setState((prevState) => ({
+            ...prevState,
+            airQuality: {
+              pm25: sensorData.pm25,
+              timestamp: sensorData.time_stamp,
+            },
+            loading: false,
+          }));
+          return;
+        }
       }
+      setState((prevState) => ({
+        ...prevState,
+        airQuality: { pm25: null, timestamp: null },
+        loading: false,
+      }));
     }
-  }, [closestSensor, data]);
+  }, [sortedSensors, data]);
 
   // Air Quality text based on pm25 value
   const getQualityText = useCallback((): QualityText => {
