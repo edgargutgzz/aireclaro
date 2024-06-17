@@ -1,12 +1,20 @@
 import PurpleAirSensors from "@/components/data/purple-air-sensors";
 import PurpleAirData from "@/components/data/purple-air-data";
+import SimaSensors from "@/components/data/sima-sensors";
+import SimaData from "@/components/data/sima-data";
 import AirQuality from "@/components/inicio/air-quality";
 import Image from "next/image";
 import { Navigation, Clock, TriangleAlert } from "lucide-react";
 
 export default async function Inicio() {
-  const sensors = await PurpleAirSensors();
-  const data = await PurpleAirData();
+  const purpleAirSensors = await PurpleAirSensors();
+  const purpleAirData = await PurpleAirData();
+  const simaSensors = await SimaSensors();
+  const simaData = await SimaData();
+
+  // Combine sensors from both sources
+  const sensors = [...purpleAirSensors, ...simaSensors];
+  const data = [...purpleAirData, ...simaData];
 
   return (
     <div className="mx-4 flex flex-col space-y-20 pb-20 pt-4 md:mx-16 md:pb-28 lg:mx-36 lg:pb-20 lg:pt-10">
