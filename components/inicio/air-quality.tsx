@@ -234,9 +234,8 @@ export default function AirQuality({
     return "No Disponible";
   }, [state.airQuality]);
 
-  // Población general recommendation based on the air quality text
-  const recommendationText = useMemo(() => {
-    const { pm25 } = state.airQuality;
+  // Población general text based on the población general title
+  const pobGeneralText = useMemo(() => {
     const textMap: { [key in QualityText]?: string } = {
       Buena: "Disfruta las actividades al aire libre.",
       Aceptable:
@@ -248,11 +247,10 @@ export default function AirQuality({
         "Permanece en interiores. Reprograma tus actividades al aire libre y si presentas síntomas respiratorios o cardiacos acude al médico.",
     };
     return textMap[pobGeneralTitle()] || "No Disponible";
-  }, [state.airQuality, pobGeneralTitle]);
+  }, [pobGeneralTitle]);
 
-  // Población sensible recommendations based on the air quality text
-  const getAdditionalRecommendation = (type: string): string => {
-    const { pm25 } = state.airQuality;
+  // Población sensible text based on the población general title
+  const pobSensibleText = (type: string): string => {
     const recommendationMap: {
       [key: string]: { [key in QualityText]: string };
     } = {
@@ -363,7 +361,7 @@ export default function AirQuality({
               <div
                 className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
-              {getAdditionalRecommendation("menores")}
+              {pobSensibleText("menores")}
             </div>
           )}
           {showAdultosMayoresRecommendation && (
@@ -371,7 +369,7 @@ export default function AirQuality({
               <div
                 className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
-              {getAdditionalRecommendation("adultosMayores")}
+              {pobSensibleText("adultosMayores")}
             </div>
           )}
           {showEmbarazadasRecommendation && (
@@ -379,7 +377,7 @@ export default function AirQuality({
               <div
                 className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
-              {getAdditionalRecommendation("embarazadas")}
+              {pobSensibleText("embarazadas")}
             </div>
           )}
           {showEnfermedadesRecommendation && (
@@ -387,7 +385,7 @@ export default function AirQuality({
               <div
                 className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
-              {getAdditionalRecommendation("enfermedades")}
+              {pobSensibleText("enfermedades")}
             </div>
           )}
           {!showAddress &&
@@ -402,7 +400,7 @@ export default function AirQuality({
                   {pobGeneralTitle()}
                 </div>
                 {/* Air Quality Text */}
-                <div className="lg:text-lg">{recommendationText}</div>
+                <div className="lg:text-lg">{pobGeneralText}</div>
                 {/* Air Quality Bar */}
                 <div className="pt-2 lg:pt-3">
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
