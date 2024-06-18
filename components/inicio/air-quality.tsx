@@ -222,8 +222,8 @@ export default function AirQuality({
     }
   }, [sortedSensors, data]);
 
-  // Air Quality text based on pm25 value
-  const getQualityText = useCallback((): QualityText => {
+  // Población general title based on pm25 value
+  const pobGeneralTitle = useCallback((): QualityText => {
     const { pm25 } = state.airQuality;
     if (pm25 === null) return "No Disponible";
     if (pm25 <= 15) return "Buena";
@@ -247,8 +247,8 @@ export default function AirQuality({
       "Extremadamente Mala":
         "Permanece en interiores. Reprograma tus actividades al aire libre y si presentas síntomas respiratorios o cardiacos acude al médico.",
     };
-    return textMap[getQualityText()] || "No Disponible";
-  }, [state.airQuality, getQualityText]);
+    return textMap[pobGeneralTitle()] || "No Disponible";
+  }, [state.airQuality, pobGeneralTitle]);
 
   // Población sensible recommendations based on the air quality text
   const getAdditionalRecommendation = (type: string): string => {
@@ -299,7 +299,7 @@ export default function AirQuality({
         "No Disponible": "No Disponible",
       },
     };
-    return recommendationMap[type][getQualityText()];
+    return recommendationMap[type][pobGeneralTitle()];
   };
 
   // Población sensible border colors
