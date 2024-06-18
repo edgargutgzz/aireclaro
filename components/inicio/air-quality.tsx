@@ -398,11 +398,11 @@ export default function AirQuality({
             !showEnfermedadesRecommendation && (
               <div className="flex flex-col space-y-2 lg:space-y-4">
                 {/* Air Quality Title */}
-                <div className="text-4xl font-semibold lg:text-5xl">
+                {/* <div className="text-4xl font-semibold lg:text-5xl">
                   {getQualityText()}
-                </div>
+                </div> */}
                 {/* Air Quality Text */}
-                {/* <div className="lg:text-lg">{recommendationText}</div> */}
+                <div className="lg:text-lg">{recommendationText}</div>
                 {/* Air Quality Bar */}
                 {/* <div className="pt-2 lg:pt-3">
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
