@@ -402,9 +402,9 @@ export default function AirQuality({
                   {getQualityText()}
                 </div> */}
                 {/* Air Quality Text */}
-                <div className="lg:text-lg">{recommendationText}</div>
+                {/* <div className="lg:text-lg">{recommendationText}</div> */}
                 {/* Air Quality Bar */}
-                {/* <div className="pt-2 lg:pt-3">
+                <div className="pt-2 lg:pt-3">
                   <div className="relative flex min-h-[12px] overflow-hidden rounded-lg">
                     <div
                       style={{ flexBasis: "12%" }}
@@ -447,7 +447,7 @@ export default function AirQuality({
                       className="absolute top-1/2 h-4 w-4 -translate-y-1/2 transform rounded-full border-4 bg-gray-200"
                     ></div>
                   </div>
-                </div> */}
+                </div>
               </div>
             )}
         </>
