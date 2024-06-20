@@ -28,7 +28,7 @@ interface Data {
 
 // Function to get marker color based on pm25 value
 const createMarker = (pm25: number | null): HTMLElement | null => {
-  let markerColor = "bg-white"; // default color
+  let markerColor = "bg-gray-400"; // default color
 
   if (pm25 === null) {
     markerColor = "bg-gray-400"; // gray
