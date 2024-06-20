@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
+import { Home, Map, Database, HelpCircle } from "lucide-react"; // Import the specific icons
 
 export default function Navlinks() {
   const pathname = usePathname();
@@ -12,54 +12,58 @@ export default function Navlinks() {
     {
       name: "Inicio",
       href: "/",
-      selectedImage: "/inicio-on.png",
-      unselectedImage: "/inicio-off.png",
+      icon: Home,
       alt: "Inicio",
     },
     {
       name: "Mapa",
       href: "/mapa",
-      selectedImage: "/mapa-on.png",
-      unselectedImage: "/mapa-off.png",
+      icon: Map,
       alt: "Mapa",
+    },
+    {
+      name: "Datos",
+      href: "/datos",
+      icon: Database,
+      alt: "Datos",
     },
     {
       name: "Acerca",
       href: "/acerca",
-      selectedImage: "/acerca-on.png",
-      unselectedImage: "/acerca-off.png",
+      icon: HelpCircle,
       alt: "Acerca",
     },
   ];
 
   return (
     <>
-      {links.map((link) => (
-        <Link key={link.name} href={link.href}>
-          <div className="flex flex-col lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
-            {/* Icon */}
-            <Image
-              src={
-                pathname === link.href
-                  ? link.selectedImage
-                  : link.unselectedImage
-              }
-              alt={link.alt}
-              width={24}
-              height={24}
-              className="md:h-7 md:w-7 lg:h-6 lg:w-6"
-            />
-            {/* Name */}
-            <span
-              className={clsx("hidden lg:ml-4 lg:block", {
-                "font-bold": pathname === link.href,
-              })}
-            >
-              {link.name}
-            </span>
-          </div>
-        </Link>
-      ))}
+      {links.map((link) => {
+        const IconComponent = link.icon;
+        const isSelected = pathname === link.href;
+        return (
+          <Link key={link.name} href={link.href}>
+            <div className="flex flex-col lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
+              {/* Icon */}
+              <IconComponent
+                className={clsx("md:h-7 md:w-7 lg:h-6 lg:w-6", {
+                  "text-black": isSelected,
+                  "text-gray-400": !isSelected,
+                  "font-bold": isSelected,
+                })}
+              />
+              {/* Name */}
+              <span
+                className={clsx("hidden lg:ml-4 lg:block", {
+                  "font-bold text-black": isSelected,
+                  "text-gray-400": !isSelected,
+                })}
+              >
+                {link.name}
+              </span>
+            </div>
+          </Link>
+        );
+      })}
     </>
   );
 }
