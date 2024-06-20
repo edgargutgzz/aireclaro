@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Home, Map, Database, HelpCircle } from "lucide-react"; // Import the specific icons
+import { Home, Map, Database, Info } from "lucide-react"; // Import the specific icons
 
 export default function Navlinks() {
   const pathname = usePathname();
@@ -30,7 +30,7 @@ export default function Navlinks() {
     {
       name: "Acerca",
       href: "/acerca",
-      icon: HelpCircle,
+      icon: Info,
       alt: "Acerca",
     },
   ];
@@ -48,13 +48,12 @@ export default function Navlinks() {
                 className={clsx("md:h-7 md:w-7 lg:h-6 lg:w-6", {
                   "text-black": isSelected,
                   "text-gray-400": !isSelected,
-                  "font-bold": isSelected,
                 })}
               />
               {/* Name */}
               <span
                 className={clsx("hidden lg:ml-4 lg:block", {
-                  "font-bold text-black": isSelected,
+                  "font-semibold text-black": isSelected,
                   "text-gray-400": !isSelected,
                 })}
               >
