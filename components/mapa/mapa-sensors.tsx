@@ -146,31 +146,31 @@ export default function MapaSensors({
       {/* Legend */}
       <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-75 p-4 text-xs shadow-lg md:left-10 md:text-sm">
         <div className="mb-2 flex flex-col font-bold md:flex-row md:justify-between">
-          <span className="text-sm md:text-base">Calidad del Aire</span>
+          <span className="text-sm">Calidad del Aire</span>
           <span className="mt-0 text-xs font-normal text-gray-400 md:ml-4 md:mt-0">
             Actualización a las {latestUpdateTime}
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 md:flex md:flex-row md:space-x-4 md:space-y-0">
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
-            <span className="text-xs md:text-base">Buena</span>
+            <span className="text-xs md:text-sm">Buena</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-yellow-400"></div>
-            <span className="text-xs md:text-base">Aceptable</span>
+            <span className="text-xs md:text-sm">Aceptable</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-orange-400"></div>
-            <span className="text-xs md:text-base">Mala</span>
+            <span className="text-xs md:text-sm">Mala</span>
           </div>
           <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-red-400"></div>
-            <span className="text-xs md:text-base">Muy mala</span>
+            <span className="text-xs md:text-sm">Muy mala</span>
           </div>
-          <div className="col-span-2 mt-0 flex items-center md:col-span-1 md:mt-0">
+          <div className="flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-purple-400"></div>
-            <span className="text-xs md:text-base">Extremadamente mala</span>
+            <span className="text-xs md:text-sm">Extrem. mala</span>
           </div>
         </div>
       </div>
