@@ -30,7 +30,7 @@ interface Data {
 const createMarker = (pm25: number | null): HTMLElement | null => {
   let markerColor = "bg-gray-400"; // default color
 
-  if (pm25 === null) {
+  if (pm25 === null || pm25 < 0) {
     markerColor = "bg-gray-400"; // gray
   } else if (pm25 >= 0 && pm25 <= 15) {
     markerColor = "bg-green-400"; // green

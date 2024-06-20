@@ -225,8 +225,8 @@ export default function AirQuality({
   // Población general title based on pm25 value
   const pobGeneralTitle = useCallback((): QualityText => {
     const { pm25 } = state.airQuality;
-    if (pm25 === null) return "No Disponible";
-    if (pm25 <= 15) return "Buena";
+    if (pm25 === null || pm25 < 0) return "No Disponible";
+    if (pm25 >= 0 && pm25 <= 15) return "Buena";
     if (pm25 > 15 && pm25 <= 25) return "Aceptable";
     if (pm25 > 25 && pm25 <= 79) return "Mala";
     if (pm25 > 79 && pm25 <= 130) return "Muy Mala";
