@@ -151,7 +151,7 @@ export default function MapaSensors({
             Actualización a las {latestUpdateTime}
           </span>
         </div>
-        <div className="grid grid-cols-3 gap-x-3 gap-y-2 md:flex md:space-x-4">
+        <div className="grid grid-cols-3 gap-x-3 gap-y-3 md:flex md:space-x-4">
           <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
             <span className="text-xs md:text-sm">Buena</span>
