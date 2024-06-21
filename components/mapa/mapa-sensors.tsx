@@ -144,27 +144,27 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
       {/* Legend */}
-      <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-75 p-3 text-xs shadow-lg md:left-10 md:text-sm">
-        <div className="mb-3 flex flex-col font-bold md:flex-row md:justify-between">
+      <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-75 p-4 text-xs shadow-lg md:left-10 md:text-sm">
+        <div className="mb-2 flex flex-col font-bold md:flex-row md:justify-between">
           <span className="text-sm">Calidad del Aire</span>
           <span className="mt-0 text-xs font-normal text-gray-400 md:ml-4 md:mt-0">
             Actualización a las {latestUpdateTime}
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-2 md:flex md:space-x-4 md:space-y-0">
-          <div className="flex items-center">
+        <div className="grid grid-cols-3 gap-x-4 gap-y-2 md:flex md:space-x-4">
+          <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-green-400"></div>
             <span className="text-xs md:text-sm">Buena</span>
           </div>
-          <div className="flex items-center">
+          <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-yellow-400"></div>
             <span className="text-xs md:text-sm">Aceptable</span>
           </div>
-          <div className="flex items-center">
+          <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-4 rounded-full bg-orange-400"></div>
             <span className="text-xs md:text-sm">Mala</span>
           </div>
-          <div className="flex items-center">
+          <div className="col-span-1 flex items-center md:col-span-1">
             <div className="mr-2 h-4 w-4 rounded-full bg-red-400"></div>
             <span className="text-xs md:text-sm">Muy mala</span>
           </div>
