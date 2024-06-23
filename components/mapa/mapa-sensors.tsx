@@ -153,24 +153,24 @@ export default function MapaSensors({
           </span>
         </div>
         {/* Legend Grid */}
-        <div className="grid grid-cols-3 gap-x-3 gap-y-3 md:gap-x-0 lg:flex lg:space-x-4">
-          <div className="col-span-1 flex items-center">
+        <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3 bg-red-100 md:gap-x-0 lg:flex lg:space-x-4">
+          <div className="col-span-1 flex">
             <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
             <span className="text-xs lg:text-sm">Buena</span>
           </div>
-          <div className="col-span-1 flex items-center">
+          <div className="col-span-1 flex">
             <div className="mr-2 h-4 w-2 rounded-full bg-yellow-400"></div>
             <span className="text-xs lg:text-sm">Aceptable</span>
           </div>
-          <div className="col-span-1 flex items-center">
+          <div className="col-span-1 flex bg-blue-100">
             <div className="mr-2 h-4 w-2 rounded-full bg-orange-400"></div>
             <span className="text-xs lg:text-sm">Mala</span>
           </div>
-          <div className="col-span-1 flex items-center md:col-span-1">
+          <div className="col-span-1 flex md:col-span-1">
             <div className="mr-2 h-4 w-2 rounded-full bg-red-400"></div>
             <span className="text-xs lg:text-sm">Muy mala</span>
           </div>
-          <div className="col-span-2 flex items-center md:col-span-1">
+          <div className="col-span-2 flex md:col-span-1">
             <div className="mr-2 h-4 w-2 rounded-full bg-purple-400"></div>
             <span className="text-xs lg:text-sm">Extremadamente mala</span>
           </div>
