@@ -144,13 +144,15 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
       {/* Legend */}
-      <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-75 py-3 pl-3 pr-0 shadow-lg md:bottom-20 md:left-8 md:p-4 lg:bottom-12 lg:left-10">
+      <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-75 py-3 pl-3 pr-0 shadow-lg md:bottom-20 md:left-6 md:p-4 lg:bottom-12 lg:left-10">
+        {/* Top Row */}
         <div className="mb-3 flex flex-col font-bold md:flex-row md:justify-between">
           <span className="text-sm">Calidad del Aire</span>
-          <span className="text-xs font-normal text-gray-400 md:ml-4">
+          <span className="text-xs font-normal text-gray-400">
             Actualización a las {latestUpdateTime}
           </span>
         </div>
+        {/* Legend Grid */}
         <div className="grid grid-cols-3 gap-x-3 gap-y-3 md:flex md:space-x-4">
           <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
