@@ -12,10 +12,12 @@ export default function Datos() {
         </h1>
         {/* Header */}
         <p className="py-4">
-          Buscamos impulsar la transparencia y la participación ciudadana en la
-          toma de decisiones sobre la calidad del aire que respiramos. Por esa
-          razon es que publicamos todos los datos que se recolectan cada hora a
-          través de los sensores ubicados en Monterrey y Saltillo.
+          Aire Claro es un proyecto sin fines de lucro que brinda información
+          sobre la contaminación del aire para cuidar la salud de todas las
+          personas. Mas alla de eso, busca Buscamos impulsar la transparencia y
+          la participación ciudadana en la toma de decisiones sobre la calidad
+          del aire que respiramos. Por esa razon es que se publican todos los
+          datos que se recopilan en la red de
         </p>
         {/* Button */}
         <div className="flex justify-end py-6">
