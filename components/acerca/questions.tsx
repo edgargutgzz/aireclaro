@@ -128,7 +128,7 @@ export default function Questions() {
       ),
     },
     {
-      question: "¿Tienes más preguntas?",
+      question: "Tengo más preguntas, ¿cómo los contacto?",
       answer: (
         <span>Envíanos un correo a contacto@observatoriodelaire.com</span>
       ),
