@@ -71,9 +71,9 @@ export default function Questions() {
           partir de enero de 2026.
           <br />
           <br />
-          En condiciones de alta humedad o viento fuerte, los sensores
-          sobreestiman o subestiman las concentraciones de partículas finas,
-          respectivamente.
+          Es importante recordar, que en condiciones de alta humedad o viento
+          fuerte, los sensores sobreestiman o subestiman las concentraciones de
+          partículas finas, respectivamente.
         </span>
       ),
     },
