@@ -149,7 +149,7 @@ export default function MapaSensors({
         <div className="mb-3 flex flex-col font-bold">
           <span className="text-sm">Calidad del Aire</span>
           <span className="text-xs font-normal text-gray-400">
-            Actualización a las {latestUpdateTime}
+            Actualizado a las {latestUpdateTime}
           </span>
         </div>
         {/* Legend Grid */}
