@@ -69,6 +69,11 @@ export default function Questions() {
           protectores para PM2.5 del nuevo Índice Mexicano de Calidad del Aire y
           Riesgos a la Salud (NOM-172-SEMARNAT-2023) que entrarán en vigor a
           partir de enero de 2026.
+          <br />
+          <br />
+          En condiciones de alta humedad o viento fuerte, los sensores
+          sobreestiman o subestiman las concentraciones de partículas finas,
+          respectivamente.
         </span>
       ),
     },

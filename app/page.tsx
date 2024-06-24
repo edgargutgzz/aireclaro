@@ -134,15 +134,6 @@ export default async function Inicio() {
               <AirQuality sensors={sensors} data={data} showTime />
             </div>
           </div>
-          {/* Nota aclaratoria */}
-          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
-            <TriangleAlert />
-            <div>
-              En condiciones de alta humedad o viento fuerte, los sensores
-              sobreestiman o subestiman las concentraciones de partículas finas,
-              respectivamente.
-            </div>
-          </div>
         </div>
       </div>
     </div>
