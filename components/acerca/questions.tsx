@@ -66,7 +66,7 @@ export default function Questions() {
           </p>
           <p>
             2. Los sensores, en su mayoría ciudadanos, de la organización
-            internacinoal
+            internacional
             <span>
               {" "}
               <a
