@@ -11,7 +11,7 @@ export default function Datos() {
           Apertura de Información
         </h1>
         {/* Header */}
-        <p className="py-4 text-justify">
+        <p className="py-4">
           Buscamos impulsar la transparencia y la participación ciudadana en la
           toma de decisiones sobre la calidad del aire que respiramos. Por esa
           razon es que publicamos todos los datos que se recolectan cada hora a

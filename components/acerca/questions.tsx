@@ -9,51 +9,86 @@ export default function Questions() {
       question: "¿Qué es Aire Claro?",
       answer: (
         <p>
-          Aire Claro muestra la calidad del aire de la Zona Metropolitana de
-          Monterrey para brindarte recomendaciones oportunas que cuiden tu
-          salud.
+          Aire Claro brinda información sobre la contaminación atmosférica en la
+          Zona Metropolitana de Monterrey.
         </p>
+      ),
+    },
+    {
+      question:
+        "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
+      answer: (
+        <div className="flex flex-col space-y-4">
+          <p>Aire Claro es la única que:</p>
+          <p>
+            1. Utiliza la red más completa de sensores terrestres del Área
+            Metropolitana de Monterrey.
+          </p>
+          <p>
+            2. La respalda el Observatorio Ciudadano de la Calidad del Aire
+            <span>
+              {" "}
+              <a
+                href="https://observatoriodelaire.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                OCCAMM
+              </a>
+              {", "}organización de la sociedad civil líder en promover
+              información sobre el estado, causas y efectos de la contaminación
+              del aire a nivel local.
+            </span>
+          </p>
+        </div>
       ),
     },
     {
       question: "¿Qué información utilizan para medir la calidad del aire?",
       answer: (
-        <span>
-          Utilizamos el promedio de la concentración de PM2.5 de cada hora,
-          proveniente de 2 fuentes principales:
-          <br />
-          <br />
-          1. Las estaciones de monitoreo{" "}
-          <a
-            href="http://aire.nl.gob.mx/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            SIMA
-          </a>{" "}
-          de la Secretaría de Medio Ambiente de Nuevo León.
-          <br />
-          <br />
-          2. Los sensores de bajo costo de{" "}
-          <a
-            href="https://www2.purpleair.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            Purple Air.
-          </a>
-        </span>
+        <div className="flex flex-col space-y-4">
+          <p>Aire Claro utiliza dos fuentes principales:</p>
+          <p>
+            1. Las estaciones de monitoreo
+            <span>
+              {" "}
+              <a
+                href="http://aire.nl.gob.mx/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                SIMA
+              </a>
+              {", "}de la Secretaría de Medio Ambiente de Nuevo León.
+            </span>
+          </p>
+          <p>
+            2. Los sensores, en su mayoría ciudadanos, de la organización
+            internacinoal
+            <span>
+              {" "}
+              <a
+                href="https://www2.purpleair.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                Purple Air.
+              </a>
+            </span>
+          </p>
+        </div>
       ),
     },
     {
-      question: "¿Cómo garantizan la precisión de las recomendaciones?",
+      question: "¿Cómo garantizan la precisión de sus recomendaciones?",
       answer: (
         <span>
-          Compartimos de forma oportuna las concentraciones de las partículas
-          respirables más dañinas para tu salud (PM2.5) y el riesgo a la salud
-          asociado por respirarlas, con base en el{" "}
+          Compartimos las concentraciones de las partículas respirables más
+          dañinas para tu salud (PM2.5) y el riesgo a la salud asociado por
+          respirarlas, con base en el{" "}
           <a
             href="https://www.gob.mx/cms/uploads/attachment/file/554425/comunicado_indice_calidad_aire_05_2020_FINAL_v3.pdf"
             target="_blank"
@@ -71,28 +106,9 @@ export default function Questions() {
           partir de enero de 2026.
           <br />
           <br />
-          Es importante recordar, que en condiciones de alta humedad o viento
+          Es importante mencionar, que en condiciones de alta humedad o viento
           fuerte, los sensores sobreestiman o subestiman las concentraciones de
           partículas finas, respectivamente.
-        </span>
-      ),
-    },
-    {
-      question: "¿Quién es el Observatorio Ciudadano de la Calidad del Aire?",
-      answer: (
-        <span>
-          El{" "}
-          <a
-            href="https://observatoriodelaire.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            OCCAMM
-          </a>{" "}
-          es un organización de la sociedad civil que promueve información sobre
-          el estado, causas y efectos de la contaminación del aire en la Zona
-          Metropolitana de Monterrey.
         </span>
       ),
     },
