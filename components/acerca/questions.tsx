@@ -65,18 +65,18 @@ export default function Questions() {
             </span>
           </p>
           <p>
-            2. Los sensores, en su mayoría ciudadanos, de la organización
-            internacional
+            2. La red de sensores ciudadanos de
             <span>
               {" "}
               <a
-                href="https://www2.purpleair.com/"
+                href="https://map.purpleair.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:underline"
               >
-                Purple Air.
+                Purple Air
               </a>
+              {"."}
             </span>
           </p>
         </div>
@@ -86,11 +86,11 @@ export default function Questions() {
       question: "¿Cómo garantizan la precisión de sus recomendaciones?",
       answer: (
         <span>
-          Compartimos las concentraciones de las partículas respirables más
-          dañinas para tu salud (PM2.5) y el riesgo a la salud asociado por
-          respirarlas, con base en el{" "}
+          Compartimos las concentraciones promedio de la última hora de las
+          partículas respirables más dañinas para tu salud (PM2.5) y el riesgo a
+          la salud asociado por respirarlas, con base en el{" "}
           <a
-            href="https://www.gob.mx/cms/uploads/attachment/file/554425/comunicado_indice_calidad_aire_05_2020_FINAL_v3.pdf"
+            href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
