@@ -11,20 +11,20 @@ export default function Datos() {
           Apertura de Información
         </h1>
         {/* Header */}
-        <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+        {/* <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           Aire Claro es un proyecto sin fines de lucro que brinda información
           sobre la contaminación del aire para cuidar la salud de todas las
           personas. Adicionalmente, buscamos impulsar la transparencia, la
           investigación y la participación ciudadana en la toma de decisiones
           para reducir la contaminación del aire en la ZMM. Por ello, ponemos a
           tu disposición de forma gratuita el historial de nuestros datos.
-        </div>
+        </div> */}
         {/* Button */}
-        <div className="flex justify-end py-10">
+        {/* <div className="flex justify-end py-10">
           <Button>
             <ArrowDownToLine className="mr-2 h-4 w-4" /> Descargar
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
