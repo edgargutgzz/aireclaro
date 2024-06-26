@@ -3,7 +3,7 @@ import { ArrowDownToLine } from "lucide-react";
 
 export default function Datos() {
   return (
-    <div className="mx-4 flex flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-8 lg:pt-6">
+    <div className="mx-4 flex min-h-screen flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-8 lg:pt-6">
       {/* Datos */}
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
@@ -11,7 +11,7 @@ export default function Datos() {
           Apertura de Información
         </h1>
         {/* Content */}
-        <div className="flex flex-col space-y-4 pt-3 text-justify">
+        <div className="flex flex-col space-y-4 pt-3 md:text-justify">
           <p>
             Aire Claro es un proyecto sin fines de lucro que brinda información
             sobre la calidad del aire que respiramos.
