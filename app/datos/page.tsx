@@ -11,7 +11,7 @@ export default function Datos() {
           Apertura de Información
         </h1>
         {/* Content */}
-        <div className="flex flex-col space-y-4 pt-3 md:text-justify">
+        <div className="flex flex-col space-y-4 px-2 pt-3 text-justify">
           <p>
             Aire Claro es un proyecto sin fines de lucro que brinda información
             sobre la calidad del aire que respiramos.
