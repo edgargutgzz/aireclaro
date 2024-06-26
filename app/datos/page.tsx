@@ -11,7 +11,7 @@ export default function Datos() {
           Apertura de Información
         </h1>
         {/* Content */}
-        <div className="flex flex-col space-y-4 pr-2 pt-3 text-justify">
+        <div className="flex flex-col space-y-4 pr-2 pt-3 text-justify md:pr-0">
           <p>
             Aire Claro es un proyecto sin fines de lucro que brinda información
             sobre la calidad del aire que respiramos.
@@ -23,7 +23,7 @@ export default function Datos() {
           </p>
         </div>
         {/* Button */}
-        <div className="flex justify-end py-10 pr-2">
+        <div className="flex justify-end py-10 pr-2 md:pr-0">
           <Button>
             <ArrowDownToLine className="mr-2 h-4 w-4" /> Descargar
           </Button>
