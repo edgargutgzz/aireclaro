@@ -10,8 +10,8 @@ export default function Datos() {
         <h1 className="py-4 text-2xl font-bold md:text-3xl lg:py-6">
           Apertura de Información
         </h1>
-        {/* Header */}
-        <div className="flex flex-col space-y-4 text-justify">
+        {/* Content */}
+        <div className="flex flex-col space-y-4 pt-3 text-justify">
           <p>
             Aire Claro es un proyecto sin fines de lucro que brinda información
             sobre la calidad del aire que respiramos.
