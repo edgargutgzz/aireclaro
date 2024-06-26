@@ -19,8 +19,7 @@ export default function Datos() {
           <p>
             Adicionalmente, buscamos impulsar la transparencia, la investigación
             y la participación ciudadana en la toma de decisiones para reducir
-            la contaminación del aire. Por ello, ponemos a tu disposición de
-            forma gratuita el historial de nuestros datos.
+            la contaminación del aire.
           </p>
         </div>
         {/* Button */}
