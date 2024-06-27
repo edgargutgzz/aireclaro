@@ -24,11 +24,11 @@ export default function Datos() {
           </p>
         </div>
         {/* Button */}
-        <div className="flex justify-end py-10 pr-2 md:pr-0">
+        {/* <div className="flex justify-end py-10 pr-2 md:pr-0">
           <Button>
             <ArrowDownToLine className="mr-2 h-4 w-4" /> Descargar
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
