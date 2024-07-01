@@ -23,6 +23,8 @@ export async function GET(req: NextRequest) {
       const { data, error, count } = await supabase
         .from("calidad_aire")
         .select("*", { count: "exact" })
+        .gte("time_stamp", "2024-01-01")
+        .lt("time_stamp", "2025-01-01")
         .range(from, from + step - 1);
 
       if (error) {
@@ -58,7 +60,7 @@ export async function GET(req: NextRequest) {
     archive.append(csv, { name: "calidad_aire.csv" });
 
     // Finalize the archive
-    archive.finalize();
+    await archive.finalize();
 
     const headers = new Headers();
     headers.set("Content-Disposition", "attachment; filename=calidad_aire.zip");
