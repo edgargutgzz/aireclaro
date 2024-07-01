@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowDownToLine } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Datos() {
   return (
@@ -25,9 +26,14 @@ export default function Datos() {
         </div>
         {/* Button */}
         <div className="flex justify-end py-10 pr-2 md:pr-0">
-          <Button>
-            <ArrowDownToLine className="mr-2 h-4 w-4" /> Descargar
-          </Button>
+          <Link
+            target="_blank"
+            href="https://drive.google.com/drive/folders/150x2sta9CD0CVzhtwWAESV9HoR7_RdGk"
+          >
+            <Button>
+              <ArrowRight className="mr-2 h-4 w-4" /> Ir a Google Drive
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
