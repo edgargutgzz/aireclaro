@@ -10,6 +10,20 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Aire Claro",
   description: "Mejor información de calidad del aire para cuidar tu salud.",
+  openGraph: {
+    title: "Aire Claro",
+    description: "Mejor información de calidad del aire para cuidar tu salud.",
+    url: "https://aireclaro.com",
+    type: "website",
+    images: [
+      {
+        url: "/aireclaro-logo.png",
+        width: 800,
+        height: 600,
+        alt: "Aire Claro Logo",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
