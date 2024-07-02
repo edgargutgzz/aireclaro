@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 
 export default function Datos() {
   return (
@@ -30,7 +31,12 @@ export default function Datos() {
             target="_blank"
             href="https://drive.google.com/drive/folders/150x2sta9CD0CVzhtwWAESV9HoR7_RdGk"
           >
-            <Button>
+            <Button
+              onClick={() => {
+                track("Google Drive Link Clicked");
+                // ... other logic if needed
+              }}
+            >
               <ArrowRight className="mr-2 h-4 w-4" /> Ir a Google Drive
             </Button>
           </Link>
