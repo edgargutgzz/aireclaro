@@ -35,7 +35,7 @@ export default function Datos() {
           >
             <Button
               onClick={() => {
-                track("Button clicked");
+                track("Ir a Google Drive clicked");
               }}
             >
               <ArrowRight className="mr-2 h-4 w-4" /> Ir a Google Drive
