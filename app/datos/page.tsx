@@ -31,7 +31,7 @@ export default function Datos() {
         <div className="flex justify-end py-10 pr-2 md:pr-0">
           <Link
             target="_blank"
-            href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff?usp=sharing"
+            href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
           >
             <Button
               onClick={() => {
