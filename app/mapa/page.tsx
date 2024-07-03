@@ -15,8 +15,8 @@ export default async function Mapa() {
   const data = [...purpleAirData, ...simaData];
 
   return (
-    <>
+    <div className="overflow-hidden">
       <MapaSensors sensors={sensors} data={data} />
-    </>
+    </div>
   );
 }
