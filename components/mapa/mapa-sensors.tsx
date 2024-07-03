@@ -49,7 +49,7 @@ const createMarker = (pm25: number | null): HTMLElement | null => {
   }
 
   const marker = document.createElement("div");
-  marker.className = `marker ${markerColor} bg-opacity-75 w-12 h-12 rounded-full flex items-center justify-center`;
+  marker.className = `marker ${markerColor} bg-opacity-85 w-7 h-7 rounded-full flex items-center justify-center`;
   return marker;
 };
 
