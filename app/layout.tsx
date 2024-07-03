@@ -18,9 +18,20 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/aireclaro-logo.png",
+        url: "https://aireclaro.com/aireclaro-logo.png",
         width: 800,
         height: 600,
+        alt: "Aire Claro Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Aire Claro",
+    description: "Mejor información de calidad del aire para cuidar tu salud.",
+    images: [
+      {
+        url: "https://aireclaro.com/aireclaro-logo.png",
         alt: "Aire Claro Logo",
       },
     ],
@@ -34,6 +45,37 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <title>Aire Claro</title>
+        <meta
+          name="description"
+          content="Mejor información de calidad del aire para cuidar tu salud."
+        />
+        <meta property="og:title" content="Aire Claro" />
+        <meta
+          property="og:description"
+          content="Mejor información de calidad del aire para cuidar tu salud."
+        />
+        <meta property="og:url" content="https://aireclaro.com" />
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:image"
+          content="https://aireclaro.com/aireclaro-logo.png"
+        />
+        <meta property="og:image:width" content="800" />
+        <meta property="og:image:height" content="600" />
+        <meta property="og:image:alt" content="Aire Claro Logo" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Aire Claro" />
+        <meta
+          name="twitter:description"
+          content="Mejor información de calidad del aire para cuidar tu salud."
+        />
+        <meta
+          name="twitter:image"
+          content="https://aireclaro.com/aireclaro-logo.png"
+        />
+      </head>
       <body className={inter.className}>
         <div className="flex flex-col-reverse lg:h-screen lg:flex-row">
           {/* Navbar */}
