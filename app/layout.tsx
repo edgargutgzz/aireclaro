@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://aireclaro.com/aireclaro-logo-fb.jpeg",
+        url: "https://aireclaro.com/aireclaro-logo-fb.png",
         width: 1200,
         height: 630,
         alt: "Aire Claro Logo",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     description: "Mejor información de calidad del aire para cuidar tu salud.",
     images: [
       {
-        url: "https://aireclaro.com/aireclaro-logo-fb.jpeg",
+        url: "https://aireclaro.com/aireclaro-logo-fb.png",
         alt: "Aire Claro Logo",
       },
     ],
@@ -60,7 +60,7 @@ export default function RootLayout({
         <meta property="og:type" content="website" />
         <meta
           property="og:image"
-          content="https://aireclaro.com/aireclaro-logo-fb.jpeg"
+          content="https://aireclaro.com/aireclaro-logo-fb.png"
         />
         <meta property="og:image:width" content="800" />
         <meta property="og:image:height" content="600" />
@@ -73,7 +73,7 @@ export default function RootLayout({
         />
         <meta
           name="twitter:image"
-          content="https://aireclaro.com/aireclaro-logo-fb.jpeg"
+          content="https://aireclaro.com/aireclaro-logo-fb.png"
         />
       </head>
       <body className={inter.className}>
