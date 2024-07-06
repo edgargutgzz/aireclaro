@@ -5,6 +5,7 @@ import SimaData from "@/components/data/sima-data";
 import AirQuality from "@/components/inicio/air-quality";
 import Image from "next/image";
 import { Navigation, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default async function Inicio() {
   const purpleAirSensors = await PurpleAirSensors();
@@ -31,14 +32,14 @@ export default async function Inicio() {
         {/* Air Quality text, recommendation and quality bar */}
         <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">PRONÓSTICO POR HORA</div>
-          <div className="flex space-x-12">
+          <div className="flex space-x-8">
             <div className="flex flex-col items-center space-y-2">
               <div>Ahora</div>
               <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div>18:00</div>
-              <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div>19:00</div>
@@ -46,21 +47,13 @@ export default async function Inicio() {
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div>20:00</div>
-              <div className="h-3 w-10 rounded-full bg-red-400"></div>
+              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div>21:00</div>
-              <div className="h-3 w-10 rounded-full bg-purple-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
           </div>
-        </div>
-      </div>
-      {/* Pronostico Diario */}
-      <div className="flex flex-col">
-        {/* Air Quality text, recommendation and quality bar */}
-        <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
-          <div className="text-sm text-gray-400">PRONÓSTICO DIARIO</div>
-          <AirQuality sensors={sensors} data={data} />
         </div>
       </div>
     </div>
