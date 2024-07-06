@@ -1,0 +1,68 @@
+import PurpleAirSensors from "@/components/data/purple-air-sensors";
+import PurpleAirData from "@/components/data/purple-air-data";
+import SimaSensors from "@/components/data/sima-sensors";
+import SimaData from "@/components/data/sima-data";
+import AirQuality from "@/components/inicio/air-quality";
+import Image from "next/image";
+import { Navigation, Clock } from "lucide-react";
+
+export default async function Inicio() {
+  const purpleAirSensors = await PurpleAirSensors();
+  const purpleAirData = await PurpleAirData();
+  const simaSensors = await SimaSensors();
+  const simaData = await SimaData();
+
+  // Combine sensors from both sources
+  const sensors = [...purpleAirSensors, ...simaSensors];
+  const data = [...purpleAirData, ...simaData];
+
+  return (
+    <div className="mx-4 flex flex-col space-y-20 pb-20 pt-4 md:mx-16 md:pb-28 lg:mx-36 lg:pb-20 lg:pt-10">
+      {/* Calidad del Aire */}
+      <div className="flex flex-col">
+        {/* Air Quality text, recommendation and quality bar */}
+        <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+          <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
+          <AirQuality sensors={sensors} data={data} />
+        </div>
+      </div>
+      {/* Pronostico por Hora */}
+      <div className="flex flex-col">
+        {/* Air Quality text, recommendation and quality bar */}
+        <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+          <div className="text-sm text-gray-400">PRONÓSTICO POR HORA</div>
+          <div className="flex space-x-12">
+            <div className="flex flex-col items-center space-y-2">
+              <div>Ahora</div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>18:00</div>
+              <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>19:00</div>
+              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>20:00</div>
+              <div className="h-3 w-10 rounded-full bg-red-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>21:00</div>
+              <div className="h-3 w-10 rounded-full bg-purple-400"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Pronostico Diario */}
+      <div className="flex flex-col">
+        {/* Air Quality text, recommendation and quality bar */}
+        <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+          <div className="text-sm text-gray-400">PRONÓSTICO DIARIO</div>
+          <AirQuality sensors={sensors} data={data} />
+        </div>
+      </div>
+    </div>
+  );
+}

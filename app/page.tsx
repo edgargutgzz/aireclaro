@@ -4,7 +4,7 @@ import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import AirQuality from "@/components/inicio/air-quality";
 import Image from "next/image";
-import { Navigation, Clock, TriangleAlert } from "lucide-react";
+import { Navigation, Clock } from "lucide-react";
 
 export default async function Inicio() {
   const purpleAirSensors = await PurpleAirSensors();
