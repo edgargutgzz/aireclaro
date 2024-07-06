@@ -185,7 +185,7 @@ export default function MapaSensors({
           </div>
         </div>
         {/* Sensores - Title */}
-        <div className="mb-2 mt-6 flex flex-col font-bold">
+        <div className="mb-2 mt-5 flex flex-col font-bold">
           <span className="text-sm">Sensores</span>
           <span className="text-xs font-normal text-gray-400">
             Fuente de datos
