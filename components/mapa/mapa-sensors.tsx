@@ -198,7 +198,7 @@ export default function MapaSensors({
             <span className="text-xs">Purple Air</span>
           </div>
           <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-3 w-3 rounded-full border border-black bg-yellow-400"></div>
+            <div className="mr-2 h-3 w-3 rounded-full border border-black bg-green-400"></div>
             <span className="text-xs">SIMA</span>
           </div>
         </div>
