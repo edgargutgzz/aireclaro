@@ -16,6 +16,7 @@ interface Sensor {
   nombre: string;
   lat: number;
   lon: number;
+  source: string;
 }
 
 // Air Quality Data interface
@@ -27,7 +28,10 @@ interface Data {
 }
 
 // Function to get marker color based on pm25 value
-const createMarker = (pm25: number | null): HTMLElement | null => {
+const createMarker = (
+  pm25: number | null,
+  source: string,
+): HTMLElement | null => {
   let markerColor = "bg-gray-400"; // default color
 
   if (pm25 === null || pm25 < 0) {
@@ -49,7 +53,9 @@ const createMarker = (pm25: number | null): HTMLElement | null => {
   }
 
   const marker = document.createElement("div");
-  marker.className = `marker ${markerColor} bg-opacity-85 w-7 h-7 rounded-full flex items-center justify-center`;
+  marker.className = `marker ${markerColor} bg-opacity-85 w-7 h-7 flex items-center justify-center rounded-full ${
+    source === "sima" ? "border border-black" : ""
+  }`;
   return marker;
 };
 
@@ -93,7 +99,10 @@ export default function MapaSensors({
         );
 
         // Create a marker element based on the PM2.5 value
-        const markerElement = createMarker(latestData ? latestData.pm25 : null);
+        const markerElement = createMarker(
+          latestData ? latestData.pm25 : null,
+          sensor.source,
+        );
 
         // Skip if no marker is created
         if (!markerElement) return;
@@ -145,14 +154,14 @@ export default function MapaSensors({
       />
       {/* Legend */}
       <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-75 py-3 pl-3 pr-0 shadow-lg md:bottom-24 md:left-6 md:p-4 lg:bottom-12 lg:left-10">
-        {/* Top Row */}
+        {/* Calidad del Aire - Title */}
         <div className="mb-3 flex flex-col font-bold">
           <span className="text-sm">Calidad del Aire</span>
           <span className="text-xs font-normal text-gray-400">
-            Actualizado a las {latestUpdateTime}
+            Actualizada a las {latestUpdateTime}
           </span>
         </div>
-        {/* Legend Grid */}
+        {/* Calidad del Aire - Legend */}
         <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
           <div className="col-span-1 flex">
             <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
@@ -173,6 +182,24 @@ export default function MapaSensors({
           <div className="col-span-2 flex">
             <div className="mr-2 h-4 w-2 rounded-full bg-purple-400"></div>
             <span className="text-xs">Extremadamente mala</span>
+          </div>
+        </div>
+        {/* Calidad del Aire - Title */}
+        <div className="mb-3 mt-6 flex flex-col font-bold">
+          <span className="text-sm">Sensores</span>
+          <span className="text-xs font-normal text-gray-400">
+            Fuente de datos
+          </span>
+        </div>
+        {/* Calidad del Aire - Legend */}
+        <div className="grid grid-cols-2 items-center gap-x-3 gap-y-3">
+          <div className="col-span-1 flex items-center">
+            <div className="mr-2 h-3 w-3 rounded-full bg-green-400"></div>
+            <span className="text-xs">Purple Air</span>
+          </div>
+          <div className="col-span-1 flex items-center">
+            <div className="mr-2 h-3 w-3 rounded-full border border-black bg-yellow-400"></div>
+            <span className="text-xs">SIMA</span>
           </div>
         </div>
       </div>

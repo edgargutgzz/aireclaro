@@ -10,8 +10,18 @@ export default async function Mapa() {
   const simaSensors = await SimaSensors();
   const simaData = await SimaData();
 
+  // Tag each sensor with its source
+  const taggedPurpleAirSensors = purpleAirSensors.map((sensor) => ({
+    ...sensor,
+    source: "purpleAir",
+  }));
+  const taggedSimaSensors = simaSensors.map((sensor) => ({
+    ...sensor,
+    source: "sima",
+  }));
+
   // Combine sensors from both sources
-  const sensors = [...purpleAirSensors, ...simaSensors];
+  const sensors = [...taggedPurpleAirSensors, ...taggedSimaSensors];
   const data = [...purpleAirData, ...simaData];
 
   return (
