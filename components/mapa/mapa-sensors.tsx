@@ -184,15 +184,15 @@ export default function MapaSensors({
             <span className="text-xs">Extremadamente mala</span>
           </div>
         </div>
-        {/* Calidad del Aire - Title */}
-        <div className="mb-3 mt-6 flex flex-col font-bold">
+        {/* Sensores - Title */}
+        <div className="mb-2 mt-6 flex flex-col font-bold">
           <span className="text-sm">Sensores</span>
           <span className="text-xs font-normal text-gray-400">
             Fuente de datos
           </span>
         </div>
-        {/* Calidad del Aire - Legend */}
-        <div className="grid grid-cols-2 items-center gap-x-3 gap-y-3">
+        {/* Sensores - Legend */}
+        <div className="grid grid-cols-2 items-center">
           <div className="col-span-1 flex items-center">
             <div className="mr-2 h-3 w-3 rounded-full bg-green-400"></div>
             <span className="text-xs">Purple Air</span>
