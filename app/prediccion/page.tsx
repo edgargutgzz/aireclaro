@@ -66,67 +66,67 @@ export default async function Inicio() {
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>18</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>19</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>20</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>21</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>22</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>23</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>0</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>1</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>2</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>3</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>4</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>5</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>6</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>7</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>8</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
-            <div className="flex flex-col items-center space-y-3">
+            <div className="flex flex-col items-center space-y-4">
               <div>9</div>
-              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
           </div>
         </div>
