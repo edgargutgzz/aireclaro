@@ -137,40 +137,40 @@ export default async function Inicio() {
           <div className="text-sm text-gray-400">PRONÓSTICO DIARIO</div>
           <div className="flex flex-col space-y-10 pb-5">
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Hoy</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="w-3/12">Hoy</div>
+              <div className="h-3 w-9/12 rounded-full bg-green-400"></div>
             </div>
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Martes</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="w-3/12">Martes</div>
+              <div className="h-3 w-9/12 rounded-full bg-green-400"></div>
             </div>
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Miércoles</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="w-3/12">Miércoles</div>
+              <div className="h-3 w-9/12 rounded-full bg-green-400"></div>
             </div>
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Jueves</div>
-              <div className="h-3 w-5/6 rounded-full bg-orange-400"></div>
+              <div className="w-3/12">Jueves</div>
+              <div className="h-3 w-9/12 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Viernes</div>
-              <div className="h-3 w-5/6 rounded-full bg-red-400"></div>
+              <div className="w-3/12">Viernes</div>
+              <div className="h-3 w-9/12 rounded-full bg-red-400"></div>
             </div>
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Sábado</div>
-              <div className="h-3 w-5/6 rounded-full bg-purple-400"></div>
+              <div className="w-3/12">Sábado</div>
+              <div className="h-3 w-9/12 rounded-full bg-purple-400"></div>
             </div>
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Domingo</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="w-3/12">Domingo</div>
+              <div className="h-3 w-9/12 rounded-full bg-green-400"></div>
             </div>
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Lunes</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="w-3/12">Lunes</div>
+              <div className="h-3 w-9/12 rounded-full bg-green-400"></div>
             </div>
             <div className="flex items-center space-x-10">
-              <div className="w-1/6">Martes</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="w-3/12">Martes</div>
+              <div className="h-3 w-9/12 rounded-full bg-green-400"></div>
             </div>
           </div>
         </div>
