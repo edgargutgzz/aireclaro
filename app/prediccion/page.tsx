@@ -17,7 +17,7 @@ export default async function Inicio() {
   const data = [...purpleAirData, ...simaData];
 
   return (
-    <div className="mx-4 flex flex-col space-y-14 pb-20 pt-4 md:mx-16 md:pb-28 lg:mx-36 lg:pb-20 lg:pt-10">
+    <div className="mx-4 flex flex-col space-y-12 pb-20 pt-4 md:mx-16 md:pb-28 lg:mx-36 lg:pb-20 lg:pt-10">
       {/* Calidad del Aire */}
       <div className="flex flex-col">
         {/* Air Quality text, recommendation and quality bar */}
