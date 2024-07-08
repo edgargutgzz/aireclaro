@@ -135,7 +135,7 @@ export default async function Inicio() {
       <div className="flex flex-col">
         <div className="flex flex-col space-y-4 rounded-lg bg-white px-4 pb-2 pt-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">PRONÓSTICO DIARIO</div>
-          <div className="flex max-h-80 flex-col space-y-10 overflow-y-auto pb-5">
+          <div className="flex flex-col space-y-10 pb-5">
             <div className="flex items-center space-x-10">
               <div className="w-1/6">Hoy</div>
               <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
@@ -150,15 +150,15 @@ export default async function Inicio() {
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-1/6">Jueves</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="h-3 w-5/6 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-1/6">Viernes</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="h-3 w-5/6 rounded-full bg-red-400"></div>
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-1/6">Sábado</div>
-              <div className="h-3 w-5/6 rounded-full bg-green-400"></div>
+              <div className="h-3 w-5/6 rounded-full bg-purple-400"></div>
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-1/6">Domingo</div>
