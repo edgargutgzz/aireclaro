@@ -3,7 +3,6 @@ import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import AirQuality from "@/components/inicio/air-quality";
-import Image from "next/image";
 import { Navigation, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -34,39 +33,39 @@ export default async function Inicio() {
           <div className="flex space-x-8 overflow-x-auto pb-5">
             <div className="flex flex-col items-center space-y-4">
               <div>Ahora</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>11</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>12</div>
-              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
+              <div className="h-3 w-10 rounded-full bg-red-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>13</div>
-              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
+              <div className="h-3 w-10 rounded-full bg-red-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>14</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-red-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>15</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>16</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>17</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>18</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>19</div>
@@ -118,15 +117,15 @@ export default async function Inicio() {
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>7</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>8</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-4">
               <div>9</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
             </div>
           </div>
         </div>
@@ -138,11 +137,11 @@ export default async function Inicio() {
           <div className="flex flex-col space-y-10 pb-5">
             <div className="flex items-center space-x-10">
               <div className="w-4/12">Hoy</div>
-              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
+              <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-4/12">Martes</div>
-              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
+              <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-4/12">Miércoles</div>
@@ -154,11 +153,11 @@ export default async function Inicio() {
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-4/12">Viernes</div>
-              <div className="h-3 w-8/12 rounded-full bg-red-400"></div>
+              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-4/12">Sábado</div>
-              <div className="h-3 w-8/12 rounded-full bg-purple-400"></div>
+              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-4/12">Domingo</div>
@@ -166,11 +165,34 @@ export default async function Inicio() {
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-4/12">Lunes</div>
-              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
+              <div className="h-3 w-8/12 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex items-center space-x-10">
               <div className="w-4/12">Martes</div>
-              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
+              <div className="h-3 w-8/12 rounded-full bg-red-400"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Ubicación y Hora */}
+      <div className="flex flex-col">
+        {/* Title */}
+        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-6">
+          UBICACIÓN Y HORA
+        </div>
+        {/* Cards */}
+        <div className="flex flex-col space-y-8 md:flex-row md:space-x-8 md:space-y-0">
+          {/* Ubicación */}
+          <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg md:w-2/3">
+            <Navigation />
+            <AirQuality sensors={sensors} data={data} showAddress />
+          </div>
+          {/* Hora */}
+          <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg md:w-1/3">
+            <Clock />
+            <div className="flex">
+              <div className="pr-1">Actualizado a las</div>
+              <AirQuality sensors={sensors} data={data} showTime />
             </div>
           </div>
         </div>
