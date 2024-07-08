@@ -20,6 +20,10 @@ export default async function Inicio() {
     <div className="mx-4 flex flex-col space-y-10 pb-20 pt-4 md:mx-16 md:pb-28 lg:mx-36 lg:pb-20 lg:pt-10">
       {/* Calidad del Aire */}
       <div className="flex flex-col">
+        {/* Title */}
+        <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-6">
+          POBLACIÓN GENERAL
+        </div>
         {/* Air Quality text, recommendation and quality bar */}
         <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
