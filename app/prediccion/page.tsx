@@ -37,28 +37,96 @@ export default async function Inicio() {
               <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <div>18:00</div>
+              <div>11</div>
               <div className="h-3 w-10 rounded-full bg-green-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <div>19:00</div>
-              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
+              <div>12</div>
+              <div className="h-3 w-9 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <div>20:00</div>
-              <div className="h-3 w-10 rounded-full bg-orange-400"></div>
+              <div>13</div>
+              <div className="h-3 w-9 rounded-full bg-orange-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <div>21:00</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div>14</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <div>22:00</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div>15</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <div>23:00</div>
-              <div className="h-3 w-10 rounded-full bg-green-400"></div>
+              <div>16</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>17</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>18</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>19</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>20</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>21</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>22</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>23</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>0</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>1</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>2</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>3</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>4</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>5</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>6</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>7</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>8</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
+            </div>
+            <div className="flex flex-col items-center space-y-2">
+              <div>9</div>
+              <div className="h-3 w-9 rounded-full bg-green-400"></div>
             </div>
           </div>
         </div>
