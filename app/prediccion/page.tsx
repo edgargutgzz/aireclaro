@@ -29,9 +29,9 @@ export default async function Inicio() {
       </div>
       {/* Pronostico por Hora */}
       <div className="flex flex-col">
-        <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 pb-0 pt-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+        <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 pb-1 pt-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">PRONÓSTICO POR HORA</div>
-          <div className="flex space-x-8 overflow-x-auto pb-5 pt-2">
+          <div className="flex space-x-8 overflow-x-auto pb-4">
             <div className="flex flex-col items-center space-y-2">
               <div>Ahora</div>
               <div className="h-3 w-10 rounded-full bg-green-400"></div>
