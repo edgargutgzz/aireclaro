@@ -192,13 +192,13 @@ export default function MapaSensors({
           </span> */}
         </div>
         {/* Sensores - Legend */}
-        <div className="grid grid-cols-2 items-center space-x-4">
+        <div className="grid grid-cols-2 items-center space-x-2">
           <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-3 w-3 rounded-full bg-green-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
             <span className="text-xs">Sensor Purple Air</span>
           </div>
           <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-3 w-3 rounded-full border border-black bg-green-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full border border-black bg-green-400"></div>
             <span className="text-xs">Estación SIMA</span>
           </div>
         </div>
