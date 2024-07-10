@@ -5,6 +5,16 @@ import SimaData from "@/components/data/sima-data";
 import AirQuality from "@/components/inicio/air-quality";
 import { Navigation, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 export default async function Inicio() {
   const purpleAirSensors = await PurpleAirSensors();
@@ -31,6 +41,24 @@ export default async function Inicio() {
         <div className="flex flex-col space-y-4 rounded-lg bg-white px-4 pb-2 pt-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">PRONÓSTICO POR HORA</div>
           <div className="flex space-x-8 overflow-x-auto pb-5">
+            <Drawer>
+              <DrawerTrigger>Open</DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                  <DrawerDescription>
+                    This action cannot be undone.
+                  </DrawerDescription>
+                </DrawerHeader>
+                <DrawerFooter>
+                  <Button>Submit</Button>
+                  <DrawerClose>
+                    <Button variant="outline">Cancel</Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+
             <div className="flex flex-col items-center space-y-4">
               <div>Ahora</div>
               <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
