@@ -139,40 +139,40 @@ export default async function Inicio() {
         <div className="flex flex-col space-y-4 rounded-lg bg-white px-4 pb-2 pt-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">PRONÓSTICO DIARIO</div>
           <div className="flex flex-col space-y-8 pb-5">
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Hoy</div>
+            <Button variant="ghost" className="flex space-x-10">
+              <div className="w-4/12 text-left">Hoy</div>
               <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
             </Button>
             <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Martes</div>
+              <div className="w-4/12 text-left">Martes</div>
               <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
             </Button>
             <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Miércoles</div>
+              <div className="w-4/12 text-left">Miércoles</div>
               <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
             </Button>
             <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Jueves</div>
+              <div className="w-4/12 text-left">Jueves</div>
               <div className="h-3 w-8/12 rounded-full bg-orange-400"></div>
             </Button>
             <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Viernes</div>
+              <div className="w-4/12 text-left">Viernes</div>
               <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
             </Button>
             <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Sábado</div>
+              <div className="w-4/12 text-left">Sábado</div>
               <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
             </Button>
             <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Domingo</div>
+              <div className="w-4/12 text-left">Domingo</div>
               <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
             </Button>
             <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Lunes</div>
+              <div className="w-4/12 text-left">Lunes</div>
               <div className="h-3 w-8/12 rounded-full bg-orange-400"></div>
             </Button>
             <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12">Martes</div>
+              <div className="w-4/12 text-left">Martes</div>
               <div className="h-3 w-8/12 rounded-full bg-red-400"></div>
             </Button>
           </div>
