@@ -15,6 +15,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { Chart } from "@/components/prediccion/chart";
 
 export default async function Inicio() {
   const purpleAirSensors = await PurpleAirSensors();
@@ -149,10 +150,7 @@ export default async function Inicio() {
                 </DrawerDescription>
               </DrawerHeader>
               <DrawerFooter>
-                <Button>Submit</Button>
-                <DrawerClose>
-                  <Button variant="outline">Cancel</Button>
-                </DrawerClose>
+                <Chart />
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
