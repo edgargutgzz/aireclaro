@@ -160,61 +160,57 @@ export default async function Inicio() {
       </div>
       {/* Pronostico Diario */}
       <div className="flex flex-col">
-        <div className="flex flex-col space-y-4 rounded-lg bg-white pb-2 pt-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
-          <div className="px-4 text-sm text-gray-400">PRONÓSTICO DIARIO</div>
-          <div className="flex flex-col space-y-5 px-0 pb-5">
-            <Button variant="ghost" className="flex space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">Hoy</div>
-              <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
-            </Button>
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">
-                Martes
-              </div>
-              <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
-            </Button>
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">
-                Miércoles
-              </div>
-              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
-            </Button>
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">
-                Jueves
-              </div>
-              <div className="h-3 w-8/12 rounded-full bg-orange-400"></div>
-            </Button>
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">
-                Viernes
-              </div>
-              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
-            </Button>
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">
-                Sábado
-              </div>
-              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
-            </Button>
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">
-                Domingo
-              </div>
-              <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
-            </Button>
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">
-                Lunes
-              </div>
-              <div className="h-3 w-8/12 rounded-full bg-orange-400"></div>
-            </Button>
-            <Button variant="ghost" className="flex items-center space-x-10">
-              <div className="w-4/12 text-left text-base font-normal">
-                Martes
-              </div>
-              <div className="h-3 w-8/12 rounded-full bg-red-400"></div>
-            </Button>
+        <div className="flex flex-col space-y-4 rounded-lg bg-white px-4 pb-2 pt-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+          <div className="text-sm text-gray-400">PRONÓSTICO DIARIO</div>
+          <div className="flex flex-col space-y-10">
+            <Drawer>
+              <DrawerTrigger>
+                <div className="flex space-x-10">
+                  <div className="w-4/12 text-left text-base font-normal">
+                    Hoy
+                  </div>
+                  <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
+                </div>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                  <DrawerDescription>
+                    This action cannot be undone.
+                  </DrawerDescription>
+                </DrawerHeader>
+                <DrawerFooter>
+                  <Button>Submit</Button>
+                  <DrawerClose>
+                    <Button variant="outline">Cancel</Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+            <Drawer>
+              <DrawerTrigger>
+                <div className="flex space-x-10">
+                  <div className="w-4/12 text-left text-base font-normal">
+                    Martes
+                  </div>
+                  <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
+                </div>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                  <DrawerDescription>
+                    This action cannot be undone.
+                  </DrawerDescription>
+                </DrawerHeader>
+                <DrawerFooter>
+                  <Button>Submit</Button>
+                  <DrawerClose>
+                    <Button variant="outline">Cancel</Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
           </div>
         </div>
       </div>
