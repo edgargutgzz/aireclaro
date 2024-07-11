@@ -143,7 +143,7 @@ export default async function Inicio() {
               </div>
             </DrawerTrigger>
             <DrawerContent className="h-5/6">
-              <DrawerHeader>
+              <DrawerHeader className="bg-red-100">
                 <DrawerTitle>Aceptable</DrawerTitle>
                 <DrawerDescription>
                   Disfruta las actividades al aire libre. Infórmate sobre la
