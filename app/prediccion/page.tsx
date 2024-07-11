@@ -142,14 +142,14 @@ export default async function Inicio() {
                 </div>
               </div>
             </DrawerTrigger>
-            <DrawerContent>
-              <DrawerHeader>
+            <DrawerContent className="h-3/4 bg-purple-100">
+              <DrawerHeader className="bg-red-100">
                 <DrawerTitle>Are you absolutely sure?</DrawerTitle>
                 <DrawerDescription>
                   This action cannot be undone.
                 </DrawerDescription>
               </DrawerHeader>
-              <DrawerFooter>
+              <DrawerFooter className="bg-blue-100">
                 <Chart />
               </DrawerFooter>
             </DrawerContent>
