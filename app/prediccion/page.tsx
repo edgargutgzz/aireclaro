@@ -144,9 +144,9 @@ export default async function Inicio() {
             </DrawerTrigger>
             <DrawerContent className="h-3/4">
               <DrawerHeader>
-                <DrawerTitle>Calidad del Aire</DrawerTitle>
+                <DrawerTitle>Buena</DrawerTitle>
                 <DrawerDescription>
-                  This action cannot be undone.
+                  Disfruta las actividades al aire libre.
                 </DrawerDescription>
               </DrawerHeader>
               <DrawerFooter className="flex h-full items-center justify-center">
