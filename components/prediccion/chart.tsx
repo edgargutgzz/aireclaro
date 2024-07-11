@@ -69,10 +69,13 @@ export function Chart() {
       <BarChart width={600} height={300} data={chartData}>
         <XAxis
           dataKey="hour"
-          ticks={["00:00", "06:00", "12:00", "18:00"]}
+          tickFormatter={(tick) => {
+            const hour = parseInt(tick.split(":")[0], 10);
+            return [0, 6, 12, 18].includes(hour) ? String(hour) : "";
+          }}
           axisLine={false}
           tickLine={false}
-          dy={10} // Add this line to add padding
+          dy={10}
         />
         <Tooltip
           formatter={(value, name, props) => [
