@@ -67,7 +67,13 @@ export function Chart() {
   return (
     <ChartContainer config={chartConfig} className="h-5/6 w-full">
       <BarChart width={600} height={300} data={chartData}>
-        <XAxis dataKey="hour" ticks={["00:00", "06:00", "12:00", "18:00"]} />
+        <XAxis
+          dataKey="hour"
+          ticks={["00:00", "06:00", "12:00", "18:00"]}
+          axisLine={false}
+          tickLine={false}
+          dy={10} // Add this line to add padding
+        />
         <Tooltip
           formatter={(value, name, props) => [
             getQualityText(Number(value)),
