@@ -142,7 +142,7 @@ export default async function Inicio() {
                 </div>
               </div>
             </DrawerTrigger>
-            <DrawerContent className="h-3/4">
+            <DrawerContent className="h-5/6">
               <DrawerHeader>
                 <DrawerTitle>Buena</DrawerTitle>
                 <DrawerDescription>
