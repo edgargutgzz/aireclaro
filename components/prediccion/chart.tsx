@@ -5,7 +5,6 @@ import {
   BarChart,
   Cell,
   XAxis,
-  YAxis,
   Tooltip,
   Legend,
   CartesianGrid,
@@ -59,7 +58,6 @@ const getColorForPm25 = (pm25: number) => {
 const chartConfig = {
   pm25: {
     label: "PM2.5",
-    color: "#2563eb",
   },
 } satisfies ChartConfig;
 
@@ -68,10 +66,8 @@ export function Chart() {
     <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
       <BarChart width={600} height={300} data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="hour" />
-        <YAxis />
+        <XAxis dataKey="hour" ticks={["00:00", "06:00", "12:00", "18:00"]} />
         <Tooltip />
-        <Legend />
         <Bar dataKey="pm25" radius={4}>
           {chartData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={getColorForPm25(entry.pm25)} />
