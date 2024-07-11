@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Bar,
-  BarChart,
-  Cell,
-  XAxis,
-  Tooltip,
-  Legend,
-  CartesianGrid,
-} from "recharts";
+import { Bar, BarChart, Cell, XAxis, Tooltip, CartesianGrid } from "recharts";
 
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
@@ -55,6 +47,16 @@ const getColorForPm25 = (pm25: number) => {
   }
 };
 
+const getQualityText = (pm25: number) => {
+  if (pm25 === null || pm25 < 0) return "No Disponible";
+  if (pm25 >= 0 && pm25 <= 15) return "Buena";
+  if (pm25 > 15 && pm25 <= 25) return "Aceptable";
+  if (pm25 > 25 && pm25 <= 79) return "Mala";
+  if (pm25 > 79 && pm25 <= 130) return "Muy Mala";
+  if (pm25 > 130) return "Extremadamente Mala";
+  return "No Disponible";
+};
+
 const chartConfig = {
   pm25: {
     label: "PM2.5",
@@ -67,7 +69,12 @@ export function Chart() {
       <BarChart width={600} height={300} data={chartData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="hour" ticks={["00:00", "06:00", "12:00", "18:00"]} />
-        <Tooltip />
+        <Tooltip
+          formatter={(value, name, props) => [
+            getQualityText(Number(value)),
+            "Calidad del Aire",
+          ]}
+        />
         <Bar dataKey="pm25" radius={4}>
           {chartData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={getColorForPm25(entry.pm25)} />
