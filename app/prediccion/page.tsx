@@ -46,7 +46,7 @@ export default async function Inicio() {
               <div className="flex space-x-8 overflow-x-auto pb-5">
                 <div className="flex flex-col items-center space-y-4">
                   <div>Ahora</div>
-                  <div className="h-3 w-10 rounded-full bg-green-400"></div>
+                  <div className="h-3 w-10 rounded-full bg-yellow-400"></div>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
                   <div>11</div>
@@ -144,9 +144,10 @@ export default async function Inicio() {
             </DrawerTrigger>
             <DrawerContent className="h-5/6">
               <DrawerHeader>
-                <DrawerTitle>Buena</DrawerTitle>
+                <DrawerTitle>Aceptable</DrawerTitle>
                 <DrawerDescription>
-                  Disfruta las actividades al aire libre.
+                  Disfruta las actividades al aire libre. Infórmate sobre la
+                  evolución de la calidad del aire.
                 </DrawerDescription>
               </DrawerHeader>
               <DrawerFooter className="flex h-full items-center justify-center">
@@ -168,7 +169,7 @@ export default async function Inicio() {
                   <div className="w-4/12 text-left text-base font-normal">
                     Hoy
                   </div>
-                  <div className="h-3 w-8/12 rounded-full bg-green-400"></div>
+                  <div className="h-3 w-8/12 rounded-full bg-yellow-400"></div>
                 </div>
               </DrawerTrigger>
               <DrawerContent>
