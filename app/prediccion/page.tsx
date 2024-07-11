@@ -143,11 +143,16 @@ export default async function Inicio() {
               </div>
             </DrawerTrigger>
             <DrawerContent className="h-5/6">
-              <DrawerHeader className="bg-red-100">
-                <DrawerTitle>Aceptable</DrawerTitle>
+              <DrawerHeader>
+                <DrawerTitle className="text-2xl">Aceptable</DrawerTitle>
                 <DrawerDescription>
-                  Disfruta las actividades al aire libre. Infórmate sobre la
-                  evolución de la calidad del aire.
+                  <div className="flex flex-col">
+                    <div className="text-base">
+                      Disfruta las actividades al aire libre. Infórmate sobre la
+                      evolución de la calidad del aire.
+                    </div>
+                    <div>Jueves, 11 de julio del 2024</div>
+                  </div>
                 </DrawerDescription>
               </DrawerHeader>
               <DrawerFooter className="flex h-full items-center justify-center">
