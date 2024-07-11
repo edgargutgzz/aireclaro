@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, Cell, XAxis, Tooltip } from "recharts";
+import { Bar, BarChart, Cell, XAxis, Tooltip, CartesianGrid } from "recharts";
 
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
@@ -67,6 +67,7 @@ export function Chart() {
   return (
     <ChartContainer config={chartConfig} className="h-5/6 w-full">
       <BarChart width={600} height={300} data={chartData}>
+        <CartesianGrid strokeDasharray="3 10" />
         <XAxis
           dataKey="hour"
           tickFormatter={(tick) => {
