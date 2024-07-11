@@ -94,7 +94,7 @@ export function Chart() {
         <ReferenceLine
           x="10:00"
           stroke="black"
-          strokeWidth={14}
+          strokeWidth={17}
           label={{ position: "top", value: "10 AM", fill: "black" }}
         />
         <Bar dataKey="pm25" radius={4}>
