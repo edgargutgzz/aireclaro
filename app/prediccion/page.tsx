@@ -144,7 +144,7 @@ export default async function Inicio() {
             </DrawerTrigger>
             <DrawerContent className="h-3/4">
               <DrawerHeader>
-                <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+                <DrawerTitle>Calidad del Aire</DrawerTitle>
                 <DrawerDescription>
                   This action cannot be undone.
                 </DrawerDescription>
