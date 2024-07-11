@@ -76,7 +76,7 @@ export function Chart() {
           }}
           axisLine={false}
           tickLine={false}
-          dy={10}
+          dy={5}
         />
         <Tooltip
           formatter={(value, name, props) => [
