@@ -1,7 +1,14 @@
 "use client";
 
-import { Bar, BarChart, Cell, XAxis, Tooltip, CartesianGrid } from "recharts";
-
+import {
+  Bar,
+  BarChart,
+  Cell,
+  XAxis,
+  Tooltip,
+  CartesianGrid,
+  ReferenceLine,
+} from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const chartData = [
@@ -83,6 +90,12 @@ export function Chart() {
             getQualityText(Number(value)),
             "Calidad del Aire",
           ]}
+        />
+        <ReferenceLine
+          x="10:00"
+          stroke="black"
+          strokeWidth={15}
+          label={{ position: "top", value: "10 AM", fill: "black" }}
         />
         <Bar dataKey="pm25" radius={4}>
           {chartData.map((entry, index) => (
