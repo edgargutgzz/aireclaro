@@ -1,35 +1,51 @@
 "use client";
 
-import { Bar, BarChart } from "recharts";
+import { Bar, BarChart, Cell } from "recharts";
 
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const chartData = [
   { hour: "00:00", pm25: 10 },
-  { hour: "01:00", pm25: 15 },
-  { hour: "02:00", pm25: 8 },
-  { hour: "03:00", pm25: 5 },
-  { hour: "04:00", pm25: 6 },
-  { hour: "05:00", pm25: 7 },
-  { hour: "06:00", pm25: 12 },
-  { hour: "07:00", pm25: 20 },
-  { hour: "08:00", pm25: 25 },
-  { hour: "09:00", pm25: 30 },
-  { hour: "10:00", pm25: 35 },
-  { hour: "11:00", pm25: 40 },
-  { hour: "12:00", pm25: 45 },
-  { hour: "13:00", pm25: 50 },
-  { hour: "14:00", pm25: 55 },
-  { hour: "15:00", pm25: 60 },
-  { hour: "16:00", pm25: 65 },
-  { hour: "17:00", pm25: 70 },
-  { hour: "18:00", pm25: 75 },
-  { hour: "19:00", pm25: 80 },
-  { hour: "20:00", pm25: 85 },
+  { hour: "01:00", pm25: 12 },
+  { hour: "02:00", pm25: 15 },
+  { hour: "03:00", pm25: 18 },
+  { hour: "04:00", pm25: 22 },
+  { hour: "05:00", pm25: 30 },
+  { hour: "06:00", pm25: 40 },
+  { hour: "07:00", pm25: 50 },
+  { hour: "08:00", pm25: 60 },
+  { hour: "09:00", pm25: 70 },
+  { hour: "10:00", pm25: 80 },
+  { hour: "11:00", pm25: 90 },
+  { hour: "12:00", pm25: 100 },
+  { hour: "13:00", pm25: 110 },
+  { hour: "14:00", pm25: 120 },
+  { hour: "15:00", pm25: 130 },
+  { hour: "16:00", pm25: 140 },
+  { hour: "17:00", pm25: 130 },
+  { hour: "18:00", pm25: 120 },
+  { hour: "19:00", pm25: 110 },
+  { hour: "20:00", pm25: 100 },
   { hour: "21:00", pm25: 90 },
-  { hour: "22:00", pm25: 95 },
-  { hour: "23:00", pm25: 100 },
+  { hour: "22:00", pm25: 80 },
+  { hour: "23:00", pm25: 70 },
 ];
+
+const getColorForPm25 = (pm25: number) => {
+  if (pm25 === null || pm25 < 0) {
+    return "#9CA3AF"; // Tailwind CSS bg-gray-400
+  } else if (pm25 >= 0 && pm25 <= 15) {
+    return "#34D399"; // Tailwind CSS bg-green-400
+  } else if (pm25 > 15 && pm25 <= 25) {
+    return "#FBBF24"; // Tailwind CSS bg-yellow-400
+  } else if (pm25 > 25 && pm25 <= 79) {
+    return "#FB923C"; // Tailwind CSS bg-orange-400
+  } else if (pm25 > 79 && pm25 <= 130) {
+    return "#EF4444"; // Tailwind CSS bg-red-400
+  } else if (pm25 > 130) {
+    return "#A855F7"; // Tailwind CSS bg-purple-400
+  }
+};
 
 const chartConfig = {
   pm25: {
@@ -42,7 +58,11 @@ export function Chart() {
   return (
     <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
       <BarChart accessibilityLayer data={chartData}>
-        <Bar dataKey="pm25" fill="var(--color-desktop)" radius={4} />
+        <Bar dataKey="pm25" radius={4}>
+          {chartData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={getColorForPm25(entry.pm25)} />
+          ))}
+        </Bar>
       </BarChart>
     </ChartContainer>
   );
