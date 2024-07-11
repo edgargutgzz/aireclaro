@@ -151,7 +151,9 @@ export default async function Inicio() {
                       Disfruta las actividades al aire libre. Infórmate sobre la
                       evolución de la calidad del aire.
                     </div>
-                    <div>Jueves, 11 de julio del 2024</div>
+                    <div className="pt-2 text-xs">
+                      Jueves, 11 de julio del 2024
+                    </div>
                   </div>
                 </DrawerDescription>
               </DrawerHeader>
