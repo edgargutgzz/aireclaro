@@ -158,7 +158,7 @@ export default async function Inicio() {
                 </DrawerDescription>
               </DrawerHeader>
               <DrawerFooter className="flex-grow space-y-12 overflow-y-auto">
-                <div>
+                <div className="bg-red-100">
                   <Chart />
                 </div>
                 {/* Población sensible */}

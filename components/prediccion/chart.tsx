@@ -72,8 +72,8 @@ const chartConfig = {
 
 export function Chart() {
   return (
-    <ChartContainer config={chartConfig}>
-      <BarChart width={600} height={800} data={chartData}>
+    <ChartContainer className="h-96 w-full" config={chartConfig}>
+      <BarChart data={chartData} height={500} width={600}>
         <CartesianGrid strokeDasharray="3 10" />
         <XAxis
           dataKey="hour"
