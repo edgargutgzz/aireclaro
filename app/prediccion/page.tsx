@@ -152,12 +152,12 @@ export default async function Inicio() {
                       Disfruta las actividades al aire libre.
                     </div>
                     <div className="pt-2 text-xs">
-                      Jueves, 11 de julio del 2024
+                      Viernes, 12 de julio del 2024
                     </div>
                   </div>
                 </DrawerDescription>
               </DrawerHeader>
-              <DrawerFooter className="flex-grow overflow-y-auto">
+              <DrawerFooter className="flex-grow space-y-12 overflow-y-auto">
                 <div>
                   <Chart />
                 </div>
