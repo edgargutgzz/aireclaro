@@ -487,12 +487,12 @@ export default async function Inicio() {
         {/* Cards */}
         <div className="flex flex-col md:flex-row md:space-x-8 md:space-y-0">
           {/* Ubicación */}
-          <div className="mb-10 flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg md:w-2/3">
+          <div className="mb-10 flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg md:w-2/3">
             <div className="text-sm text-gray-400">UBICACIÓN</div>
             <AirQuality sensors={sensors} data={data} showAddress />
           </div>
           {/* Hora */}
-          <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg md:w-1/3">
+          <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg md:w-1/3">
             <div className="text-sm text-gray-400">HORA</div>
             <div className="flex">
               <div className="pr-1">Actualizado a las</div>
