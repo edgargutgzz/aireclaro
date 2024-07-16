@@ -403,7 +403,7 @@ export default function AirQuality({
                 <div className="lg:text-lg">{pobGeneralText}</div>
                 {/* Air Quality Bar */}
                 <div className="pt-2 lg:pt-3">
-                  <div className="relative flex min-h-[14px] overflow-hidden rounded-lg">
+                  <div className="relative flex min-h-[10px] overflow-hidden rounded-lg">
                     <div
                       style={{ flexBasis: "12%" }}
                       className="bg-green-400"
