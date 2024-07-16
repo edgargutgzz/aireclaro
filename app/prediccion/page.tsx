@@ -143,7 +143,7 @@ export default async function Inicio() {
                 </div>
               </div>
             </DrawerTrigger>
-            <DrawerContent className="flex h-5/6 flex-col overflow-y-auto">
+            <DrawerContent className="h-5/6 flex-grow flex-col overflow-y-auto">
               <DrawerHeader>
                 <DrawerTitle className="text-3xl">Mala</DrawerTitle>
                 <DrawerDescription>
