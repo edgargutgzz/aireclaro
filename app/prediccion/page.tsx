@@ -143,7 +143,7 @@ export default async function Inicio() {
                 </div>
               </div>
             </DrawerTrigger>
-            <DrawerContent className="h-5/6 flex-grow flex-col overflow-y-auto">
+            <DrawerContent className="flex h-5/6 flex-col">
               <DrawerHeader>
                 <DrawerTitle className="text-3xl">Mala</DrawerTitle>
                 <DrawerDescription>
@@ -159,7 +159,7 @@ export default async function Inicio() {
                   </div>
                 </DrawerDescription>
               </DrawerHeader>
-              <DrawerFooter className="flex-grow space-y-8 px-5">
+              <DrawerFooter className="flex-grow space-y-8 overflow-y-auto px-5">
                 <div>
                   <Chart />
                 </div>
