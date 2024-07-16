@@ -33,7 +33,7 @@ export default async function Inicio() {
       {/* Calidad del Aire */}
       <div className="flex flex-col">
         {/* Air Quality text, recommendation and quality bar */}
-        <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+        <div className="flex flex-col space-y-4 px-4 py-10 text-left lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
           <AirQuality sensors={sensors} data={data} />
         </div>

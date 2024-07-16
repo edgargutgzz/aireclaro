@@ -394,7 +394,7 @@ export default function AirQuality({
             !showAdultosMayoresRecommendation &&
             !showEmbarazadasRecommendation &&
             !showEnfermedadesRecommendation && (
-              <div className="flex flex-col space-y-2 lg:space-y-4">
+              <div className="flex flex-col space-y-4 lg:space-y-4">
                 {/* Air Quality Title */}
                 <div className="text-4xl font-semibold lg:text-5xl">
                   {pobGeneralTitle()}
