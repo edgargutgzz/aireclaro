@@ -442,7 +442,7 @@ export default function AirQuality({
                         left: `${getMarkerPosition()}%`,
                         borderColor: "white",
                       }}
-                      className="absolute top-1/2 h-4 w-4 -translate-y-1/2 transform rounded-full border-4 bg-gray-200"
+                      className="absolute top-1/2 h-3 w-3 -translate-y-1/2 transform rounded-full border-4 bg-gray-500"
                     ></div>
                   </div>
                 </div>
