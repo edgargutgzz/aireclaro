@@ -153,7 +153,7 @@ export default async function Inicio() {
                       presentas síntomas como tos o falta de aire, toma más
                       descansos y realiza actividades menos vigorosas.
                     </div>
-                    <div className="pt-2 text-xs">
+                    <div className="pt-2 text-xs text-gray-400">
                       Martes, 16 de julio del 2024
                     </div>
                   </div>
