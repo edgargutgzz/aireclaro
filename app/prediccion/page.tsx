@@ -495,7 +495,7 @@ export default async function Inicio() {
           <div className="flex flex-col space-y-2 rounded-lg bg-white p-4 text-sm shadow-lg md:w-1/3">
             <div className="text-sm text-gray-400">HORA</div>
             <div className="flex">
-              <div className="pr-1">Actualizado a las</div>
+              <div className="pr-1">Actualizada a las</div>
               <AirQuality sensors={sensors} data={data} showTime />
             </div>
           </div>
