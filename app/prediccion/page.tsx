@@ -33,14 +33,14 @@ export default async function Inicio() {
       {/* Calidad del Aire */}
       <div className="flex flex-col">
         {/* Air Quality text, recommendation and quality bar */}
-        <div className="mb-20 flex flex-col space-y-4 rounded-lg bg-white px-4 py-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+        <div className="mb-32 flex flex-col space-y-4 rounded-lg bg-white px-4 py-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
           <AirQuality sensors={sensors} data={data} />
         </div>
       </div>
       {/* Pronostico por Hora */}
       <div className="flex flex-col">
-        <div className="mb-10 flex flex-col space-y-4 rounded-lg bg-white px-4 pb-0 pt-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+        <div className="mb-10 flex flex-col space-y-4 rounded-lg bg-white px-4 pt-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">PRONÓSTICO POR HORA</div>
           <Drawer>
             <DrawerTrigger>
