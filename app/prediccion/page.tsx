@@ -45,7 +45,7 @@ export default async function Inicio() {
           <Drawer>
             <DrawerTrigger>
               <div className="flex space-x-7 overflow-x-auto pb-4">
-                <div className="flex flex-col items-center space-y-6">
+                <div className="flex flex-col items-center space-y-4">
                   <div>Ahora</div>
                   <div className="h-3 w-7 rounded-full bg-green-400"></div>
                 </div>
@@ -253,7 +253,7 @@ export default async function Inicio() {
       <div className="flex flex-col">
         <div className="mb-10 flex flex-col space-y-4 rounded-lg bg-white px-4 py-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">PRONÓSTICO DIARIO</div>
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-6">
             {/* Hoy */}
             <Drawer>
               <DrawerTrigger>
