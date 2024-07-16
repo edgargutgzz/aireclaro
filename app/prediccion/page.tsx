@@ -47,7 +47,7 @@ export default async function Inicio() {
               <div className="flex space-x-7 overflow-x-auto pb-4">
                 <div className="flex flex-col items-center space-y-4">
                   <div>Ahora</div>
-                  <div className="h-3 w-6 rounded-full bg-green-400"></div>
+                  <div className="h-3 w-6 rounded-full bg-orange-400"></div>
                 </div>
                 <div className="flex flex-col items-center space-y-4">
                   <div>11</div>
@@ -145,14 +145,16 @@ export default async function Inicio() {
             </DrawerTrigger>
             <DrawerContent className="flex h-5/6 flex-col">
               <DrawerHeader>
-                <DrawerTitle className="text-2xl">Buena</DrawerTitle>
+                <DrawerTitle className="text-3xl">Mala</DrawerTitle>
                 <DrawerDescription>
                   <div className="flex flex-col">
                     <div className="text-base">
-                      Disfruta las actividades al aire libre.
+                      Es posible realizar actividades al aire libre. Si
+                      presentas síntomas como tos o falta de aire, toma más
+                      descansos y realiza actividades menos vigorosas.
                     </div>
                     <div className="pt-2 text-xs">
-                      Viernes, 12 de julio del 2024
+                      Martes, 16 de julio del 2024
                     </div>
                   </div>
                 </DrawerDescription>
