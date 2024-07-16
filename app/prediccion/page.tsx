@@ -251,7 +251,7 @@ export default async function Inicio() {
       </div>
       {/* Pronostico Diario */}
       <div className="flex flex-col">
-        <div className="flex flex-col space-y-4 rounded-lg bg-white px-4 py-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+        <div className="mb-10 flex flex-col space-y-4 rounded-lg bg-white px-4 py-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">PRONÓSTICO DIARIO</div>
           <div className="flex flex-col space-y-4">
             {/* Hoy */}
