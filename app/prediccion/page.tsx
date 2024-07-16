@@ -44,7 +44,7 @@ export default async function Inicio() {
           <div className="text-sm text-gray-400">PRONÓSTICO POR HORA</div>
           <Drawer>
             <DrawerTrigger>
-              <div className="flex space-x-4 overflow-x-auto pb-5">
+              <div className="flex space-x-5 overflow-x-auto pb-5">
                 <div className="flex flex-col items-center space-y-4">
                   <div>Ahora</div>
                   <div className="h-3 w-8 rounded-full bg-green-400"></div>
