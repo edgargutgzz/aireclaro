@@ -148,7 +148,7 @@ export default async function Inicio() {
                 <DrawerTitle className="text-3xl">Mala</DrawerTitle>
                 <DrawerDescription>
                   <div className="flex flex-col">
-                    <div className="text-base">
+                    <div className="text-sm">
                       Es posible realizar actividades al aire libre. Si
                       presentas síntomas como tos o falta de aire, toma más
                       descansos y realiza actividades menos vigorosas.
