@@ -45,7 +45,7 @@ export default async function Inicio() {
           <Drawer>
             <DrawerTrigger>
               <div className="flex space-x-7 overflow-x-auto pb-4">
-                <div className="flex flex-col items-center space-y-4">
+                <div className="flex flex-col items-center space-y-6">
                   <div>Ahora</div>
                   <div className="h-3 w-7 rounded-full bg-green-400"></div>
                 </div>
