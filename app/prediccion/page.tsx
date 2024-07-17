@@ -160,7 +160,7 @@ export default async function Inicio() {
                   </div>
                 </DrawerDescription>
               </DrawerHeader>
-              <DrawerFooter className="flex flex-grow overflow-y-auto px-4">
+              <DrawerFooter className="flex px-4">
                 <Chart />
               </DrawerFooter>
             </DrawerContent>
