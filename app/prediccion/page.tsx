@@ -145,17 +145,13 @@ export default async function Inicio() {
             </DrawerTrigger>
             <DrawerContent className="flex h-[90%] flex-col">
               <DrawerHeader>
-                <DrawerTitle className="text-3xl">Mala</DrawerTitle>
+                {/* <DrawerTitle className="text-start text-3xl">Mala</DrawerTitle> */}
                 <DrawerDescription>
-                  <div className="flex flex-col">
-                    <div className="text-sm">
-                      Es posible realizar actividades al aire libre. Si
-                      presentas síntomas como tos o falta de aire, toma más
-                      descansos y realiza actividades menos vigorosas.
+                  <div className="mb-28 flex flex-col space-y-4 rounded-lg bg-white px-4 py-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+                    <div className="text-sm text-gray-400">
+                      CALIDAD DEL AIRE
                     </div>
-                    <div className="pt-2 text-xs text-gray-400">
-                      Martes, 16 de julio del 2024
-                    </div>
+                    <AirQuality sensors={sensors} data={data} />
                   </div>
                 </DrawerDescription>
               </DrawerHeader>
