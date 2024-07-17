@@ -175,8 +175,8 @@ export default async function Inicio() {
                     <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
                       <Image
                         src="/menores.png"
-                        width={32}
-                        height={32}
+                        width={28}
+                        height={28}
                         alt="Menores Icon"
                       />
                       <div className="font-semibold">Menores de 12 años</div>
