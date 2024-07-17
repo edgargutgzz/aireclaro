@@ -73,7 +73,7 @@ const chartConfig = {
 export function Chart() {
   return (
     <ChartContainer
-      className="rounded-lg bg-white p-4 shadow-lg"
+      className="max-w-full rounded-lg bg-white p-4 shadow-lg"
       config={chartConfig}
     >
       <BarChart data={chartData}>
