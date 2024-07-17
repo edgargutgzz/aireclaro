@@ -143,7 +143,7 @@ export default async function Inicio() {
                 </div>
               </div>
             </DrawerTrigger>
-            <DrawerContent className="flex h-5/6 flex-col">
+            <DrawerContent className="flex h-[90%] flex-col">
               <DrawerHeader>
                 <DrawerTitle className="text-3xl">Mala</DrawerTitle>
                 <DrawerDescription>
