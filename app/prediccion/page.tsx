@@ -3,7 +3,6 @@ import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import AirQuality from "@/components/inicio/air-quality";
-import { Navigation, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -143,15 +142,21 @@ export default async function Inicio() {
                 </div>
               </div>
             </DrawerTrigger>
-            <DrawerContent className="flex h-[90%] flex-col">
+            <DrawerContent className="flex h-[90%] flex-col bg-gray-50">
               <DrawerHeader>
-                {/* <DrawerTitle className="text-start text-3xl">Mala</DrawerTitle> */}
                 <DrawerDescription>
-                  <div className="mb-28 flex flex-col space-y-4 rounded-lg bg-white px-4 py-4 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
-                    <div className="text-sm text-gray-400">
+                  <div className="mb-28 flex flex-col space-y-2 rounded-lg bg-white px-4 py-4 text-left text-black shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+                    <div className="text-xs text-gray-400">
                       CALIDAD DEL AIRE
                     </div>
-                    <AirQuality sensors={sensors} data={data} />
+                    <div className="text-3xl font-semibold lg:text-5xl">
+                      Mala
+                    </div>
+                    <div className="lg:text-lg">
+                      Es posible realizar actividades al aire libre. Si
+                      presentas síntomas como tos o falta de aire, toma más
+                      descansos y realiza actividades menos vigorosas.
+                    </div>
                   </div>
                 </DrawerDescription>
               </DrawerHeader>
