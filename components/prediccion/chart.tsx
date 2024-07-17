@@ -72,7 +72,7 @@ const chartConfig = {
 
 export function Chart() {
   return (
-    <ChartContainer className="h-80 w-full" config={chartConfig}>
+    <ChartContainer className="h-full w-full" config={chartConfig}>
       <BarChart data={chartData} height={500} width={600}>
         <CartesianGrid strokeDasharray="3 10" />
         <XAxis
