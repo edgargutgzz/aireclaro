@@ -159,20 +159,20 @@ export default async function Inicio() {
                   </div>
                 </DrawerDescription>
               </DrawerHeader>
-              <DrawerFooter className="flex flex-grow space-y-8 overflow-y-auto px-10">
+              <DrawerFooter className="flex flex-grow space-y-0 overflow-y-auto px-10">
                 <div className="h-full">
                   <Chart />
                 </div>
                 {/* Población sensible */}
-                <div className="flex flex-col">
-                  {/* Title */}
-                  {/* <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-6">
+                {/* <div className="flex flex-col"> */}
+                {/* Title */}
+                {/* <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-6">
                     POBLACIÓN SENSIBLE
                   </div> */}
-                  {/* Menores y Adultos Mayores recommendation */}
-                  <div className="flex flex-col space-y-8 pb-6 text-sm lg:flex-row lg:space-x-8 lg:space-y-0 lg:pb-10">
-                    {/* Menores de 12 */}
-                    {/* <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
+                {/* Menores y Adultos Mayores recommendation */}
+                <div className="flex flex-col space-y-8 pb-6 text-sm lg:flex-row lg:space-x-8 lg:space-y-0 lg:pb-10">
+                  {/* Menores de 12 */}
+                  {/* <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
                       <Image
                         src="/menores.png"
                         width={28}
@@ -186,8 +186,8 @@ export default async function Inicio() {
                         showMenoresRecommendation
                       />
                     </div> */}
-                    {/* Mayores de 60 años */}
-                    {/* <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
+                  {/* Mayores de 60 años */}
+                  {/* <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
                       <Image
                         src="/adultos-mayores.png"
                         width={32}
@@ -201,11 +201,11 @@ export default async function Inicio() {
                         showAdultosMayoresRecommendation
                       />
                     </div> */}
-                  </div>
-                  {/* Embarazadas y Enfermedades recommendation */}
-                  <div className="flex flex-col space-y-8 pb-6 text-sm lg:flex-row lg:space-x-8 lg:space-y-0">
-                    {/* Embarazadas */}
-                    {/* <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
+                </div>
+                {/* Embarazadas y Enfermedades recommendation */}
+                <div className="flex flex-col space-y-8 pb-6 text-sm lg:flex-row lg:space-x-8 lg:space-y-0">
+                  {/* Embarazadas */}
+                  {/* <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
                       <Image
                         src="/embarazadas.png"
                         width={26}
@@ -219,8 +219,8 @@ export default async function Inicio() {
                         showEmbarazadasRecommendation
                       />
                     </div> */}
-                    {/* Enfermedades */}
-                    {/* <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
+                  {/* Enfermedades */}
+                  {/* <div className="flex w-full flex-col space-y-2 rounded-lg bg-white p-4 text-left shadow-lg lg:w-1/2 lg:space-y-4 lg:px-4 lg:py-5">
                       <div className="flex flex-row space-x-2">
                         <Image
                           src="/enfermedades-corazon.png"
@@ -244,8 +244,8 @@ export default async function Inicio() {
                         showEnfermedadesRecommendation
                       />
                     </div> */}
-                  </div>
                 </div>
+                {/* </div> */}
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
