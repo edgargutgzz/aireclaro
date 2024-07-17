@@ -76,7 +76,7 @@ export function Chart() {
       className="rounded-lg bg-white p-4 shadow-lg"
       config={chartConfig}
     >
-      <BarChart data={chartData} height={500} width={600}>
+      <BarChart data={chartData}>
         <CartesianGrid strokeDasharray="3 10" />
         <XAxis
           dataKey="hour"

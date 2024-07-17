@@ -143,9 +143,9 @@ export default async function Inicio() {
               </div>
             </DrawerTrigger>
             <DrawerContent className="flex h-[90%] flex-col bg-gray-50">
-              <DrawerHeader>
+              <DrawerHeader className="bg-red-100">
                 <DrawerDescription>
-                  <div className="mb-28 flex flex-col space-y-2 rounded-lg bg-white px-4 py-4 text-left text-black shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
+                  <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-4 text-left text-black shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
                     <div className="text-xs text-gray-400">
                       CALIDAD DEL AIRE
                     </div>
@@ -160,7 +160,7 @@ export default async function Inicio() {
                   </div>
                 </DrawerDescription>
               </DrawerHeader>
-              <DrawerFooter className="flex px-4">
+              <DrawerFooter className="flex bg-blue-100 px-4">
                 <Chart />
               </DrawerFooter>
             </DrawerContent>
