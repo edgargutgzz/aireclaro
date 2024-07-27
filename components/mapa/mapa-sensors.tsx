@@ -96,7 +96,7 @@ export default function MapaSensors({
       container: mapContainer.current!, // Set the map container
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd", // Set the map style
       center: [-100.32098588977951, 25.676269873872855], // Set the initial center coordinates
-      zoom: 10, // Set the initial zoom level
+      zoom: 11, // Set the initial zoom level
     });
 
     // Event listener for when the map has loaded
