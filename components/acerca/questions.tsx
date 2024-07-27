@@ -15,36 +15,6 @@ export default function Questions() {
       ),
     },
     {
-      question:
-        "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
-      answer: (
-        <div className="flex flex-col space-y-4">
-          <p>Aire Claro es la única que:</p>
-          <p>
-            1. Utiliza la red más completa de sensores terrestres del Área
-            Metropolitana de Monterrey.
-          </p>
-          <p>
-            2. La respalda el Observatorio Ciudadano de la Calidad del Aire
-            <span>
-              {" "}
-              <a
-                href="https://observatoriodelaire.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                OCCAMM
-              </a>
-              {", "}organización de la sociedad civil líder en promover
-              información sobre el estado, causas y efectos de la contaminación
-              del aire a nivel local.
-            </span>
-          </p>
-        </div>
-      ),
-    },
-    {
       question: "¿Qué información utilizan para medir la calidad del aire?",
       answer: (
         <div className="flex flex-col space-y-4">
@@ -77,6 +47,36 @@ export default function Questions() {
                 Purple Air
               </a>
               {"."}
+            </span>
+          </p>
+        </div>
+      ),
+    },
+    {
+      question:
+        "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
+      answer: (
+        <div className="flex flex-col space-y-4">
+          <p>Aire Claro es la única que:</p>
+          <p>
+            1. Utiliza la red más completa de sensores terrestres del Área
+            Metropolitana de Monterrey.
+          </p>
+          <p>
+            2. La respalda el Observatorio Ciudadano de la Calidad del Aire
+            <span>
+              {" "}
+              <a
+                href="https://observatoriodelaire.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
+                OCCAMM
+              </a>
+              {", "}organización de la sociedad civil líder en promover
+              información sobre el estado, causas y efectos de la contaminación
+              del aire a nivel local.
             </span>
           </p>
         </div>
