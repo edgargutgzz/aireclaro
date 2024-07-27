@@ -64,6 +64,11 @@ const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
 };
 
+// Utility function to format latitude and longitude to five decimal places
+const formatLatLon = (value: number): string => {
+  return value.toFixed(5);
+};
+
 // MapaSensors component
 export default function MapaSensors({
   sensors,
@@ -120,8 +125,8 @@ export default function MapaSensors({
               ? `<p>PM2.5: <span class="text-gray-400">${roundPM25(latestData.pm25)}</span></p>`
               : "<p>No data available</p>"
           }
-          <p>Lat: <span class="text-gray-400">${sensor.lat}</span></p>
-          <p>Lon: <span class="text-gray-400">${sensor.lon}</span></p>
+          <p>Lat: <span class="text-gray-400">${formatLatLon(sensor.lat)}</span></p>
+          <p>Lon: <span class="text-gray-400">${formatLatLon(sensor.lon)}</span></p>
         `;
 
         // Create a new popup instance
