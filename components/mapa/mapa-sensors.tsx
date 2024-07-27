@@ -59,6 +59,11 @@ const createMarker = (
   return marker;
 };
 
+// Utility function to round the pm25 value to the nearest integer
+const roundPM25 = (value: number | null): string | null => {
+  return value !== null ? Math.round(value).toString() : null;
+};
+
 // MapaSensors component
 export default function MapaSensors({
   sensors,
@@ -112,7 +117,7 @@ export default function MapaSensors({
           <h3><strong>${sensor.nombre}</strong></h3>
           ${
             latestData
-              ? `<p>PM2.5: <span class="text-gray-400">${latestData.pm25}</span></p>`
+              ? `<p>PM2.5: <span class="text-gray-400">${roundPM25(latestData.pm25)}</span></p>`
               : "<p>No data available</p>"
           }
           <p>Lat: <span class="text-gray-400">${sensor.lat}</span></p>
