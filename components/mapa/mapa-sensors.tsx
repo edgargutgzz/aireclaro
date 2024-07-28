@@ -163,7 +163,7 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
       {/* Legend */}
-      <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-75 py-3 pl-3 pr-0 shadow-lg md:bottom-24 md:left-6 md:p-4 lg:bottom-12 lg:left-10">
+      <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-85 py-3 pl-3 pr-0 shadow-lg md:bottom-24 md:left-6 md:p-4 lg:bottom-12 lg:left-10">
         {/* Calidad del Aire - Title */}
         <div className="mb-2 flex flex-col font-bold">
           <span className="text-sm">Calidad del Aire</span>
