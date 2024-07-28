@@ -165,7 +165,7 @@ export default function MapaSensors({
       {/* Legend */}
       <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-85 py-3 pl-3 pr-0 shadow-lg md:bottom-24 md:left-6 md:p-4 lg:bottom-12 lg:left-10">
         {/* Calidad del Aire - Title */}
-        <div className="mb-2 flex flex-col font-bold">
+        <div className="mb-2 flex flex-col font-semibold">
           <span className="text-sm">Calidad del Aire</span>
         </div>
         {/* Calidad del Aire - Legend */}
@@ -192,7 +192,7 @@ export default function MapaSensors({
           </div>
         </div>
         {/* Sensores - Title */}
-        <div className="mb-2 mt-5 flex flex-col font-bold">
+        <div className="mb-2 mt-5 flex flex-col font-semibold">
           <span className="text-sm">Fuente de Medición</span>
         </div>
         {/* Sensores - Legend */}
