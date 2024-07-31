@@ -1,6 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
@@ -27,7 +33,28 @@ export default function Datos() {
             gratuita el historial de nuestros datos.
           </p>
         </div>
-        {/* Button */}
+        {/*Card*/}
+        <div className="flex gap-12 py-10">
+          <Card className="w-full">
+            <CardHeader className="gap-1 text-center">
+              <CardTitle className="text-4xl">502,777</CardTitle>
+              <CardDescription>mediciones</CardDescription>
+            </CardHeader>
+          </Card>
+          <Card className="w-full">
+            <CardHeader className="gap-1 text-center">
+              <CardTitle className="text-4xl">119</CardTitle>
+              <CardDescription>sensores</CardDescription>
+            </CardHeader>
+          </Card>
+          <Card className="w-full">
+            <CardHeader className="gap-1 text-center">
+              <CardTitle className="text-4xl">17</CardTitle>
+              <CardDescription>municipios</CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+        {/* Ir a Google Drive*/}
         <div className="flex justify-end py-10 pr-2 md:pr-0">
           <Link
             target="_blank"
