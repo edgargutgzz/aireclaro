@@ -85,7 +85,7 @@ export default function Datos() {
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
         <h1 className="py-4 text-2xl font-bold md:text-3xl lg:py-6">
-          Apertura de Información
+          Datos de Calidad del Aire
         </h1>
         {/* Content */}
         <div className="flex flex-col space-y-4 pr-2 pt-3 text-justify text-sm md:pr-0 md:text-base">
@@ -232,7 +232,7 @@ export default function Datos() {
             </ChartContainer>
           </CardContent>
         </Card> */}
-        {/* Ir a Google Drive*/}
+        {/* Descargar Datos*/}
         <div className="flex justify-end py-10 pr-2 md:pr-0">
           <Link
             target="_blank"
@@ -243,7 +243,7 @@ export default function Datos() {
                 track("Ir a Google Drive clicked");
               }}
             >
-              <ArrowRight className="mr-2 h-4 w-4" /> Ir a Google Drive
+              <ArrowRight className="mr-2 h-4 w-4" /> Descargar datos
             </Button>
           </Link>
         </div>
