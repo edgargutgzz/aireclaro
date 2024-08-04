@@ -96,7 +96,7 @@ export default function Datos() {
           </p>
         </div>
         {/*Indicadores*/}
-        <div className="flex flex-col gap-8 pt-8 text-center md:flex-row md:gap-12 md:pt-12">
+        <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12 md:pt-12">
           <Card className="w-full">
             <CardHeader className="gap-1">
               <CardTitle className="text-3xl md:text-4xl">510,000</CardTitle>
@@ -228,7 +228,7 @@ export default function Datos() {
           </CardContent>
         </Card> */}
         {/* Descargar Datos*/}
-        <div className="flex justify-end pt-12 md:pt-16">
+        <div className="flex justify-end pt-16 md:pt-16">
           <Link
             target="_blank"
             href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
