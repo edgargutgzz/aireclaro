@@ -16,7 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ArrowRight } from "lucide-react";
+import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
@@ -96,7 +96,7 @@ export default function Datos() {
           </p>
         </div>
         {/*Indicadores*/}
-        <div className="flex flex-col gap-12 pt-12 text-center md:flex-row md:gap-12">
+        <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12">
           <Card className="w-full">
             <CardHeader className="gap-1">
               <CardTitle className="text-2xl md:text-4xl">510,000</CardTitle>
@@ -238,7 +238,7 @@ export default function Datos() {
                 track("Ir a Google Drive clicked");
               }}
             >
-              <ArrowRight className="mr-2 h-4 w-4" /> Descargar datos
+              Descargar datos <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
         </div>
