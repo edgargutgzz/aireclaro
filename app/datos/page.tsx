@@ -84,7 +84,7 @@ export default function Datos() {
       {/* Datos */}
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
-        <h1 className="pt-7 text-2xl font-bold md:text-3xl">
+        <h1 className="pt-7 text-3xl font-bold md:text-3xl">
           Calidad del Aire
         </h1>
         {/* Descripción */}
