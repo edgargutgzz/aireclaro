@@ -90,7 +90,7 @@ export default function Datos() {
         {/* Descripción */}
         <div className="flex flex-col pt-6 text-justify text-base md:pr-0 md:text-base">
           <p>
-            Publicamos el total de los datos que recopilamos para impulsar la
+            Publicamos el historial de datos que recopilamos para impulsar la
             toma de decisiones por parte de gobierno, academia, sociedad civil y
             la ciudadanía en general.
           </p>
