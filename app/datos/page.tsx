@@ -84,7 +84,7 @@ export default function Datos() {
       {/* Datos */}
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
-        <h1 className="pt-6 text-2xl font-bold md:text-3xl">
+        <h1 className="pt-7 text-2xl font-bold md:text-3xl">
           Calidad del Aire
         </h1>
         {/* Descripción */}
@@ -228,7 +228,7 @@ export default function Datos() {
           </CardContent>
         </Card> */}
         {/* Descargar Datos*/}
-        <div className="flex justify-end pt-12">
+        <div className="flex justify-end pt-16">
           <Link
             target="_blank"
             href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
