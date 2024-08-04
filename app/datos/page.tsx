@@ -84,27 +84,22 @@ export default function Datos() {
       {/* Datos */}
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
-        <h1 className="py-4 text-2xl font-bold md:text-3xl lg:py-6">
-          Datos de Calidad del Aire
+        <h1 className="pt-6 text-2xl font-bold md:text-3xl">
+          Calidad del Aire
         </h1>
-        {/* Content */}
-        <div className="flex flex-col space-y-4 pr-2 pt-3 text-justify text-sm md:pr-0 md:text-base">
+        {/* Descripción */}
+        <div className="flex flex-col pt-6 text-justify text-sm md:pr-0 md:text-base">
           <p>
-            Aire Claro es un proyecto sin fines de lucro que brinda información
-            sobre la calidad del aire que respiramos.
-          </p>
-          <p>
-            Adicionalmente, buscamos impulsar la transparencia, la investigación
-            y la participación ciudadana en la toma de decisiones para reducir
-            la contaminación del aire. Por ello, ponemos a tu dispoción de forma
-            gratuita el historial de nuestros datos, prueba.
+            Publicamos el total de los datos que recopilamos para impulsar la
+            toma de decisiones por parte de gobierno, academia, sociedad civil y
+            la ciudadanía en general.
           </p>
         </div>
-        {/*Card*/}
-        <div className="flex gap-12 py-10">
+        {/*Indicadores*/}
+        <div className="flex gap-12 pt-12">
           <Card className="w-full">
             <CardHeader className="gap-1 text-center">
-              <CardTitle className="text-4xl">502,777</CardTitle>
+              <CardTitle className="text-4xl">510,000</CardTitle>
               <CardDescription>mediciones</CardDescription>
             </CardHeader>
           </Card>
@@ -233,7 +228,7 @@ export default function Datos() {
           </CardContent>
         </Card> */}
         {/* Descargar Datos*/}
-        <div className="flex justify-end py-10 pr-2 md:pr-0">
+        <div className="flex justify-end pt-12">
           <Link
             target="_blank"
             href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"

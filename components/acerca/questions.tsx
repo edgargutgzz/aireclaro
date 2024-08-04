@@ -10,7 +10,7 @@ export default function Questions() {
       answer: (
         <p>
           Aire Claro brinda información sobre la contaminación atmosférica en la
-          Zona Metropolitana de Monterrey.
+          Zona Metropolitana de Monterrey y Saltillo.
         </p>
       ),
     },
@@ -76,7 +76,7 @@ export default function Questions() {
               </a>
               {", "}organización de la sociedad civil líder en promover
               información sobre el estado, causas y efectos de la contaminación
-              del aire a nivel local.
+              del aire.
             </span>
           </p>
         </div>
@@ -152,7 +152,7 @@ export default function Questions() {
       {questions.map((q) => (
         <div
           key={q.question}
-          className="my-3 cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg md:text-base lg:my-4"
+          className="my-3 cursor-pointer rounded-lg bg-red-100 p-4 text-sm shadow-lg md:text-base lg:space-y-4"
           onClick={() => toggleQuestion(q.question)}
         >
           {/* Header */}
