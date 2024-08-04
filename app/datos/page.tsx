@@ -96,22 +96,22 @@ export default function Datos() {
           </p>
         </div>
         {/*Indicadores*/}
-        <div className="flex gap-12 pt-12">
+        <div className="flex flex-col gap-12 pt-12 text-center md:flex-row md:gap-12">
           <Card className="w-full">
-            <CardHeader className="gap-1 text-center">
-              <CardTitle className="text-4xl">510,000</CardTitle>
+            <CardHeader className="gap-1">
+              <CardTitle className="text-2xl md:text-4xl">510,000</CardTitle>
               <CardDescription>mediciones</CardDescription>
             </CardHeader>
           </Card>
           <Card className="w-full">
-            <CardHeader className="gap-1 text-center">
-              <CardTitle className="text-4xl">119</CardTitle>
+            <CardHeader className="gap-1">
+              <CardTitle className="text-2xl md:text-4xl">119</CardTitle>
               <CardDescription>sensores</CardDescription>
             </CardHeader>
           </Card>
           <Card className="w-full">
-            <CardHeader className="gap-1 text-center">
-              <CardTitle className="text-4xl">17</CardTitle>
+            <CardHeader className="gap-1">
+              <CardTitle className="text-2xl md:text-4xl">17</CardTitle>
               <CardDescription>municipios</CardDescription>
             </CardHeader>
           </Card>
