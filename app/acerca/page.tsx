@@ -8,7 +8,7 @@ export default function Acerca() {
       {/* Preguntas Frecuentes */}
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
-        <h1 className="pt-4 text-3xl font-bold md:pt-7">
+        <h1 className="pt-4 text-2xl font-bold md:pt-7">
           Preguntas Frecuentes
         </h1>
         {/* Questions */}
