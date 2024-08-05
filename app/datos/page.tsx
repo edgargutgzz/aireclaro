@@ -84,11 +84,11 @@ export default function Datos() {
       {/* Datos */}
       <div className="flex flex-col">
         {/* Header */}
-        <h1 className="pt-4 text-2xl font-bold md:pt-7 md:text-3xl">
+        <h1 className="pt-4 text-3xl font-bold md:pt-7 md:text-3xl">
           Calidad del Aire
         </h1>
         {/* Descripción */}
-        <div className="flex flex-col pt-6 text-justify text-sm md:pr-0 md:text-base">
+        <div className="flex flex-col pt-6 text-justify text-base">
           <p>
             Publicamos el historial de datos sobre la calidad del aire que
             respiramos para impulsar la toma de decisiones por parte de
