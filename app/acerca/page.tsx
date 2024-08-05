@@ -8,21 +8,21 @@ export default function Acerca() {
       {/* Preguntas Frecuentes */}
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
-        <h1 className="pt-4 text-2xl font-bold md:text-3xl lg:py-6">
+        <h1 className="pt-4 text-3xl font-bold md:pt-7">
           Preguntas Frecuentes
         </h1>
         {/* Questions */}
         <Questions />
       </div>
       {/* Equipo */}
-      <div className="mb-20 flex flex-col md:mb-32">
+      <div className="mb-20 flex flex-col md:mb-48">
         {/* Header */}
-        <h1 className="py-4 text-2xl font-bold md:text-3xl lg:py-6">Equipo</h1>
+        <h1 className="pt-7 text-3xl font-bold">Equipo</h1>
         {/* Integrantes */}
         <Equipo />
       </div>
       {/* Un proyecto del OCCAMM */}
-      <div className="flex items-center justify-center py-4 text-sm md:text-base lg:pb-12 lg:pt-6">
+      <div className="flex items-center justify-center text-sm md:text-base lg:pb-12">
         <div className="text-gray-400">Un proyecto del</div>
         <Image
           src="/logo-occamm.png"

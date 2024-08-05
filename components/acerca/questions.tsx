@@ -152,7 +152,7 @@ export default function Questions() {
       {questions.map((q) => (
         <div
           key={q.question}
-          className="my-3 cursor-pointer rounded-lg bg-red-100 p-4 text-sm shadow-lg md:text-base lg:space-y-4"
+          className="mt-8 cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg md:text-base"
           onClick={() => toggleQuestion(q.question)}
         >
           {/* Header */}
