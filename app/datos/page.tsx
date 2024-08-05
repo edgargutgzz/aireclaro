@@ -90,7 +90,7 @@ export default function Datos() {
           <p>
             Publicamos el historial de datos sobre la calidad del aire que
             respiramos para impulsar la toma de decisiones por parte de
-            gobierno, academia, sociedad civil y la ciudadanía en general.
+            gobierno, universidades, sociedad civil y la ciudadanía en general.
           </p>
         </div>
         {/*Indicadores*/}
