@@ -103,7 +103,7 @@ export default function Datos() {
           </Card>
           <Card className="w-full">
             <CardHeader className="gap-1">
-              <CardTitle className="text-3xl md:text-4xl">119</CardTitle>
+              <CardTitle className="text-3xl md:text-4xl">100</CardTitle>
               <CardDescription>sensores</CardDescription>
             </CardHeader>
           </Card>
