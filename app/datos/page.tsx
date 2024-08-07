@@ -97,7 +97,7 @@ export default function Datos() {
         <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12 md:pt-12">
           <Card className="w-full">
             <CardHeader className="gap-1">
-              <CardTitle className="text-3xl md:text-4xl">550,000</CardTitle>
+              <CardTitle className="text-3xl md:text-4xl">520,000</CardTitle>
               <CardDescription>mediciones</CardDescription>
             </CardHeader>
           </Card>
