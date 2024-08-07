@@ -109,7 +109,7 @@ export default function Datos() {
           </Card>
           <Card className="w-full">
             <CardHeader className="gap-1">
-              <CardTitle className="text-3xl md:text-4xl">17</CardTitle>
+              <CardTitle className="text-3xl md:text-4xl">19</CardTitle>
               <CardDescription>municipios</CardDescription>
             </CardHeader>
           </Card>
