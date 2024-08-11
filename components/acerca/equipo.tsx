@@ -9,22 +9,16 @@ export default function Equipo() {
       alt: "Selene Guajardo",
     },
     {
-      name: "Edgar Gutiérrez",
-      image: "/profile-edgar.jpeg",
-      puesto: "Diseño y Desarrollo de Aire Claro",
-      alt: "Edgar Gutiérrez",
-    },
-    {
       name: "Lucía Barrera",
       image: "/profile-lucia.JPG",
       puesto: "Miembro del Consejo Juvenil del OCCAMM",
       alt: "Lucía Barrera",
     },
     {
-      name: "Carlos R. García",
-      image: "/profile-carlos.jpg",
-      puesto: "Miembro del Consejo Juvenil del OCCAMM",
-      alt: "Carlos R. García",
+      name: "Edgar Gutiérrez",
+      image: "/profile-edgar.jpeg",
+      puesto: "Diseño y Desarrollo Web de Aire Claro",
+      alt: "Edgar Gutiérrez",
     },
   ];
   return (
