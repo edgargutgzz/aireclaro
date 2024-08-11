@@ -19,7 +19,15 @@ import {
 import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  ReferenceLine,
+  Label,
+} from "recharts";
 import * as React from "react";
 
 // PM25 data
@@ -58,14 +66,14 @@ const pm25Data = [
 ];
 
 const chartData = pm25Data.map((item) => ({
-  date: item.fecha, // Renaming 'fecha' to 'date'
+  date: item.fecha,
   pm25: item.pm25,
 }));
 
 const chartConfig = {
   pm25: {
-    label: "PM2.5",
-    color: "hsl(var(--chart-2))",
+    label: "pm25",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
@@ -134,55 +142,19 @@ export default function Datos() {
             <CardContent className="chart-container px-2 pt-4 sm:px-6 sm:pt-6">
               <ChartContainer
                 config={chartConfig}
-                className="aspect-auto h-[250px] w-full"
+                className="aspect-auto h-[300px] w-full"
               >
                 <AreaChart data={filteredData}>
                   <defs>
-                    <linearGradient
-                      id="fillDesktop"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
+                    <linearGradient id="fillpm25" x1="0" y1="0" x2="0" y2="1">
                       <stop
                         offset="5%"
-                        stopColor="hsl(var(--chart-1))"
+                        stopColor="var(--color-pm25)"
                         stopOpacity={0.8}
                       />
                       <stop
                         offset="95%"
-                        stopColor="hsl(var(--chart-1))"
-                        stopOpacity={0.1}
-                      />
-                    </linearGradient>
-                    <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="5%"
-                        stopColor="hsl(var(--chart-2))"
-                        stopOpacity={0.8}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="hsl(var(--chart-2))"
-                        stopOpacity={0.1}
-                      />
-                    </linearGradient>
-                    <linearGradient
-                      id="fillHumedad"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="5%"
-                        stopColor="hsl(var(--chart-3))"
-                        stopOpacity={0.8}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor="hsl(var(--chart-3))"
+                        stopColor="var(--color-pm25)"
                         stopOpacity={0.1}
                       />
                     </linearGradient>
@@ -220,12 +192,25 @@ export default function Datos() {
                     }
                   />
                   <Area
-                    dataKey="pm25" // Use pm25 as the data key
+                    dataKey="pm25"
                     type="natural"
-                    fill="url(#fillMobile)"
-                    stroke="hsl(var(--chart-2))"
+                    fill="url(#fillpm25)"
+                    stroke="var(--color-pm25)"
                     stackId="a"
                   />
+                  <ReferenceLine
+                    y={25}
+                    stroke="hsl(12 76% 61%)"
+                    style={{ stroke: "hsl(12 76% 61%)" }}
+                    strokeDasharray="3 3"
+                  >
+                    <Label
+                      value="Límite diario recomendado"
+                      position="top"
+                      fill="hsl(12 76% 61%)"
+                      style={{ textAnchor: "end" }}
+                    />
+                  </ReferenceLine>
                 </AreaChart>
               </ChartContainer>
             </CardContent>
