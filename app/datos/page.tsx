@@ -100,7 +100,7 @@ export default function Datos() {
           </Card>
         </div>
         {/*Chart*/}
-        <div className="pt-12">
+        {/* <div className="pt-12">
           <Card>
             <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
               <div className="grid flex-1 gap-1 text-center sm:text-left">
@@ -207,7 +207,7 @@ export default function Datos() {
               </ChartContainer>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
         {/* Descargar Datos*/}
         <div className="flex justify-end pt-16 md:pt-16">
           <Link
