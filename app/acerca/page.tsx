@@ -24,13 +24,19 @@ export default function Acerca() {
       {/* Un proyecto del OCCAMM */}
       <div className="flex items-center justify-center text-sm md:text-base lg:pb-12">
         <div className="text-gray-400">Un proyecto del</div>
-        <Image
-          src="/logo-occamm.png"
-          alt="Observatorio del Aire Logo"
-          width={150}
-          height={28}
-          className="ml-5 md:ml-7 md:h-[41px] md:w-[220px]"
-        />
+        <a
+          href="https://observatoriodelaire.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Image
+            src="/logo-occamm.png"
+            alt="Observatorio del Aire Logo"
+            width={150}
+            height={28}
+            className="ml-5 md:ml-7 md:h-[41px] md:w-[220px]"
+          />
+        </a>
       </div>
     </div>
   );
