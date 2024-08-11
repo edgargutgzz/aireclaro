@@ -22,25 +22,48 @@ import { track } from "@vercel/analytics";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import * as React from "react";
 
-const chartData: {
-  date: string;
-  mobile: number;
-}[] = [];
+// PM25 data
+const pm25Data = [
+  { fecha: "2024-07-01", pm25: 12 },
+  { fecha: "2024-07-02", pm25: 14 },
+  { fecha: "2024-07-03", pm25: 17 },
+  { fecha: "2024-07-04", pm25: 24 },
+  { fecha: "2024-07-05", pm25: 32 },
+  { fecha: "2024-07-06", pm25: 22 },
+  { fecha: "2024-07-07", pm25: 12 },
+  { fecha: "2024-07-08", pm25: 13 },
+  { fecha: "2024-07-09", pm25: 14 },
+  { fecha: "2024-07-10", pm25: 15 },
+  { fecha: "2024-07-11", pm25: 9 },
+  { fecha: "2024-07-12", pm25: 12 },
+  { fecha: "2024-07-13", pm25: 14 },
+  { fecha: "2024-07-14", pm25: 17 },
+  { fecha: "2024-07-15", pm25: 21 },
+  { fecha: "2024-07-16", pm25: 26 },
+  { fecha: "2024-07-17", pm25: 26 },
+  { fecha: "2024-07-18", pm25: 29 },
+  { fecha: "2024-07-19", pm25: 23 },
+  { fecha: "2024-07-20", pm25: 19 },
+  { fecha: "2024-07-21", pm25: 19 },
+  { fecha: "2024-07-22", pm25: 16 },
+  { fecha: "2024-07-23", pm25: 14 },
+  { fecha: "2024-07-24", pm25: 12 },
+  { fecha: "2024-07-25", pm25: 17 },
+  { fecha: "2024-07-26", pm25: 24 },
+  { fecha: "2024-07-27", pm25: 24 },
+  { fecha: "2024-07-28", pm25: 20 },
+  { fecha: "2024-07-29", pm25: 22 },
+  { fecha: "2024-07-30", pm25: 18 },
+  { fecha: "2024-07-31", pm25: 26 },
+];
 
-const startDate = new Date("2024-02-02T00:00:00Z"); // Start from February 2, 2024
-const endDate = new Date("2024-08-01T23:59:59Z"); // End at August 1, 2024
-let currentDate = new Date(startDate);
-
-while (currentDate <= endDate) {
-  chartData.push({
-    date: currentDate.toISOString().split("T")[0],
-    mobile: Math.floor(Math.random() * 500) + 50, // Random data for mobile
-  });
-  currentDate.setUTCDate(currentDate.getUTCDate() + 2); // Change step to every 2 days
-}
+const chartData = pm25Data.map((item) => ({
+  date: item.fecha, // Renaming 'fecha' to 'date'
+  pm25: item.pm25,
+}));
 
 const chartConfig = {
-  mobile: {
+  pm25: {
     label: "PM2.5",
     color: "hsl(var(--chart-2))",
   },
@@ -65,7 +88,7 @@ export default function Datos() {
   });
 
   return (
-    <div className="mx-4 flex min-h-screen flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-8 lg:pt-6">
+    <div className="mx-4 flex min-h-screen flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-20 lg:pt-6">
       {/* Datos */}
       <div className="flex flex-col">
         {/* Header */}
@@ -100,11 +123,11 @@ export default function Datos() {
           </Card>
         </div>
         {/*Chart*/}
-        {/* <div className="pt-12">
+        <div className="pt-12">
           <Card>
             <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
               <div className="grid flex-1 gap-1 text-center sm:text-left">
-                <CardTitle>Mediciones de Calidad del Aire</CardTitle>
+                <CardTitle>Mediciones</CardTitle>
                 <CardDescription>Concentración de PM2.5</CardDescription>
               </div>
             </CardHeader>
@@ -197,7 +220,7 @@ export default function Datos() {
                     }
                   />
                   <Area
-                    dataKey="mobile"
+                    dataKey="pm25" // Use pm25 as the data key
                     type="natural"
                     fill="url(#fillMobile)"
                     stroke="hsl(var(--chart-2))"
@@ -207,7 +230,7 @@ export default function Datos() {
               </ChartContainer>
             </CardContent>
           </Card>
-        </div> */}
+        </div>
         {/* Descargar Datos*/}
         <div className="flex justify-end pt-16 md:pt-16">
           <Link
