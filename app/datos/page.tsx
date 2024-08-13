@@ -76,23 +76,6 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function Datos() {
-  const [timeRange] = React.useState("90d");
-
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date);
-    const now = new Date();
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
-    }
-    now.setDate(now.getDate() - daysToSubtract);
-    const minDate = new Date("2024-02-02");
-    const maxDate = new Date("2024-08-01");
-    return date >= minDate && date <= maxDate;
-  });
-
   return (
     <div className="mx-4 flex min-h-screen flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-20 lg:pt-6">
       {/* Datos */}
@@ -144,7 +127,7 @@ export default function Datos() {
                 config={chartConfig}
                 className="aspect-auto h-[300px] w-full"
               >
-                <AreaChart data={filteredData}>
+                <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="fillpm25" x1="0" y1="0" x2="0" y2="1">
                       <stop
