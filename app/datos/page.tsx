@@ -205,10 +205,10 @@ export default function Datos() {
                     strokeDasharray="3 3"
                   >
                     <Label
-                      value="Límite recomendado (Norma Mexicana de Salud)"
+                      value="Límite diario (Norma Mexicana de Salud)"
                       position="top"
                       fill="hsl(12 76% 61%)"
-                      style={{ textAnchor: "end" }}
+                      style={{ textAnchor: "middle" }}
                     />
                   </ReferenceLine>
                   <ReferenceLine
@@ -218,10 +218,10 @@ export default function Datos() {
                     strokeDasharray="3 3"
                   >
                     <Label
-                      value="Límite recomendado (Organización Mundial de la Salud)"
+                      value="Límite diario (Organización Mundial de la Salud)"
                       position="top"
                       fill="hsl(12 76% 61%)"
-                      style={{ textAnchor: "end" }}
+                      style={{ textAnchor: "middle" }}
                     />
                   </ReferenceLine>
                 </AreaChart>
