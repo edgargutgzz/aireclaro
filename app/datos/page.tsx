@@ -11,8 +11,6 @@ import {
 import {
   ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
@@ -30,7 +28,7 @@ import {
 } from "recharts";
 import * as React from "react";
 
-// PM25 data
+// Line graph data
 const pm25Data = [
   { fecha: "2024-07-01", pm25: 12 },
   { fecha: "2024-07-02", pm25: 14 },
@@ -136,7 +134,9 @@ export default function Datos() {
             <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
               <div className="grid flex-1 gap-1 text-center sm:text-left">
                 <CardTitle>Mediciones</CardTitle>
-                <CardDescription>Concentración de PM2.5</CardDescription>
+                <CardDescription>
+                  Concentración de PM2.5 en Nuevo León
+                </CardDescription>
               </div>
             </CardHeader>
             <CardContent className="chart-container px-2 pt-4 sm:px-6 sm:pt-6">
@@ -205,7 +205,20 @@ export default function Datos() {
                     strokeDasharray="3 3"
                   >
                     <Label
-                      value="Límite diario recomendado"
+                      value="Límite recomendado (Norma Mexicana de Salud)"
+                      position="top"
+                      fill="hsl(12 76% 61%)"
+                      style={{ textAnchor: "end" }}
+                    />
+                  </ReferenceLine>
+                  <ReferenceLine
+                    y={15}
+                    stroke="hsl(12 76% 61%)"
+                    style={{ stroke: "hsl(12 76% 61%)" }}
+                    strokeDasharray="3 3"
+                  >
+                    <Label
+                      value="Límite recomendado (Organización Mundial de la Salud)"
                       position="top"
                       fill="hsl(12 76% 61%)"
                       style={{ textAnchor: "end" }}
