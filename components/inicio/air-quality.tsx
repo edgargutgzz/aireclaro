@@ -112,42 +112,39 @@ export default function AirQuality({
 
   // Fetch the user's current latitude and longitude
   useEffect(() => {
-    // Check if the browser supports geolocation
     if (navigator.geolocation) {
-      // Request the user's current position
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Success callback: extracting latitude and longitude from the position object
           const { latitude, longitude } = position.coords;
 
-          // Update the state with the obtained coordinates and set loading to false
+          // Update the state with location, fetch address, and set loading to false
           setState((prevState) => ({
             ...prevState,
             location: { latitude, longitude },
             loading: false,
           }));
 
-          // Fetch the address for the given coordinates
+          // Fetch the address after setting the state
           fetchAddress(latitude, longitude);
         },
         () => {
-          // Error callback: if obtaining the position fails, update the state with an error message
+          // Error callback: update the state with an error message
           setState((prevState) => ({
             ...prevState,
-            error: "Ubicación no disponible", // Location not available
+            error: "Ubicación no disponible",
             loading: false,
           }));
         },
       );
     } else {
-      // If the browser does not support geolocation, update the state with an error message
+      // If geolocation is not supported, update the state with an error message
       setState((prevState) => ({
         ...prevState,
-        error: "Ubicación no disponible", // Location not available
+        error: "Ubicación no disponible",
         loading: false,
       }));
     }
-  }, [fetchAddress]); // Dependency array ensures this effect runs only once on mount
+  }, [fetchAddress]);
 
   // Calculate the distance between two sets of coordinates
   const getDistance = useCallback(
