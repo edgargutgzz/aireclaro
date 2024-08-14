@@ -5,6 +5,7 @@ import SkeletonGeneral from "./skeleton-general";
 import SkeletonSensible from "./skeleton-sensible";
 import { format } from "date-fns";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
+import React from "react";
 
 // Sensor interface
 interface Sensor {
@@ -49,7 +50,7 @@ const geocodingClient = mbxGeocoding({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
 });
 
-export default function AirQuality({
+const AirQuality = React.memo(function AirQuality({
   sensors,
   data,
   showMenoresRecommendation = false,
@@ -449,4 +450,6 @@ export default function AirQuality({
       )}
     </>
   );
-}
+});
+
+export default AirQuality;
