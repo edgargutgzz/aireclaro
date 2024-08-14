@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
-import SkeletonGeneral from "./skeleton-general";
-import SkeletonSensible from "./skeleton-sensible";
+import { useEffect, useState, useCallback, useMemo, lazy } from "react";
+// Lazy load skeleton components
+const SkeletonGeneral = lazy(() => import("./skeleton-general"));
+const SkeletonSensible = lazy(() => import("./skeleton-sensible"));
 import { format } from "date-fns";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 
