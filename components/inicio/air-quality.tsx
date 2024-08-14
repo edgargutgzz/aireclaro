@@ -36,6 +36,24 @@ interface AirQualityProps {
   showTime?: boolean;
 }
 
+interface Location {
+  latitude: number | null;
+  longitude: number | null;
+}
+
+interface AirQuality {
+  pm25: number | null;
+  timestamp: string | null;
+}
+
+interface AirQualityState {
+  location: Location;
+  airQuality: AirQuality;
+  address: string | null;
+  error: string | null;
+  loading: boolean;
+}
+
 // Type for the air quality text
 type QualityText =
   | "Buena"
@@ -50,6 +68,9 @@ const geocodingClient = mbxGeocoding({
   accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
 });
 
+// Create a cache object
+const addressCache = new Map<string, string>();
+
 const AirQuality = React.memo(function AirQuality({
   sensors,
   data,
@@ -61,23 +82,35 @@ const AirQuality = React.memo(function AirQuality({
   showTime = false,
 }: AirQualityProps) {
   // Consolidated state for location, air quality data, error, and loading status
-  const [state, setState] = useState({
+  const [state, setState] = useState<AirQualityState>({
     location: {
-      latitude: null as number | null,
-      longitude: null as number | null,
+      latitude: null,
+      longitude: null,
     },
     airQuality: {
-      pm25: null as number | null,
-      timestamp: null as string | null,
+      pm25: null,
+      timestamp: null,
     },
-    address: null as string | null,
-    error: null as string | null,
+    address: null,
+    error: null,
     loading: true,
   });
 
   // Fetch the user's current address based on latitude and longitude from the use effect hook below
   const fetchAddress = useCallback(
     async (latitude: number, longitude: number): Promise<void> => {
+      // Create a cache key based on the coordinates
+      const cacheKey = `${latitude},${longitude}`;
+
+      // Check if the address is already cached
+      if (addressCache.has(cacheKey)) {
+        setState((prevState) => ({
+          ...prevState,
+          address: addressCache.get(cacheKey) || null, // Ensure the address is never undefined
+        }));
+        return;
+      }
+
       try {
         // Make a request to the geocoding service with the given coordinates
         const response = await geocodingClient
@@ -89,10 +122,13 @@ const AirQuality = React.memo(function AirQuality({
 
         // If the response contains at least one feature, update the state with the place name
         if (response.body.features.length > 0) {
+          const placeName = response.body.features[0].place_name;
           setState((prevState) => ({
             ...prevState,
-            address: response.body.features[0].place_name, // Update state with the address
+            address: placeName, // Update state with the address
           }));
+          // Cache the result
+          addressCache.set(cacheKey, placeName);
         } else {
           // If no features are found, update the state with a default message
           setState((prevState) => ({
