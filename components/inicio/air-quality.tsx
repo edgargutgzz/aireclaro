@@ -64,14 +64,6 @@ type QualityText =
   | "Extremadamente Mala"
   | "No Disponible";
 
-// Geocoding client
-const geocodingClient = mbxGeocoding({
-  accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
-});
-
-// Create a cache object
-const addressCache = new Map<string, string>();
-
 const AirQuality = React.memo(function AirQuality({
   sensors,
   data,
