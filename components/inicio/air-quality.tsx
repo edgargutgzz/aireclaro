@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { useAddress } from "../../hooks/useAddress";
 import SkeletonGeneral from "./skeleton-general";
 import SkeletonSensible from "./skeleton-sensible";
 import { format } from "date-fns";
-import React from "react";
+import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 
 // Sensor interface
 interface Sensor {
@@ -36,24 +35,6 @@ interface AirQualityProps {
   showTime?: boolean;
 }
 
-interface Location {
-  latitude: number | null;
-  longitude: number | null;
-}
-
-interface AirQuality {
-  pm25: number | null;
-  timestamp: string | null;
-}
-
-interface AirQualityState {
-  location: Location;
-  airQuality: AirQuality;
-  address: string | null;
-  error: string | null;
-  loading: boolean;
-}
-
 // Type for the air quality text
 type QualityText =
   | "Buena"
@@ -63,7 +44,12 @@ type QualityText =
   | "Extremadamente Mala"
   | "No Disponible";
 
-const AirQuality = React.memo(function AirQuality({
+// Geocoding client
+const geocodingClient = mbxGeocoding({
+  accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
+});
+
+export default function AirQuality({
   sensors,
   data,
   showMenoresRecommendation = false,
@@ -74,55 +60,94 @@ const AirQuality = React.memo(function AirQuality({
   showTime = false,
 }: AirQualityProps) {
   // Consolidated state for location, air quality data, error, and loading status
-  const [state, setState] = useState<AirQualityState>({
+  const [state, setState] = useState({
     location: {
-      latitude: null,
-      longitude: null,
+      latitude: null as number | null,
+      longitude: null as number | null,
     },
     airQuality: {
-      pm25: null,
-      timestamp: null,
+      pm25: null as number | null,
+      timestamp: null as string | null,
     },
-    address: null,
-    error: null,
+    address: null as string | null,
+    error: null as string | null,
     loading: true,
   });
 
+  // Fetch the user's current address based on latitude and longitude from the use effect hook below
+  const fetchAddress = useCallback(
+    async (latitude: number, longitude: number): Promise<void> => {
+      try {
+        // Make a request to the geocoding service with the given coordinates
+        const response = await geocodingClient
+          .reverseGeocode({
+            query: [longitude, latitude], // Provide the coordinates
+            limit: 1, // Limit the response to 1 result
+          })
+          .send(); // Send the request and await the response
+
+        // If the response contains at least one feature, update the state with the place name
+        if (response.body.features.length > 0) {
+          setState((prevState) => ({
+            ...prevState,
+            address: response.body.features[0].place_name, // Update state with the address
+          }));
+        } else {
+          // If no features are found, update the state with a default message
+          setState((prevState) => ({
+            ...prevState,
+            address: "Dirección no disponible", // Address not available
+          }));
+        }
+      } catch {
+        // If an error occurs during the request, update the state with an error message
+        setState((prevState) => ({
+          ...prevState,
+          address: "Error al obtener la dirección", // Error obtaining the address
+        }));
+      }
+    },
+    [], // Empty dependency array means this function is created once and won't change
+  );
+
   // Fetch the user's current latitude and longitude
   useEffect(() => {
+    // Check if the browser supports geolocation
     if (navigator.geolocation) {
+      // Request the user's current position
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          // Success callback: extracting latitude and longitude from the position object
           const { latitude, longitude } = position.coords;
 
+          // Update the state with the obtained coordinates and set loading to false
           setState((prevState) => ({
             ...prevState,
             location: { latitude, longitude },
             loading: false,
           }));
+
+          // Fetch the address for the given coordinates
+          fetchAddress(latitude, longitude);
         },
         () => {
+          // Error callback: if obtaining the position fails, update the state with an error message
           setState((prevState) => ({
             ...prevState,
-            error: "Ubicación no disponible",
+            error: "Ubicación no disponible", // Location not available
             loading: false,
           }));
         },
       );
     } else {
+      // If the browser does not support geolocation, update the state with an error message
       setState((prevState) => ({
         ...prevState,
-        error: "Ubicación no disponible",
+        error: "Ubicación no disponible", // Location not available
         loading: false,
       }));
     }
-  }, []);
-
-  const { location } = state;
-  const { address, error: addressError } = useAddress(
-    location.latitude,
-    location.longitude,
-  );
+  }, [fetchAddress]); // Dependency array ensures this effect runs only once on mount
 
   // Calculate the distance between two sets of coordinates
   const getDistance = useCallback(
@@ -427,6 +452,4 @@ const AirQuality = React.memo(function AirQuality({
       )}
     </>
   );
-});
-
-export default AirQuality;
+}
