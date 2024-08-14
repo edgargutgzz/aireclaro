@@ -5,7 +5,6 @@ import { useAddress } from "../../hooks/useAddress";
 import SkeletonGeneral from "./skeleton-general";
 import SkeletonSensible from "./skeleton-sensible";
 import { format } from "date-fns";
-import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 import React from "react";
 
 // Sensor interface
