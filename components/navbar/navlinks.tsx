@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Home, Map, Database, Info } from "lucide-react"; // Import the specific icons
+import { Home, Map, Database, Info } from "lucide-react";
 
 export default function Navlinks() {
   const pathname = usePathname();

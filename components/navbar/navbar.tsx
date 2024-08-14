@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Navlinks from "@/components/navlinks";
+import Navlinks from "@/components/navbar/navlinks";
 
 export default function Navbar() {
   return (
