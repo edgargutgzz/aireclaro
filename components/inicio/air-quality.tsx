@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useAddress } from "../../hooks/useAddress";
 import SkeletonGeneral from "./skeleton-general";
 import SkeletonSensible from "./skeleton-sensible";
 import { format } from "date-fns";
@@ -96,57 +97,6 @@ const AirQuality = React.memo(function AirQuality({
     loading: true,
   });
 
-  // Fetch the user's current address based on latitude and longitude from the use effect hook below
-  const fetchAddress = useCallback(
-    async (latitude: number, longitude: number): Promise<void> => {
-      // Create a cache key based on the coordinates
-      const cacheKey = `${latitude},${longitude}`;
-
-      // Check if the address is already cached
-      if (addressCache.has(cacheKey)) {
-        setState((prevState) => ({
-          ...prevState,
-          address: addressCache.get(cacheKey) || null, // Ensure the address is never undefined
-        }));
-        return;
-      }
-
-      try {
-        // Make a request to the geocoding service with the given coordinates
-        const response = await geocodingClient
-          .reverseGeocode({
-            query: [longitude, latitude], // Provide the coordinates
-            limit: 1, // Limit the response to 1 result
-          })
-          .send(); // Send the request and await the response
-
-        // If the response contains at least one feature, update the state with the place name
-        if (response.body.features.length > 0) {
-          const placeName = response.body.features[0].place_name;
-          setState((prevState) => ({
-            ...prevState,
-            address: placeName, // Update state with the address
-          }));
-          // Cache the result
-          addressCache.set(cacheKey, placeName);
-        } else {
-          // If no features are found, update the state with a default message
-          setState((prevState) => ({
-            ...prevState,
-            address: "Dirección no disponible", // Address not available
-          }));
-        }
-      } catch {
-        // If an error occurs during the request, update the state with an error message
-        setState((prevState) => ({
-          ...prevState,
-          address: "Error al obtener la dirección", // Error obtaining the address
-        }));
-      }
-    },
-    [], // Empty dependency array means this function is created once and won't change
-  );
-
   // Fetch the user's current latitude and longitude
   useEffect(() => {
     if (navigator.geolocation) {
@@ -154,18 +104,13 @@ const AirQuality = React.memo(function AirQuality({
         (position) => {
           const { latitude, longitude } = position.coords;
 
-          // Update the state with location, fetch address, and set loading to false
           setState((prevState) => ({
             ...prevState,
             location: { latitude, longitude },
             loading: false,
           }));
-
-          // Fetch the address after setting the state
-          fetchAddress(latitude, longitude);
         },
         () => {
-          // Error callback: update the state with an error message
           setState((prevState) => ({
             ...prevState,
             error: "Ubicación no disponible",
@@ -174,14 +119,19 @@ const AirQuality = React.memo(function AirQuality({
         },
       );
     } else {
-      // If geolocation is not supported, update the state with an error message
       setState((prevState) => ({
         ...prevState,
         error: "Ubicación no disponible",
         loading: false,
       }));
     }
-  }, [fetchAddress]);
+  }, []);
+
+  const { location } = state;
+  const { address, error: addressError } = useAddress(
+    location.latitude,
+    location.longitude,
+  );
 
   // Calculate the distance between two sets of coordinates
   const getDistance = useCallback(
