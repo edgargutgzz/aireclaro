@@ -7,13 +7,10 @@ import Image from "next/image";
 import { Navigation, Clock } from "lucide-react";
 
 export default async function Inicio() {
-  const [purpleAirSensors, purpleAirData, simaSensors, simaData] =
-    await Promise.all([
-      PurpleAirSensors(),
-      PurpleAirData(),
-      SimaSensors(),
-      SimaData(),
-    ]);
+  const purpleAirSensors = await PurpleAirSensors();
+  const purpleAirData = await PurpleAirData();
+  const simaSensors = await SimaSensors();
+  const simaData = await SimaData();
 
   // Combine sensors from both sources
   const sensors = [...purpleAirSensors, ...simaSensors];
