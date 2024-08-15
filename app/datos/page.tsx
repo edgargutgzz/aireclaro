@@ -81,14 +81,31 @@ export default function Datos() {
       {/* Datos */}
       <div className="flex flex-col">
         {/* Header */}
-        <h1 className="pt-4 text-3xl font-bold md:pt-7">Calidad del Aire</h1>
-        {/* Descripción */}
-        <div className="flex flex-col pt-6 text-justify text-base">
-          <p>
-            Publicamos el historial de datos sobre la calidad del aire que
-            respiramos para impulsar la toma de decisiones por parte de
-            gobierno, universidades, sociedad civil y la ciudadanía en general.
+        <h1 className="pt-4 text-3xl font-bold md:pt-7">
+          Datos de Calidad del Aire
+        </h1>
+        {/* Descripción y Descargar datos */}
+        <div className="flex items-center pt-8">
+          <p className="w-2/3">
+            Descarga el historial de datos, desde julio 2023 a julio 2024, sobre
+            la calidad del aire que respiramos en la Zona Metropolitana de
+            Monterrey y Saltillo.
           </p>
+          <div className="flex w-1/3 justify-end">
+            <Link
+              target="_blank"
+              href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
+            >
+              <Button
+                onClick={() => {
+                  track("Ir a Google Drive clicked");
+                }}
+              >
+                Descargar datos
+                <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
         {/*Indicadores*/}
         <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12 md:pt-12">
@@ -196,14 +213,14 @@ export default function Datos() {
                   </ReferenceLine>
                   <ReferenceLine
                     y={15}
-                    stroke="hsl(12 76% 61%)"
-                    style={{ stroke: "hsl(12 76% 61%)" }}
+                    stroke="hsl(221.2 83.2% 53.3%)"
+                    style={{ stroke: "hsl(221.2 83.2% 53.3%)" }}
                     strokeDasharray="3 3"
                   >
                     <Label
                       value="Límite diario (Organización Mundial de la Salud)"
                       position="top"
-                      fill="hsl(12 76% 61%)"
+                      fill="hsl(221.2 83.2% 53.3%)"
                       style={{ textAnchor: "middle" }}
                     />
                   </ReferenceLine>
@@ -211,21 +228,6 @@ export default function Datos() {
               </ChartContainer>
             </CardContent>
           </Card>
-        </div>
-        {/* Descargar Datos*/}
-        <div className="flex justify-end pt-16 md:pt-16">
-          <Link
-            target="_blank"
-            href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
-          >
-            <Button
-              onClick={() => {
-                track("Ir a Google Drive clicked");
-              }}
-            >
-              Descargar datos <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
         </div>
       </div>
     </div>
