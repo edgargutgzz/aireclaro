@@ -81,7 +81,7 @@ export default function Datos() {
       {/* Datos */}
       <div className="flex flex-col">
         {/* Header */}
-        <h1 className="pt-4 text-center text-3xl font-bold md:pt-7 md:text-left">
+        <h1 className="pt-4 text-3xl font-bold md:pt-7">
           Datos de Calidad del Aire
         </h1>
         {/* Descripción y Descargar datos */}
@@ -91,7 +91,7 @@ export default function Datos() {
             la calidad del aire que respiramos en la Zona Metropolitana de
             Monterrey y Saltillo.
           </p>
-          <div className="mt-4 flex w-full justify-center pt-4 md:mt-0 md:w-1/3 md:justify-end">
+          <div className="flex w-full justify-center pt-12 md:mt-0 md:w-1/3 md:justify-end">
             <Link
               target="_blank"
               href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
@@ -107,7 +107,6 @@ export default function Datos() {
             </Link>
           </div>
         </div>
-
         {/*Indicadores*/}
         <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12 md:pt-12">
           <Card className="w-full">
