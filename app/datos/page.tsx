@@ -205,7 +205,7 @@ export default function Datos() {
                     strokeDasharray="3 3"
                   >
                     <Label
-                      value="Límite diario (Norma Mexicana de Salud)"
+                      value="Límite diario (Norma Mexicana Salud)"
                       position="top"
                       fill="hsl(12 76% 61%)"
                       style={{ textAnchor: "middle" }}
@@ -218,7 +218,7 @@ export default function Datos() {
                     strokeDasharray="3 3"
                   >
                     <Label
-                      value="Límite diario (Organización Mundial de la Salud)"
+                      value="Límite diario (Organización Mundial de Salud)"
                       position="top"
                       fill="hsl(221.2 83.2% 53.3%)"
                       style={{ textAnchor: "middle" }}
