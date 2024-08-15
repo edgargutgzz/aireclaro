@@ -86,7 +86,7 @@ export default function Datos() {
         </h1>
         {/* Descripción y Descargar datos */}
         <div className="flex flex-col items-center pt-6 md:flex-row md:items-center">
-          <p className="w-full text-justify md:w-2/3 md:pr-4">
+          <p className="w-full text-justify md:w-2/3">
             Descarga el historial de datos, desde julio 2023 a julio 2024, sobre
             la calidad del aire que respiramos en la Zona Metropolitana de
             Monterrey y Saltillo.
