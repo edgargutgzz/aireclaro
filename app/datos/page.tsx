@@ -107,7 +107,6 @@ export default function Datos() {
             </Link>
           </div>
         </div>
-
         {/*Indicadores*/}
         <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12 md:pt-12">
           <Card className="w-full">
