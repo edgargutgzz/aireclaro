@@ -112,6 +112,11 @@ export default function AirQuality({
 
   // Fetch the user's current latitude and longitude
   useEffect(() => {
+    const defaultLocation = {
+      latitude: 25.686670039553142,
+      longitude: -100.31669036697983,
+    };
+
     // Check if the browser supports geolocation
     if (navigator.geolocation) {
       // Request the user's current position
@@ -131,23 +136,30 @@ export default function AirQuality({
           fetchAddress(latitude, longitude);
         },
         () => {
-          // Error callback: if obtaining the position fails, update the state with an error message
+          // If user denies location access or an error occurs, use the default location
           setState((prevState) => ({
             ...prevState,
-            error: "Ubicación no disponible", // Location not available
+            location: defaultLocation,
             loading: false,
           }));
+
+          // Fetch the address for the default location
+          fetchAddress(defaultLocation.latitude, defaultLocation.longitude);
         },
       );
     } else {
-      // If the browser does not support geolocation, update the state with an error message
+      // If the browser does not support geolocation, use default location
       setState((prevState) => ({
         ...prevState,
-        error: "Ubicación no disponible", // Location not available
+        location: defaultLocation,
         loading: false,
       }));
+
+      // Fetch the address for the default location
+      fetchAddress(defaultLocation.latitude, defaultLocation.longitude);
     }
-  }, [fetchAddress]); // Dependency array ensures this effect runs only once on mount
+  }, [fetchAddress]);
+  // Dependency array ensures this effect runs only once on mount
 
   // Calculate the distance between two sets of coordinates
   const getDistance = useCallback(
