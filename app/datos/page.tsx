@@ -85,13 +85,13 @@ export default function Datos() {
           Datos de Calidad del Aire
         </h1>
         {/* Descripción y Descargar datos */}
-        <div className="flex flex-col items-center pt-6 md:flex-row">
-          <p className="w-full text-justify md:w-2/3">
+        <div className="flex flex-col items-center pt-6 md:flex-row md:items-center">
+          <p className="w-full text-justify md:w-2/3 md:pr-4">
             Descarga el historial de datos, desde julio 2023 a julio 2024, sobre
             la calidad del aire que respiramos en la Zona Metropolitana de
             Monterrey y Saltillo.
           </p>
-          <div className="flex w-full justify-start pt-8 md:mt-0 md:w-1/3 md:justify-end">
+          <div className="flex w-full justify-start pt-8 md:w-1/3 md:justify-end md:pt-0">
             <Link
               target="_blank"
               href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
@@ -107,6 +107,7 @@ export default function Datos() {
             </Link>
           </div>
         </div>
+
         {/*Indicadores*/}
         <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12 md:pt-12">
           <Card className="w-full">
