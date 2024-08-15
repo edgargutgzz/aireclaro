@@ -91,7 +91,7 @@ export default function Datos() {
             la calidad del aire que respiramos en la Zona Metropolitana de
             Monterrey y Saltillo.
           </p>
-          <div className="flex w-full justify-start pt-4 md:mt-0 md:w-1/3 md:justify-end">
+          <div className="flex w-full justify-start pt-6 md:mt-0 md:w-1/3 md:justify-end">
             <Link
               target="_blank"
               href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
