@@ -85,13 +85,13 @@ export default function Datos() {
           Datos de Calidad del Aire
         </h1>
         {/* Descripción y Descargar datos */}
-        <div className="flex flex-col items-center pt-4 md:flex-row">
+        <div className="flex flex-col items-center pt-6 md:flex-row">
           <p className="w-full text-justify md:w-2/3">
             Descarga el historial de datos, desde julio 2023 a julio 2024, sobre
             la calidad del aire que respiramos en la Zona Metropolitana de
             Monterrey y Saltillo.
           </p>
-          <div className="flex w-full justify-start pt-6 md:mt-0 md:w-1/3 md:justify-end">
+          <div className="flex w-full justify-start pt-8 md:mt-0 md:w-1/3 md:justify-end">
             <Link
               target="_blank"
               href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
@@ -205,7 +205,7 @@ export default function Datos() {
                     strokeDasharray="3 3"
                   >
                     <Label
-                      value="Límite diario (Norma Mexicana Salud)"
+                      value="Límite diario (Norma Mexicana de Salud)"
                       position="top"
                       fill="hsl(12 76% 61%)"
                       style={{ textAnchor: "middle" }}
