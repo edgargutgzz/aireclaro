@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import debounce from "lodash.debounce";
 import SkeletonGeneral from "./skeleton-general";
 import SkeletonSensible from "./skeleton-sensible";
-import { format } from "date-fns/format";
+import { format } from "date-fns";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 
 // Sensor interface
@@ -80,59 +81,62 @@ export default function AirQuality({
     longitude: number | null;
   }>({ latitude: null, longitude: null });
 
-  // Fetch the user's current address based on latitude and longitude from the use effect hook below
-  const fetchAddress = useCallback(
-    async (latitude: number, longitude: number): Promise<void> => {
-      try {
-        // Make a request to the geocoding service with the given coordinates
-        const response = await geocodingClient
-          .reverseGeocode({
-            query: [longitude, latitude], // Provide the coordinates
-            limit: 1, // Limit the response to 1 result
-          })
-          .send(); // Send the request and await the response
+  // Define the debounced function outside of the component
+const debouncedFetchAddress = debounce(async (latitude: number, longitude: number, setState: React.Dispatch<React.SetStateAction<any>>) => {
+  try {
+    const response = await geocodingClient
+      .reverseGeocode({
+        query: [longitude, latitude],
+        limit: 1,
+      })
+      .send();
 
-        // If the response contains at least one feature, update the state with the place name
-        if (response.body.features.length > 0) {
-          setState((prevState) => ({
-            ...prevState,
-            address: response.body.features[0].place_name, // Update state with the address
-          }));
-        } else {
-          // If no features are found, update the state with a default message
-          setState((prevState) => ({
-            ...prevState,
-            address: "Dirección no disponible", // Address not available
-          }));
-        }
-      } catch {
-        // If an error occurs during the request, update the state with an error message
-        setState((prevState) => ({
-          ...prevState,
-          address: "Error al obtener la dirección", // Error obtaining the address
-        }));
-      }
-    },
-    [], // Empty dependency array means this function is created once and won't change
-  );
+    if (response.body.features.length > 0) {
+      setState((prevState: typeof state) => ({
+        ...prevState,
+        address: response.body.features[0].place_name,
+      }));
+    } else {
+      setState((prevState: typeof state) => ({
+        ...prevState,
+        address: "Dirección no disponible",
+      }));
+    }
+  } catch {
+    setState((prevState: typeof state) => ({
+      ...prevState,
+      address: "Error al obtener la dirección",
+    }));
+  }
+}, 300); // Adjust debounce time as needed
 
-  // Function to handle location change
-  const handleLocationChange = useCallback(
-    (latitude: number, longitude: number) => {
-      // Check if the location has changed
-      if (
-        lastKnownLocation.latitude !== latitude ||
-        lastKnownLocation.longitude !== longitude
-      ) {
-        // Update the last known location
-        setLastKnownLocation({ latitude, longitude });
+// Use useCallback for the actual callback, not for the debounced function
+const fetchAddress = useCallback(
+  (latitude: number, longitude: number) => {
+    debouncedFetchAddress(latitude, longitude, setState);
+  },
+  [] // No dependencies needed here since debouncedFetchAddress is defined outside
+);
 
-        // Fetch the address for the new location
-        fetchAddress(latitude, longitude);
-      }
-    },
-    [fetchAddress, lastKnownLocation],
-  );
+
+// Function to handle location change
+const handleLocationChange = useCallback(
+  (latitude: number, longitude: number) => {
+    const hasLocationChanged =
+      lastKnownLocation.latitude !== latitude ||
+      lastKnownLocation.longitude !== longitude;
+
+    if (hasLocationChanged) {
+      // Update the last known location
+      setLastKnownLocation({ latitude, longitude });
+
+      // Trigger the debounced fetch function
+      fetchAddress(latitude, longitude);
+    }
+  },
+  [lastKnownLocation, fetchAddress]
+);
+  
 
   // Fetch the user's current latitude and longitude
   useEffect(() => {
