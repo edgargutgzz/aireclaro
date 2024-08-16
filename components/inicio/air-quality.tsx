@@ -206,7 +206,7 @@ export default function AirQuality({
       state.location.longitude !== null &&
       sensors.length > 0
     ) {
-      return [...sensors].sort((a, b) => {
+      return sensors.slice().sort((a, b) => {
         const aDistance = getDistance(
           state.location.latitude!,
           state.location.longitude!,
@@ -223,7 +223,7 @@ export default function AirQuality({
       });
     }
     return [];
-  }, [state.location, sensors, getDistance]);
+  }, [state.location.latitude, state.location.longitude, sensors, getDistance]);
 
   // Find the pm25 and timestamp value for the closest sensor
   useEffect(() => {
