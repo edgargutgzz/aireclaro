@@ -1,27 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import debounce from "lodash.debounce";
+import SkeletonGeneral from "./skeleton-general";
+import SkeletonSensible from "./skeleton-sensible";
+import { format } from "date-fns";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
-
-// Dynamically import sub-components
-const AirQualityTitle = dynamic(() => import("./AirQualityTitle"), {
-  ssr: false,
-});
-
-const AirQualityRecommendation = dynamic(
-  () => import("./AirQualityRecommendation"),
-  { ssr: false }
-);
-
-const AirQualityBar = dynamic(() => import("./AirQualityBar"), { ssr: false });
-const AirQualityAddress = dynamic(() => import("./AirQualityAddress"), {
-  ssr: false,
-});
-const AirQualityTime = dynamic(() => import("./AirQualityTime"), {
-  ssr: false,
-});
 
 // Sensor interface
 interface Sensor {
@@ -91,68 +74,41 @@ export default function AirQuality({
     loading: true,
   });
 
-  // State to track the last known location
-  const [lastKnownLocation, setLastKnownLocation] = useState<{
-    latitude: number | null;
-    longitude: number | null;
-  }>({ latitude: null, longitude: null });
+  // Fetch the user's current address based on latitude and longitude from the use effect hook below
+  const fetchAddress = useCallback(
+    async (latitude: number, longitude: number): Promise<void> => {
+      try {
+        // Make a request to the geocoding service with the given coordinates
+        const response = await geocodingClient
+          .reverseGeocode({
+            query: [longitude, latitude], // Provide the coordinates
+            limit: 1, // Limit the response to 1 result
+          })
+          .send(); // Send the request and await the response
 
-  // Define the debounced function outside of the component
-const debouncedFetchAddress = debounce(async (latitude: number, longitude: number, setState: React.Dispatch<React.SetStateAction<any>>) => {
-  try {
-    const response = await geocodingClient
-      .reverseGeocode({
-        query: [longitude, latitude],
-        limit: 1,
-      })
-      .send();
-
-    if (response.body.features.length > 0) {
-      setState((prevState: typeof state) => ({
-        ...prevState,
-        address: response.body.features[0].place_name,
-      }));
-    } else {
-      setState((prevState: typeof state) => ({
-        ...prevState,
-        address: "Dirección no disponible",
-      }));
-    }
-  } catch {
-    setState((prevState: typeof state) => ({
-      ...prevState,
-      address: "Error al obtener la dirección",
-    }));
-  }
-}, 300); // Adjust debounce time as needed
-
-// Use useCallback for the actual callback, not for the debounced function
-const fetchAddress = useCallback(
-  (latitude: number, longitude: number) => {
-    debouncedFetchAddress(latitude, longitude, setState);
-  },
-  [] // No dependencies needed here since debouncedFetchAddress is defined outside
-);
-
-
-// Function to handle location change
-const handleLocationChange = useCallback(
-  (latitude: number, longitude: number) => {
-    const hasLocationChanged =
-      lastKnownLocation.latitude !== latitude ||
-      lastKnownLocation.longitude !== longitude;
-
-    if (hasLocationChanged) {
-      // Update the last known location
-      setLastKnownLocation({ latitude, longitude });
-
-      // Trigger the debounced fetch function
-      fetchAddress(latitude, longitude);
-    }
-  },
-  [lastKnownLocation, fetchAddress]
-);
-  
+        // If the response contains at least one feature, update the state with the place name
+        if (response.body.features.length > 0) {
+          setState((prevState) => ({
+            ...prevState,
+            address: response.body.features[0].place_name, // Update state with the address
+          }));
+        } else {
+          // If no features are found, update the state with a default message
+          setState((prevState) => ({
+            ...prevState,
+            address: "Dirección no disponible", // Address not available
+          }));
+        }
+      } catch {
+        // If an error occurs during the request, update the state with an error message
+        setState((prevState) => ({
+          ...prevState,
+          address: "Error al obtener la dirección", // Error obtaining the address
+        }));
+      }
+    },
+    [], // Empty dependency array means this function is created once and won't change
+  );
 
   // Fetch the user's current latitude and longitude
   useEffect(() => {
@@ -161,42 +117,49 @@ const handleLocationChange = useCallback(
       longitude: -100.31669036697983,
     };
 
+    // Check if the browser supports geolocation
     if (navigator.geolocation) {
+      // Request the user's current position
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          // Success callback: extracting latitude and longitude from the position object
           const { latitude, longitude } = position.coords;
 
+          // Update the state with the obtained coordinates and set loading to false
           setState((prevState) => ({
             ...prevState,
             location: { latitude, longitude },
             loading: false,
           }));
 
-          handleLocationChange(latitude, longitude); // Use handleLocationChange here
+          // Fetch the address for the given coordinates
+          fetchAddress(latitude, longitude);
         },
         () => {
+          // If user denies location access or an error occurs, use the default location
           setState((prevState) => ({
             ...prevState,
             location: defaultLocation,
             loading: false,
           }));
 
-          handleLocationChange(
-            defaultLocation.latitude,
-            defaultLocation.longitude,
-          ); // Use handleLocationChange here
+          // Fetch the address for the default location
+          fetchAddress(defaultLocation.latitude, defaultLocation.longitude);
         },
       );
     } else {
+      // If the browser does not support geolocation, use default location
       setState((prevState) => ({
         ...prevState,
         location: defaultLocation,
         loading: false,
       }));
 
-      handleLocationChange(defaultLocation.latitude, defaultLocation.longitude); // Use handleLocationChange here
+      // Fetch the address for the default location
+      fetchAddress(defaultLocation.latitude, defaultLocation.longitude);
     }
-  }, [handleLocationChange]);
+  }, [fetchAddress]);
+  // Dependency array ensures this effect runs only once on mount
 
   // Calculate the distance between two sets of coordinates
   const getDistance = useCallback(
@@ -226,7 +189,7 @@ const handleLocationChange = useCallback(
       state.location.longitude !== null &&
       sensors.length > 0
     ) {
-      return sensors.slice().sort((a, b) => {
+      return [...sensors].sort((a, b) => {
         const aDistance = getDistance(
           state.location.latitude!,
           state.location.longitude!,
@@ -243,7 +206,7 @@ const handleLocationChange = useCallback(
       });
     }
     return [];
-  }, [state.location.latitude, state.location.longitude, sensors, getDistance]);
+  }, [state.location, sensors, getDistance]);
 
   // Find the pm25 and timestamp value for the closest sensor
   useEffect(() => {
@@ -373,33 +336,132 @@ const handleLocationChange = useCallback(
 
   return (
     <>
-    {state.error ? (
-      <p>{state.error}</p>
-    ) : state.loading ? (
-      <div>Loading...</div>
-    ) : (
-      <>
-        <AirQualityTitle data={state.airQuality} />
-        <AirQualityRecommendation
-          data={state.airQuality}
-          showMenoresRecommendation={showMenoresRecommendation}
-          showAdultosMayoresRecommendation={showAdultosMayoresRecommendation}
-          showEmbarazadasRecommendation={showEmbarazadasRecommendation}
-          showEnfermedadesRecommendation={showEnfermedadesRecommendation}
-        />
-        <AirQualityBar data={state.airQuality} />
-        {showAddress && (
-          <AirQualityAddress
-            latitude={state.location.latitude}
-            longitude={state.location.longitude}
-            address={state.address}
-          />
-        )}
-        {showTime && (
-          <AirQualityTime timestamp={state.airQuality.timestamp} />
-        )}
-      </>
-    )}
-  </>
+      {state.error ? (
+        <p>{state.error}</p>
+      ) : state.loading ? (
+        <>
+          {showMenoresRecommendation ||
+          showAdultosMayoresRecommendation ||
+          showEmbarazadasRecommendation ||
+          showEnfermedadesRecommendation ? (
+            <SkeletonSensible />
+          ) : (
+            <SkeletonGeneral />
+          )}
+        </>
+      ) : (
+        <>
+          {showAddress &&
+            state.location.latitude !== null &&
+            state.location.longitude !== null && (
+              <div className="flex items-center">
+                {state.address ? (
+                  <div>{state.address}</div>
+                ) : (
+                  <div>Loading...</div>
+                )}
+              </div>
+            )}
+          {showTime &&
+            state.airQuality.timestamp &&
+            format(
+              new Date(state.airQuality.timestamp.replace(" ", "T")),
+              "h:mm a",
+            ).replace(/:\d{2}/, ":00")}
+          {showMenoresRecommendation && (
+            <div className="flex flex-col pb-1">
+              <div
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
+              />
+              {pobSensibleText("menores")}
+            </div>
+          )}
+          {showAdultosMayoresRecommendation && (
+            <div className="flex flex-col pb-1">
+              <div
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
+              />
+              {pobSensibleText("adultosMayores")}
+            </div>
+          )}
+          {showEmbarazadasRecommendation && (
+            <div className="flex flex-col pb-1">
+              <div
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
+              />
+              {pobSensibleText("embarazadas")}
+            </div>
+          )}
+          {showEnfermedadesRecommendation && (
+            <div className="flex flex-col pb-1">
+              <div
+                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
+              />
+              {pobSensibleText("enfermedades")}
+            </div>
+          )}
+          {!showAddress &&
+            !showTime &&
+            !showMenoresRecommendation &&
+            !showAdultosMayoresRecommendation &&
+            !showEmbarazadasRecommendation &&
+            !showEnfermedadesRecommendation && (
+              <div className="flex flex-col space-y-4 lg:space-y-4">
+                {/* Air Quality Title */}
+                <div className="text-5xl font-semibold lg:text-5xl">
+                  {pobGeneralTitle()}
+                </div>
+                {/* Air Quality Text */}
+                <div className="lg:text-lg">{pobGeneralText}</div>
+                {/* Air Quality Bar */}
+                <div className="pt-2 lg:pt-3">
+                  <div className="relative flex min-h-[10px] overflow-hidden rounded-lg">
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-green-400"
+                    />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-green-400 to-yellow-400"
+                    />
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-yellow-400"
+                    />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-yellow-400 to-orange-400"
+                    />
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-orange-400"
+                    />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-orange-400 to-red-400"
+                    />
+                    <div style={{ flexBasis: "12%" }} className="bg-red-400" />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-red-400 to-purple-400"
+                    />
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-purple-400"
+                    />
+                    <div
+                      style={{
+                        left: `${getMarkerPosition()}%`,
+                        borderColor: "white",
+                      }}
+                      className="absolute top-1/2 h-3 w-3 -translate-y-1/2 transform rounded-full border-4 bg-gray-300"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            )}
+        </>
+      )}
+    </>
   );
 }
