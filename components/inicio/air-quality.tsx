@@ -74,6 +74,12 @@ export default function AirQuality({
     loading: true,
   });
 
+  // State to track the last known location
+  const [lastKnownLocation, setLastKnownLocation] = useState<{
+    latitude: number | null;
+    longitude: number | null;
+  }>({ latitude: null, longitude: null });
+
   // Fetch the user's current address based on latitude and longitude from the use effect hook below
   const fetchAddress = useCallback(
     async (latitude: number, longitude: number): Promise<void> => {
@@ -110,6 +116,24 @@ export default function AirQuality({
     [], // Empty dependency array means this function is created once and won't change
   );
 
+  // Function to handle location change
+  const handleLocationChange = useCallback(
+    (latitude: number, longitude: number) => {
+      // Check if the location has changed
+      if (
+        lastKnownLocation.latitude !== latitude ||
+        lastKnownLocation.longitude !== longitude
+      ) {
+        // Update the last known location
+        setLastKnownLocation({ latitude, longitude });
+
+        // Fetch the address for the new location
+        fetchAddress(latitude, longitude);
+      }
+    },
+    [fetchAddress, lastKnownLocation],
+  );
+
   // Fetch the user's current latitude and longitude
   useEffect(() => {
     const defaultLocation = {
@@ -117,49 +141,42 @@ export default function AirQuality({
       longitude: -100.31669036697983,
     };
 
-    // Check if the browser supports geolocation
     if (navigator.geolocation) {
-      // Request the user's current position
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Success callback: extracting latitude and longitude from the position object
           const { latitude, longitude } = position.coords;
 
-          // Update the state with the obtained coordinates and set loading to false
           setState((prevState) => ({
             ...prevState,
             location: { latitude, longitude },
             loading: false,
           }));
 
-          // Fetch the address for the given coordinates
-          fetchAddress(latitude, longitude);
+          handleLocationChange(latitude, longitude); // Use handleLocationChange here
         },
         () => {
-          // If user denies location access or an error occurs, use the default location
           setState((prevState) => ({
             ...prevState,
             location: defaultLocation,
             loading: false,
           }));
 
-          // Fetch the address for the default location
-          fetchAddress(defaultLocation.latitude, defaultLocation.longitude);
+          handleLocationChange(
+            defaultLocation.latitude,
+            defaultLocation.longitude,
+          ); // Use handleLocationChange here
         },
       );
     } else {
-      // If the browser does not support geolocation, use default location
       setState((prevState) => ({
         ...prevState,
         location: defaultLocation,
         loading: false,
       }));
 
-      // Fetch the address for the default location
-      fetchAddress(defaultLocation.latitude, defaultLocation.longitude);
+      handleLocationChange(defaultLocation.latitude, defaultLocation.longitude); // Use handleLocationChange here
     }
-  }, [fetchAddress]);
-  // Dependency array ensures this effect runs only once on mount
+  }, [handleLocationChange]);
 
   // Calculate the distance between two sets of coordinates
   const getDistance = useCallback(
