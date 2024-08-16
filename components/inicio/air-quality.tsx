@@ -1,11 +1,27 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import debounce from "lodash.debounce";
-import SkeletonGeneral from "./skeleton-general";
-import SkeletonSensible from "./skeleton-sensible";
-import { format } from "date-fns";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
+
+// Dynamically import sub-components
+const AirQualityTitle = dynamic(() => import("./AirQualityTitle"), {
+  ssr: false,
+});
+
+const AirQualityRecommendation = dynamic(
+  () => import("./AirQualityRecommendation"),
+  { ssr: false }
+);
+
+const AirQualityBar = dynamic(() => import("./AirQualityBar"), { ssr: false });
+const AirQualityAddress = dynamic(() => import("./AirQualityAddress"), {
+  ssr: false,
+});
+const AirQualityTime = dynamic(() => import("./AirQualityTime"), {
+  ssr: false,
+});
 
 // Sensor interface
 interface Sensor {
@@ -357,132 +373,33 @@ const handleLocationChange = useCallback(
 
   return (
     <>
-      {state.error ? (
-        <p>{state.error}</p>
-      ) : state.loading ? (
-        <>
-          {showMenoresRecommendation ||
-          showAdultosMayoresRecommendation ||
-          showEmbarazadasRecommendation ||
-          showEnfermedadesRecommendation ? (
-            <SkeletonSensible />
-          ) : (
-            <SkeletonGeneral />
-          )}
-        </>
-      ) : (
-        <>
-          {showAddress &&
-            state.location.latitude !== null &&
-            state.location.longitude !== null && (
-              <div className="flex items-center">
-                {state.address ? (
-                  <div>{state.address}</div>
-                ) : (
-                  <div>Loading...</div>
-                )}
-              </div>
-            )}
-          {showTime &&
-            state.airQuality.timestamp &&
-            format(
-              new Date(state.airQuality.timestamp.replace(" ", "T")),
-              "h:mm a",
-            ).replace(/:\d{2}/, ":00")}
-          {showMenoresRecommendation && (
-            <div className="flex flex-col pb-1">
-              <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
-              />
-              {pobSensibleText("menores")}
-            </div>
-          )}
-          {showAdultosMayoresRecommendation && (
-            <div className="flex flex-col pb-1">
-              <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
-              />
-              {pobSensibleText("adultosMayores")}
-            </div>
-          )}
-          {showEmbarazadasRecommendation && (
-            <div className="flex flex-col pb-1">
-              <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
-              />
-              {pobSensibleText("embarazadas")}
-            </div>
-          )}
-          {showEnfermedadesRecommendation && (
-            <div className="flex flex-col pb-1">
-              <div
-                className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
-              />
-              {pobSensibleText("enfermedades")}
-            </div>
-          )}
-          {!showAddress &&
-            !showTime &&
-            !showMenoresRecommendation &&
-            !showAdultosMayoresRecommendation &&
-            !showEmbarazadasRecommendation &&
-            !showEnfermedadesRecommendation && (
-              <div className="flex flex-col space-y-4 lg:space-y-4">
-                {/* Air Quality Title */}
-                <div className="text-5xl font-semibold lg:text-5xl">
-                  {pobGeneralTitle()}
-                </div>
-                {/* Air Quality Text */}
-                <div className="lg:text-lg">{pobGeneralText}</div>
-                {/* Air Quality Bar */}
-                <div className="pt-2 lg:pt-3">
-                  <div className="relative flex min-h-[10px] overflow-hidden rounded-lg">
-                    <div
-                      style={{ flexBasis: "12%" }}
-                      className="bg-green-400"
-                    />
-                    <div
-                      style={{ flexBasis: "10%" }}
-                      className="bg-gradient-to-r from-green-400 to-yellow-400"
-                    />
-                    <div
-                      style={{ flexBasis: "12%" }}
-                      className="bg-yellow-400"
-                    />
-                    <div
-                      style={{ flexBasis: "10%" }}
-                      className="bg-gradient-to-r from-yellow-400 to-orange-400"
-                    />
-                    <div
-                      style={{ flexBasis: "12%" }}
-                      className="bg-orange-400"
-                    />
-                    <div
-                      style={{ flexBasis: "10%" }}
-                      className="bg-gradient-to-r from-orange-400 to-red-400"
-                    />
-                    <div style={{ flexBasis: "12%" }} className="bg-red-400" />
-                    <div
-                      style={{ flexBasis: "10%" }}
-                      className="bg-gradient-to-r from-red-400 to-purple-400"
-                    />
-                    <div
-                      style={{ flexBasis: "12%" }}
-                      className="bg-purple-400"
-                    />
-                    <div
-                      style={{
-                        left: `${getMarkerPosition()}%`,
-                        borderColor: "white",
-                      }}
-                      className="absolute top-1/2 h-3 w-3 -translate-y-1/2 transform rounded-full border-4 bg-gray-300"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            )}
-        </>
-      )}
-    </>
+    {state.error ? (
+      <p>{state.error}</p>
+    ) : state.loading ? (
+      <div>Loading...</div>
+    ) : (
+      <>
+        <AirQualityTitle data={state.airQuality} />
+        <AirQualityRecommendation
+          data={state.airQuality}
+          showMenoresRecommendation={showMenoresRecommendation}
+          showAdultosMayoresRecommendation={showAdultosMayoresRecommendation}
+          showEmbarazadasRecommendation={showEmbarazadasRecommendation}
+          showEnfermedadesRecommendation={showEnfermedadesRecommendation}
+        />
+        <AirQualityBar data={state.airQuality} />
+        {showAddress && (
+          <AirQualityAddress
+            latitude={state.location.latitude}
+            longitude={state.location.longitude}
+            address={state.address}
+          />
+        )}
+        {showTime && (
+          <AirQualityTime timestamp={state.airQuality.timestamp} />
+        )}
+      </>
+    )}
+  </>
   );
 }
