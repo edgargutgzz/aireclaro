@@ -65,7 +65,6 @@ const createMarker = (
   return marker;
 };
 
-
 // Utility function to round the pm25 value to the nearest integer
 const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
@@ -93,11 +92,10 @@ export default function MapaSensors({
   // State to hold the latest update time
   const [latestUpdateTime, setLatestUpdateTime] = useState<string>("");
 
-  // useEffect hook to initialize the map and add markers
   useEffect(() => {
     // Check if the map is already initialized
     if (map.current) return; // Initialize map only once
-
+  
     // Create a new Mapbox map instance
     map.current = new Map({
       container: mapContainer.current!, // Set the map container
@@ -105,7 +103,7 @@ export default function MapaSensors({
       center: [-100.32098588977951, 25.676269873872855], // Set the initial center coordinates
       zoom: 11, // Set the initial zoom level
     });
-
+  
     // Event listener for when the map has loaded
     map.current.on("load", () => {
       // Iterate over each sensor
@@ -114,35 +112,44 @@ export default function MapaSensors({
         const latestData = data.find(
           (dataItem) => dataItem.sensor_id === sensor.sensor_id,
         );
-
+  
         // Create a marker element based on the PM2.5 value
         const markerElement = createMarker(
           latestData ? latestData.pm25 : null,
           sensor.source,
         );
-
+  
         // Skip if no marker is created
         if (!markerElement) return;
-
-        // Create the popup content
-        const popupContent = `
-          <div class="text-lg">
-            <p><span class="text-black">Sensor:</span> <span class="text-gray-400">${sensor.nombre}</span></p>
-            ${
-              latestData
-                ? `<p><span class="text-black">PM2.5:</span> <span class="text-gray-400">${roundPM25(latestData.pm25)}</span></p>`
-                : '<p><span class="text-black">No data available</span></p>'
-            }
-            <p><span class="text-black">Lat:</span> <span class="text-gray-400">${formatLatLon(sensor.lat)}</span></p>
-            <p><span class="text-black">Lon:</span> <span class="text-gray-400">${formatLatLon(sensor.lon)}</span></p>
+  
+        // Create a new popup instance using the default Mapbox styling
+        const popup = new Popup({ offset: 25, closeButton: false })
+        .setHTML(`
+          <div style="margin-top: 10px;"> 
+            <div style="font-size: 42px; font-weight: bold; display: inline;">
+              ${latestData ? roundPM25(latestData.pm25) : 'N/A'}
+            </div>
+            <span style="font-size: 12px; font-weight: normal;">
+              PM2.5
+            </span>
+            <div style="color: gray; margin-top: 4px;">
+              <span style="color: black;">Sensor: </span>${sensor.nombre}
+            </div>
+            <div>
+              <span style="color: black;">Lat: </span><span style="color: gray;">${formatLatLon(sensor.lat)}</span>
+            </div>
+            <div>
+              <span style="color: black;">Lon: </span><span style="color: gray;">${formatLatLon(sensor.lon)}</span>
+            </div>
           </div>
-        `;
-
-        // Create a new popup instance
-        const popup = new Popup({ offset: 25, closeButton: false }).setHTML(
-          popupContent,
-        );
-
+        `);
+      
+      
+      
+      
+      
+         
+  
         // Create a new marker instance
         new Marker({
           element: markerElement, // Set the custom marker element
@@ -151,18 +158,19 @@ export default function MapaSensors({
           .setPopup(popup) // Bind the popup to the marker
           .addTo(map.current!); // Add the marker to the map
       });
-
+  
       // Get the timestamp from the first data element and format it
       const firstDataTimestamp = data[0].time_stamp;
       const formattedTime = format(
         new Date(firstDataTimestamp.replace(" ", "T")),
         "h:mm a",
       ).replace(/:\d{2}/, ":00");
-
+  
       // Update the state with the formatted time
       setLatestUpdateTime(formattedTime);
     });
   }, [sensors, data]); // Dependencies: re-run if sensors or data change
+  
 
   return (
     <div className="relative h-screen">
