@@ -129,20 +129,23 @@ export default function MapaSensors({
             <div style="font-size: 42px; font-weight: bold; display: inline;">
               ${latestData ? roundPM25(latestData.pm25) : 'N/A'}
             </div>
-            <span style="font-size: 12px; font-weight: normal;">
+            <span style="font-size: 12px; font-weight: normal; display: inline; vertical-align: bottom;">
               PM2.5
             </span>
-            <div style="color: gray; margin-top: 4px;">
+            <div style="color: gray; margin-top: 4px; font-size: 12px;">
               <span style="color: black;">Sensor: </span>${sensor.nombre}
             </div>
-            <div>
+            <div style="font-size: 12px;">
               <span style="color: black;">Lat: </span><span style="color: gray;">${formatLatLon(sensor.lat)}</span>
             </div>
-            <div>
+            <div style="font-size: 12px;">
               <span style="color: black;">Lon: </span><span style="color: gray;">${formatLatLon(sensor.lon)}</span>
             </div>
           </div>
         `);
+      
+      
+      
       
       
       
