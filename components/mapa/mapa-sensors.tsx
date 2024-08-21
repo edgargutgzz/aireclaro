@@ -53,11 +53,18 @@ const createMarker = (
   }
 
   const marker = document.createElement("div");
-  marker.className = `marker ${markerColor} bg-opacity-85 w-7 h-7 flex items-center justify-center rounded-full ${
+  marker.className = `marker ${markerColor} bg-opacity-85 w-8 h-8 flex items-center justify-center rounded-full ${
     source === "sima" ? "border border-black" : ""
-  }`;
+  } text-white text-xs font-bold`;
+
+  // Add the PM2.5 value as text inside the marker
+  if (pm25 !== null && pm25 >= 0) {
+    marker.textContent = roundPM25(pm25);
+  }
+
   return marker;
 };
+
 
 // Utility function to round the pm25 value to the nearest integer
 const roundPM25 = (value: number | null): string | null => {
@@ -119,14 +126,16 @@ export default function MapaSensors({
 
         // Create the popup content
         const popupContent = `
-          <h3><strong>${sensor.nombre}</strong></h3>
-          ${
-            latestData
-              ? `<p>PM2.5: <span class="text-gray-400">${roundPM25(latestData.pm25)}</span></p>`
-              : "<p>No data available</p>"
-          }
-          <p>Lat: <span class="text-gray-400">${formatLatLon(sensor.lat)}</span></p>
-          <p>Lon: <span class="text-gray-400">${formatLatLon(sensor.lon)}</span></p>
+          <div class="text-lg">
+            <p><span class="text-black">Sensor:</span> <span class="text-gray-400">${sensor.nombre}</span></p>
+            ${
+              latestData
+                ? `<p><span class="text-black">PM2.5:</span> <span class="text-gray-400">${roundPM25(latestData.pm25)}</span></p>`
+                : '<p><span class="text-black">No data available</span></p>'
+            }
+            <p><span class="text-black">Lat:</span> <span class="text-gray-400">${formatLatLon(sensor.lat)}</span></p>
+            <p><span class="text-black">Lon:</span> <span class="text-gray-400">${formatLatLon(sensor.lon)}</span></p>
+          </div>
         `;
 
         // Create a new popup instance
