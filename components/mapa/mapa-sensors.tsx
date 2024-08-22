@@ -56,6 +56,7 @@ const createMarker = (
   marker.className = `marker ${markerColor} bg-opacity-85 w-8 h-8 flex items-center justify-center rounded-full ${
     source === "sima" ? "border border-black" : ""
   } text-white text-xs font-bold`;
+  marker.setAttribute("data-marker-color", markerColor); // Set data attribute for color
 
   // Add the PM2.5 value as text inside the marker
   if (pm25 !== null && pm25 >= 0) {
@@ -73,6 +74,16 @@ const roundPM25 = (value: number | null): string | null => {
 // Utility function to format latitude and longitude to five decimal places
 const formatLatLon = (value: number): string => {
   return value.toFixed(5);
+};
+
+
+// Mapping between Tailwind color classes for popup borders (300 variants)
+const borderColorMap: { [key: string]: string } = {
+  "bg-green-400": "#6EE7B7",  // Green 300
+  "bg-yellow-400": "#FCD34D", // Yellow 300
+  "bg-orange-400": "#FDBA74", // Orange 300
+  "bg-red-400": "#FCA5A5",    // Red 300
+  "bg-purple-400": "#C4B5FD", // Purple 300
 };
 
 // MapaSensors component
@@ -93,86 +104,78 @@ export default function MapaSensors({
   const [latestUpdateTime, setLatestUpdateTime] = useState<string>("");
 
   useEffect(() => {
-    // Check if the map is already initialized
-    if (map.current) return; // Initialize map only once
+    if (map.current) return;
   
-    // Create a new Mapbox map instance
     map.current = new Map({
-      container: mapContainer.current!, // Set the map container
-      style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd", // Set the map style
-      center: [-100.32098588977951, 25.676269873872855], // Set the initial center coordinates
-      zoom: 11, // Set the initial zoom level
+      container: mapContainer.current!,
+      style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
+      center: [-100.32098588977951, 25.676269873872855],
+      zoom: 11,
     });
   
-    // Event listener for when the map has loaded
     map.current.on("load", () => {
-      // Iterate over each sensor
       sensors.forEach((sensor) => {
-        // Find the latest data for the sensor
         const latestData = data.find(
           (dataItem) => dataItem.sensor_id === sensor.sensor_id,
         );
   
-        // Create a marker element based on the PM2.5 value
         const markerElement = createMarker(
           latestData ? latestData.pm25 : null,
           sensor.source,
         );
   
-        // Skip if no marker is created
         if (!markerElement) return;
   
-        // Create a new popup instance using the default Mapbox styling
-        const popup = new Popup({ offset: 25, closeButton: false })
-        .setHTML(`
-          <div style="margin-top: 10px;"> 
-            <div style="font-size: 42px; font-weight: bold; display: inline;">
-              ${latestData ? roundPM25(latestData.pm25) : 'N/A'}
-            </div>
-            <span style="font-size: 12px; font-weight: normal; display: inline; vertical-align: bottom;">
-              PM2.5
-            </span>
-            <div style="color: gray; margin-top: 4px; font-size: 12px;">
-              <span style="color: black;">Sensor: </span>${sensor.nombre}
-            </div>
-            <div style="font-size: 12px;">
-              <span style="color: black;">Lat: </span><span style="color: gray;">${formatLatLon(sensor.lat)}</span>
-            </div>
-            <div style="font-size: 12px;">
-              <span style="color: black;">Lon: </span><span style="color: gray;">${formatLatLon(sensor.lon)}</span>
-            </div>
-          </div>
-        `);
-      
-      
-      
-      
-      
-      
-      
-      
-         
+        const markerColorClass = markerElement.getAttribute("data-marker-color");
+        const popupBorderColor = markerColorClass
+          ? borderColorMap[markerColorClass] // Use 300 variant for border
+          : "#FFFFFF";
   
-        // Create a new marker instance
+          const popup = new Popup({ offset: 25, closeButton: false })
+          .setHTML(`
+            <div style="padding: 10px; border-radius: 8px; background-color: white;">
+              <div style="position: relative; padding-bottom: 8px; display: flex; align-items: baseline;">
+                <div style="font-size: 42px; font-weight: bold; color: black;">
+                  ${latestData ? roundPM25(latestData.pm25) : 'N/A'}
+                </div>
+                <span style="font-size: 12px; font-weight: normal; margin-left: 8px; color: black;">
+                  PM2.5
+                </span>
+                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: ${popupBorderColor}; border-radius: 3px;"></div>
+              </div>
+              <div style="margin-top: 8px; font-size: 12px; color: black;">
+                <span style="font-weight: bold;">Sensor: </span>${sensor.nombre}
+              </div>
+              <div style="font-size: 12px; color: black;">
+                <span style="font-weight: bold;">Lat: </span>${formatLatLon(sensor.lat)}
+              </div>
+              <div style="font-size: 12px; color: black;">
+                <span style="font-weight: bold;">Lon: </span>${formatLatLon(sensor.lon)}
+              </div>
+            </div>
+          `);
+        
+        
+  
         new Marker({
-          element: markerElement, // Set the custom marker element
+          element: markerElement,
         })
-          .setLngLat([sensor.lon, sensor.lat]) // Set the marker coordinates
-          .setPopup(popup) // Bind the popup to the marker
-          .addTo(map.current!); // Add the marker to the map
+          .setLngLat([sensor.lon, sensor.lat])
+          .setPopup(popup)
+          .addTo(map.current!);
       });
   
-      // Get the timestamp from the first data element and format it
       const firstDataTimestamp = data[0].time_stamp;
       const formattedTime = format(
         new Date(firstDataTimestamp.replace(" ", "T")),
         "h:mm a",
       ).replace(/:\d{2}/, ":00");
   
-      // Update the state with the formatted time
       setLatestUpdateTime(formattedTime);
     });
-  }, [sensors, data]); // Dependencies: re-run if sensors or data change
+  }, [sensors, data]);
+  
+  
   
 
   return (
