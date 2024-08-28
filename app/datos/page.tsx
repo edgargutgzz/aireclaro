@@ -94,7 +94,7 @@ export default function Datos() {
           <div className="flex w-full justify-start pt-8 md:w-1/3 md:justify-end md:pt-0">
             <Link
               target="_blank"
-              href="https://drive.google.com/drive/folders/14zDh5Eaa3twZmCJTQZDNkyDwEjoQajff"
+              href="https://datamx.io/dataset/calidad-del-aire-en-nuevo-leon"
             >
               <Button
                 onClick={() => {
