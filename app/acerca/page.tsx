@@ -14,7 +14,7 @@ export default function Acerca() {
         <Questions />
       </div>
       {/* Un proyecto del OCCAMM */}
-      <div className="flex items-center justify-center text-sm md:text-base lg:pb-12">
+      <div className="flex items-center justify-start text-sm md:text-base lg:pb-12">
         <div className="text-gray-400">Un proyecto del</div>
         <a
           href="https://observatoriodelaire.com/"
