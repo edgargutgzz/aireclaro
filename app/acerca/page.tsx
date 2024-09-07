@@ -26,7 +26,7 @@ export default function Acerca() {
             alt="Observatorio del Aire Logo"
             width={290}
             height={100}
-            className="md:-ml-6"
+            className="md:-ml-4"
           />
         </a>
       </div>
