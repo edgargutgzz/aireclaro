@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Acerca() {
   return (
-    <div className="mx-4 flex flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-8 lg:pt-6">
+    <div className="mx-4 flex min-h-screen flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-0 lg:pt-6">
       {/* Preguntas Frecuentes */}
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
@@ -14,7 +14,7 @@ export default function Acerca() {
         <Questions />
       </div>
       {/* Un proyecto del OCCAMM */}
-      <div className="flex items-center justify-center pt-10 text-sm md:text-base lg:pb-12">
+      <div className="flex items-center justify-center text-sm md:text-base lg:pb-12">
         <div className="text-gray-400">Un proyecto del</div>
         <a
           href="https://observatoriodelaire.com/"
@@ -24,9 +24,9 @@ export default function Acerca() {
           <Image
             src="/logo-occamm.png"
             alt="Observatorio del Aire Logo"
-            width={97}
-            height={18}
-            className="ml-5 md:ml-6 md:h-[41px] md:w-[220px]"
+            width={290}
+            height={100}
+            className="md:-ml-6"
           />
         </a>
       </div>
