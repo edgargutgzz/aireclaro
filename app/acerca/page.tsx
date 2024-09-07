@@ -1,5 +1,4 @@
 import Questions from "@/components/acerca/questions";
-import Equipo from "@/components/acerca/equipo";
 import Image from "next/image";
 
 export default function Acerca() {
@@ -14,15 +13,8 @@ export default function Acerca() {
         {/* Questions */}
         <Questions />
       </div>
-      {/* Equipo */}
-      <div className="mb-20 flex flex-col md:mb-48">
-        {/* Header */}
-        <h1 className="pt-7 text-3xl font-bold">Equipo</h1>
-        {/* Integrantes */}
-        <Equipo />
-      </div>
       {/* Un proyecto del OCCAMM */}
-      <div className="flex items-center justify-center text-sm md:text-base lg:pb-12">
+      <div className="flex items-center justify-center pt-10 text-sm md:text-base lg:pb-12">
         <div className="text-gray-400">Un proyecto del</div>
         <a
           href="https://observatoriodelaire.com/"
@@ -32,9 +24,9 @@ export default function Acerca() {
           <Image
             src="/logo-occamm.png"
             alt="Observatorio del Aire Logo"
-            width={150}
-            height={28}
-            className="ml-5 md:ml-7 md:h-[41px] md:w-[220px]"
+            width={97}
+            height={18}
+            className="ml-5 md:ml-6 md:h-[41px] md:w-[220px]"
           />
         </a>
       </div>
