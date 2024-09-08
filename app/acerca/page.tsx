@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Acerca() {
   return (
-    <div className="mx-4 flex min-h-screen flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-0 lg:pt-6">
+    <div className="mx-4 flex min-h-screen flex-col pb-10 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-0 lg:pt-6">
       {/* Preguntas Frecuentes */}
       <div className="mb-10 flex flex-col md:mb-16 lg:mb-20">
         {/* Header */}
@@ -14,7 +14,7 @@ export default function Acerca() {
         <Questions />
       </div>
       {/* Un proyecto del OCCAMM */}
-      <div className="flex flex-col items-center justify-start text-base md:flex-row lg:pb-12">
+      <div className="flex flex-col items-center justify-start text-base md:flex-row">
         <div className="hidden text-gray-400 md:block">Un proyecto del</div>
         <a
           href="https://observatoriodelaire.com/"
