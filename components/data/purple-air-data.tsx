@@ -6,7 +6,7 @@ export default async function PurpleAirData() {
     .from("calidad_aire")
     .select()
     .order("time_stamp", { ascending: false })
-    .limit(81);
+    .limit(88);
 
   if (error) {
     console.error("Error:", error);
