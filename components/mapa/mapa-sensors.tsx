@@ -76,13 +76,12 @@ const formatLatLon = (value: number): string => {
   return value.toFixed(5);
 };
 
-
 // Mapping between Tailwind color classes for popup borders (300 variants)
 const borderColorMap: { [key: string]: string } = {
-  "bg-green-400": "#6EE7B7",  // Green 300
+  "bg-green-400": "#6EE7B7", // Green 300
   "bg-yellow-400": "#FCD34D", // Yellow 300
   "bg-orange-400": "#FDBA74", // Orange 300
-  "bg-red-400": "#FCA5A5",    // Red 300
+  "bg-red-400": "#FCA5A5", // Red 300
   "bg-purple-400": "#C4B5FD", // Purple 300
 };
 
@@ -105,58 +104,59 @@ export default function MapaSensors({
 
   useEffect(() => {
     if (map.current) return;
-  
+
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
       center: [-100.32098588977951, 25.676269873872855],
       zoom: 11,
     });
-  
+
     map.current.on("load", () => {
       sensors.forEach((sensor) => {
+        // Skip if the sensor source is "sima"
+        if (sensor.source.toLowerCase() === "sima") return;
+
         const latestData = data.find(
           (dataItem) => dataItem.sensor_id === sensor.sensor_id,
         );
-  
+
         const markerElement = createMarker(
           latestData ? latestData.pm25 : null,
           sensor.source,
         );
-  
+
         if (!markerElement) return;
-  
-        const markerColorClass = markerElement.getAttribute("data-marker-color");
+
+        const markerColorClass =
+          markerElement.getAttribute("data-marker-color");
         const popupBorderColor = markerColorClass
           ? borderColorMap[markerColorClass] // Use 300 variant for border
           : "#FFFFFF";
-  
-          const popup = new Popup({ offset: 25, closeButton: false })
-          .setHTML(`
-            <div style="padding: 10px; border-radius: 8px; background-color: white;">
-              <div style="position: relative; padding-bottom: 8px; display: flex; align-items: baseline;">
-                <div style="font-size: 42px; font-weight: bold; color: black;">
-                  ${latestData ? roundPM25(latestData.pm25) : 'N/A'}
-                </div>
-                <span style="font-size: 12px; font-weight: normal; margin-left: 8px; color: black;">
-                  PM2.5
-                </span>
-                <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: ${popupBorderColor}; border-radius: 3px;"></div>
-              </div>
-              <div style="margin-top: 8px; font-size: 12px; color: black;">
-                <span style="font-weight: bold;">Sensor: </span>${sensor.nombre}
-              </div>
-              <div style="font-size: 12px; color: black;">
-                <span style="font-weight: bold;">Lat: </span>${formatLatLon(sensor.lat)}
-              </div>
-              <div style="font-size: 12px; color: black;">
-                <span style="font-weight: bold;">Lon: </span>${formatLatLon(sensor.lon)}
-              </div>
+
+        const popup = new Popup({ offset: 25, closeButton: false }).setHTML(`
+        <div style="padding: 10px; border-radius: 8px; background-color: white;">
+          <div style="position: relative; padding-bottom: 8px; display: flex; align-items: baseline;">
+            <div style="font-size: 42px; font-weight: bold; color: black;">
+              ${latestData ? roundPM25(latestData.pm25) : "N/A"}
             </div>
-          `);
-        
-        
-  
+            <span style="font-size: 12px; font-weight: normal; margin-left: 8px; color: black;">
+              PM2.5
+            </span>
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: ${popupBorderColor}; border-radius: 3px;"></div>
+          </div>
+          <div style="margin-top: 8px; font-size: 12px; color: black;">
+            <span style="font-weight: bold;">Sensor: </span>${sensor.nombre}
+          </div>
+          <div style="font-size: 12px; color: black;">
+            <span style="font-weight: bold;">Lat: </span>${formatLatLon(sensor.lat)}
+          </div>
+          <div style="font-size: 12px; color: black;">
+            <span style="font-weight: bold;">Lon: </span>${formatLatLon(sensor.lon)}
+          </div>
+        </div>
+      `);
+
         new Marker({
           element: markerElement,
         })
@@ -164,19 +164,16 @@ export default function MapaSensors({
           .setPopup(popup)
           .addTo(map.current!);
       });
-  
+
       const firstDataTimestamp = data[0].time_stamp;
       const formattedTime = format(
         new Date(firstDataTimestamp.replace(" ", "T")),
         "h:mm a",
       ).replace(/:\d{2}/, ":00");
-  
+
       setLatestUpdateTime(formattedTime);
     });
   }, [sensors, data]);
-  
-  
-  
 
   return (
     <div className="relative h-screen">
@@ -222,12 +219,12 @@ export default function MapaSensors({
         <div className="grid grid-cols-2 items-center space-x-2">
           <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
-            <span className="text-xs">Sensor Purple Air</span>
+            <span className="text-xs">Sensor de Purple Air</span>
           </div>
-          <div className="col-span-1 flex items-center">
+          {/* <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-2 rounded-full border border-black bg-green-400"></div>
             <span className="text-xs">Estación SIMA</span>
-          </div>
+          </div> */}
         </div>
         {/* Hora de actualización */}
         <div className="pt-4 text-xs font-normal text-gray-400">
