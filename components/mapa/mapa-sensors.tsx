@@ -36,16 +36,18 @@ const createMarker = (
 
   if (pm25 === null || pm25 < 0) {
     markerColor = "bg-gray-400"; // gray
-  } else if (pm25 >= 0 && pm25 <= 15) {
-    markerColor = "bg-green-400"; // green
+  } else if (pm25 === 0) {
+    markerColor = "bg-gray-400"; // gray for exactly 0
+  } else if (pm25 > 0 && pm25 <= 15) {
+    markerColor = "bg-green-400"; // green for (0, 15]
   } else if (pm25 > 15 && pm25 <= 25) {
-    markerColor = "bg-yellow-400"; // yellow
+    markerColor = "bg-yellow-400"; // yellow for (15, 25]
   } else if (pm25 > 25 && pm25 <= 79) {
-    markerColor = "bg-orange-400"; // orange
+    markerColor = "bg-orange-400"; // orange for (25, 79]
   } else if (pm25 > 79 && pm25 <= 130) {
-    markerColor = "bg-red-400"; // red
+    markerColor = "bg-red-400"; // red for (79, 130]
   } else if (pm25 > 130) {
-    markerColor = "bg-purple-400"; // purple
+    markerColor = "bg-purple-400"; // purple for > 130
   }
 
   if (markerColor === "bg-gray-400") {
