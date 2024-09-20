@@ -35,11 +35,11 @@ const createMarker = (
   let markerColor = "bg-gray-400"; // default color
 
   if (pm25 === null || pm25 < 0) {
-    markerColor = "bg-gray-400"; // gray
-  } else if (pm25 === 0) {
-    markerColor = "bg-gray-400"; // gray for exactly 0
-  } else if (pm25 > 0 && pm25 <= 15) {
-    markerColor = "bg-green-400"; // green for (0, 15]
+    markerColor = "bg-gray-400"; // gray for null or negative values
+  } else if (pm25 <= 0.4) {
+    markerColor = "bg-gray-400"; // gray for values 0.4 or less
+  } else if (pm25 > 0.4 && pm25 <= 15) {
+    markerColor = "bg-green-400"; // green for (0.4, 15]
   } else if (pm25 > 15 && pm25 <= 25) {
     markerColor = "bg-yellow-400"; // yellow for (15, 25]
   } else if (pm25 > 25 && pm25 <= 79) {
