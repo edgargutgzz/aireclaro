@@ -15,7 +15,7 @@ export default function Aviso() {
           </p>
 
           {/* Sección 1 */}
-          <h2 className="mt-16 text-lg font-semibold">
+          <h2 className="mt-12 text-lg font-semibold">
             1. Responsable del Tratamiento de Datos
           </h2>
           <p className="mt-2">
