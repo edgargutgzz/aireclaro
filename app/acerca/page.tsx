@@ -27,31 +27,36 @@ export default function Acerca() {
         {/* Questions */}
         <Questions />
       </div>
-      {/* Un proyecto del OCCAMM */}
-      <div className="flex flex-col items-center justify-start text-base md:flex-row">
-        <div className="hidden text-gray-400 md:block">Un proyecto del</div>
-        <a
-          href="https://observatoriodelaire.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            src="/logo-occamm.png"
-            alt="Observatorio del Aire Logo"
-            width={290}
-            height={100}
-            className="md:-ml-4"
-          />
-        </a>
-      </div>
-      {/* Aviso de Privacidad */}
-      <div className="mb-4 mt-4 text-center">
-        <Link
-          href="/aviso-privacidad"
-          className="text-blue-600 hover:underline"
-        >
-          Aviso de Privacidad
-        </Link>
+      {/* Footer */}
+      <div className="flex flex-col items-center justify-center text-base md:flex-row md:items-center md:justify-between">
+        {/* Un proyecto del OCCAMM */}
+        <div className="flex flex-col items-center md:flex-row md:items-center">
+          <div className="hidden text-gray-400 md:mr-2 md:block">
+            Un proyecto del
+          </div>
+          <a
+            href="https://observatoriodelaire.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              src="/logo-occamm.png"
+              alt="Observatorio del Aire Logo"
+              width={290}
+              height={100}
+              className="md:-ml-4"
+            />
+          </a>
+        </div>
+        {/* Aviso de Privacidad */}
+        <div className="mt-4 text-center md:mt-0">
+          <Link
+            href="/aviso-privacidad"
+            className="text-blue-600 hover:underline"
+          >
+            Aviso de Privacidad
+          </Link>
+        </div>
       </div>
     </div>
   );
