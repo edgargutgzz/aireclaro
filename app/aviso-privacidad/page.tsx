@@ -10,9 +10,9 @@ export default function Aviso() {
           <p>Última actualización: 1 de octubre del 2024</p>
 
           <p className="mt-4">
-            Aire Claro recopila y utiliza únicamente tu ubicación para
-            proporcionarte información precisa sobre la calidad del aire en tu
-            área. No recopilamos ningún otro dato personal.
+            Aire Claro recopila y utiliza únicamente tu ubicación en tiempo real
+            para proporcionarte información precisa sobre la calidad del aire en
+            tu área.
           </p>
 
           {/* Sección 1 */}
@@ -21,71 +21,60 @@ export default function Aviso() {
           </h2>
           <p className="mt-2">
             Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana
-            de Monterrey (OCCAMM)
-            <br />
-            <strong>Dirección:</strong> Business Hub, Blvd. Antonio L. Rodríguez
-            2100-Piso 12, Santa María, 64650 Monterrey, N.L.
-            <br />
-            <strong>Correo electrónico:</strong>{" "}
-            <a
-              href="mailto:contacto@observatoriodelaire.com"
-              className="text-blue-600"
-            >
-              contacto@observatoriodelaire.com
-            </a>
+            de Monterrey (OCCAMM) con dirección en Business Hub, Blvd. Antonio
+            L. Rodríguez 2100-Piso 12, Santa María, 64650 Monterrey, N.L.
           </p>
 
           {/* Sección 2 */}
-          <h2 className="mt-6 text-xl font-semibold">2. Datos Recopilados</h2>
+          <h2 className="mt-6 text-lg font-semibold">2. Datos Recopilados</h2>
           <p className="mt-2">
-            - <strong>Ubicación Geográfica:</strong> Utilizamos los datos de tu
-            ubicación en tiempo real para ofrecer información relevante sobre la
-            calidad del aire en tu zona.
-            <br />- <strong>No recopilamos ningún otro dato personal.</strong>
+            - Ubicación Geográfica: Utilizamos los datos de tu ubicación para
+            ofrecer información relevante sobre la calidad del aire en tu zona.
           </p>
 
           {/* Sección 3 */}
-          <h2 className="mt-6 text-xl font-semibold">3. Uso de los Datos</h2>
+          <h2 className="mt-6 text-lg font-semibold">3. Uso de los Datos</h2>
           <p className="mt-2">
             - Proporcionar información precisa sobre la calidad del aire en tu
             área.
-            <br />- Mejorar la precisión y funcionalidad de{" "}
-            <strong>Aire Claro</strong>.
+            <br />- Mejorar la precisión y funcionalidad de Aire Claro.
           </p>
 
           {/* Sección 4 */}
-          <h2 className="mt-6 text-xl font-semibold">
+          <h2 className="mt-6 text-lg font-semibold">
             4. Compartición de Datos
           </h2>
           <p className="mt-2">
-            - <strong>Terceros:</strong> No compartimos tus datos de ubicación
-            con terceros, excepto cuando sea necesario para cumplir con
-            obligaciones legales o con tu consentimiento expreso.
+            - Terceros: No compartimos tu ubicación con terceros, excepto cuando
+            sea necesario para cumplir con obligaciones legales o con tu
+            consentimiento expreso.
           </p>
 
           {/* Sección 5 */}
-          <h2 className="mt-6 text-xl font-semibold">
+          <h2 className="mt-6 text-lg font-semibold">
             5. Seguridad de los Datos
           </h2>
           <p className="mt-2">
             Implementamos medidas de seguridad razonables para proteger tu
-            ubicación contra accesos no autorizados, alteraciones o destrucción.
+            información durante su uso en la aplicación. Dado que no almacenamos
+            tu ubicación, el riesgo de acceso no autorizado es mínimo.
           </p>
 
           {/* Sección 6 */}
-          <h2 className="mt-6 text-xl font-semibold">6. Consentimiento</h2>
+          <h2 className="mt-6 text-lg font-semibold">6. Consentimiento</h2>
           <p className="mt-2">
-            Al utilizar <strong>Aire Claro</strong>, consientes la recopilación
-            y uso de tu ubicación según lo descrito en este aviso de privacidad.
+            Al utilizar Aire Claro, consientes el uso de tu ubicación en tiempo
+            real según lo descrito en este aviso de privacidad.
           </p>
 
           {/* Sección 7 */}
-          <h2 className="mt-6 text-xl font-semibold">
+          <h2 className="mt-6 text-lg font-semibold">
             7. Derechos del Usuario
           </h2>
           <p className="mt-2">
-            Tienes derecho a acceder, rectificar o eliminar la información de tu
-            ubicación almacenada. Para ejercer estos derechos, por favor
+            Dado que no almacenamos tu ubicación ni otros datos personales, no
+            es necesario solicitar acceso, rectificación o eliminación de datos.
+            Si tienes preguntas sobre cómo manejamos tu información, por favor
             contáctanos a través de{" "}
             <a
               href="mailto:contacto@observatoriodelaire.com"
@@ -97,7 +86,7 @@ export default function Aviso() {
           </p>
 
           {/* Sección 8 */}
-          <h2 className="mt-6 text-xl font-semibold">
+          <h2 className="mt-6 text-lg font-semibold">
             8. Cambios en el Aviso de Privacidad
           </h2>
           <p className="mt-2">
@@ -107,7 +96,7 @@ export default function Aviso() {
           </p>
 
           {/* Sección 9 */}
-          <h2 className="mt-6 text-xl font-semibold">9. Contacto</h2>
+          <h2 className="mt-6 text-lg font-semibold">9. Contacto</h2>
           <p className="mt-2">
             Si tienes preguntas o inquietudes sobre este aviso de privacidad,
             por favor contáctanos:
