@@ -1,5 +1,6 @@
 import Questions from "@/components/acerca/questions";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Acerca() {
   return (
@@ -42,6 +43,15 @@ export default function Acerca() {
             className="md:-ml-4"
           />
         </a>
+      </div>
+      {/* Aviso de Privacidad */}
+      <div className="mb-4 mt-4 text-center">
+        <Link
+          href="/aviso-privacidad"
+          className="text-blue-600 hover:underline"
+        >
+          Aviso de Privacidad
+        </Link>
       </div>
     </div>
   );
