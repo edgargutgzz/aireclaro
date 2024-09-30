@@ -5,7 +5,7 @@ export default function Aviso() {
         {/* Header */}
         <h1 className="pt-4 text-3xl font-bold md:pt-7">Aviso de Privacidad</h1>
 
-        {/* Contenido del Aviso de Privacidad */}
+        {/* Aviso de Privacidad */}
         <div className="mt-6">
           <p>Última actualización: 1 de octubre del 2024</p>
 

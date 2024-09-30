@@ -49,7 +49,7 @@ export default function Acerca() {
           </a>
         </div>
         {/* Aviso de Privacidad */}
-        <div className="mt-4 text-center md:mt-0">
+        <div className="mb-4 mt-4 text-center md:mt-0">
           <Link
             href="/aviso-privacidad"
             className="text-blue-600 hover:underline"
