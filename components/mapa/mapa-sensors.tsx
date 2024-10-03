@@ -116,9 +116,6 @@ export default function MapaSensors({
 
     map.current.on("load", () => {
       sensors.forEach((sensor) => {
-        // Skip if the sensor source is "sima"
-        if (sensor.source.toLowerCase() === "sima") return;
-
         const latestData = data.find(
           (dataItem) => dataItem.sensor_id === sensor.sensor_id,
         );
@@ -223,10 +220,10 @@ export default function MapaSensors({
             <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
             <span className="text-xs">Sensor de Purple Air</span>
           </div>
-          {/* <div className="col-span-1 flex items-center">
+          <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-2 rounded-full border border-black bg-green-400"></div>
             <span className="text-xs">Estación SIMA</span>
-          </div> */}
+          </div>
         </div>
         {/* Hora de actualización */}
         <div className="pt-4 text-xs font-normal text-gray-400">
