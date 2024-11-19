@@ -5,8 +5,8 @@ export default async function PurpleAirData() {
   const { data, error } = await supabase
     .from("purpleair_mediciones")
     .select()
-    .order("time_stamp", { ascending: false })
-    .limit(75);
+    .order("time_stamp", { ascending: false });
+
   if (error) {
     console.error("Error:", error);
     return [];
