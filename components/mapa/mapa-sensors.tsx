@@ -80,7 +80,7 @@ const formatLatLon = (value: number): string => {
 
 // Mapping between Tailwind color classes for popup borders (300 variants)
 const borderColorMap: { [key: string]: string } = {
-  "bg-green-400": "#6EE7B7", // Green 300
+  "bg-green-400": "#00e400",
   "bg-yellow-400": "#FCD34D", // Yellow 300
   "bg-orange-400": "#FDBA74", // Orange 300
   "bg-red-400": "#FCA5A5", // Red 300
