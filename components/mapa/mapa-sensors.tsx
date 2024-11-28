@@ -39,15 +39,15 @@ const createMarker = (
   } else if (pm25 <= 0.4) {
     markerColor = "bg-gray-400"; // gray for values 0.4 or less
   } else if (pm25 > 0.4 && pm25 <= 15) {
-    markerColor = "bg-green-400"; // green for (0.4, 15]
+    markerColor = "bg-[#00e400]"; // green for (0.4, 15]
   } else if (pm25 > 15 && pm25 <= 25) {
-    markerColor = "bg-yellow-400"; // yellow for (15, 25]
+    markerColor = "bg-[#ffff00]"; // yellow for (15, 25]
   } else if (pm25 > 25 && pm25 <= 79) {
-    markerColor = "bg-orange-400"; // orange for (25, 79]
+    markerColor = "bg-[#ff7e00]"; // orange for (25, 79]
   } else if (pm25 > 79 && pm25 <= 130) {
-    markerColor = "bg-red-400"; // red for (79, 130]
+    markerColor = "bg-[#ff0000]"; // red for (79, 130]
   } else if (pm25 > 130) {
-    markerColor = "bg-purple-400"; // purple for > 130
+    markerColor = "bg-[#8f3f97]"; // purple for > 130
   }
 
   if (markerColor === "bg-gray-400") {
@@ -55,9 +55,11 @@ const createMarker = (
   }
 
   const marker = document.createElement("div");
+  const textColor =
+    markerColor === "bg-[#ffff00]" ? "text-black" : "text-white";
   marker.className = `marker ${markerColor} bg-opacity-85 w-8 h-8 flex items-center justify-center rounded-full ${
     source === "sima" ? "border border-black" : ""
-  } text-white text-xs font-bold`;
+  } ${textColor} text-xs font-bold`;
   marker.setAttribute("data-marker-color", markerColor); // Set data attribute for color
 
   // Add the PM2.5 value as text inside the marker
@@ -80,11 +82,11 @@ const formatLatLon = (value: number): string => {
 
 // Mapping between Tailwind color classes for popup borders (300 variants)
 const borderColorMap: { [key: string]: string } = {
-  "bg-green-400": "#00e400",
-  "bg-yellow-400": "#FCD34D", // Yellow 300
-  "bg-orange-400": "#FDBA74", // Orange 300
-  "bg-red-400": "#FCA5A5", // Red 300
-  "bg-purple-400": "#C4B5FD", // Purple 300
+  "bg-[#00e400]": "#00e400",
+  "bg-[#ffff00]": "#ffff00",
+  "bg-[#ff7e00]": "#ff7e00",
+  "bg-[#ff0000]": "#ff0000",
+  "bg-[#8f3f97]": "#8f3f97",
 };
 
 // MapaSensors component
@@ -190,23 +192,23 @@ export default function MapaSensors({
         {/* Calidad del Aire - Legend */}
         <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
           <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full bg-[#00e400]"></div>
             <span className="text-xs">Buena</span>
           </div>
           <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-yellow-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full bg-[#ffff00]"></div>
             <span className="text-xs">Aceptable</span>
           </div>
           <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-orange-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full bg-[#ff7e00]"></div>
             <span className="text-xs">Mala</span>
           </div>
           <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-red-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full bg-[#ff0000]"></div>
             <span className="text-xs">Muy mala</span>
           </div>
           <div className="col-span-2 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-purple-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full bg-[#8f3f97]"></div>
             <span className="text-xs">Extremadamente mala</span>
           </div>
         </div>
@@ -217,11 +219,11 @@ export default function MapaSensors({
         {/* Sensores - Legend */}
         <div className="grid grid-cols-2 items-center space-x-2">
           <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-4 w-2 rounded-full bg-green-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full bg-[#00e400]"></div>
             <span className="text-xs">Sensor de Purple Air</span>
           </div>
           <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-4 w-2 rounded-full border border-black bg-green-400"></div>
+            <div className="mr-2 h-4 w-2 rounded-full border border-black bg-[#00e400]"></div>
             <span className="text-xs">Estación SIMA</span>
           </div>
         </div>
