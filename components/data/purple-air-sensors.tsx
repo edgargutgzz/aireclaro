@@ -5,7 +5,8 @@ export default async function PurpleAirSensors() {
   const { data, error } = await supabase
     .from("purpleair_sensores")
     .select()
-    .eq("estatus", "activo");
+    .eq("estatus", "activo")
+    .neq("sensor_id", 174831);
 
   if (error) {
     console.error("Error:", error);
