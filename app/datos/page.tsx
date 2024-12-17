@@ -111,13 +111,13 @@ export default function Datos() {
         <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12 md:pt-12">
           <Card className="w-full">
             <CardHeader className="gap-1">
-              <CardTitle className="text-3xl md:text-3xl">600,000</CardTitle>
+              <CardTitle className="text-3xl md:text-3xl">1,000,000</CardTitle>
               <CardDescription>⏱️ mediciones</CardDescription>
             </CardHeader>
           </Card>
           <Card className="w-full">
             <CardHeader className="gap-1">
-              <CardTitle className="text-3xl md:text-3xl">100</CardTitle>
+              <CardTitle className="text-3xl md:text-3xl">150</CardTitle>
               <CardDescription>📡 sensores</CardDescription>
             </CardHeader>
           </Card>
