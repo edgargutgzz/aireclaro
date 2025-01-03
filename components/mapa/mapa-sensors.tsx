@@ -147,7 +147,7 @@ export default function MapaSensors({
             <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: ${popupBorderColor}; border-radius: 3px;"></div>
           </div>
           <div style="margin-top: 8px; font-size: 12px; color: black;">
-            <span style="font-weight: bold;">Sensor: </span>${sensor.nombre}
+            <span style="font-weight: bold;">${sensor.source === "sima" ? "Estación: " : "Sensor: "}</span>${sensor.nombre}
           </div>
           <div style="font-size: 12px; color: black;">
             <span style="font-weight: bold;">Lat: </span>${formatLatLon(sensor.lat)}
