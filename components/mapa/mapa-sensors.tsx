@@ -140,6 +140,34 @@ export default function MapaSensors({
             const userMarkerElement = document.createElement("div");
             userMarkerElement.className =
               "w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg";
+            userMarkerElement.style.animation =
+              "pulsate 1.5s ease-out infinite";
+            userMarkerElement.style.cssText = `
+              width: 16px;
+              height: 16px;
+              background: #3b82f6;
+              border: 2px solid white;
+              border-radius: 50%;
+              box-shadow: 0 0 0 rgba(59, 130, 246, 0.4);
+              animation: pulsate 2s ease-out infinite;
+            `;
+
+            // Add the keyframe animation
+            const style = document.createElement("style");
+            style.textContent = `
+              @keyframes pulsate {
+                0% {
+                  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+                }
+                70% {
+                  box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+                }
+                100% {
+                  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+                }
+              }
+            `;
+            document.head.appendChild(style);
 
             new Marker({
               element: userMarkerElement,
@@ -158,8 +186,15 @@ export default function MapaSensors({
       // Add user location marker if we already have the location
       if (userLocation && map.current) {
         const userMarkerElement = document.createElement("div");
-        userMarkerElement.className =
-          "w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg";
+        userMarkerElement.style.cssText = `
+          width: 16px;
+          height: 16px;
+          background: #3b82f6;
+          border: 2px solid white;
+          border-radius: 50%;
+          box-shadow: 0 0 0 rgba(59, 130, 246, 0.4);
+          animation: pulsate 2s ease-out infinite;
+        `;
 
         new Marker({
           element: userMarkerElement,
