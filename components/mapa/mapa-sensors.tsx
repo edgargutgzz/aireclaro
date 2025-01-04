@@ -125,14 +125,28 @@ export default function MapaSensors({
       zoom: 11,
     });
 
-    // Add this geolocation request
+    // Request user location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
+          const location = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-          });
+          };
+          setUserLocation(location);
+
+          // Add marker if map is already loaded
+          if (map.current) {
+            const userMarkerElement = document.createElement("div");
+            userMarkerElement.className =
+              "w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg";
+
+            new Marker({
+              element: userMarkerElement,
+            })
+              .setLngLat([location.longitude, location.latitude])
+              .addTo(map.current);
+          }
         },
         (error) => {
           console.error("Error getting user location:", error);
@@ -141,8 +155,8 @@ export default function MapaSensors({
     }
 
     map.current.on("load", () => {
-      // Add this user location marker code
-      if (userLocation) {
+      // Add user location marker if we already have the location
+      if (userLocation && map.current) {
         const userMarkerElement = document.createElement("div");
         userMarkerElement.className =
           "w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg";
@@ -151,7 +165,7 @@ export default function MapaSensors({
           element: userMarkerElement,
         })
           .setLngLat([userLocation.longitude, userLocation.latitude])
-          .addTo(map.current!);
+          .addTo(map.current);
       }
 
       sensors.forEach((sensor) => {
@@ -211,7 +225,7 @@ export default function MapaSensors({
 
       setLatestUpdateTime(formattedTime);
     });
-  }, [sensors, data, userLocation]); // Add userLocation to dependencies
+  }, [sensors, data, userLocation]); // Add userLocation back to dependencies
 
   return (
     <div className="relative h-screen">
