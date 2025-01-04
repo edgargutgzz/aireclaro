@@ -256,6 +256,8 @@ export default function MapaSensors({
       const currentDate = new Date(firstDataTimestamp.replace(" ", "T"));
       const minutes = currentDate.getMinutes();
 
+      console.log("Current time:", currentDate, "Minutes:", minutes); // Debug log
+
       // If we're less than 15 minutes into the hour, show previous hour
       if (minutes < 15) {
         currentDate.setHours(currentDate.getHours() - 1);
@@ -265,6 +267,7 @@ export default function MapaSensors({
         /:\d{2}/,
         ":00",
       );
+      console.log("Formatted time:", formattedTime); // Debug log
       setLatestUpdateTime(formattedTime);
     });
   }, [sensors, data, userLocation]); // Add userLocation back to dependencies
