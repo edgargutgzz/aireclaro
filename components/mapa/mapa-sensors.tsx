@@ -115,6 +115,19 @@ export default function MapaSensors({
   // Add this new state
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
+  // Add this function to handle marker creation
+  const addUserLocationMarker = (map: Map, location: UserLocation) => {
+    const userMarkerElement = document.createElement("div");
+    userMarkerElement.className =
+      "w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg";
+
+    new Marker({
+      element: userMarkerElement,
+    })
+      .setLngLat([location.longitude, location.latitude])
+      .addTo(map);
+  };
+
   useEffect(() => {
     if (map.current) return;
 
@@ -125,14 +138,20 @@ export default function MapaSensors({
       zoom: 11,
     });
 
-    // Add this geolocation request
+    // Request user location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
+          const location = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-          });
+          };
+          setUserLocation(location);
+
+          // Add marker if map is already loaded
+          if (map.current) {
+            addUserLocationMarker(map.current, location);
+          }
         },
         (error) => {
           console.error("Error getting user location:", error);
@@ -141,17 +160,9 @@ export default function MapaSensors({
     }
 
     map.current.on("load", () => {
-      // Add this user location marker code
-      if (userLocation) {
-        const userMarkerElement = document.createElement("div");
-        userMarkerElement.className =
-          "w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg";
-
-        new Marker({
-          element: userMarkerElement,
-        })
-          .setLngLat([userLocation.longitude, userLocation.latitude])
-          .addTo(map.current!);
+      // Add user location marker if we already have the location
+      if (userLocation && map.current) {
+        addUserLocationMarker(map.current, userLocation);
       }
 
       sensors.forEach((sensor) => {
@@ -211,7 +222,7 @@ export default function MapaSensors({
 
       setLatestUpdateTime(formattedTime);
     });
-  }, [sensors, data, userLocation]); // Add userLocation to dependencies
+  }, [sensors, data]); // Remove userLocation from dependencies to prevent re-renders
 
   return (
     <div className="relative h-screen">
