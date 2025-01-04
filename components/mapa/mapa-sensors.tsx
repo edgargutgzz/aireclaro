@@ -253,10 +253,10 @@ export default function MapaSensors({
       });
 
       const firstDataTimestamp = data[0].time_stamp;
-      const currentDate = new Date(firstDataTimestamp.replace(" ", "T"));
+      const currentDate = new Date();
       const minutes = currentDate.getMinutes();
 
-      console.log("Current time:", currentDate, "Minutes:", minutes); // Debug log
+      console.log("Real current time:", currentDate, "Minutes:", minutes); // Debug log
 
       // If we're less than 15 minutes into the hour, show previous hour
       if (minutes < 15) {
