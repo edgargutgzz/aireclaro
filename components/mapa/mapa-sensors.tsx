@@ -253,11 +253,18 @@ export default function MapaSensors({
       });
 
       const firstDataTimestamp = data[0].time_stamp;
-      const formattedTime = format(
-        new Date(firstDataTimestamp.replace(" ", "T")),
-        "h:mm a",
-      ).replace(/:\d{2}/, ":00");
+      const currentDate = new Date(firstDataTimestamp.replace(" ", "T"));
+      const minutes = currentDate.getMinutes();
 
+      // If we're less than 15 minutes into the hour, show previous hour
+      if (minutes < 15) {
+        currentDate.setHours(currentDate.getHours() - 1);
+      }
+
+      const formattedTime = format(currentDate, "h:mm a").replace(
+        /:\d{2}/,
+        ":00",
+      );
       setLatestUpdateTime(formattedTime);
     });
   }, [sensors, data, userLocation]); // Add userLocation back to dependencies
