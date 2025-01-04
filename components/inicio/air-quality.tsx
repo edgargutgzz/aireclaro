@@ -364,10 +364,17 @@ export default function AirQuality({
             )}
           {showTime &&
             state.airQuality.timestamp &&
-            format(
-              new Date(state.airQuality.timestamp.replace(" ", "T")),
-              "h:mm a",
-            ).replace(/:\d{2}/, ":00")}
+            (() => {
+              const currentDate = new Date();
+              const minutes = currentDate.getMinutes();
+
+              // If we're less than 15 minutes into the hour, show previous hour
+              if (minutes < 15) {
+                currentDate.setHours(currentDate.getHours() - 1);
+              }
+
+              return format(currentDate, "h:mm a").replace(/:\d{2}/, ":00");
+            })()}
           {showMenoresRecommendation && (
             <div className="flex flex-col pb-1">
               <div
