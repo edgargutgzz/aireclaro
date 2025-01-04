@@ -27,6 +27,12 @@ interface Data {
   time_stamp: string;
 }
 
+// Add this interface after your existing interfaces
+interface UserLocation {
+  latitude: number;
+  longitude: number;
+}
+
 // Function to get marker color based on pm25 value
 const createMarker = (
   pm25: number | null,
@@ -106,6 +112,9 @@ export default function MapaSensors({
   // State to hold the latest update time
   const [latestUpdateTime, setLatestUpdateTime] = useState<string>("");
 
+  // Add this new state
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+
   useEffect(() => {
     if (map.current) return;
 
@@ -116,7 +125,35 @@ export default function MapaSensors({
       zoom: 11,
     });
 
+    // Add this geolocation request
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        },
+      );
+    }
+
     map.current.on("load", () => {
+      // Add this user location marker code
+      if (userLocation) {
+        const userMarkerElement = document.createElement("div");
+        userMarkerElement.className =
+          "w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg";
+
+        new Marker({
+          element: userMarkerElement,
+        })
+          .setLngLat([userLocation.longitude, userLocation.latitude])
+          .addTo(map.current!);
+      }
+
       sensors.forEach((sensor) => {
         const latestData = data.find(
           (dataItem) => dataItem.sensor_id === sensor.sensor_id,
@@ -174,7 +211,7 @@ export default function MapaSensors({
 
       setLatestUpdateTime(formattedTime);
     });
-  }, [sensors, data]);
+  }, [sensors, data, userLocation]); // Add userLocation to dependencies
 
   return (
     <div className="relative h-screen">
@@ -225,6 +262,10 @@ export default function MapaSensors({
           <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-2 rounded-full border border-black bg-[#00e400]"></div>
             <span className="text-xs">Estación SIMA</span>
+          </div>
+          <div className="col-span-2 mt-2 flex items-center">
+            <div className="mr-2 h-4 w-4 rounded-full border-2 border-white bg-blue-500"></div>
+            <span className="text-xs">Tu ubicación</span>
           </div>
         </div>
         {/* Hora de actualización */}
