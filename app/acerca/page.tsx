@@ -50,10 +50,7 @@ export default function Acerca() {
         </div>
         {/* Aviso de Privacidad */}
         <div className="mb-6 mt-4 text-center md:mt-0">
-          <Link
-            href="/aviso-privacidad"
-            className="text-blue-600 hover:underline"
-          >
+          <Link href="/aviso-privacidad" className="hover:text-gray-400">
             Aviso de Privacidad
           </Link>
         </div>
