@@ -15,6 +15,7 @@ export default function Acerca() {
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          loading="lazy"
           className="h-64 w-full rounded-lg md:h-96"
         ></iframe>
       </div>
@@ -49,7 +50,7 @@ export default function Acerca() {
           </a>
         </div>
         {/* Aviso de Privacidad */}
-        <div className="mb-6 mt-4 text-center md:mt-0">
+        <div className="flex items-center text-center md:mt-0">
           <Link href="/aviso-privacidad" className="hover:text-gray-400">
             Aviso de Privacidad
           </Link>
