@@ -89,7 +89,7 @@ export default function Datos() {
           <p className="w-full text-justify md:w-2/3">
             Descarga el historial de datos, desde julio 2023 a diciembre 2024,
             sobre la calidad del aire que respiramos en la Zona Metropolitana de
-            Monterrey.
+            Monterrey y Saltillo.
           </p>
           <div className="flex w-full justify-start pt-8 md:w-1/3 md:justify-end md:pt-0">
             <Link
@@ -98,7 +98,7 @@ export default function Datos() {
             >
               <Button
                 onClick={() => {
-                  track("Ir a Google Drive clicked");
+                  track("Descargar datos");
                 }}
               >
                 Descargar datos
@@ -132,10 +132,10 @@ export default function Datos() {
         <div className="pt-12">
           <Card>
             <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-              <div className="grid flex-1 gap-1 text-center sm:text-left">
-                <CardTitle>Mediciones</CardTitle>
+              <div className="grid flex-1 gap-2 text-center sm:text-left">
+                <CardTitle>Muestra de datos</CardTitle>
                 <CardDescription>
-                  Concentración de PM2.5 en Nuevo León
+                  Concentración de PM2.5 en la Zona Metropolitana de Monterrey
                 </CardDescription>
               </div>
             </CardHeader>
