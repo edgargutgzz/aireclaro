@@ -6,10 +6,9 @@ export default async function PurpleAirSensors() {
     .from("purpleair_sensores")
     .select()
     .eq("estatus", "activo")
-    .neq("sensor_id", 174831)
-    .neq("sensor_id", 146946)
     .neq("sensor_id", 132661) // lleva semanas marcando 64
-    .neq("sensor_id", 34499); // lleva semanas marcando 1
+    .neq("sensor_id", 146946) // lleva días marcando 277.4
+    .neq("sensor_id", 174831); // lleva días marcando valores muy altos
 
   if (error) {
     console.error("Error:", error);
