@@ -1,18 +1,10 @@
-import dynamic from "next/dynamic";
 import PurpleAirSensors from "@/components/data/purple-air-sensors";
 import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import Image from "next/image";
 import { Navigation, Clock } from "lucide-react";
-
-// Dynamically import the AirQuality component
-const LazyAirQuality = dynamic(
-  () => import("@/components/inicio/air-quality"),
-  {
-    ssr: false, // Disable server-side rendering for this component
-  },
-);
+import LazyAirQualityWrapper from "@/components/inicio/lazy-air-quality";
 
 export default async function Inicio() {
   const [purpleAirSensors, purpleAirData, simaSensors, simaData] =
@@ -38,7 +30,7 @@ export default async function Inicio() {
         {/* Air Quality text, recommendation and quality bar */}
         <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
           <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
-          <LazyAirQuality sensors={sensors} data={data} />
+          <LazyAirQualityWrapper sensors={sensors} data={data} />
         </div>
       </div>
       {/* Población sensible */}
@@ -58,7 +50,7 @@ export default async function Inicio() {
               alt="Menores Icon"
             />
             <div className="font-semibold">Menores de 12 años</div>
-            <LazyAirQuality
+            <LazyAirQualityWrapper
               sensors={sensors}
               data={data}
               showMenoresRecommendation
@@ -73,7 +65,7 @@ export default async function Inicio() {
               alt="Adultos mayores Icon"
             />
             <div className="font-semibold">Mayores de 60 años</div>
-            <LazyAirQuality
+            <LazyAirQualityWrapper
               sensors={sensors}
               data={data}
               showAdultosMayoresRecommendation
@@ -91,7 +83,7 @@ export default async function Inicio() {
               alt="Personas Embarazadas Icon"
             />
             <div className="font-semibold">Personas embarazadas</div>
-            <LazyAirQuality
+            <LazyAirQualityWrapper
               sensors={sensors}
               data={data}
               showEmbarazadasRecommendation
@@ -116,7 +108,7 @@ export default async function Inicio() {
             <div className="font-semibold">
               Enfermedades cardiovasculares y respiratorias
             </div>
-            <LazyAirQuality
+            <LazyAirQualityWrapper
               sensors={sensors}
               data={data}
               showEnfermedadesRecommendation
@@ -135,14 +127,14 @@ export default async function Inicio() {
           {/* Ubicación */}
           <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg md:w-2/3">
             <Navigation />
-            <LazyAirQuality sensors={sensors} data={data} showAddress />
+            <LazyAirQualityWrapper sensors={sensors} data={data} showAddress />
           </div>
           {/* Hora */}
           <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg md:w-1/3">
             <Clock />
             <div className="flex">
               <div className="pr-1">Actualizada a las</div>
-              <LazyAirQuality sensors={sensors} data={data} showTime />
+              <LazyAirQualityWrapper sensors={sensors} data={data} showTime />
             </div>
           </div>
         </div>

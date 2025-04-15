@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import mbxGeocoding from "@mapbox/mapbox-sdk/services/geocoding";
 
 // Sensor interface
-interface Sensor {
+export interface Sensor {
   id: number;
   sensor_id: number;
   nombre: string;
@@ -16,7 +16,7 @@ interface Sensor {
 }
 
 // Air Quality Data interface
-interface Data {
+export interface Data {
   id: number;
   sensor_id: number;
   pm25: number;

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 export default function Questions() {
+  // Questions and answers
   const questions = [
     {
       question: "¿Qué es Aire Claro?",
@@ -134,10 +135,12 @@ export default function Questions() {
     },
   ];
 
+  // State to manage the open question
   const [openQuestion, setOpenQuestion] = useState<string | null>(
     questions[0].question,
   );
 
+  // Function to toggle the open question
   const toggleQuestion = (question: string): void => {
     if (openQuestion === question) {
       setOpenQuestion(null); // If clicked again, close it

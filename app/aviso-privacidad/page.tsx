@@ -7,8 +7,6 @@ export default function Aviso() {
 
         {/* Aviso de Privacidad */}
         <div className="mt-6">
-          <p>Última actualización: 1 de octubre del 2024</p>
-
           <p className="mt-4">
             Aire Claro recopila y utiliza tu ubicación para proporcionarte
             información precisa sobre la calidad del aire en tu área.
@@ -91,6 +89,8 @@ export default function Aviso() {
             Si tienes preguntas o inquietudes sobre este aviso de privacidad,
             por favor envíanos un correo a: contacto@observatoriodelaire.com
           </p>
+
+          <p className="mt-10">Última actualización: 31 de marzo del 2025</p>
         </div>
       </div>
     </div>
