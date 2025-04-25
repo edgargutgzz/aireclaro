@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Home, Map, Database, Info } from "lucide-react";
+import { Home, MapPin, Database, Info } from "lucide-react";
 
 export default function Navlinks() {
   const pathname = usePathname();
@@ -18,7 +18,7 @@ export default function Navlinks() {
     {
       name: "Mapa",
       href: "/mapa",
-      icon: Map,
+      icon: MapPin,
       alt: "Mapa",
     },
     {
