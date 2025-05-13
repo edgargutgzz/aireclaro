@@ -9,10 +9,25 @@ export default function Questions() {
     {
       question: "¿Qué es Aire Claro?",
       answer: (
-        <p>
-          Aire Claro brinda información sobre la contaminación atmosférica en la
-          Zona Metropolitana de Monterrey y Saltillo.
-        </p>
+        <div>
+          <p className="mb-4">
+            Aire Claro brinda información sobre la contaminación atmosférica en
+            la Zona Metropolitana de Monterrey y Saltillo.
+          </p>
+          <div className="mt-6 flex justify-center">
+            <iframe
+              width="560"
+              height="315"
+              src="https://www.youtube.com/embed/zUt6HwlZB08?si=z6mAQ8bkuVx25QsP"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+              className="h-64 w-full rounded-lg md:h-96"
+            ></iframe>
+          </div>
+        </div>
       ),
     },
     {
@@ -135,10 +150,8 @@ export default function Questions() {
     },
   ];
 
-  // State to manage the open question
-  const [openQuestion, setOpenQuestion] = useState<string | null>(
-    questions[0].question,
-  );
+  // State to manage the open question - initialize with null so no questions are open by default
+  const [openQuestion, setOpenQuestion] = useState<string | null>(null);
 
   // Function to toggle the open question
   const toggleQuestion = (question: string): void => {
