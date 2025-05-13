@@ -90,7 +90,7 @@ export default function Aviso() {
             por favor envíanos un correo a: contacto@observatoriodelaire.com
           </p>
 
-          <p className="mt-10">Última actualización: 31 de marzo del 2025</p>
+          <p className="mt-10">Última actualización: 01 de mayo del 2025</p>
         </div>
       </div>
     </div>

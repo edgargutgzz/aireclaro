@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Link from "next/link";
 
 export default function Questions() {
   // Questions and answers
@@ -140,6 +141,23 @@ export default function Questions() {
             ></iframe>
           </div>
         </span>
+      ),
+    },
+    {
+      question: "¿Qué información recolectan sobre mí?",
+      answer: (
+        <p>
+          Aire Claro solamente recopila y utiliza tu ubicación para
+          proporcionarte información precisa sobre la calidad del aire en tu
+          área. También puedes leer nuestro{" "}
+          <Link
+            href="/aviso-privacidad"
+            className="text-blue-500 hover:underline"
+          >
+            aviso de privacidad
+          </Link>{" "}
+          para conocer más.
+        </p>
       ),
     },
     {
