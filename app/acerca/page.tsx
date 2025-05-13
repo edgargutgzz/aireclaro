@@ -12,8 +12,8 @@ export default function Acerca() {
 
       {/* Footer */}
       <div className="mt-12 flex flex-col items-center md:mt-16">
-        <div className="flex items-center justify-center">
-          <div className="mr-2 text-gray-400">Un proyecto del</div>
+        <div className="flex items-center justify-center whitespace-nowrap">
+          <div className="mr-3 text-gray-400">Un proyecto del</div>
           <a
             href="https://observatoriodelaire.com/"
             target="_blank"
