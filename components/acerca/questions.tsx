@@ -147,14 +147,16 @@ export default function Questions() {
       question: "¿Qué información recolectan sobre mí?",
       answer: (
         <p>
-          Aire Claro solamente recopila y utiliza tu ubicación para
-          proporcionarte información precisa sobre la calidad del aire en tu
-          área. También puedes leer nuestro{" "}
+          Aire Claro recopila y utiliza tu ubicación para proporcionarte
+          información precisa sobre la calidad del aire en tu área.
+          <br />
+          <br />
+          También puedes leer nuestro{" "}
           <Link
             href="/aviso-privacidad"
             className="text-blue-500 hover:underline"
           >
-            aviso de privacidad
+            Aviso de Privacidad
           </Link>{" "}
           para conocer más.
         </p>
