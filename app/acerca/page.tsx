@@ -3,7 +3,7 @@ import Image from "next/image";
 
 export default function Acerca() {
   return (
-    <div className="mx-4 flex min-h-screen flex-col py-8 pb-24 md:mx-16 md:py-12 md:pb-10 lg:mx-36">
+    <div className="mx-4 flex min-h-screen flex-col py-8 pb-16 md:mx-16 md:py-12 md:pb-10 lg:mx-36">
       {/* Header */}
       <h1 className="mb-8 text-3xl font-bold md:mb-10">Preguntas Frecuentes</h1>
 
@@ -27,7 +27,7 @@ export default function Acerca() {
               alt="Observatorio del Aire Logo"
               width={240}
               height={80}
-              className="-ml-2 w-[180px] sm:-ml-4 sm:w-[240px] md:w-[290px]"
+              className="-ml-2 w-[200px] sm:-ml-4 sm:w-[240px] md:w-[290px]"
             />
           </a>
         </div>
