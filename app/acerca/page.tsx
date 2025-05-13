@@ -11,20 +11,23 @@ export default function Acerca() {
       <Questions />
 
       {/* Footer */}
-      <div className="mt-12 flex flex-col items-center md:mt-16">
-        <div className="flex items-center justify-center whitespace-nowrap">
-          <div className="mr-3 text-gray-400">Un proyecto del</div>
+      <div className="mt-12 flex justify-center md:mt-16">
+        <div className="flex flex-col items-center sm:flex-row sm:items-center sm:whitespace-nowrap">
+          <div className="mb-2 text-center text-gray-400 sm:mb-0 sm:mr-3">
+            Un proyecto del
+          </div>
           <a
             href="https://observatoriodelaire.com/"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex justify-center"
           >
             <Image
               src="/logo-occamm.png"
               alt="Observatorio del Aire Logo"
               width={290}
               height={100}
-              className="-ml-4"
+              className="sm:-ml-4"
             />
           </a>
         </div>
