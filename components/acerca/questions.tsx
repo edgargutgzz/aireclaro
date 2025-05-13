@@ -12,7 +12,7 @@ export default function Questions() {
         <div>
           <p className="mb-4">
             Aire Claro brinda información sobre la contaminación atmosférica en
-            la Zona Metropolitana de Monterrey y Saltillo.
+            la Zona Metropolitana de Monterrey.
           </p>
           <div className="mt-6 flex justify-center">
             <iframe
@@ -45,8 +45,8 @@ export default function Questions() {
                 className="text-blue-500 hover:underline"
               >
                 SIMA
-              </a>
-              {", "}de la Secretaría de Medio Ambiente de Nuevo León.
+              </a>{" "}
+              de la Secretaría de Medio Ambiente de Nuevo León.
             </span>
           </p>
           <p>
@@ -74,7 +74,7 @@ export default function Questions() {
         <div className="flex flex-col space-y-4">
           <p>Aire Claro es la única que:</p>
           <p>
-            1. Utiliza la red más completa de sensores terrestres del Área
+            1. Utiliza la red más completa de sensores terrestres de la Zona
             Metropolitana de Monterrey.
           </p>
           <p>
@@ -89,9 +89,9 @@ export default function Questions() {
               >
                 OCCAMM
               </a>
-              {", "}organización de la sociedad civil líder en promover
-              información sobre el estado, causas y efectos de la contaminación
-              del aire.
+              {", "}organización de la sociedad civil con 10 años de experiencia
+              promoviendo información sobre el estado, causas y efectos de la
+              contaminación del aire.
             </span>
           </p>
         </div>
@@ -122,8 +122,8 @@ export default function Questions() {
           <br />
           <br />
           Es importante mencionar, que en condiciones de alta humedad o viento
-          fuerte, los sensores sobreestiman o subestiman las concentraciones de
-          partículas finas, respectivamente.
+          fuerte, los sensores de Purple Air sobreestiman o subestiman las
+          concentraciones de partículas finas, respectivamente.
         </span>
       ),
     },
