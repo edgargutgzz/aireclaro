@@ -11,7 +11,7 @@ export default function Acerca() {
       <Questions />
 
       {/* Footer */}
-      <div className="mt-12 flex flex-row items-center justify-center md:mt-16 md:justify-start">
+      <div className="mt-12 flex flex-row items-center justify-start md:mt-16">
         <div className="text-sm text-gray-400 md:text-base">
           Un proyecto del
         </div>
