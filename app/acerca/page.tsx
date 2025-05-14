@@ -12,7 +12,7 @@ export default function Acerca() {
 
       {/* Footer */}
       <div className="mt-12 flex flex-row items-center justify-start md:mt-16">
-        <div className="text-sm text-gray-400 md:text-base">
+        <div className="ml-2 text-sm text-gray-400 md:ml-0 md:text-base">
           Un proyecto del
         </div>
         <a
