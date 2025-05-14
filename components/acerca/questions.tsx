@@ -129,6 +129,24 @@ export default function Questions() {
       ),
     },
     {
+      question: "¿Puedo descargar los datos de calidad del aire?",
+      answer: (
+        <p>
+          ¡Claro! Puedes descargar el historial completo de datos en el
+          siguiente{" "}
+          <a
+            href="https://datamx.io/dataset/calidad-del-aire-en-nuevo-leon"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            enlace
+          </a>
+          .
+        </p>
+      ),
+    },
+    {
       question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
       answer: (
         <span>
