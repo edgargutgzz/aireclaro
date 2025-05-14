@@ -77,13 +77,13 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <div className="flex flex-col-reverse lg:h-screen lg:flex-row">
+        <div className="flex min-h-screen flex-col-reverse md:flex-col">
           {/* Navbar */}
-          <div className="fixed bottom-0 z-10 w-full lg:static lg:bottom-auto lg:w-1/5">
+          <div className="fixed bottom-0 z-10 w-full md:fixed md:bottom-auto md:top-0 md:z-10">
             <Navbar />
           </div>
           {/* Content */}
-          <div className="w-full flex-grow overflow-y-auto bg-gray-50 lg:w-4/5">
+          <div className="w-full flex-grow overflow-y-auto bg-gray-50 pb-16 md:pb-0 md:pt-16">
             {children}
           </div>
         </div>
