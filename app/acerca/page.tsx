@@ -11,7 +11,7 @@ export default function Acerca() {
       <Questions />
 
       {/* Footer */}
-      <div className="mt-12 flex flex-row items-center justify-center whitespace-nowrap md:mt-16">
+      <div className="mt-12 flex flex-row items-center justify-center md:mt-16 md:justify-start">
         <div className="text-sm text-gray-400 md:text-base">
           Un proyecto del
         </div>
@@ -26,7 +26,7 @@ export default function Acerca() {
             alt="Observatorio del Aire Logo"
             width={240}
             height={80}
-            className="w-[200px] md:w-[290px]"
+            className="w-[200px] md:w-[260px]"
           />
         </a>
       </div>
