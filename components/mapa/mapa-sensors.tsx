@@ -284,13 +284,13 @@ export default function MapaSensors({
       {/* Legend Toggle Button */}
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="absolute left-6 top-4 z-10 rounded-lg bg-white p-2 shadow-lg md:hidden"
+        className="absolute left-5 top-4 z-10 rounded-lg bg-white p-3 shadow-xl transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         {isLegendVisible ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-6 w-6 text-gray-700"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -298,14 +298,14 @@ export default function MapaSensors({
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
+              strokeWidth={2.5}
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
         ) : (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
+            className="h-6 w-6 text-gray-700"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -313,7 +313,7 @@ export default function MapaSensors({
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
+              strokeWidth={2.5}
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
