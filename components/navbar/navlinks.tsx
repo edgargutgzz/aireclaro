@@ -10,16 +10,16 @@ export default function Navlinks() {
 
   const links = [
     {
-      name: "Recomendaciones",
-      href: "/recomendaciones",
-      icon: FileHeart,
-      alt: "Recomendaciones",
-    },
-    {
       name: "Mapa",
       href: "/",
       icon: MapPin,
       alt: "Mapa",
+    },
+    {
+      name: "Recomendaciones",
+      href: "/recomendaciones",
+      icon: FileHeart,
+      alt: "Recomendaciones",
     },
     {
       name: "Datos",
