@@ -1,10 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { Sensor, Data } from "@/components/inicio/air-quality"; // You'll need to export these types
+import type { Sensor, Data } from "@/components/recomendaciones/air-quality"; // You'll need to export these types
 
 const LazyAirQuality = dynamic(
-  () => import("@/components/inicio/air-quality"),
+  () => import("@/components/recomendaciones/air-quality"),
   {
     ssr: false,
     loading: () => <div>Loading...</div>, // Optional loading state
