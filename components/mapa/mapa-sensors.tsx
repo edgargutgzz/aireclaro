@@ -113,9 +113,12 @@ export default function MapaSensors({
   // Add this new state
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
+  const [isLegendVisible, setIsLegendVisible] = useState(false); // Add this state
+
   useEffect(() => {
     if (map.current) return;
 
+    // Initialize map
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
@@ -277,8 +280,51 @@ export default function MapaSensors({
         ref={mapContainer}
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
+
+      {/* Legend Toggle Button */}
+      <button
+        onClick={() => setIsLegendVisible(!isLegendVisible)}
+        className="absolute bottom-24 left-2 z-10 rounded-lg bg-white p-2 shadow-lg md:hidden"
+        aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
+      >
+        {isLegendVisible ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        )}
+      </button>
+
       {/* Legend */}
-      <div className="absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-85 py-3 pl-3 pr-0 shadow-lg md:bottom-24 md:left-6 md:p-4 lg:bottom-12 lg:left-10">
+      <div
+        className={`absolute bottom-14 left-2 rounded-lg bg-white bg-opacity-85 py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out md:bottom-24 md:left-6 md:p-4 lg:bottom-12 lg:left-10
+          ${isLegendVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 md:translate-y-0 md:opacity-100"}`}
+      >
         {/* Calidad del Aire - Title */}
         <div className="mb-2 flex flex-col font-semibold">
           <span className="text-sm">Calidad del Aire</span>
