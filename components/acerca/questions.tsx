@@ -13,7 +13,7 @@ export default function Questions() {
         <div>
           <p className="mb-4">
             Aire Claro es una plataforma que brinda información sobre la calidad
-            del aire que se respira en la Zona Metropolitana de Monterrey.
+            del aire que respiramos en la Zona Metropolitana de Monterrey.
           </p>
           <div className="mt-6 flex justify-center">
             <iframe
