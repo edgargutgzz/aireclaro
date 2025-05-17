@@ -80,10 +80,10 @@ export default function Questions() {
       ),
     },
     {
-      question: "¿Cómo garantizan la precisión de sus recomendaciones?",
+      question: "¿Cuál es el tipo de contaminante que se mide?",
       answer: (
         <span>
-          Compartimos las concentraciones promedio de la última hora de las
+          Medimos las concentraciones promedio de la última hora de las
           partículas respirables más dañinas para tu salud (PM2.5) y el riesgo a
           la salud asociado por respirarlas, con base en el{" "}
           <a
