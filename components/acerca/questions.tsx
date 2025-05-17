@@ -32,6 +32,18 @@ export default function Questions() {
       ),
     },
     {
+      question:
+        "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
+      answer: (
+        <p>
+          Aire Claro es única en su tipo al concentrarse exclusivamente en la
+          Zona Metropolitana de Monterrey, combinando datos de estaciones
+          oficiales y sensores ciudadanos para brindar la cobertura más completa
+          de la región.
+        </p>
+      ),
+    },
+    {
       question: "¿Qué información utilizan para medir la calidad del aire?",
       answer: (
         <div className="flex flex-col space-y-4">
@@ -63,36 +75,6 @@ export default function Questions() {
                 Purple Air
               </a>
               {"."}
-            </span>
-          </p>
-        </div>
-      ),
-    },
-    {
-      question:
-        "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
-      answer: (
-        <div className="flex flex-col space-y-4">
-          <p>Aire Claro es la única que:</p>
-          <p>
-            1. Utiliza la red más completa de sensores terrestres de la Zona
-            Metropolitana de Monterrey.
-          </p>
-          <p>
-            2. La respalda el Observatorio Ciudadano de la Calidad del Aire
-            <span>
-              {" "}
-              <a
-                href="https://observatoriodelaire.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                OCCAMM
-              </a>
-              {", "}organización de la sociedad civil con 10 años de experiencia
-              promoviendo información sobre el estado, causas y efectos de la
-              contaminación del aire.
             </span>
           </p>
         </div>
