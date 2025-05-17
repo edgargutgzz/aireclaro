@@ -80,10 +80,10 @@ export default function Questions() {
       ),
     },
     {
-      question: "¿Cuál es el tipo de contaminante que mide Aire Claro?",
+      question: "¿Cuál es el tipo de contaminante que mide?",
       answer: (
         <span>
-          Medimos las concentraciones promedio de la última hora de las
+          Aire Claro mide las concentraciones promedio de la última hora de las
           partículas respirables más dañinas para tu salud (PM2.5) y el riesgo a
           la salud asociado por respirarlas, con base en el{" "}
           <a
@@ -97,7 +97,7 @@ export default function Questions() {
           mexicano.
           <br />
           <br />
-          Adicionalmente, utilizamos los rangos de color de los valores más
+          Adicionalmente, utiliza los rangos de color de los valores más
           protectores para PM2.5 del nuevo Índice Mexicano de Calidad del Aire y
           Riesgos a la Salud (NOM-172-SEMARNAT-2023) que entrarán en vigor a
           partir de enero de 2026.
