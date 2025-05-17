@@ -43,7 +43,8 @@ export default function Questions() {
       ),
     },
     {
-      question: "¿Qué información utilizan para medir la calidad del aire?",
+      question:
+        "¿Qué información utiliza Aire Claro para medir la calidad del aire?",
       answer: (
         <div className="flex flex-col space-y-4">
           <p>
