@@ -80,7 +80,7 @@ export default function Questions() {
       ),
     },
     {
-      question: "¿Cuál es el tipo de contaminante que se mide?",
+      question: "¿Cuál es el tipo de contaminante que mide Aire Claro?",
       answer: (
         <span>
           Medimos las concentraciones promedio de la última hora de las
@@ -110,6 +110,41 @@ export default function Questions() {
       ),
     },
     {
+      question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
+      answer: (
+        <span>
+          <div>
+            <iframe
+              src="https://www.youtube.com/embed/dx0NLeoR3cs"
+              title="YouTube Short"
+              allowFullScreen
+              className="h-96 w-full rounded-xl shadow-lg"
+            ></iframe>
+          </div>
+        </span>
+      ),
+    },
+    {
+      question: "¿Recolectan información sobre mí al usar la plataforma?",
+      answer: (
+        <p>
+          Solo utilizamos tu ubicación al inicio para recomendarte el sensor más
+          cercano a ti y proporcionarte información precisa sobre la calidad del
+          aire en tu área.
+          <br />
+          <br />
+          También puedes leer nuestro{" "}
+          <Link
+            href="/aviso-privacidad"
+            className="text-blue-500 hover:underline"
+          >
+            Aviso de Privacidad
+          </Link>{" "}
+          para conocer más.
+        </p>
+      ),
+    },
+    {
       question: "¿Puedo descargar los datos de calidad del aire?",
       answer: (
         <p>
@@ -126,40 +161,6 @@ export default function Questions() {
             enlace
           </a>
           .
-        </p>
-      ),
-    },
-    {
-      question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
-      answer: (
-        <span>
-          <div>
-            <iframe
-              src="https://www.youtube.com/embed/dx0NLeoR3cs"
-              title="YouTube Short"
-              allowFullScreen
-              className="h-96 w-full rounded-xl shadow-lg"
-            ></iframe>
-          </div>
-        </span>
-      ),
-    },
-    {
-      question: "¿Qué información recolectan sobre mí?",
-      answer: (
-        <p>
-          Aire Claro recopila y utiliza tu ubicación para proporcionarte
-          información precisa sobre la calidad del aire en tu área.
-          <br />
-          <br />
-          También puedes leer nuestro{" "}
-          <Link
-            href="/aviso-privacidad"
-            className="text-blue-500 hover:underline"
-          >
-            Aviso de Privacidad
-          </Link>{" "}
-          para conocer más.
         </p>
       ),
     },
