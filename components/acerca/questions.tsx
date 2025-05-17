@@ -113,7 +113,9 @@ export default function Questions() {
       question: "¿Puedo descargar los datos de calidad del aire?",
       answer: (
         <p>
-          ¡Claro! Puedes descargar el historial completo de datos en el
+          ¡Claro! Como organización de la sociedad civil, parte fundamental de
+          nuestro trabajo es transparentar los datos que utilizamos para el
+          beneficio de todos. Puedes descargar el historial completo en el
           siguiente{" "}
           <a
             href="https://datamx.io/dataset/calidad-del-aire-en-nuevo-leon"
