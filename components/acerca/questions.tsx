@@ -36,10 +36,9 @@ export default function Questions() {
         "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
       answer: (
         <p>
-          Aire Claro es única en su tipo al concentrarse exclusivamente en la
-          Zona Metropolitana de Monterrey, combinando datos de estaciones
-          oficiales y sensores ciudadanos para brindar la cobertura más completa
-          de la región.
+          Aire Claro se enfoca exclusivamente en la Zona Metropolitana de
+          Monterrey, combinando datos de estaciones oficiales y sensores
+          ciudadanos para brindar la cobertura más completa de la región.
         </p>
       ),
     },
