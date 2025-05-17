@@ -118,7 +118,7 @@ export default function Questions() {
           del aire en tu área.
           <br />
           <br />
-          También puedes leer nuestro{" "}
+          También puedes leer el{" "}
           <Link
             href="/aviso-privacidad"
             className="text-blue-500 hover:underline"
