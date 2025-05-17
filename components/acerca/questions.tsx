@@ -110,6 +110,26 @@ export default function Questions() {
       ),
     },
     {
+      question: "¿Recolecta información sobre mí al utilizar la plataforma?",
+      answer: (
+        <p>
+          Aire Claro utiliza tu ubicación al inicio para recomendarte el sensor
+          más cercano a ti y proporcionarte información precisa sobre la calidad
+          del aire en tu área.
+          <br />
+          <br />
+          También puedes leer nuestro{" "}
+          <Link
+            href="/aviso-privacidad"
+            className="text-blue-500 hover:underline"
+          >
+            Aviso de Privacidad
+          </Link>{" "}
+          para conocer más.
+        </p>
+      ),
+    },
+    {
       question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
       answer: (
         <span>
@@ -124,26 +144,7 @@ export default function Questions() {
         </span>
       ),
     },
-    {
-      question: "¿Recolectan información sobre mí al usar la plataforma?",
-      answer: (
-        <p>
-          Solo utilizamos tu ubicación al inicio para recomendarte el sensor más
-          cercano a ti y proporcionarte información precisa sobre la calidad del
-          aire en tu área.
-          <br />
-          <br />
-          También puedes leer nuestro{" "}
-          <Link
-            href="/aviso-privacidad"
-            className="text-blue-500 hover:underline"
-          >
-            Aviso de Privacidad
-          </Link>{" "}
-          para conocer más.
-        </p>
-      ),
-    },
+
     {
       question: "¿Puedo descargar los datos de calidad del aire?",
       answer: (
