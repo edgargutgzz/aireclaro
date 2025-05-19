@@ -343,7 +343,7 @@ export default function MapaSensors({
 
       {/* Legend */}
       <div
-        className={`absolute left-2 rounded-xl bg-white bg-opacity-85 py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
+        className={`absolute left-2 rounded-xl bg-white py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
           ${
             isLegendVisible
               ? "bottom-52 translate-y-0 opacity-100"
