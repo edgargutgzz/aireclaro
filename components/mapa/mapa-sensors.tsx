@@ -222,27 +222,29 @@ export default function MapaSensors({
           : "#FFFFFF";
 
         const popup = new Popup({ offset: 25, closeButton: false }).setHTML(`
-        <div style="padding: 10px; border-radius: 8px; background-color: white;">
-          <div style="position: relative; padding-bottom: 8px; display: flex; align-items: baseline;">
-            <div style="font-size: 42px; font-weight: bold; color: black;">
-              ${latestData ? roundPM25(latestData.pm25) : "N/A"}
+          <div style="padding: 15px; border-radius: 16px; background-color: white;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+              <div style="font-size: 42px; font-weight: bold; color: ${popupBorderColor}; line-height: 1;">
+                ${latestData ? roundPM25(latestData.pm25) : "—"}
+              </div>
+              <div style="font-size: 14px; margin-left: 8px; color: #6b7280; font-weight: 500;">
+                PM2.5
+              </div>
             </div>
-            <span style="font-size: 12px; font-weight: normal; margin-left: 8px; color: black;">
-              PM2.5
-            </span>
-            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background-color: ${popupBorderColor}; border-radius: 3px;"></div>
+            
+            <div style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 12px; line-height: 1.3;">
+              ${sensor.nombre}
+            </div>
+            
+            <div style="font-size: 12px; color: #6b7280;">
+              ${sensor.source === "sima" ? "Estación oficial" : "Sensor ciudadano"}
+            </div>
+            
+            <div class="hidden md:block" style="font-size: 11px; color: #6b7280; margin-top: 4px;">
+              ${formatLatLon(sensor.lat)}, ${formatLatLon(sensor.lon)}
+            </div>
           </div>
-          <div style="margin-top: 8px; font-size: 12px; color: black;">
-            <span style="font-weight: bold;">${sensor.source === "sima" ? "Estación: " : "Sensor: "}</span>${sensor.nombre}
-          </div>
-          <div class="hidden md:block" style="font-size: 12px; color: black;">
-            <span style="font-weight: bold;">Lat: </span>${formatLatLon(sensor.lat)}
-          </div>
-          <div class="hidden md:block" style="font-size: 12px; color: black;">
-            <span style="font-weight: bold;">Lon: </span>${formatLatLon(sensor.lon)}
-          </div>
-        </div>
-      `);
+        `);
 
         new Marker({
           element: markerElement,
