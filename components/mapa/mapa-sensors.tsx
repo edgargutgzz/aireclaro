@@ -60,13 +60,12 @@ const createMarker = (
 
   const marker = document.createElement("div");
   const textColor =
-    markerColor === "bg-[#ffff00]" ? "text-black" : "text-white";
+    markerColor === "bg-[#ffff00]" ? "text-gray-700" : "text-white";
   marker.className = `marker ${markerColor} bg-opacity-85 w-8 h-8 flex items-center justify-center rounded-full ${
     source === "sima" ? "border border-black" : ""
   } ${textColor} text-xs font-bold`;
-  marker.setAttribute("data-marker-color", markerColor); // Set data attribute for color
+  marker.setAttribute("data-marker-color", markerColor);
 
-  // Add the PM2.5 value as text inside the marker
   if (pm25 !== null && pm25 >= 0) {
     marker.textContent = roundPM25(pm25);
   }
