@@ -3,9 +3,11 @@ import Image from "next/image";
 
 export default function Acerca() {
   return (
-    <div className="mx-4 flex flex-col py-8 pb-2 md:mx-16 md:py-12 md:pb-10 lg:mx-52">
+    <div className="mx-4 flex flex-col pb-2 pt-8 md:mx-16 md:py-12 md:pb-10 lg:mx-52">
       {/* Header */}
-      <h1 className="text-3xl font-bold md:mb-10">Preguntas Frecuentes</h1>
+      <h1 className="pb-10 text-3xl font-bold md:mb-10">
+        Preguntas Frecuentes
+      </h1>
 
       {/* Questions */}
       <Questions />
