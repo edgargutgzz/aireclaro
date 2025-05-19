@@ -3,34 +3,40 @@ import { createClient } from "@/utils/supabase/server";
 export default async function PurpleAirData() {
   const supabase = createClient();
 
-  // Get the timestamp of the most recent reading
-  const { data: latestReading, error: timeError } = await supabase
-    .from("purpleair_mediciones")
-    .select("time_stamp")
-    .order("time_stamp", { ascending: false })
-    .limit(1);
+  try {
+    // Get the most recent 100 readings (simplest approach)
+    const { data, error } = await supabase
+      .from("purpleair_mediciones")
+      .select("id, sensor_id, pm25, time_stamp")
+      .order("time_stamp", { ascending: false })
+      .limit(100);
 
-  if (timeError || !latestReading?.length) {
-    console.error("Error finding latest reading:", timeError);
+    if (error) {
+      console.log("Error fetching readings:", error);
+      return [];
+    }
+
+    if (!data || data.length === 0) {
+      console.log("No data returned from query");
+      return [];
+    }
+
+    console.log("Total readings fetched:", data.length);
+
+    // Filter to keep only the latest reading per sensor
+    const latestReadings: { [key: number]: (typeof data)[0] } = {};
+    data.forEach((reading) => {
+      if (!latestReadings[reading.sensor_id]) {
+        latestReadings[reading.sensor_id] = reading;
+      }
+    });
+
+    const result = Object.values(latestReadings);
+    console.log("Unique sensors after filtering:", result.length);
+
+    return result;
+  } catch (err) {
+    console.log("Unexpected error in PurpleAirData:", err);
     return [];
   }
-
-  const latestTimestamp = latestReading[0].time_stamp;
-
-  // Extract the date and hour part (2025-05-19 11)
-  const hourStart = latestTimestamp.substring(0, 13);
-
-  // Get all readings from the latest hour
-  const { data, error } = await supabase
-    .from("purpleair_mediciones")
-    .select("sensor_id, pm25, time_stamp")
-    .like("time_stamp", `${hourStart}%`) // Match the hour prefix
-    .order("sensor_id");
-
-  if (error) {
-    console.error("Error:", error);
-    return [];
-  }
-
-  return data;
 }
