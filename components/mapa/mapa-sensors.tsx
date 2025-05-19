@@ -122,7 +122,7 @@ export default function MapaSensors({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
       center: [-100.35098588977951, 25.676269873872855],
-      zoom: 10,
+      zoom: 9,
     });
 
     // Request user location
