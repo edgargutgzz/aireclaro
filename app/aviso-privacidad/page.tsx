@@ -72,6 +72,7 @@ export default function Aviso() {
           </h2>
           <p className="mt-2">
             Nos reservamos el derecho de actualizar este aviso de privacidad.
+            Última actualización: 01 de mayo del 2025.
           </p>
 
           {/* Sección 9 */}
@@ -80,8 +81,6 @@ export default function Aviso() {
             Si tienes preguntas o inquietudes sobre este aviso de privacidad,
             por favor envíanos un correo a: contacto@observatoriodelaire.com
           </p>
-
-          <p className="mt-10">Última actualización: 01 de mayo del 2025</p>
         </div>
       </div>
     </div>
