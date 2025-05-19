@@ -237,7 +237,7 @@ export default function MapaSensors({
             </div>
             
             <div style="font-size: 12px; color: #6b7280;">
-              ${sensor.source === "sima" ? "Estación oficial" : "Sensor ciudadano"}
+              ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
             </div>
             
             <div class="hidden md:block" style="font-size: 11px; color: #6b7280; margin-top: 4px;">
