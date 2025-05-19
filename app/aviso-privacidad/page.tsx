@@ -1,3 +1,4 @@
+// Privacy Notice
 const privacySections = [
   {
     title: "1. Responsable del Tratamiento de Datos",
@@ -46,6 +47,7 @@ const privacySections = [
   },
 ];
 
+// Component for each section of the privacy notice
 const PrivacySection = ({
   title,
   content,
@@ -59,9 +61,10 @@ const PrivacySection = ({
   </div>
 );
 
+// Privacy Notice page
 export default function Aviso() {
   return (
-    <div className="mx-5 flex min-h-screen flex-col py-8 pb-20 md:mx-16 md:py-12 md:pb-10 lg:mx-52">
+    <div className="mx-5 flex flex-col py-8 pb-10 md:mx-16 md:py-12 md:pb-10 lg:mx-52">
       <div className="flex flex-col">
         {/* Header */}
         <h1 className="mb-6 text-3xl font-bold md:mb-10">
