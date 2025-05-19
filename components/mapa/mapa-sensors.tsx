@@ -224,7 +224,6 @@ export default function MapaSensors({
         const popup = new Popup({
           offset: 25,
           closeButton: false,
-          className: "custom-popup-shadow", // Add custom class for styling
         }).setHTML(`
           <div style="padding: 15px; border-radius: 16px; background-color: white;">
             <div style="display: flex; align-items: center; margin-bottom: 12px;">
@@ -254,7 +253,7 @@ export default function MapaSensors({
         const style = document.createElement("style");
         if (!document.querySelector("style[data-popup-shadow]")) {
           style.textContent = `
-            .custom-popup-shadow .mapboxgl-popup-content {
+            .mapboxgl-popup-content {
               box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
               border-radius: 16px;
             }
