@@ -283,7 +283,7 @@ export default function MapaSensors({
       {/* Legend Toggle Button */}
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="absolute bottom-20 left-5 z-10 rounded-lg bg-white p-3 shadow-xl transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
+        className="absolute bottom-28 left-5 z-10 rounded-lg bg-white p-3 shadow-xl transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         {isLegendVisible ? (
