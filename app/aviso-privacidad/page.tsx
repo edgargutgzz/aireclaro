@@ -67,9 +67,7 @@ export default function Aviso() {
     <div className="mx-4 flex flex-col py-8 pb-10 md:mx-16 md:py-12 md:pb-10 lg:mx-52">
       <div className="flex flex-col">
         {/* Header */}
-        <h1 className="mb-6 text-3xl font-bold md:mb-10">
-          Aviso de Privacidad
-        </h1>
+        <h1 className="text-3xl font-bold md:mb-10">Aviso de Privacidad</h1>
 
         {/* Aviso de Privacidad */}
         <div className="text-sm md:text-base">
