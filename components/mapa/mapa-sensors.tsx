@@ -235,15 +235,18 @@ export default function MapaSensors({
               </div>
             </div>
             
-            <div style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 12px; line-height: 1.3;">
+            <div style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 8px; line-height: 1.3;">
               ${sensor.nombre}
             </div>
             
-            <div style="font-size: 12px; color: #6b7280;">
-              ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
+            <div style="display: flex; align-items: center;">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background-color: ${popupBorderColor}; margin-right: 6px;"></div>
+              <div style="font-size: 12px; color: #6b7280;">
+                ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
+              </div>
             </div>
             
-            <div class="hidden md:block" style="font-size: 11px; color: #6b7280; margin-top: 4px;">
+            <div class="hidden md:block" style="font-size: 11px; color: #6b7280; margin-top: 8px;">
               ${formatLatLon(sensor.lat)}, ${formatLatLon(sensor.lon)}
             </div>
           </div>
@@ -340,7 +343,7 @@ export default function MapaSensors({
 
       {/* Legend */}
       <div
-        className={`absolute left-2 rounded-lg bg-white bg-opacity-85 py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
+        className={`absolute left-2 rounded-xl bg-white bg-opacity-85 py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
           ${
             isLegendVisible
               ? "bottom-52 translate-y-0 opacity-100"
