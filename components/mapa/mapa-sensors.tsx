@@ -365,7 +365,7 @@ export default function MapaSensors({
         <div className="grid grid-cols-2 items-center space-x-4">
           <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-2 rounded-full bg-[#00e400]"></div>
-            <span className="text-xs">Sensor de Purple Air</span>
+            <span className="text-xs">Sensor Purple Air</span>
           </div>
           <div className="col-span-1 flex items-center">
             <div className="mr-2 h-4 w-2 rounded-full border-2 border-black bg-[#00e400]"></div>
