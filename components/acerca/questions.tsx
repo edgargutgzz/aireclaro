@@ -42,6 +42,24 @@ const faqData = [
     ),
   },
   {
+    question: "¿Quién mantiene la plataforma?",
+    answer: (
+      <p>
+        El Observatorio Ciudadano de la Calidad del Aire (OCCAMM). Puedes
+        conocer más sobre el observatorio en el siguiente{" "}
+        <a
+          href="https://www.observatoriodelaire.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
+        >
+          enlace
+        </a>
+        .
+      </p>
+    ),
+  },
+  {
     question: "¿Qué información utiliza para medir la calidad del aire?",
     answer: (
       <div className="flex flex-col space-y-4">
