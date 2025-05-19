@@ -1,4 +1,4 @@
-// Privacy Notice
+// Privacy Notice content
 const privacySections = [
   {
     title: "1. Responsable del Tratamiento de Datos",
@@ -61,7 +61,7 @@ const PrivacySection = ({
   </div>
 );
 
-// Privacy Notice page
+// Privacy Notice
 export default function Aviso() {
   return (
     <div className="mx-5 flex flex-col py-8 pb-10 md:mx-16 md:py-12 md:pb-10 lg:mx-52">
