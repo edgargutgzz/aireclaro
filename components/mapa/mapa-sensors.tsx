@@ -221,7 +221,11 @@ export default function MapaSensors({
           ? borderColorMap[markerColorClass] // Use 300 variant for border
           : "#FFFFFF";
 
-        const popup = new Popup({ offset: 25, closeButton: false }).setHTML(`
+        const popup = new Popup({
+          offset: 25,
+          closeButton: false,
+          className: "custom-popup-shadow", // Add custom class for styling
+        }).setHTML(`
           <div style="padding: 15px; border-radius: 16px; background-color: white;">
             <div style="display: flex; align-items: center; margin-bottom: 12px;">
               <div style="font-size: 42px; font-weight: bold; color: ${popupBorderColor}; line-height: 1;">
@@ -245,6 +249,19 @@ export default function MapaSensors({
             </div>
           </div>
         `);
+
+        // Add custom CSS for the popup shadow
+        const style = document.createElement("style");
+        if (!document.querySelector("style[data-popup-shadow]")) {
+          style.textContent = `
+            .custom-popup-shadow .mapboxgl-popup-content {
+              box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+              border-radius: 16px;
+            }
+          `;
+          style.setAttribute("data-popup-shadow", "true");
+          document.head.appendChild(style);
+        }
 
         new Marker({
           element: markerElement,
