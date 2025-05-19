@@ -47,7 +47,7 @@ const privacySections = [
   },
 ];
 
-// Component for each section of the privacy notice
+// Privacy Notice component
 const PrivacySection = ({
   title,
   content,
