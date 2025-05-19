@@ -72,7 +72,7 @@ export default function Aviso() {
         </h1>
 
         {/* Aviso de Privacidad */}
-        <div className="mx-1 text-sm md:text-base">
+        <div className="text-sm md:text-base">
           {privacySections.map((section, index) => (
             <PrivacySection
               key={index}
