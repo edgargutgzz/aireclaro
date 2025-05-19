@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { FileHeart, MapPin, Database, Info, Home } from "lucide-react";
+import { FileHeart, MapPin, BarChart, Info } from "lucide-react";
 
 export default function Navlinks() {
   const pathname = usePathname();
@@ -24,7 +24,7 @@ export default function Navlinks() {
     {
       name: "Datos",
       href: "/datos",
-      icon: Database,
+      icon: BarChart,
       alt: "Datos",
     },
     {
