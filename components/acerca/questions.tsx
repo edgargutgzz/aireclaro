@@ -182,7 +182,7 @@ const FAQItem = ({
   onToggle: () => void;
 }) => (
   <div
-    className="cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg md:text-base"
+    className="mt-8 cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg md:text-base"
     onClick={onToggle}
   >
     <div className="flex items-center justify-between">
