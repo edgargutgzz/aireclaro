@@ -4,7 +4,7 @@ export default async function PurpleAirData() {
   const supabase = createClient();
 
   try {
-    // Get the most recent 100 readings (simplest approach)
+    // Get the most recent 100 readings
     const { data, error } = await supabase
       .from("purpleair_mediciones")
       .select("id, sensor_id, pm25, time_stamp")
@@ -12,16 +12,12 @@ export default async function PurpleAirData() {
       .limit(100);
 
     if (error) {
-      console.log("Error fetching readings:", error);
       return [];
     }
 
     if (!data || data.length === 0) {
-      console.log("No data returned from query");
       return [];
     }
-
-    console.log("Total readings fetched:", data.length);
 
     // Filter to keep only the latest reading per sensor
     const latestReadings: { [key: number]: (typeof data)[0] } = {};
@@ -31,12 +27,8 @@ export default async function PurpleAirData() {
       }
     });
 
-    const result = Object.values(latestReadings);
-    console.log("Unique sensors after filtering:", result.length);
-
-    return result;
+    return Object.values(latestReadings);
   } catch (err) {
-    console.log("Unexpected error in PurpleAirData:", err);
     return [];
   }
 }
