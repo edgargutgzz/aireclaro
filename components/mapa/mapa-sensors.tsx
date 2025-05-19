@@ -324,8 +324,8 @@ export default function MapaSensors({
         className={`absolute left-2 rounded-lg bg-white bg-opacity-85 py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
           ${
             isLegendVisible
-              ? "bottom-44 translate-y-0 opacity-100"
-              : "bottom-44 translate-y-[100%] opacity-0 md:translate-y-0 md:opacity-100"
+              ? "bottom-46 translate-y-0 opacity-100"
+              : "bottom-46 translate-y-[100%] opacity-0 md:translate-y-0 md:opacity-100"
           }
           md:bottom-24 md:left-6 md:top-auto md:p-4 
           lg:bottom-12 lg:left-10`}
