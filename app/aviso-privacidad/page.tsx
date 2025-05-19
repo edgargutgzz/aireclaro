@@ -8,9 +8,9 @@ export default function Aviso() {
         </h1>
 
         {/* Aviso de Privacidad */}
-        <div>
+        <div className="text-sm md:text-base">
           {/* Sección 1 */}
-          <h2 className="mt-12 text-lg font-semibold">
+          <h2 className="mt-12 font-semibold">
             1. Responsable del Tratamiento de Datos
           </h2>
           <p className="mt-2">
@@ -20,14 +20,14 @@ export default function Aviso() {
           </p>
 
           {/* Sección 2 */}
-          <h2 className="mt-10 text-lg font-semibold">2. Datos Recopilados</h2>
+          <h2 className="mt-10 font-semibold">2. Datos Recopilados</h2>
           <p className="mt-2">
             - Ubicación Geográfica: Utilizamos los datos de tu ubicación para
             ofrecer información relevante sobre la calidad del aire en tu zona.
           </p>
 
           {/* Sección 3 */}
-          <h2 className="mt-10 text-lg font-semibold">3. Uso de los Datos</h2>
+          <h2 className="mt-10 font-semibold">3. Uso de los Datos</h2>
           <p className="mt-2">
             - Proporcionar información precisa sobre la calidad del aire en tu
             área.
@@ -35,9 +35,7 @@ export default function Aviso() {
           </p>
 
           {/* Sección 4 */}
-          <h2 className="mt-10 text-lg font-semibold">
-            4. Compartición de Datos
-          </h2>
+          <h2 className="mt-10 font-semibold">4. Compartición de Datos</h2>
           <p className="mt-2">
             - Terceros: No compartimos tu ubicación con terceros, excepto cuando
             sea necesario para cumplir con obligaciones legales o con tu
@@ -45,9 +43,7 @@ export default function Aviso() {
           </p>
 
           {/* Sección 5 */}
-          <h2 className="mt-10 text-lg font-semibold">
-            5. Seguridad de los Datos
-          </h2>
+          <h2 className="mt-10 font-semibold">5. Seguridad de los Datos</h2>
           <p className="mt-2">
             Implementamos medidas de seguridad razonables para proteger tu
             información durante su uso en la aplicación. Dado que no almacenamos
@@ -55,16 +51,14 @@ export default function Aviso() {
           </p>
 
           {/* Sección 6 */}
-          <h2 className="mt-10 text-lg font-semibold">6. Consentimiento</h2>
+          <h2 className="mt-10 font-semibold">6. Consentimiento</h2>
           <p className="mt-2">
             Al utilizar Aire Claro, consientes el uso de tu ubicación en tiempo
             real según lo descrito en este aviso de privacidad.
           </p>
 
           {/* Sección 7 */}
-          <h2 className="mt-10 text-lg font-semibold">
-            7. Derechos del Usuario
-          </h2>
+          <h2 className="mt-10 font-semibold">7. Derechos del Usuario</h2>
           <p className="mt-2">
             Dado que no almacenamos tu ubicación ni otros datos personales, no
             es necesario solicitar acceso, rectificación o eliminación de datos.
@@ -73,7 +67,7 @@ export default function Aviso() {
           </p>
 
           {/* Sección 8 */}
-          <h2 className="mt-10 text-lg font-semibold">
+          <h2 className="mt-10 font-semibold">
             8. Cambios en el Aviso de Privacidad
           </h2>
           <p className="mt-2">
@@ -81,7 +75,7 @@ export default function Aviso() {
           </p>
 
           {/* Sección 9 */}
-          <h2 className="mt-10 text-lg font-semibold">9. Contacto</h2>
+          <h2 className="mt-10 font-semibold">9. Contacto</h2>
           <p className="mt-2">
             Si tienes preguntas o inquietudes sobre este aviso de privacidad,
             por favor envíanos un correo a: contacto@observatoriodelaire.com
