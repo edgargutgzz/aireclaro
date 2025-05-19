@@ -193,7 +193,7 @@ const FAQItem = ({
         <ChevronDown size={24} className="flex-shrink-0" />
       )}
     </div>
-    {isOpen && <div className="mt-4 w-full">{answer}</div>}
+    {isOpen && <div className="w-full">{answer}</div>}
   </div>
 );
 
