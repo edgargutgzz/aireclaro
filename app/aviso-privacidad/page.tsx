@@ -1,17 +1,14 @@
 export default function Aviso() {
   return (
-    <div className="mx-4 flex min-h-screen flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-36 lg:pb-20 lg:pt-6">
+    <div className="mx-4 flex min-h-screen flex-col py-8 pb-20 md:mx-16 md:py-12 md:pb-10 lg:mx-52">
       <div className="flex flex-col">
         {/* Header */}
-        <h1 className="pt-4 text-3xl font-bold md:pt-7">Aviso de Privacidad</h1>
+        <h1 className="mb-6 text-3xl font-bold md:mb-10">
+          Aviso de Privacidad
+        </h1>
 
         {/* Aviso de Privacidad */}
-        <div className="mt-6">
-          <p className="mt-4">
-            Aire Claro recopila y utiliza tu ubicación para proporcionarte
-            información precisa sobre la calidad del aire en tu área.
-          </p>
-
+        <div>
           {/* Sección 1 */}
           <h2 className="mt-12 text-lg font-semibold">
             1. Responsable del Tratamiento de Datos
