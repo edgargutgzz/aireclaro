@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { FileHeart, MapPin, LineChart, Info } from "lucide-react";
+import { Heart, MapPin, LineChart, Info } from "lucide-react";
 
 export default function Navlinks() {
   const pathname = usePathname();
@@ -18,7 +18,7 @@ export default function Navlinks() {
     {
       name: "Recomendaciones",
       href: "/recomendaciones",
-      icon: FileHeart,
+      icon: Heart,
       alt: "Recomendaciones",
     },
     {
