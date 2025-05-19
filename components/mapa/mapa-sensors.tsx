@@ -236,10 +236,10 @@ export default function MapaSensors({
           <div style="margin-top: 8px; font-size: 12px; color: black;">
             <span style="font-weight: bold;">${sensor.source === "sima" ? "Estación: " : "Sensor: "}</span>${sensor.nombre}
           </div>
-          <div style="font-size: 12px; color: black;">
+          <div class="hidden md:block" style="font-size: 12px; color: black;">
             <span style="font-weight: bold;">Lat: </span>${formatLatLon(sensor.lat)}
           </div>
-          <div style="font-size: 12px; color: black;">
+          <div class="hidden md:block" style="font-size: 12px; color: black;">
             <span style="font-weight: bold;">Lon: </span>${formatLatLon(sensor.lon)}
           </div>
         </div>

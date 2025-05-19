@@ -9,7 +9,6 @@ export default async function SimaData() {
     .limit(13);
 
   if (error) {
-    console.error("Error:", error);
     return [];
   }
 

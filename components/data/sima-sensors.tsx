@@ -5,7 +5,6 @@ export default async function SimaSensors() {
   const { data, error } = await supabase.from("sima_sensores").select();
 
   if (error) {
-    console.error("Error:", error);
     return [];
   }
 

@@ -15,7 +15,6 @@ export default async function PurpleAirSensors() {
     .neq("sensor_id", 39361); // lleva semanas marcando valores muy bajos (Instituto Nezaldi)
 
   if (error) {
-    console.error("Error:", error);
     return [];
   }
 
