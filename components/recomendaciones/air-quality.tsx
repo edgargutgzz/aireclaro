@@ -315,11 +315,11 @@ export default function AirQuality({
   // Población sensible border colors
   const getBorderColor = (pm25: number | null): string => {
     if (pm25 === null) return "border-white-300";
-    if (pm25 <= 15) return "border-green-300";
-    if (pm25 > 15 && pm25 <= 25) return "border-yellow-300";
-    if (pm25 > 25 && pm25 <= 79) return "border-orange-300";
-    if (pm25 > 79 && pm25 <= 130) return "border-red-300";
-    if (pm25 > 130) return "border-purple-300";
+    if (pm25 <= 15) return "border-[#00e400]";
+    if (pm25 > 15 && pm25 <= 25) return "border-[#ffff00]";
+    if (pm25 > 25 && pm25 <= 79) return "border-[#ff7e00]";
+    if (pm25 > 79 && pm25 <= 130) return "border-[#ff0000]";
+    if (pm25 > 130) return "border-[#8f3f97]";
     return "border-white-300"; // default color in case the value is null or undefined
   };
 
