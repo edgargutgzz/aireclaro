@@ -335,7 +335,7 @@ export default function AirQuality({
   };
 
   return (
-    <>
+    <div className="pb-24 md:pb-0">
       {state.error ? (
         <p>{state.error}</p>
       ) : state.loading ? (
@@ -469,6 +469,6 @@ export default function AirQuality({
             )}
         </>
       )}
-    </>
+    </div>
   );
 }
