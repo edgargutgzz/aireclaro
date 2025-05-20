@@ -227,7 +227,7 @@ export default function MapaSensors({
         }).setHTML(`
           <div style="padding: 12px; border-radius: 16px; background-color: white; max-width: 240px;">
             <!-- Main reading with PM2.5 value -->
-            <div style="display: flex; align-items: center; background-color: ${popupBorderColor}15; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; background-color: ${popupBorderColor}15; padding: 10px; border-radius: 8px; margin-bottom: 8px;">
               <div style="font-size: 36px; font-weight: bold; color: ${popupBorderColor}; line-height: 1; margin-right: 10px;">
                 ${latestData ? roundPM25(latestData.pm25) : "—"}
               </div>
@@ -237,13 +237,15 @@ export default function MapaSensors({
               </div>
             </div>
             
-            <!-- Simplified sensor info with reduced spacing -->
-            <div style="font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 2px;">
-              ${sensor.nombre}
-            </div>
-            
-            <div style="font-size: 13px; color: #6b7280;">
-              ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
+            <!-- Sensor info in light grey card -->
+            <div style="background-color: #f5f5f5; padding: 8px; border-radius: 8px;">
+              <div style="font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 2px;">
+                ${sensor.nombre}
+              </div>
+              
+              <div style="font-size: 13px; color: #6b7280;">
+                ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
+              </div>
             </div>
           </div>
         `);
