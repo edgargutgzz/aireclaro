@@ -224,7 +224,6 @@ export default function MapaSensors({
         const popup = new Popup({
           offset: 25,
           closeButton: false,
-          className: `color-popup-${latestData ? Math.round(latestData.pm25) : 0}`,
         }).setHTML(`
           <div style="background-color: ${popupBorderColor}15; padding: 16px; border-radius: 16px;">
             <div style="display: flex; align-items: center;">
@@ -248,15 +247,7 @@ export default function MapaSensors({
         // Add custom CSS for the popup shadow
         const style = document.createElement("style");
         if (!document.querySelector("style[data-popup-shadow]")) {
-          // Convert the hex color to RGBA with 15% opacity
-          const hexToRgba = (hex, alpha = 1) => {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-          };
-
-          const bgColor = hexToRgba(popupBorderColor, 0.15);
+          const bgColorLight = popupBorderColor + "26"; // Using 15% opacity in hex (26)
 
           style.textContent = `
             .mapboxgl-popup-content {
@@ -264,10 +255,12 @@ export default function MapaSensors({
               border-radius: 16px;
               padding: 0;
               overflow: hidden;
+              background-color: transparent !important;
             }
             
-            .color-popup-${latestData ? Math.round(latestData.pm25) : 0} .mapboxgl-popup-tip {
-              border-top-color: ${bgColor} !important;
+            .mapboxgl-popup-tip {
+              border-top-color: ${bgColorLight} !important;
+              border-bottom-color: ${bgColorLight} !important;
             }
           `;
           style.setAttribute("data-popup-shadow", "true");
