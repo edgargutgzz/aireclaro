@@ -41,30 +41,30 @@ export default function Navlinks() {
         const IconComponent = link.icon;
         const isSelected = pathname === link.href;
         return (
-          <Link key={link.name} href={link.href}>
-            <div className="relative flex items-center px-2 py-1 md:rounded-lg md:px-3 md:py-2 md:hover:bg-gray-100">
-              {/* Active indicator for mobile and desktop */}
-              {isSelected && (
-                <div className="absolute -bottom-3 left-0 right-0 h-0.5 bg-blue-500" />
-              )}
-
+          <Link key={link.name} href={link.href} aria-label={link.alt}>
+            <div className="relative flex items-center px-4 py-2 md:rounded-lg md:px-3 md:hover:bg-gray-100">
               {/* Icon */}
               <IconComponent
-                className={clsx("h-5 w-5 md:h-6 md:w-6", {
+                className={clsx("h-6 w-6 md:h-5 md:w-5", {
                   "text-blue-500": isSelected,
                   "text-gray-400 hover:text-gray-600": !isSelected,
                 })}
               />
 
-              {/* Name - hidden on smallest screens, visible on md+ */}
+              {/* Text only on desktop */}
               <span
-                className={clsx("ml-1 hidden text-sm md:block", {
+                className={clsx("hidden md:ml-2 md:block md:text-sm", {
                   "font-medium text-blue-500": isSelected,
                   "text-gray-500": !isSelected,
                 })}
               >
                 {link.name}
               </span>
+
+              {/* Bottom indicator line for both mobile and desktop */}
+              {isSelected && (
+                <div className="absolute -bottom-2 left-0 h-0.5 w-full bg-blue-500"></div>
+              )}
             </div>
           </Link>
         );
