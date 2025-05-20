@@ -48,7 +48,7 @@ export default function Navlinks() {
                 className={clsx(
                   "flex h-10 w-10 items-center justify-center rounded-full md:h-9 md:w-9 lg:h-6 lg:w-6",
                   {
-                    "bg-gray-100": isSelected && window.innerWidth < 1024,
+                    "bg-gray-100 lg:bg-transparent": isSelected,
                     "text-black": isSelected,
                     "text-gray-400": !isSelected,
                   },
