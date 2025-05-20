@@ -226,11 +226,11 @@ export default function MapaSensors({
           closeButton: false,
         }).setHTML(`
           <div style="padding: 15px; border-radius: 16px; background-color: white;">
-            <div style="display: flex; align-items: flex-end; margin-bottom: 12px;">
+            <div style="display: flex; margin-bottom: 12px;">
               <div style="font-size: 42px; font-weight: bold; color: ${popupBorderColor}; line-height: 1;">
                 ${latestData ? roundPM25(latestData.pm25) : "—"}
               </div>
-              <div style="font-size: 14px; margin-left: 8px; color: #6b7280; font-weight: 500; margin-bottom: 5px;">
+              <div style="font-size: 14px; margin-left: 8px; color: #6b7280; font-weight: 500; align-self: flex-end; margin-bottom: 2px;">
                 PM2.5
               </div>
             </div>
