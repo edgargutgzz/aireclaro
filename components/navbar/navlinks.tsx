@@ -47,10 +47,10 @@ export default function Navlinks() {
             className="group"
             aria-label={link.alt}
           >
-            {/* Mobile view - vertical layout with icons only */}
+            {/* Mobile view - with icon and text */}
             <div className="flex flex-col items-center md:hidden">
               <div
-                className={clsx("rounded-full p-1.5", {
+                className={clsx("mb-1 rounded-full p-1.5", {
                   "bg-blue-50": isSelected,
                 })}
               >
@@ -61,12 +61,20 @@ export default function Navlinks() {
                   })}
                 />
               </div>
+              <span
+                className={clsx("text-xs", {
+                  "font-medium text-blue-500": isSelected,
+                  "text-gray-600": !isSelected,
+                })}
+              >
+                {link.name}
+              </span>
             </div>
 
-            {/* Desktop view - horizontal layout with text */}
+            {/* Desktop view */}
             <div
               className={clsx(
-                "hidden md:flex md:items-center md:rounded-lg md:px-5 md:py-3",
+                "hidden md:flex md:items-center md:rounded-lg md:px-4 md:py-2.5",
                 {
                   "bg-blue-50": isSelected,
                   "hover:bg-gray-100": !isSelected,
@@ -74,13 +82,13 @@ export default function Navlinks() {
               )}
             >
               <IconComponent
-                className={clsx("md:h-6 md:w-6", {
+                className={clsx("md:h-5 md:w-5", {
                   "text-blue-500": isSelected,
                   "text-gray-500 group-hover:text-gray-600": !isSelected,
                 })}
               />
               <span
-                className={clsx("md:ml-4 md:text-base", {
+                className={clsx("md:ml-3 md:text-sm", {
                   "font-medium text-blue-500": isSelected,
                   "text-gray-600": !isSelected,
                 })}
