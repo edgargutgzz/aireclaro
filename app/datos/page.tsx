@@ -81,15 +81,13 @@ export default function Datos() {
       {/* Datos */}
       <div className="flex flex-col">
         {/* Header */}
-        <h1 className="pt-4 text-3xl font-bold md:pt-7">
-          Datos de Calidad del Aire
-        </h1>
+        <h1 className="pt-4 text-3xl font-bold md:pt-7">Datos</h1>
         {/* Descripción y Descargar datos */}
         <div className="flex flex-col items-center pt-6 md:flex-row md:items-center">
           <p className="w-full text-justify md:w-2/3">
-            Descarga el historial de datos, desde julio 2023 a febrero 2025,
-            sobre la calidad del aire que respiramos en la Zona Metropolitana de
-            Monterrey y Saltillo.
+            Descarga el historial de datos de calidad del aire, desde julio 2023
+            a febrero 2025, sobre la calidad del aire que respiramos en la Zona
+            Metropolitana de Monterrey y Saltillo.
           </p>
           <div className="flex w-full justify-start pt-8 md:w-1/3 md:justify-end md:pt-0">
             <Link
