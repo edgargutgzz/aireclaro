@@ -20,7 +20,7 @@ export default async function Inicio() {
   const data = [...purpleAirData, ...simaData];
 
   return (
-    <div className="mx-4 flex flex-col space-y-20 pb-32 pt-4 md:mx-16 md:pb-28 lg:mx-52 lg:pb-20 lg:pt-10">
+    <div className="mx-4 flex flex-col space-y-20 pb-32 pt-4 md:mx-16 md:pb-28 md:pt-32 lg:mx-52 lg:pb-20">
       {/* Población general */}
       <div className="flex flex-col">
         {/* Title */}
