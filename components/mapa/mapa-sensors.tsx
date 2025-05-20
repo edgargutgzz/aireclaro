@@ -117,11 +117,11 @@ export default function MapaSensors({
   useEffect(() => {
     if (map.current) return;
 
-    // Initialize map
+    // Initialize map with center point adjusted to be lower (by decreasing latitude)
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
-      center: [-100.32098588977951, 25.676269873872855],
+      center: [-100.32098588977951, 25.665], // Decreased latitude to move center point south
       zoom: 10,
     });
 
