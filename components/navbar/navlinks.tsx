@@ -44,33 +44,28 @@ export default function Navlinks() {
           <Link
             key={link.name}
             href={link.href}
-            aria-label={link.alt}
-            className="group relative"
+            className="flex flex-col items-center"
           >
-            <div className="flex items-center px-4 py-2 md:rounded-lg md:px-3 md:hover:bg-gray-100">
-              {/* Icon */}
+            <div
+              className={clsx("mb-1 rounded-full p-1.5", {
+                "bg-blue-50": isSelected,
+              })}
+            >
               <IconComponent
-                className={clsx("h-6 w-6 md:h-5 md:w-5", {
+                className={clsx("h-6 w-6", {
                   "text-blue-500": isSelected,
-                  "text-gray-400 group-hover:text-gray-600": !isSelected,
-                })}
-              />
-
-              {/* Text only on desktop */}
-              <span
-                className={clsx("hidden md:ml-2 md:block md:text-sm", {
-                  "font-medium text-blue-500": isSelected,
                   "text-gray-500": !isSelected,
                 })}
-              >
-                {link.name}
-              </span>
+              />
             </div>
-
-            {/* Bottom indicator line positioned at the very bottom of navbar */}
-            {isSelected && (
-              <div className="absolute -bottom-2 left-0 h-[3px] w-full bg-blue-500"></div>
-            )}
+            <span
+              className={clsx("text-xs", {
+                "font-medium text-blue-500": isSelected,
+                "text-gray-600": !isSelected,
+              })}
+            >
+              {link.name}
+            </span>
           </Link>
         );
       })}
