@@ -344,13 +344,13 @@ export default function MapaSensors({
         )}
       </button>
 
-      {/* Legend - update positioning to be lower */}
+      {/* Legend - adjusted to be a bit higher */}
       <div
         className={`absolute right-6 rounded-xl bg-white py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
           ${
             isLegendVisible
-              ? "top-32 translate-y-0 opacity-100"
-              : "top-32 translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"
+              ? "top-24 translate-y-0 opacity-100"
+              : "top-24 translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"
           }
           md:bottom-24 md:left-6 md:right-auto md:top-auto md:p-4 
           lg:bottom-12 lg:left-10`}
