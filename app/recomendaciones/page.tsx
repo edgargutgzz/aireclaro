@@ -29,7 +29,9 @@ export default async function Inicio() {
         </div>
         {/* Air Quality text, recommendation and quality bar */}
         <div className="flex flex-col space-y-2 rounded-lg bg-white px-4 py-5 text-left shadow-lg lg:space-y-4 lg:px-4 lg:py-6">
-          <div className="text-sm text-gray-400">CALIDAD DEL AIRE</div>
+          <div className="text-sm text-gray-400">
+            CALIDAD DEL AIRE AL MOMENTO
+          </div>
           <LazyAirQualityWrapper sensors={sensors} data={data} />
         </div>
       </div>
@@ -49,7 +51,7 @@ export default async function Inicio() {
               height={32}
               alt="Menores Icon"
             />
-            <div className="font-semibold">Menores de 12 años</div>
+            <div className="font-semibold">Niños menores de 12</div>
             <LazyAirQualityWrapper
               sensors={sensors}
               data={data}
@@ -64,7 +66,7 @@ export default async function Inicio() {
               height={32}
               alt="Adultos mayores Icon"
             />
-            <div className="font-semibold">Mayores de 60 años</div>
+            <div className="font-semibold">Adultos mayores</div>
             <LazyAirQualityWrapper
               sensors={sensors}
               data={data}
@@ -82,7 +84,7 @@ export default async function Inicio() {
               height={26}
               alt="Personas Embarazadas Icon"
             />
-            <div className="font-semibold">Personas embarazadas</div>
+            <div className="font-semibold">Mujeres embarazadas</div>
             <LazyAirQualityWrapper
               sensors={sensors}
               data={data}
@@ -106,7 +108,7 @@ export default async function Inicio() {
               />
             </div>
             <div className="font-semibold">
-              Enfermedades cardiovasculares y respiratorias
+              Si tienes condiciones cardiovasculares o respiratorias
             </div>
             <LazyAirQualityWrapper
               sensors={sensors}
@@ -120,20 +122,25 @@ export default async function Inicio() {
       <div className="flex flex-col">
         {/* Title */}
         <div className="flex justify-center pb-3 text-sm text-gray-400 lg:pb-6">
-          UBICACIÓN Y HORA
+          TU UBICACIÓN Y HORA
         </div>
         {/* Cards */}
         <div className="flex flex-col space-y-8 md:flex-row md:space-x-8 md:space-y-0">
           {/* Ubicación */}
           <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg md:w-2/3">
-            <Navigation />
+            <div className="flex items-center">
+              <Navigation className="mr-2" />
+              <span>Tu ubicación</span>
+            </div>
             <LazyAirQualityWrapper sensors={sensors} data={data} showAddress />
           </div>
           {/* Hora */}
           <div className="flex flex-col space-y-4 rounded-lg bg-white p-4 text-sm shadow-lg md:w-1/3">
-            <Clock />
+            <div className="flex items-center">
+              <Clock className="mr-2" />
+              <span>Última medición</span>
+            </div>
             <div className="flex">
-              <div className="pr-1">Actualizada a las</div>
               <LazyAirQualityWrapper sensors={sensors} data={data} showTime />
             </div>
           </div>
