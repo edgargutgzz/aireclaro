@@ -42,24 +42,17 @@ export default function Navlinks() {
         const isSelected = pathname === link.href;
         return (
           <Link key={link.name} href={link.href}>
-            <div className="flex flex-col items-center px-3 py-2 transition-colors duration-200 lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
+            <div className="flex flex-col lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
               {/* Icon */}
-              <div
-                className={clsx(
-                  "flex h-10 w-10 items-center justify-center rounded-full md:h-9 md:w-9 lg:h-6 lg:w-6",
-                  {
-                    "bg-gray-100 lg:bg-transparent": isSelected,
-                    "text-black": isSelected,
-                    "text-gray-400": !isSelected,
-                  },
-                )}
-              >
-                <IconComponent className="h-5 w-5 md:h-5 md:w-5 lg:h-5 lg:w-5" />
-              </div>
-
-              {/* Name - Only on large screens */}
+              <IconComponent
+                className={clsx("md:h-7 md:w-7 lg:h-6 lg:w-6", {
+                  "text-black": isSelected,
+                  "text-gray-400": !isSelected,
+                })}
+              />
+              {/* Name */}
               <span
-                className={clsx("hidden lg:ml-4 lg:block lg:text-base", {
+                className={clsx("hidden lg:ml-4 lg:block", {
                   "font-semibold text-black": isSelected,
                   "text-gray-400": !isSelected,
                 })}
