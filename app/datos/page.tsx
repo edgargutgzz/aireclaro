@@ -77,7 +77,7 @@ const chartConfig = {
 
 export default function Datos() {
   return (
-    <div className="mx-4 flex min-h-screen flex-col pb-20 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-52 lg:pb-20 lg:pt-6">
+    <div className="mx-4 flex min-h-screen flex-col pb-32 pt-4 md:mx-16 md:pb-28 md:pt-8 lg:mx-52 lg:pb-20 lg:pt-6">
       {/* Datos */}
       <div className="flex flex-col">
         {/* Header */}
