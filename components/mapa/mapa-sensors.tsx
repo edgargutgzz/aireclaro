@@ -224,10 +224,10 @@ export default function MapaSensors({
         const popup = new Popup({
           offset: 25,
           closeButton: false,
+          className: `color-popup-${latestData ? Math.round(latestData.pm25) : 0}`,
         }).setHTML(`
-          <div style="padding: 16px; border-radius: 16px; background-color: white; max-width: 240px;">
-            <!-- Main reading with PM2.5 value -->
-            <div style="display: flex; align-items: center; background-color: ${popupBorderColor}15; padding: 10px; border-radius: 8px; margin-bottom: 6px;">
+          <div style="background-color: ${popupBorderColor}15; padding: 16px; border-radius: 16px;">
+            <div style="display: flex; align-items: center;">
               <div style="font-size: 36px; font-weight: bold; color: ${popupBorderColor}; line-height: 1; margin-right: 10px;">
                 ${latestData ? roundPM25(latestData.pm25) : "—"}
               </div>
@@ -237,9 +237,8 @@ export default function MapaSensors({
               </div>
             </div>
             
-            <!-- Coordinates only -->
-            <div style="display: flex; justify-content: center; margin-top: 8px;">
-              <div class="hidden md:block" style="font-size: 11px; color: #9ca3af;">
+            <div style="display: flex; justify-content: center; margin-top: 10px;">
+              <div class="hidden md:block" style="font-size: 11px; color: #6b7280;">
                 ${formatLatLon(sensor.lat)}, ${formatLatLon(sensor.lon)}
               </div>
             </div>
@@ -249,22 +248,26 @@ export default function MapaSensors({
         // Add custom CSS for the popup shadow
         const style = document.createElement("style");
         if (!document.querySelector("style[data-popup-shadow]")) {
+          // Convert the hex color to RGBA with 15% opacity
+          const hexToRgba = (hex, alpha = 1) => {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          };
+
+          const bgColor = hexToRgba(popupBorderColor, 0.15);
+
           style.textContent = `
             .mapboxgl-popup-content {
               box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
               border-radius: 16px;
               padding: 0;
+              overflow: hidden;
             }
             
-            .mapboxgl-popup-tip {
-              border-top-color: white !important;
-            }
-            
-            /* Added responsive styling for the sensor title */
-            @media (max-width: 768px) {
-              .sensor-title {
-                font-size: 15px !important;
-              }
+            .color-popup-${latestData ? Math.round(latestData.pm25) : 0} .mapboxgl-popup-tip {
+              border-top-color: ${bgColor} !important;
             }
           `;
           style.setAttribute("data-popup-shadow", "true");
