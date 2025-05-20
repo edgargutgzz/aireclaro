@@ -237,7 +237,7 @@ export default function MapaSensors({
               </div>
             </div>
             
-            <div style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 12px; line-height: 1.3;">
+            <div class="sensor-title" style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 12px; line-height: 1.3;">
               ${sensor.nombre}
             </div>
             
@@ -258,6 +258,13 @@ export default function MapaSensors({
             .mapboxgl-popup-content {
               box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
               border-radius: 16px;
+            }
+            
+            /* Added responsive styling for the sensor title */
+            @media (max-width: 768px) {
+              .sensor-title {
+                font-size: 16px !important;
+              }
             }
           `;
           style.setAttribute("data-popup-shadow", "true");
