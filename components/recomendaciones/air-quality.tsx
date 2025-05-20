@@ -335,7 +335,7 @@ export default function AirQuality({
   };
 
   return (
-    <div className="mb-28 md:mb-0">
+    <div>
       {state.error ? (
         <p>{state.error}</p>
       ) : state.loading ? (
