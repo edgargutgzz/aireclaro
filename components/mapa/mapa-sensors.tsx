@@ -225,25 +225,25 @@ export default function MapaSensors({
           offset: 25,
           closeButton: false,
         }).setHTML(`
-          <div style="padding: 12px; border-radius: 16px; background-color: white; max-width: 240px;">
+          <div class="p-3 rounded-xl bg-white max-w-[240px]">
             <!-- Main reading with PM2.5 value -->
-            <div style="display: flex; align-items: center; background-color: ${popupBorderColor}15; padding: 10px; border-radius: 16px; margin-bottom: 8px;">
-              <div style="font-size: 36px; font-weight: bold; color: ${popupBorderColor}; line-height: 1; margin-right: 10px;">
+            <div class="flex items-center bg-opacity-15 p-2.5 rounded-xl mb-2" style="background-color: ${popupBorderColor}15;">
+              <div class="text-3xl font-bold mr-2.5 leading-none" style="color: ${popupBorderColor};">
                 ${latestData ? roundPM25(latestData.pm25) : "—"}
               </div>
-              <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 16px; font-weight: 600; color: #4b5563;">PM2.5</span>
-                <span style="font-size: 12px; color: #6b7280;">μg/m³</span>
+              <div class="flex flex-col">
+                <span class="text-base font-semibold text-gray-600">PM2.5</span>
+                <span class="text-xs text-gray-500">μg/m³</span>
               </div>
             </div>
             
             <!-- Sensor info in light grey card -->
-            <div style="background-color: #f5f5f5; padding: 8px; border-radius: 16px;">
-              <div style="font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 2px;">
+            <div class="bg-gray-100 p-2 rounded-xl">
+              <div class="text-sm font-semibold text-gray-900 mb-0.5">
                 ${sensor.nombre}
               </div>
               
-              <div style="font-size: 13px; color: #6b7280;">
+              <div class="text-xs text-gray-500">
                 ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
               </div>
             </div>
@@ -256,19 +256,12 @@ export default function MapaSensors({
           style.textContent = `
             .mapboxgl-popup-content {
               box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
-              border-radius: 16px;
+              border-radius: 1rem !important; /* match Tailwind's rounded-xl */
               padding: 0;
             }
             
             .mapboxgl-popup-tip {
               border-top-color: white !important;
-            }
-            
-            /* Added responsive styling for the sensor title */
-            @media (max-width: 768px) {
-              .sensor-title {
-                font-size: 15px !important;
-              }
             }
           `;
           style.setAttribute("data-popup-shadow", "true");
@@ -314,7 +307,7 @@ export default function MapaSensors({
       {/* Legend Toggle Button */}
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="absolute bottom-36 left-6 z-10 rounded-2xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
+        className="absolute bottom-36 left-6 z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
         style={{ boxShadow: "0 6px 24px rgba(0, 0, 0, 0.18)" }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
