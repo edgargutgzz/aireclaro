@@ -45,9 +45,9 @@ export default function Navlinks() {
             <div className="flex flex-col lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
               {/* Icon */}
               <IconComponent
-                className={clsx("md:h-7 md:w-7 lg:h-6 lg:w-6", {
-                  "text-black": isSelected,
-                  "text-gray-400": !isSelected,
+                className={clsx("h-6 w-6 md:h-7 md:w-7 lg:h-6 lg:w-6", {
+                  "text-black drop-shadow-sm": isSelected,
+                  "text-gray-500": !isSelected,
                 })}
               />
               {/* Name */}
