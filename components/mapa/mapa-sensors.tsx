@@ -356,23 +356,23 @@ export default function MapaSensors({
         {/* Calidad del Aire - Legend */}
         <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
           <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-[#00e400]"></div>
+            <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
             <span className="text-xs">Buena</span>
           </div>
           <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-[#ffff00]"></div>
+            <div className="mr-2 h-4 w-4 rounded-full bg-[#ffff00]"></div>
             <span className="text-xs">Aceptable</span>
           </div>
           <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-[#ff7e00]"></div>
+            <div className="mr-2 h-4 w-4 rounded-full bg-[#ff7e00]"></div>
             <span className="text-xs">Mala</span>
           </div>
           <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-[#ff0000]"></div>
+            <div className="mr-2 h-4 w-4 rounded-full bg-[#ff0000]"></div>
             <span className="text-xs">Muy mala</span>
           </div>
           <div className="col-span-2 flex">
-            <div className="mr-2 h-4 w-2 rounded-full bg-[#8f3f97]"></div>
+            <div className="mr-2 h-4 w-4 rounded-full bg-[#8f3f97]"></div>
             <span className="text-xs">Extremadamente mala</span>
           </div>
         </div>
@@ -383,11 +383,11 @@ export default function MapaSensors({
         {/* Sensores - Legend */}
         <div className="grid grid-cols-2 items-center gap-x-4">
           <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-4 w-2 rounded-full bg-[#00e400]"></div>
+            <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
             <span className="text-xs">Sensor Purple Air</span>
           </div>
           <div className="col-span-1 flex items-center pr-2">
-            <div className="mr-2 h-4 w-2 rounded-full border-2 border-black bg-[#00e400]"></div>
+            <div className="mr-2 h-4 w-4 rounded-full border-2 border-black bg-[#00e400]"></div>
             <span className="text-xs">Estación SIMA</span>
           </div>
         </div>
