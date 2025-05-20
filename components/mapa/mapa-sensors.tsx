@@ -225,28 +225,32 @@ export default function MapaSensors({
           offset: 25,
           closeButton: false,
         }).setHTML(`
-          <div style="padding: 15px; border-radius: 16px; background-color: white; width: 200px;">
-            <div style="margin-bottom: 12px; padding-bottom: 12px;">
-              <div style="display: flex; align-items: baseline;">
-                <div style="font-size: 42px; font-weight: bold; color: ${popupBorderColor}; line-height: 1; margin-right: 8px;">
-                  ${latestData ? roundPM25(latestData.pm25) : "—"}
-                </div>
-                <div style="font-size: 14px; color: #9ca3af; font-weight: 500;">
-                  PM2.5
-                </div>
-              </div>
-            </div>
-            
-            <div class="sensor-title" style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 8px; line-height: 1.3;">
+          <div style="padding: 16px; border-radius: 16px; background-color: white; max-width: 240px;">
+            <!-- Header with sensor name -->
+            <div class="sensor-title" style="font-size: 17px; font-weight: 700; color: #111827; margin-bottom: 12px; line-height: 1.3; letter-spacing: -0.01em;">
               ${sensor.nombre}
             </div>
             
-            <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0;">
-              ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
+            <!-- Main reading with PM2.5 value -->
+            <div style="display: flex; align-items: center; background-color: ${popupBorderColor}15; padding: 10px; border-radius: 8px; margin-bottom: 12px;">
+              <div style="font-size: 36px; font-weight: bold; color: ${popupBorderColor}; line-height: 1; margin-right: 10px;">
+                ${latestData ? roundPM25(latestData.pm25) : "—"}
+              </div>
+              <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 16px; font-weight: 600; color: #4b5563;">PM2.5</span>
+                <span style="font-size: 12px; color: #6b7280;">μg/m³</span>
+              </div>
             </div>
             
-            <div class="hidden md:block" style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
-              ${formatLatLon(sensor.lat)}, ${formatLatLon(sensor.lon)}
+            <!-- Footer with source and coordinates -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div style="font-size: 13px; color: #4b5563; font-weight: 500;">
+                ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
+              </div>
+              
+              <div class="hidden md:block" style="font-size: 11px; color: #9ca3af;">
+                ${formatLatLon(sensor.lat)}, ${formatLatLon(sensor.lon)}
+              </div>
             </div>
           </div>
         `);
@@ -258,16 +262,17 @@ export default function MapaSensors({
             .mapboxgl-popup-content {
               box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
               border-radius: 16px;
-              min-width: 200px;
+              padding: 0;
+            }
+            
+            .mapboxgl-popup-tip {
+              border-top-color: white !important;
             }
             
             /* Added responsive styling for the sensor title */
             @media (max-width: 768px) {
               .sensor-title {
-                font-size: 16px !important;
-              }
-              .mapboxgl-popup-content {
-                min-width: 180px;
+                font-size: 15px !important;
               }
             }
           `;
