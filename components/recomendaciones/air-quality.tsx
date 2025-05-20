@@ -425,36 +425,39 @@ export default function AirQuality({
                   <div className="relative flex min-h-[10px] overflow-hidden rounded-lg">
                     <div
                       style={{ flexBasis: "12%" }}
-                      className="bg-green-400"
+                      className="bg-[#00e400]"
                     />
                     <div
                       style={{ flexBasis: "10%" }}
-                      className="bg-gradient-to-r from-green-400 to-yellow-400"
+                      className="bg-gradient-to-r from-[#00e400] to-[#ffff00]"
                     />
                     <div
                       style={{ flexBasis: "12%" }}
-                      className="bg-yellow-400"
+                      className="bg-[#ffff00]"
                     />
                     <div
                       style={{ flexBasis: "10%" }}
-                      className="bg-gradient-to-r from-yellow-400 to-orange-400"
+                      className="bg-gradient-to-r from-[#ffff00] to-[#ff7e00]"
                     />
                     <div
                       style={{ flexBasis: "12%" }}
-                      className="bg-orange-400"
+                      className="bg-[#ff7e00]"
                     />
                     <div
                       style={{ flexBasis: "10%" }}
-                      className="bg-gradient-to-r from-orange-400 to-red-400"
-                    />
-                    <div style={{ flexBasis: "12%" }} className="bg-red-400" />
-                    <div
-                      style={{ flexBasis: "10%" }}
-                      className="bg-gradient-to-r from-red-400 to-purple-400"
+                      className="bg-gradient-to-r from-[#ff7e00] to-[#ff0000]"
                     />
                     <div
                       style={{ flexBasis: "12%" }}
-                      className="bg-purple-400"
+                      className="bg-[#ff0000]"
+                    />
+                    <div
+                      style={{ flexBasis: "10%" }}
+                      className="bg-gradient-to-r from-[#ff0000] to-[#8f3f97]"
+                    />
+                    <div
+                      style={{ flexBasis: "12%" }}
+                      className="bg-[#8f3f97]"
                     />
                     <div
                       style={{
