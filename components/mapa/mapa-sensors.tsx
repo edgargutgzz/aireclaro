@@ -225,8 +225,9 @@ export default function MapaSensors({
           offset: 25,
           closeButton: false,
         }).setHTML(`
-          <div style="background-color: ${popupBorderColor}15; padding: 16px; border-radius: 16px;">
-            <div style="display: flex; align-items: center;">
+          <div style="padding: 16px; border-radius: 16px; background-color: white; max-width: 240px;">
+            <!-- Main reading with PM2.5 value -->
+            <div style="display: flex; align-items: center; background-color: ${popupBorderColor}15; padding: 10px; border-radius: 8px; margin-bottom: 12px;">
               <div style="font-size: 36px; font-weight: bold; color: ${popupBorderColor}; line-height: 1; margin-right: 10px;">
                 ${latestData ? roundPM25(latestData.pm25) : "—"}
               </div>
@@ -236,10 +237,13 @@ export default function MapaSensors({
               </div>
             </div>
             
-            <div style="display: flex; justify-content: center; margin-top: 10px;">
-              <div class="hidden md:block" style="font-size: 11px; color: #6b7280;">
-                ${formatLatLon(sensor.lat)}, ${formatLatLon(sensor.lon)}
-              </div>
+            <!-- Simplified sensor info -->
+            <div style="font-size: 15px; font-weight: 600; color: #111827; margin-bottom: 4px;">
+              ${sensor.nombre}
+            </div>
+            
+            <div style="font-size: 13px; color: #6b7280;">
+              ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
             </div>
           </div>
         `);
@@ -247,20 +251,22 @@ export default function MapaSensors({
         // Add custom CSS for the popup shadow
         const style = document.createElement("style");
         if (!document.querySelector("style[data-popup-shadow]")) {
-          const bgColorLight = popupBorderColor + "26"; // Using 15% opacity in hex (26)
-
           style.textContent = `
             .mapboxgl-popup-content {
               box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
               border-radius: 16px;
               padding: 0;
-              overflow: hidden;
-              background-color: transparent !important;
             }
             
             .mapboxgl-popup-tip {
-              border-top-color: ${bgColorLight} !important;
-              border-bottom-color: ${bgColorLight} !important;
+              border-top-color: white !important;
+            }
+            
+            /* Added responsive styling for the sensor title */
+            @media (max-width: 768px) {
+              .sensor-title {
+                font-size: 15px !important;
+              }
             }
           `;
           style.setAttribute("data-popup-shadow", "true");
