@@ -335,7 +335,7 @@ export default function AirQuality({
   };
 
   return (
-    <div className="mb-32 md:mb-0">
+    <div className="mb-28 md:mb-0">
       {state.error ? (
         <p>{state.error}</p>
       ) : state.loading ? (
@@ -400,7 +400,7 @@ export default function AirQuality({
             </div>
           )}
           {showEnfermedadesRecommendation && (
-            <div className="flex flex-col">
+            <div className="flex flex-col pb-1">
               <div
                 className={`mb-2 rounded-lg border-b-4 lg:mb-4 ${getBorderColor(state.airQuality.pm25)}`}
               />
