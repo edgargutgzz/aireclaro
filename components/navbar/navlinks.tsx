@@ -42,19 +42,25 @@ export default function Navlinks() {
         const isSelected = pathname === link.href;
         return (
           <Link key={link.name} href={link.href}>
-            <div className="flex flex-col lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
+            <div className="relative flex items-center px-2 py-1 md:rounded-lg md:px-3 md:py-2 md:hover:bg-gray-100">
+              {/* Active indicator for mobile and desktop */}
+              {isSelected && (
+                <div className="absolute -bottom-3 left-0 right-0 h-0.5 bg-blue-500" />
+              )}
+
               {/* Icon */}
               <IconComponent
-                className={clsx("h-6 w-6 md:h-7 md:w-7 lg:h-6 lg:w-6", {
-                  "text-black drop-shadow-sm": isSelected,
-                  "text-gray-500": !isSelected,
+                className={clsx("h-5 w-5 md:h-6 md:w-6", {
+                  "text-blue-500": isSelected,
+                  "text-gray-400 hover:text-gray-600": !isSelected,
                 })}
               />
-              {/* Name */}
+
+              {/* Name - hidden on smallest screens, visible on md+ */}
               <span
-                className={clsx("hidden lg:ml-4 lg:block", {
-                  "font-semibold text-black": isSelected,
-                  "text-gray-400": !isSelected,
+                className={clsx("ml-1 hidden text-sm md:block", {
+                  "font-medium text-blue-500": isSelected,
+                  "text-gray-500": !isSelected,
                 })}
               >
                 {link.name}
