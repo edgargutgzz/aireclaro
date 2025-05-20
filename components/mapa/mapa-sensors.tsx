@@ -239,11 +239,8 @@ export default function MapaSensors({
               ${sensor.nombre}
             </div>
             
-            <div style="display: flex; align-items: center;">
-              <div style="width: 8px; height: 8px; border-radius: 50%; background-color: ${popupBorderColor}; margin-right: 6px;"></div>
-              <div style="font-size: 12px; color: #6b7280;">
-                ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
-              </div>
+            <div style="font-size: 12px; color: #6b7280;">
+              ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
             </div>
             
             <div class="hidden md:block" style="font-size: 11px; color: #6b7280; margin-top: 8px;">
@@ -386,9 +383,11 @@ export default function MapaSensors({
         {/* Sensores - Legend */}
         <div className="grid grid-cols-2 items-center gap-x-4">
           <div className="col-span-1 flex items-center">
+            <div className="mr-2 h-4 w-2 rounded-full bg-[#00e400]"></div>
             <span className="text-xs">Sensor Purple Air</span>
           </div>
           <div className="col-span-1 flex items-center pr-2">
+            <div className="mr-2 h-4 w-2 rounded-full border-2 border-black bg-[#00e400]"></div>
             <span className="text-xs">Estación SIMA</span>
           </div>
         </div>
