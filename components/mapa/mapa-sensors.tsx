@@ -307,7 +307,7 @@ export default function MapaSensors({
       {/* Legend Toggle Button */}
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="absolute bottom-36 left-6 z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
+        className="absolute right-6 top-6 z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
         style={{ boxShadow: "0 6px 24px rgba(0, 0, 0, 0.18)" }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
@@ -346,13 +346,13 @@ export default function MapaSensors({
 
       {/* Legend */}
       <div
-        className={`absolute left-6 rounded-xl bg-white py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
+        className={`absolute right-6 rounded-xl bg-white py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
           ${
             isLegendVisible
-              ? "bottom-52 translate-y-0 opacity-100"
-              : "bottom-52 translate-y-[100%] opacity-0 md:translate-y-0 md:opacity-100"
+              ? "top-20 translate-y-0 opacity-100"
+              : "top-20 translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"
           }
-          md:bottom-24 md:left-6 md:top-auto md:p-4 
+          md:bottom-24 md:left-6 md:right-auto md:top-auto md:p-4 
           lg:bottom-12 lg:left-10`}
       >
         {/* Calidad del Aire - Title */}
