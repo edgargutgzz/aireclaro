@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Heart, LineChart, Info, Map } from "lucide-react";
+import { Heart, LineChart, Info, MapPin } from "lucide-react";
 
 export default function Navlinks() {
   const pathname = usePathname();
@@ -12,7 +12,7 @@ export default function Navlinks() {
     {
       name: "Mapa",
       href: "/",
-      icon: Map,
+      icon: MapPin,
       alt: "Mapa",
     },
     {
@@ -42,17 +42,24 @@ export default function Navlinks() {
         const isSelected = pathname === link.href;
         return (
           <Link key={link.name} href={link.href}>
-            <div className="flex flex-col lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
+            <div className="flex flex-col items-center px-3 py-2 transition-colors duration-200 lg:flex-row lg:rounded-lg lg:p-4 lg:hover:bg-gray-100">
               {/* Icon */}
-              <IconComponent
-                className={clsx("md:h-7 md:w-7 lg:h-6 lg:w-6", {
-                  "text-black": isSelected,
-                  "text-gray-400": !isSelected,
-                })}
-              />
-              {/* Name */}
+              <div
+                className={clsx(
+                  "flex h-10 w-10 items-center justify-center rounded-full md:h-9 md:w-9 lg:h-6 lg:w-6",
+                  {
+                    "bg-gray-100": isSelected && window.innerWidth < 1024,
+                    "text-black": isSelected,
+                    "text-gray-400": !isSelected,
+                  },
+                )}
+              >
+                <IconComponent className="h-5 w-5 md:h-5 md:w-5 lg:h-5 lg:w-5" />
+              </div>
+
+              {/* Name - Only on large screens */}
               <span
-                className={clsx("hidden lg:ml-4 lg:block", {
+                className={clsx("hidden lg:ml-4 lg:block lg:text-base", {
                   "font-semibold text-black": isSelected,
                   "text-gray-400": !isSelected,
                 })}
