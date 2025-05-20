@@ -15,19 +15,19 @@ export default function Navbar() {
 
       {/* Desktop navbar at top */}
       <div className="sticky top-0 z-50 hidden border-b border-gray-200 bg-white shadow-sm md:block">
-        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3">
+        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-3">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Image
               src="/aireclaro-logo.png"
               alt="Aire Claro Logo"
-              width={160}
-              height={19}
+              width={180}
+              height={21}
               className="h-auto"
             />
           </div>
           {/* Navigation */}
-          <div className="flex justify-end gap-6">
+          <div className="flex justify-end gap-10">
             <Navlinks />
           </div>
         </div>
