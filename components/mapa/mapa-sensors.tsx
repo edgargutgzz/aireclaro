@@ -225,27 +225,27 @@ export default function MapaSensors({
           offset: 25,
           closeButton: false,
         }).setHTML(`
-          <div style="padding: 15px; border-radius: 16px; background-color: white;">
-            <div style="margin-bottom: 16px;">
+          <div style="padding: 15px; border-radius: 16px; background-color: white; width: 200px;">
+            <div style="margin-bottom: 12px; padding-bottom: 12px;">
               <div style="display: flex; align-items: baseline;">
-                <div style="font-size: 42px; font-weight: bold; color: ${popupBorderColor}; line-height: 1;">
+                <div style="font-size: 42px; font-weight: bold; color: ${popupBorderColor}; line-height: 1; margin-right: 8px;">
                   ${latestData ? roundPM25(latestData.pm25) : "—"}
                 </div>
-                <div style="font-size: 14px; margin-left: 10px; color: #9ca3af; font-weight: 500;">
+                <div style="font-size: 14px; color: #9ca3af; font-weight: 500;">
                   PM2.5
                 </div>
               </div>
             </div>
             
-            <div class="sensor-title" style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 12px; line-height: 1.3;">
+            <div class="sensor-title" style="font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 8px; line-height: 1.3;">
               ${sensor.nombre}
             </div>
             
-            <div style="font-size: 12px; color: #6b7280;">
+            <div style="font-size: 12px; color: #6b7280; margin-bottom: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0;">
               ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
             </div>
             
-            <div class="hidden md:block" style="font-size: 11px; color: #6b7280; margin-top: 8px;">
+            <div class="hidden md:block" style="font-size: 11px; color: #9ca3af; margin-top: 4px;">
               ${formatLatLon(sensor.lat)}, ${formatLatLon(sensor.lon)}
             </div>
           </div>
@@ -258,12 +258,16 @@ export default function MapaSensors({
             .mapboxgl-popup-content {
               box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
               border-radius: 16px;
+              min-width: 200px;
             }
             
             /* Added responsive styling for the sensor title */
             @media (max-width: 768px) {
               .sensor-title {
                 font-size: 16px !important;
+              }
+              .mapboxgl-popup-content {
+                min-width: 180px;
               }
             }
           `;
