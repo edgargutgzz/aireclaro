@@ -246,6 +246,11 @@ export default function MapaSensors({
               <div class="text-xs text-gray-500">
                 ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
               </div>
+              
+              <!-- Coordinates - hidden on mobile, visible on desktop -->
+              <div class="hidden md:block text-xs text-gray-400 mt-1">
+                Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
+              </div>
             </div>
           </div>
         `);
