@@ -12,7 +12,8 @@ const faqData = [
       <div>
         <p className="mb-4">
           Aire Claro es una plataforma que brinda información sobre la calidad
-          del aire que respiramos en la Zona Metropolitana de Monterrey.
+          del aire que respiramos en la Zona Metropolitana de Monterrey y
+          Saltillo.
         </p>
         <div className="mt-6 flex justify-center">
           <iframe
@@ -36,8 +37,8 @@ const faqData = [
     answer: (
       <p>
         Aire Claro se enfoca exclusivamente en la Zona Metropolitana de
-        Monterrey, combinando datos de estaciones oficiales y sensores
-        ciudadanos para brindar la cobertura más completa de la región.
+        Monterrey y Saltillo, combinando datos de estaciones oficiales y
+        sensores ciudadanos para brindar la cobertura más completa de la región.
       </p>
     ),
   },
