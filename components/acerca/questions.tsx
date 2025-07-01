@@ -201,18 +201,22 @@ const FAQItem = ({
   onToggle: () => void;
 }) => (
   <div
-    className="mt-8 cursor-pointer rounded-lg bg-white p-4 text-sm shadow-lg md:text-base"
+    className="group cursor-pointer rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md"
     onClick={onToggle}
   >
     <div className="flex items-center justify-between">
-      <h3 className="pr-2 font-bold">{question}</h3>
-      {isOpen ? (
-        <ChevronUp size={24} className="flex-shrink-0" />
-      ) : (
-        <ChevronDown size={24} className="flex-shrink-0" />
-      )}
+      <h3 className="pr-4 text-lg font-semibold text-gray-900">{question}</h3>
+      <div className="flex-shrink-0 transition-transform duration-200">
+        {isOpen ? (
+          <ChevronUp size={24} className="text-gray-900" />
+        ) : (
+          <ChevronDown size={24} className="text-gray-400" />
+        )}
+      </div>
     </div>
-    {isOpen && <div className="mt-4 w-full">{answer}</div>}
+    {isOpen && (
+      <div className="mt-4 leading-relaxed text-gray-700">{answer}</div>
+    )}
   </div>
 );
 
@@ -225,7 +229,7 @@ export default function Questions() {
   };
 
   return (
-    <>
+    <div className="space-y-4">
       {faqData.map((item) => (
         <FAQItem
           key={item.question}
@@ -235,6 +239,6 @@ export default function Questions() {
           onToggle={() => toggleQuestion(item.question)}
         />
       ))}
-    </>
+    </div>
   );
 }
