@@ -5,11 +5,11 @@ import {
   ChevronDown,
   ChevronUp,
   HelpCircle,
+  Smartphone,
   Users,
   Shield,
   BarChart3,
   Download,
-  Smartphone,
   MessageCircle,
   CircleGauge,
 } from "lucide-react";
@@ -210,9 +210,41 @@ const faqData = [
   },
 ];
 
+// Styles
+const styles = {
+  card: "group cursor-pointer rounded-xl border bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md",
+  cardOpen: "border-blue-200",
+  cardClosed: "border-gray-200 hover:border-blue-100",
+  chevronOpen: "text-blue-600",
+  chevronClosed: "text-gray-400",
+};
+
+// Icon component
+const FAQIcon = ({ icon: Icon, isOpen }: { icon?: any; isOpen: boolean }) => {
+  if (Icon) {
+    return (
+      <div
+        className={`flex-shrink-0 rounded-full p-2 transition-colors ${
+          isOpen ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600"
+        }`}
+      >
+        <Icon size={18} />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`h-2 w-2 rounded-full transition-colors ${
+        isOpen ? "bg-blue-600" : "bg-gray-300"
+      }`}
+    />
+  );
+};
+
 // FAQ component
 const FAQItem = ({
-  icon: Icon,
+  icon,
   question,
   answer,
   isOpen,
@@ -225,41 +257,25 @@ const FAQItem = ({
   onToggle: () => void;
 }) => (
   <div
-    className={`group cursor-pointer rounded-xl border bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md ${
-      isOpen ? "border-blue-200" : "border-gray-200 hover:border-blue-100"
-    }`}
+    className={`${styles.card} ${isOpen ? styles.cardOpen : styles.cardClosed}`}
     onClick={onToggle}
   >
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-3">
-        {Icon ? (
-          <div
-            className={`flex-shrink-0 rounded-full p-2 transition-colors ${
-              isOpen ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600"
-            }`}
-          >
-            <Icon size={18} />
-          </div>
-        ) : (
-          <div
-            className={`h-2 w-2 rounded-full transition-colors ${
-              isOpen ? "bg-blue-600" : "bg-gray-300"
-            }`}
-          />
-        )}
+        <FAQIcon icon={icon} isOpen={isOpen} />
         <h3 className="pr-4 text-lg font-semibold text-gray-900">{question}</h3>
       </div>
       <div className="flex-shrink-0 transition-transform duration-200">
         {isOpen ? (
-          <ChevronUp size={24} className="text-blue-600" />
+          <ChevronUp size={24} className={styles.chevronOpen} />
         ) : (
-          <ChevronDown size={24} className="text-gray-400" />
+          <ChevronDown size={24} className={styles.chevronClosed} />
         )}
       </div>
     </div>
     {isOpen && (
       <div
-        className={`mt-4 leading-relaxed text-gray-700 ${Icon ? "ml-12" : "ml-5"}`}
+        className={`mt-4 leading-relaxed text-gray-700 ${icon ? "ml-12" : "ml-5"}`}
       >
         {answer}
       </div>
