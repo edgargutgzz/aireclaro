@@ -2,11 +2,10 @@ import Questions from "@/components/acerca/questions";
 
 export default function Acerca() {
   return (
-    <div className="mx-4 flex flex-col pb-32 pt-8 md:mx-16 md:pb-10 md:pt-32 lg:mx-52">
-      {/* Header */}
-      <h1 className="pb-4 text-3xl font-bold md:mb-10">Preguntas Frecuentes</h1>
-
-      {/* Questions */}
+    <div className="container mx-auto max-w-6xl px-4 pb-8 pt-16 md:pb-16 md:pt-28">
+      <h1 className="mb-16 text-5xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
+        Preguntas Frecuentes
+      </h1>
       <Questions />
     </div>
   );
