@@ -76,7 +76,8 @@ const faqData = [
   },
   {
     icon: BarChart3,
-    question: "¿Qué información utiliza para medir la calidad del aire?",
+    question:
+      "¿Qué información utiliza Aire Claro para medir la calidad del aire?",
     answer: (
       <div className="flex flex-col space-y-4">
         <p>
@@ -114,7 +115,7 @@ const faqData = [
   },
   {
     icon: CircleGauge,
-    question: "¿Cuál es el tipo de contaminante que mide?",
+    question: "¿Cuál es el principal contaminante que mide Aire Claro?",
     answer: (
       <span>
         Aire Claro mide las concentraciones promedio de la última hora de las
@@ -145,7 +146,8 @@ const faqData = [
   },
   {
     icon: Shield,
-    question: "¿Recolecta información sobre mí al utilizar la plataforma?",
+    question:
+      "¿Recolecta Aire Claro información sobre mí al utilizar la plataforma?",
     answer: (
       <p>
         Aire Claro utiliza tu ubicación al inicio para recomendarte el sensor
@@ -166,7 +168,7 @@ const faqData = [
   },
   {
     icon: Smartphone,
-    question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
+    question: "¿Cómo agrego un ícono de enlace a Aire Claro en mi celular?",
     answer: (
       <span>
         <div>
@@ -223,10 +225,8 @@ const FAQItem = ({
   onToggle: () => void;
 }) => (
   <div
-    className={`group cursor-pointer rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md ${
-      isOpen
-        ? "border-blue-200 bg-blue-50"
-        : "border-gray-200 bg-white hover:border-blue-100"
+    className={`group cursor-pointer rounded-xl border bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md ${
+      isOpen ? "border-blue-200" : "border-gray-200 hover:border-blue-100"
     }`}
     onClick={onToggle}
   >
@@ -247,13 +247,7 @@ const FAQItem = ({
             }`}
           />
         )}
-        <h3
-          className={`pr-4 text-lg font-semibold transition-colors ${
-            isOpen ? "text-blue-600" : "text-gray-900"
-          }`}
-        >
-          {question}
-        </h3>
+        <h3 className="pr-4 text-lg font-semibold text-gray-900">{question}</h3>
       </div>
       <div className="flex-shrink-0 transition-transform duration-200">
         {isOpen ? (
