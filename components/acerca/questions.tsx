@@ -1,12 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  HelpCircle,
+  Users,
+  Shield,
+  BarChart3,
+  Download,
+  Smartphone,
+  MessageCircle,
+  CircleGauge,
+} from "lucide-react";
 import Link from "next/link";
 
 // FAQ content
 const faqData = [
   {
+    icon: HelpCircle,
     question: "¿Qué es Aire Claro?",
     answer: (
       <div>
@@ -32,6 +44,7 @@ const faqData = [
     ),
   },
   {
+    icon: Smartphone,
     question:
       "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
     answer: (
@@ -43,6 +56,7 @@ const faqData = [
     ),
   },
   {
+    icon: Users,
     question: "¿Quién mantiene la plataforma?",
     answer: (
       <p>
@@ -61,6 +75,7 @@ const faqData = [
     ),
   },
   {
+    icon: BarChart3,
     question: "¿Qué información utiliza para medir la calidad del aire?",
     answer: (
       <div className="flex flex-col space-y-4">
@@ -98,6 +113,7 @@ const faqData = [
     ),
   },
   {
+    icon: CircleGauge,
     question: "¿Cuál es el tipo de contaminante que mide?",
     answer: (
       <span>
@@ -128,6 +144,7 @@ const faqData = [
     ),
   },
   {
+    icon: Shield,
     question: "¿Recolecta información sobre mí al utilizar la plataforma?",
     answer: (
       <p>
@@ -148,6 +165,7 @@ const faqData = [
     ),
   },
   {
+    icon: Smartphone,
     question: "¿Cómo agrego un ícono de enlace directo en mi celular?",
     answer: (
       <span>
@@ -163,6 +181,7 @@ const faqData = [
     ),
   },
   {
+    icon: Download,
     question: "¿Puedo descargar los datos de calidad del aire?",
     answer: (
       <p>
@@ -183,6 +202,7 @@ const faqData = [
     ),
   },
   {
+    icon: MessageCircle,
     question: "Tengo más preguntas, ¿cómo los contacto?",
     answer: <span>Envíanos un correo a contacto@observatoriodelaire.com</span>,
   },
@@ -190,32 +210,65 @@ const faqData = [
 
 // FAQ component
 const FAQItem = ({
+  icon: Icon,
   question,
   answer,
   isOpen,
   onToggle,
 }: {
+  icon?: any;
   question: string;
   answer: React.ReactNode;
   isOpen: boolean;
   onToggle: () => void;
 }) => (
   <div
-    className="group cursor-pointer rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md"
+    className={`group cursor-pointer rounded-xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md ${
+      isOpen
+        ? "border-blue-200 bg-blue-50"
+        : "border-gray-200 bg-white hover:border-blue-100"
+    }`}
     onClick={onToggle}
   >
     <div className="flex items-center justify-between">
-      <h3 className="pr-4 text-lg font-semibold text-gray-900">{question}</h3>
+      <div className="flex items-center space-x-3">
+        {Icon ? (
+          <div
+            className={`flex-shrink-0 rounded-full p-2 transition-colors ${
+              isOpen ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600"
+            }`}
+          >
+            <Icon size={18} />
+          </div>
+        ) : (
+          <div
+            className={`h-2 w-2 rounded-full transition-colors ${
+              isOpen ? "bg-blue-600" : "bg-gray-300"
+            }`}
+          />
+        )}
+        <h3
+          className={`pr-4 text-lg font-semibold transition-colors ${
+            isOpen ? "text-blue-600" : "text-gray-900"
+          }`}
+        >
+          {question}
+        </h3>
+      </div>
       <div className="flex-shrink-0 transition-transform duration-200">
         {isOpen ? (
-          <ChevronUp size={24} className="text-gray-900" />
+          <ChevronUp size={24} className="text-blue-600" />
         ) : (
           <ChevronDown size={24} className="text-gray-400" />
         )}
       </div>
     </div>
     {isOpen && (
-      <div className="mt-4 leading-relaxed text-gray-700">{answer}</div>
+      <div
+        className={`mt-4 leading-relaxed text-gray-700 ${Icon ? "ml-12" : "ml-5"}`}
+      >
+        {answer}
+      </div>
     )}
   </div>
 );
@@ -233,6 +286,7 @@ export default function Questions() {
       {faqData.map((item) => (
         <FAQItem
           key={item.question}
+          icon={item.icon}
           question={item.question}
           answer={item.answer}
           isOpen={openQuestion === item.question}
