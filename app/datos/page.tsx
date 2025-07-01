@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,60 +5,56 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SquareArrowOutUpRight } from "lucide-react";
+import {
+  SquareArrowOutUpRight,
+  CircleGauge,
+  Radio,
+  MapPin,
+} from "lucide-react";
 import Link from "next/link";
-import { track } from "@vercel/analytics";
 
 export default function Datos() {
   return (
-    <div className="mx-4 flex min-h-screen flex-col pb-32 pt-4 md:mx-16 md:pb-28 md:pt-32 lg:mx-52 lg:pb-20">
-      {/* Datos */}
-      <div className="flex flex-col">
-        {/* Header */}
-        <h1 className="pt-4 text-3xl font-bold md:pt-7">Datos</h1>
-        {/* Descripción y Descargar datos */}
-        <div className="flex flex-col items-center pt-6 md:flex-row md:items-center">
-          <p className="w-full text-justify md:w-2/3">
-            Descarga el historial de datos de calidad del aire, desde julio 2023
-            a febrero 2025, sobre la calidad del aire que respiramos en la Zona
-            Metropolitana de Monterrey y Saltillo.
-          </p>
-          <div className="flex w-full justify-start pt-8 md:w-1/3 md:justify-end md:pt-0">
-            <Link
-              target="_blank"
-              href="https://datamx.io/dataset/calidad-del-aire-en-nuevo-leon"
-            >
-              <Button
-                onClick={() => {
-                  track("Descargar datos");
-                }}
-              >
-                Descargar datos
-                <SquareArrowOutUpRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+    <div className="container mx-auto max-w-6xl px-4 pb-8 pt-16 md:pb-16 md:pt-28">
+      <div className="mb-16 flex flex-col items-start justify-between md:flex-row md:items-center">
+        <h1 className="text-5xl font-extrabold tracking-tight text-gray-900">
+          Datos
+        </h1>
+        <Link
+          target="_blank"
+          href="https://datamx.io/dataset/calidad-del-aire-en-nuevo-leon"
+          className="mt-4 md:mt-0"
+        >
+          <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-6 py-3 shadow-sm transition-all duration-200 hover:shadow-md">
+            <div className="flex-shrink-0 rounded-full bg-gray-100 p-2 text-gray-600">
+              <SquareArrowOutUpRight size={18} />
+            </div>
+            <span className="font-medium text-gray-900">Descargar datos</span>
           </div>
+        </Link>
+      </div>
+
+      {/* Indicadores */}
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-12">
+        <div className="relative rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">
+          <CircleGauge
+            size={20}
+            className="absolute right-4 top-4 text-gray-300"
+          />
+          <h3 className="mb-2 text-3xl font-semibold text-gray-900">
+            1,250,000
+          </h3>
+          <p className="text-gray-600">mediciones</p>
         </div>
-        {/*Indicadores*/}
-        <div className="flex flex-col gap-8 pt-12 text-center md:flex-row md:gap-12 md:pt-12">
-          <Card className="w-full">
-            <CardHeader className="gap-1">
-              <CardTitle className="text-3xl md:text-3xl">1,250,000</CardTitle>
-              <CardDescription>⏱️ mediciones</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="w-full">
-            <CardHeader className="gap-1">
-              <CardTitle className="text-3xl md:text-3xl">85</CardTitle>
-              <CardDescription>📡 sensores</CardDescription>
-            </CardHeader>
-          </Card>
-          <Card className="w-full">
-            <CardHeader className="gap-1">
-              <CardTitle className="text-3xl md:text-3xl">19</CardTitle>
-              <CardDescription>📍 municipios</CardDescription>
-            </CardHeader>
-          </Card>
+        <div className="relative rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">
+          <Radio size={20} className="absolute right-4 top-4 text-gray-300" />
+          <h3 className="mb-2 text-3xl font-semibold text-gray-900">85</h3>
+          <p className="text-gray-600">sensores</p>
+        </div>
+        <div className="relative rounded-xl border border-gray-200 bg-white p-6 text-center shadow-sm">
+          <MapPin size={20} className="absolute right-4 top-4 text-gray-300" />
+          <h3 className="mb-2 text-3xl font-semibold text-gray-900">19</h3>
+          <p className="text-gray-600">municipios</p>
         </div>
       </div>
     </div>
