@@ -33,14 +33,14 @@ interface SensorData {
   ano: number;
 }
 
+// Move monthOrder outside the component since it's a constant
+const monthOrder = ["enero", "febrero", "marzo", "abril", "mayo"];
+
 export default function PM25Chart() {
   const [data, setData] = useState<SensorData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
-
-  // Month order for sorting in spanish
-  const monthOrder = ["enero", "febrero", "marzo", "abril", "mayo"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -174,7 +174,7 @@ export default function PM25Chart() {
     );
   };
 
-  const chartOptions = {
+  const chartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -191,11 +191,11 @@ export default function PM25Chart() {
         displayColors: false,
         titleFont: {
           size: 12,
-          weight: "normal" as const,
+          weight: "normal",
         },
         bodyFont: {
           size: 18,
-          weight: "bold" as const,
+          weight: "bold",
         },
         padding: {
           top: 12,
@@ -203,8 +203,8 @@ export default function PM25Chart() {
           left: 16,
           right: 16,
         },
-        titleAlign: "right" as const,
-        bodyAlign: "left" as const,
+        titleAlign: "right",
+        bodyAlign: "left",
         shadowOffsetX: 0,
         shadowOffsetY: 2,
         shadowBlur: 8,
@@ -222,7 +222,7 @@ export default function PM25Chart() {
       annotation: {
         annotations: {
           mexicanLimit: {
-            type: "line" as const,
+            type: "line",
             yMin: 25,
             yMax: 25,
             borderColor: "rgba(239, 68, 68, 0.8)",
@@ -231,12 +231,10 @@ export default function PM25Chart() {
             label: {
               content: "Límite diario (Norma Mexicana): 25 μg/m³",
               enabled: true,
-              position: "start" as const,
+              position: "start",
               backgroundColor: "rgba(239, 68, 68, 0.9)",
               color: "white",
-              font: {
-                size: 12,
-              },
+              font: { size: 12 },
               padding: 8,
               cornerRadius: 4,
               display: function (ctx: any) {
@@ -245,7 +243,7 @@ export default function PM25Chart() {
             },
           },
           mexicanAnnualLimit: {
-            type: "line" as const,
+            type: "line",
             yMin: 12,
             yMax: 12,
             borderColor: "rgba(75, 85, 99, 0.8)",
@@ -254,7 +252,7 @@ export default function PM25Chart() {
             label: {
               content: "Límite anual (Norma Mexicana): 12 μg/m³",
               enabled: true,
-              position: "start" as const,
+              position: "start",
               backgroundColor: "rgba(75, 85, 99, 0.9)",
               color: "white",
               font: { size: 12 },
@@ -266,7 +264,7 @@ export default function PM25Chart() {
             },
           },
           whoLimit: {
-            type: "line" as const,
+            type: "line",
             yMin: 15,
             yMax: 15,
             borderColor: "rgba(75, 85, 99, 0.8)",
@@ -275,7 +273,7 @@ export default function PM25Chart() {
             label: {
               content: "Límite diario (OMS): 15 μg/m³",
               enabled: true,
-              position: "start" as const,
+              position: "start",
               backgroundColor: "rgba(75, 85, 99, 0.9)",
               color: "white",
               font: { size: 12 },
@@ -287,7 +285,7 @@ export default function PM25Chart() {
             },
           },
           whoAnnualLimit: {
-            type: "line" as const,
+            type: "line",
             yMin: 5,
             yMax: 5,
             borderColor: "rgba(75, 85, 99, 0.8)",
@@ -296,7 +294,7 @@ export default function PM25Chart() {
             label: {
               content: "Límite anual (OMS): 5 μg/m³",
               enabled: true,
-              position: "start" as const,
+              position: "start",
               backgroundColor: "rgba(75, 85, 99, 0.9)",
               color: "white",
               font: { size: 12 },
@@ -313,9 +311,7 @@ export default function PM25Chart() {
     scales: {
       x: {
         display: true,
-        grid: {
-          display: false,
-        },
+        grid: { display: false },
         ticks: {
           font: {
             family: "ui-sans-serif, system-ui, sans-serif",
@@ -329,12 +325,8 @@ export default function PM25Chart() {
       },
       y: {
         display: true,
-        grid: {
-          display: false,
-        },
-        title: {
-          display: false,
-        },
+        grid: { display: false },
+        title: { display: false },
         min: 0,
         max: 35,
         ticks: {
@@ -348,7 +340,7 @@ export default function PM25Chart() {
         },
       },
     },
-  } as const;
+  };
 
   const currentMonthData = groupedByMonth[selectedMonth] || [];
   const sensorsWithNoData = getSensorsWithNoData(currentMonthData);
