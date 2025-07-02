@@ -244,13 +244,13 @@ export default function PM25Chart() {
           },
           mexicanAnnualLimit: {
             type: "line",
-            yMin: 12,
-            yMax: 12,
+            yMin: 10,
+            yMax: 10,
             borderColor: "rgba(75, 85, 99, 0.8)",
             borderWidth: 1,
             borderDash: [4, 4],
             label: {
-              content: "Límite anual (Norma Mexicana): 12 μg/m³",
+              content: "Límite anual (Norma Mexicana): 10 μg/m³",
               enabled: true,
               position: "start",
               backgroundColor: "rgba(75, 85, 99, 0.9)",
@@ -416,7 +416,7 @@ export default function PM25Chart() {
               <div className="flex items-center gap-2">
                 <div className="h-0 w-6 border-t-2 border-dashed border-gray-600"></div>
                 <span className="text-gray-600">
-                  Norma Mexicana anual (12 μg/m³)
+                  Norma Mexicana anual (10 μg/m³)
                 </span>
               </div>
               <div className="flex items-center gap-2">
