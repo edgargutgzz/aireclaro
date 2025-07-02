@@ -1,4 +1,4 @@
-sensor_id,sensor_nombre,monthly_avg_pm25,mes,ano
+sensor_id,sensor_nombre,pm25_promedio,mes,ano
 CE,Monterrey - Centro,24.56,mayo,2025
 NE2,Apodaca,No hay datos,mayo,2025
 NO,Monterrey - Noroeste,No hay datos,mayo,2025

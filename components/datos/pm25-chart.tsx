@@ -45,7 +45,7 @@ export default function PM25Chart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/data.csv");
+        const response = await fetch("/pm25_promedio.csv");
         const csvText = await response.text();
 
         const lines = csvText.trim().split("\n");
@@ -433,7 +433,7 @@ export default function PM25Chart() {
           {/* Sensors without data */}
           <div className="md:px-4">
             <h4 className="mb-3 text-sm font-semibold text-gray-800">
-              Estaciones no disponibles
+              Estaciones sin datos disponibles
             </h4>
             <div className="flex flex-wrap gap-2">
               {sensorsWithNoData.length > 0 ? (
@@ -459,8 +459,8 @@ export default function PM25Chart() {
               Exportar datos
             </h4>
             <a
-              href="/data.csv"
-              download="concentraciones-pm25.csv"
+              href="/pm25_promedio.csv"
+              download="pm25_promedio.csv"
               className="inline-flex items-center gap-2 rounded-md bg-gray-100 px-3 py-2 text-xs text-gray-700 transition-colors hover:bg-gray-200"
             >
               <Download size={14} />
