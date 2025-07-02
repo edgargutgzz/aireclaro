@@ -1,0 +1,478 @@
+"use client";
+import { useEffect, useState } from "react";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  BarController,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
+import { Chart } from "react-chartjs-2";
+import { Download } from "lucide-react";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  BarController,
+  Title,
+  Tooltip,
+  Legend,
+  annotationPlugin,
+);
+
+interface SensorData {
+  sensor_id: string;
+  sensor_nombre: string;
+  monthly_avg_pm25: number;
+  mes: string;
+  ano: number;
+}
+
+export default function PM25Chart() {
+  const [data, setData] = useState<SensorData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string>("");
+
+  // Month order for sorting in spanish
+  const monthOrder = ["enero", "febrero", "marzo", "abril", "mayo"];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/data.csv");
+        const csvText = await response.text();
+
+        const lines = csvText.trim().split("\n");
+
+        const parsedData = lines.slice(1).map((line) => {
+          const values = line.split(",");
+          return {
+            sensor_id: values[0]?.trim(),
+            sensor_nombre: values[1]?.trim(),
+            monthly_avg_pm25: parseFloat(values[2]?.trim()),
+            mes: values[3]?.trim(),
+            ano: parseInt(values[4]?.trim()),
+          };
+        });
+
+        setData(parsedData);
+        setLoading(false);
+      } catch {
+        setError("Error al cargar los datos del CSV");
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Get all unique sensors
+  const allUniqueSensors = Array.from(
+    new Set(data.map((item) => item.sensor_nombre)),
+  ).sort();
+
+  // Calculate max PM2.5 value for fixed scale
+  const maxPM25Value = Math.max(
+    ...data
+      .filter(
+        (item) =>
+          item.monthly_avg_pm25 !== null &&
+          item.monthly_avg_pm25 !== undefined &&
+          !isNaN(item.monthly_avg_pm25),
+      )
+      .map((item) => item.monthly_avg_pm25),
+  );
+
+  const yAxisMax = Math.ceil(maxPM25Value / 5) * 5;
+
+  // Group data by month
+  const groupedByMonth = data.reduce(
+    (acc, row) => {
+      if (!acc[row.mes]) {
+        acc[row.mes] = [];
+      }
+      acc[row.mes].push(row);
+      return acc;
+    },
+    {} as { [month: string]: SensorData[] },
+  );
+
+  // Set first available month as default
+  useEffect(() => {
+    if (monthOrder.length > 0 && !selectedMonth) {
+      setSelectedMonth(monthOrder[0]);
+    }
+  }, [selectedMonth]);
+
+  // Create chart data for selected month
+  const createChartData = (monthData: SensorData[]) => {
+    const validData = monthData.filter(
+      (item) =>
+        item.monthly_avg_pm25 !== null &&
+        item.monthly_avg_pm25 !== undefined &&
+        !isNaN(item.monthly_avg_pm25),
+    );
+
+    const sortedData = validData.sort(
+      (a, b) => b.monthly_avg_pm25 - a.monthly_avg_pm25,
+    );
+
+    // Function to shorten location names
+    const shortenName = (name: string) => {
+      return name
+        .replace("Monterrey - Centro", "Mty - Centro")
+        .replace("Monterrey - ", "Mty - ")
+        .replace("San Nicolás - ", "S.N. - ")
+        .replace("San Nicolás", "S.N.")
+        .replace("Guadalupe", "Gdpe.")
+        .replace("Escobedo", "Escobedo")
+        .replace("Cadereyta", "Cadereyta");
+    };
+
+    return {
+      labels: sortedData.map((item) => shortenName(item.sensor_nombre)),
+      datasets: [
+        {
+          label: "",
+          data: sortedData.map((item) => Math.round(item.monthly_avg_pm25)),
+          backgroundColor: sortedData.map((item) =>
+            Math.round(item.monthly_avg_pm25) > 25
+              ? "rgba(239, 68, 68, 0.8)"
+              : "rgba(59, 130, 246, 0.8)",
+          ),
+          borderColor: sortedData.map((item) =>
+            Math.round(item.monthly_avg_pm25) > 25
+              ? "rgba(239, 68, 68, 1)"
+              : "rgba(59, 130, 246, 1)",
+          ),
+          borderWidth: 1,
+          borderRadius: 4,
+          originalNames: sortedData.map((item) => item.sensor_nombre),
+        },
+      ],
+    };
+  };
+
+  const getSensorsWithNoData = (monthData: SensorData[]) => {
+    const sensorsWithData = monthData
+      .filter(
+        (item) =>
+          item.monthly_avg_pm25 !== null &&
+          item.monthly_avg_pm25 !== undefined &&
+          !isNaN(item.monthly_avg_pm25),
+      )
+      .map((item) => item.sensor_nombre);
+
+    return allUniqueSensors.filter(
+      (sensor) => !sensorsWithData.includes(sensor),
+    );
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        titleColor: "white",
+        bodyColor: "white",
+        borderColor: "rgba(255, 255, 255, 0.1)",
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: false,
+        titleFont: {
+          size: 12,
+          weight: "normal",
+        },
+        bodyFont: {
+          size: 18,
+          weight: "bold",
+        },
+        padding: {
+          top: 12,
+          bottom: 12,
+          left: 16,
+          right: 16,
+        },
+        titleAlign: "right",
+        bodyAlign: "left",
+        callbacks: {
+          title: function (context: any) {
+            const dataIndex = context[0].dataIndex;
+            return context[0].dataset.originalNames[dataIndex];
+          },
+          label: function (context: any) {
+            return `${context.parsed.y} μg/m³`;
+          },
+        },
+      },
+      annotation: {
+        annotations: {
+          mexicanLimit: {
+            type: "line" as const,
+            yMin: 25,
+            yMax: 25,
+            borderColor: "rgba(239, 68, 68, 0.8)",
+            borderWidth: 1,
+            borderDash: [4, 4],
+            label: {
+              content: "Límite diario (Norma Mexicana): 25 μg/m³",
+              enabled: true,
+              position: "start" as const,
+              backgroundColor: "rgba(239, 68, 68, 0.9)",
+              color: "white",
+              font: {
+                size: 12,
+              },
+              padding: 8,
+              cornerRadius: 4,
+              display: function (ctx: any) {
+                return ctx.hovered;
+              },
+            },
+          },
+          mexicanAnnualLimit: {
+            type: "line" as const,
+            yMin: 12,
+            yMax: 12,
+            borderColor: "rgba(75, 85, 99, 0.8)",
+            borderWidth: 1,
+            borderDash: [4, 4],
+            label: {
+              content: "Límite anual (Norma Mexicana): 12 μg/m³",
+              enabled: true,
+              position: "start" as const,
+              backgroundColor: "rgba(75, 85, 99, 0.9)",
+              color: "white",
+              font: { size: 12 },
+              padding: 8,
+              cornerRadius: 4,
+              display: function (ctx: any) {
+                return ctx.hovered;
+              },
+            },
+          },
+          whoLimit: {
+            type: "line" as const,
+            yMin: 15,
+            yMax: 15,
+            borderColor: "rgba(75, 85, 99, 0.8)",
+            borderWidth: 1,
+            borderDash: [4, 4],
+            label: {
+              content: "Límite diario (OMS): 15 μg/m³",
+              enabled: true,
+              position: "start" as const,
+              backgroundColor: "rgba(75, 85, 99, 0.9)",
+              color: "white",
+              font: { size: 12 },
+              padding: 8,
+              cornerRadius: 4,
+              display: function (ctx: any) {
+                return ctx.hovered;
+              },
+            },
+          },
+          whoAnnualLimit: {
+            type: "line" as const,
+            yMin: 5,
+            yMax: 5,
+            borderColor: "rgba(75, 85, 99, 0.8)",
+            borderWidth: 1,
+            borderDash: [4, 4],
+            label: {
+              content: "Límite anual (OMS): 5 μg/m³",
+              enabled: true,
+              position: "start" as const,
+              backgroundColor: "rgba(75, 85, 99, 0.9)",
+              color: "white",
+              font: { size: 12 },
+              padding: 8,
+              cornerRadius: 4,
+              display: function (ctx: any) {
+                return ctx.hovered;
+              },
+            },
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        display: true,
+        grid: {
+          display: false,
+        },
+        ticks: {
+          font: {
+            family: "ui-sans-serif, system-ui, sans-serif",
+            size: 12,
+            weight: "500",
+          },
+          color: "rgb(75, 85, 99)",
+          maxRotation: 45,
+          minRotation: 0,
+        },
+      },
+      y: {
+        display: true,
+        grid: {
+          display: false,
+        },
+        title: {
+          display: false,
+        },
+        min: 0,
+        max: 35, // Fixed maximum for all months
+        ticks: {
+          font: {
+            family: "ui-sans-serif, system-ui, sans-serif",
+            size: 12,
+            weight: "500",
+          },
+          color: "rgb(75, 85, 99)",
+          stepSize: 5, // Optional: consistent step size (0, 5, 10, 15, 20, 25, 30, 35)
+        },
+      },
+    },
+  };
+
+  const currentMonthData = groupedByMonth[selectedMonth] || [];
+  const sensorsWithNoData = getSensorsWithNoData(currentMonthData);
+
+  if (loading) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="flex h-64 items-center justify-center">
+          <p className="text-gray-600">Cargando datos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="text-center text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      {/* Card Header */}
+      <div className="mb-4 flex flex-col items-start justify-between gap-3 border-b border-gray-200 pb-4 md:flex-row md:items-center md:gap-0">
+        <h3 className="text-xl font-semibold text-gray-900">
+          Concentraciones de PM2.5 (μg/m³)
+        </h3>
+
+        {/* Month tabs only */}
+        <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
+          {monthOrder.map((month) => (
+            <button
+              key={month}
+              onClick={() => setSelectedMonth(month)}
+              className={`rounded-md px-3 py-1 text-sm font-medium capitalize transition-colors ${
+                selectedMonth === month
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              {month}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Chart container with download button */}
+      <div className="mb-4 h-96 w-full md:h-[500px]">
+        <Chart
+          type="bar"
+          data={createChartData(currentMonthData)}
+          options={chartOptions}
+        />
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-gray-200 pt-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {/* Reference lines */}
+          <div>
+            <h4 className="mb-3 text-sm font-semibold text-gray-800">
+              Límites de referencia
+            </h4>
+            <div className="grid grid-cols-1 gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="h-0 w-6 border-t-2 border-dashed border-red-400"></div>
+                <span className="text-gray-600">
+                  Norma Mexicana diario (25 μg/m³)
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-0 w-6 border-t-2 border-dashed border-gray-600"></div>
+                <span className="text-gray-600">
+                  Norma Mexicana anual (12 μg/m³)
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-0 w-6 border-t-2 border-dashed border-gray-600"></div>
+                <span className="text-gray-600">OMS diario (15 μg/m³)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-0 w-6 border-t-2 border-dashed border-gray-600"></div>
+                <span className="text-gray-600">OMS anual (5 μg/m³)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Sensors without data */}
+          <div>
+            <h4 className="mb-3 text-sm font-semibold text-gray-800">
+              Datos no disponibles
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {sensorsWithNoData.length > 0 ? (
+                sensorsWithNoData.map((sensor, index) => (
+                  <span
+                    key={index}
+                    className="inline-block rounded-md bg-gray-100 px-3 py-1 text-xs text-gray-600"
+                  >
+                    {sensor}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs italic text-gray-500">
+                  Todos los sensores activos
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Download section */}
+          <div>
+            <h4 className="mb-3 text-sm font-semibold text-gray-800">
+              Descargar datos
+            </h4>
+            <a
+              href="/data.csv"
+              download="concentraciones-pm25.csv"
+              className="inline-flex items-center gap-2 rounded-md bg-gray-100 px-3 py-2 text-xs text-gray-700 transition-colors hover:bg-gray-200"
+            >
+              <Download size={14} />
+              Descargar CSV
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
