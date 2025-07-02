@@ -182,20 +182,20 @@ export default function PM25Chart() {
         display: false,
       },
       tooltip: {
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
-        titleColor: "white",
-        bodyColor: "white",
-        borderColor: "rgba(255, 255, 255, 0.1)",
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        titleColor: "rgb(55, 65, 81)",
+        bodyColor: "rgb(17, 24, 39)",
+        borderColor: "rgba(229, 231, 235, 1)",
         borderWidth: 1,
         cornerRadius: 8,
         displayColors: false,
         titleFont: {
           size: 12,
-          weight: "normal",
+          weight: "normal" as const,
         },
         bodyFont: {
           size: 18,
-          weight: "bold",
+          weight: "bold" as const,
         },
         padding: {
           top: 12,
@@ -203,8 +203,12 @@ export default function PM25Chart() {
           left: 16,
           right: 16,
         },
-        titleAlign: "right",
-        bodyAlign: "left",
+        titleAlign: "right" as const,
+        bodyAlign: "left" as const,
+        shadowOffsetX: 0,
+        shadowOffsetY: 2,
+        shadowBlur: 8,
+        shadowColor: "rgba(0, 0, 0, 0.1)",
         callbacks: {
           title: function (context: any) {
             const dataIndex = context[0].dataIndex;
@@ -316,7 +320,7 @@ export default function PM25Chart() {
           font: {
             family: "ui-sans-serif, system-ui, sans-serif",
             size: 12,
-            weight: "500",
+            weight: 500,
           },
           color: "rgb(75, 85, 99)",
           maxRotation: 45,
@@ -332,19 +336,19 @@ export default function PM25Chart() {
           display: false,
         },
         min: 0,
-        max: 35, // Fixed maximum for all months
+        max: 35,
         ticks: {
           font: {
             family: "ui-sans-serif, system-ui, sans-serif",
             size: 12,
-            weight: "500",
+            weight: 500,
           },
           color: "rgb(75, 85, 99)",
-          stepSize: 5, // Optional: consistent step size (0, 5, 10, 15, 20, 25, 30, 35)
+          stepSize: 5,
         },
       },
     },
-  };
+  } as const;
 
   const currentMonthData = groupedByMonth[selectedMonth] || [];
   const sensorsWithNoData = getSensorsWithNoData(currentMonthData);
@@ -404,13 +408,13 @@ export default function PM25Chart() {
 
       {/* Footer */}
       <div className="border-t border-gray-200 pt-4">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {/* Reference lines */}
-          <div>
+          <div className="md:pr-4">
             <h4 className="mb-3 text-sm font-semibold text-gray-800">
               Límites de referencia
             </h4>
-            <div className="grid grid-cols-1 gap-2 text-xs">
+            <div className="space-y-2 text-xs">
               <div className="flex items-center gap-2">
                 <div className="h-0 w-6 border-t-2 border-dashed border-red-400"></div>
                 <span className="text-gray-600">
@@ -435,7 +439,7 @@ export default function PM25Chart() {
           </div>
 
           {/* Sensors without data */}
-          <div>
+          <div className="md:px-4">
             <h4 className="mb-3 text-sm font-semibold text-gray-800">
               Datos no disponibles
             </h4>
@@ -458,9 +462,9 @@ export default function PM25Chart() {
           </div>
 
           {/* Download section */}
-          <div>
+          <div className="md:pl-4">
             <h4 className="mb-3 text-sm font-semibold text-gray-800">
-              Descargar datos
+              Exportar datos
             </h4>
             <a
               href="/data.csv"
