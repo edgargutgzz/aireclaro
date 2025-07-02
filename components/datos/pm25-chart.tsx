@@ -433,7 +433,7 @@ export default function PM25Chart() {
           {/* Sensors without data */}
           <div className="md:px-4">
             <h4 className="mb-3 text-sm font-semibold text-gray-800">
-              Datos no disponibles
+              Estaciones no disponibles
             </h4>
             <div className="flex flex-wrap gap-2">
               {sensorsWithNoData.length > 0 ? (
