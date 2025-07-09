@@ -34,7 +34,7 @@ interface SensorData {
 }
 
 // Move monthOrder outside the component since it's a constant
-const monthOrder = ["enero", "febrero", "marzo", "abril", "mayo"];
+const monthOrder = ["enero", "febrero", "marzo", "abril", "mayo", "junio"];
 
 export default function PM25Chart() {
   const [data, setData] = useState<SensorData[]>([]);
@@ -373,19 +373,25 @@ export default function PM25Chart() {
 
         {/* Month tabs only */}
         <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
-          {monthOrder.map((month) => (
-            <button
-              key={month}
-              onClick={() => setSelectedMonth(month)}
-              className={`rounded-md px-3 py-1 text-sm font-medium capitalize transition-colors ${
-                selectedMonth === month
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              {month}
-            </button>
-          ))}
+          {monthOrder.map((month) => {
+            // Create abbreviated versions for mobile
+            const shortMonth = month.substring(0, 3);
+
+            return (
+              <button
+                key={month}
+                onClick={() => setSelectedMonth(month)}
+                className={`rounded-md px-2 py-1 text-xs font-medium capitalize transition-colors md:px-3 md:text-sm ${
+                  selectedMonth === month
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <span className="md:hidden">{shortMonth}</span>
+                <span className="hidden md:inline">{month}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

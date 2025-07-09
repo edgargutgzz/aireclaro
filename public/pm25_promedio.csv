@@ -1,56 +1,4 @@
-sensor_id,sensor_nombre,pm25_promedio,mes,ano
-CE,Monterrey - Centro,24.56,mayo,2025
-NE2,Apodaca,No hay datos,mayo,2025
-NO,Monterrey - Noroeste,No hay datos,mayo,2025
-SE3,Cadereyta,21.46,mayo,2025
-SO2,San Pedro,No hay datos,mayo,2025
-NO2,García,No hay datos,mayo,2025
-Norte2,San Nicolás - UANL,22.19,mayo,2025
-SE2,Juárez,25.99,mayo,2025
-SE,Guadalupe,23.14,mayo,2025
-SUR,Monterrey - Sur,No hay datos,mayo,2025
-NE,San Nicolás - Noreste,20.53,mayo,2025
-Norte,Escobedo,19.4,mayo,2025
-SO,Santa Catarina,No hay datos,mayo,2025
-NE2,Apodaca,No hay datos,marzo,2025
-NO,Monterrey - Noroeste,No hay datos,marzo,2025
-SE2,Juárez,28.09,marzo,2025
-SE3,Cadereyta,26.29,marzo,2025
-SO2,San Pedro,26.27,marzo,2025
-SE,Guadalupe,25.06,marzo,2025
-CE,Monterrey - Centro,24.6,marzo,2025
-NE,San Nicolás - Noreste,23.14,marzo,2025
-NO2,García,23.05,marzo,2025
-SUR,Monterrey - Sur,22.99,marzo,2025
-Norte2,San Nicolás - UANL,22.81,marzo,2025
-Norte,Escobedo,20.33,marzo,2025
-SO,Santa Catarina,19.3,marzo,2025
-NE2,Apodaca,No hay datos,febrero,2025
-NO,Monterrey - Noroeste,No hay datos,febrero,2025
-NO2,García,No hay datos,febrero,2025
-SE,Guadalupe,No hay datos,febrero,2025
-SO,Santa Catarina,No hay datos,febrero,2025
-CE,Monterrey - Centro,34.19,febrero,2025
-SE2,Juárez,29.64,febrero,2025
-NE,San Nicolás - Noreste,27.74,febrero,2025
-SO2,San Pedro,26.13,febrero,2025
-Norte2,San Nicolás - UANL,24.91,febrero,2025
-SE3,Cadereyta,22.52,febrero,2025
-SUR,Monterrey - Sur,21.11,febrero,2025
-Norte,Escobedo,19.3,febrero,2025
-NE2,Apodaca,No hay datos,enero,2025
-NO,Monterrey - Noroeste,No hay datos,enero,2025
-SO,Santa Catarina,No hay datos,enero,2025
-SO2,San Pedro,No hay datos,enero,2025
-CE,Monterrey - Centro,28.51,enero,2025
-SE2,Juárez,25.17,enero,2025
-NE,San Nicolás - Noreste,24.18,enero,2025
-SE,Guadalupe,23.91,enero,2025
-Norte2,San Nicolás - UANL,20.97,enero,2025
-Norte,Escobedo,18.87,enero,2025
-SE3,Cadereyta,18.17,enero,2025
-SUR,Monterrey - Sur,16.79,enero,2025
-NO2,García,9.16,enero,2025
+sensor_id,sensor_nombre,monthly_avg_pm25,mes,ano
 CE,Monterrey - Centro,No hay datos,abril,2025
 NE,San Nicolás - Noreste,No hay datos,abril,2025
 NO,Monterrey - Noroeste,No hay datos,abril,2025
@@ -64,3 +12,68 @@ SUR,Monterrey - Sur,19.07,abril,2025
 NE,San Nicolás - Noreste,18.96,abril,2025
 Norte,Escobedo,17.77,abril,2025
 SO,Santa Catarina,13.15,abril,2025
+NE2,Apodaca,No hay datos,enero,2025
+NO,Monterrey - Noroeste,No hay datos,enero,2025
+SO,Santa Catarina,No hay datos,enero,2025
+SO2,San Pedro,No hay datos,enero,2025
+CE,Monterrey - Centro,28.51,enero,2025
+SE2,Juárez,25.17,enero,2025
+NE,San Nicolás - Noreste,24.18,enero,2025
+SE,Guadalupe,23.91,enero,2025
+Norte2,San Nicolás - UANL,20.97,enero,2025
+Norte,Escobedo,18.87,enero,2025
+SE3,Cadereyta,18.17,enero,2025
+SUR,Monterrey - Sur,16.79,enero,2025
+NO2,García,9.16,enero,2025
+NE2,Apodaca,No hay datos,febrero,2025
+NO,Monterrey - Noroeste,No hay datos,febrero,2025
+NO2,García,No hay datos,febrero,2025
+SE,Guadalupe,No hay datos,febrero,2025
+SO,Santa Catarina,No hay datos,febrero,2025
+CE,Monterrey - Centro,34.19,febrero,2025
+SE2,Juárez,29.64,febrero,2025
+NE,San Nicolás - Noreste,27.74,febrero,2025
+SO2,San Pedro,26.13,febrero,2025
+Norte2,San Nicolás - UANL,24.91,febrero,2025
+SE3,Cadereyta,22.52,febrero,2025
+SUR,Monterrey - Sur,21.11,febrero,2025
+Norte,Escobedo,19.3,febrero,2025
+NE2,Apodaca,No hay datos,marzo,2025
+NO,Monterrey - Noroeste,No hay datos,marzo,2025
+SE2,Juárez,28.09,marzo,2025
+SE3,Cadereyta,26.29,marzo,2025
+SO2,San Pedro,26.27,marzo,2025
+SE,Guadalupe,25.06,marzo,2025
+CE,Monterrey - Centro,24.6,marzo,2025
+NE,San Nicolás - Noreste,23.14,marzo,2025
+NO2,García,23.05,marzo,2025
+SUR,Monterrey - Sur,22.99,marzo,2025
+Norte2,San Nicolás - UANL,22.81,marzo,2025
+Norte,Escobedo,20.33,marzo,2025
+SO,Santa Catarina,19.3,marzo,2025
+CE,Monterrey - Centro,24.56,mayo,2025
+NE2,Apodaca,No hay datos,mayo,2025
+NO,Monterrey - Noroeste,No hay datos,mayo,2025
+SE3,Cadereyta,21.46,mayo,2025
+SO2,San Pedro,No hay datos,mayo,2025
+NO2,García,No hay datos,mayo,2025
+Norte2,San Nicolás - UANL,22.19,mayo,2025
+SE2,Juárez,25.99,mayo,2025
+SE,Guadalupe,23.14,mayo,2025
+SUR,Monterrey - Sur,No hay datos,mayo,2025
+NE,San Nicolás - Noreste,20.53,mayo,2025
+Norte,Escobedo,19.4,mayo,2025
+SO,Santa Catarina,No hay datos,mayo,2025
+NO2,García,18.07,junio,2025
+CE,Monterrey - Centro,17.21,junio,2025
+SO,Santa Catarina,15.49,junio,2025
+Norte2,San Nicolás - UANL,15.47,junio,2025
+SE2,Juárez,14.67,junio,2025
+SE,Guadalupe,13.37,junio,2025
+NE,San Nicolás - Noreste,12.54,junio,2025
+Norte,Escobedo,11.61,junio,2025
+NE2,Apodaca,No hay datos,junio,2025
+NO,Monterrey - Noroeste,No hay datos,junio,2025
+SE3,Cadereyta,No hay datos,junio,2025
+SO2,San Pedro,No hay datos,junio,2025
+SUR,Monterrey - Sur,No hay datos,junio,2025
