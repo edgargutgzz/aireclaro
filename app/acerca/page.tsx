@@ -1,4 +1,5 @@
 import Questions from "@/components/acerca/questions";
+import Image from "next/image";
 
 export default function Acerca() {
   return (
@@ -7,6 +8,18 @@ export default function Acerca() {
         Preguntas Frecuentes
       </h1>
       <Questions />
+
+      {/* OCCAMM Logo Section */}
+      <div className="mt-20 flex items-center justify-center gap-6">
+        <span className="text-lg text-gray-600">Un proyecto del</span>
+        <Image
+          src="/occamm-logo.png"
+          alt="OCCAMM Logo"
+          width={150}
+          height={60}
+          className="h-auto w-auto"
+        />
+      </div>
     </div>
   );
 }
