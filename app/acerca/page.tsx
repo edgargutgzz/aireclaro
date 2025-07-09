@@ -10,14 +10,14 @@ export default function Acerca() {
       <Questions />
 
       {/* OCCAMM Logo Section */}
-      <div className="mt-20 flex items-center justify-center gap-6">
+      <div className="mt-20 flex flex-col items-center justify-center gap-4 md:flex-row md:gap-6">
         <span className="text-lg text-gray-600">Un proyecto del</span>
         <Image
           src="/occamm-logo.png"
           alt="OCCAMM Logo"
           width={150}
           height={60}
-          className="h-auto w-auto"
+          className="h-auto w-32 md:w-auto"
         />
       </div>
     </div>
