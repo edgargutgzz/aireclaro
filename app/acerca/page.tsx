@@ -17,7 +17,7 @@ export default function Acerca() {
           alt="OCCAMM Logo"
           width={150}
           height={60}
-          className="h-auto w-32 md:w-auto"
+          className="h-auto w-auto"
         />
       </div>
     </div>
