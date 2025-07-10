@@ -1,4 +1,5 @@
 import PM25Chart from "@/components/datos/pm25-chart";
+import PM25Calendar from "@/components/datos/pm25-calendar";
 
 export default function Datos() {
   return (
@@ -7,7 +8,14 @@ export default function Datos() {
       <h1 className="mb-16 text-5xl font-extrabold tracking-tight text-gray-900">
         Datos
       </h1>
-      <PM25Chart />
+
+      {/* PM2.5 Chart */}
+      <div className="mb-8">
+        <PM25Chart />
+      </div>
+
+      {/* PM2.5 Calendar */}
+      <PM25Calendar />
     </div>
   );
 }
