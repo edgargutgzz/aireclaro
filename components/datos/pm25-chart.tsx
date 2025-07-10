@@ -364,7 +364,7 @@ export default function PM25Chart() {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900">
-                Acerca de los datos
+                Acerca de la visualización
               </h3>
               <button
                 onClick={() => setShowInfoPopup(false)}

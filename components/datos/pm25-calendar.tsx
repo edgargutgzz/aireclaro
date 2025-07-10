@@ -132,9 +132,7 @@ export default function PM25Calendar() {
           >
             <div className="flex items-center justify-between border-b border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900">
-                Disponibilidad de datos por estación -{" "}
-                {selectedMonth.charAt(0).toUpperCase() + selectedMonth.slice(1)}{" "}
-                2025
+                Acerca de la visualización
               </h3>
               <button
                 onClick={() => setShowInfoPopup(false)}
