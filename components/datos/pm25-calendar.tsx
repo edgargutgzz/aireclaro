@@ -155,14 +155,14 @@ export default function PM25Calendar() {
                     <div className="h-4 w-4 rounded bg-green-400"></div>
                     <span className="text-sm text-gray-600">
                       Verde: Datos suficientes para el día (≥75% de mediciones
-                      válidas)
+                      horarias válidas, equivalente a 18 o más horas con datos)
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-4 rounded bg-red-400"></div>
                     <span className="text-sm text-gray-600">
                       Rojo: Datos insuficientes para el día (&lt;75% de
-                      mediciones válidas)
+                      mediciones horarias válidas, menos de 18 horas con datos)
                     </span>
                   </div>
                 </div>

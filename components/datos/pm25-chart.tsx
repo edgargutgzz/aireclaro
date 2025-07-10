@@ -392,9 +392,10 @@ export default function PM25Chart() {
                   Procesamiento de datos
                 </h4>
                 <p className="text-sm text-gray-600">
-                  Los valores mostrados corresponden a promedios mensuales de
-                  las concentraciones de PM2.5 medidas en microgramos por metro
-                  cúbico (μg/m³).
+                  Los datos de PM2.5 se procesan mediante una agregación en dos
+                  etapas: primero se calculan promedios diarios y posteriormente
+                  se obtienen los promedios mensuales mostrados, medidos en
+                  microgramos por metro cúbico (μg/m³).
                 </p>
               </div>
 
