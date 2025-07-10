@@ -14,11 +14,15 @@ interface SensorCalendarData {
 
 const DAYS_IN_JUNE = 30;
 
+// Move monthOrder outside the component since it's a constant
+const monthOrder = ["enero", "febrero", "marzo", "abril", "mayo", "junio"];
+
 export default function PM25Calendar() {
   const [data, setData] = useState<SensorCalendarData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showInfoPopup, setShowInfoPopup] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState<string>("junio");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -122,14 +126,20 @@ export default function PM25Calendar() {
           onClick={() => setShowInfoPopup(false)}
         />
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="relative w-full max-w-lg rounded-xl bg-white shadow-lg">
+          <div
+            className="relative w-full max-w-lg rounded-xl bg-white shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900">
-                Disponibilidad de datos por estación - Junio 2025
+                Disponibilidad de datos por estación -{" "}
+                {selectedMonth.charAt(0).toUpperCase() + selectedMonth.slice(1)}{" "}
+                2025
               </h3>
               <button
                 onClick={() => setShowInfoPopup(false)}
                 className="text-gray-400 transition-colors hover:text-gray-600"
+                aria-label="Cerrar"
               >
                 <X size={20} />
               </button>
@@ -224,8 +234,37 @@ export default function PM25Calendar() {
             <Info size={22} />
           </button>
           <h3 className="text-xl font-semibold text-gray-900">
-            Disponibilidad de datos por estación - Junio 2025
+            Disponibilidad de datos por estación
           </h3>
+        </div>
+
+        {/* Month tabs */}
+        <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
+          {monthOrder.map((month) => {
+            // Create abbreviated versions for mobile
+            const shortMonth = month.substring(0, 3);
+            const isJunio = month === "junio";
+            const isSelected = selectedMonth === month;
+
+            return (
+              <button
+                key={month}
+                onClick={() => isJunio && setSelectedMonth(month)}
+                disabled={!isJunio}
+                className={`rounded-md px-2 py-1 text-xs font-medium capitalize transition-colors md:px-3 md:text-sm ${
+                  isSelected
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : isJunio
+                      ? "text-gray-600 hover:text-gray-900"
+                      : "cursor-not-allowed text-gray-400"
+                }`}
+                title={!isJunio ? "Datos no disponibles para este mes" : ""}
+              >
+                <span className="md:hidden">{shortMonth}</span>
+                <span className="hidden md:inline">{month}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -307,11 +346,15 @@ export default function PM25Calendar() {
             <div className="grid grid-cols-1 gap-2 text-xs">
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded bg-green-400"></div>
-                <span className="text-gray-600">Datos suficientes</span>
+                <span className="text-gray-600">
+                  Datos suficientes en el día
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded bg-red-400"></div>
-                <span className="text-gray-600">Datos insuficientes</span>
+                <span className="text-gray-600">
+                  Datos insuficientes en el día
+                </span>
               </div>
             </div>
           </div>
