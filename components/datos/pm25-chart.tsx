@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
 import { Chart } from "react-chartjs-2";
-import { Download } from "lucide-react";
+import { Download, Info, X } from "lucide-react";
 
 ChartJS.register(
   CategoryScale,
@@ -41,6 +41,7 @@ export default function PM25Chart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const [showInfoPopup, setShowInfoPopup] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -345,6 +346,75 @@ export default function PM25Chart() {
   const currentMonthData = groupedByMonth[selectedMonth] || [];
   const sensorsWithNoData = getSensorsWithNoData(currentMonthData);
 
+  // Info Popup Component
+  const InfoPopup = () => {
+    if (!showInfoPopup) return null;
+
+    return (
+      <>
+        {/* Backdrop */}
+        <div
+          className="fixed inset-0 z-40 bg-black bg-opacity-50"
+          onClick={() => setShowInfoPopup(false)}
+        />
+
+        {/* Popup */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-lg rounded-xl bg-white shadow-lg">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Acerca de los datos
+              </h3>
+              <button
+                onClick={() => setShowInfoPopup(false)}
+                className="text-gray-400 transition-colors hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="space-y-4 p-6">
+              <div>
+                <h4 className="mb-2 font-medium text-gray-900">
+                  Sistema Integral de Monitoreo Ambiental (SIMA)
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Los datos de PM2.5 provienen de las estaciones de monitoreo
+                  del Sistema Integral de Monitoreo Ambiental (SIMA)
+                  distribuidas en el Área Metropolitana de Monterrey.
+                </p>
+              </div>
+
+              <div>
+                <h4 className="mb-2 font-medium text-gray-900">
+                  Procesamiento de datos
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Los valores mostrados corresponden a promedios mensuales de
+                  las concentraciones de PM2.5 medidas en microgramos por metro
+                  cúbico (μg/m³).
+                </p>
+              </div>
+
+              <div>
+                <h4 className="mb-2 font-medium text-gray-900">
+                  Límites de referencia
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Se incluyen los límites establecidos por la Norma Oficial
+                  Mexicana (NOM-025-SSA1-2021) y las recomendaciones de la
+                  Organización Mundial de la Salud (OMS) para PM2.5.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
   if (loading) {
     return (
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -365,11 +435,23 @@ export default function PM25Chart() {
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      {/* Info Popup */}
+      <InfoPopup />
+
       {/* Card Header */}
       <div className="mb-4 flex flex-col items-start justify-between gap-3 border-b border-gray-200 pb-4 md:flex-row md:items-center md:gap-0">
-        <h3 className="text-xl font-semibold text-gray-900">
-          Concentraciones de PM2.5 (μg/m³)
-        </h3>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowInfoPopup(true)}
+            className="text-blue-500 transition-colors hover:text-blue-700"
+            title="Información sobre los datos"
+          >
+            <Info size={22} />
+          </button>
+          <h3 className="text-xl font-semibold text-gray-900">
+            Concentraciones de PM2.5 (μg/m³)
+          </h3>
+        </div>
 
         {/* Month tabs only */}
         <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
