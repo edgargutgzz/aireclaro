@@ -231,12 +231,18 @@ export default function PM25Calendar() {
 
       {/* Heatmap */}
       <div className="mb-4 overflow-x-auto">
-        <div className="min-w-max">
+        <div className="relative min-w-max">
           {/* Header with days */}
           <div className="flex">
-            {/* Empty corner cell */}
-            <div className="w-36 border-b border-gray-200 p-2"></div>
-            {/* Day headers */}
+            {/* Position header - sticky */}
+            <div className="sticky left-0 z-10 w-12 border-b border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
+              Pos.
+            </div>
+            {/* Sensor name header - sticky */}
+            <div className="sticky left-12 z-10 w-36 border-b border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
+              Estación
+            </div>
+            {/* Day headers - scrollable */}
             {Array.from({ length: DAYS_IN_JUNE }, (_, i) => i + 1).map(
               (day) => (
                 <div
@@ -250,13 +256,17 @@ export default function PM25Calendar() {
           </div>
 
           {/* Data rows */}
-          {allSensors.map((sensor) => (
+          {allSensors.map((sensor, index) => (
             <div key={sensor} className="flex">
-              {/* Sensor label */}
-              <div className="w-36 border-r border-gray-200 p-2 text-center text-sm font-medium text-gray-700">
+              {/* Position number - sticky */}
+              <div className="sticky left-0 z-10 w-12 border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-500">
+                {index + 1}
+              </div>
+              {/* Sensor label - sticky */}
+              <div className="sticky left-12 z-10 w-36 border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
                 {shortenName(sensor)}
               </div>
-              {/* Data cells */}
+              {/* Data cells - scrollable */}
               {Array.from({ length: DAYS_IN_JUNE }, (_, i) => i + 1).map(
                 (day) => {
                   const dayData = getDataForSensorDay(sensor, day);
