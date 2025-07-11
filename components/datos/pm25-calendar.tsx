@@ -10,6 +10,8 @@ interface SensorCalendarData {
   total_possible: number;
   percentage: number;
   valid: boolean;
+  mes: string;
+  ano: number;
 }
 
 const DAYS_IN_JUNE = 30;
@@ -17,12 +19,28 @@ const DAYS_IN_JUNE = 30;
 // Move monthOrder outside the component since it's a constant
 const monthOrder = ["enero", "febrero", "marzo", "abril", "mayo", "junio"];
 
+// Get days in month
+const getDaysInMonth = (month: string) => {
+  const daysMap: { [key: string]: number } = {
+    enero: 31,
+    febrero: 28,
+    marzo: 31,
+    abril: 30,
+    mayo: 31,
+    junio: 30,
+  };
+  return daysMap[month] || 30;
+};
+
 export default function PM25Calendar() {
   const [data, setData] = useState<SensorCalendarData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showInfoPopup, setShowInfoPopup] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState<string>("junio");
+  const [selectedMonth, setSelectedMonth] = useState<string>("enero");
+
+  // Available months with data
+  const availableMonths = ["enero", "junio"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,6 +60,8 @@ export default function PM25Calendar() {
             total_possible: parseInt(values[4]?.trim()),
             percentage: parseFloat(values[5]?.trim()),
             valid: values[6]?.trim().toLowerCase() === "yes",
+            mes: values[7]?.trim(),
+            ano: parseInt(values[8]?.trim()),
           };
         });
 
@@ -56,15 +76,21 @@ export default function PM25Calendar() {
     fetchData();
   }, []);
 
-  // Get all unique sensors and order them by completion rate
+  // Filter data for selected month
+  const currentMonthData = data.filter((item) => item.mes === selectedMonth);
+  const daysInSelectedMonth = getDaysInMonth(selectedMonth);
+
+  // Get all unique sensors and order them by completion rate for the selected month
   const allSensors = (() => {
     const uniqueSensors = Array.from(
-      new Set(data.map((item) => item.sensor_nombre)), // Use sensor_nombre
+      new Set(currentMonthData.map((item) => item.sensor_nombre)),
     );
 
     // Calculate completion rate for each sensor
     const sensorCompletionRates = uniqueSensors.map((sensor) => {
-      const sensorData = data.filter((item) => item.sensor_nombre === sensor); // Use sensor_nombre
+      const sensorData = currentMonthData.filter(
+        (item) => item.sensor_nombre === sensor,
+      );
       const totalDays = sensorData.length;
       const completeDays = sensorData.filter(
         (item) => item.percentage === 100,
@@ -108,11 +134,11 @@ export default function PM25Calendar() {
     return isValid ? "text-white" : "text-white";
   };
 
-  // Get data for specific sensor and day
+  // Get data for specific sensor and day (filtered by selected month)
   const getDataForSensorDay = (sensor: string, day: number) => {
-    return data.find(
+    return currentMonthData.find(
       (item) => item.sensor_nombre === sensor && item.day === day,
-    ); // Use sensor_nombre
+    );
   };
 
   // Info Popup Component
@@ -149,9 +175,9 @@ export default function PM25Calendar() {
                 </h4>
                 <p className="text-sm text-gray-600">
                   Esta matriz muestra la disponibilidad de datos para cada
-                  estación de monitoreo durante el mes de junio de 2025. Cada
-                  fila representa una estación y cada columna representa un día
-                  del mes.
+                  estación de monitoreo durante el mes seleccionado. Cada fila
+                  representa una estación y cada columna representa un día del
+                  mes.
                 </p>
               </div>
               <div>
@@ -241,22 +267,22 @@ export default function PM25Calendar() {
           {monthOrder.map((month) => {
             // Create abbreviated versions for mobile
             const shortMonth = month.substring(0, 3);
-            const isJunio = month === "junio";
+            const hasData = availableMonths.includes(month);
             const isSelected = selectedMonth === month;
 
             return (
               <button
                 key={month}
-                onClick={() => isJunio && setSelectedMonth(month)}
-                disabled={!isJunio}
+                onClick={() => hasData && setSelectedMonth(month)}
+                disabled={!hasData}
                 className={`rounded-md px-2 py-1 text-xs font-medium capitalize transition-colors md:px-3 md:text-sm ${
                   isSelected
                     ? "bg-white text-gray-900 shadow-sm"
-                    : isJunio
+                    : hasData
                       ? "text-gray-600 hover:text-gray-900"
                       : "cursor-not-allowed text-gray-400"
                 }`}
-                title={!isJunio ? "Datos no disponibles para este mes" : ""}
+                title={!hasData ? "Datos no disponibles para este mes" : ""}
               >
                 <span className="md:hidden">{shortMonth}</span>
                 <span className="hidden md:inline">{month}</span>
@@ -280,7 +306,7 @@ export default function PM25Calendar() {
               Estación
             </div>
             {/* Day headers - scrollable */}
-            {Array.from({ length: DAYS_IN_JUNE }, (_, i) => i + 1).map(
+            {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map(
               (day) => (
                 <div
                   key={day}
@@ -304,7 +330,7 @@ export default function PM25Calendar() {
                 {shortenName(sensor)}
               </div>
               {/* Data cells - scrollable */}
-              {Array.from({ length: DAYS_IN_JUNE }, (_, i) => i + 1).map(
+              {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map(
                 (day) => {
                   const dayData = getDataForSensorDay(sensor, day);
                   return (
@@ -316,9 +342,7 @@ export default function PM25Calendar() {
                         <div
                           className={`h-8 w-full rounded ${getColorClass(dayData.valid)} ${getTextColor(dayData.valid)} flex cursor-pointer items-center justify-center`}
                           title={`${shortenName(sensor)} - Día ${day}: ${dayData.valid_measurements}/${dayData.total_possible} mediciones (${dayData.percentage.toFixed(1)}%)`}
-                        >
-                          {/* Remove the percentage display */}
-                        </div>
+                        ></div>
                       ) : (
                         <div className="flex h-8 w-full items-center justify-center rounded bg-gray-100">
                           <span className="text-xs text-gray-400">-</span>
