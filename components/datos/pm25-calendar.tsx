@@ -272,11 +272,11 @@ export default function PM25Calendar() {
           {/* Header with days */}
           <div className="flex">
             {/* Position header - sticky */}
-            <div className="sticky left-0 z-10 w-12 border-b border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
+            <div className="sticky left-0 z-[5] w-12 border-b border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
               Pos.
             </div>
             {/* Sensor name header - sticky */}
-            <div className="sticky left-12 z-10 w-36 border-b border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
+            <div className="sticky left-12 z-[5] w-36 border-b border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
               Estación
             </div>
             {/* Day headers - scrollable */}
@@ -296,11 +296,11 @@ export default function PM25Calendar() {
           {allSensors.map((sensor, index) => (
             <div key={sensor} className="flex">
               {/* Position number - sticky */}
-              <div className="sticky left-0 z-10 w-12 border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-500">
+              <div className="sticky left-0 z-[5] w-12 border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-500">
                 {index + 1}
               </div>
               {/* Sensor label - sticky */}
-              <div className="sticky left-12 z-10 w-36 border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
+              <div className="sticky left-12 z-[5] w-36 border-r border-gray-200 bg-white p-2 text-center text-sm font-medium text-gray-700">
                 {shortenName(sensor)}
               </div>
               {/* Data cells - scrollable */}
