@@ -40,7 +40,7 @@ export default function PM25Calendar() {
   const [selectedMonth, setSelectedMonth] = useState<string>("enero");
 
   // Available months with data
-  const availableMonths = ["enero", "junio"];
+  const availableMonths = ["enero", "febrero", "junio"];
 
   useEffect(() => {
     const fetchData = async () => {
