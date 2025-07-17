@@ -34,13 +34,27 @@ interface SensorData {
 }
 
 // Move monthOrder outside the component since it's a constant
-const monthOrder = ["enero", "febrero", "marzo", "abril", "mayo", "junio"];
+const monthOrder = [
+  "enero",
+  "febrero",
+  "marzo",
+  "abril",
+  "mayo",
+  "junio",
+  "julio",
+  "agosto",
+  "septiembre",
+  "octubre",
+  "noviembre",
+  "diciembre",
+];
 
 export default function PM25Chart() {
   const [data, setData] = useState<SensorData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [showInfoPopup, setShowInfoPopup] = useState(false);
 
   useEffect(() => {
@@ -73,6 +87,21 @@ export default function PM25Chart() {
     fetchData();
   }, []);
 
+  // Get available years from data
+  const availableYears = Array.from(new Set(data.map((item) => item.ano))).sort(
+    (a, b) => a - b,
+  ); // Sort ascending (oldest first)
+
+  // Get available months for the selected year
+  const getAvailableMonthsForYear = (year: number | null) => {
+    if (!year) return [];
+    return Array.from(
+      new Set(data.filter((item) => item.ano === year).map((item) => item.mes)),
+    );
+  };
+
+  const availableMonths = getAvailableMonthsForYear(selectedYear);
+
   // Get all unique sensors
   const allUniqueSensors = Array.from(
     new Set(data.map((item) => item.sensor_nombre)),
@@ -92,26 +121,40 @@ export default function PM25Chart() {
 
   const yAxisMax = Math.ceil(maxPM25Value / 5) * 5;
 
-  // Group data by month
-  const groupedByMonth = data.reduce(
+  // Group data by month and year
+  const groupedByMonthAndYear = data.reduce(
     (acc, row) => {
-      if (!acc[row.mes]) {
-        acc[row.mes] = [];
+      const key = `${row.mes}-${row.ano}`;
+      if (!acc[key]) {
+        acc[key] = [];
       }
-      acc[row.mes].push(row);
+      acc[key].push(row);
       return acc;
     },
-    {} as { [month: string]: SensorData[] },
+    {} as { [monthYear: string]: SensorData[] },
   );
 
-  // Set first available month as default
+  // Set defaults when data is loaded
   useEffect(() => {
-    if (monthOrder.length > 0 && !selectedMonth) {
-      setSelectedMonth(monthOrder[0]);
+    if (availableYears.length > 0 && selectedYear === null) {
+      setSelectedYear(availableYears[0]); // Set to most recent year
     }
-  }, [selectedMonth]);
+  }, [availableYears, selectedYear]);
 
-  // Create chart data for selected month
+  useEffect(() => {
+    // When year changes or on initial load, set the first available month for that year
+    if (selectedYear && availableMonths.length > 0) {
+      // Find the first month in monthOrder that's available for the selected year
+      const firstAvailableMonth = monthOrder.find((month) =>
+        availableMonths.includes(month),
+      );
+      if (firstAvailableMonth && selectedMonth !== firstAvailableMonth) {
+        setSelectedMonth(firstAvailableMonth);
+      }
+    }
+  }, [selectedYear, availableMonths.length]);
+
+  // Create chart data for selected month and year
   const createChartData = (monthData: SensorData[]) => {
     const validData = monthData.filter(
       (item) =>
@@ -343,7 +386,9 @@ export default function PM25Chart() {
     },
   };
 
-  const currentMonthData = groupedByMonth[selectedMonth] || [];
+  // Get current data based on selected month and year
+  const currentKey = `${selectedMonth}-${selectedYear}`;
+  const currentMonthData = groupedByMonthAndYear[currentKey] || [];
   const sensorsWithNoData = getSensorsWithNoData(currentMonthData);
 
   // Info Popup Component
@@ -440,8 +485,8 @@ export default function PM25Chart() {
       <InfoPopup />
 
       {/* Card Header */}
-      <div className="mb-4 flex flex-col items-start justify-between gap-3 border-b border-gray-200 pb-4 md:flex-row md:items-center md:gap-0">
-        <div className="flex items-center gap-3">
+      <div className="mb-4 flex flex-col gap-3 border-b border-gray-200 pb-4 md:flex-row md:gap-4">
+        <div className="flex items-center gap-3 md:w-1/2">
           <button
             onClick={() => setShowInfoPopup(true)}
             className="text-blue-500 transition-colors hover:text-blue-700"
@@ -454,27 +499,54 @@ export default function PM25Chart() {
           </h3>
         </div>
 
-        {/* Month tabs only */}
-        <div className="flex gap-1 rounded-lg bg-gray-100 p-1">
-          {monthOrder.map((month) => {
-            // Create abbreviated versions for mobile
-            const shortMonth = month.substring(0, 3);
-
-            return (
+        {/* Year and Month filters */}
+        <div className="flex flex-col gap-2 md:w-1/2 md:flex-row md:gap-6">
+          {/* Year selector */}
+          <div className="flex gap-1 rounded-lg bg-gray-100 p-1 py-2 md:flex-shrink-0">
+            {availableYears.map((year) => (
               <button
-                key={month}
-                onClick={() => setSelectedMonth(month)}
-                className={`rounded-md px-2 py-1 text-xs font-medium capitalize transition-colors md:px-3 md:text-sm ${
-                  selectedMonth === month
+                key={year}
+                onClick={() => setSelectedYear(year)}
+                className={`rounded-md px-3 py-1 text-sm font-medium transition-colors ${
+                  selectedYear === year
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-600 hover:text-gray-900"
                 }`}
               >
-                <span className="md:hidden">{shortMonth}</span>
-                <span className="hidden md:inline">{month}</span>
+                {year}
               </button>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* Month selector */}
+          <div className="overflow-x-auto rounded-lg bg-gray-100 p-1 py-2 md:flex-1">
+            <div className="flex gap-1">
+              {monthOrder.map((month) => {
+                // Create abbreviated versions for mobile
+                const shortMonth = month.substring(0, 3);
+                const isAvailable = availableMonths.includes(month);
+                const isSelected = selectedMonth === month;
+
+                return (
+                  <button
+                    key={month}
+                    onClick={() => isAvailable && setSelectedMonth(month)}
+                    disabled={!isAvailable}
+                    className={`flex-shrink-0 rounded-md px-2 py-1 text-xs font-medium capitalize transition-colors md:px-3 md:text-sm ${
+                      isSelected && isAvailable
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : isAvailable
+                          ? "text-gray-600 hover:text-gray-900"
+                          : "cursor-not-allowed text-gray-400 opacity-50"
+                    }`}
+                  >
+                    <span className="md:hidden">{shortMonth}</span>
+                    <span className="hidden md:inline">{month}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 

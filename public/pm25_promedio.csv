@@ -1,6 +1,6 @@
 sensor_id,sensor_nombre,monthly_avg_pm25,mes,ano
 CE,Monterrey - Centro,No hay datos,abril,2025
-NE,San Nicolás - Noreste,No hay datos,abril,2025
+NE2,Apodaca,No hay datos,abril,2025
 NO,Monterrey - Noroeste,No hay datos,abril,2025
 SE3,Cadereyta,No hay datos,abril,2025
 SO2,San Pedro,No hay datos,abril,2025
@@ -89,3 +89,18 @@ SO2,San Pedro,No hay datos,junio,2025
 SUR,Monterrey - Sur,No hay datos,junio,2025
 O3,Pesquería,No hay datos,junio,2025
 NO3,García - Este,No hay datos,junio,2025
+NE2,Apodaca,27.95,enero,2024
+NO,Monterrey - Noroeste,No hay datos,enero,2024
+SO,Santa Catarina,No hay datos,enero,2024
+SO2,San Pedro,21.39,enero,2024
+CE,Monterrey - Centro,31.65,enero,2024
+SE2,Juárez,43.12,enero,2024
+NE,San Nicolás - Noreste,31.23,enero,2024
+SE,Guadalupe,No hay datos,enero,2024
+Norte2,San Nicolás - UANL,23.43,enero,2024
+Norte,Escobedo,29.18,enero,2024
+SE3,Cadereyta,22.36,enero,2024
+SUR,Monterrey - Sur,No hay datos,enero,2024
+NO2,García,No hay datos,enero,2024
+O3,Pesquería,No hay datos,enero,2024
+NO3,García - Este,No hay datos,enero,2024
