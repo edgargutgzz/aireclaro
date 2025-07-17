@@ -532,7 +532,7 @@ export default function PM25Chart() {
                     key={month}
                     onClick={() => isAvailable && setSelectedMonth(month)}
                     disabled={!isAvailable}
-                    className={`flex-shrink-0 rounded-md px-2 py-1 text-xs font-medium capitalize transition-colors md:px-3 md:text-sm ${
+                    className={`flex-shrink-0 rounded-md px-2 py-1 text-sm font-medium capitalize transition-colors md:px-3 md:text-sm ${
                       isSelected && isAvailable
                         ? "bg-white text-gray-900 shadow-sm"
                         : isAvailable
