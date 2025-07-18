@@ -372,7 +372,7 @@ export default function PM25Chart() {
         grid: { display: false },
         title: { display: false },
         min: 0,
-        max: 35,
+        max: 50,
         ticks: {
           font: {
             family: "ui-sans-serif, system-ui, sans-serif",
