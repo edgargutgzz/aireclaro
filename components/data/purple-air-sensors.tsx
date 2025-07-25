@@ -13,7 +13,8 @@ export default async function PurpleAirSensors() {
     .neq("sensor_id", 56441) // lleva semanas marcando valores muy bajos (Biblioteca Col. Portales, Sta. Catarina N.L.)
     .neq("sensor_id", 36709) // lleva semanas marcando valores muy bajos (San Roberto International School Campus San Agustin)
     .neq("sensor_id", 39361) // lleva semanas marcando valores muy bajos (Instituto Nezaldi)
-    .neq("sensor_id", 46841); // lleva semanas marcando valores muy bajos y nulos en humedad y temperatura (Instituto de Educación Naciones Unidas)
+    .neq("sensor_id", 46841) // lleva semanas marcando valores muy bajos y nulos en humedad y temperatura (Instituto de Educación Naciones Unidas)
+    .neq("sensor_id", 208785); // lleva semanas marcando valores muy altos (Colegio Cambridge de Monterrey Campus Anáhuac)
 
   if (error) {
     return [];
