@@ -22,12 +22,6 @@ export default function Navlinks() {
       alt: "Recomendaciones",
     },
     {
-      name: "Datos",
-      href: "/datos",
-      icon: LineChart,
-      alt: "Datos",
-    },
-    {
       name: "Acerca",
       href: "/acerca",
       icon: Info,
