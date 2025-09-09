@@ -5,10 +5,14 @@ import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 
 export default async function Mapa() {
-  const purpleAirSensors = await PurpleAirSensors();
-  const purpleAirData = await PurpleAirData();
-  const simaSensors = await SimaSensors();
-  const simaData = await SimaData();
+  // Ensure all data loads in parallel and wait for all to complete
+  const [purpleAirSensors, purpleAirData, simaSensors, simaData] =
+    await Promise.all([
+      PurpleAirSensors(),
+      PurpleAirData(),
+      SimaSensors(),
+      SimaData(),
+    ]);
 
   // Tag each sensor with its source
   const taggedPurpleAirSensors = purpleAirSensors.map((sensor) => ({
