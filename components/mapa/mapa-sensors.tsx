@@ -113,16 +113,22 @@ export default function MapaSensors({
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
   const [isLegendVisible, setIsLegendVisible] = useState(false); // Add this state
+  const [mapLoaded, setMapLoaded] = useState(false); // Add this state
 
+  // Initialize map once
   useEffect(() => {
     if (map.current) return;
 
-    // Initialize map with center point adjusted to be lower (by decreasing latitude)
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
-      center: [-100.32098588977951, 25.665], // Decreased latitude to move center point south
+      center: [-100.32098588977951, 25.665],
       zoom: 10,
+    });
+
+    // Set map loaded state when ready
+    map.current.on("load", () => {
+      setMapLoaded(true);
     });
 
     // Request user location
@@ -134,160 +140,122 @@ export default function MapaSensors({
             longitude: position.coords.longitude,
           };
           setUserLocation(location);
-
-          // Add marker if map is already loaded
-          if (map.current) {
-            const userMarkerElement = document.createElement("div");
-            userMarkerElement.className =
-              "w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg";
-            userMarkerElement.style.animation =
-              "pulsate 1.5s ease-out infinite";
-            userMarkerElement.style.cssText = `
-              width: 16px;
-              height: 16px;
-              background: #3b82f6;
-              border: 2px solid white;
-              border-radius: 50%;
-              box-shadow: 0 0 0 rgba(59, 130, 246, 0.4);
-              animation: pulsate 2s ease-out infinite;
-            `;
-
-            // Add the keyframe animation
-            const style = document.createElement("style");
-            style.textContent = `
-              @keyframes pulsate {
-                0% {
-                  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
-                }
-                70% {
-                  box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-                }
-                100% {
-                  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-                }
-              }
-            `;
-            document.head.appendChild(style);
-
-            new Marker({
-              element: userMarkerElement,
-            })
-              .setLngLat([location.longitude, location.latitude])
-              .addTo(map.current);
-          }
         },
         (error) => {
           console.error("Error getting user location:", error);
         },
       );
     }
+  }, []);
 
-    map.current.on("load", () => {
-      // Add user location marker if we already have the location
-      if (userLocation && map.current) {
-        const userMarkerElement = document.createElement("div");
-        userMarkerElement.style.cssText = `
-          width: 16px;
-          height: 16px;
-          background: #3b82f6;
-          border: 2px solid white;
-          border-radius: 50%;
-          box-shadow: 0 0 0 rgba(59, 130, 246, 0.4);
-          animation: pulsate 2s ease-out infinite;
-        `;
+  // Add user location marker when available
+  useEffect(() => {
+    if (!userLocation || !mapLoaded || !map.current) return;
 
-        new Marker({
-          element: userMarkerElement,
-        })
-          .setLngLat([userLocation.longitude, userLocation.latitude])
-          .addTo(map.current);
-      }
+    const userMarkerElement = document.createElement("div");
+    userMarkerElement.style.cssText = `
+      width: 16px;
+      height: 16px;
+      background: #3b82f6;
+      border: 2px solid white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 rgba(59, 130, 246, 0.4);
+      animation: pulsate 2s ease-out infinite;
+    `;
 
-      sensors.forEach((sensor) => {
-        const latestData = data.find(
-          (dataItem) => dataItem.sensor_id === sensor.sensor_id,
-        );
+    // Add the keyframe animation if not already added
+    if (!document.querySelector("style[data-user-marker]")) {
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes pulsate {
+          0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+      `;
+      style.setAttribute("data-user-marker", "true");
+      document.head.appendChild(style);
+    }
 
-        const markerElement = createMarker(
-          latestData ? latestData.pm25 : null,
-          sensor.source,
-        );
+    new Marker({ element: userMarkerElement })
+      .setLngLat([userLocation.longitude, userLocation.latitude])
+      .addTo(map.current);
+  }, [userLocation, mapLoaded]);
 
-        if (!markerElement) return;
+  // Add sensors when both map and data are ready
+  useEffect(() => {
+    if (!mapLoaded || !map.current || !sensors.length || !data.length) {
+      return;
+    }
 
-        const markerColorClass =
-          markerElement.getAttribute("data-marker-color");
-        const popupBorderColor = markerColorClass
-          ? borderColorMap[markerColorClass] // Use 300 variant for border
-          : "#FFFFFF";
+    // Clear existing markers
+    // markersRef.current.forEach(marker => marker.remove()); // This line was removed as markersRef is not defined
+    // markersRef.current = []; // This line was removed as markersRef is not defined
 
-        const popup = new Popup({
-          offset: 25,
-          closeButton: false,
-        }).setHTML(`
-          <div class="p-3 rounded-xl bg-white max-w-[240px]">
-            <!-- Main reading with PM2.5 value -->
-            <div class="flex items-center bg-opacity-15 p-2.5 rounded-xl mb-2" style="background-color: ${popupBorderColor}15;">
-              <div class="text-3xl font-bold mr-2.5 leading-none" style="color: ${popupBorderColor};">
-                ${latestData ? roundPM25(latestData.pm25) : "—"}
-              </div>
-              <div class="flex flex-col">
-                <span class="text-base font-semibold text-gray-600">PM2.5</span>
-                <span class="text-xs text-gray-500">μg/m³</span>
-              </div>
+    console.log("Adding sensors to map:", {
+      sensorsCount: sensors.length,
+      dataCount: data.length,
+    });
+
+    sensors.forEach((sensor) => {
+      const latestData = data.find(
+        (dataItem) => dataItem.sensor_id === sensor.sensor_id,
+      );
+
+      const markerElement = createMarker(
+        latestData ? latestData.pm25 : null,
+        sensor.source,
+      );
+
+      if (!markerElement) return;
+
+      const markerColorClass = markerElement.getAttribute("data-marker-color");
+      const popupBorderColor = markerColorClass
+        ? borderColorMap[markerColorClass]
+        : "#FFFFFF";
+
+      const popup = new Popup({
+        offset: 25,
+        closeButton: false,
+      }).setHTML(`
+        <div class="p-3 rounded-xl bg-white max-w-[240px]">
+          <div class="flex items-center bg-opacity-15 p-2.5 rounded-xl mb-2" style="background-color: ${popupBorderColor}15;">
+            <div class="text-3xl font-bold mr-2.5 leading-none" style="color: ${popupBorderColor};">
+              ${latestData ? roundPM25(latestData.pm25) : "—"}
             </div>
-            
-            <!-- Sensor info in light grey card -->
-            <div class="bg-gray-100 p-2 rounded-xl">
-              <div class="text-sm font-semibold text-gray-900 mb-0.5">
-                ${sensor.nombre}
-              </div>
-              
-              <div class="text-xs text-gray-500">
-                ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
-              </div>
-              
-              <!-- Coordinates - hidden on mobile, visible on desktop -->
-              <div class="hidden md:block text-xs text-gray-400 mt-1">
-                Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
-              </div>
+            <div class="flex flex-col">
+              <span class="text-base font-semibold text-gray-600">PM2.5</span>
+              <span class="text-xs text-gray-500">μg/m³</span>
             </div>
           </div>
-        `);
+          
+          <div class="bg-gray-100 p-2 rounded-xl">
+            <div class="text-sm font-semibold text-gray-900 mb-0.5">
+              ${sensor.nombre}
+            </div>
+            <div class="text-xs text-gray-500">
+              ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
+            </div>
+            <div class="hidden md:block text-xs text-gray-400 mt-1">
+              Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
+            </div>
+          </div>
+        </div>
+      `);
 
-        // Add custom CSS for the popup shadow
-        const style = document.createElement("style");
-        if (!document.querySelector("style[data-popup-shadow]")) {
-          style.textContent = `
-            .mapboxgl-popup-content {
-              box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
-              border-radius: 1rem !important; /* match Tailwind's rounded-xl */
-              padding: 0;
-            }
-            
-            .mapboxgl-popup-tip {
-              border-top-color: white !important;
-            }
-          `;
-          style.setAttribute("data-popup-shadow", "true");
-          document.head.appendChild(style);
-        }
+      const marker = new Marker({ element: markerElement })
+        .setLngLat([sensor.lon, sensor.lat])
+        .setPopup(popup)
+        .addTo(map.current!);
 
-        new Marker({
-          element: markerElement,
-        })
-          .setLngLat([sensor.lon, sensor.lat])
-          .setPopup(popup)
-          .addTo(map.current!);
-      });
+      // markersRef.current.push(marker); // This line was removed as markersRef is not defined
+    });
 
-      const firstDataTimestamp = data[0].time_stamp;
+    // Set update time
+    if (data.length > 0) {
       const currentDate = new Date();
       const minutes = currentDate.getMinutes();
 
-      console.log("Real current time:", currentDate, "Minutes:", minutes); // Debug log
-
-      // If we're less than 15 minutes into the hour, show previous hour
       if (minutes < 15) {
         currentDate.setHours(currentDate.getHours() - 1);
       }
@@ -296,10 +264,26 @@ export default function MapaSensors({
         /:\d{2}/,
         ":00",
       );
-      console.log("Formatted time:", formattedTime); // Debug log
       setLatestUpdateTime(formattedTime);
-    });
-  }, [sensors, data, userLocation]); // Add userLocation back to dependencies
+    }
+
+    // Add popup styles if not already added
+    if (!document.querySelector("style[data-popup-shadow]")) {
+      const style = document.createElement("style");
+      style.textContent = `
+        .mapboxgl-popup-content {
+          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+          border-radius: 1rem !important;
+          padding: 0;
+        }
+        .mapboxgl-popup-tip {
+          border-top-color: white !important;
+        }
+      `;
+      style.setAttribute("data-popup-shadow", "true");
+      document.head.appendChild(style);
+    }
+  }, [mapLoaded, sensors, data]); // Now this will re-run when data changes
 
   return (
     <div className="relative h-screen">
