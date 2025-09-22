@@ -199,6 +199,44 @@ export default function MapaSensors({
       return;
     }
 
+    // 🔍 DEBUG: Check sensor breakdown by source
+    const purpleAirSensors = sensors.filter((s) => s.source === "purpleAir");
+    const simaSensors = sensors.filter((s) => s.source === "sima");
+
+    console.log("🔍 SENSOR BREAKDOWN:", {
+      totalSensors: sensors.length,
+      purpleAir: purpleAirSensors.length,
+      sima: simaSensors.length,
+    });
+
+    // 🔍 DEBUG: Check data breakdown by source (look at sensor_ids in data)
+    const purpleAirSensorIds = new Set(
+      purpleAirSensors.map((s) => s.sensor_id),
+    );
+    const purpleAirDataCount = data.filter((d) =>
+      purpleAirSensorIds.has(d.sensor_id),
+    ).length;
+    const simaDataCount = data.length - purpleAirDataCount;
+
+    console.log("🔍 DATA BREAKDOWN:", {
+      totalData: data.length,
+      purpleAirData: purpleAirDataCount,
+      simaData: simaDataCount,
+    });
+
+    // 🔍 DEBUG: Sample a few Purple Air sensors
+    console.log("🟣 SAMPLE PURPLE AIR SENSORS:");
+    purpleAirSensors.slice(0, 3).forEach((sensor) => {
+      const hasData = data.find((d) => d.sensor_id === sensor.sensor_id);
+      console.log(`  ${sensor.nombre} (ID: ${sensor.sensor_id}):`, {
+        lat: sensor.lat,
+        lon: sensor.lon,
+        source: sensor.source,
+        hasMatchingData: !!hasData,
+        pm25: hasData?.pm25,
+      });
+    });
+
     // Clear existing markers
     console.log("Clearing existing markers:", markersRef.current.length);
     markersRef.current.forEach((marker) => (marker as any).remove());
@@ -208,6 +246,10 @@ export default function MapaSensors({
       sensorsCount: sensors.length,
       dataCount: data.length,
     });
+
+    let addedCount = 0;
+    let purpleAirAddedCount = 0;
+    let simaAddedCount = 0;
 
     sensors.forEach((sensor) => {
       const latestData = data.find(
@@ -220,6 +262,16 @@ export default function MapaSensors({
       );
 
       if (!markerElement) return;
+
+      // 🔍 DEBUG: Log each successful marker addition
+      if (sensor.source === "purpleAir") {
+        purpleAirAddedCount++;
+        console.log(
+          `✅ Added Purple Air: ${sensor.nombre} - PM2.5: ${latestData?.pm25}`,
+        );
+      } else {
+        simaAddedCount++;
+      }
 
       const markerColorClass = markerElement.getAttribute("data-marker-color");
       const popupBorderColor = markerColorClass
@@ -260,8 +312,14 @@ export default function MapaSensors({
         .setPopup(popup)
         .addTo(map.current!);
 
-      // UNCOMMENT THIS LINE - Track the marker
       markersRef.current.push(marker);
+      addedCount++;
+    });
+
+    console.log("🎯 FINAL MARKER COUNT:", {
+      total: addedCount,
+      purpleAir: purpleAirAddedCount,
+      sima: simaAddedCount,
     });
 
     // Set update time
