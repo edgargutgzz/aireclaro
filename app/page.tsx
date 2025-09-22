@@ -4,17 +4,40 @@ import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 
-export default async function Mapa() {
-  // Ensure all data loads in parallel and wait for all to complete
-  const [purpleAirSensors, purpleAirData, simaSensors, simaData] =
-    await Promise.all([
-      PurpleAirSensors(),
-      PurpleAirData(),
-      SimaSensors(),
-      SimaData(),
-    ]);
+async function fetchWithFallback<T>(
+  fetchFn: () => Promise<T>,
+  fallbackValue: T,
+  retries = 2,
+): Promise<T> {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fetchFn();
+    } catch (error) {
+      if (i === retries) {
+        console.warn(`Failed after ${retries + 1} attempts:`, error);
+        return fallbackValue;
+      }
+      // Wait before retry
+      await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
+    }
+  }
+  return fallbackValue;
+}
 
-  // Tag each sensor with its source
+export default async function Mapa() {
+  // Critical data - retry on failure
+  const [purpleAirSensors, purpleAirData] = await Promise.all([
+    fetchWithFallback(PurpleAirSensors, []),
+    fetchWithFallback(PurpleAirData, []),
+  ]);
+
+  // Less critical data - allow to fail
+  const results = await Promise.allSettled([SimaSensors(), SimaData()]);
+
+  const simaSensors = results[0].status === "fulfilled" ? results[0].value : [];
+  const simaData = results[1].status === "fulfilled" ? results[1].value : [];
+
+  // Tag sensors
   const taggedPurpleAirSensors = purpleAirSensors.map((sensor) => ({
     ...sensor,
     source: "purpleAir",
@@ -24,13 +47,8 @@ export default async function Mapa() {
     source: "sima",
   }));
 
-  // Combine sensors from both sources
   const sensors = [...taggedPurpleAirSensors, ...taggedSimaSensors];
   const data = [...purpleAirData, ...simaData];
 
-  return (
-    <>
-      <MapaSensors sensors={sensors} data={data} />
-    </>
-  );
+  return <MapaSensors sensors={sensors} data={data} />;
 }
