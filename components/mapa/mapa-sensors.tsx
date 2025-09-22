@@ -106,14 +106,17 @@ export default function MapaSensors({
   // Reference to the map instance
   const map = useRef<Map | null>(null);
 
+  // ADD THIS MISSING LINE - Reference to track all markers
+  const markersRef = useRef<Marker[]>([]);
+
   // State to hold the latest update time
   const [latestUpdateTime, setLatestUpdateTime] = useState<string>("");
 
   // Add this new state
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
-  const [isLegendVisible, setIsLegendVisible] = useState(false); // Add this state
-  const [mapLoaded, setMapLoaded] = useState(false); // Add this state
+  const [isLegendVisible, setIsLegendVisible] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // Initialize map once
   useEffect(() => {
@@ -128,6 +131,7 @@ export default function MapaSensors({
 
     // Set map loaded state when ready
     map.current.on("load", () => {
+      console.log("Map loaded, setting mapLoaded to true");
       setMapLoaded(true);
     });
 
@@ -184,13 +188,21 @@ export default function MapaSensors({
 
   // Add sensors when both map and data are ready
   useEffect(() => {
+    console.log("Sensor effect triggered:", {
+      mapLoaded,
+      sensorsLength: sensors.length,
+      dataLength: data.length,
+    });
+
     if (!mapLoaded || !map.current || !sensors.length || !data.length) {
+      console.log("Not ready yet, skipping sensor addition");
       return;
     }
 
     // Clear existing markers
-    // markersRef.current.forEach(marker => marker.remove()); // This line was removed as markersRef is not defined
-    // markersRef.current = []; // This line was removed as markersRef is not defined
+    console.log("Clearing existing markers:", markersRef.current.length);
+    markersRef.current.forEach((marker) => (marker as any).remove());
+    markersRef.current = [];
 
     console.log("Adding sensors to map:", {
       sensorsCount: sensors.length,
@@ -248,7 +260,8 @@ export default function MapaSensors({
         .setPopup(popup)
         .addTo(map.current!);
 
-      // markersRef.current.push(marker); // This line was removed as markersRef is not defined
+      // UNCOMMENT THIS LINE - Track the marker
+      markersRef.current.push(marker);
     });
 
     // Set update time
@@ -283,7 +296,12 @@ export default function MapaSensors({
       style.setAttribute("data-popup-shadow", "true");
       document.head.appendChild(style);
     }
-  }, [mapLoaded, sensors, data]); // Now this will re-run when data changes
+
+    console.log(
+      "Finished adding sensors, total markers:",
+      markersRef.current.length,
+    );
+  }, [mapLoaded, sensors, data]); // This will re-run when data changes
 
   return (
     <div className="relative h-screen">
