@@ -109,6 +109,9 @@ export default function MapaSensors({
   // ADD THIS MISSING LINE - Reference to track all markers
   const markersRef = useRef<Marker[]>([]);
 
+  // Add this with your other refs (around line 110)
+  const sensorsAddedRef = useRef(false);
+
   // State to hold the latest update time
   const [latestUpdateTime, setLatestUpdateTime] = useState<string>("");
 
@@ -131,7 +134,6 @@ export default function MapaSensors({
 
     // Set map loaded state when ready
     map.current.on("load", () => {
-      console.log("Map loaded, setting mapLoaded to true");
       setMapLoaded(true);
     });
 
@@ -189,8 +191,12 @@ export default function MapaSensors({
   // Add sensors when both map and data are ready
   useEffect(() => {
     if (!mapLoaded || !map.current || !sensors.length || !data.length) {
+      sensorsAddedRef.current = false; // Reset when conditions not met
       return;
     }
+
+    // Prevent duplicate additions - ADD THIS LINE
+    if (sensorsAddedRef.current) return;
 
     // Clear existing markers
     markersRef.current.forEach((marker) => (marker as any).remove());
@@ -250,7 +256,11 @@ export default function MapaSensors({
       markersRef.current.push(marker);
     });
 
-    // Set update time
+    sensorsAddedRef.current = true; // ✅ You already have this
+  }, [mapLoaded, sensors, data]);
+
+  // Set update time
+  useEffect(() => {
     if (data.length > 0) {
       const currentDate = new Date();
       const minutes = currentDate.getMinutes();
@@ -265,8 +275,10 @@ export default function MapaSensors({
       );
       setLatestUpdateTime(formattedTime);
     }
+  }, [data]);
 
-    // Add popup styles if not already added
+  // Add popup styles if not already added
+  useEffect(() => {
     if (!document.querySelector("style[data-popup-shadow]")) {
       const style = document.createElement("style");
       style.textContent = `
@@ -282,7 +294,7 @@ export default function MapaSensors({
       style.setAttribute("data-popup-shadow", "true");
       document.head.appendChild(style);
     }
-  }, [mapLoaded, sensors, data]);
+  }, []);
 
   return (
     <div className="relative h-screen">
