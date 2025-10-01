@@ -106,11 +106,8 @@ export default function MapaSensors({
   // Reference to the map instance
   const map = useRef<Map | null>(null);
 
-  // ADD THIS MISSING LINE - Reference to track all markers
+  // Reference to track all markers
   const markersRef = useRef<Marker[]>([]);
-
-  // Add this with your other refs (around line 110)
-  const sensorsAddedRef = useRef(false);
 
   // State to hold the latest update time
   const [latestUpdateTime, setLatestUpdateTime] = useState<string>("");
@@ -191,14 +188,10 @@ export default function MapaSensors({
   // Add sensors when both map and data are ready
   useEffect(() => {
     if (!mapLoaded || !map.current || !sensors.length || !data.length) {
-      sensorsAddedRef.current = false; // Reset when conditions not met
       return;
     }
 
-    // Prevent duplicate additions - ADD THIS LINE
-    if (sensorsAddedRef.current) return;
-
-    // Clear existing markers
+    // Always clear existing markers first
     markersRef.current.forEach((marker) => (marker as any).remove());
     markersRef.current = [];
 
@@ -255,9 +248,15 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-
-    sensorsAddedRef.current = true; // ✅ You already have this
   }, [mapLoaded, sensors, data]);
+
+  // Cleanup markers when component unmounts
+  useEffect(() => {
+    return () => {
+      markersRef.current.forEach((marker) => (marker as any).remove());
+      markersRef.current = [];
+    };
+  }, []);
 
   // Set update time
   useEffect(() => {
