@@ -4,6 +4,9 @@ import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 
+// Add this line to force dynamic rendering
+export const dynamic = "force-dynamic";
+
 async function fetchWithFallback<T>(
   fetchFn: () => Promise<T>,
   fallbackValue: T,
