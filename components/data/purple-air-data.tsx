@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 
 export default async function PurpleAirData() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("purpleair_mediciones")
@@ -9,7 +9,13 @@ export default async function PurpleAirData() {
     .order("time_stamp", { ascending: false })
     .limit(100);
 
-  if (error || !data?.length) {
+  if (error) {
+    console.error("PurpleAir Data fetch error:", error);
+    throw new Error(`Failed to fetch PurpleAir data: ${error.message}`);
+  }
+
+  if (!data?.length) {
+    console.warn("PurpleAir Data returned no measurements");
     return [];
   }
 

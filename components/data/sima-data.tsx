@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 
 export default async function SimaData() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("sima_mediciones")
     .select()
@@ -9,8 +9,9 @@ export default async function SimaData() {
     .limit(13);
 
   if (error) {
-    return [];
+    console.error("SIMA Data fetch error:", error);
+    throw new Error(`Failed to fetch SIMA data: ${error.message}`);
   }
 
-  return data;
+  return data || [];
 }
