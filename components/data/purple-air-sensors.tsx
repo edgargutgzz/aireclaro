@@ -13,6 +13,7 @@ export default async function PurpleAirSensors() {
     .neq("sensor_id", 36709)
     .neq("sensor_id", 39361)
     .neq("sensor_id", 46841)
+    .neq("sensor_id", 34499)
     .neq("sensor_id", 208785);
 
   if (error) {
