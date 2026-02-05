@@ -386,15 +386,9 @@ export default function MapaSensors({
           <span className="text-sm">Fuente de Medición</span>
         </div>
         {/* Sensores - Legend */}
-        <div className="grid grid-cols-2 items-center gap-x-4">
-          <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
-            <span className="text-xs">Sensor Purple Air</span>
-          </div>
-          <div className="col-span-1 flex items-center pr-2">
-            <div className="mr-2 h-4 w-4 rounded-full border-2 border-black bg-[#00e400]"></div>
-            <span className="text-xs">Estación SIMA</span>
-          </div>
+        <div className="flex items-center">
+          <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
+          <span className="text-xs">Sensor Purple Air</span>
         </div>
         {/* Hora de actualización */}
         <div className="pt-4 text-xs font-normal text-gray-400">
