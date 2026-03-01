@@ -14,7 +14,8 @@ export default async function PurpleAirSensors() {
     .neq("sensor_id", 34499) // San Patricio #106
     .neq("sensor_id", 227889)
     .neq("sensor_id", 119965) // Grupo Reforma El Norte
-    .neq("sensor_id", 265719); // Las Vivenzias
+    .neq("sensor_id", 265719) // Las Vivenzias
+    .neq("sensor_id", 46841);
 
   if (error) {
     console.error("PurpleAir Sensors fetch error:", error);
