@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Navlinks from "@/components/navbar/navlinks";
 
 export default function Navbar() {
@@ -18,13 +19,15 @@ export default function Navbar() {
         <div className="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-3">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Image
-              src="/aireclaro-logo.png"
-              alt="Aire Claro Logo"
-              width={180}
-              height={21}
-              className="h-auto"
-            />
+            <Link href="/">
+              <Image
+                src="/aireclaro-logo.png"
+                alt="Aire Claro Logo"
+                width={180}
+                height={21}
+                className="h-auto"
+              />
+            </Link>
           </div>
           {/* Navigation */}
           <div className="flex justify-end gap-10">

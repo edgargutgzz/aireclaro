@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes colorCycle {
+  0%   { color: #06b6d4; }
+  33%  { color: #8b5cf6; }
+  66%  { color: #ec4899; }
+  100% { color: #06b6d4; }
+}
+
+.datacomun-comun {
+  color: #06b6d4;
+  animation: colorCycle 6s ease-in-out infinite;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
