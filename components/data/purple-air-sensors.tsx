@@ -8,7 +8,6 @@ export default async function PurpleAirSensors() {
     .eq("estatus", "activo")
     .neq("sensor_id", 132661)
     .neq("sensor_id", 146946)
-    .neq("sensor_id", 174831)
     .neq("sensor_id", 56441)
     .neq("sensor_id", 39361)
     .neq("sensor_id", 34499) // San Patricio #106
