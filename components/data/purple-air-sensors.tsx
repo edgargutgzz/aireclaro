@@ -12,7 +12,6 @@ export default async function PurpleAirSensors() {
     .neq("sensor_id", 39361)
     .neq("sensor_id", 34499) // San Patricio #106
     .neq("sensor_id", 227889)
-    .neq("sensor_id", 119965) // Grupo Reforma El Norte
     .neq("sensor_id", 46841)
     .neq("sensor_id", 174787)
     .neq("sensor_id", 121825); // Grupo Reforma Sierra Madre
