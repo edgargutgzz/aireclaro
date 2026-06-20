@@ -14,6 +14,7 @@ interface Sensor {
   id: number;
   sensor_id: number;
   nombre: string;
+  nombre_display?: string;
   lat: number;
   lon: number;
   source: string; // purpleAir o sima
@@ -81,6 +82,14 @@ const roundPM25 = (value: number | null): string | null => {
 // Utility function to format latitude and longitude to five decimal places
 const formatLatLon = (value: number): string => {
   return value.toFixed(5);
+};
+
+// Neutral marker for SIMA sensors (no PM2.5 data)
+const createSimaMarker = (): HTMLElement => {
+  const marker = document.createElement("div");
+  marker.className =
+    "marker bg-gray-400 bg-opacity-85 w-9 h-9 flex items-center justify-center rounded-full border-2 border-black";
+  return marker;
 };
 
 // Mapping between Tailwind color classes for popup borders (300 variants)
@@ -196,21 +205,24 @@ export default function MapaSensors({
     markersRef.current = [];
 
     sensors.forEach((sensor) => {
-      const latestData = data.find(
-        (dataItem) => dataItem.sensor_id === sensor.sensor_id,
-      );
+      const isSima = sensor.source === "sima";
 
-      const markerElement = createMarker(
-        latestData ? latestData.pm25 : null,
-        sensor.source,
-      );
+      const latestData = isSima
+        ? null
+        : data.find((dataItem) => dataItem.sensor_id === sensor.sensor_id);
+
+      const markerElement = isSima
+        ? createSimaMarker()
+        : createMarker(latestData ? latestData.pm25 : null, sensor.source);
 
       if (!markerElement) return;
 
       const markerColorClass = markerElement.getAttribute("data-marker-color");
-      const popupBorderColor = markerColorClass
-        ? borderColorMap[markerColorClass]
-        : "#FFFFFF";
+      const popupBorderColor = isSima
+        ? "#9ca3af"
+        : markerColorClass
+          ? borderColorMap[markerColorClass]
+          : "#FFFFFF";
 
       const popup = new Popup({
         offset: 25,
@@ -226,13 +238,13 @@ export default function MapaSensors({
               <span class="text-xs text-gray-500">μg/m³</span>
             </div>
           </div>
-          
+
           <div class="bg-gray-100 p-2 rounded-xl">
             <div class="text-sm font-semibold text-gray-900 mb-0.5">
-              ${sensor.nombre}
+              ${isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre}
             </div>
             <div class="text-xs text-gray-500">
-              ${sensor.source === "sima" ? "Estación SIMA" : "Sensor Purple Air"}
+              ${isSima ? "Estación SIMA" : "Sensor Purple Air"}
             </div>
             <div class="hidden md:block text-xs text-gray-400 mt-1">
               Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
@@ -386,9 +398,15 @@ export default function MapaSensors({
           <span className="text-sm">Fuente de Medición</span>
         </div>
         {/* Sensores - Legend */}
-        <div className="flex items-center">
-          <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
-          <span className="text-xs">Sensor Purple Air</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center">
+            <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
+            <span className="text-xs">Sensor Purple Air</span>
+          </div>
+          <div className="flex items-center">
+            <div className="mr-2 h-4 w-4 rounded-full bg-gray-400 border-2 border-black"></div>
+            <span className="text-xs">Estación SIMA</span>
+          </div>
         </div>
         {/* Hora de actualización */}
         <div className="pt-4 text-xs font-normal text-gray-400">
