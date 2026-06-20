@@ -29,11 +29,11 @@ async function fetchWithFallback<T>(
 
 export default async function Mapa() {
   // Critical data - retry on failure (both PurpleAir AND SIMA)
-  const [purpleAirSensors, purpleAirData, simaSensors] =
+  const [purpleAirSensors, purpleAirData] =
     await Promise.all([
       fetchWithFallback(PurpleAirSensors, []),
       fetchWithFallback(PurpleAirData, []),
-      fetchWithFallback(SimaSensors, []),
+      // fetchWithFallback(SimaSensors, []), // re-enable when data is ready
     ]);
 
   // Tag sensors
@@ -42,12 +42,7 @@ export default async function Mapa() {
     source: "purpleAir",
   }));
 
-  const taggedSimaSensors = simaSensors.map((sensor) => ({
-    ...sensor,
-    source: "sima",
-  }));
-
-  const sensors = [...taggedPurpleAirSensors, ...taggedSimaSensors];
+  const sensors = [...taggedPurpleAirSensors];
   const data = [...purpleAirData];
 
   return <MapaSensors sensors={sensors} data={data} />;
