@@ -192,7 +192,7 @@ const faqData = [
         beneficio de todos. Puedes descargar el historial completo en el
         siguiente{" "}
         <a
-          href="https://datamx.io/dataset/calidad-del-aire-en-nuevo-leon"
+          href="https://datamx.io/dataset/calidad-del-aire-en-la-zona-metropolitana-de-monterrey"
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-500 hover:underline"
