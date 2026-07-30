@@ -250,6 +250,7 @@ export default function MapaSensors({
             <div class="text-xs text-gray-500">
               ${isSima ? "Estación SIMA" : "Sensor Purple Air"}
             </div>
+            ${isSima && latestData ? `<div class="text-xs text-gray-400 mt-1">Dato de las ${format(new Date(latestData.time_stamp), "h:mm a")}</div>` : ""}
             <div class="hidden md:block text-xs text-gray-400 mt-1">
               Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
             </div>
