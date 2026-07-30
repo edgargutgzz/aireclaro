@@ -126,6 +126,8 @@ export default function MapaSensors({
 
   const [isLegendVisible, setIsLegendVisible] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [showPurpleAir, setShowPurpleAir] = useState(true);
+  const [showSima, setShowSima] = useState(true);
 
   // Initialize map once
   useEffect(() => {
@@ -207,22 +209,24 @@ export default function MapaSensors({
     sensors.forEach((sensor) => {
       const isSima = sensor.source === "sima";
 
-      const latestData = isSima
-        ? null
-        : data.find((dataItem) => dataItem.sensor_id === sensor.sensor_id);
+      if (isSima && !showSima) return;
+      if (!isSima && !showPurpleAir) return;
 
-      const markerElement = isSima
-        ? createSimaMarker()
-        : createMarker(latestData ? latestData.pm25 : null, sensor.source);
+      const latestData = data.find(
+        (dataItem) => dataItem.sensor_id === sensor.sensor_id,
+      );
+
+      const markerElement = createMarker(
+        latestData ? latestData.pm25 : null,
+        sensor.source,
+      );
 
       if (!markerElement) return;
 
       const markerColorClass = markerElement.getAttribute("data-marker-color");
-      const popupBorderColor = isSima
-        ? "#9ca3af"
-        : markerColorClass
-          ? borderColorMap[markerColorClass]
-          : "#FFFFFF";
+      const popupBorderColor = markerColorClass
+        ? borderColorMap[markerColorClass]
+        : "#FFFFFF";
 
       const popup = new Popup({
         offset: 25,
@@ -260,7 +264,7 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, sensors, data]);
+  }, [mapLoaded, sensors, data, showPurpleAir, showSima]);
 
   // Cleanup markers when component unmounts
   useEffect(() => {
@@ -398,9 +402,21 @@ export default function MapaSensors({
           <span className="text-sm">Fuente de Medición</span>
         </div>
         {/* Sensores - Legend */}
-        <div className="flex items-center">
-          <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
-          <span className="text-xs">Sensor Purple Air</span>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowPurpleAir((v) => !v)}
+            className={`flex items-center transition-opacity ${showPurpleAir ? "opacity-100" : "opacity-40"}`}
+          >
+            <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
+            <span className="text-xs">Sensor Purple Air</span>
+          </button>
+          <button
+            onClick={() => setShowSima((v) => !v)}
+            className={`flex items-center transition-opacity ${showSima ? "opacity-100" : "opacity-40"}`}
+          >
+            <div className="mr-2 h-4 w-4 rounded-full bg-gray-400 border-2 border-black"></div>
+            <span className="text-xs">Estación SIMA</span>
+          </button>
         </div>
         {/* Hora de actualización */}
         <div className="pt-4 text-xs font-normal text-gray-400">
