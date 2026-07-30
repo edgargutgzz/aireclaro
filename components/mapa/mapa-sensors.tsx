@@ -248,7 +248,7 @@ export default function MapaSensors({
             <div class="text-xs text-gray-500">
               ${isSima ? "Estación SIMA" : "Sensor Purple Air"}
             </div>
-            ${latestData ? `<div class="text-xs text-gray-400 mt-1">Dato de las ${format(new Date(latestData.time_stamp), "h:00 a")}</div>` : ""}
+            ${latestData ? `<div class="mt-1"><span class="inline-block bg-gray-200 text-gray-600 text-xs font-medium rounded-full px-2 py-0.5">${format(new Date(latestData.time_stamp), "h:00 a")}</span></div>` : ""}
             <div class="hidden md:block text-xs text-gray-400 mt-1">
               Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
             </div>
