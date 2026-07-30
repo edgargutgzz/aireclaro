@@ -225,6 +225,7 @@ export default function MapaSensors({
       const popupBorderColor = markerColorClass
         ? borderColorMap[markerColorClass]
         : "#FFFFFF";
+      const popupTextColor = popupBorderColor === "#ffff00" ? "#b8a000" : popupBorderColor;
 
       const popup = new Popup({
         offset: 25,
@@ -232,7 +233,7 @@ export default function MapaSensors({
       }).setHTML(`
         <div class="p-3 rounded-xl bg-white max-w-[240px]">
           <div class="flex items-center bg-opacity-15 p-2.5 rounded-xl mb-2" style="background-color: ${popupBorderColor}15;">
-            <div class="text-3xl font-bold mr-2.5 leading-none" style="color: ${popupBorderColor};">
+            <div class="text-3xl font-bold mr-2.5 leading-none" style="color: ${popupTextColor};">
               ${latestData ? roundPM25(latestData.pm25) : "—"}
             </div>
             <div class="flex flex-col">
@@ -241,17 +242,17 @@ export default function MapaSensors({
             </div>
           </div>
 
-          <div class="bg-gray-100 p-2 rounded-xl">
+          <div class="bg-gray-100 p-2 rounded-xl mb-2">
             <div class="text-sm font-semibold text-gray-900 mb-0.5">
               ${isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre}
             </div>
             <div class="text-xs text-gray-500">
               ${isSima ? "Estación SIMA" : "Sensor Purple Air"}
             </div>
-            ${latestData ? `<div class="mt-1"><span class="inline-block bg-gray-200 text-gray-600 text-xs font-medium rounded-full px-2 py-0.5">${format(new Date(latestData.time_stamp), "h:00 a")}</span></div>` : ""}
-            <div class="hidden md:block text-xs text-gray-400 mt-1">
-              Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
-            </div>
+          </div>
+          ${latestData ? `<div class="text-xs text-gray-400 mb-1 px-1">Actualizado a las ${format(new Date(latestData.time_stamp), "h:00 a")}</div>` : ""}
+          <div class="hidden md:block text-xs text-gray-400 px-1">
+            Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
           </div>
         </div>
       `);
