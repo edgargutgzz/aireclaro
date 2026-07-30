@@ -118,8 +118,6 @@ export default function MapaSensors({
   // Reference to track all markers
   const markersRef = useRef<Marker[]>([]);
 
-  // State to hold the latest update time
-  const [latestUpdateTime, setLatestUpdateTime] = useState<string>("");
 
   // Add this new state
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
@@ -275,23 +273,6 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Set update time
-  useEffect(() => {
-    if (data.length > 0) {
-      const currentDate = new Date();
-      const minutes = currentDate.getMinutes();
-
-      if (minutes < 15) {
-        currentDate.setHours(currentDate.getHours() - 1);
-      }
-
-      const formattedTime = format(currentDate, "h:mm a").replace(
-        /:\d{2}/,
-        ":00",
-      );
-      setLatestUpdateTime(formattedTime);
-    }
-  }, [data]);
 
   // Add popup styles if not already added
   useEffect(() => {
@@ -418,10 +399,6 @@ export default function MapaSensors({
             <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400] border-2 border-black"></div>
             <span className="text-xs">Estación SIMA</span>
           </button>
-        </div>
-        {/* Hora de actualización */}
-        <div className="pt-4 text-xs font-normal text-gray-400">
-          Actualizado a las {latestUpdateTime}
         </div>
       </div>
     </div>
