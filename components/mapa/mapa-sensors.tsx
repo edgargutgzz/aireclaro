@@ -295,6 +295,13 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
 
+      {/* Loading overlay */}
+      {!mapLoaded && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-gray-100">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-500" />
+        </div>
+      )}
+
       {/* Legend Toggle Button */}
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
