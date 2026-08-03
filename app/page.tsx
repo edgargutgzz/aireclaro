@@ -3,28 +3,9 @@ import PurpleAirSensors from "@/components/data/purple-air-sensors";
 import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
+import { fetchWithFallback } from "@/utils/fetch";
 
 export const revalidate = 120; // 2 minutes
-
-async function fetchWithFallback<T>(
-  fetchFn: () => Promise<T>,
-  fallbackValue: T,
-  retries = 2,
-): Promise<T> {
-  for (let i = 0; i <= retries; i++) {
-    try {
-      return await fetchFn();
-    } catch (error) {
-      if (i === retries) {
-        console.warn(`Failed after ${retries + 1} attempts:`, error);
-        return fallbackValue;
-      }
-      // Wait before retry
-      await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
-    }
-  }
-  return fallbackValue;
-}
 
 export default async function Mapa() {
   // Critical data - retry on failure (both PurpleAir AND SIMA)

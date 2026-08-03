@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
 import PurpleAirSensors from "@/components/data/purple-air-sensors";
-
-export const metadata: Metadata = { title: "Recomendaciones" };
 import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import Image from "next/image";
 import { Navigation, Clock } from "lucide-react";
 import LazyAirQualityWrapper from "@/components/recomendaciones/lazy-air-quality";
+import { fetchWithFallback } from "@/utils/fetch";
+
+export const metadata: Metadata = { title: "Recomendaciones" };
 
 export default async function Inicio() {
   const [purpleAirSensors, purpleAirData, simaSensors, simaData] =
     await Promise.all([
-      PurpleAirSensors(),
-      PurpleAirData(),
-      SimaSensors(),
-      SimaData(),
+      fetchWithFallback(PurpleAirSensors, []),
+      fetchWithFallback(PurpleAirData, []),
+      fetchWithFallback(SimaSensors, []),
+      fetchWithFallback(SimaData, []),
     ]);
 
   // Combine sensors from both sources
