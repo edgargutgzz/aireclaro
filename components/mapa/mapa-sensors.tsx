@@ -84,13 +84,6 @@ const formatLatLon = (value: number): string => {
   return value.toFixed(5);
 };
 
-// Neutral marker for SIMA sensors (no PM2.5 data)
-const createSimaMarker = (): HTMLElement => {
-  const marker = document.createElement("div");
-  marker.className =
-    "marker bg-gray-400 bg-opacity-85 w-9 h-9 flex items-center justify-center rounded-full border-2 border-black";
-  return marker;
-};
 
 // Mapping between Tailwind color classes for popup borders (300 variants)
 const borderColorMap: { [key: string]: string } = {
