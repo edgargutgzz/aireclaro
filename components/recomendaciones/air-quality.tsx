@@ -72,6 +72,7 @@ export default function AirQuality({
     address: null as string | null,
     error: null as string | null,
     loading: true,
+    locationGranted: null as boolean | null,
   });
 
   // Fetch the user's current address based on latitude and longitude from the use effect hook below
@@ -130,6 +131,7 @@ export default function AirQuality({
             ...prevState,
             location: { latitude, longitude },
             loading: false,
+            locationGranted: true,
           }));
 
           // Fetch the address for the given coordinates
@@ -141,6 +143,7 @@ export default function AirQuality({
             ...prevState,
             location: defaultLocation,
             loading: false,
+            locationGranted: false,
           }));
 
           // Fetch the address for the default location
@@ -354,11 +357,16 @@ export default function AirQuality({
           {showAddress &&
             state.location.latitude !== null &&
             state.location.longitude !== null && (
-              <div className="flex items-center">
-                {state.address ? (
-                  <div>{state.address}</div>
-                ) : (
-                  <div>Loading...</div>
+              <div className="flex flex-col gap-2">
+                {state.locationGranted === false && (
+                  <div className="text-xs text-gray-400">
+                    No tienes el acceso de ubicación activado. Actívalo en la configuración de tu navegador para ver recomendaciones basadas en tu ubicación exacta.
+                  </div>
+                )}
+                {state.locationGranted !== false && (
+                  <div>
+                    {state.address ? state.address : "Cargando..."}
+                  </div>
                 )}
               </div>
             )}
