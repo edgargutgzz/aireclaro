@@ -38,7 +38,7 @@ const privacySections = [
   {
     title: "8. Cambios en el Aviso de Privacidad",
     content:
-      "Nos reservamos el derecho de actualizar este aviso de privacidad. Última actualización: 01 de mayo del 2025.",
+      "Nos reservamos el derecho de actualizar este aviso de privacidad. Última actualización: 03 de agosto del 2026.",
   },
   {
     title: "9. Contacto",
