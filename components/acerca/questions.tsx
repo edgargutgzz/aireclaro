@@ -206,7 +206,7 @@ const faqData = [
   {
     icon: MessageCircle,
     question: "Tengo más preguntas, ¿cómo los contacto?",
-    answer: <span>Envíanos un correo a contacto@observatoriodelaire.com</span>,
+    answer: <span>Envíanos un correo a <a href="mailto:contacto@observatoriodelaire.com" className="text-blue-500 hover:underline">contacto@observatoriodelaire.com</a></span>,
   },
 ];
 
