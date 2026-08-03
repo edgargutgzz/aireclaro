@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import Questions from "@/components/acerca/questions";
+
+export const metadata: Metadata = { title: "Preguntas Frecuentes" };
 import Footer from "@/components/footer/footer";
 import Image from "next/image";
 import Link from "next/link";

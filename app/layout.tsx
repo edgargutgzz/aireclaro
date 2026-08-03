@@ -9,7 +9,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://aireclaro.com"),
-  title: "Aire Claro",
+  title: {
+    default: "Aire Claro",
+    template: "%s | Aire Claro",
+  },
   description: "Mejor información de calidad del aire para cuidar tu salud.",
   openGraph: {
     title: "Aire Claro",

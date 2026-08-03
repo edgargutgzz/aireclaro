@@ -1,3 +1,7 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { title: "Aviso de Privacidad" };
+
 // Privacy Notice content
 const privacySections = [
   {

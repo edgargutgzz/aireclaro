@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import PurpleAirSensors from "@/components/data/purple-air-sensors";
+
+export const metadata: Metadata = { title: "Recomendaciones" };
 import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
