@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { LocateFixed } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -153,9 +154,20 @@ export default function MapaSensors({
     }
   }, []);
 
+  const flyToUser = () => {
+    if (!userLocation || !map.current) return;
+    map.current.flyTo({
+      center: [userLocation.longitude, userLocation.latitude],
+      zoom: 13,
+      duration: 1500,
+    });
+  };
+
   // Add user location marker when available
   useEffect(() => {
     if (!userLocation || !mapLoaded || !map.current) return;
+
+    flyToUser();
 
     const userMarkerElement = document.createElement("div");
     userMarkerElement.style.cssText = `
@@ -300,6 +312,18 @@ export default function MapaSensors({
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-gray-100">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-500" />
         </div>
+      )}
+
+      {/* Locate me button */}
+      {userLocation && (
+        <button
+          onClick={flyToUser}
+          className="absolute bottom-10 right-6 z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100"
+          style={{ boxShadow: "0 6px 24px rgba(0, 0, 0, 0.18)" }}
+          aria-label="Ir a mi ubicación"
+        >
+          <LocateFixed className="h-6 w-6 text-gray-700" />
+        </button>
       )}
 
       {/* Legend Toggle Button */}
