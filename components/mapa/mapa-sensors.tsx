@@ -156,7 +156,7 @@ export default function MapaSensors({
 
   const flyToUser = () => {
     if (!userLocation || !map.current) return;
-    map.current.flyTo({
+    (map.current as any).flyTo({
       center: [userLocation.longitude, userLocation.latitude],
       zoom: 13,
       duration: 1500,
