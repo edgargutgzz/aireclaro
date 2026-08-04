@@ -333,7 +333,7 @@ export default function MapaSensors({
       {userLocation && (
         <button
           onClick={flyToUser}
-          className="absolute bottom-32 right-6 z-40 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:bottom-10"
+          className="absolute right-6 top-20 z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:bottom-10 md:top-auto"
           style={{ boxShadow: "0 6px 24px rgba(0, 0, 0, 0.18)" }}
           aria-label="Ir a mi ubicación"
         >
