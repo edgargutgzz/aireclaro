@@ -429,14 +429,14 @@ export default function MapaSensors({
             onClick={() => setShowPurpleAir((v) => !v)}
             className={`flex items-center transition-opacity ${showPurpleAir ? "opacity-100" : "opacity-40"}`}
           >
-            <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
+            <div className="mr-2 h-4 w-4 rounded-full bg-gray-400"></div>
             <span className="text-xs">Sensor Purple Air</span>
           </button>
           <button
             onClick={() => setShowSima((v) => !v)}
             className={`flex items-center transition-opacity ${showSima ? "opacity-100" : "opacity-40"}`}
           >
-            <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400] border-2 border-black"></div>
+            <div className="mr-2 h-4 w-4 rounded-full bg-gray-400 border-2 border-black"></div>
             <span className="text-xs">Estación SIMA</span>
           </button>
         </div>
