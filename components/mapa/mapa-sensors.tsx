@@ -333,8 +333,7 @@ export default function MapaSensors({
       {userLocation && (
         <button
           onClick={flyToUser}
-          className="absolute right-6 top-[5.5rem] z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:bottom-10 md:top-auto"
-          style={{ boxShadow: "0 6px 24px rgba(0, 0, 0, 0.18)" }}
+          className="absolute right-6 top-[5.5rem] z-10 rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:bottom-10 md:top-auto"
           aria-label="Ir a mi ubicación"
         >
           <LocateFixed className="h-6 w-6 text-gray-700" />
@@ -368,8 +367,7 @@ export default function MapaSensors({
       {/* Legend Toggle Button - mobile only */}
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="absolute right-6 top-6 z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
-        style={{ boxShadow: "0 6px 24px rgba(0, 0, 0, 0.18)" }}
+        className="absolute right-6 top-6 z-10 rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         <Info className="h-6 w-6 text-gray-700" />
