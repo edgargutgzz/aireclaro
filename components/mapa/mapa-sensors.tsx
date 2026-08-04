@@ -333,7 +333,7 @@ export default function MapaSensors({
       {userLocation && (
         <button
           onClick={flyToUser}
-          className="absolute right-6 top-[4.5rem] z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:bottom-10 md:top-auto"
+          className="absolute right-6 top-[5.5rem] z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:bottom-10 md:top-auto"
           style={{ boxShadow: "0 6px 24px rgba(0, 0, 0, 0.18)" }}
           aria-label="Ir a mi ubicación"
         >
@@ -386,8 +386,8 @@ export default function MapaSensors({
         className={`absolute right-6 rounded-xl bg-white py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
           ${
             isLegendVisible
-              ? "top-[8.5rem] translate-y-0 opacity-100"
-              : "top-[8.5rem] translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"
+              ? "top-[9.5rem] translate-y-0 opacity-100"
+              : "top-[9.5rem] translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"
           }
           md:bottom-24 md:left-6 md:right-auto md:top-auto md:p-4 
           lg:bottom-12 lg:left-10`}
