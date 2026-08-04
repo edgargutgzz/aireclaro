@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LocateFixed } from "lucide-react";
+import { LocateFixed, Info } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -341,104 +341,73 @@ export default function MapaSensors({
         </button>
       )}
 
-      {/* Legend Toggle Button */}
+      {/* Filter chips - always visible */}
+      <div className="absolute left-4 top-6 z-10 flex flex-col gap-2 md:bottom-6 md:left-6 md:top-auto lg:bottom-6 lg:left-10">
+        <button
+          onClick={() => setShowPurpleAir((v) => !v)}
+          className={`rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+            showPurpleAir
+              ? "border-white/60 bg-white/80 text-gray-900 shadow-sm"
+              : "border-white/20 bg-white/20 text-white/60"
+          }`}
+        >
+          <span className="text-xs font-medium">Sensor Purple Air</span>
+        </button>
+        <button
+          onClick={() => setShowSima((v) => !v)}
+          className={`rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+            showSima
+              ? "border-white/60 bg-white/80 text-gray-900 shadow-sm"
+              : "border-white/20 bg-white/20 text-white/60"
+          }`}
+        >
+          <span className="text-xs font-medium">Estación SIMA</span>
+        </button>
+      </div>
+
+      {/* Legend Toggle Button - mobile only */}
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
         className="absolute right-6 top-6 z-10 rounded-xl bg-white p-3 shadow-lg transition-colors duration-200 hover:bg-gray-50 active:bg-gray-100 md:hidden"
         style={{ boxShadow: "0 6px 24px rgba(0, 0, 0, 0.18)" }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
-        {isLegendVisible ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-700"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2.5}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-700"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2.5}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        )}
+        <Info className="h-6 w-6 text-gray-700" />
       </button>
 
-      {/* Legend - adjusted to be a bit higher */}
+      {/* Legend - color scale only */}
       <div
-        className={`absolute right-6 rounded-xl bg-white py-3 pl-3 pr-0 shadow-lg transition-all duration-300 ease-in-out
+        className={`absolute right-6 rounded-xl bg-white p-4 shadow-lg transition-all duration-300 ease-in-out
           ${
             isLegendVisible
               ? "top-[9.5rem] translate-y-0 opacity-100"
               : "top-[9.5rem] translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"
           }
-          md:bottom-24 md:left-6 md:right-auto md:top-auto md:p-4 
-          lg:bottom-12 lg:left-10`}
+          md:bottom-6 md:left-[12rem] md:right-auto md:top-auto
+          lg:bottom-6 lg:left-[13rem]`}
       >
-        {/* Calidad del Aire - Title */}
-        <div className="mb-2 flex flex-col font-semibold">
-          <span className="text-sm">Calidad del Aire</span>
-        </div>
-        {/* Calidad del Aire - Legend */}
+        <div className="mb-2 text-sm font-semibold">Calidad del Aire</div>
         <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
-          <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-4 rounded-full bg-[#00e400]"></div>
+          <div className="col-span-1 flex items-center">
+            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#00e400]"></div>
             <span className="text-xs">Buena</span>
           </div>
-          <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-4 rounded-full bg-[#ffff00]"></div>
+          <div className="col-span-1 flex items-center">
+            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#ffff00]"></div>
             <span className="text-xs">Aceptable</span>
           </div>
-          <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-4 rounded-full bg-[#ff7e00]"></div>
+          <div className="col-span-1 flex items-center">
+            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#ff7e00]"></div>
             <span className="text-xs">Mala</span>
           </div>
-          <div className="col-span-1 flex">
-            <div className="mr-2 h-4 w-4 rounded-full bg-[#ff0000]"></div>
+          <div className="col-span-1 flex items-center">
+            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#ff0000]"></div>
             <span className="text-xs">Muy mala</span>
           </div>
-          <div className="col-span-2 flex">
-            <div className="mr-2 h-4 w-4 rounded-full bg-[#8f3f97]"></div>
+          <div className="col-span-2 flex items-center">
+            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#8f3f97]"></div>
             <span className="text-xs">Extremadamente mala</span>
           </div>
-        </div>
-        {/* Sensores - Title */}
-        <div className="mb-2 mt-5 flex flex-col font-semibold">
-          <span className="text-sm">Fuente de Medición</span>
-        </div>
-        {/* Sensores - Legend */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setShowPurpleAir((v) => !v)}
-            className={`flex items-center transition-opacity ${showPurpleAir ? "opacity-100" : "opacity-40"}`}
-          >
-            <div className="mr-2 h-4 w-4 rounded-full bg-gray-400"></div>
-            <span className="text-xs">Sensor Purple Air</span>
-          </button>
-          <button
-            onClick={() => setShowSima((v) => !v)}
-            className={`flex items-center transition-opacity ${showSima ? "opacity-100" : "opacity-40"}`}
-          >
-            <div className="mr-2 h-4 w-4 rounded-full bg-gray-400 border-2 border-black"></div>
-            <span className="text-xs">Estación SIMA</span>
-          </button>
         </div>
       </div>
     </div>
