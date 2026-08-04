@@ -234,7 +234,7 @@ export default function MapaSensors({
 
       const popup = new Popup({
         offset: 25,
-        closeButton: false,
+        closeButton: true,
       }).setHTML(`
         <div class="p-3 rounded-xl bg-white max-w-[240px]">
           <div class="flex items-center bg-opacity-15 p-2.5 rounded-xl mb-2" style="background-color: ${popupBorderColor}15;">
@@ -292,6 +292,17 @@ export default function MapaSensors({
         }
         .mapboxgl-popup-tip {
           border-top-color: white !important;
+        }
+        .mapboxgl-popup-close-button {
+          font-size: 18px;
+          color: #6b7280;
+          padding: 6px 10px;
+          border-radius: 0 1rem 0 0;
+          line-height: 1;
+        }
+        .mapboxgl-popup-close-button:hover {
+          background-color: #f3f4f6;
+          color: #111827;
         }
       `;
       style.setAttribute("data-popup-shadow", "true");
