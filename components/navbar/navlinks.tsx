@@ -41,18 +41,28 @@ export default function Navlinks() {
             className="group"
             aria-label={link.alt}
           >
-            {/* Mobile view */}
-            <div className="flex items-center justify-center md:hidden">
-              {isSelected ? (
-                <div className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2">
-                  <IconComponent className="h-5 w-5 text-gray-900" />
-                  <span className="text-xs font-medium text-gray-900">{link.name}</span>
-                </div>
-              ) : (
-                <div className="p-2">
-                  <IconComponent className="h-5 w-5 text-gray-400" />
-                </div>
-              )}
+            {/* Mobile view - with icon and text */}
+            <div className="flex flex-col items-center md:hidden">
+              <div
+                className={clsx("mb-1 rounded-full p-1.5", {
+                  "bg-gray-100": isSelected,
+                })}
+              >
+                <IconComponent
+                  className={clsx("h-6 w-6", {
+                    "text-gray-900": isSelected,
+                    "text-gray-400": !isSelected,
+                  })}
+                />
+              </div>
+              <span
+                className={clsx("text-xs", {
+                  "font-medium text-gray-900": isSelected,
+                  "text-gray-400": !isSelected,
+                })}
+              >
+                {link.name}
+              </span>
             </div>
 
             {/* Desktop view */}
