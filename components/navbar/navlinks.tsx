@@ -45,20 +45,20 @@ export default function Navlinks() {
             <div className="flex flex-col items-center md:hidden">
               <div
                 className={clsx("mb-1 rounded-full p-1.5", {
-                  "bg-blue-50": isSelected,
+                  "bg-gray-100": isSelected,
                 })}
               >
                 <IconComponent
                   className={clsx("h-6 w-6", {
-                    "text-blue-500": isSelected,
-                    "text-gray-500": !isSelected,
+                    "text-gray-900": isSelected,
+                    "text-gray-400": !isSelected,
                   })}
                 />
               </div>
               <span
                 className={clsx("text-xs", {
-                  "font-medium text-blue-500": isSelected,
-                  "text-gray-600": !isSelected,
+                  "font-medium text-gray-900": isSelected,
+                  "text-gray-400": !isSelected,
                 })}
               >
                 {link.name}
