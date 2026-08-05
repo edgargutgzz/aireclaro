@@ -340,16 +340,6 @@ export default function MapaSensors({
       {/* Filter chips - always visible */}
       <div className="absolute left-4 top-6 z-10 flex flex-col gap-2 md:bottom-6 md:left-6 md:top-auto lg:bottom-6 lg:left-10">
         <button
-          onClick={() => setShowPurpleAir((v) => !v)}
-          className={`rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-            showPurpleAir
-              ? "border-white/60 bg-white/80 text-gray-900 shadow-sm"
-              : "border-white/20 bg-white/20 text-white/60"
-          }`}
-        >
-          <span className="text-xs font-medium">Sensor Purple Air</span>
-        </button>
-        <button
           onClick={() => setShowSima((v) => !v)}
           className={`rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
             showSima
@@ -358,6 +348,16 @@ export default function MapaSensors({
           }`}
         >
           <span className="text-xs font-medium">Estación SIMA</span>
+        </button>
+        <button
+          onClick={() => setShowPurpleAir((v) => !v)}
+          className={`rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+            showPurpleAir
+              ? "border-white/60 bg-white/80 text-gray-900 shadow-sm"
+              : "border-white/20 bg-white/20 text-white/60"
+          }`}
+        >
+          <span className="text-xs font-medium">Sensor Purple Air</span>
         </button>
       </div>
 
