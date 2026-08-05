@@ -7,7 +7,7 @@ export default function Navbar() {
     <>
       {/* Mobile navbar at bottom */}
       <div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-white shadow-lg md:hidden">
-        <div className="flex w-full justify-around px-2 py-3">
+        <div className="flex w-full justify-around px-2 py-2">
           <Navlinks />
         </div>
         {/* Bottom safe area for newer iOS devices */}
