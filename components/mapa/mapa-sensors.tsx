@@ -63,9 +63,12 @@ const createMarker = (
   const marker = document.createElement("div");
   const textColor =
     markerColor === "bg-[#ffff00]" ? "text-gray-700" : "text-white";
-  marker.className = `marker ${markerColor} bg-opacity-85 w-9 h-9 flex items-center justify-center rounded-full ${
-    source === "sima" ? "border-2 border-black" : ""
-  } ${textColor} text-xs font-bold`;
+  const size = source === "sima" ? "w-12 h-12" : "w-10 h-10";
+  const fontSize = source === "sima" ? "text-sm" : "text-xs";
+  marker.className = `marker ${markerColor} bg-opacity-90 ${size} flex items-center justify-center rounded-full ${textColor} ${fontSize} font-bold`;
+  marker.style.boxShadow = source === "sima"
+    ? "0 3px 10px rgba(0,0,0,0.3), 0 0 0 2px white, 0 0 0 4px #1f2937"
+    : "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px rgba(255,255,255,0.6)";
   marker.setAttribute("data-marker-color", markerColor);
 
   if (pm25 !== null && pm25 >= 0) {
@@ -354,9 +357,9 @@ export default function MapaSensors({
         </button>
         <button
           onClick={() => setShowSima((v) => !v)}
-          className={`rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+          className={`rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
             showSima
-              ? "border-white/60 bg-white/80 text-gray-900 shadow-sm"
+              ? "border-gray-800 bg-white/90 text-gray-900 shadow-sm"
               : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
