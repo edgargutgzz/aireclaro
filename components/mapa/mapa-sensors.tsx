@@ -173,6 +173,31 @@ const borderColorMap: { [key: string]: string } = {
   "bg-[#8f3f97]": "#8f3f97",
 };
 
+function LegendContent() {
+  return (
+    <>
+      <div className="mb-2 text-sm font-semibold">Calidad del Aire</div>
+      <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
+        {[
+          { color: "bg-[#00e400]", label: "Buena" },
+          { color: "bg-[#ffff00]", label: "Aceptable" },
+          { color: "bg-[#ff7e00]", label: "Mala" },
+          { color: "bg-[#ff0000]", label: "Muy mala" },
+        ].map(({ color, label }) => (
+          <div key={label} className="col-span-1 flex items-center">
+            <div className={`mr-2 h-4 w-4 flex-shrink-0 rounded-full ${color}`} />
+            <span className="text-xs">{label}</span>
+          </div>
+        ))}
+        <div className="col-span-2 flex items-center">
+          <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#8f3f97]" />
+          <span className="text-xs">Extremadamente mala</span>
+        </div>
+      </div>
+    </>
+  );
+}
+
 // MapaSensors component
 export default function MapaSensors({
   sensors,
@@ -442,26 +467,24 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
       )}
 
-      {/* Filter chips — grouped container */}
-      <div className="absolute left-4 top-6 z-10 md:bottom-6 md:left-6 md:top-auto lg:bottom-6 lg:left-10">
-        <div className="flex flex-col gap-1 rounded-2xl border border-white/60 bg-white/80 p-1.5 shadow-sm backdrop-blur-md">
-          <button
-            onClick={() => setShowSima((v) => !v)}
-            className={`rounded-xl px-4 py-2 transition-all duration-200 ${
-              showSima ? "bg-white shadow-sm text-gray-900" : "text-gray-400"
-            }`}
-          >
-            <span className="text-xs font-medium">Estación SIMA</span>
-          </button>
-          <button
-            onClick={() => setShowPurpleAir((v) => !v)}
-            className={`rounded-xl px-4 py-2 transition-all duration-200 ${
-              showPurpleAir ? "bg-white shadow-sm text-gray-900" : "text-gray-400"
-            }`}
-          >
-            <span className="text-xs font-medium">Sensor Purple Air</span>
-          </button>
-        </div>
+      {/* Filter chips */}
+      <div className="absolute left-4 top-6 z-10 flex flex-col gap-2 md:bottom-6 md:left-6 md:top-auto lg:bottom-6 lg:left-10">
+        <button
+          onClick={() => setShowSima((v) => !v)}
+          className={`rounded-full px-4 py-2 backdrop-blur-md border transition-all duration-200 ${
+            showSima ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
+          }`}
+        >
+          <span className="text-xs font-medium">Estación SIMA</span>
+        </button>
+        <button
+          onClick={() => setShowPurpleAir((v) => !v)}
+          className={`rounded-full px-4 py-2 backdrop-blur-md border transition-all duration-200 ${
+            showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
+          }`}
+        >
+          <span className="text-xs font-medium">Sensor Purple Air</span>
+        </button>
         {/* Air quality chip — hidden for now, re-enable when ready
         {userLocation && qualityInfo && (
           <button
@@ -485,40 +508,28 @@ const [mapLoaded, setMapLoaded] = useState(false);
         */}
       </div>
 
-      {/* Legend toggle button - top right, mobile only */}
+      {/* Legend toggle button — mobile only, bottom right above locate button */}
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="absolute right-6 top-6 z-10 rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
+        className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
+        style={{ bottom: 'calc(9.25rem + env(safe-area-inset-bottom, 0px))' }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         <Info className="h-6 w-6 text-gray-700" />
       </button>
 
-      {/* Legend panel */}
+      {/* Legend panel — mobile: fixed above info button */}
       <div
-        className={`absolute right-6 rounded-xl bg-white/80 backdrop-blur-md border border-white/60 p-4 shadow-sm transition-all duration-300 ease-in-out
-          ${isLegendVisible ? "top-[9.5rem] translate-y-0 opacity-100" : "top-[9.5rem] translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"}
-          md:bottom-6 md:left-[12rem] md:right-auto md:top-auto
-          lg:bottom-6 lg:left-[13rem]`}
+        className={`fixed right-6 z-[44] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md transition-all duration-300 ease-in-out md:hidden
+          ${isLegendVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}`}
+        style={{ bottom: 'calc(13rem + env(safe-area-inset-bottom, 0px))' }}
       >
-        <div className="mb-2 text-sm font-semibold">Calidad del Aire</div>
-        <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
-          {[
-            { color: "bg-[#00e400]", label: "Buena" },
-            { color: "bg-[#ffff00]", label: "Aceptable" },
-            { color: "bg-[#ff7e00]", label: "Mala" },
-            { color: "bg-[#ff0000]", label: "Muy mala" },
-          ].map(({ color, label }) => (
-            <div key={label} className="col-span-1 flex items-center">
-              <div className={`mr-2 h-4 w-4 flex-shrink-0 rounded-full ${color}`} />
-              <span className="text-xs">{label}</span>
-            </div>
-          ))}
-          <div className="col-span-2 flex items-center">
-            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#8f3f97]" />
-            <span className="text-xs">Extremadamente mala</span>
-          </div>
-        </div>
+        <LegendContent />
+      </div>
+
+      {/* Legend panel — desktop: always visible, bottom left */}
+      <div className="absolute hidden rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:block md:bottom-6 md:left-[12rem] lg:bottom-6 lg:left-[13rem]">
+        <LegendContent />
       </div>
 
       {/* Bottom sheet backdrop */}
