@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed } from "lucide-react";
+import { LocateFixed, Info } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -186,6 +186,7 @@ export default function MapaSensors({
   const markersRef = useRef<Marker[]>([]);
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [isLegendVisible, setIsLegendVisible] = useState(false);
 const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
@@ -486,6 +487,41 @@ const [mapLoaded, setMapLoaded] = useState(false);
         */}
       </div>
 
+      {/* Legend toggle button - top right, mobile only */}
+      <button
+        onClick={() => setIsLegendVisible(!isLegendVisible)}
+        className="absolute right-6 top-6 z-10 rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
+        aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
+      >
+        <Info className="h-6 w-6 text-gray-700" />
+      </button>
+
+      {/* Legend panel */}
+      <div
+        className={`absolute right-6 rounded-xl bg-white/80 backdrop-blur-md border border-white/60 p-4 shadow-sm transition-all duration-300 ease-in-out
+          ${isLegendVisible ? "top-[9.5rem] translate-y-0 opacity-100" : "top-[9.5rem] translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"}
+          md:bottom-6 md:left-[12rem] md:right-auto md:top-auto
+          lg:bottom-6 lg:left-[13rem]`}
+      >
+        <div className="mb-2 text-sm font-semibold">Calidad del Aire</div>
+        <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
+          {[
+            { color: "bg-[#00e400]", label: "Buena" },
+            { color: "bg-[#ffff00]", label: "Aceptable" },
+            { color: "bg-[#ff7e00]", label: "Mala" },
+            { color: "bg-[#ff0000]", label: "Muy mala" },
+          ].map(({ color, label }) => (
+            <div key={label} className="col-span-1 flex items-center">
+              <div className={`mr-2 h-4 w-4 flex-shrink-0 rounded-full ${color}`} />
+              <span className="text-xs">{label}</span>
+            </div>
+          ))}
+          <div className="col-span-2 flex items-center">
+            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#8f3f97]" />
+            <span className="text-xs">Extremadamente mala</span>
+          </div>
+        </div>
+      </div>
 
       {/* Bottom sheet backdrop */}
       <div
