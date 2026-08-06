@@ -496,30 +496,55 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
       </div>
 
-      {/* Desktop left panel — filters card */}
+      {/* Desktop left panel — one outer card, three inner cards */}
       <div className="absolute left-6 top-[5rem] z-10 hidden md:block">
-        <div className="rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md">
-          <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sensores</div>
-          <div className="flex flex-col gap-1">
-            <button
-              onClick={() => setShowSima((v) => !v)}
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-left transition-all duration-200 ${
-                showSima ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              <Landmark className="h-4 w-4 flex-shrink-0" />
-              <span className="text-xs font-medium">Estación SIMA</span>
-            </button>
-            <button
-              onClick={() => setShowPurpleAir((v) => !v)}
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-left transition-all duration-200 ${
-                showPurpleAir ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              <Users className="h-4 w-4 flex-shrink-0" />
-              <span className="text-xs font-medium">Sensor Ciudadano</span>
-            </button>
+        <div className="flex w-[280px] flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
+
+          {/* Inner card 1: Sensores */}
+          <div className="rounded-xl bg-white p-3">
+            <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sensores</div>
+            <div className="flex flex-col gap-0.5">
+              <button
+                onClick={() => setShowSima((v) => !v)}
+                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-200 ${
+                  showSima ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                <Landmark className="h-4 w-4 flex-shrink-0" />
+                <span className="text-xs font-medium">Estación SIMA</span>
+              </button>
+              <button
+                onClick={() => setShowPurpleAir((v) => !v)}
+                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-200 ${
+                  showPurpleAir ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
+                }`}
+              >
+                <Users className="h-4 w-4 flex-shrink-0" />
+                <span className="text-xs font-medium">Sensor Ciudadano</span>
+              </button>
+            </div>
           </div>
+
+          {/* Inner card 2: Locate */}
+          {userLocation && (
+            <button
+              onClick={flyToUser}
+              className="flex w-full items-center gap-2.5 rounded-xl bg-white px-3 py-2.5 text-left transition-colors duration-200 hover:bg-gray-50"
+            >
+              <LocateFixed className="h-4 w-4 flex-shrink-0 text-gray-600" />
+              <span className="text-xs font-medium text-gray-700">Centrar en mi ubicación</span>
+            </button>
+          )}
+
+          {/* Inner card 3: Legend */}
+          <div className="rounded-xl bg-white p-3">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="text-xs font-semibold text-gray-700">Calidad del Aire</span>
+              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
+            </div>
+            <LegendContent />
+          </div>
+
         </div>
       </div>
 
@@ -560,26 +585,6 @@ const [mapLoaded, setMapLoaded] = useState(false);
           </button>
         </div>
         <div className="px-5 pb-28">
-          <LegendContent />
-        </div>
-      </div>
-
-      {/* Desktop bottom-left column: locate button + legend */}
-      <div className="absolute bottom-6 left-6 z-10 hidden md:flex md:flex-col md:items-start md:gap-3">
-        {userLocation && (
-          <button
-            onClick={flyToUser}
-            className="rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors duration-200"
-            aria-label="Ir a mi ubicación"
-          >
-            <LocateFixed className="h-6 w-6 text-gray-700" />
-          </button>
-        )}
-        <div className="min-w-[280px] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-          <div className="mb-3 flex items-center gap-2">
-            <span className="text-sm font-semibold">Calidad del Aire</span>
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
-          </div>
           <LegendContent />
         </div>
       </div>
