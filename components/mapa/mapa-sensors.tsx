@@ -470,8 +470,8 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
       )}
 
-      {/* Filter chips — full width, 50/50 */}
-      <div className="absolute left-0 right-0 top-6 z-10 flex flex-row gap-2 px-4 md:left-6 md:right-auto md:flex-col md:px-0">
+      {/* Filter chips — mobile: full width 50/50 | desktop: vertical stack top-left below navbar */}
+      <div className="absolute left-0 right-0 top-6 z-10 flex flex-row gap-2 px-4 md:left-6 md:right-auto md:top-[5rem] md:flex-col md:px-0">
         <button
           onClick={() => setShowSima((v) => !v)}
           className={`flex-1 md:flex-none rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
@@ -559,7 +559,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       </div>
 
       {/* Legend panel — desktop: always visible, bottom left */}
-      <div className="absolute hidden min-w-[200px] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:block md:bottom-6 md:left-[12rem] lg:bottom-6 lg:left-[13rem]">
+      <div className="absolute hidden min-w-[200px] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:block md:bottom-6 md:left-6">
         <LegendContent />
       </div>
 
