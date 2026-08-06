@@ -65,7 +65,7 @@ const createMarker = (
   marker.className = `marker ${markerColor} bg-opacity-90 w-10 h-10 flex items-center justify-center rounded-full ${textColor} text-xs font-bold`;
   marker.style.boxShadow = source === "sima"
     ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px white, 0 0 0 4px #1f2937"
-    : "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px rgba(255,255,255,0.6)";
+    : "0 2px 8px rgba(0,0,0,0.2), 0 0 0 4px rgba(255,255,255,0.8)";
   marker.setAttribute("data-marker-color", markerColor);
 
   if (pm25 !== null && pm25 >= 0) {
