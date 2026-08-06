@@ -442,28 +442,26 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
       )}
 
-      {/* Filter chips + air quality — left column */}
-      <div className="absolute left-4 top-6 z-10 flex flex-col gap-2 md:bottom-6 md:left-6 md:top-auto lg:bottom-6 lg:left-10">
-        <button
-          onClick={() => setShowSima((v) => !v)}
-          className={`rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-            showSima
-              ? "border-gray-800 bg-white/90 text-gray-900 shadow-sm"
-              : "border-white/20 bg-white/20 text-white/60"
-          }`}
-        >
-          <span className="text-xs font-medium">Estación SIMA</span>
-        </button>
-        <button
-          onClick={() => setShowPurpleAir((v) => !v)}
-          className={`rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-            showPurpleAir
-              ? "border-white/60 bg-white/80 text-gray-900 shadow-sm"
-              : "border-white/20 bg-white/20 text-white/60"
-          }`}
-        >
-          <span className="text-xs font-medium">Sensor Purple Air</span>
-        </button>
+      {/* Filter chips — grouped container */}
+      <div className="absolute left-4 top-6 z-10 md:bottom-6 md:left-6 md:top-auto lg:bottom-6 lg:left-10">
+        <div className="flex flex-col gap-1 rounded-2xl border border-white/60 bg-white/80 p-1.5 shadow-sm backdrop-blur-md">
+          <button
+            onClick={() => setShowSima((v) => !v)}
+            className={`rounded-xl px-4 py-2 transition-all duration-200 ${
+              showSima ? "bg-white shadow-sm text-gray-900" : "text-gray-400"
+            }`}
+          >
+            <span className="text-xs font-medium">Estación SIMA</span>
+          </button>
+          <button
+            onClick={() => setShowPurpleAir((v) => !v)}
+            className={`rounded-xl px-4 py-2 transition-all duration-200 ${
+              showPurpleAir ? "bg-white shadow-sm text-gray-900" : "text-gray-400"
+            }`}
+          >
+            <span className="text-xs font-medium">Sensor Purple Air</span>
+          </button>
+        </div>
         {/* Air quality chip — hidden for now, re-enable when ready
         {userLocation && qualityInfo && (
           <button
