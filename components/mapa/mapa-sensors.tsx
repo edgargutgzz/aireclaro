@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Info } from "lucide-react";
+import { LocateFixed } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -186,8 +186,7 @@ export default function MapaSensors({
   const markersRef = useRef<Marker[]>([]);
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-  const [isLegendVisible, setIsLegendVisible] = useState(false);
-  const [mapLoaded, setMapLoaded] = useState(false);
+const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
   const [sheetState, setSheetState] = useState<'closed' | 'mid' | 'full'>('closed');
@@ -484,50 +483,6 @@ export default function MapaSensors({
         )}
       </div>
 
-      {/* Legend Toggle Button - mobile only */}
-      <button
-        onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="absolute right-6 top-6 z-10 rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
-        aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
-      >
-        <Info className="h-6 w-6 text-gray-700" />
-      </button>
-
-      {/* Legend - color scale only */}
-      <div
-        className={`absolute right-6 rounded-xl bg-white/80 backdrop-blur-md border border-white/60 p-4 shadow-sm transition-all duration-300 ease-in-out
-          ${
-            isLegendVisible
-              ? "top-[9.5rem] translate-y-0 opacity-100"
-              : "top-[9.5rem] translate-y-[-100%] opacity-0 md:translate-y-0 md:opacity-100"
-          }
-          md:bottom-6 md:left-[12rem] md:right-auto md:top-auto
-          lg:bottom-6 lg:left-[13rem]`}
-      >
-        <div className="mb-2 text-sm font-semibold">Calidad del Aire</div>
-        <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
-          <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#00e400]"></div>
-            <span className="text-xs">Buena</span>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#ffff00]"></div>
-            <span className="text-xs">Aceptable</span>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#ff7e00]"></div>
-            <span className="text-xs">Mala</span>
-          </div>
-          <div className="col-span-1 flex items-center">
-            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#ff0000]"></div>
-            <span className="text-xs">Muy mala</span>
-          </div>
-          <div className="col-span-2 flex items-center">
-            <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#8f3f97]"></div>
-            <span className="text-xs">Extremadamente mala</span>
-          </div>
-        </div>
-      </div>
 
       {/* Bottom sheet backdrop */}
       <div
@@ -583,7 +538,7 @@ export default function MapaSensors({
               <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
                 Para grupos sensibles
               </div>
-              <div className="flex flex-col gap-4">
+              <div className="mb-6 flex flex-col gap-4">
                 {[
                   { label: "Niños (menores de 12)", rec: qualityInfo.sensitiveRecs.menores },
                   { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
@@ -593,6 +548,25 @@ export default function MapaSensors({
                   <div key={label}>
                     <div className="mb-0.5 text-xs font-semibold text-gray-700">{label}</div>
                     <div className="text-xs text-gray-500">{rec}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mb-3 h-px bg-gray-100" />
+              <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+                Escala de colores
+              </div>
+              <div className="flex flex-col gap-2">
+                {[
+                  { color: "#00e400", label: "Buena", range: "0 – 15 μg/m³" },
+                  { color: "#ffff00", label: "Aceptable", range: "15 – 25 μg/m³" },
+                  { color: "#ff7e00", label: "Mala", range: "25 – 79 μg/m³" },
+                  { color: "#ff0000", label: "Muy mala", range: "79 – 130 μg/m³" },
+                  { color: "#8f3f97", label: "Extremadamente mala", range: "> 130 μg/m³" },
+                ].map(({ color, label, range }) => (
+                  <div key={label} className="flex items-center gap-3">
+                    <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                    <span className="text-xs text-gray-700">{label}</span>
+                    <span className="ml-auto text-xs text-gray-400">{range}</span>
                   </div>
                 ))}
               </div>
