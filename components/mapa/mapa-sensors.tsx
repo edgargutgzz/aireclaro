@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Info, X } from "lucide-react";
+import { LocateFixed, Info, X, Landmark, Users } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -478,7 +478,10 @@ const [mapLoaded, setMapLoaded] = useState(false);
             showSima ? "border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
-          <span className="text-xs font-medium">Estación SIMA</span>
+          <div className="flex items-center justify-center gap-1.5">
+            <Landmark className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">Estación SIMA</span>
+          </div>
         </button>
         <button
           onClick={() => setShowPurpleAir((v) => !v)}
@@ -486,7 +489,10 @@ const [mapLoaded, setMapLoaded] = useState(false);
             showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
-          <span className="text-xs font-medium">Sensor Ciudadano</span>
+          <div className="flex items-center justify-center gap-1.5">
+            <Users className="h-3.5 w-3.5" />
+            <span className="text-xs font-medium">Sensor Ciudadano</span>
+          </div>
         </button>
         {/* Air quality chip — hidden for now, re-enable when ready
         {userLocation && qualityInfo && (
