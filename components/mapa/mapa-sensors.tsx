@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Info, X } from "lucide-react";
+import { LocateFixed, Info } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -190,7 +190,9 @@ export default function MapaSensors({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [sheetState, setSheetState] = useState<'closed' | 'mid' | 'full'>('closed');
+  const [dragOffset, setDragOffset] = useState(0);
+  const dragStartY = useRef(0);
 
   // Find the nearest sensor's PM2.5 reading to the user's location
   const nearestPm25 = useMemo(() => {
@@ -380,6 +382,31 @@ export default function MapaSensors({
     }
   }, []);
 
+  const sheetTopBase = sheetState === 'full' ? '8vh' : sheetState === 'mid' ? '55vh' : '100vh';
+  const sheetTopStyle = dragOffset > 0 ? `calc(${sheetTopBase} + ${dragOffset}px)` : sheetTopBase;
+
+  const handleHandleTap = () => {
+    if (sheetState === 'mid') setSheetState('full');
+    else if (sheetState === 'full') setSheetState('mid');
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    dragStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const delta = e.touches[0].clientY - dragStartY.current;
+    if (delta > 0) setDragOffset(delta);
+  };
+
+  const handleTouchEnd = () => {
+    if (dragOffset > 80) {
+      if (sheetState === 'full') setSheetState('mid');
+      else if (sheetState === 'mid') setSheetState('closed');
+    }
+    setDragOffset(0);
+  };
+
   return (
     <div className="relative h-screen">
       {/* Map container */}
@@ -487,46 +514,42 @@ export default function MapaSensors({
       {userLocation && qualityInfo && (
         <>
           <button
-            onClick={() => setIsSheetOpen(true)}
+            onClick={() => setSheetState('mid')}
             className={`fixed left-0 right-0 z-[45] rounded-t-2xl bg-white px-5 pb-3 pt-2 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-opacity duration-300 md:hidden ${
-              isSheetOpen ? "pointer-events-none opacity-0" : "opacity-100"
+              sheetState !== 'closed' ? "pointer-events-none opacity-0" : "opacity-100"
             }`}
             style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px))" }}
           >
             <div className="mx-auto mb-2.5 h-1 w-10 rounded-full bg-gray-200" />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="h-3 w-3 flex-shrink-0 rounded-full"
-                  style={{ backgroundColor: qualityInfo.color }}
-                />
-                <div>
-                  <span className="text-sm font-semibold text-gray-900">{qualityInfo.label}</span>
-                  {nearestPm25 !== null && (
-                    <span className="ml-2 text-xs text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
-                  )}
-                </div>
+            <div className="flex items-center gap-3">
+              <div
+                className="h-3 w-3 flex-shrink-0 rounded-full"
+                style={{ backgroundColor: qualityInfo.color }}
+              />
+              <div>
+                <span className="text-sm font-semibold text-gray-900">{qualityInfo.label}</span>
+                {nearestPm25 !== null && (
+                  <span className="ml-2 text-xs text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
+                )}
               </div>
             </div>
           </button>
 
           {/* Desktop: compact card bottom-right */}
           <button
-            onClick={() => setIsSheetOpen(true)}
-            className={`fixed bottom-24 right-6 z-[45] hidden w-72 items-center justify-between rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-md backdrop-blur-md transition-opacity duration-300 md:flex ${
-              isSheetOpen ? "pointer-events-none opacity-0" : "opacity-100"
+            onClick={() => setSheetState('mid')}
+            className={`fixed bottom-24 right-6 z-[45] hidden w-72 items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-md backdrop-blur-md transition-opacity duration-300 md:flex ${
+              sheetState !== 'closed' ? "pointer-events-none opacity-0" : "opacity-100"
             }`}
           >
-            <div className="flex items-center gap-3">
-              <div
-                className="h-3 w-3 flex-shrink-0 rounded-full"
-                style={{ backgroundColor: qualityInfo.color }}
-              />
-              <div className="text-left">
-                <div className="text-sm font-semibold text-gray-900">{qualityInfo.label}</div>
-                <div className="text-xs text-gray-400">
-                  {nearestPm25 !== null ? `${Math.round(nearestPm25)} μg/m³ · ` : ""}cerca de ti
-                </div>
+            <div
+              className="h-3 w-3 flex-shrink-0 rounded-full"
+              style={{ backgroundColor: qualityInfo.color }}
+            />
+            <div className="text-left">
+              <div className="text-sm font-semibold text-gray-900">{qualityInfo.label}</div>
+              <div className="text-xs text-gray-400">
+                {nearestPm25 !== null ? `${Math.round(nearestPm25)} μg/m³ · ` : ""}cerca de ti
               </div>
             </div>
           </button>
@@ -535,72 +558,73 @@ export default function MapaSensors({
 
       {/* Bottom sheet backdrop */}
       <div
-        className={`fixed inset-0 z-[55] bg-black/30 transition-opacity duration-300 ${
-          isSheetOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        className={`fixed inset-0 z-[55] bg-black/20 transition-opacity duration-300 ${
+          sheetState !== 'closed' ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
-        onClick={() => setIsSheetOpen(false)}
+        onClick={() => setSheetState('closed')}
       />
 
-      {/* Bottom sheet */}
+      {/* Bottom sheet — 3-state: closed / mid / full */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-[60] max-h-[75vh] overflow-y-auto rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out ${
-          isSheetOpen ? "translate-y-0" : "translate-y-full"
-        }`}
+        className="fixed left-0 right-0 bottom-0 z-[60] rounded-t-3xl bg-white shadow-2xl overflow-hidden"
+        style={{
+          top: sheetTopStyle,
+          transition: dragOffset > 0 ? 'none' : 'top 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
       >
         {qualityInfo && (
-          <div className="px-5 pb-10 pt-4">
-            {/* Handle */}
-            <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-gray-200" />
-
-            {/* Header */}
-            <div className="mb-4 flex items-center justify-between">
-              <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                Calidad del aire cerca de ti
-              </span>
-              <button onClick={() => setIsSheetOpen(false)}>
-                <X className="h-5 w-5 text-gray-400" />
-              </button>
-            </div>
-
-            {/* Quality label + PM2.5 */}
-            <div className="mb-2 flex items-end gap-3">
-              <div
-                className="text-4xl font-bold leading-none"
-                style={{ color: qualityInfo.textColor }}
-              >
-                {qualityInfo.label}
+          <>
+            {/* Drag handle — tap to toggle mid↔full, drag down to dismiss */}
+            <div
+              className="cursor-pointer select-none px-5 pb-4 pt-3"
+              onClick={handleHandleTap}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-gray-200" />
+              <div className="mb-4">
+                <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                  Calidad del aire cerca de ti
+                </span>
               </div>
-              {nearestPm25 !== null && (
-                <div className="mb-1 text-sm text-gray-400">
-                  {Math.round(nearestPm25)} μg/m³
+              <div className="mb-2 flex items-end gap-3">
+                <div
+                  className="text-4xl font-bold leading-none"
+                  style={{ color: qualityInfo.textColor }}
+                >
+                  {qualityInfo.label}
                 </div>
-              )}
+                {nearestPm25 !== null && (
+                  <div className="mb-1 text-sm text-gray-400">
+                    {Math.round(nearestPm25)} μg/m³
+                  </div>
+                )}
+              </div>
+              <p className="text-sm text-gray-600">{qualityInfo.generalRec}</p>
             </div>
 
-            {/* General recommendation */}
-            <p className="mb-5 text-sm text-gray-600">{qualityInfo.generalRec}</p>
-
-            {/* Divider */}
-            <div className="mb-4 h-px bg-gray-100" />
-
-            {/* Sensitive groups */}
-            <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
-              Para grupos sensibles
+            {/* Scrollable content — visible only in full state */}
+            <div className="overflow-y-auto px-5 pb-10">
+              <div className="mb-4 h-px bg-gray-100" />
+              <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+                Para grupos sensibles
+              </div>
+              <div className="flex flex-col gap-4">
+                {[
+                  { label: "Niños (menores de 12)", rec: qualityInfo.sensitiveRecs.menores },
+                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
+                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
+                  { label: "Enfermedades cardio o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
+                ].map(({ label, rec }) => (
+                  <div key={label}>
+                    <div className="mb-0.5 text-xs font-semibold text-gray-700">{label}</div>
+                    <div className="text-xs text-gray-500">{rec}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col gap-4">
-              {[
-                { label: "Niños (menores de 12)", rec: qualityInfo.sensitiveRecs.menores },
-                { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
-                { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
-                { label: "Enfermedades cardio o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
-              ].map(({ label, rec }) => (
-                <div key={label}>
-                  <div className="mb-0.5 text-xs font-semibold text-gray-700">{label}</div>
-                  <div className="text-xs text-gray-500">{rec}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+          </>
         )}
       </div>
     </div>
