@@ -515,23 +515,20 @@ export default function MapaSensors({
         <>
           <button
             onClick={() => setSheetState('mid')}
-            className={`fixed left-0 right-0 z-[45] rounded-t-2xl bg-white px-5 pb-3 pt-2 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-opacity duration-300 md:hidden ${
+            className={`fixed left-1/2 z-[45] -translate-x-1/2 flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-5 py-3 shadow-md backdrop-blur-md transition-opacity duration-300 md:hidden ${
               sheetState !== 'closed' ? "pointer-events-none opacity-0" : "opacity-100"
             }`}
-            style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px))" }}
+            style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem)" }}
           >
-            <div className="mx-auto mb-2.5 h-1 w-10 rounded-full bg-gray-200" />
-            <div className="flex items-center gap-3">
-              <div
-                className="h-3 w-3 flex-shrink-0 rounded-full"
-                style={{ backgroundColor: qualityInfo.color }}
-              />
-              <div>
-                <span className="text-sm font-semibold text-gray-900">{qualityInfo.label}</span>
-                {nearestPm25 !== null && (
-                  <span className="ml-2 text-xs text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
-                )}
-              </div>
+            <div
+              className="h-3 w-3 flex-shrink-0 rounded-full"
+              style={{ backgroundColor: qualityInfo.color }}
+            />
+            <div>
+              <span className="text-sm font-semibold text-gray-900">{qualityInfo.label}</span>
+              {nearestPm25 !== null && (
+                <span className="ml-2 text-xs text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
+              )}
             </div>
           </button>
 
