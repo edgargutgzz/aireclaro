@@ -259,7 +259,7 @@ export default function MapaSensors({
             </div>
           </div>
           ${latestData ? `<div class="text-xs text-gray-400 mb-1 px-1">Actualizado a las ${format(new Date(latestData.time_stamp), "h:00 a")}</div>` : ""}
-          <div class="hidden md:block text-xs text-gray-400 px-1">
+          <div class="hidden text-xs text-gray-400 px-1">
             Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
           </div>
         </div>
@@ -372,7 +372,7 @@ export default function MapaSensors({
 
       {/* Legend - color scale only */}
       <div
-        className={`absolute right-6 rounded-xl bg-white p-4 shadow-lg transition-all duration-300 ease-in-out
+        className={`absolute right-6 rounded-xl bg-white/80 backdrop-blur-md border border-white/60 p-4 shadow-sm transition-all duration-300 ease-in-out
           ${
             isLegendVisible
               ? "top-[9.5rem] translate-y-0 opacity-100"
