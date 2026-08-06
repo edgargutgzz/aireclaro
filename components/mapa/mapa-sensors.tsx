@@ -519,7 +519,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
 
       {/* Legend backdrop — mobile only */}
       <div
-        className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-0 z-[46] bg-black/20 transition-opacity duration-300 md:hidden ${
           isLegendVisible ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         onClick={() => setIsLegendVisible(false)}
@@ -527,7 +527,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
 
       {/* Legend panel — mobile: slides up from bottom */}
       <div
-        className={`fixed left-0 right-0 bottom-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
+        className={`fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
           isLegendVisible ? "translate-y-0" : "translate-y-full"
         }`}
       >
