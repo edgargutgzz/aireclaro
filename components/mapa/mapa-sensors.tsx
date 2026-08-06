@@ -174,25 +174,24 @@ const borderColorMap: { [key: string]: string } = {
 };
 
 function LegendContent() {
+  const items = [
+    { color: "#00e400", label: "Buena", range: "0 – 15 μg/m³" },
+    { color: "#ffff00", label: "Aceptable", range: "15 – 25 μg/m³" },
+    { color: "#ff7e00", label: "Mala", range: "25 – 79 μg/m³" },
+    { color: "#ff0000", label: "Muy mala", range: "79 – 130 μg/m³" },
+    { color: "#8f3f97", label: "Extremadamente mala", range: "> 130 μg/m³" },
+  ];
   return (
     <>
-      <div className="mb-2 text-sm font-semibold">Calidad del Aire</div>
-      <div className="grid grid-cols-3 items-center gap-x-3 gap-y-3">
-        {[
-          { color: "bg-[#00e400]", label: "Buena" },
-          { color: "bg-[#ffff00]", label: "Aceptable" },
-          { color: "bg-[#ff7e00]", label: "Mala" },
-          { color: "bg-[#ff0000]", label: "Muy mala" },
-        ].map(({ color, label }) => (
-          <div key={label} className="col-span-1 flex items-center">
-            <div className={`mr-2 h-4 w-4 flex-shrink-0 rounded-full ${color}`} />
-            <span className="text-xs">{label}</span>
+      <div className="mb-3 text-sm font-semibold">Calidad del Aire · PM2.5</div>
+      <div className="flex flex-col gap-2.5">
+        {items.map(({ color, label, range }) => (
+          <div key={label} className="flex items-center gap-2">
+            <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+            <span className="text-xs text-gray-700">{label}</span>
+            <span className="ml-auto text-xs text-gray-400">{range}</span>
           </div>
         ))}
-        <div className="col-span-2 flex items-center">
-          <div className="mr-2 h-4 w-4 flex-shrink-0 rounded-full bg-[#8f3f97]" />
-          <span className="text-xs">Extremadamente mala</span>
-        </div>
       </div>
     </>
   );
