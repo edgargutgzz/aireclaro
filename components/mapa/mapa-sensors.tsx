@@ -542,7 +542,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
         }`}
       >
         <div className="flex items-center justify-between px-5 pb-4 pt-5">
-          <span className="text-sm font-semibold">Calidad del Aire · PM2.5</span>
+          <span className="text-sm font-semibold">Calidad del Aire</span>
           <button
             onClick={() => setIsLegendVisible(false)}
             aria-label="Cerrar"
