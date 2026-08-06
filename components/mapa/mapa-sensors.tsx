@@ -517,13 +517,24 @@ const [mapLoaded, setMapLoaded] = useState(false);
         <Info className="h-6 w-6 text-gray-700" />
       </button>
 
-      {/* Legend panel — mobile: fixed above info button */}
+      {/* Legend backdrop — mobile only */}
       <div
-        className={`fixed right-6 z-[44] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md transition-all duration-300 ease-in-out md:hidden
-          ${isLegendVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}`}
-        style={{ bottom: 'calc(13rem + env(safe-area-inset-bottom, 0px))' }}
+        className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
+          isLegendVisible ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setIsLegendVisible(false)}
+      />
+
+      {/* Legend panel — mobile: slides up from bottom */}
+      <div
+        className={`fixed left-0 right-0 bottom-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
+          isLegendVisible ? "translate-y-0" : "translate-y-full"
+        }`}
       >
-        <LegendContent />
+        <div className="mx-auto mb-4 mt-3 h-1 w-10 rounded-full bg-gray-200" />
+        <div className="px-5 pb-28">
+          <LegendContent />
+        </div>
       </div>
 
       {/* Legend panel — desktop: always visible, bottom left */}
