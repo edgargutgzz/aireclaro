@@ -62,11 +62,9 @@ const createMarker = (
   const marker = document.createElement("div");
   const textColor =
     markerColor === "bg-[#ffff00]" ? "text-gray-700" : "text-white";
-  const size = source === "sima" ? "w-12 h-12" : "w-10 h-10";
-  const fontSize = source === "sima" ? "text-sm" : "text-xs";
-  marker.className = `marker ${markerColor} bg-opacity-90 ${size} flex items-center justify-center rounded-full ${textColor} ${fontSize} font-bold`;
+  marker.className = `marker ${markerColor} bg-opacity-90 w-10 h-10 flex items-center justify-center rounded-full ${textColor} text-xs font-bold`;
   marker.style.boxShadow = source === "sima"
-    ? "0 3px 10px rgba(0,0,0,0.3), 0 0 0 2px white, 0 0 0 4px #1f2937"
+    ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px white, 0 0 0 4px #1f2937"
     : "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px rgba(255,255,255,0.6)";
   marker.setAttribute("data-marker-color", markerColor);
 
@@ -505,7 +503,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
 
           {/* Inner card 1: Sensores */}
           <div className="rounded-xl bg-white py-2">
-            <div className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sensores</div>
+            <div className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wide text-gray-400">Fuentes</div>
             <div className="flex flex-col gap-2.5">
               <button
                 onClick={() => setShowSima((v) => !v)}
