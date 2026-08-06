@@ -502,8 +502,8 @@ const [mapLoaded, setMapLoaded] = useState(false);
         <div className="flex w-[280px] flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
 
           {/* Inner card 1: Sensores */}
-          <div className="rounded-xl bg-white py-2">
-            <div className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wide text-gray-400">Fuentes</div>
+          <div className="rounded-xl bg-white px-2 py-2">
+            <div className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wide text-gray-400">Fuente</div>
             <div className="flex flex-col gap-2.5">
               <button
                 onClick={() => setShowSima((v) => !v)}
@@ -530,7 +530,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
           {userLocation && (
             <button
               onClick={flyToUser}
-              className="flex w-full items-center gap-2.5 rounded-xl bg-white px-3 py-2.5 text-left transition-colors duration-200 hover:bg-gray-50"
+              className="mx-2 flex items-center gap-2.5 rounded-xl bg-white px-3 py-2.5 text-left transition-colors duration-200 hover:bg-gray-50"
             >
               <LocateFixed className="h-4 w-4 flex-shrink-0 text-gray-600" />
               <span className="text-xs font-medium text-gray-700">Centrar en mi ubicación</span>
@@ -538,7 +538,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
           )}
 
           {/* Inner card 3: Legend */}
-          <div className="rounded-xl bg-white p-3">
+          <div className="rounded-xl bg-white p-4">
             <div className="mb-3 flex items-center gap-2">
               <span className="text-xs font-semibold text-gray-700">Calidad del Aire</span>
               <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
