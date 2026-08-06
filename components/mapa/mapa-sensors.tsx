@@ -463,6 +463,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
         >
           <span className="text-xs font-medium">Sensor Purple Air</span>
         </button>
+        {/* Air quality chip — hidden for now, re-enable when ready
         {userLocation && qualityInfo && (
           <button
             onClick={() => setSheetState('mid')}
@@ -482,6 +483,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
             </span>
           </button>
         )}
+        */}
       </div>
 
 
