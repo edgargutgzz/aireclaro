@@ -470,11 +470,11 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
       )}
 
-      {/* Filter chips — mobile: full width 50/50 | desktop: vertical stack top-left below navbar */}
-      <div className="absolute left-0 right-0 top-6 z-10 flex flex-row gap-2 px-4 md:left-6 md:right-auto md:top-[5rem] md:flex-col md:px-0">
+      {/* Mobile filter pills — full width 50/50 */}
+      <div className="absolute left-0 right-0 top-6 z-10 flex flex-row gap-2 px-4 md:hidden">
         <button
           onClick={() => setShowSima((v) => !v)}
-          className={`flex-1 md:flex-none rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+          className={`flex-1 rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
             showSima ? "border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
@@ -485,7 +485,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
         <button
           onClick={() => setShowPurpleAir((v) => !v)}
-          className={`flex-1 md:flex-none rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+          className={`flex-1 rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
             showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
@@ -494,27 +494,33 @@ const [mapLoaded, setMapLoaded] = useState(false);
             <span className="text-xs font-medium">Sensor Ciudadano</span>
           </div>
         </button>
-        {/* Air quality chip — hidden for now, re-enable when ready
-        {userLocation && qualityInfo && (
-          <button
-            onClick={() => setSheetState('mid')}
-            className={`flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-4 py-2 text-left backdrop-blur-md shadow-sm transition-all duration-200 ${
-              sheetState !== 'closed' ? "pointer-events-none opacity-0" : "opacity-100"
-            }`}
-          >
-            <div
-              className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-              style={{ backgroundColor: qualityInfo.color }}
-            />
-            <span className="text-xs font-medium text-gray-900">
-              {qualityInfo.label}
-              {nearestPm25 !== null && (
-                <span className="ml-1.5 font-normal text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
-              )}
-            </span>
-          </button>
-        )}
-        */}
+      </div>
+
+      {/* Desktop left panel — filters card */}
+      <div className="absolute left-6 top-[5rem] z-10 hidden md:block">
+        <div className="rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md">
+          <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sensores</div>
+          <div className="flex flex-col gap-1">
+            <button
+              onClick={() => setShowSima((v) => !v)}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-left transition-all duration-200 ${
+                showSima ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <Landmark className="h-4 w-4 flex-shrink-0" />
+              <span className="text-xs font-medium">Estación SIMA</span>
+            </button>
+            <button
+              onClick={() => setShowPurpleAir((v) => !v)}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-left transition-all duration-200 ${
+                showPurpleAir ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <Users className="h-4 w-4 flex-shrink-0" />
+              <span className="text-xs font-medium">Sensor Ciudadano</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Legend toggle button — mobile only, bottom right above locate button */}
@@ -569,7 +575,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
             <LocateFixed className="h-6 w-6 text-gray-700" />
           </button>
         )}
-        <div className="min-w-[220px] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+        <div className="min-w-[280px] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
           <div className="mb-3 flex items-center gap-2">
             <span className="text-sm font-semibold">Calidad del Aire</span>
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
