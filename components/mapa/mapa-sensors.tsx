@@ -433,7 +433,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       {userLocation && (
         <button
           onClick={flyToUser}
-          className="absolute right-6 top-[5.5rem] z-10 rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:bottom-10 md:top-auto"
+          className="absolute bottom-20 right-6 z-10 rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:bottom-10"
           aria-label="Ir a mi ubicación"
         >
           <LocateFixed className="h-6 w-6 text-gray-700" />
