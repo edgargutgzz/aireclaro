@@ -458,11 +458,11 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </div>
       )}
 
-      {/* Locate me button */}
+      {/* Locate me button — mobile only */}
       {userLocation && (
         <button
           onClick={flyToUser}
-          className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:bottom-10"
+          className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
           style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
           aria-label="Ir a mi ubicación"
         >
@@ -558,9 +558,24 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </div>
       </div>
 
-      {/* Legend panel — desktop: always visible, bottom left */}
-      <div className="absolute hidden min-w-[200px] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:block md:bottom-6 md:left-6">
-        <LegendContent />
+      {/* Desktop bottom-left column: locate button + legend */}
+      <div className="absolute bottom-6 left-6 z-10 hidden md:flex md:flex-col md:items-start md:gap-3">
+        {userLocation && (
+          <button
+            onClick={flyToUser}
+            className="rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors duration-200"
+            aria-label="Ir a mi ubicación"
+          >
+            <LocateFixed className="h-6 w-6 text-gray-700" />
+          </button>
+        )}
+        <div className="min-w-[220px] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="text-sm font-semibold">Calidad del Aire</span>
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
+          </div>
+          <LegendContent />
+        </div>
       </div>
 
       {/* Bottom sheet backdrop */}
