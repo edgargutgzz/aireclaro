@@ -467,19 +467,19 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
       )}
 
-      {/* Filter chips */}
-      <div className="absolute left-4 top-6 z-10 flex flex-col gap-2 md:bottom-6 md:left-6 md:top-auto lg:bottom-6 lg:left-10">
+      {/* Filter chips — centered, horizontal */}
+      <div className="absolute left-1/2 top-6 z-10 flex -translate-x-1/2 flex-row gap-2">
         <button
           onClick={() => setShowSima((v) => !v)}
-          className={`rounded-full px-4 py-2 backdrop-blur-md border transition-all duration-200 ${
-            showSima ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
+          className={`rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+            showSima ? "border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
           <span className="text-xs font-medium">Estación SIMA</span>
         </button>
         <button
           onClick={() => setShowPurpleAir((v) => !v)}
-          className={`rounded-full px-4 py-2 backdrop-blur-md border transition-all duration-200 ${
+          className={`rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
             showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
