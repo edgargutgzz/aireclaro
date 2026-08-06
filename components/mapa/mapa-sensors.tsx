@@ -532,10 +532,10 @@ const [mapLoaded, setMapLoaded] = useState(false);
               <div className="mb-2 px-3 text-xs font-semibold text-gray-700">Navegación</div>
               <button
                 onClick={flyToUser}
-                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-colors duration-200 hover:bg-gray-50"
+                className="flex w-full items-center gap-2.5 rounded-lg bg-gray-100 px-3 py-2 text-left text-gray-900 transition-colors duration-200 hover:bg-gray-200"
               >
-                <LocateFixed className="h-4 w-4 flex-shrink-0 text-gray-600" />
-                <span className="text-xs font-medium text-gray-700">Centrar en mi ubicación</span>
+                <LocateFixed className="h-4 w-4 flex-shrink-0" />
+                <span className="text-xs font-medium">Centrar en mi ubicación</span>
               </button>
             </div>
           )}
