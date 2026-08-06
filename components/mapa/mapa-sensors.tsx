@@ -506,7 +506,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
           {/* Inner card 1: Sensores */}
           <div className="rounded-xl bg-white p-3">
             <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sensores</div>
-            <div className="flex flex-col gap-0.5">
+            <div className="flex flex-col gap-1.5">
               <button
                 onClick={() => setShowSima((v) => !v)}
                 className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-200 ${
