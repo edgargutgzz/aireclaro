@@ -504,13 +504,13 @@ const [mapLoaded, setMapLoaded] = useState(false);
         <div className="flex w-[280px] flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
 
           {/* Inner card 1: Sensores */}
-          <div className="rounded-xl bg-white p-3">
-            <div className="mb-2 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sensores</div>
-            <div className="flex flex-col gap-1.5">
+          <div className="rounded-xl bg-white py-2">
+            <div className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wide text-gray-400">Sensores</div>
+            <div className="flex flex-col gap-2.5">
               <button
                 onClick={() => setShowSima((v) => !v)}
-                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-200 ${
-                  showSima ? "bg-gray-100 text-gray-900 ring-1 ring-gray-900" : "text-gray-400 hover:text-gray-600"
+                className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-all duration-200 ${
+                  showSima ? "bg-gray-100 text-gray-900 ring-1 ring-inset ring-gray-900" : "text-gray-400 hover:text-gray-600"
                 }`}
               >
                 <Landmark className="h-4 w-4 flex-shrink-0" />
@@ -518,7 +518,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
               </button>
               <button
                 onClick={() => setShowPurpleAir((v) => !v)}
-                className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-200 ${
+                className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-all duration-200 ${
                   showPurpleAir ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
                 }`}
               >
