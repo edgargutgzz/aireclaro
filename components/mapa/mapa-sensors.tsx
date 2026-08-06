@@ -441,7 +441,7 @@ export default function MapaSensors({
         </button>
       )}
 
-      {/* Filter chips - always visible */}
+      {/* Filter chips + air quality — left column */}
       <div className="absolute left-4 top-6 z-10 flex flex-col gap-2 md:bottom-6 md:left-6 md:top-auto lg:bottom-6 lg:left-10">
         <button
           onClick={() => setShowSima((v) => !v)}
@@ -463,6 +463,25 @@ export default function MapaSensors({
         >
           <span className="text-xs font-medium">Sensor Purple Air</span>
         </button>
+        {userLocation && qualityInfo && (
+          <button
+            onClick={() => setSheetState('mid')}
+            className={`flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-4 py-2 text-left backdrop-blur-md shadow-sm transition-all duration-200 ${
+              sheetState !== 'closed' ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
+          >
+            <div
+              className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+              style={{ backgroundColor: qualityInfo.color }}
+            />
+            <span className="text-xs font-medium text-gray-900">
+              {qualityInfo.label}
+              {nearestPm25 !== null && (
+                <span className="ml-1.5 font-normal text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
+              )}
+            </span>
+          </button>
+        )}
       </div>
 
       {/* Legend Toggle Button - mobile only */}
@@ -509,49 +528,6 @@ export default function MapaSensors({
           </div>
         </div>
       </div>
-
-      {/* Air quality peek strip — mobile: full-width flush above navbar */}
-      {userLocation && qualityInfo && (
-        <>
-          <button
-            onClick={() => setSheetState('mid')}
-            className={`fixed left-1/2 z-[45] -translate-x-1/2 flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-5 py-3 shadow-md backdrop-blur-md transition-opacity duration-300 md:hidden ${
-              sheetState !== 'closed' ? "pointer-events-none opacity-0" : "opacity-100"
-            }`}
-            style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem)" }}
-          >
-            <div
-              className="h-3 w-3 flex-shrink-0 rounded-full"
-              style={{ backgroundColor: qualityInfo.color }}
-            />
-            <div>
-              <span className="text-sm font-semibold text-gray-900">{qualityInfo.label}</span>
-              {nearestPm25 !== null && (
-                <span className="ml-2 text-xs text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
-              )}
-            </div>
-          </button>
-
-          {/* Desktop: compact card bottom-right */}
-          <button
-            onClick={() => setSheetState('mid')}
-            className={`fixed bottom-24 right-6 z-[45] hidden w-72 items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-md backdrop-blur-md transition-opacity duration-300 md:flex ${
-              sheetState !== 'closed' ? "pointer-events-none opacity-0" : "opacity-100"
-            }`}
-          >
-            <div
-              className="h-3 w-3 flex-shrink-0 rounded-full"
-              style={{ backgroundColor: qualityInfo.color }}
-            />
-            <div className="text-left">
-              <div className="text-sm font-semibold text-gray-900">{qualityInfo.label}</div>
-              <div className="text-xs text-gray-400">
-                {nearestPm25 !== null ? `${Math.round(nearestPm25)} μg/m³ · ` : ""}cerca de ti
-              </div>
-            </div>
-          </button>
-        </>
-      )}
 
       {/* Bottom sheet backdrop */}
       <div
