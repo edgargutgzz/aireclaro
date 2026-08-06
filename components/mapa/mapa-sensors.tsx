@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Info, ChevronUp, X } from "lucide-react";
+import { LocateFixed, Info, X } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -507,7 +507,6 @@ export default function MapaSensors({
                   )}
                 </div>
               </div>
-              <ChevronUp className="h-4 w-4 flex-shrink-0 text-gray-400" />
             </div>
           </button>
 
@@ -530,7 +529,6 @@ export default function MapaSensors({
                 </div>
               </div>
             </div>
-            <ChevronUp className="h-4 w-4 flex-shrink-0 text-gray-400" />
           </button>
         </>
       )}
