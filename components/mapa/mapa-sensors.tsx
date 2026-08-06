@@ -175,25 +175,39 @@ const borderColorMap: { [key: string]: string } = {
 
 function LegendContent() {
   const items = [
-    { color: "#00e400", label: "Buena", range: "0 – 15 μg/m³" },
-    { color: "#ffff00", label: "Aceptable", range: "15 – 25 μg/m³" },
-    { color: "#ff7e00", label: "Mala", range: "25 – 79 μg/m³" },
-    { color: "#ff0000", label: "Muy mala", range: "79 – 130 μg/m³" },
-    { color: "#8f3f97", label: "Extremadamente mala", range: "> 130 μg/m³" },
+    { color: "#00e400", label: "Buena" },
+    { color: "#ffff00", label: "Aceptable" },
+    { color: "#ff7e00", label: "Mala" },
+    { color: "#ff0000", label: "Muy mala" },
+    { color: "#8f3f97", label: "Extr. mala" },
   ];
+  const ticks = ["0", "15", "25", "79", "130", "+"];
+
   return (
-    <>
-      <div className="mb-3 text-sm font-semibold md:block hidden">Calidad del Aire · PM2.5</div>
-      <div className="flex flex-col gap-2.5">
-        {items.map(({ color, label, range }) => (
+    <div>
+      {/* Segmented color bar */}
+      <div className="mb-1 flex h-4 overflow-hidden rounded-full">
+        {items.map(({ color, label }) => (
+          <div key={label} className="flex-1" style={{ backgroundColor: color }} />
+        ))}
+      </div>
+      {/* Threshold ticks */}
+      <div className="mb-4 flex justify-between">
+        {ticks.map((t) => (
+          <span key={t} className="text-[10px] text-gray-400">{t}</span>
+        ))}
+      </div>
+      {/* Category labels */}
+      <div className="flex flex-col gap-2">
+        {items.map(({ color, label }) => (
           <div key={label} className="flex items-center gap-2">
-            <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+            <div className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
             <span className="text-xs text-gray-700">{label}</span>
-            <span className="ml-auto text-xs text-gray-400">{range}</span>
           </div>
         ))}
       </div>
-    </>
+      <div className="mt-2 text-right text-[10px] text-gray-400">μg/m³</div>
+    </div>
   );
 }
 
@@ -546,7 +560,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       </div>
 
       {/* Legend panel — desktop: always visible, bottom left */}
-      <div className="absolute hidden rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:block md:bottom-6 md:left-[12rem] lg:bottom-6 lg:left-[13rem]">
+      <div className="absolute hidden min-w-[200px] rounded-xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:block md:bottom-6 md:left-[12rem] lg:bottom-6 lg:left-[13rem]">
         <LegendContent />
       </div>
 
