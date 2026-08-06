@@ -364,7 +364,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
               ${isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre}
             </div>
             <div class="text-xs text-gray-500">
-              ${isSima ? "Estación SIMA" : "Sensor Purple Air"}
+              ${isSima ? "Estación SIMA" : "Sensor Ciudadano"}
             </div>
           </div>
           ${latestData ? `<div class="text-xs text-gray-400 mb-1 px-1">Actualizado a las ${format(new Date(latestData.time_stamp), "h:00 a")}</div>` : ""}
@@ -486,7 +486,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
             showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
-          <span className="text-xs font-medium">Sensor Purple Air</span>
+          <span className="text-xs font-medium">Sensor Ciudadano</span>
         </button>
         {/* Air quality chip — hidden for now, re-enable when ready
         {userLocation && qualityInfo && (
