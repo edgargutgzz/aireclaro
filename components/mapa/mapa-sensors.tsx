@@ -558,18 +558,17 @@ export default function MapaSensors({
 
       {/* Bottom sheet backdrop */}
       <div
-        className={`fixed inset-0 z-[55] bg-black/20 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 ${
           sheetState !== 'closed' ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         onClick={() => setSheetState('closed')}
       />
 
-      {/* Bottom sheet — 3-state: closed / mid / full */}
+      {/* Bottom sheet — 3-state: closed / mid / full — sits below navbar (z-50) */}
       <div
-        className="fixed left-0 right-0 z-[60] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden"
+        className="fixed left-0 right-0 bottom-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden"
         style={{
           top: sheetTopStyle,
-          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           transition: dragOffset > 0 ? 'none' : 'top 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
@@ -606,7 +605,7 @@ export default function MapaSensors({
             </div>
 
             {/* Scrollable content — visible only in full state */}
-            <div className="overflow-y-auto px-5 pb-10">
+            <div className="overflow-y-auto px-5 pb-24">
               <div className="mb-4 h-px bg-gray-100" />
               <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
                 Para grupos sensibles
