@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Info } from "lucide-react";
+import { LocateFixed, Info, X } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -183,7 +183,7 @@ function LegendContent() {
   ];
   return (
     <>
-      <div className="mb-3 text-sm font-semibold">Calidad del Aire · PM2.5</div>
+      <div className="mb-3 text-sm font-semibold md:block hidden">Calidad del Aire · PM2.5</div>
       <div className="flex flex-col gap-2.5">
         {items.map(({ color, label, range }) => (
           <div key={label} className="flex items-center gap-2">
@@ -531,7 +531,15 @@ const [mapLoaded, setMapLoaded] = useState(false);
           isLegendVisible ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <div className="mx-auto mb-4 mt-3 h-1 w-10 rounded-full bg-gray-200" />
+        <div className="flex items-center justify-between px-5 pb-4 pt-5">
+          <span className="text-sm font-semibold">Calidad del Aire · PM2.5</span>
+          <button
+            onClick={() => setIsLegendVisible(false)}
+            aria-label="Cerrar"
+          >
+            <X className="h-5 w-5 text-gray-400" />
+          </button>
+        </div>
         <div className="px-5 pb-28">
           <LegendContent />
         </div>
