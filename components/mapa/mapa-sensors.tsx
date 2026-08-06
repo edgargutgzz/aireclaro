@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { LocateFixed, Info } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { LocateFixed, Info, ChevronUp, X } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -29,7 +29,6 @@ interface Data {
   time_stamp: string;
 }
 
-// Add this interface after your existing interfaces
 interface UserLocation {
   latitude: number;
   longitude: number;
@@ -40,24 +39,24 @@ const createMarker = (
   pm25: number | null,
   source: string,
 ): HTMLElement | null => {
-  let markerColor = "bg-gray-400"; // default color
+  let markerColor = "bg-gray-400";
 
   if (pm25 === null || pm25 < 0 || pm25 <= 0.4) {
-    markerColor = "bg-gray-400"; // gray for null, negative, or low values (≤ 0.4)
+    markerColor = "bg-gray-400";
   } else if (pm25 > 0.4 && pm25 <= 15) {
-    markerColor = "bg-[#00e400]"; // green for (0.4, 15]
+    markerColor = "bg-[#00e400]";
   } else if (pm25 > 15 && pm25 <= 25) {
-    markerColor = "bg-[#ffff00]"; // yellow for (15, 25]
+    markerColor = "bg-[#ffff00]";
   } else if (pm25 > 25 && pm25 <= 79) {
-    markerColor = "bg-[#ff7e00]"; // orange for (25, 79]
+    markerColor = "bg-[#ff7e00]";
   } else if (pm25 > 79 && pm25 <= 130) {
-    markerColor = "bg-[#ff0000]"; // red for (79, 130]
+    markerColor = "bg-[#ff0000]";
   } else if (pm25 > 130) {
-    markerColor = "bg-[#8f3f97]"; // purple for > 130
+    markerColor = "bg-[#8f3f97]";
   }
 
   if (markerColor === "bg-gray-400") {
-    return null; // Do not create marker if color is gray
+    return null;
   }
 
   const marker = document.createElement("div");
@@ -78,18 +77,94 @@ const createMarker = (
   return marker;
 };
 
-// Utility function to round the pm25 value to the nearest integer
 const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
 };
 
-// Utility function to format latitude and longitude to five decimal places
 const formatLatLon = (value: number): string => {
   return value.toFixed(5);
 };
 
+const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
 
-// Mapping between Tailwind color classes for popup borders (300 variants)
+interface QualityInfo {
+  label: string;
+  color: string;
+  textColor: string;
+  generalRec: string;
+  sensitiveRecs: {
+    menores: string;
+    adultos: string;
+    embarazadas: string;
+    enfermedades: string;
+  };
+}
+
+const getQualityInfo = (pm25: number | null): QualityInfo | null => {
+  if (pm25 === null || pm25 <= 0.4) return null;
+  if (pm25 <= 15) return {
+    label: "Buena", color: "#00e400", textColor: "#00b300",
+    generalRec: "Disfruta las actividades al aire libre.",
+    sensitiveRecs: {
+      menores: "Disfruta las actividades al aire libre.",
+      adultos: "Disfruta las actividades al aire libre.",
+      embarazadas: "Disfruta las actividades al aire libre.",
+      enfermedades: "Disfruta las actividades al aire libre.",
+    },
+  };
+  if (pm25 <= 25) return {
+    label: "Aceptable", color: "#ffff00", textColor: "#b8a000",
+    generalRec: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
+    sensitiveRecs: {
+      menores: "Disfruta las actividades al aire libre.",
+      adultos: "Reduce las actividades físicas vigorosas al aire libre.",
+      embarazadas: "Disfruta las actividades al aire libre.",
+      enfermedades: "Reduce las actividades físicas vigorosas al aire libre.",
+    },
+  };
+  if (pm25 <= 79) return {
+    label: "Mala", color: "#ff7e00", textColor: "#ff7e00",
+    generalRec: "Es posible realizar actividades al aire libre. Si presentas síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas.",
+    sensitiveRecs: {
+      menores: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
+      adultos: "Reduce las actividades físicas vigorosas al aire libre.",
+      embarazadas: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
+      enfermedades: "Reduce las actividades físicas vigorosas al aire libre.",
+    },
+  };
+  if (pm25 <= 130) return {
+    label: "Muy mala", color: "#ff0000", textColor: "#ff0000",
+    generalRec: "Reduce las actividades físicas al aire libre. Evita la actividad física vigorosa o prolongada en exteriores.",
+    sensitiveRecs: {
+      menores: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
+      adultos: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
+      embarazadas: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
+      enfermedades: "Evita las actividades físicas al aire libre. Acude al médico si presentas síntomas.",
+    },
+  };
+  return {
+    label: "Extremadamente mala", color: "#8f3f97", textColor: "#8f3f97",
+    generalRec: "Permanece en interiores. Si presentas síntomas respiratorios o cardiacos acude al médico.",
+    sensitiveRecs: {
+      menores: "Permanece en interiores. Acude al médico si presentas síntomas.",
+      adultos: "Permanece en interiores. Acude al médico si presentas síntomas.",
+      embarazadas: "Permanece en interiores. Acude al médico si presentas síntomas.",
+      enfermedades: "Permanece en interiores. Acude al médico si presentas síntomas.",
+    },
+  };
+};
+
+// Mapping between Tailwind color classes for popup borders
 const borderColorMap: { [key: string]: string } = {
   "bg-[#00e400]": "#00e400",
   "bg-[#ffff00]": "#ffff00",
@@ -106,23 +181,32 @@ export default function MapaSensors({
   sensors: Sensor[];
   data: Data[];
 }) {
-  // Reference to the map container
   const mapContainer = useRef<HTMLDivElement>(null);
-
-  // Reference to the map instance
   const map = useRef<Map | null>(null);
-
-  // Reference to track all markers
   const markersRef = useRef<Marker[]>([]);
 
-
-  // Add this new state
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-
   const [isLegendVisible, setIsLegendVisible] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  // Find the nearest sensor's PM2.5 reading to the user's location
+  const nearestPm25 = useMemo(() => {
+    if (!userLocation || !sensors.length || !data.length) return null;
+    const sorted = [...sensors].sort((a, b) =>
+      getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
+      getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lon)
+    );
+    for (const sensor of sorted) {
+      const d = data.find((item) => item.sensor_id === sensor.sensor_id);
+      if (d && d.pm25 !== null && d.pm25 > 0.4) return d.pm25;
+    }
+    return null;
+  }, [userLocation, sensors, data]);
+
+  const qualityInfo = getQualityInfo(nearestPm25);
 
   // Initialize map once
   useEffect(() => {
@@ -135,20 +219,17 @@ export default function MapaSensors({
       zoom: 10,
     });
 
-    // Set map loaded state when ready
     map.current.on("load", () => {
       setMapLoaded(true);
     });
 
-    // Request user location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const location = {
+          setUserLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-          };
-          setUserLocation(location);
+          });
         },
         (error) => {
           console.error("Error getting user location:", error);
@@ -183,7 +264,6 @@ export default function MapaSensors({
       animation: pulsate 2s ease-out infinite;
     `;
 
-    // Add the keyframe animation if not already added
     if (!document.querySelector("style[data-user-marker]")) {
       const style = document.createElement("style");
       style.textContent = `
@@ -208,7 +288,6 @@ export default function MapaSensors({
       return;
     }
 
-    // Always clear existing markers first
     markersRef.current.forEach((marker) => (marker as any).remove());
     markersRef.current = [];
 
@@ -282,7 +361,6 @@ export default function MapaSensors({
     };
   }, []);
 
-
   // Add popup styles if not already added
   useEffect(() => {
     if (!document.querySelector("style[data-popup-shadow]")) {
@@ -309,7 +387,6 @@ export default function MapaSensors({
         ref={mapContainer}
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
-
 
       {/* Empty state when both sources are toggled off */}
       {!showPurpleAir && !showSima && (
@@ -404,6 +481,129 @@ export default function MapaSensors({
             <span className="text-xs">Extremadamente mala</span>
           </div>
         </div>
+      </div>
+
+      {/* Air quality peek strip — mobile: full-width flush above navbar */}
+      {userLocation && qualityInfo && (
+        <>
+          <button
+            onClick={() => setIsSheetOpen(true)}
+            className={`fixed left-0 right-0 z-[45] rounded-t-2xl bg-white px-5 pb-3 pt-2 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-opacity duration-300 md:hidden ${
+              isSheetOpen ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
+            style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px))" }}
+          >
+            <div className="mx-auto mb-2.5 h-1 w-10 rounded-full bg-gray-200" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className="h-3 w-3 flex-shrink-0 rounded-full"
+                  style={{ backgroundColor: qualityInfo.color }}
+                />
+                <div>
+                  <span className="text-sm font-semibold text-gray-900">{qualityInfo.label}</span>
+                  {nearestPm25 !== null && (
+                    <span className="ml-2 text-xs text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
+                  )}
+                </div>
+              </div>
+              <ChevronUp className="h-4 w-4 flex-shrink-0 text-gray-400" />
+            </div>
+          </button>
+
+          {/* Desktop: compact card bottom-right */}
+          <button
+            onClick={() => setIsSheetOpen(true)}
+            className={`fixed bottom-24 right-6 z-[45] hidden w-72 items-center justify-between rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-md backdrop-blur-md transition-opacity duration-300 md:flex ${
+              isSheetOpen ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="h-3 w-3 flex-shrink-0 rounded-full"
+                style={{ backgroundColor: qualityInfo.color }}
+              />
+              <div className="text-left">
+                <div className="text-sm font-semibold text-gray-900">{qualityInfo.label}</div>
+                <div className="text-xs text-gray-400">
+                  {nearestPm25 !== null ? `${Math.round(nearestPm25)} μg/m³ · ` : ""}cerca de ti
+                </div>
+              </div>
+            </div>
+            <ChevronUp className="h-4 w-4 flex-shrink-0 text-gray-400" />
+          </button>
+        </>
+      )}
+
+      {/* Bottom sheet backdrop */}
+      <div
+        className={`fixed inset-0 z-[55] bg-black/30 transition-opacity duration-300 ${
+          isSheetOpen ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setIsSheetOpen(false)}
+      />
+
+      {/* Bottom sheet */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-[60] max-h-[75vh] overflow-y-auto rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out ${
+          isSheetOpen ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        {qualityInfo && (
+          <div className="px-5 pb-10 pt-4">
+            {/* Handle */}
+            <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-gray-200" />
+
+            {/* Header */}
+            <div className="mb-4 flex items-center justify-between">
+              <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                Calidad del aire cerca de ti
+              </span>
+              <button onClick={() => setIsSheetOpen(false)}>
+                <X className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Quality label + PM2.5 */}
+            <div className="mb-2 flex items-end gap-3">
+              <div
+                className="text-4xl font-bold leading-none"
+                style={{ color: qualityInfo.textColor }}
+              >
+                {qualityInfo.label}
+              </div>
+              {nearestPm25 !== null && (
+                <div className="mb-1 text-sm text-gray-400">
+                  {Math.round(nearestPm25)} μg/m³
+                </div>
+              )}
+            </div>
+
+            {/* General recommendation */}
+            <p className="mb-5 text-sm text-gray-600">{qualityInfo.generalRec}</p>
+
+            {/* Divider */}
+            <div className="mb-4 h-px bg-gray-100" />
+
+            {/* Sensitive groups */}
+            <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+              Para grupos sensibles
+            </div>
+            <div className="flex flex-col gap-4">
+              {[
+                { label: "Niños (menores de 12)", rec: qualityInfo.sensitiveRecs.menores },
+                { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
+                { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
+                { label: "Enfermedades cardio o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
+              ].map(({ label, rec }) => (
+                <div key={label}>
+                  <div className="mb-0.5 text-xs font-semibold text-gray-700">{label}</div>
+                  <div className="text-xs text-gray-500">{rec}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
