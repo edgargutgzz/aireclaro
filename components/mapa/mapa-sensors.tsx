@@ -467,11 +467,11 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
       )}
 
-      {/* Filter chips — centered, horizontal */}
-      <div className="absolute left-1/2 top-6 z-10 flex -translate-x-1/2 flex-row gap-2">
+      {/* Filter chips — full width, 50/50 */}
+      <div className="absolute left-0 right-0 top-6 z-10 flex flex-row gap-2 px-4">
         <button
           onClick={() => setShowSima((v) => !v)}
-          className={`rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+          className={`flex-1 rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
             showSima ? "border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
@@ -479,7 +479,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </button>
         <button
           onClick={() => setShowPurpleAir((v) => !v)}
-          className={`rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+          className={`flex-1 rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
             showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
