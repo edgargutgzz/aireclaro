@@ -588,7 +588,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
             <X className="h-5 w-5 text-gray-400" />
           </button>
         </div>
-        <div className="px-5 pb-20">
+        <div className="px-5 pt-2" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
           <LegendContent />
         </div>
       </div>
