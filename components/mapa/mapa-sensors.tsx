@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Info, ChevronUp, X } from "lucide-react";
+import { LocateFixed, Info, X } from "lucide-react";
 import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -488,49 +488,45 @@ export default function MapaSensors({
         <>
           <button
             onClick={() => setIsSheetOpen(true)}
-            className={`fixed left-0 right-0 z-[45] rounded-t-2xl bg-white px-5 pb-3 pt-2 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-opacity duration-300 md:hidden ${
+            className={`fixed left-0 right-0 z-[45] border-t-2 bg-gray-50 px-5 py-3 shadow-[0_-2px_10px_rgba(0,0,0,0.06)] transition-opacity duration-300 md:hidden ${
               isSheetOpen ? "pointer-events-none opacity-0" : "opacity-100"
             }`}
-            style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px))" }}
-          >
-            <div className="mx-auto mb-2.5 h-1 w-10 rounded-full bg-gray-200" />
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="h-3 w-3 flex-shrink-0 rounded-full"
-                  style={{ backgroundColor: qualityInfo.color }}
-                />
-                <div>
-                  <span className="text-sm font-semibold text-gray-900">{qualityInfo.label}</span>
-                  {nearestPm25 !== null && (
-                    <span className="ml-2 text-xs text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
-                  )}
-                </div>
-              </div>
-              <ChevronUp className="h-4 w-4 flex-shrink-0 text-gray-400" />
-            </div>
-          </button>
-
-          {/* Desktop: compact card bottom-right */}
-          <button
-            onClick={() => setIsSheetOpen(true)}
-            className={`fixed bottom-24 right-6 z-[45] hidden w-72 items-center justify-between rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-md backdrop-blur-md transition-opacity duration-300 md:flex ${
-              isSheetOpen ? "pointer-events-none opacity-0" : "opacity-100"
-            }`}
+            style={{
+              bottom: "calc(3.5rem + env(safe-area-inset-bottom, 0px))",
+              borderTopColor: qualityInfo.color,
+            }}
           >
             <div className="flex items-center gap-3">
               <div
                 className="h-3 w-3 flex-shrink-0 rounded-full"
                 style={{ backgroundColor: qualityInfo.color }}
               />
-              <div className="text-left">
-                <div className="text-sm font-semibold text-gray-900">{qualityInfo.label}</div>
-                <div className="text-xs text-gray-400">
-                  {nearestPm25 !== null ? `${Math.round(nearestPm25)} μg/m³ · ` : ""}cerca de ti
-                </div>
+              <div>
+                <span className="text-sm font-semibold text-gray-900">{qualityInfo.label}</span>
+                {nearestPm25 !== null && (
+                  <span className="ml-2 text-xs text-gray-400">{Math.round(nearestPm25)} μg/m³</span>
+                )}
               </div>
             </div>
-            <ChevronUp className="h-4 w-4 flex-shrink-0 text-gray-400" />
+          </button>
+
+          {/* Desktop: compact card bottom-right */}
+          <button
+            onClick={() => setIsSheetOpen(true)}
+            className={`fixed bottom-24 right-6 z-[45] hidden w-72 items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-md backdrop-blur-md transition-opacity duration-300 md:flex ${
+              isSheetOpen ? "pointer-events-none opacity-0" : "opacity-100"
+            }`}
+          >
+            <div
+              className="h-3 w-3 flex-shrink-0 rounded-full"
+              style={{ backgroundColor: qualityInfo.color }}
+            />
+            <div className="text-left">
+              <div className="text-sm font-semibold text-gray-900">{qualityInfo.label}</div>
+              <div className="text-xs text-gray-400">
+                {nearestPm25 !== null ? `${Math.round(nearestPm25)} μg/m³ · ` : ""}cerca de ti
+              </div>
+            </div>
           </button>
         </>
       )}
