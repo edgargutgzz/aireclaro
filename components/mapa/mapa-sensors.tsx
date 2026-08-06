@@ -588,7 +588,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
             <X className="h-5 w-5 text-gray-400" />
           </button>
         </div>
-        <div className="px-5 pb-28">
+        <div className="px-5 pb-20">
           <LegendContent />
         </div>
       </div>
