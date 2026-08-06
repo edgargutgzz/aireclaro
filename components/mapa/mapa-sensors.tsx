@@ -566,9 +566,10 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: closed / mid / full */}
       <div
-        className="fixed left-0 right-0 bottom-0 z-[60] rounded-t-3xl bg-white shadow-2xl overflow-hidden"
+        className="fixed left-0 right-0 z-[60] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden"
         style={{
           top: sheetTopStyle,
+          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           transition: dragOffset > 0 ? 'none' : 'top 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
