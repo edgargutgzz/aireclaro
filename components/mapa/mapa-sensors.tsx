@@ -187,14 +187,17 @@ function LegendContent() {
       {items.map(({ color, label, range, textColor }) => (
         <div
           key={label}
-          className="flex items-center justify-between rounded-xl px-3 py-2.5"
+          className="rounded-xl px-3 py-2.5"
           style={{ backgroundColor: `${color}18` }}
         >
-          <div className="flex items-center gap-2.5">
-            <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-sm font-medium" style={{ color: textColor }}>{label}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+              <span className="text-sm font-medium" style={{ color: textColor }}>{label}</span>
+            </div>
+            <span className="text-xs text-gray-400 md:hidden">{range}</span>
           </div>
-          <span className="text-xs text-gray-400">{range}</span>
+          <p className="hidden pl-[22px] pt-0.5 text-xs text-gray-400 md:block">{range}</p>
         </div>
       ))}
     </div>
@@ -507,7 +510,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
               <button
                 onClick={() => setShowSima((v) => !v)}
                 className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-all duration-200 ${
-                  showSima ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-600"
+                  showSima ? "bg-gray-100 text-gray-900 ring-1 ring-gray-900" : "text-gray-400 hover:text-gray-600"
                 }`}
               >
                 <Landmark className="h-4 w-4 flex-shrink-0" />
