@@ -345,33 +345,26 @@ const [mapLoaded, setMapLoaded] = useState(false);
         : "#FFFFFF";
       const popupTextColor = popupBorderColor === "#ffff00" ? "#b8a000" : popupBorderColor;
 
+      const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+      const sourceLabel = isSima ? "Estación SIMA" : "Sensor Ciudadano";
+      const value = latestData ? roundPM25(latestData.pm25) : "—";
+      const timestamp = latestData ? format(new Date(latestData.time_stamp), "h:00 a") : null;
+
       const popup = new Popup({
         offset: 25,
         closeButton: false,
       }).setHTML(`
-        <div class="p-3 rounded-xl bg-white max-w-[240px]">
-          <div class="flex items-center bg-opacity-15 p-2.5 rounded-xl mb-2" style="background-color: ${popupBorderColor}15;">
-            <div class="text-3xl font-bold mr-2.5 leading-none" style="color: ${popupTextColor};">
-              ${latestData ? roundPM25(latestData.pm25) : "—"}
-            </div>
-            <div class="flex flex-col">
-              <span class="text-base font-semibold text-gray-600">PM2.5</span>
-              <span class="text-xs text-gray-500">μg/m³</span>
+        <div style="padding: 14px; min-width: 170px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <div style="width: 4px; height: 44px; border-radius: 2px; background: ${popupBorderColor}; flex-shrink: 0;"></div>
+            <div>
+              <div style="font-size: 30px; font-weight: 700; line-height: 1; color: ${popupTextColor};">${value}</div>
+              <div style="font-size: 11px; color: #9ca3af; margin-top: 3px;">μg/m³ · PM2.5</div>
             </div>
           </div>
-
-          <div class="bg-gray-100 p-2 rounded-xl mb-2">
-            <div class="text-sm font-semibold text-gray-900 mb-0.5">
-              ${isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre}
-            </div>
-            <div class="text-xs text-gray-500">
-              ${isSima ? "Estación SIMA" : "Sensor Ciudadano"}
-            </div>
-          </div>
-          ${latestData ? `<div class="text-xs text-gray-400 mb-1 px-1">Actualizado a las ${format(new Date(latestData.time_stamp), "h:00 a")}</div>` : ""}
-          <div class="hidden text-xs text-gray-400 px-1">
-            Lat: ${formatLatLon(sensor.lat)} | Lon: ${formatLatLon(sensor.lon)}
-          </div>
+          <div style="font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 2px;">${sensorName}</div>
+          <div style="font-size: 11px; color: #9ca3af; margin-bottom: ${timestamp ? "8px" : "0"};">${sourceLabel}</div>
+          ${timestamp ? `<div style="font-size: 11px; color: #d1d5db;">Actualizado a las ${timestamp}</div>` : ""}
         </div>
       `);
 
@@ -398,12 +391,17 @@ const [mapLoaded, setMapLoaded] = useState(false);
       const style = document.createElement("style");
       style.textContent = `
         .mapboxgl-popup-content {
-          box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+          background: rgba(255, 255, 255, 0.88) !important;
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.6);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
           border-radius: 1rem !important;
           padding: 0;
         }
         .mapboxgl-popup-tip {
-          border-top-color: white !important;
+          border-top-color: rgba(255,255,255,0.88) !important;
+          border-bottom-color: rgba(255,255,255,0.88) !important;
         }
       `;
       style.setAttribute("data-popup-shadow", "true");
