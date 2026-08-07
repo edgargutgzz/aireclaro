@@ -442,7 +442,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       )}
 
       {/* Mobile filter pills — full width 50/50 */}
-      <div className="absolute left-0 right-0 top-6 z-10 flex flex-row gap-2 px-4 md:hidden">
+      <div className="absolute left-0 right-0 z-10 flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
         <button
           onClick={() => setShowSima((v) => !v)}
           className={`flex-1 rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
