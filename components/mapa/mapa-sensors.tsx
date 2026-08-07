@@ -574,7 +574,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           return (
-            <div className="px-5 pt-5" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
+            <div className="px-5 pt-5" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>
               {/* Top row: PM2.5 | divider | sensor info | close */}
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex flex-shrink-0 items-center gap-3">
@@ -615,19 +615,16 @@ const [mapLoaded, setMapLoaded] = useState(false);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
                 }}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-3 text-gray-600 transition-colors hover:bg-gray-200"
+                className="flex w-full items-center gap-3 rounded-xl bg-gray-100 px-4 py-3 transition-colors hover:bg-gray-200"
               >
-                {copied ? (
-                  <>
-                    <span className="text-sm">✓</span>
-                    <span className="text-sm font-medium">Copiado</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4" />
-                    <span className="text-sm font-medium">Copiar coordenadas</span>
-                  </>
-                )}
+                <Copy className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                <div className="min-w-0 flex-1 text-left">
+                  <div className="text-[11px] text-gray-400">Coordenadas</div>
+                  <div className="font-mono text-sm font-medium text-gray-700">
+                    {sensor.lat.toFixed(5)}, {sensor.lon.toFixed(5)}
+                  </div>
+                </div>
+                {copied && <span className="text-xs font-medium text-green-600">Copiado ✓</span>}
               </button>
             </div>
           );
