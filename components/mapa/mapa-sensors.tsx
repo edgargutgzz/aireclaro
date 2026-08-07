@@ -621,65 +621,59 @@ const [mapLoaded, setMapLoaded] = useState(false);
         })()}
       </div>
 
+      <style>{`@keyframes slideInRight { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }`}</style>
+
       {/* Desktop: sensor info card — slides in from right */}
-      {(() => {
-        const s = selectedSensor;
-        const sensor = s?.sensor;
-        const pm25 = s?.pm25 ?? null;
-        const color = s?.color ?? "#000";
-        const textColor = s?.textColor ?? "#000";
-        const timestamp = s?.timestamp ?? null;
-        const isSima = sensor?.source === "sima";
-        const sensorName = sensor ? (isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre) : "";
+      {selectedSensor && (() => {
+        const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+        const isSima = sensor.source === "sima";
+        const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
         const sensorQuality = getQualityInfo(pm25);
         return (
-          <div className={`fixed right-6 top-[5rem] z-[48] hidden w-[300px] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:block ${
-            selectedSensor ? "translate-x-0 opacity-100" : "translate-x-[calc(100%+24px)] opacity-0 pointer-events-none"
-          }`}>
+          <div key={sensor.id} className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] md:block" style={{ animation: 'slideInRight 0.3s cubic-bezier(0.32,0.72,0,1)' }}>
             <div className="flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
               <div className="rounded-xl bg-white p-4">
-              <div className="mb-4 flex items-start justify-between">
-                <div>
-                  <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
-                  {timestamp && (
-                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
-                      {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
-                      <span>{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                      <span>·</span>
-                      <span>Actualizado a las {timestamp}</span>
-                    </div>
+                <div className="mb-4 flex items-start justify-between">
+                  <div>
+                    <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
+                    {timestamp && (
+                      <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
+                        {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
+                        <span>{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                        <span>·</span>
+                        <span>Actualizado a las {timestamp}</span>
+                      </div>
+                    )}
+                  </div>
+                  <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <div className="mb-4 flex items-end gap-3">
+                  <div className="text-3xl font-bold leading-none" style={{ color: textColor }}>
+                    {sensorQuality ? sensorQuality.label : "—"}
+                  </div>
+                  {pm25 !== null && (
+                    <div className="mb-0.5 text-sm text-gray-400">{roundPM25(pm25)} μg/m³</div>
                   )}
                 </div>
-                <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
-                  <X className="h-5 w-5" />
+                {sensorQuality && (
+                  <div className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
+                    <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
+                  </div>
+                )}
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-3 text-gray-600 transition-colors hover:bg-gray-200"
+                >
+                  <Copy className="h-4 w-4" />
+                  <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
                 </button>
               </div>
-              <div className="mb-4 flex items-end gap-3">
-                <div className="text-3xl font-bold leading-none" style={{ color: textColor }}>
-                  {sensorQuality ? sensorQuality.label : "—"}
-                </div>
-                {pm25 !== null && (
-                  <div className="mb-0.5 text-sm text-gray-400">{roundPM25(pm25)} μg/m³</div>
-                )}
-              </div>
-              {sensorQuality && (
-                <div className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
-                  <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
-                </div>
-              )}
-              <button
-                onClick={() => {
-                  if (!sensor) return;
-                  navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1500);
-                }}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-3 text-gray-600 transition-colors hover:bg-gray-200"
-              >
-                <Copy className="h-4 w-4" />
-                <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
-              </button>
-            </div>
             </div>
           </div>
         );
