@@ -573,21 +573,28 @@ const [mapLoaded, setMapLoaded] = useState(false);
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+          const sensorQuality = getQualityInfo(pm25);
           return (
             <div className="px-5 pt-5" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>
               {/* Top row: PM2.5 | divider | sensor info | close */}
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-start gap-4 mb-4">
                 <div className="flex flex-shrink-0 items-center gap-3">
-                  <div className="h-14 w-1 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                  <div className="h-16 w-1 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
                   <div>
                     <div className="text-4xl font-bold leading-none" style={{ color: textColor }}>
                       {pm25 !== null ? roundPM25(pm25) : "—"}
                     </div>
                     <div className="mt-1 text-xs text-gray-400">μg/m³ · PM2.5</div>
+                    {sensorQuality && (
+                      <div className="mt-2 inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                        style={{ backgroundColor: `${color}22`, color: textColor }}>
+                        {sensorQuality.label}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="h-14 w-px flex-shrink-0 bg-gray-100" />
+                <div className="mt-1 h-16 w-px flex-shrink-0 bg-gray-100" />
 
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-semibold text-gray-900">{sensorName}</div>
@@ -596,8 +603,8 @@ const [mapLoaded, setMapLoaded] = useState(false);
                     <span className="text-xs">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                   </div>
                   {timestamp && (
-                    <div className="mt-1 flex items-center gap-1.5 text-gray-500">
-                      <Clock className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                    <div className="mt-1 flex items-center gap-1.5 text-gray-400">
+                      <Clock className="h-3.5 w-3.5 flex-shrink-0" />
                       <span className="text-xs">Actualizado: {timestamp}</span>
                     </div>
                   )}
@@ -607,6 +614,13 @@ const [mapLoaded, setMapLoaded] = useState(false);
                   <X className="h-5 w-5" />
                 </button>
               </div>
+
+              {/* Quality recommendation */}
+              {sensorQuality && (
+                <div className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
+                  <p className="text-xs leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
+                </div>
+              )}
 
               {/* Copiar coordenadas — full width */}
               <button
