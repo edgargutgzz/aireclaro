@@ -79,9 +79,6 @@ const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
 };
 
-const formatLatLon = (value: number): string => {
-  return value.toFixed(5);
-};
 
 const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371;
