@@ -581,7 +581,12 @@ const [mapLoaded, setMapLoaded] = useState(false);
                 <div>
                   <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
                   {timestamp && (
-                    <div className="mt-0.5 text-xs text-gray-400">Actualizado a las {timestamp}</div>
+                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
+                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
+                    <span>{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                    <span>·</span>
+                    <span>Actualizado a las {timestamp}</span>
+                  </div>
                   )}
                 </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
