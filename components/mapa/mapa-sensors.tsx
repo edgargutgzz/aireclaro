@@ -622,7 +622,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
               >
                 <Copy className="h-4 w-4" />
                 <span className="text-sm font-medium">
-                  {copied ? "Copiado ✓" : "Copiar coordenadas"}
+                  {copied ? "Copiado" : "Copiar coordenadas"}
                 </span>
               </button>
             </div>
