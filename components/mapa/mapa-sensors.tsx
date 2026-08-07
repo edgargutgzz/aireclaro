@@ -442,7 +442,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       )}
 
       {/* Mobile filter pills — full width 50/50 */}
-      <div className="absolute left-0 right-0 z-10 flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(1.5rem + env(safe-area-inset-top, 0px))' }}>
+      <div className="fixed left-0 right-0 z-[44] flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}>
         <button
           onClick={() => setShowSima((v) => !v)}
           className={`flex-1 rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
@@ -611,7 +611,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
                 }}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-3 text-gray-600 transition-colors hover:bg-gray-200"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200"
               >
                 <Copy className="h-4 w-4" />
                 <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
@@ -667,7 +667,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
                     setCopied(true);
                     setTimeout(() => setCopied(false), 1500);
                   }}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-3 text-gray-600 transition-colors hover:bg-gray-200"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200"
                 >
                   <Copy className="h-4 w-4" />
                   <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
