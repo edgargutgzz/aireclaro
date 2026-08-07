@@ -621,15 +621,23 @@ const [mapLoaded, setMapLoaded] = useState(false);
         })()}
       </div>
 
-      {/* Desktop: sensor info floating card — bottom right */}
-      {selectedSensor && (() => {
-        const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
-        const isSima = sensor.source === "sima";
-        const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+      {/* Desktop: sensor info card — slides in from right */}
+      {(() => {
+        const s = selectedSensor;
+        const sensor = s?.sensor;
+        const pm25 = s?.pm25 ?? null;
+        const color = s?.color ?? "#000";
+        const textColor = s?.textColor ?? "#000";
+        const timestamp = s?.timestamp ?? null;
+        const isSima = sensor?.source === "sima";
+        const sensorName = sensor ? (isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre) : "";
         const sensorQuality = getQualityInfo(pm25);
         return (
-          <div className="fixed bottom-6 right-6 z-[48] hidden w-[340px] rounded-2xl border border-white/60 bg-white shadow-lg md:block">
-            <div className="p-5">
+          <div className={`fixed right-6 top-[5rem] z-[48] hidden w-[300px] transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:block ${
+            selectedSensor ? "translate-x-0 opacity-100" : "translate-x-[calc(100%+24px)] opacity-0 pointer-events-none"
+          }`}>
+            <div className="flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
+              <div className="rounded-xl bg-white p-4">
               <div className="mb-4 flex items-start justify-between">
                 <div>
                   <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
@@ -661,6 +669,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
               )}
               <button
                 onClick={() => {
+                  if (!sensor) return;
                   navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
@@ -670,6 +679,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
                 <Copy className="h-4 w-4" />
                 <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
               </button>
+            </div>
             </div>
           </div>
         );
