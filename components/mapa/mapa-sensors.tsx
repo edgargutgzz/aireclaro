@@ -581,7 +581,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
                 <div>
                   <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
                   {timestamp && (
-                    <div className="mt-0.5 text-xs text-gray-400">Actualizado: {timestamp}</div>
+                    <div className="mt-0.5 text-xs text-gray-400">Actualizado a las {timestamp}</div>
                   )}
                 </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
