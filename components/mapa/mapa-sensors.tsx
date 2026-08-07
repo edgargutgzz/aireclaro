@@ -615,16 +615,12 @@ const [mapLoaded, setMapLoaded] = useState(false);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
                 }}
-                className="flex w-full items-center gap-3 rounded-xl bg-gray-100 px-4 py-3 transition-colors hover:bg-gray-200"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-3 text-gray-600 transition-colors hover:bg-gray-200"
               >
-                <Copy className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                <div className="min-w-0 flex-1 text-left">
-                  <div className="text-[11px] text-gray-400">Coordenadas</div>
-                  <div className="font-mono text-sm font-medium text-gray-700">
-                    {sensor.lat.toFixed(5)}, {sensor.lon.toFixed(5)}
-                  </div>
-                </div>
-                {copied && <span className="text-xs font-medium text-green-600">Copiado ✓</span>}
+                <Copy className="h-4 w-4" />
+                <span className="text-sm font-medium">
+                  {copied ? "Copiado ✓" : "Copiar coordenadas"}
+                </span>
               </button>
             </div>
           );
