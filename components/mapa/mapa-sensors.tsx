@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Info, X, Landmark, Users } from "lucide-react";
-import mapboxgl, { Map, Marker, Popup } from "mapbox-gl";
+import { LocateFixed, Info, X, Landmark, Users, Copy, Clock } from "lucide-react";
+import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 
@@ -219,6 +219,14 @@ const [mapLoaded, setMapLoaded] = useState(false);
   const [sheetState, setSheetState] = useState<'closed' | 'mid' | 'full'>('closed');
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
+  const [selectedSensor, setSelectedSensor] = useState<{
+    sensor: Sensor;
+    pm25: number | null;
+    color: string;
+    textColor: string;
+    timestamp: string | null;
+  } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   // Find the nearest sensor's PM2.5 reading to the user's location
   const nearestPm25 = useMemo(() => {
@@ -337,59 +345,20 @@ const [mapLoaded, setMapLoaded] = useState(false);
       if (!markerElement) return;
 
       const markerColorClass = markerElement.getAttribute("data-marker-color");
-      const popupBorderColor = markerColorClass
-        ? borderColorMap[markerColorClass]
-        : "#FFFFFF";
-      const popupTextColor = popupBorderColor === "#ffff00" ? "#b8a000" : popupBorderColor;
+      const color = markerColorClass ? borderColorMap[markerColorClass] : "#FFFFFF";
+      const textColor = color === "#ffff00" ? "#b8a000" : color;
+      const timestamp = latestData
+        ? format(new Date(latestData.time_stamp), "h") + ":00 " + format(new Date(latestData.time_stamp), "a")
+        : null;
 
-      const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-      const sourceLabel = isSima ? "Estación SIMA" : "Sensor Ciudadano";
-      const sourceIcon = isSima
-        ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>`
-        : `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
-      const value = latestData ? roundPM25(latestData.pm25) : "—";
-      const timestamp = latestData ? format(new Date(latestData.time_stamp), "h") + ":00 " + format(new Date(latestData.time_stamp), "a") : null;
-
-      const popup = new Popup({
-        offset: 25,
-        closeButton: false,
-      }).setHTML(`
-        <div style="padding: 14px; min-width: 170px;">
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-            <div style="width: 4px; height: 44px; border-radius: 2px; background: ${popupBorderColor}; flex-shrink: 0;"></div>
-            <div>
-              <div style="font-size: 30px; font-weight: 700; line-height: 1; color: ${popupTextColor};">${value}</div>
-              <div style="font-size: 11px; color: #9ca3af; margin-top: 3px;">μg/m³ · PM2.5</div>
-            </div>
-          </div>
-          <div style="font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 2px;">${sensorName}</div>
-          <div style="display: flex; align-items: center; gap: 4px; margin-bottom: ${timestamp ? "8px" : "0"};">
-            ${sourceIcon}
-            <span style="font-size: 11px; color: #9ca3af;">${sourceLabel}</span>
-          </div>
-          ${timestamp ? `
-            <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 8px;">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
-              <span style="font-size: 11px; color: #6b7280;">Actualizado: ${timestamp}</span>
-            </div>
-          ` : ""}
-          <button
-            onclick="navigator.clipboard.writeText('${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}');var s=this.querySelector('span');s.textContent='✓ Copiado';var b=this;setTimeout(function(){s.textContent='Copiar coordenadas'},1500)"
-            style="display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:8px;border:none;background:rgba(0,0,0,0.04);cursor:pointer;text-align:left;"
-          >
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            <span style="font-size:11px;color:#9ca3af;">Copiar coordenadas</span>
-          </button>
-        </div>
-      `);
+      markerElement.style.cursor = "pointer";
+      markerElement.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
+      });
 
       const marker = new Marker({ element: markerElement })
         .setLngLat([sensor.lon, sensor.lat])
-        .setPopup(popup)
         .addTo(map.current!);
 
       markersRef.current.push(marker);
@@ -404,29 +373,13 @@ const [mapLoaded, setMapLoaded] = useState(false);
     };
   }, []);
 
-  // Add popup styles if not already added
+  // Close selected sensor on map click
   useEffect(() => {
-    if (!document.querySelector("style[data-popup-shadow]")) {
-      const style = document.createElement("style");
-      style.textContent = `
-        .mapboxgl-popup-content {
-          background: rgba(255, 255, 255, 0.88) !important;
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.6);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-          border-radius: 1rem !important;
-          padding: 0;
-        }
-        .mapboxgl-popup-tip {
-          border-top-color: rgba(255,255,255,0.88) !important;
-          border-bottom-color: rgba(255,255,255,0.88) !important;
-        }
-      `;
-      style.setAttribute("data-popup-shadow", "true");
-      document.head.appendChild(style);
-    }
-  }, []);
+    if (!mapLoaded || !map.current) return;
+    const handler = () => setSelectedSensor(null);
+    map.current.on("click", handler);
+    return () => { (map.current as any)?.off("click", handler); };
+  }, [mapLoaded]);
 
   const sheetTopBase = sheetState === 'full' ? '8vh' : sheetState === 'mid' ? '55vh' : '100vh';
   const sheetTopStyle = dragOffset > 0 ? `calc(${sheetTopBase} + ${dragOffset}px)` : sheetTopBase;
@@ -608,6 +561,66 @@ const [mapLoaded, setMapLoaded] = useState(false);
         <div className="px-5 pt-2" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
           <LegendContent />
         </div>
+      </div>
+
+      {/* Selected sensor info panel — slides up from bottom */}
+      <div
+        className={`fixed left-0 right-0 bottom-0 z-[40] rounded-t-3xl bg-white/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+          selectedSensor ? "translate-y-0" : "translate-y-full"
+        }`}
+      >
+        {selectedSensor && (() => {
+          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+          const isSima = sensor.source === "sima";
+          const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+          return (
+            <div className="px-5 pt-5" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
+              {/* Header row */}
+              <div className="mb-4 flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-1 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                  <div>
+                    <div className="text-3xl font-bold leading-none" style={{ color: textColor }}>
+                      {pm25 !== null ? roundPM25(pm25) : "—"}
+                    </div>
+                    <div className="mt-1 text-xs text-gray-400">μg/m³ · PM2.5</div>
+                  </div>
+                </div>
+                <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Sensor info */}
+              <div className="mb-3">
+                <div className="mb-1 text-sm font-semibold text-gray-900">{sensorName}</div>
+                <div className="flex items-center gap-1.5 text-gray-400">
+                  {isSima ? <Landmark className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />}
+                  <span className="text-xs">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                </div>
+                {timestamp && (
+                  <div className="mt-1 flex items-center gap-1.5 text-gray-500">
+                    <Clock className="h-3.5 w-3.5 text-gray-400" />
+                    <span className="text-xs">Actualizado: {timestamp}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Copy coordinates */}
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1500);
+                }}
+                className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-xs text-gray-500 transition-colors hover:bg-gray-200"
+              >
+                <Copy className="h-3.5 w-3.5" />
+                {copied ? "✓ Copiado" : "Copiar coordenadas"}
+              </button>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Bottom sheet backdrop */}
