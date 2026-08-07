@@ -602,12 +602,6 @@ const [mapLoaded, setMapLoaded] = useState(false);
                     {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0" /> : <Users className="h-3.5 w-3.5 flex-shrink-0" />}
                     <span className="text-xs">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                   </div>
-                  {timestamp && (
-                    <div className="mt-1 flex items-center gap-1.5 text-gray-400">
-                      <Clock className="h-3.5 w-3.5 flex-shrink-0" />
-                      <span className="text-xs">Actualizado: {timestamp}</span>
-                    </div>
-                  )}
                 </div>
 
                 <button onClick={() => setSelectedSensor(null)} className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600">
@@ -619,6 +613,14 @@ const [mapLoaded, setMapLoaded] = useState(false);
               {sensorQuality && (
                 <div className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
                   <p className="text-xs leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
+                </div>
+              )}
+
+              {/* Timestamp — low priority */}
+              {timestamp && (
+                <div className="mb-3 flex items-center gap-1.5 px-1 text-gray-400">
+                  <Clock className="h-3 w-3 flex-shrink-0" />
+                  <span className="text-[11px]">Actualizado: {timestamp}</span>
                 </div>
               )}
 
