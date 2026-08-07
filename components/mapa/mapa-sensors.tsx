@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Info, X, Landmark, Users, Copy, Clock } from "lucide-react";
+import { LocateFixed, Info, X, Landmark, Users, Copy } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -577,8 +577,13 @@ const [mapLoaded, setMapLoaded] = useState(false);
           return (
             <div className="px-5 pt-5" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>
               {/* Header: sensor name + close */}
-              <div className="mb-4 flex items-center justify-between">
-                <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
+              <div className="mb-4 flex items-start justify-between">
+                <div>
+                  <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
+                  {timestamp && (
+                    <div className="mt-0.5 text-xs text-gray-400">Actualizado: {timestamp}</div>
+                  )}
+                </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
                   <X className="h-5 w-5" />
                 </button>
@@ -598,14 +603,6 @@ const [mapLoaded, setMapLoaded] = useState(false);
               {sensorQuality && (
                 <div className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
                   <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
-                </div>
-              )}
-
-              {/* Timestamp — low priority */}
-              {timestamp && (
-                <div className="mb-3 flex items-center gap-1.5 px-1 text-gray-400">
-                  <Clock className="h-3 w-3 flex-shrink-0" />
-                  <span className="text-[11px]">Actualizado: {timestamp}</span>
                 </div>
               )}
 
