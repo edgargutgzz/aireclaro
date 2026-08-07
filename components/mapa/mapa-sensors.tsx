@@ -368,13 +368,22 @@ const [mapLoaded, setMapLoaded] = useState(false);
             <span style="font-size: 11px; color: #9ca3af;">${sourceLabel}</span>
           </div>
           ${timestamp ? `
-            <div style="display: flex; align-items: center; gap: 5px;">
+            <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 8px;">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
               </svg>
               <span style="font-size: 11px; color: #6b7280;">Actualizado: ${timestamp}</span>
             </div>
           ` : ""}
+          <button
+            onclick="navigator.clipboard.writeText('${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}');var s=this.querySelector('span');s.textContent='✓ Copiado';var b=this;setTimeout(function(){s.textContent='Copiar coordenadas'},1500)"
+            style="display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;border-radius:8px;border:none;background:rgba(0,0,0,0.04);cursor:pointer;text-align:left;"
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <span style="font-size:11px;color:#9ca3af;">Copiar coordenadas</span>
+          </button>
         </div>
       `);
 
