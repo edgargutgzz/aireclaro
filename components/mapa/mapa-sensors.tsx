@@ -574,50 +574,53 @@ const [mapLoaded, setMapLoaded] = useState(false);
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           return (
-            <div className="px-5 pt-5" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
-              {/* Header row */}
-              <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-1 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
-                  <div>
-                    <div className="text-3xl font-bold leading-none" style={{ color: textColor }}>
-                      {pm25 !== null ? roundPM25(pm25) : "—"}
-                    </div>
-                    <div className="mt-1 text-xs text-gray-400">μg/m³ · PM2.5</div>
+            <div className="flex items-center gap-4 px-5 pt-5" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
+              {/* PM2.5 value */}
+              <div className="flex flex-shrink-0 items-center gap-3">
+                <div className="h-14 w-1 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                <div>
+                  <div className="text-4xl font-bold leading-none" style={{ color: textColor }}>
+                    {pm25 !== null ? roundPM25(pm25) : "—"}
                   </div>
+                  <div className="mt-1 text-xs text-gray-400">μg/m³ · PM2.5</div>
                 </div>
-                <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
-                  <X className="h-5 w-5" />
-                </button>
               </div>
 
+              {/* Divider */}
+              <div className="h-14 w-px flex-shrink-0 bg-gray-100" />
+
               {/* Sensor info */}
-              <div className="mb-3">
-                <div className="mb-1 text-sm font-semibold text-gray-900">{sensorName}</div>
-                <div className="flex items-center gap-1.5 text-gray-400">
-                  {isSima ? <Landmark className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />}
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-semibold text-gray-900">{sensorName}</div>
+                <div className="mt-1 flex items-center gap-1.5 text-gray-400">
+                  {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0" /> : <Users className="h-3.5 w-3.5 flex-shrink-0" />}
                   <span className="text-xs">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                 </div>
                 {timestamp && (
                   <div className="mt-1 flex items-center gap-1.5 text-gray-500">
-                    <Clock className="h-3.5 w-3.5 text-gray-400" />
+                    <Clock className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
                     <span className="text-xs">Actualizado: {timestamp}</span>
                   </div>
                 )}
               </div>
 
-              {/* Copy coordinates */}
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1500);
-                }}
-                className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-xs text-gray-500 transition-colors hover:bg-gray-200"
-              >
-                <Copy className="h-3.5 w-3.5" />
-                {copied ? "✓ Copiado" : "Copiar coordenadas"}
-              </button>
+              {/* Actions */}
+              <div className="flex flex-shrink-0 flex-col items-center gap-2">
+                <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
+                  <X className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  }}
+                  className="rounded-lg bg-gray-100 p-2 text-gray-500 transition-colors hover:bg-gray-200"
+                  title="Copiar coordenadas"
+                >
+                  {copied ? <span className="text-xs">✓</span> : <Copy className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
           );
         })()}
