@@ -621,8 +621,6 @@ const [mapLoaded, setMapLoaded] = useState(false);
         })()}
       </div>
 
-      <style>{`@keyframes slideInRight { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }`}</style>
-
       {/* Desktop: sensor info card — slides in from right */}
       {selectedSensor && (() => {
         const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
@@ -630,7 +628,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
         const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
         const sensorQuality = getQualityInfo(pm25);
         return (
-          <div key={sensor.id} className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] md:block" style={{ animation: 'slideInRight 0.3s cubic-bezier(0.32,0.72,0,1)' }}>
+          <div className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] md:block">
             <div className="flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
               <div className="rounded-xl bg-white p-4">
                 <div className="mb-4 flex items-start justify-between">
