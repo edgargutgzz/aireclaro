@@ -364,7 +364,14 @@ const [mapLoaded, setMapLoaded] = useState(false);
           </div>
           <div style="font-size: 13px; font-weight: 600; color: #111827; margin-bottom: 2px;">${sensorName}</div>
           <div style="font-size: 11px; color: #9ca3af; margin-bottom: ${timestamp ? "8px" : "0"};">${sourceLabel}</div>
-          ${timestamp ? `<div style="font-size: 11px; color: #d1d5db;">Actualizado a las ${timestamp}</div>` : ""}
+          ${timestamp ? `
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span style="font-size: 11px; color: #6b7280;">Actualizado a las ${timestamp}</span>
+            </div>
+          ` : ""}
         </div>
       `);
 
