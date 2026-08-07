@@ -565,7 +565,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
 
       {/* Selected sensor info panel — slides up from bottom */}
       <div
-        className={`fixed left-0 right-0 bottom-0 z-[40] rounded-t-3xl bg-white/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+        className={`fixed left-0 right-0 bottom-0 z-[48] rounded-t-3xl bg-white/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           selectedSensor ? "translate-y-0" : "translate-y-full"
         }`}
       >
