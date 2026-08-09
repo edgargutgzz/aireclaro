@@ -216,7 +216,7 @@ export default function MapaSensors({
 const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
-  const [sheetState, setSheetState] = useState<'closed' | 'mid' | 'full'>('closed');
+  const [sheetState, setSheetState] = useState<'closed' | 'peek' | 'mid' | 'full'>('closed');
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
   const [selectedSensor, setSelectedSensor] = useState<{
@@ -376,7 +376,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
   // Auto-open bottom sheet when nearest air quality data is ready
   useEffect(() => {
     if (qualityInfo && sheetState === 'closed') {
-      setSheetState('mid');
+      setSheetState('peek');
     }
   }, [qualityInfo]);
 
@@ -388,11 +388,12 @@ const [mapLoaded, setMapLoaded] = useState(false);
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  const sheetTopBase = sheetState === 'full' ? '8vh' : sheetState === 'mid' ? '55vh' : '100vh';
+  const sheetTopBase = sheetState === 'full' ? '8vh' : sheetState === 'mid' ? '52vh' : sheetState === 'peek' ? '84vh' : '100vh';
   const sheetTopStyle = dragOffset > 0 ? `calc(${sheetTopBase} + ${dragOffset}px)` : sheetTopBase;
 
   const handleHandleTap = () => {
-    if (sheetState === 'mid') setSheetState('full');
+    if (sheetState === 'peek') setSheetState('mid');
+    else if (sheetState === 'mid') setSheetState('full');
     else if (sheetState === 'full') setSheetState('mid');
   };
 
@@ -408,7 +409,8 @@ const [mapLoaded, setMapLoaded] = useState(false);
   const handleTouchEnd = () => {
     if (dragOffset > 80) {
       if (sheetState === 'full') setSheetState('mid');
-      else if (sheetState === 'mid') setSheetState('closed');
+      else if (sheetState === 'mid') setSheetState('peek');
+      else if (sheetState === 'peek') setSheetState('closed');
     }
     setDragOffset(0);
   };
@@ -437,7 +439,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       )}
 
       {/* Locate me button — mobile only, hidden when bottom sheet is open */}
-      {userLocation && sheetState === 'closed' && (
+      {userLocation && (sheetState === 'closed' || sheetState === 'peek') && (
         <button
           onClick={flyToUser}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
@@ -530,7 +532,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       </div>
 
       {/* Legend toggle button — mobile only, hidden when bottom sheet is open */}
-      {sheetState === 'closed' && (
+      {(sheetState === 'closed' || sheetState === 'peek') && (
         <button
           onClick={() => setIsLegendVisible(!isLegendVisible)}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
@@ -688,7 +690,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       {/* Bottom sheet backdrop */}
       <div
         className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 ${
-          sheetState !== 'closed' ? "opacity-100" : "pointer-events-none opacity-0"
+          sheetState === 'full' || sheetState === 'mid' ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         onClick={() => setSheetState('closed')}
       />
