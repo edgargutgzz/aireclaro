@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LocateFixed, Info, X, Landmark, Users, Copy } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -77,19 +77,6 @@ const createMarker = (
 
 const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
-};
-
-
-const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
 interface QualityInfo {
@@ -213,12 +200,9 @@ export default function MapaSensors({
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [isLegendVisible, setIsLegendVisible] = useState(false);
-const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
-  const [sheetState, setSheetState] = useState<'closed' | 'peek' | 'mid' | 'full'>('peek');
-  const [dragOffset, setDragOffset] = useState(0);
-  const dragStartY = useRef(0);
   const [selectedSensor, setSelectedSensor] = useState<{
     sensor: Sensor;
     pm25: number | null;
@@ -227,22 +211,6 @@ const [mapLoaded, setMapLoaded] = useState(false);
     timestamp: string | null;
   } | null>(null);
   const [copied, setCopied] = useState(false);
-
-  // Find the nearest sensor's PM2.5 reading to the user's location
-  const nearestPm25 = useMemo(() => {
-    if (!userLocation || !sensors.length || !data.length) return null;
-    const sorted = [...sensors].sort((a, b) =>
-      getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
-      getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lon)
-    );
-    for (const sensor of sorted) {
-      const d = data.find((item) => item.sensor_id === sensor.sensor_id);
-      if (d && d.pm25 !== null && d.pm25 > 0.4) return d.pm25;
-    }
-    return null;
-  }, [userLocation, sensors, data]);
-
-  const qualityInfo = getQualityInfo(nearestPm25);
 
   // Initialize map once
   useEffect(() => {
@@ -381,38 +349,6 @@ const [mapLoaded, setMapLoaded] = useState(false);
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  const sheetTransform = (() => {
-    const drag = dragOffset > 0 ? ` + ${dragOffset}px` : '';
-    if (sheetState === 'full') return `translateY(calc(0%${drag}))`;
-    if (sheetState === 'mid') return `translateY(calc(100% - 55vh${drag}))`;
-    if (sheetState === 'peek') return `translateY(calc(100% - 9rem${drag}))`;
-    return `translateY(calc(100%${drag}))`;
-  })();
-
-  const handleHandleTap = () => {
-    if (sheetState === 'peek') setSheetState('mid');
-    else if (sheetState === 'mid') setSheetState('full');
-    else if (sheetState === 'full') setSheetState('mid');
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    dragStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    const delta = e.touches[0].clientY - dragStartY.current;
-    if (delta > 0) setDragOffset(delta);
-  };
-
-  const handleTouchEnd = () => {
-    if (dragOffset > 80) {
-      if (sheetState === 'full') setSheetState('mid');
-      else if (sheetState === 'mid') setSheetState('peek');
-      else if (sheetState === 'peek') setSheetState('closed');
-    }
-    setDragOffset(0);
-  };
-
   return (
     <div className="relative h-screen">
       {/* Map container */}
@@ -436,8 +372,8 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </div>
       )}
 
-      {/* Locate me button — mobile only, hidden when bottom sheet is open */}
-      {userLocation && sheetState !== 'mid' && sheetState !== 'full' && (
+      {/* Locate me button — mobile only */}
+      {userLocation && (
         <button
           onClick={flyToUser}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
@@ -529,17 +465,15 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </div>
       </div>
 
-      {/* Legend toggle button — mobile only, hidden when bottom sheet is open */}
-      {sheetState !== 'mid' && sheetState !== 'full' && (
-        <button
-          onClick={() => setIsLegendVisible(!isLegendVisible)}
-          className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
-          style={{ bottom: 'calc(9.25rem + env(safe-area-inset-bottom, 0px))' }}
-          aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
-        >
-          <Info className="h-6 w-6 text-gray-700" />
-        </button>
-      )}
+      {/* Legend toggle button — mobile only */}
+      <button
+        onClick={() => setIsLegendVisible(!isLegendVisible)}
+        className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
+        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 5.75rem)' }}
+        aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
+      >
+        <Info className="h-6 w-6 text-gray-700" />
+      </button>
 
       {/* Legend backdrop — mobile only */}
       <div
@@ -630,7 +564,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
         })()}
       </div>
 
-      {/* Desktop: sensor info card — slides in from right */}
+      {/* Desktop: sensor info card */}
       {selectedSensor && (() => {
         const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
         const isSima = sensor.source === "sima";
@@ -684,100 +618,6 @@ const [mapLoaded, setMapLoaded] = useState(false);
           </div>
         );
       })()}
-
-      {/* Bottom sheet backdrop */}
-      <div
-        className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 ${
-          sheetState === 'full' || sheetState === 'mid' ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        onClick={() => setSheetState('closed')}
-      />
-
-      {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
-      <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden md:hidden"
-        style={{
-          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
-          height: '100dvh',
-          transform: sheetTransform,
-          transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
-      >
-        <>
-            {/* Drag handle — always visible */}
-            <div
-              className="cursor-pointer select-none px-5 pb-4 pt-3"
-              onClick={handleHandleTap}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-gray-200" />
-              <div className="mb-4">
-                <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                  Calidad del aire cerca de ti
-                </span>
-              </div>
-              {qualityInfo ? (
-                <>
-                  <div className="mb-2 flex items-end gap-3">
-                    <div className="text-4xl font-bold leading-none" style={{ color: qualityInfo.textColor }}>
-                      {qualityInfo.label}
-                    </div>
-                    {nearestPm25 !== null && (
-                      <div className="mb-1 text-sm text-gray-400">{Math.round(nearestPm25)} μg/m³</div>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-600">{qualityInfo.generalRec}</p>
-                </>
-              ) : (
-                <p className="text-sm text-gray-400">Activa tu ubicación para ver la calidad del aire cerca de ti.</p>
-              )}
-            </div>
-
-            {/* Scrollable content — only when quality data is available */}
-            {qualityInfo && (
-              <div className="overflow-y-auto px-5 pb-24">
-                <div className="mb-4 h-px bg-gray-100" />
-                <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
-                  Para grupos sensibles
-                </div>
-                <div className="mb-6 flex flex-col gap-4">
-                  {[
-                    { label: "Niños (menores de 12)", rec: qualityInfo.sensitiveRecs.menores },
-                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
-                    { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
-                    { label: "Enfermedades cardio o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
-                  ].map(({ label, rec }) => (
-                    <div key={label}>
-                      <div className="mb-0.5 text-xs font-semibold text-gray-700">{label}</div>
-                      <div className="text-xs text-gray-500">{rec}</div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mb-3 h-px bg-gray-100" />
-                <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
-                  Escala de colores
-                </div>
-                <div className="flex flex-col gap-2">
-                  {[
-                    { color: "#00e400", label: "Buena", range: "0 – 15 μg/m³" },
-                    { color: "#ffff00", label: "Aceptable", range: "15 – 25 μg/m³" },
-                    { color: "#ff7e00", label: "Mala", range: "25 – 79 μg/m³" },
-                    { color: "#ff0000", label: "Muy mala", range: "79 – 130 μg/m³" },
-                    { color: "#8f3f97", label: "Extremadamente mala", range: "> 130 μg/m³" },
-                  ].map(({ color, label, range }) => (
-                    <div key={label} className="flex items-center gap-3">
-                      <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
-                      <span className="text-xs text-gray-700">{label}</span>
-                      <span className="ml-auto text-xs text-gray-400">{range}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-      </div>
     </div>
   );
 }
