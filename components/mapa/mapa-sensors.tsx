@@ -436,8 +436,8 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </div>
       )}
 
-      {/* Locate me button — mobile only */}
-      {userLocation && (
+      {/* Locate me button — mobile only, hidden when bottom sheet is open */}
+      {userLocation && sheetState === 'closed' && (
         <button
           onClick={flyToUser}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
@@ -529,15 +529,17 @@ const [mapLoaded, setMapLoaded] = useState(false);
         </div>
       </div>
 
-      {/* Legend toggle button — mobile only, bottom right above locate button */}
-      <button
-        onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
-        style={{ bottom: 'calc(9.25rem + env(safe-area-inset-bottom, 0px))' }}
-        aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
-      >
-        <Info className="h-6 w-6 text-gray-700" />
-      </button>
+      {/* Legend toggle button — mobile only, hidden when bottom sheet is open */}
+      {sheetState === 'closed' && (
+        <button
+          onClick={() => setIsLegendVisible(!isLegendVisible)}
+          className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
+          style={{ bottom: 'calc(9.25rem + env(safe-area-inset-bottom, 0px))' }}
+          aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
+        >
+          <Info className="h-6 w-6 text-gray-700" />
+        </button>
+      )}
 
       {/* Legend backdrop — mobile only */}
       <div
