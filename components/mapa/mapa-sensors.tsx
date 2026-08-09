@@ -368,20 +368,6 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
 
-      {/* Empty state when both sources are toggled off */}
-      {!showPurpleAir && !showSima && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4">
-          <div className="rounded-2xl bg-white px-6 py-5 text-center shadow-lg">
-            <p className="mb-3 text-sm text-gray-600">Activa al menos una fuente para ver los datos.</p>
-            <button
-              onClick={() => { setShowPurpleAir(true); setShowSima(true); }}
-              className="rounded-lg bg-gray-900 px-4 py-2 text-xs font-medium text-white hover:bg-gray-700 transition-colors"
-            >
-              Mostrar todo
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Locate me button — mobile only */}
       {userLocation && (
