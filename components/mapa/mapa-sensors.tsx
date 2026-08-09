@@ -383,8 +383,8 @@ export default function MapaSensors({
       {userLocation && (
         <button
           onClick={flyToUser}
-          className="fixed right-4 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
-          style={{ top: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}
+          className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
           aria-label="Ir a mi ubicación"
         >
           <LocateFixed className="h-6 w-6 text-gray-700" />
