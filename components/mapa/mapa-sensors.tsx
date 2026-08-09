@@ -197,6 +197,7 @@ export default function MapaSensors({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
+  const markerElementsRef = useRef(new globalThis.Map<number, HTMLElement>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [isLegendVisible, setIsLegendVisible] = useState(false);
@@ -294,6 +295,7 @@ export default function MapaSensors({
 
     markersRef.current.forEach((marker) => (marker as any).remove());
     markersRef.current = [];
+    markerElementsRef.current.clear();
 
     sensors.forEach((sensor) => {
       const isSima = sensor.source === "sima";
@@ -320,10 +322,13 @@ export default function MapaSensors({
         : null;
 
       markerElement.style.cursor = "pointer";
+      markerElement.style.transition = "transform 0.15s ease";
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
       });
+
+      markerElementsRef.current.set(sensor.sensor_id, markerElement);
 
       const marker = new Marker({ element: markerElement })
         .setLngLat([sensor.lon, sensor.lat])
@@ -340,6 +345,21 @@ export default function MapaSensors({
       markersRef.current = [];
     };
   }, []);
+
+  // Highlight selected marker
+  useEffect(() => {
+    markerElementsRef.current.forEach((el) => {
+      el.style.transform = 'scale(1)';
+      el.style.zIndex = '';
+    });
+    if (selectedSensor) {
+      const el = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
+      if (el) {
+        el.style.transform = 'scale(1.35)';
+        el.style.zIndex = '10';
+      }
+    }
+  }, [selectedSensor]);
 
   // Close selected sensor on map click
   useEffect(() => {
