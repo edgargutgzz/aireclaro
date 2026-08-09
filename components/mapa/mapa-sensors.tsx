@@ -323,6 +323,7 @@ export default function MapaSensors({
 
       markerElement.style.cursor = "pointer";
       markerElement.style.transition = "transform 0.15s ease";
+      markerElement.style.transformOrigin = "center";
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
