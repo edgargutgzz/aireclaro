@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LocateFixed, Info, X, Landmark, Users, Copy } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -469,7 +469,7 @@ export default function MapaSensors({
         style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
-        <Info className="h-6 w-6 text-gray-700" />
+        <GaugeCircle className="h-6 w-6 text-gray-700" />
       </button>
 
       {/* Legend backdrop — mobile only */}
