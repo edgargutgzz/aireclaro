@@ -60,7 +60,9 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.alignItems = "center";
   el.style.justifyContent = "center";
   el.style.opacity = "0.9";
-  el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
+  el.style.boxShadow = isSima
+    ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937"
+    : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
   el.style.color = textColor;
   el.style.fontSize = "12px";
   el.style.fontWeight = "700";
@@ -337,8 +339,10 @@ export default function MapaSensors({
 
   // Highlight selected marker via box-shadow (avoids touching Mapbox's transform)
   useEffect(() => {
-    markerElementsRef.current.forEach(({ el }) => {
-      el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
+    markerElementsRef.current.forEach(({ el, source }) => {
+      el.style.boxShadow = source === "sima"
+        ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937"
+        : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
     });
     if (selectedSensor) {
       const entry = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
