@@ -551,7 +551,9 @@ export default function MapaSensors({
                   {sensorQuality ? sensorQuality.label : "—"}
                 </div>
                 {pm25 !== null && (
-                  <div className="mb-0.5 text-sm text-gray-400">{roundPM25(pm25)} μg/m³</div>
+                  <div className="mb-0.5 text-sm text-gray-400">
+                    <span className="font-medium">PM2.5</span> · {roundPM25(pm25)} μg/m³
+                  </div>
                 )}
               </div>
               {sensorQuality && (
@@ -605,7 +607,9 @@ export default function MapaSensors({
                     {sensorQuality ? sensorQuality.label : "—"}
                   </div>
                   {pm25 !== null && (
-                    <div className="mb-0.5 text-sm text-gray-400">{roundPM25(pm25)} μg/m³</div>
+                    <div className="mb-0.5 text-sm text-gray-400">
+                      <span className="font-medium">PM2.5</span> · {roundPM25(pm25)} μg/m³
+                    </div>
                   )}
                 </div>
                 {sensorQuality && (
