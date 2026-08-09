@@ -403,8 +403,8 @@ export default function MapaSensors({
       <div className="fixed left-0 right-0 z-[44] flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}>
         <button
           onClick={() => setShowSima((v) => !v)}
-          className={`flex-1 rounded-full border-2 px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-            showSima ? "border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
+          className={`flex-1 rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+            showSima ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
           }`}
         >
           <div className="flex items-center justify-center gap-1.5">
