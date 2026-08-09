@@ -55,7 +55,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.width = "40px";
   el.style.height = "40px";
   el.style.backgroundColor = bg;
-  el.style.borderRadius = isSima ? "7px" : "50%";
+  el.style.borderRadius = "50%";
   el.style.display = "flex";
   el.style.alignItems = "center";
   el.style.justifyContent = "center";
