@@ -49,7 +49,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
 
   const { bg } = colorInfo;
   const isSima = source === "sima";
-  const iconStroke = "white";
+  const textColor = bg === "#ffff00" ? "#374151" : "white";
 
   const el = document.createElement("div");
   el.style.width = "40px";
@@ -60,23 +60,14 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.alignItems = "center";
   el.style.justifyContent = "center";
   el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25)";
+  el.style.color = textColor;
+  el.style.fontSize = "12px";
+  el.style.fontWeight = "700";
 
-  const svgNS = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(svgNS, "svg");
-  svg.setAttribute("width", "14");
-  svg.setAttribute("height", "14");
-  svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("fill", "none");
-  svg.setAttribute("stroke", iconStroke);
-  svg.setAttribute("stroke-width", "2.5");
-  svg.setAttribute("stroke-linecap", "round");
-  svg.setAttribute("stroke-linejoin", "round");
+  if (pm25 !== null && pm25 > 0.4) {
+    el.textContent = Math.round(pm25).toString();
+  }
 
-  svg.innerHTML = isSima
-    ? `<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>`
-    : `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`;
-
-  el.appendChild(svg);
   return el;
 };
 
