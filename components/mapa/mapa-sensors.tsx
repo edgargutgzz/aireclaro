@@ -373,6 +373,13 @@ const [mapLoaded, setMapLoaded] = useState(false);
     };
   }, []);
 
+  // Auto-open bottom sheet when nearest air quality data is ready
+  useEffect(() => {
+    if (qualityInfo && sheetState === 'closed') {
+      setSheetState('mid');
+    }
+  }, [qualityInfo]);
+
   // Close selected sensor on map click
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
