@@ -374,7 +374,7 @@ export default function MapaSensors({
         <button
           onClick={flyToUser}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 5.75rem)' }}
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
           aria-label="Ir a mi ubicación"
         >
           <LocateFixed className="h-6 w-6 text-gray-700" />
@@ -466,7 +466,7 @@ export default function MapaSensors({
       <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
         className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
-        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
+        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 5.75rem)' }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         <GaugeCircle className="h-6 w-6 text-gray-700" />
