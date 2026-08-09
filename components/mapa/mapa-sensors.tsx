@@ -216,7 +216,7 @@ export default function MapaSensors({
 const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
-  const [sheetState, setSheetState] = useState<'closed' | 'peek' | 'mid' | 'full'>('closed');
+  const [sheetState, setSheetState] = useState<'closed' | 'peek' | 'mid' | 'full'>('peek');
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
   const [selectedSensor, setSelectedSensor] = useState<{
@@ -373,13 +373,6 @@ const [mapLoaded, setMapLoaded] = useState(false);
     };
   }, []);
 
-  // Auto-open bottom sheet when nearest air quality data is ready
-  useEffect(() => {
-    if (qualityInfo && sheetState === 'closed') {
-      setSheetState('peek');
-    }
-  }, [qualityInfo]);
-
   // Close selected sensor on map click
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
@@ -439,7 +432,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       )}
 
       {/* Locate me button — mobile only, hidden when bottom sheet is open */}
-      {userLocation && (sheetState === 'closed' || sheetState === 'peek') && (
+      {userLocation && sheetState !== 'mid' && sheetState !== 'full' && (
         <button
           onClick={flyToUser}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
@@ -532,7 +525,7 @@ const [mapLoaded, setMapLoaded] = useState(false);
       </div>
 
       {/* Legend toggle button — mobile only, hidden when bottom sheet is open */}
-      {(sheetState === 'closed' || sheetState === 'peek') && (
+      {sheetState !== 'mid' && sheetState !== 'full' && (
         <button
           onClick={() => setIsLegendVisible(!isLegendVisible)}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
@@ -704,9 +697,8 @@ const [mapLoaded, setMapLoaded] = useState(false);
           transition: dragOffset > 0 ? 'none' : 'top 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
-        {qualityInfo && (
-          <>
-            {/* Drag handle — tap to toggle mid↔full, drag down to dismiss */}
+        <>
+            {/* Drag handle — always visible */}
             <div
               className="cursor-pointer select-none px-5 pb-4 pt-3"
               onClick={handleHandleTap}
@@ -720,63 +712,65 @@ const [mapLoaded, setMapLoaded] = useState(false);
                   Calidad del aire cerca de ti
                 </span>
               </div>
-              <div className="mb-2 flex items-end gap-3">
-                <div
-                  className="text-4xl font-bold leading-none"
-                  style={{ color: qualityInfo.textColor }}
-                >
-                  {qualityInfo.label}
-                </div>
-                {nearestPm25 !== null && (
-                  <div className="mb-1 text-sm text-gray-400">
-                    {Math.round(nearestPm25)} μg/m³
+              {qualityInfo ? (
+                <>
+                  <div className="mb-2 flex items-end gap-3">
+                    <div className="text-4xl font-bold leading-none" style={{ color: qualityInfo.textColor }}>
+                      {qualityInfo.label}
+                    </div>
+                    {nearestPm25 !== null && (
+                      <div className="mb-1 text-sm text-gray-400">{Math.round(nearestPm25)} μg/m³</div>
+                    )}
                   </div>
-                )}
-              </div>
-              <p className="text-sm text-gray-600">{qualityInfo.generalRec}</p>
+                  <p className="text-sm text-gray-600">{qualityInfo.generalRec}</p>
+                </>
+              ) : (
+                <p className="text-sm text-gray-400">Activa tu ubicación para ver la calidad del aire cerca de ti.</p>
+              )}
             </div>
 
-            {/* Scrollable content — visible only in full state */}
-            <div className="overflow-y-auto px-5 pb-24">
-              <div className="mb-4 h-px bg-gray-100" />
-              <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
-                Para grupos sensibles
+            {/* Scrollable content — only when quality data is available */}
+            {qualityInfo && (
+              <div className="overflow-y-auto px-5 pb-24">
+                <div className="mb-4 h-px bg-gray-100" />
+                <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+                  Para grupos sensibles
+                </div>
+                <div className="mb-6 flex flex-col gap-4">
+                  {[
+                    { label: "Niños (menores de 12)", rec: qualityInfo.sensitiveRecs.menores },
+                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
+                    { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
+                    { label: "Enfermedades cardio o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
+                  ].map(({ label, rec }) => (
+                    <div key={label}>
+                      <div className="mb-0.5 text-xs font-semibold text-gray-700">{label}</div>
+                      <div className="text-xs text-gray-500">{rec}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mb-3 h-px bg-gray-100" />
+                <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
+                  Escala de colores
+                </div>
+                <div className="flex flex-col gap-2">
+                  {[
+                    { color: "#00e400", label: "Buena", range: "0 – 15 μg/m³" },
+                    { color: "#ffff00", label: "Aceptable", range: "15 – 25 μg/m³" },
+                    { color: "#ff7e00", label: "Mala", range: "25 – 79 μg/m³" },
+                    { color: "#ff0000", label: "Muy mala", range: "79 – 130 μg/m³" },
+                    { color: "#8f3f97", label: "Extremadamente mala", range: "> 130 μg/m³" },
+                  ].map(({ color, label, range }) => (
+                    <div key={label} className="flex items-center gap-3">
+                      <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+                      <span className="text-xs text-gray-700">{label}</span>
+                      <span className="ml-auto text-xs text-gray-400">{range}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="mb-6 flex flex-col gap-4">
-                {[
-                  { label: "Niños (menores de 12)", rec: qualityInfo.sensitiveRecs.menores },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
-                  { label: "Enfermedades cardio o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
-                ].map(({ label, rec }) => (
-                  <div key={label}>
-                    <div className="mb-0.5 text-xs font-semibold text-gray-700">{label}</div>
-                    <div className="text-xs text-gray-500">{rec}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="mb-3 h-px bg-gray-100" />
-              <div className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">
-                Escala de colores
-              </div>
-              <div className="flex flex-col gap-2">
-                {[
-                  { color: "#00e400", label: "Buena", range: "0 – 15 μg/m³" },
-                  { color: "#ffff00", label: "Aceptable", range: "15 – 25 μg/m³" },
-                  { color: "#ff7e00", label: "Mala", range: "25 – 79 μg/m³" },
-                  { color: "#ff0000", label: "Muy mala", range: "79 – 130 μg/m³" },
-                  { color: "#8f3f97", label: "Extremadamente mala", range: "> 130 μg/m³" },
-                ].map(({ color, label, range }) => (
-                  <div key={label} className="flex items-center gap-3">
-                    <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
-                    <span className="text-xs text-gray-700">{label}</span>
-                    <span className="ml-auto text-xs text-gray-400">{range}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            )}
           </>
-        )}
       </div>
     </div>
   );
