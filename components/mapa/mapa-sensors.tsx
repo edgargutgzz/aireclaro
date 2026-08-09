@@ -49,7 +49,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
 
   const { bg } = colorInfo;
   const isSima = source === "sima";
-  const textColor = bg === "#ffff00" ? "#374151" : "white";
+  const textColor = bg === "#ffff00" ? "#6b7280" : "white";
 
   const el = document.createElement("div");
   el.style.width = "40px";
