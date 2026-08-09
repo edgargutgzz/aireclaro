@@ -34,45 +34,52 @@ interface UserLocation {
   longitude: number;
 }
 
-// Function to get marker color based on pm25 value
-const createMarker = (
-  pm25: number | null,
-  source: string,
-): HTMLElement | null => {
-  let markerColor = "bg-gray-400";
+const getPM25Color = (pm25: number | null): { bg: string; text: string } | null => {
+  if (pm25 === null || pm25 <= 0.4) return null;
+  if (pm25 <= 15) return { bg: "#00e400", text: "#00b300" };
+  if (pm25 <= 25) return { bg: "#ffff00", text: "#b8a000" };
+  if (pm25 <= 79) return { bg: "#ff7e00", text: "#ff7e00" };
+  if (pm25 <= 130) return { bg: "#ff0000", text: "#ff0000" };
+  return { bg: "#8f3f97", text: "#8f3f97" };
+};
 
-  if (pm25 === null || pm25 < 0 || pm25 <= 0.4) {
-    markerColor = "bg-gray-400";
-  } else if (pm25 > 0.4 && pm25 <= 15) {
-    markerColor = "bg-[#00e400]";
-  } else if (pm25 > 15 && pm25 <= 25) {
-    markerColor = "bg-[#ffff00]";
-  } else if (pm25 > 25 && pm25 <= 79) {
-    markerColor = "bg-[#ff7e00]";
-  } else if (pm25 > 79 && pm25 <= 130) {
-    markerColor = "bg-[#ff0000]";
-  } else if (pm25 > 130) {
-    markerColor = "bg-[#8f3f97]";
-  }
+const createMarker = (pm25: number | null, source: string): HTMLElement | null => {
+  const colorInfo = getPM25Color(pm25);
+  if (!colorInfo) return null;
 
-  if (markerColor === "bg-gray-400") {
-    return null;
-  }
+  const { bg } = colorInfo;
+  const isSima = source === "sima";
+  const iconStroke = bg === "#ffff00" ? "#374151" : "white";
 
-  const marker = document.createElement("div");
-  const textColor =
-    markerColor === "bg-[#ffff00]" ? "text-gray-700" : "text-white";
-  marker.className = `marker ${markerColor} bg-opacity-90 w-10 h-10 flex items-center justify-center rounded-full ${textColor} text-xs font-bold`;
-  marker.style.boxShadow = source === "sima"
+  const el = document.createElement("div");
+  el.style.width = "28px";
+  el.style.height = "28px";
+  el.style.backgroundColor = bg;
+  el.style.borderRadius = isSima ? "7px" : "50%";
+  el.style.display = "flex";
+  el.style.alignItems = "center";
+  el.style.justifyContent = "center";
+  el.style.boxShadow = isSima
     ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px white, 0 0 0 4px #1f2937"
     : "0 2px 8px rgba(0,0,0,0.25)";
-  marker.setAttribute("data-marker-color", markerColor);
 
-  if (pm25 !== null && pm25 >= 0) {
-    marker.textContent = roundPM25(pm25);
-  }
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("width", "14");
+  svg.setAttribute("height", "14");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", iconStroke);
+  svg.setAttribute("stroke-width", "2.5");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
 
-  return marker;
+  svg.innerHTML = isSima
+    ? `<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>`
+    : `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`;
+
+  el.appendChild(svg);
+  return el;
 };
 
 const roundPM25 = (value: number | null): string | null => {
@@ -146,14 +153,6 @@ const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   };
 };
 
-// Mapping between Tailwind color classes for popup borders
-const borderColorMap: { [key: string]: string } = {
-  "bg-[#00e400]": "#00e400",
-  "bg-[#ffff00]": "#ffff00",
-  "bg-[#ff7e00]": "#ff7e00",
-  "bg-[#ff0000]": "#ff0000",
-  "bg-[#8f3f97]": "#8f3f97",
-};
 
 function LegendContent() {
   const items = [
@@ -314,9 +313,9 @@ export default function MapaSensors({
 
       if (!markerElement) return;
 
-      const markerColorClass = markerElement.getAttribute("data-marker-color");
-      const color = markerColorClass ? borderColorMap[markerColorClass] : "#FFFFFF";
-      const textColor = color === "#ffff00" ? "#b8a000" : color;
+      const colorInfo = getPM25Color(latestData?.pm25 ?? null);
+      const color = colorInfo?.bg ?? "#ffffff";
+      const textColor = colorInfo?.text ?? "#ffffff";
       const timestamp = latestData
         ? format(new Date(latestData.time_stamp), "h") + ":00 " + format(new Date(latestData.time_stamp), "a")
         : null;
@@ -352,6 +351,7 @@ export default function MapaSensors({
       el.style.boxShadow = source === "sima"
         ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px white, 0 0 0 4px #1f2937"
         : "0 2px 8px rgba(0,0,0,0.25)";
+      el.style.outline = "";
     });
     if (selectedSensor) {
       const entry = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
