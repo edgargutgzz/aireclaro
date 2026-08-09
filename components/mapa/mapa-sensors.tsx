@@ -381,8 +381,13 @@ const [mapLoaded, setMapLoaded] = useState(false);
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  const sheetTopBase = sheetState === 'full' ? '8vh' : sheetState === 'mid' ? '52vh' : sheetState === 'peek' ? 'calc(100vh - 10rem - env(safe-area-inset-bottom, 0px))' : '100vh';
-  const sheetTopStyle = dragOffset > 0 ? `calc(${sheetTopBase} + ${dragOffset}px)` : sheetTopBase;
+  const sheetTransform = (() => {
+    const drag = dragOffset > 0 ? ` + ${dragOffset}px` : '';
+    if (sheetState === 'full') return `translateY(calc(0%${drag}))`;
+    if (sheetState === 'mid') return `translateY(calc(100% - 55vh${drag}))`;
+    if (sheetState === 'peek') return `translateY(calc(100% - 9rem${drag}))`;
+    return `translateY(calc(100%${drag}))`;
+  })();
 
   const handleHandleTap = () => {
     if (sheetState === 'peek') setSheetState('mid');
@@ -688,13 +693,13 @@ const [mapLoaded, setMapLoaded] = useState(false);
         onClick={() => setSheetState('closed')}
       />
 
-      {/* Bottom sheet — 3-state: peek / mid / full — ends above navbar on mobile */}
+      {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden"
+        className="fixed left-0 right-0 bottom-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden md:hidden"
         style={{
-          top: sheetTopStyle,
-          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
-          transition: dragOffset > 0 ? 'none' : 'top 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+          height: '100dvh',
+          transform: sheetTransform,
+          transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
         <>
