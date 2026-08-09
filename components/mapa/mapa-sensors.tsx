@@ -197,7 +197,7 @@ export default function MapaSensors({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, HTMLElement>());
+  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; source: string }>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [isLegendVisible, setIsLegendVisible] = useState(false);
@@ -322,14 +322,13 @@ export default function MapaSensors({
         : null;
 
       markerElement.style.cursor = "pointer";
-      markerElement.style.transition = "transform 0.15s ease";
-      markerElement.style.transformOrigin = "center";
+      markerElement.style.transition = "box-shadow 0.15s ease";
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
       });
 
-      markerElementsRef.current.set(sensor.sensor_id, markerElement);
+      markerElementsRef.current.set(sensor.sensor_id, { el: markerElement, source: sensor.source });
 
       const marker = new Marker({ element: markerElement })
         .setLngLat([sensor.lon, sensor.lat])
@@ -347,17 +346,17 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Highlight selected marker
+  // Highlight selected marker via box-shadow (avoids touching Mapbox's transform)
   useEffect(() => {
-    markerElementsRef.current.forEach((el) => {
-      el.style.transform = 'scale(1)';
-      el.style.zIndex = '';
+    markerElementsRef.current.forEach(({ el, source }) => {
+      el.style.boxShadow = source === "sima"
+        ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2px white, 0 0 0 4px #1f2937"
+        : "0 2px 8px rgba(0,0,0,0.25)";
     });
     if (selectedSensor) {
-      const el = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
-      if (el) {
-        el.style.transform = 'scale(1.35)';
-        el.style.zIndex = '10';
+      const entry = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
+      if (entry) {
+        entry.el.style.boxShadow = "0 4px 16px rgba(0,0,0,0.35), 0 0 0 3px white, 0 0 0 6px rgba(0,0,0,0.85)";
       }
     }
   }, [selectedSensor]);
