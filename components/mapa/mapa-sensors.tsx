@@ -695,8 +695,9 @@ const [mapLoaded, setMapLoaded] = useState(false);
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 bottom-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden md:hidden"
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden md:hidden"
         style={{
+          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '100dvh',
           transform: sheetTransform,
           transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
