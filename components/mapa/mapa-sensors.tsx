@@ -52,8 +52,8 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   const iconStroke = bg === "#ffff00" ? "#374151" : "white";
 
   const el = document.createElement("div");
-  el.style.width = "28px";
-  el.style.height = "28px";
+  el.style.width = "40px";
+  el.style.height = "40px";
   el.style.backgroundColor = bg;
   el.style.borderRadius = isSima ? "7px" : "50%";
   el.style.display = "flex";
