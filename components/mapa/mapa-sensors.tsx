@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -726,14 +726,17 @@ export default function MapaSensors({
               <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
               <div className="flex flex-col gap-3">
                 {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
-                ].map(({ label, rec }) => (
+                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
+                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
+                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
+                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                ].map(({ label, rec, Icon }) => (
                   <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                    <p className="mb-1 text-xs font-semibold text-gray-700">{label}</p>
-                    <p className="text-xs leading-relaxed text-gray-500">{rec}</p>
+                    <div className="mb-1 flex items-center gap-2">
+                      <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                      <p className="text-xs font-semibold text-gray-700">{label}</p>
+                    </div>
+                    <p className="pl-[1.375rem] text-xs leading-relaxed text-gray-500">{rec}</p>
                   </div>
                 ))}
               </div>
