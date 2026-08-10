@@ -723,12 +723,7 @@ export default function MapaSensors({
         <div className="overflow-y-auto px-5" style={{ paddingBottom: '3rem', maxHeight: 'calc(50vh - 5rem)' }}>
           {qualityInfo && (
             <>
-              <div className="mb-5">
-                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </div>
-                <p className="mt-1 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
-              </div>
+              <p className="mb-5 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
 
               {/* General recommendation */}
               <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
