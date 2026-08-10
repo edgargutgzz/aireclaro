@@ -469,66 +469,35 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left panel */}
-      <div className="absolute left-6 top-[5rem] z-10 hidden md:block">
-        <div className="flex w-[260px] flex-col gap-2">
-
-          {/* Source filter pills */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowSima((v) => !v)}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium backdrop-blur-md transition-all duration-200 ${
-                showSima ? "border-2 border-gray-900 bg-white/90 text-gray-900 shadow-sm" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
-              }`}
-            >
-              <Landmark className="h-3.5 w-3.5" />
-              Estación SIMA
-            </button>
-            <button
-              onClick={() => setShowPurpleAir((v) => !v)}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium backdrop-blur-md transition-all duration-200 ${
-                showPurpleAir ? "border border-white/60 bg-white/90 text-gray-900 shadow-sm" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
-              }`}
-            >
-              <Users className="h-3.5 w-3.5" />
-              Sensor Ciudadano
-            </button>
-          </div>
-
-          {/* Locate button */}
-          {userLocation && (
-            <button
-              onClick={flyToUser}
-              className="flex w-full items-center gap-2 rounded-full border border-white/60 bg-white/80 px-4 py-2 text-xs font-medium text-gray-700 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-            >
-              <LocateFixed className="h-3.5 w-3.5 flex-shrink-0" />
-              Centrar en mi ubicación
-            </button>
-          )}
-
-          {/* Legend — collapsible */}
-          <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
-            <button
-              onClick={() => setIsDesktopLegendExpanded((v) => !v)}
-              className="flex w-full items-center justify-between px-4 py-3 text-left"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-gray-700">Calidad del Aire</span>
-                <span className="rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
-              </div>
-              <ChevronDown
-                className="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-300"
-                style={{ transform: isDesktopLegendExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
-              />
-            </button>
-            {isDesktopLegendExpanded && (
-              <div className="border-t border-gray-100 bg-white px-3 pb-3 pt-2">
-                <LegendContent />
-              </div>
-            )}
-          </div>
-
-        </div>
+      {/* Desktop filter pills — bottom left */}
+      <div className="absolute bottom-8 left-6 z-10 hidden gap-2 md:flex">
+        <button
+          onClick={() => setShowSima((v) => !v)}
+          className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
+            showSima ? "border-2 border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+          }`}
+        >
+          <Landmark className="h-3.5 w-3.5" />
+          Estación SIMA
+        </button>
+        <button
+          onClick={() => setShowPurpleAir((v) => !v)}
+          className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
+            showPurpleAir ? "border border-white/60 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+          }`}
+        >
+          <Users className="h-3.5 w-3.5" />
+          Sensor Ciudadano
+        </button>
+        {userLocation && (
+          <button
+            onClick={flyToUser}
+            className="flex items-center gap-1.5 rounded-full border border-white/60 bg-white/80 px-4 py-2 text-xs font-medium text-gray-700 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          >
+            <LocateFixed className="h-3.5 w-3.5" />
+            Mi ubicación
+          </button>
+        )}
       </div>
 
       {/* Legend toggle button — mobile only, hidden when sheet is expanded */}
