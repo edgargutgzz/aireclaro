@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -723,7 +723,10 @@ export default function MapaSensors({
         <div className="overflow-y-auto px-5" style={{ paddingBottom: '3rem', maxHeight: 'calc(50vh - 5rem)' }}>
           {qualityInfo && (
             <>
-              <p className="mb-4 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación.</p>
+              <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5">
+                <MapPin className="h-3 w-3 text-gray-400" />
+                <span className="text-xs font-medium text-gray-500">Sensor más cercano a ti</span>
+              </div>
 
               {/* General recommendation */}
               <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
