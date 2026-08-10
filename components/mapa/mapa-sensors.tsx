@@ -564,9 +564,10 @@ export default function MapaSensors({
 
       {/* Mobile: sensor info panel — slides up from bottom */}
       <div
-        className={`fixed left-0 right-0 bottom-0 z-[48] rounded-t-3xl bg-white/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
+        className={`fixed left-0 right-0 z-[48] rounded-t-3xl bg-white/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
           selectedSensor ? "translate-y-0" : "translate-y-full"
         }`}
+        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))' }}
       >
         {selectedSensor && (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
@@ -574,7 +575,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="px-5 pt-5" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>
+            <div className="overflow-y-auto px-5 pt-5 pb-4" style={{ maxHeight: '65vh' }}>
               <div className="mb-4 flex items-start justify-between">
                 <div>
                   <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
