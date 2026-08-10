@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -203,6 +203,9 @@ export default function MapaSensors({
     timestamp: string | null;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [sheetState, setSheetState] = useState<'peek' | 'mid' | 'full'>('peek');
+  const [dragOffset, setDragOffset] = useState(0);
+  const dragStartY = useRef(0);
 
   // Initialize map once
   useEffect(() => {
@@ -360,6 +363,33 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
+  const sheetTransform = (() => {
+    const drag = dragOffset > 0 ? ` + ${dragOffset}px` : '';
+    if (sheetState === 'full') return `translateY(calc(0%${drag}))`;
+    if (sheetState === 'mid') return `translateY(calc(100% - 50vh${drag}))`;
+    return `translateY(calc(100% - 4.5rem${drag}))`;
+  })();
+
+  const handleSheetTap = useCallback(() => {
+    setSheetState((s) => s === 'peek' ? 'mid' : s === 'mid' ? 'full' : 'mid');
+  }, []);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    dragStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const delta = e.touches[0].clientY - dragStartY.current;
+    if (delta > 0) setDragOffset(delta);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (dragOffset > 80) {
+      setSheetState((s) => s === 'full' ? 'mid' : 'peek');
+    }
+    setDragOffset(0);
+  }, [dragOffset]);
+
   return (
     <div className="relative h-screen">
       {/* Map container */}
@@ -369,8 +399,8 @@ export default function MapaSensors({
       />
 
 
-      {/* Locate me button — mobile only */}
-      {userLocation && (
+      {/* Locate me button — mobile only, hidden when sheet is expanded */}
+      {userLocation && sheetState === 'peek' && (
         <button
           onClick={flyToUser}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
@@ -462,15 +492,15 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Legend toggle button — mobile only */}
-      <button
+      {/* Legend toggle button — mobile only, hidden when sheet is expanded */}
+      {sheetState === 'peek' && <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
         className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
         style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 5.75rem)' }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         <GaugeCircle className="h-6 w-6 text-gray-700" />
-      </button>
+      </button>}
 
       {/* Legend backdrop — mobile only */}
       <div
@@ -619,6 +649,36 @@ export default function MapaSensors({
           </div>
         );
       })()}
+
+      {/* Bottom sheet backdrop — mobile only */}
+      <div
+        className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
+          sheetState !== 'peek' ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+        onClick={() => setSheetState('peek')}
+      />
+
+      {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
+      <div
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden md:hidden"
+        style={{
+          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
+          height: '100dvh',
+          transform: sheetTransform,
+          transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+      >
+        {/* Drag handle */}
+        <div
+          className="cursor-pointer select-none px-5 pt-3 pb-2"
+          onClick={handleSheetTap}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="mx-auto h-1 w-10 rounded-full bg-gray-200" />
+        </div>
+      </div>
     </div>
   );
 }
