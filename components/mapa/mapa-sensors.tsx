@@ -492,20 +492,18 @@ export default function MapaSensors({
         {userLocation && (
           <button
             onClick={flyToUser}
-            className="flex items-center gap-1.5 rounded-full border border-white/60 bg-white/80 px-4 py-2 text-xs font-medium text-gray-700 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+            className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-2.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+            aria-label="Mi ubicación"
           >
-            <LocateFixed className="h-3.5 w-3.5" />
-            Mi ubicación
+            <LocateFixed className="h-4 w-4 text-gray-700" />
           </button>
         )}
         <button
           onClick={() => setIsDesktopLegendExpanded((v) => !v)}
-          className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
-            isDesktopLegendExpanded ? "border border-white/60 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
-          }`}
+          className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-2.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          aria-label="Leyenda"
         >
-          <GaugeCircle className="h-3.5 w-3.5" />
-          Leyenda
+          <GaugeCircle className="h-4 w-4 text-gray-700" />
         </button>
       </div>
 
