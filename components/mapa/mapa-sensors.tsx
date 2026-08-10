@@ -747,6 +747,11 @@ export default function MapaSensors({
             </button>
             {isDesktopCardExpanded && (
               <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
+                {nearestPm25 !== null && (
+                  <div className="mb-1 flex items-end gap-2">
+                    <span className="text-sm text-gray-400">{roundPM25(nearestPm25)} μg/m³ · <span className="font-medium">PM2.5</span></span>
+                  </div>
+                )}
                 <p className="mb-3 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
                 <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
@@ -822,8 +827,15 @@ export default function MapaSensors({
           {qualityInfo && (
             <>
               <div className="mb-5">
-                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
+                <div className="flex items-end gap-2">
+                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                    {qualityInfo.label}
+                  </div>
+                  {nearestPm25 !== null && (
+                    <div className="mb-0.5 text-sm text-gray-400">
+                      {roundPM25(nearestPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                    </div>
+                  )}
                 </div>
                 <p className="mt-1 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
               </div>
