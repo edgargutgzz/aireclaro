@@ -700,8 +700,7 @@ export default function MapaSensors({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-gray-200" />
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del aire cerca de ti</p>
+          <div className="mx-auto h-1 w-10 rounded-full bg-gray-200" />
         </div>
 
         {/* Scrollable content */}
