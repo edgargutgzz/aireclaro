@@ -393,7 +393,7 @@ export default function MapaSensors({
   const sheetTransform = (() => {
     const drag = dragOffset > 0 ? ` + ${dragOffset}px` : '';
     if (sheetState === 'mid') return `translateY(calc(100% - 50vh${drag}))`;
-    return `translateY(calc(100% - 7rem${drag}))`;
+    return `translateY(calc(100% - 5.5rem${drag}))`;
   })();
 
   const handleSheetTap = useCallback(() => {
