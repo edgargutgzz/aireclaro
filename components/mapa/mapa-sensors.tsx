@@ -702,13 +702,16 @@ export default function MapaSensors({
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           {qualityInfo ? (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-3">
               <div
                 className="h-3 w-3 flex-shrink-0 rounded-full"
                 style={{ backgroundColor: qualityInfo.color }}
               />
-              <span className="text-base font-semibold" style={{ color: qualityInfo.textColor }}>
+              <span className="flex-shrink-0 text-base font-semibold" style={{ color: qualityInfo.textColor }}>
                 {qualityInfo.label}
+              </span>
+              <span className="min-w-0 truncate text-sm text-gray-400">
+                {qualityInfo.generalRec}
               </span>
             </div>
           ) : (
