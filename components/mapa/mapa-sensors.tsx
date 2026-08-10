@@ -427,12 +427,6 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
 
-      {/* Loading spinner */}
-      {!mapLoaded && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-100">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-gray-400" />
-        </div>
-      )}
 
 
       {/* Locate me button — mobile only, hidden when sheet is expanded */}
