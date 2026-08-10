@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, ChevronUp } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -702,14 +702,8 @@ export default function MapaSensors({
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           {qualityInfo ? (
-            <div className="flex items-end justify-between">
-              <div className="text-xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                {qualityInfo.label}
-              </div>
-              <ChevronUp
-                className="h-5 w-5 text-gray-300 transition-transform duration-300"
-                style={{ transform: sheetState === 'mid' ? 'rotate(180deg)' : 'rotate(0deg)' }}
-              />
+            <div className="text-xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+              {qualityInfo.label}
             </div>
           ) : (
             <p className="text-sm text-gray-400">Activa tu ubicación para ver la calidad del aire cerca de ti.</p>
