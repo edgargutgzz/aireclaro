@@ -684,7 +684,7 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] overflow-hidden md:hidden"
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '100dvh',
@@ -694,7 +694,7 @@ export default function MapaSensors({
       >
         {/* Drag handle + peek summary */}
         <div
-          className="cursor-pointer select-none px-5 pt-3 pb-4"
+          className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-4"
           onClick={handleSheetTap}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -714,7 +714,7 @@ export default function MapaSensors({
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
-        <div className="overflow-y-auto px-5" style={{ paddingBottom: '1rem' }}>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5" style={{ paddingBottom: '1rem' }}>
           {qualityInfo && (
             <>
               {/* General recommendation */}
