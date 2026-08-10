@@ -218,6 +218,8 @@ export default function MapaSensors({
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [isDesktopCardExpanded, setIsDesktopCardExpanded] = useState(false);
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
+  const [locationDenied, setLocationDenied] = useState(false);
+  const [showLocationTip, setShowLocationTip] = useState(false);
 
   const nearestSensorData = useMemo(() => {
     if (!userLocation || !sensors.length || !data.length) return null;
@@ -275,7 +277,7 @@ export default function MapaSensors({
           });
         },
         (error) => {
-          console.error("Error getting user location:", error);
+          if (error.code === 1) setLocationDenied(true);
         },
       );
     }
@@ -283,6 +285,11 @@ export default function MapaSensors({
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) return;
+    if (locationDenied) {
+      setShowLocationTip(true);
+      setTimeout(() => setShowLocationTip(false), 3000);
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setUserLocation({
@@ -290,9 +297,11 @@ export default function MapaSensors({
           longitude: position.coords.longitude,
         });
       },
-      (error) => console.error("Error getting user location:", error),
+      (error) => {
+        if (error.code === 1) setLocationDenied(true);
+      },
     );
-  }, []);
+  }, [locationDenied]);
 
   const flyToUser = () => {
     if (!userLocation || !map.current) return;
@@ -456,14 +465,20 @@ export default function MapaSensors({
 
       {/* Locate me button — mobile only, hidden when sheet is expanded */}
       {sheetState === 'peek' && (
-        <button
-          onClick={userLocation ? flyToUser : requestLocation}
-          className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}
-          aria-label="Mi ubicación"
-        >
-          <LocateFixed className={`h-6 w-6 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-        </button>
+        <div className="fixed right-6 z-[45] flex flex-col items-end gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}>
+          {showLocationTip && (
+            <div className="rounded-xl bg-gray-900/90 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
+              Activa tu ubicación en ajustes del navegador
+            </div>
+          )}
+          <button
+            onClick={userLocation ? flyToUser : requestLocation}
+            className="rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm"
+            aria-label="Mi ubicación"
+          >
+            <LocateFixed className={`h-6 w-6 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          </button>
+        </div>
       )}
 
       {/* Mobile filter pills — full width 50/50 */}
@@ -515,7 +530,12 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop bottom-right buttons — legend + locate */}
-      <div className="absolute bottom-8 right-6 z-10 hidden flex-col gap-2 md:flex">
+      <div className="absolute bottom-8 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
+        {showLocationTip && (
+          <div className="rounded-xl bg-gray-900/90 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
+            Activa tu ubicación en ajustes del navegador
+          </div>
+        )}
         <button
           onClick={() => setIsDesktopLegendExpanded((v) => !v)}
           className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
