@@ -217,7 +217,7 @@ export default function MapaSensors({
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
 
-  const nearestPm25 = useMemo(() => {
+  const nearestSensorData = useMemo(() => {
     if (!userLocation || !sensors.length || !data.length) return null;
     const sorted = [...sensors].sort((a, b) =>
       getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
@@ -225,11 +225,16 @@ export default function MapaSensors({
     );
     for (const sensor of sorted) {
       const d = data.find((item) => item.sensor_id === sensor.sensor_id);
-      if (d && d.pm25 !== null && d.pm25 > 0.4) return d.pm25;
+      if (d && d.pm25 !== null && d.pm25 > 0.4) {
+        const timestamp = format(new Date(d.time_stamp), "h") + ":00 " + format(new Date(d.time_stamp), "a");
+        return { pm25: d.pm25, timestamp };
+      }
     }
     return null;
   }, [userLocation, sensors, data]);
 
+  const nearestPm25 = nearestSensorData?.pm25 ?? null;
+  const nearestTimestamp = nearestSensorData?.timestamp ?? null;
   const qualityInfo = getQualityInfo(nearestPm25);
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
@@ -702,7 +707,12 @@ export default function MapaSensors({
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+            <div>
+              <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+              {nearestTimestamp && (
+                <p className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+              )}
+            </div>
             {qualityInfo ? (
               <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
                 {qualityInfo.label}
