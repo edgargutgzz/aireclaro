@@ -382,7 +382,7 @@ export default function MapaSensors({
       )}
 
       {/* Mobile filter pills — full width 50/50 */}
-      <div className="fixed left-0 right-0 z-[44] flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)' }}>
+      <div className="fixed left-0 right-0 z-[44] flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}>
         <button
           onClick={() => setShowSima((v) => !v)}
           className={`flex-1 rounded-full px-4 py-2 backdrop-blur-md transition-all duration-200 ${
