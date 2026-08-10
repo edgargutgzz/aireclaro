@@ -455,14 +455,14 @@ export default function MapaSensors({
 
 
       {/* Locate me button — mobile only, hidden when sheet is expanded */}
-      {userLocation && sheetState === 'peek' && (
+      {sheetState === 'peek' && (
         <button
-          onClick={flyToUser}
+          onClick={userLocation ? flyToUser : requestLocation}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
           style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}
-          aria-label="Ir a mi ubicación"
+          aria-label="Mi ubicación"
         >
-          <LocateFixed className="h-6 w-6 text-gray-700" />
+          <LocateFixed className={`h-6 w-6 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
         </button>
       )}
 
@@ -523,15 +523,13 @@ export default function MapaSensors({
         >
           <GaugeCircle className="h-5 w-5 text-gray-700" />
         </button>
-        {userLocation && (
-          <button
-            onClick={flyToUser}
-            className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-            aria-label="Mi ubicación"
-          >
-            <LocateFixed className="h-5 w-5 text-gray-700" />
-          </button>
-        )}
+        <button
+          onClick={userLocation ? flyToUser : requestLocation}
+          className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          aria-label="Mi ubicación"
+        >
+          <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+        </button>
       </div>
 
       {/* Desktop legend panel — above bottom-right buttons */}
