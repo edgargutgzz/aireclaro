@@ -489,28 +489,32 @@ export default function MapaSensors({
           <Users className="h-3.5 w-3.5" />
           Sensor Ciudadano
         </button>
+      </div>
+
+      {/* Desktop bottom-right buttons — legend + locate */}
+      <div className="absolute bottom-8 right-6 z-10 hidden flex-col gap-2 md:flex">
+        <button
+          onClick={() => setIsDesktopLegendExpanded((v) => !v)}
+          className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          aria-label="Leyenda"
+        >
+          <GaugeCircle className="h-5 w-5 text-gray-700" />
+        </button>
         {userLocation && (
           <button
             onClick={flyToUser}
-            className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-2.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+            className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
             aria-label="Mi ubicación"
           >
-            <LocateFixed className="h-4 w-4 text-gray-700" />
+            <LocateFixed className="h-5 w-5 text-gray-700" />
           </button>
         )}
-        <button
-          onClick={() => setIsDesktopLegendExpanded((v) => !v)}
-          className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-2.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-          aria-label="Leyenda"
-        >
-          <GaugeCircle className="h-4 w-4 text-gray-700" />
-        </button>
       </div>
 
-      {/* Desktop legend panel — above bottom pills */}
+      {/* Desktop legend panel — above bottom-right buttons */}
       {isDesktopLegendExpanded && (
-        <div className="absolute bottom-20 left-6 z-10 hidden w-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm backdrop-blur-md md:block">
-          <div className="px-3 pb-3 pt-3">
+        <div className="absolute bottom-24 right-6 z-10 hidden w-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm backdrop-blur-md md:block">
+          <div className="p-3">
             <LegendContent />
           </div>
         </div>
