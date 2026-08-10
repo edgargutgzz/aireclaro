@@ -723,9 +723,11 @@ export default function MapaSensors({
         <div className="overflow-y-auto px-5" style={{ paddingBottom: '3rem', maxHeight: 'calc(50vh - 5rem)' }}>
           {qualityInfo && (
             <>
-              <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5">
-                <MapPin className="h-3 w-3 text-gray-400" />
-                <span className="text-xs font-medium text-gray-500">Sensor más cercano a ti</span>
+              <div className="mb-5">
+                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
+                </div>
+                <p className="mt-1 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
               </div>
 
               {/* General recommendation */}
