@@ -203,7 +203,7 @@ export default function MapaSensors({
     timestamp: string | null;
   } | null>(null);
   const [copied, setCopied] = useState(false);
-  const [sheetState, setSheetState] = useState<'peek' | 'mid' | 'full'>('peek');
+  const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
 
@@ -365,13 +365,12 @@ export default function MapaSensors({
 
   const sheetTransform = (() => {
     const drag = dragOffset > 0 ? ` + ${dragOffset}px` : '';
-    if (sheetState === 'full') return `translateY(calc(0%${drag}))`;
     if (sheetState === 'mid') return `translateY(calc(100% - 50vh${drag}))`;
     return `translateY(calc(100% - 4.5rem${drag}))`;
   })();
 
   const handleSheetTap = useCallback(() => {
-    setSheetState((s) => s === 'peek' ? 'mid' : s === 'mid' ? 'full' : 'mid');
+    setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
   }, []);
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -384,9 +383,7 @@ export default function MapaSensors({
   }, []);
 
   const handleTouchEnd = useCallback(() => {
-    if (dragOffset > 80) {
-      setSheetState((s) => s === 'full' ? 'mid' : 'peek');
-    }
+    if (dragOffset > 80) setSheetState('peek');
     setDragOffset(0);
   }, [dragOffset]);
 
