@@ -32,26 +32,25 @@ export default function Navlinks() {
           <Link
             key={link.name}
             href={link.href}
-            className="group flex-1 transition-opacity active:opacity-50 md:flex-none"
+            className="group transition-opacity active:opacity-70 md:flex-none"
             aria-label={link.alt}
           >
-            {/* Mobile view - with icon and text */}
-            <div className="flex flex-col items-center md:hidden">
-              <div
-                className={clsx("mb-1 rounded-full p-1.5", {
-                  "bg-gray-100": isSelected,
+            {/* Mobile view — horizontal pill */}
+            <div
+              className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden", {
+                "bg-gray-900": isSelected,
+                "bg-transparent": !isSelected,
+              })}
+            >
+              <IconComponent
+                className={clsx("h-5 w-5", {
+                  "text-white": isSelected,
+                  "text-gray-400": !isSelected,
                 })}
-              >
-                <IconComponent
-                  className={clsx("h-6 w-6", {
-                    "text-gray-900": isSelected,
-                    "text-gray-400": !isSelected,
-                  })}
-                />
-              </div>
+              />
               <span
-                className={clsx("text-xs", {
-                  "font-medium text-gray-900": isSelected,
+                className={clsx("text-sm font-medium", {
+                  "text-white": isSelected,
                   "text-gray-400": !isSelected,
                 })}
               >

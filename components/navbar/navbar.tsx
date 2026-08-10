@@ -5,13 +5,14 @@ import Navlinks from "@/components/navbar/navlinks";
 export default function Navbar() {
   return (
     <>
-      {/* Mobile navbar at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/60 bg-white/80 shadow-sm backdrop-blur-md md:hidden">
-        <div className="flex w-full pb-2 pt-4">
+      {/* Mobile navbar at bottom — floating pill */}
+      <div
+        className="fixed left-1/2 z-50 -translate-x-1/2 md:hidden"
+        style={{ bottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
+      >
+        <div className="flex items-center gap-1 rounded-full border border-white/60 bg-white/85 p-1.5 shadow-lg backdrop-blur-md">
           <Navlinks />
         </div>
-        {/* Bottom safe area for newer iOS devices */}
-        <div className="h-[env(safe-area-inset-bottom)]"></div>
       </div>
 
       {/* Desktop navbar at top */}

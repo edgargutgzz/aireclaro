@@ -433,7 +433,7 @@ export default function MapaSensors({
         <button
           onClick={flyToUser}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
+          style={{ bottom: 'calc(4rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
           aria-label="Ir a mi ubicación"
         >
           <LocateFixed className="h-6 w-6 text-gray-700" />
@@ -525,7 +525,7 @@ export default function MapaSensors({
       {sheetState === 'peek' && <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
         className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
-        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 11.25rem)' }}
+        style={{ bottom: 'calc(4rem + env(safe-area-inset-bottom, 0px) + 11.25rem)' }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         <GaugeCircle className="h-6 w-6 text-gray-700" />
@@ -557,7 +557,7 @@ export default function MapaSensors({
             <X className="h-5 w-5 text-gray-400" />
           </button>
         </div>
-        <div className="px-5 pt-2" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
+        <div className="px-5 pt-2" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px) + 1rem)' }}>
           <LegendContent />
         </div>
       </div>
@@ -567,7 +567,7 @@ export default function MapaSensors({
         className={`fixed left-0 right-0 z-[48] rounded-t-3xl bg-white/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
           selectedSensor ? "translate-y-0" : "translate-y-full"
         }`}
-        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))' }}
+        style={{ bottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}
       >
         {selectedSensor && (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
@@ -692,7 +692,7 @@ export default function MapaSensors({
       <div
         className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden"
         style={{
-          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
+          bottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))',
           height: '100dvh',
           transform: sheetTransform,
           transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
