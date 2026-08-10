@@ -707,12 +707,7 @@ export default function MapaSensors({
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center justify-between">
-            <div>
-              <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-              {nearestTimestamp && (
-                <p className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
-              )}
-            </div>
+            <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
             {qualityInfo ? (
               <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
                 {qualityInfo.label}
@@ -750,6 +745,9 @@ export default function MapaSensors({
                   </div>
                 ))}
               </div>
+              {nearestTimestamp && (
+                <p className="mt-4 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+              )}
             </>
           )}
         </div>
