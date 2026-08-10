@@ -38,19 +38,19 @@ export default function Navlinks() {
             {/* Mobile view — horizontal pill */}
             <div
               className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden", {
-                "bg-gray-900": isSelected,
-                "bg-transparent": !isSelected,
+                "border border-gray-900": isSelected,
+                "border border-transparent": !isSelected,
               })}
             >
               <IconComponent
                 className={clsx("h-5 w-5", {
-                  "text-white": isSelected,
+                  "text-gray-900": isSelected,
                   "text-gray-400": !isSelected,
                 })}
               />
               <span
                 className={clsx("text-sm font-medium", {
-                  "text-white": isSelected,
+                  "text-gray-900": isSelected,
                   "text-gray-400": !isSelected,
                 })}
               >
