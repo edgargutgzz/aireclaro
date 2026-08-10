@@ -709,13 +709,13 @@ export default function MapaSensors({
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-            {qualityInfo ? (
+            {sheetState === 'peek' && (qualityInfo ? (
               <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
                 {qualityInfo.label}
               </span>
             ) : (
               <span className="text-sm text-gray-300">—</span>
-            )}
+            ))}
           </div>
         </div>
 
@@ -723,7 +723,12 @@ export default function MapaSensors({
         <div className="overflow-y-auto px-5" style={{ paddingBottom: '3rem', maxHeight: 'calc(50vh - 5rem)' }}>
           {qualityInfo && (
             <>
-              <p className="mb-5 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
+              <div className="mb-5">
+                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
+                </div>
+                <p className="mt-1 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
+              </div>
 
               {/* General recommendation */}
               <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
