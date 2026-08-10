@@ -94,7 +94,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="flex min-h-screen flex-col">
           {/* Navbar */}
-          <div className="fixed top-0 z-10 w-full">
+          <div className="fixed top-0 z-[55] w-full">
             <Navbar />
           </div>
           {/* Content - no padding */}
