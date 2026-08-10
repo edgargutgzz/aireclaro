@@ -398,7 +398,7 @@ export default function MapaSensors({
   const sheetTransform = (() => {
     const drag = dragOffset > 0 ? ` + ${dragOffset}px` : '';
     if (sheetState === 'mid') return `translateY(calc(100% - 50vh${drag}))`;
-    return `translateY(calc(100% - 5.5rem${drag}))`;
+    return `translateY(calc(100% - 4.5rem${drag}))`;
   })();
 
   const handleSheetTap = useCallback(() => {
@@ -433,7 +433,7 @@ export default function MapaSensors({
         <button
           onClick={flyToUser}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}
           aria-label="Ir a mi ubicación"
         >
           <LocateFixed className="h-6 w-6 text-gray-700" />
@@ -525,7 +525,7 @@ export default function MapaSensors({
       {sheetState === 'peek' && <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
         className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
-        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 11.25rem)' }}
+        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 9.75rem)' }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         <GaugeCircle className="h-6 w-6 text-gray-700" />
