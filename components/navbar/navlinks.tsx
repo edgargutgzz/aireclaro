@@ -36,12 +36,7 @@ export default function Navlinks() {
             aria-label={link.alt}
           >
             {/* Mobile view — horizontal pill */}
-            <div
-              className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden", {
-                "border border-gray-900": isSelected,
-                "border border-transparent": !isSelected,
-              })}
-            >
+            <div className="flex items-center gap-2 px-5 py-2.5 md:hidden">
               <IconComponent
                 className={clsx("h-5 w-5", {
                   "text-gray-900": isSelected,
@@ -49,9 +44,9 @@ export default function Navlinks() {
                 })}
               />
               <span
-                className={clsx("text-sm font-medium", {
-                  "text-gray-900": isSelected,
-                  "text-gray-400": !isSelected,
+                className={clsx("text-sm", {
+                  "font-semibold text-gray-900": isSelected,
+                  "font-medium text-gray-400": !isSelected,
                 })}
               >
                 {link.name}
