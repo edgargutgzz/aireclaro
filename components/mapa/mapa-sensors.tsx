@@ -701,19 +701,16 @@ export default function MapaSensors({
           onTouchEnd={handleTouchEnd}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
-          {qualityInfo ? (
-            <div className="flex flex-col gap-0.5">
-              <span className="text-xs font-medium text-gray-400">Calidad del aire</span>
-              <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+            {qualityInfo ? (
+              <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
                 {qualityInfo.label}
               </span>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-0.5">
-              <span className="text-xs font-medium text-gray-400">Calidad del aire</span>
-              <span className="text-sm text-gray-400">Activa tu ubicación para ver</span>
-            </div>
-          )}
+            ) : (
+              <span className="text-sm text-gray-300">—</span>
+            )}
+          </div>
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
