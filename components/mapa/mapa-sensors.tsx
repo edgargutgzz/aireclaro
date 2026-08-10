@@ -235,9 +235,19 @@ export default function MapaSensors({
     return null;
   }, [userLocation, sensors, data]);
 
+  const areaMedianPm25 = useMemo(() => {
+    const values = data
+      .map((d) => d.pm25)
+      .filter((v): v is number => v !== null && v > 0.4);
+    if (!values.length) return null;
+    const sorted = [...values].sort((a, b) => a - b);
+    return sorted[Math.floor(sorted.length / 2)];
+  }, [data]);
+
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestTimestamp = nearestSensorData?.timestamp ?? null;
-  const qualityInfo = getQualityInfo(nearestPm25);
+  const displayPm25 = nearestPm25 ?? areaMedianPm25;
+  const qualityInfo = getQualityInfo(displayPm25);
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
 
@@ -269,6 +279,19 @@ export default function MapaSensors({
         },
       );
     }
+  }, []);
+
+  const requestLocation = useCallback(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      (error) => console.error("Error getting user location:", error),
+    );
   }, []);
 
   const flyToUser = () => {
@@ -747,12 +770,26 @@ export default function MapaSensors({
             </button>
             {isDesktopCardExpanded && (
               <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
-                {nearestPm25 !== null && (
-                  <div className="mb-1 flex items-end gap-2">
-                    <span className="text-sm text-gray-400">{roundPM25(nearestPm25)} μg/m³ · <span className="font-medium">PM2.5</span></span>
+                {displayPm25 !== null && (
+                  <div className="mb-1 text-sm text-gray-400">
+                    {roundPM25(displayPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
                   </div>
                 )}
-                <p className="mb-3 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
+                {userLocation ? (
+                  <p className="mb-3 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
+                ) : (
+                  <div className="mb-3 flex items-center gap-2">
+                    <p className="text-xs text-gray-400">Promedio de los sensores en la zona</p>
+                    <button
+                      onClick={requestLocation}
+                      className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
+                    >
+                      <LocateFixed className="h-3 w-3" />
+                      Mi ubicación
+                    </button>
+                  </div>
+                )}
+
                 <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
@@ -831,13 +868,26 @@ export default function MapaSensors({
                   <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                     {qualityInfo.label}
                   </div>
-                  {nearestPm25 !== null && (
+                  {displayPm25 !== null && (
                     <div className="mb-0.5 text-sm text-gray-400">
-                      {roundPM25(nearestPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                      {roundPM25(displayPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
                     </div>
                   )}
                 </div>
-                <p className="mt-1 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
+                {userLocation ? (
+                  <p className="mt-1 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
+                ) : (
+                  <div className="mt-2 flex items-center gap-2">
+                    <p className="text-xs text-gray-400">Promedio de los sensores en la zona</p>
+                    <button
+                      onClick={requestLocation}
+                      className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
+                    >
+                      <LocateFixed className="h-3 w-3" />
+                      Mi ubicación
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* General recommendation */}
