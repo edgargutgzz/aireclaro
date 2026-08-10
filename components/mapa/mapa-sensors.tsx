@@ -469,8 +469,8 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop filter pills — bottom left */}
-      <div className="absolute bottom-8 left-6 z-10 hidden gap-2 md:flex">
+      {/* Desktop filter pills — top left */}
+      <div className="absolute left-6 top-[5rem] z-10 hidden gap-2 md:flex">
         <button
           onClick={() => setShowSima((v) => !v)}
           className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
