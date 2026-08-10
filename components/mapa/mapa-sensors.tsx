@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, ChevronUp } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -692,7 +692,7 @@ export default function MapaSensors({
           transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
-        {/* Drag handle */}
+        {/* Drag handle + peek summary */}
         <div
           className="cursor-pointer select-none px-5 pt-3 pb-4"
           onClick={handleSheetTap}
@@ -700,25 +700,26 @@ export default function MapaSensors({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <div className="mx-auto h-1 w-10 rounded-full bg-gray-200" />
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
+          {qualityInfo ? (
+            <div className="flex items-end justify-between">
+              <div className="text-xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                {qualityInfo.label}
+              </div>
+              <ChevronUp
+                className="h-5 w-5 text-gray-300 transition-transform duration-300"
+                style={{ transform: sheetState === 'mid' ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              />
+            </div>
+          ) : (
+            <p className="text-sm text-gray-400">Activa tu ubicación para ver la calidad del aire cerca de ti.</p>
+          )}
         </div>
 
-        {/* Scrollable content */}
-        <div className="overflow-y-auto px-5" style={{ paddingBottom: 'calc(1rem)' }}>
-          {qualityInfo ? (
+        {/* Scrollable content — visible when expanded to mid */}
+        <div className="overflow-y-auto px-5" style={{ paddingBottom: '1rem' }}>
+          {qualityInfo && (
             <>
-              {/* Hero */}
-              <div className="mb-4 flex items-end gap-3">
-                <div className="text-4xl font-bold leading-none" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </div>
-                {nearestPm25 !== null && (
-                  <div className="mb-0.5 text-sm text-gray-400">
-                    {Math.round(nearestPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
-                  </div>
-                )}
-              </div>
-
               {/* General recommendation */}
               <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
                 <p className="text-sm leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
@@ -740,8 +741,6 @@ export default function MapaSensors({
                 ))}
               </div>
             </>
-          ) : (
-            <p className="text-sm text-gray-400">Activa tu ubicación para ver la calidad del aire cerca de ti.</p>
           )}
         </div>
       </div>
