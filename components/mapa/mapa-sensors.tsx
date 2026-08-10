@@ -469,80 +469,26 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left column — filter pills + recommendation */}
-      <div className="absolute left-6 top-[5rem] z-10 hidden w-[280px] flex-col gap-3 md:flex">
-
-        {/* Filter pills */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowSima((v) => !v)}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
-              showSima ? "border-2 border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
-            }`}
-          >
-            <Landmark className="h-3.5 w-3.5" />
-            Estación SIMA
-          </button>
-          <button
-            onClick={() => setShowPurpleAir((v) => !v)}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
-              showPurpleAir ? "border border-white/60 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
-            }`}
-          >
-            <Users className="h-3.5 w-3.5" />
-            Sensor Ciudadano
-          </button>
-        </div>
-
-        {/* Recommendation card — collapsible */}
-        {qualityInfo && (
-          <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
-            <button
-              onClick={() => setIsDesktopCardExpanded((v) => !v)}
-              className="flex w-full items-center justify-between px-4 py-3.5 text-left"
-            >
-              <div>
-                <p className="text-xs font-medium text-gray-400">Calidad del aire</p>
-                <p className="text-lg font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </p>
-              </div>
-              <ChevronDown
-                className="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-300"
-                style={{ transform: isDesktopCardExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
-              />
-            </button>
-            {isDesktopCardExpanded && (
-              <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
-                <p className="mb-3 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
-                <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
-                  <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
-                </div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
-                <div className="flex flex-col gap-2">
-                  {[
-                    { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
-                    { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                    { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                  ].map(({ label, rec, Icon }) => (
-                    <div key={label} className="rounded-lg bg-gray-50 px-3 py-2.5">
-                      <div className="mb-1 flex items-center gap-1.5">
-                        <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <p className="text-xs font-semibold text-gray-700">{label}</p>
-                      </div>
-                      <p className="pl-[1.125rem] text-xs leading-relaxed text-gray-500">{rec}</p>
-                    </div>
-                  ))}
-                </div>
-                {nearestTimestamp && (
-                  <p className="mt-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
+      {/* Desktop left column — filter pills */}
+      <div className="absolute left-6 top-[5rem] z-10 hidden gap-2 md:flex">
+        <button
+          onClick={() => setShowSima((v) => !v)}
+          className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
+            showSima ? "border-2 border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+          }`}
+        >
+          <Landmark className="h-3.5 w-3.5" />
+          Estación SIMA
+        </button>
+        <button
+          onClick={() => setShowPurpleAir((v) => !v)}
+          className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
+            showPurpleAir ? "border border-white/60 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+          }`}
+        >
+          <Users className="h-3.5 w-3.5" />
+          Sensor Ciudadano
+        </button>
       </div>
 
       {/* Desktop bottom-right buttons — legend + locate */}
@@ -685,14 +631,16 @@ export default function MapaSensors({
         })()}
       </div>
 
-      {/* Desktop: right column — sensor detail only */}
-      {selectedSensor && (() => {
-        const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
-        const isSima = sensor.source === "sima";
-        const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-        const sensorQuality = getQualityInfo(pm25);
-        return (
-          <div className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] md:block">
+      {/* Desktop: right column — sensor detail + recommendation */}
+      <div className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] flex-col gap-2 md:flex" style={{ maxHeight: 'calc(100vh - 6rem)', overflowY: 'auto' }}>
+
+        {/* Sensor detail card */}
+        {selectedSensor && (() => {
+          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+          const isSima = sensor.source === "sima";
+          const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+          const sensorQuality = getQualityInfo(pm25);
+          return (
             <div className="flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
               <div className="rounded-xl bg-white p-4">
                 <div className="mb-4 flex items-start justify-between">
@@ -738,9 +686,59 @@ export default function MapaSensors({
                 </button>
               </div>
             </div>
+          );
+        })()}
+
+        {/* Recommendation card — collapsible */}
+        {qualityInfo && (
+          <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
+            <button
+              onClick={() => setIsDesktopCardExpanded((v) => !v)}
+              className="flex w-full items-center justify-between px-4 py-3.5 text-left"
+            >
+              <div>
+                <p className="text-xs font-medium text-gray-400">Calidad del aire</p>
+                <p className="text-lg font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
+                </p>
+              </div>
+              <ChevronDown
+                className="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-300"
+                style={{ transform: isDesktopCardExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              />
+            </button>
+            {isDesktopCardExpanded && (
+              <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
+                <p className="mb-3 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
+                <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                  <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
+                </div>
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+                <div className="flex flex-col gap-2">
+                  {[
+                    { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
+                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
+                    { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
+                    { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                  ].map(({ label, rec, Icon }) => (
+                    <div key={label} className="rounded-lg bg-gray-50 px-3 py-2.5">
+                      <div className="mb-1 flex items-center gap-1.5">
+                        <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <p className="text-xs font-semibold text-gray-700">{label}</p>
+                      </div>
+                      <p className="pl-[1.125rem] text-xs leading-relaxed text-gray-500">{rec}</p>
+                    </div>
+                  ))}
+                </div>
+                {nearestTimestamp && (
+                  <p className="mt-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+                )}
+              </div>
+            )}
           </div>
-        );
-      })()}
+        )}
+
+      </div>
 
       {/* Bottom sheet backdrop — mobile only */}
       <div
