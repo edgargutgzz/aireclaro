@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -76,6 +76,18 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
 
 const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
+};
+
+const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
 interface QualityInfo {
@@ -204,6 +216,21 @@ export default function MapaSensors({
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
+
+  const nearestPm25 = useMemo(() => {
+    if (!userLocation || !sensors.length || !data.length) return null;
+    const sorted = [...sensors].sort((a, b) =>
+      getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
+      getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lon)
+    );
+    for (const sensor of sorted) {
+      const d = data.find((item) => item.sensor_id === sensor.sensor_id);
+      if (d && d.pm25 !== null && d.pm25 > 0.4) return d.pm25;
+    }
+    return null;
+  }, [userLocation, sensors, data]);
+
+  const qualityInfo = getQualityInfo(nearestPm25);
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
 
@@ -667,13 +694,56 @@ export default function MapaSensors({
       >
         {/* Drag handle */}
         <div
-          className="cursor-pointer select-none px-5 pt-3 pb-2"
+          className="cursor-pointer select-none px-5 pt-3 pb-4"
           onClick={handleSheetTap}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <div className="mx-auto h-1 w-10 rounded-full bg-gray-200" />
+          <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-gray-200" />
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del aire cerca de ti</p>
+        </div>
+
+        {/* Scrollable content */}
+        <div className="overflow-y-auto px-5" style={{ paddingBottom: 'calc(1rem)' }}>
+          {qualityInfo ? (
+            <>
+              {/* Hero */}
+              <div className="mb-4 flex items-end gap-3">
+                <div className="text-4xl font-bold leading-none" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
+                </div>
+                {nearestPm25 !== null && (
+                  <div className="mb-0.5 text-sm text-gray-400">
+                    {Math.round(nearestPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                  </div>
+                )}
+              </div>
+
+              {/* General recommendation */}
+              <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                <p className="text-sm leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
+              </div>
+
+              {/* Sensitive groups */}
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+              <div className="flex flex-col gap-3">
+                {[
+                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores },
+                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
+                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
+                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
+                ].map(({ label, rec }) => (
+                  <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
+                    <p className="mb-1 text-xs font-semibold text-gray-700">{label}</p>
+                    <p className="text-xs leading-relaxed text-gray-500">{rec}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-gray-400">Activa tu ubicación para ver la calidad del aire cerca de ti.</p>
+          )}
         </div>
       </div>
     </div>
