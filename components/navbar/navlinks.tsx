@@ -36,19 +36,17 @@ export default function Navlinks() {
             aria-label={link.alt}
           >
             {/* Mobile view — horizontal pill */}
-            <div className="flex items-center gap-2 px-5 py-2.5 md:hidden">
-              <IconComponent
-                className={clsx("h-5 w-5", {
-                  "text-gray-900": isSelected,
-                  "text-gray-400": !isSelected,
-                })}
-              />
-              <span
-                className={clsx("text-sm", {
-                  "font-semibold text-gray-900": isSelected,
-                  "font-medium text-gray-400": !isSelected,
-                })}
-              >
+            <div
+              className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden transition-colors", {
+                "bg-gray-200 text-gray-900": isSelected,
+                "text-gray-400": !isSelected,
+              })}
+            >
+              <IconComponent className="h-5 w-5" />
+              <span className={clsx("text-sm", {
+                "font-semibold": isSelected,
+                "font-medium": !isSelected,
+              })}>
                 {link.name}
               </span>
             </div>
