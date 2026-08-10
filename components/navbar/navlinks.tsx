@@ -32,7 +32,7 @@ export default function Navlinks() {
           <Link
             key={link.name}
             href={link.href}
-            className="group transition-opacity active:opacity-70 md:flex-none"
+            className="group transition-opacity active:opacity-70"
             aria-label={link.alt}
           >
             {/* Mobile view — horizontal pill */}
