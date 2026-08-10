@@ -498,7 +498,25 @@ export default function MapaSensors({
             Mi ubicación
           </button>
         )}
+        <button
+          onClick={() => setIsDesktopLegendExpanded((v) => !v)}
+          className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
+            isDesktopLegendExpanded ? "border border-white/60 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+          }`}
+        >
+          <GaugeCircle className="h-3.5 w-3.5" />
+          Leyenda
+        </button>
       </div>
+
+      {/* Desktop legend panel — above bottom pills */}
+      {isDesktopLegendExpanded && (
+        <div className="absolute bottom-20 left-6 z-10 hidden w-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm backdrop-blur-md md:block">
+          <div className="px-3 pb-3 pt-3">
+            <LegendContent />
+          </div>
+        </div>
+      )}
 
       {/* Legend toggle button — mobile only, hidden when sheet is expanded */}
       {sheetState === 'peek' && <button
