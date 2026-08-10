@@ -611,9 +611,28 @@ export default function MapaSensors({
                 )}
               </div>
               {sensorQuality && (
-                <div className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
-                  <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
-                </div>
+                <>
+                  <div className="mb-4 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
+                    <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
+                  </div>
+                  <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+                  <div className="mb-4 flex flex-col gap-3">
+                    {[
+                      { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
+                      { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: PersonStanding },
+                      { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
+                      { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                    ].map(({ label, rec, Icon }) => (
+                      <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
+                        <div className="mb-1 flex items-center gap-2">
+                          <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                          <p className="text-xs font-semibold text-gray-700">{label}</p>
+                        </div>
+                        <p className="pl-[1.375rem] text-xs leading-relaxed text-gray-500">{rec}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
               <button
                 onClick={() => {
@@ -669,9 +688,28 @@ export default function MapaSensors({
                   )}
                 </div>
                 {sensorQuality && (
-                  <div className="mb-3 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
-                    <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
-                  </div>
+                  <>
+                    <div className="mb-4 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
+                      <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
+                    </div>
+                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+                    <div className="mb-3 flex flex-col gap-2">
+                      {[
+                        { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
+                        { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: PersonStanding },
+                        { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
+                        { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                      ].map(({ label, rec, Icon }) => (
+                        <div key={label} className="rounded-lg bg-gray-50 px-3 py-2.5">
+                          <div className="mb-1 flex items-center gap-1.5">
+                            <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                            <p className="text-xs font-semibold text-gray-700">{label}</p>
+                          </div>
+                          <p className="pl-[1.125rem] text-xs leading-relaxed text-gray-500">{rec}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 )}
                 <button
                   onClick={() => {
