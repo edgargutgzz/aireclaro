@@ -702,8 +702,14 @@ export default function MapaSensors({
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           {qualityInfo ? (
-            <div className="text-xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-              {qualityInfo.label}
+            <div className="flex items-center gap-2.5">
+              <div
+                className="h-3 w-3 flex-shrink-0 rounded-full"
+                style={{ backgroundColor: qualityInfo.color }}
+              />
+              <span className="text-base font-semibold" style={{ color: qualityInfo.textColor }}>
+                {qualityInfo.label}
+              </span>
             </div>
           ) : (
             <p className="text-sm text-gray-400">Activa tu ubicación para ver la calidad del aire cerca de ti.</p>
