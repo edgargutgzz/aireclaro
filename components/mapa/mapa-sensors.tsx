@@ -708,10 +708,7 @@ export default function MapaSensors({
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-400">Calidad del aire</p>
-              <p className="text-xs text-gray-300">Sensor más cercano a ti</p>
-            </div>
+            <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
             {qualityInfo ? (
               <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
                 {qualityInfo.label}
@@ -726,6 +723,8 @@ export default function MapaSensors({
         <div className="overflow-y-auto px-5" style={{ paddingBottom: '3rem', maxHeight: 'calc(50vh - 5rem)' }}>
           {qualityInfo && (
             <>
+              <p className="mb-4 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación.</p>
+
               {/* General recommendation */}
               <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
                 <p className="text-sm leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
