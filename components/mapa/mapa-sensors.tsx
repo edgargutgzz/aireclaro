@@ -519,44 +519,6 @@ export default function MapaSensors({
             <LegendContent />
           </div>
 
-          {/* Inner card 4: Recommendations (only when location is available) */}
-          {qualityInfo && (
-            <div className="rounded-xl bg-white px-4 py-4">
-              <div className="mb-3">
-                <div className="text-xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </div>
-                <p className="mt-0.5 text-xs text-gray-400">Sensor más cercano a ti</p>
-              </div>
-
-              <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
-                <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
-              </div>
-
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
-              <div className="flex flex-col gap-2">
-                {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                ].map(({ label, rec, Icon }) => (
-                  <div key={label} className="rounded-lg bg-gray-50 px-3 py-2.5">
-                    <div className="mb-1 flex items-center gap-1.5">
-                      <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                      <p className="text-xs font-semibold text-gray-700">{label}</p>
-                    </div>
-                    <p className="pl-[1.125rem] text-xs leading-relaxed text-gray-500">{rec}</p>
-                  </div>
-                ))}
-              </div>
-
-              {nearestTimestamp && (
-                <p className="mt-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
-              )}
-            </div>
-          )}
-
         </div>
       </div>
 
@@ -662,14 +624,16 @@ export default function MapaSensors({
         })()}
       </div>
 
-      {/* Desktop: sensor info card */}
-      {selectedSensor && (() => {
-        const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
-        const isSima = sensor.source === "sima";
-        const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-        const sensorQuality = getQualityInfo(pm25);
-        return (
-          <div className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] md:block">
+      {/* Desktop: right column — sensor detail + recommendation */}
+      <div className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] flex-col gap-2 md:flex" style={{ maxHeight: 'calc(100vh - 6rem)', overflowY: 'auto' }}>
+
+        {/* Sensor detail card */}
+        {selectedSensor && (() => {
+          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+          const isSima = sensor.source === "sima";
+          const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+          const sensorQuality = getQualityInfo(pm25);
+          return (
             <div className="flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
               <div className="rounded-xl bg-white p-4">
                 <div className="mb-4 flex items-start justify-between">
@@ -715,9 +679,47 @@ export default function MapaSensors({
                 </button>
               </div>
             </div>
+          );
+        })()}
+
+        {/* Recommendation card */}
+        {qualityInfo && (
+          <div className="flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
+            <div className="rounded-xl bg-white px-4 py-4">
+              <div className="mb-3">
+                <div className="text-xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
+                </div>
+                <p className="mt-0.5 text-xs text-gray-400">Sensor más cercano a ti</p>
+              </div>
+              <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
+              </div>
+              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+              <div className="flex flex-col gap-2">
+                {[
+                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
+                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
+                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
+                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                ].map(({ label, rec, Icon }) => (
+                  <div key={label} className="rounded-lg bg-gray-50 px-3 py-2.5">
+                    <div className="mb-1 flex items-center gap-1.5">
+                      <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                      <p className="text-xs font-semibold text-gray-700">{label}</p>
+                    </div>
+                    <p className="pl-[1.125rem] text-xs leading-relaxed text-gray-500">{rec}</p>
+                  </div>
+                ))}
+              </div>
+              {nearestTimestamp && (
+                <p className="mt-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+              )}
+            </div>
           </div>
-        );
-      })()}
+        )}
+
+      </div>
 
       {/* Bottom sheet backdrop — mobile only */}
       <div
