@@ -32,7 +32,7 @@ export default function Navlinks() {
           <Link
             key={link.name}
             href={link.href}
-            className="group active:opacity-50 transition-opacity"
+            className="group flex-1 transition-opacity active:opacity-50 md:flex-none"
             aria-label={link.alt}
           >
             {/* Mobile view - with icon and text */}
