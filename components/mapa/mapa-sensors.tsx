@@ -287,7 +287,6 @@ export default function MapaSensors({
     if (!navigator.geolocation) return;
     if (locationDenied) {
       setShowLocationTip(true);
-      setTimeout(() => setShowLocationTip(false), 3000);
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -465,20 +464,14 @@ export default function MapaSensors({
 
       {/* Locate me button — mobile only, hidden when sheet is expanded */}
       {sheetState === 'peek' && (
-        <div className="fixed right-6 z-[45] flex flex-col items-end gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}>
-          {showLocationTip && (
-            <div className="rounded-xl bg-gray-900/90 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
-              Activa tu ubicación en ajustes del navegador
-            </div>
-          )}
-          <button
-            onClick={userLocation ? flyToUser : requestLocation}
-            className="rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm"
-            aria-label="Mi ubicación"
-          >
-            <LocateFixed className={`h-6 w-6 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          </button>
-        </div>
+        <button
+          onClick={userLocation ? flyToUser : requestLocation}
+          className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}
+          aria-label="Mi ubicación"
+        >
+          <LocateFixed className={`h-6 w-6 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+        </button>
       )}
 
       {/* Mobile filter pills — full width 50/50 */}
@@ -531,11 +524,6 @@ export default function MapaSensors({
 
       {/* Desktop bottom-right buttons — legend + locate */}
       <div className="absolute bottom-8 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
-        {showLocationTip && (
-          <div className="rounded-xl bg-gray-900/90 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-md">
-            Activa tu ubicación en ajustes del navegador
-          </div>
-        )}
         <button
           onClick={() => setIsDesktopLegendExpanded((v) => !v)}
           className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
@@ -837,6 +825,33 @@ export default function MapaSensors({
         )}
 
       </div>
+
+      {/* Location denied modal — centered, both mobile and desktop */}
+      {showLocationTip && (
+        <>
+          <div
+            className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowLocationTip(false)}
+          />
+          <div className="fixed left-1/2 top-1/2 z-[71] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-xl">
+            <div className="mb-4 flex justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+                <LocateFixed className="h-6 w-6 text-gray-400" />
+              </div>
+            </div>
+            <p className="mb-1.5 text-center text-base font-semibold text-gray-900">Activa tu ubicación</p>
+            <p className="text-center text-sm leading-relaxed text-gray-500">
+              Para ver la calidad del aire más cercana a ti, activa el acceso a tu ubicación en los ajustes de tu navegador.
+            </p>
+            <button
+              onClick={() => setShowLocationTip(false)}
+              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              Entendido
+            </button>
+          </div>
+        </>
+      )}
 
       {/* Bottom sheet backdrop — mobile only */}
       <div
