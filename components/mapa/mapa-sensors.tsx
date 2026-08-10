@@ -714,7 +714,7 @@ export default function MapaSensors({
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
-        <div className="overflow-y-auto px-5" style={{ paddingBottom: '1rem', maxHeight: 'calc(50vh - 5rem)' }}>
+        <div className="overflow-y-auto px-5" style={{ paddingBottom: '3rem', maxHeight: 'calc(50vh - 5rem)' }}>
           {qualityInfo && (
             <>
               {/* General recommendation */}
