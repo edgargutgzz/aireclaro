@@ -427,6 +427,16 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
 
+      {/* Loading overlay */}
+      <div
+        className={`absolute inset-0 z-50 flex flex-col items-center justify-center bg-gray-100 transition-opacity duration-500 ${
+          mapLoaded ? 'pointer-events-none opacity-0' : 'opacity-100'
+        }`}
+      >
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-gray-500" />
+        <p className="mt-4 text-sm text-gray-400">Cargando mapa…</p>
+      </div>
+
 
       {/* Locate me button — mobile only, hidden when sheet is expanded */}
       {userLocation && sheetState === 'peek' && (
