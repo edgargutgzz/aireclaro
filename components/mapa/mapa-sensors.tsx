@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin, ChevronDown } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -216,6 +216,7 @@ export default function MapaSensors({
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
+  const [isDesktopCardExpanded, setIsDesktopCardExpanded] = useState(false);
 
   const nearestSensorData = useMemo(() => {
     if (!userLocation || !sensors.length || !data.length) return null;
@@ -682,40 +683,55 @@ export default function MapaSensors({
           );
         })()}
 
-        {/* Recommendation card */}
+        {/* Recommendation card — collapsible */}
         {qualityInfo && (
-          <div className="flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
-            <div className="rounded-xl bg-white px-4 py-4">
-              <div className="mb-3">
-                <div className="text-xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+          <div className="rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md overflow-hidden">
+            {/* Header — always visible, click to toggle */}
+            <button
+              onClick={() => setIsDesktopCardExpanded((v) => !v)}
+              className="flex w-full items-center justify-between px-4 py-3.5 text-left"
+            >
+              <div>
+                <p className="text-xs font-medium text-gray-400">Calidad del aire</p>
+                <p className="text-lg font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
+                </p>
+              </div>
+              <ChevronDown
+                className="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-300"
+                style={{ transform: isDesktopCardExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              />
+            </button>
+
+            {/* Expanded content */}
+            {isDesktopCardExpanded && (
+              <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
+                <p className="mb-3 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
+                <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                  <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
-                <p className="mt-0.5 text-xs text-gray-400">Sensor más cercano a ti</p>
-              </div>
-              <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
-                <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
-              </div>
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
-              <div className="flex flex-col gap-2">
-                {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                ].map(({ label, rec, Icon }) => (
-                  <div key={label} className="rounded-lg bg-gray-50 px-3 py-2.5">
-                    <div className="mb-1 flex items-center gap-1.5">
-                      <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                      <p className="text-xs font-semibold text-gray-700">{label}</p>
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+                <div className="flex flex-col gap-2">
+                  {[
+                    { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
+                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
+                    { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
+                    { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                  ].map(({ label, rec, Icon }) => (
+                    <div key={label} className="rounded-lg bg-gray-50 px-3 py-2.5">
+                      <div className="mb-1 flex items-center gap-1.5">
+                        <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <p className="text-xs font-semibold text-gray-700">{label}</p>
+                      </div>
+                      <p className="pl-[1.125rem] text-xs leading-relaxed text-gray-500">{rec}</p>
                     </div>
-                    <p className="pl-[1.125rem] text-xs leading-relaxed text-gray-500">{rec}</p>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                {nearestTimestamp && (
+                  <p className="mt-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+                )}
               </div>
-              {nearestTimestamp && (
-                <p className="mt-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
-              )}
-            </div>
+            )}
           </div>
         )}
 
