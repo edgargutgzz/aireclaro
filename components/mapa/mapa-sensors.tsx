@@ -514,6 +514,15 @@ export default function MapaSensors({
       {/* Desktop legend panel — above bottom-right buttons */}
       {isDesktopLegendExpanded && (
         <div className="absolute bottom-24 right-6 z-10 hidden w-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm backdrop-blur-md md:block">
+          <div className="flex items-center justify-between px-4 pt-3 pb-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-gray-700">Calidad del Aire</span>
+              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
+            </div>
+            <button onClick={() => setIsDesktopLegendExpanded(false)} className="text-gray-400 hover:text-gray-600">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
           <div className="p-3">
             <LegendContent />
           </div>
