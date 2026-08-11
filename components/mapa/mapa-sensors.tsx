@@ -619,10 +619,9 @@ export default function MapaSensors({
             <div className="overflow-y-auto px-5 pt-5 pb-4">
               <div className="mb-4 flex items-start justify-between">
                 <div>
-                  <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
-                  <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
-                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
-                    <span>{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                  <div className="flex items-center gap-1.5">
+                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                    <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
                   </div>
                 </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
@@ -697,8 +696,10 @@ export default function MapaSensors({
             <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
               <div className="flex items-start justify-between px-4 py-3.5">
                 <div>
-                  <p className="text-xs font-medium text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</p>
-                  <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
+                  <div className="flex items-center gap-1.5">
+                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                    <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
+                  </div>
                 </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
                   <X className="h-5 w-5" />
@@ -779,12 +780,9 @@ export default function MapaSensors({
             {isDesktopCardExpanded && (
               <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
                 {userLocation && nearestName ? (
-                  <div className="mb-3">
+                  <div className="mb-3 flex items-center gap-1.5">
+                    {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
-                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
-                      {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
-                      <span>{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                    </div>
                   </div>
                 ) : !userLocation && (
                   <div className="mb-3 flex items-center gap-2">
@@ -906,12 +904,9 @@ export default function MapaSensors({
             <>
               <div className="mb-5">
                 {userLocation && nearestName ? (
-                  <div className="mb-2">
+                  <div className="mb-2 flex items-center gap-1.5">
+                    {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
-                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
-                      {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
-                      <span>{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                    </div>
                   </div>
                 ) : !userLocation && (
                   <div className="mb-2 flex items-center gap-2">
