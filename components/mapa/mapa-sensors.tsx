@@ -256,6 +256,8 @@ export default function MapaSensors({
   const qualityInfo = getQualityInfo(displayPm25);
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
+  const [dragSensorOffset, setDragSensorOffset] = useState(0);
+  const dragSensorStartY = useRef(0);
 
   // Initialize map once
   useEffect(() => {
@@ -456,6 +458,20 @@ export default function MapaSensors({
     setDragOffset(0);
   }, [dragOffset]);
 
+  const handleSensorTouchStart = useCallback((e: React.TouchEvent) => {
+    dragSensorStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleSensorTouchMove = useCallback((e: React.TouchEvent) => {
+    const delta = e.touches[0].clientY - dragSensorStartY.current;
+    if (delta > 0) setDragSensorOffset(delta);
+  }, []);
+
+  const handleSensorTouchEnd = useCallback(() => {
+    if (dragSensorOffset > 80) setSelectedSensor(null);
+    setDragSensorOffset(0);
+  }, [dragSensorOffset]);
+
   return (
     <div className="relative h-screen">
       {/* Map container */}
@@ -605,10 +621,13 @@ export default function MapaSensors({
 
       {/* Mobile: sensor info panel — slides up from bottom */}
       <div
-        className={`fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
-          selectedSensor ? "translate-y-0" : "translate-y-full"
-        }`}
-        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))', height: '62dvh' }}
+        className="fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        style={{
+          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
+          height: '62dvh',
+          transform: selectedSensor ? `translateY(${dragSensorOffset}px)` : 'translateY(100%)',
+          transition: dragSensorOffset > 0 ? 'none' : 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
       >
         {selectedSensor && (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
@@ -616,20 +635,22 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="flex-1 overflow-y-auto px-5 pt-5 pb-4">
-              <div className="mb-4 flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                      {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
-                      {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
-                    </span>
-                  </div>
-                </div>
-                <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
-                  <X className="h-5 w-5" />
-                </button>
+            <>
+              <div
+                className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
+                onTouchStart={handleSensorTouchStart}
+                onTouchMove={handleSensorTouchMove}
+                onTouchEnd={handleSensorTouchEnd}
+              >
+                <div className="mx-auto h-1 w-10 rounded-full bg-gray-200" />
+              </div>
+              <div className="flex-1 overflow-y-auto px-5 pb-4">
+              <div className="mb-4 flex items-center gap-2">
+                <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
+                <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                  {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
+                  {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
+                </span>
               </div>
               <div className="mb-5 flex items-center gap-2">
                 <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
@@ -680,6 +701,7 @@ export default function MapaSensors({
                 <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
               </button>
             </div>
+            </>
           );
         })()}
       </div>
