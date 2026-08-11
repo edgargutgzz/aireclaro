@@ -233,7 +233,7 @@ export default function MapaSensors({
         const timestamp = format(new Date(d.time_stamp), "h") + ":00 " + format(new Date(d.time_stamp), "a");
         const isSima = sensor.source === "sima";
         const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-        return { pm25: d.pm25, timestamp, name, isSima };
+        return { pm25: d.pm25, timestamp, name, isSima, lat: sensor.lat, lon: sensor.lon };
       }
     }
     return null;
@@ -252,6 +252,8 @@ export default function MapaSensors({
   const nearestTimestamp = nearestSensorData?.timestamp ?? null;
   const nearestName = nearestSensorData?.name ?? null;
   const nearestIsSima = nearestSensorData?.isSima ?? null;
+  const nearestLat = nearestSensorData?.lat ?? null;
+  const nearestLon = nearestSensorData?.lon ?? null;
   const displayPm25 = nearestPm25 ?? areaMedianPm25;
   const qualityInfo = getQualityInfo(displayPm25);
   const [dragOffset, setDragOffset] = useState(0);
@@ -864,6 +866,19 @@ export default function MapaSensors({
                 {nearestTimestamp && (
                   <p className="mb-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
                 )}
+                {nearestLat !== null && nearestLon !== null && (
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    }}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200"
+                  >
+                    <Copy className="h-4 w-4" />
+                    <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -997,6 +1012,19 @@ export default function MapaSensors({
               </div>
               {nearestTimestamp && (
                 <p className="mb-4 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+              )}
+              {nearestLat !== null && nearestLon !== null && (
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200"
+                >
+                  <Copy className="h-4 w-4" />
+                  <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
+                </button>
               )}
             </>
           )}
