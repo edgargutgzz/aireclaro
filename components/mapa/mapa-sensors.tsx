@@ -797,21 +797,9 @@ export default function MapaSensors({
           <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
             <button
               onClick={() => setIsDesktopCardExpanded((v) => !v)}
-              className="flex w-full items-center justify-between px-4 py-3.5 text-left"
+              className="flex w-full items-center justify-between px-4 py-3 text-left"
             >
-              <div>
-                <p className="text-xs font-medium text-gray-400">Calidad del aire</p>
-                <div className="flex items-center gap-2">
-                  <p className="text-lg font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                    {qualityInfo.label}
-                  </p>
-                  {displayPm25 !== null && (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                      {roundPM25(displayPm25)} μg/m³ · PM2.5
-                    </span>
-                  )}
-                </div>
-              </div>
+              <p className="text-xs font-medium text-gray-400">Calidad del aire</p>
               <ChevronDown
                 className="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-300"
                 style={{ transform: isDesktopCardExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
