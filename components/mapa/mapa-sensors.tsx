@@ -939,6 +939,13 @@ export default function MapaSensors({
                 <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
                 </div>
+                {displayPm25 !== null && (
+                  <div className="mt-1.5">
+                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                      {roundPM25(displayPm25)} μg/m³ · PM2.5
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* General recommendation */}
