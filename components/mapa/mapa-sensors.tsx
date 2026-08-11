@@ -619,11 +619,11 @@ export default function MapaSensors({
             <div className="overflow-y-auto px-5 pt-5 pb-4">
               <div className="mb-4 flex items-start justify-between">
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
-                    <span className="text-gray-300">·</span>
-                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                    <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
+                    </span>
                   </div>
                 </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
@@ -631,16 +631,16 @@ export default function MapaSensors({
                 </button>
               </div>
               <div className="mb-5">
-                <div className="flex items-end gap-2">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
-                    {sensorQuality ? sensorQuality.label : "—"}
-                  </div>
-                  {pm25 !== null && (
-                    <div className="mb-0.5 text-sm text-gray-400">
-                      {roundPM25(pm25)} μg/m³ · <span className="font-medium">PM2.5</span>
-                    </div>
-                  )}
+                <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
+                  {sensorQuality ? sensorQuality.label : "—"}
                 </div>
+                {pm25 !== null && (
+                  <div className="mt-1.5">
+                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                      {roundPM25(pm25)} μg/m³ · PM2.5
+                    </span>
+                  </div>
+                )}
               </div>
               {sensorQuality && (
                 <>
@@ -698,11 +698,11 @@ export default function MapaSensors({
             <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
               <div className="flex items-start justify-between px-4 py-3.5">
                 <div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
-                    <span className="text-gray-300">·</span>
-                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                    <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
+                    </span>
                   </div>
                 </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
@@ -710,13 +710,15 @@ export default function MapaSensors({
                 </button>
               </div>
               <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
-                <div className="mb-4 flex items-end gap-2">
+                <div className="mb-4">
                   <div className="text-lg font-bold leading-tight" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
                   </div>
                   {pm25 !== null && (
-                    <div className="mb-0.5 text-sm text-gray-400">
-                      {roundPM25(pm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                    <div className="mt-1.5">
+                      <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                        {roundPM25(pm25)} μg/m³ · PM2.5
+                      </span>
                     </div>
                   )}
                 </div>
@@ -786,9 +788,9 @@ export default function MapaSensors({
                 {userLocation && nearestName ? (
                   <div className="mb-3 flex items-center gap-1.5">
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
-                    <span className="text-gray-300">·</span>
-                    {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                    <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
+                    </span>
                   </div>
                 ) : !userLocation && (
                   <div className="mb-3 flex items-center gap-2">
@@ -803,8 +805,10 @@ export default function MapaSensors({
                   </div>
                 )}
                 {displayPm25 !== null && (
-                  <div className="mb-1 text-sm text-gray-400">
-                    {roundPM25(displayPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                  <div className="mb-2">
+                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                      {roundPM25(displayPm25)} μg/m³ · PM2.5
+                    </span>
                   </div>
                 )}
 
@@ -912,9 +916,9 @@ export default function MapaSensors({
                 {userLocation && nearestName ? (
                   <div className="mb-2 flex items-center gap-1.5">
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
-                    <span className="text-gray-300">·</span>
-                    {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                    <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
+                    </span>
                   </div>
                 ) : !userLocation && (
                   <div className="mb-2 flex items-center gap-2">
@@ -928,15 +932,8 @@ export default function MapaSensors({
                     </button>
                   </div>
                 )}
-                <div className="flex items-end gap-2">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                    {qualityInfo.label}
-                  </div>
-                  {displayPm25 !== null && (
-                    <div className="mb-0.5 text-sm text-gray-400">
-                      {roundPM25(displayPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
-                    </div>
-                  )}
+                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
                 </div>
               </div>
 
