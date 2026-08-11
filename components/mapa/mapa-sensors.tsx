@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin, ChevronDown } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin, ChevronDown, Clock } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -690,7 +690,10 @@ export default function MapaSensors({
                 </>
               )}
               {timestamp && (
-                <p className="mb-4 text-xs text-gray-300">Actualizado a las {timestamp}</p>
+                <div className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2">
+                  <Clock className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-500">Actualizado a las {timestamp}</span>
+                </div>
               )}
               <button
                 onClick={() => {
@@ -768,7 +771,10 @@ export default function MapaSensors({
                   </>
                 )}
                 {timestamp && (
-                  <p className="mb-3 text-xs text-gray-300">Actualizado a las {timestamp}</p>
+                  <div className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2">
+                    <Clock className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm font-medium text-gray-500">Actualizado a las {timestamp}</span>
+                  </div>
                 )}
                 <button
                   onClick={() => {
@@ -864,7 +870,10 @@ export default function MapaSensors({
                   ))}
                 </div>
                 {nearestTimestamp && (
-                  <p className="mb-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+                  <div className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2">
+                    <Clock className="h-4 w-4 text-gray-400" />
+                    <span className="text-sm font-medium text-gray-500">Actualizado a las {nearestTimestamp}</span>
+                  </div>
                 )}
                 {nearestLat !== null && nearestLon !== null && (
                   <button
@@ -1011,7 +1020,10 @@ export default function MapaSensors({
                 ))}
               </div>
               {nearestTimestamp && (
-                <p className="mb-4 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+                <div className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2">
+                  <Clock className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-500">Actualizado a las {nearestTimestamp}</span>
+                </div>
               )}
               {nearestLat !== null && nearestLon !== null && (
                 <button
