@@ -784,7 +784,6 @@ export default function MapaSensors({
                     <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
                       {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
                       <span>{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                      {nearestTimestamp && <><span>·</span><span>Actualizado a las {nearestTimestamp}</span></>}
                     </div>
                   </div>
                 ) : !userLocation && (
@@ -912,7 +911,6 @@ export default function MapaSensors({
                     <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
                       {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
                       <span>{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                      {nearestTimestamp && <><span>·</span><span>Actualizado a las {nearestTimestamp}</span></>}
                     </div>
                   </div>
                 ) : !userLocation && (
