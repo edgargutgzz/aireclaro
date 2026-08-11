@@ -717,9 +717,9 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
-              <div className="flex items-start justify-between px-4 py-3.5">
-                <div>
+            <div className="overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
+              <div className="px-4 pb-4 pt-4">
+                <div className="mb-4 flex items-start justify-between">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
                     <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
@@ -727,12 +727,10 @@ export default function MapaSensors({
                       {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
                     </span>
                   </div>
+                  <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-                <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
                 <div className="mb-4 flex items-center gap-2">
                   <div className="text-lg font-bold leading-tight" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
@@ -833,6 +831,16 @@ export default function MapaSensors({
                     </button>
                   </div>
                 )}
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="text-lg font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                    {qualityInfo.label}
+                  </div>
+                  {displayPm25 !== null && (
+                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                      {roundPM25(displayPm25)} μg/m³ · PM2.5
+                    </span>
+                  )}
+                </div>
                 <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
