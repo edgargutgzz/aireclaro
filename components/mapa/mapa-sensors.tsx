@@ -689,12 +689,6 @@ export default function MapaSensors({
                   </div>
                 </>
               )}
-              {timestamp && (
-                <div className="mb-2 flex items-center justify-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-gray-300" />
-                  <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
-                </div>
-              )}
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
@@ -706,6 +700,12 @@ export default function MapaSensors({
                 <Copy className="h-4 w-4" />
                 <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
               </button>
+              {timestamp && (
+                <div className="mt-2 flex items-center justify-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-gray-300" />
+                  <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
+                </div>
+              )}
             </div>
             </>
           );
@@ -770,12 +770,6 @@ export default function MapaSensors({
                     </div>
                   </>
                 )}
-                {timestamp && (
-                  <div className="mb-2 flex items-center justify-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-gray-300" />
-                    <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
-                  </div>
-                )}
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
@@ -787,6 +781,12 @@ export default function MapaSensors({
                   <Copy className="h-4 w-4" />
                   <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
                 </button>
+                {timestamp && (
+                  <div className="mt-2 flex items-center justify-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5 text-gray-300" />
+                    <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -869,12 +869,6 @@ export default function MapaSensors({
                     </div>
                   ))}
                 </div>
-                {nearestTimestamp && (
-                  <div className="mb-2 flex items-center justify-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-gray-300" />
-                    <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
-                  </div>
-                )}
                 {nearestLat !== null && nearestLon !== null && (
                   <button
                     onClick={() => {
@@ -887,6 +881,12 @@ export default function MapaSensors({
                     <Copy className="h-4 w-4" />
                     <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
                   </button>
+                )}
+                {nearestTimestamp && (
+                  <div className="mt-2 flex items-center justify-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5 text-gray-300" />
+                    <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
+                  </div>
                 )}
               </div>
             )}
@@ -1019,12 +1019,6 @@ export default function MapaSensors({
                   </div>
                 ))}
               </div>
-              {nearestTimestamp && (
-                <div className="mb-2 flex items-center justify-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-gray-300" />
-                  <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
-                </div>
-              )}
               {nearestLat !== null && nearestLon !== null && (
                 <button
                   onClick={() => {
@@ -1037,6 +1031,12 @@ export default function MapaSensors({
                   <Copy className="h-4 w-4" />
                   <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
                 </button>
+              )}
+              {nearestTimestamp && (
+                <div className="mt-2 flex items-center justify-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-gray-300" />
+                  <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
+                </div>
               )}
             </>
           )}
