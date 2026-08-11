@@ -701,7 +701,7 @@ export default function MapaSensors({
                 <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
               </button>
               {timestamp && (
-                <div className="mt-2 flex items-center justify-center gap-1.5">
+                <div className="mt-4 flex items-center justify-center gap-1.5">
                   <Clock className="h-3.5 w-3.5 text-gray-300" />
                   <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
                 </div>
@@ -782,7 +782,7 @@ export default function MapaSensors({
                   <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
                 </button>
                 {timestamp && (
-                  <div className="mt-2 flex items-center justify-center gap-1.5">
+                  <div className="mt-4 flex items-center justify-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 text-gray-300" />
                     <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
                   </div>
@@ -883,7 +883,7 @@ export default function MapaSensors({
                   </button>
                 )}
                 {nearestTimestamp && (
-                  <div className="mt-2 flex items-center justify-center gap-1.5">
+                  <div className="mt-4 flex items-center justify-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 text-gray-300" />
                     <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
                   </div>
@@ -1033,7 +1033,7 @@ export default function MapaSensors({
                 </button>
               )}
               {nearestTimestamp && (
-                <div className="mt-2 flex items-center justify-center gap-1.5">
+                <div className="mt-4 flex items-center justify-center gap-1.5">
                   <Clock className="h-3.5 w-3.5 text-gray-300" />
                   <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
                 </div>
