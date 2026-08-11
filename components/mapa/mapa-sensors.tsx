@@ -820,7 +820,7 @@ export default function MapaSensors({
             {isDesktopCardExpanded && (
               <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
                 {userLocation && nearestName ? (
-                  <div className="mb-3 flex items-center gap-1.5">
+                  <div className="mb-3 flex items-center gap-2">
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
                     <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
                       {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
@@ -966,7 +966,7 @@ export default function MapaSensors({
           {qualityInfo && (
             <>
               {userLocation && nearestName ? (
-                <div className="mb-4 flex items-center gap-1.5">
+                <div className="mb-4 flex items-center gap-2">
                   <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
                   <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
                     {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
