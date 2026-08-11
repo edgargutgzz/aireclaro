@@ -713,7 +713,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop: right column — sensor detail + recommendation */}
-      <div className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] flex-col gap-2 md:flex" style={{ maxHeight: 'calc(100vh - 6rem)', overflowY: 'auto' }}>
+      <div className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] flex-col gap-2 md:flex">
 
         {/* Sensor detail card */}
         {selectedSensor && (() => {
@@ -723,7 +723,7 @@ export default function MapaSensors({
           const sensorQuality = getQualityInfo(pm25);
           return (
             <div className="overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
-              <div className="px-4 pb-4 pt-4">
+              <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
                 <div className="mb-4 flex items-start justify-between">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
@@ -806,7 +806,7 @@ export default function MapaSensors({
               />
             </button>
             {isDesktopCardExpanded && (
-              <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
+              <div className="overflow-y-auto border-t border-gray-100 bg-white px-4 pb-4 pt-3" style={{ maxHeight: 'calc(100vh - 10rem)' }}>
                 {userLocation && nearestName ? (
                   <div className="mb-3 flex items-center gap-2">
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
