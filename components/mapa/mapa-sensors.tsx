@@ -690,9 +690,9 @@ export default function MapaSensors({
                 </>
               )}
               {timestamp && (
-                <div className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2">
-                  <Clock className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm font-medium text-gray-500">Actualizado a las {timestamp}</span>
+                <div className="mb-2 flex items-center justify-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-gray-300" />
+                  <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
                 </div>
               )}
               <button
@@ -870,9 +870,9 @@ export default function MapaSensors({
                   ))}
                 </div>
                 {nearestTimestamp && (
-                  <div className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm font-medium text-gray-500">Actualizado a las {nearestTimestamp}</span>
+                  <div className="mb-2 flex items-center justify-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5 text-gray-300" />
+                    <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
                   </div>
                 )}
                 {nearestLat !== null && nearestLon !== null && (
@@ -1020,9 +1020,9 @@ export default function MapaSensors({
                 ))}
               </div>
               {nearestTimestamp && (
-                <div className="mb-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2">
-                  <Clock className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm font-medium text-gray-500">Actualizado a las {nearestTimestamp}</span>
+                <div className="mb-2 flex items-center justify-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5 text-gray-300" />
+                  <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
                 </div>
               )}
               {nearestLat !== null && nearestLon !== null && (
