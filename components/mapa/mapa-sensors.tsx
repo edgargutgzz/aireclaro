@@ -631,16 +631,14 @@ export default function MapaSensors({
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="mb-5">
+              <div className="mb-5 flex items-center gap-2">
                 <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
                   {sensorQuality ? sensorQuality.label : "—"}
                 </div>
                 {pm25 !== null && (
-                  <div className="mt-1.5">
-                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
-                      {roundPM25(pm25)} μg/m³ · PM2.5
-                    </span>
-                  </div>
+                  <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                    {roundPM25(pm25)} μg/m³ · PM2.5
+                  </span>
                 )}
               </div>
               {sensorQuality && (
@@ -712,16 +710,14 @@ export default function MapaSensors({
                 </button>
               </div>
               <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
-                <div className="mb-4">
+                <div className="mb-4 flex items-center gap-2">
                   <div className="text-lg font-bold leading-tight" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
                   </div>
                   {pm25 !== null && (
-                    <div className="mt-1.5">
-                      <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
-                        {roundPM25(pm25)} μg/m³ · PM2.5
-                      </span>
-                    </div>
+                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                      {roundPM25(pm25)} μg/m³ · PM2.5
+                    </span>
                   )}
                 </div>
                 {sensorQuality && (
@@ -776,9 +772,16 @@ export default function MapaSensors({
             >
               <div>
                 <p className="text-xs font-medium text-gray-400">Calidad del aire</p>
-                <p className="text-lg font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-lg font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                    {qualityInfo.label}
+                  </p>
+                  {displayPm25 !== null && (
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {roundPM25(displayPm25)} μg/m³ · PM2.5
+                    </span>
+                  )}
+                </div>
               </div>
               <ChevronDown
                 className="h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-300"
@@ -807,14 +810,6 @@ export default function MapaSensors({
                     </button>
                   </div>
                 )}
-                {displayPm25 !== null && (
-                  <div className="mb-2">
-                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
-                      {roundPM25(displayPm25)} μg/m³ · PM2.5
-                    </span>
-                  </div>
-                )}
-
                 <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
@@ -936,16 +931,16 @@ export default function MapaSensors({
                     </button>
                   </div>
                 )}
-                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </div>
-                {displayPm25 !== null && (
-                  <div className="mt-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                    {qualityInfo.label}
+                  </div>
+                  {displayPm25 !== null && (
                     <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
                       {roundPM25(displayPm25)} μg/m³ · PM2.5
                     </span>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               {/* General recommendation */}
