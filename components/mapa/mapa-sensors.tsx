@@ -638,6 +638,7 @@ export default function MapaSensors({
             <>
               <div
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
+                onClick={() => setSelectedSensor(null)}
                 onTouchStart={handleSensorTouchStart}
                 onTouchMove={handleSensorTouchMove}
                 onTouchEnd={handleSensorTouchEnd}
