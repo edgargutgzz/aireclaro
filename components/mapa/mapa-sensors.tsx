@@ -437,9 +437,9 @@ export default function MapaSensors({
   }, [mapLoaded]);
 
   const sheetTransform = (() => {
-    const drag = dragOffset > 0 ? ` + ${dragOffset}px` : '';
-    if (sheetState === 'mid') return `translateY(calc(100% - 62dvh${drag}))`;
-    return `translateY(calc(100% - 4.5rem${drag}))`;
+    const drag = dragOffset > 0 ? `translateY(${dragOffset}px)` : 'translateY(0)';
+    if (sheetState === 'mid') return drag;
+    return `translateY(calc(100% - 4.5rem${dragOffset > 0 ? ` + ${dragOffset}px` : ''}))`;
   })();
 
   const handleSheetTap = useCallback(() => {
@@ -935,7 +935,7 @@ export default function MapaSensors({
         className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
-          height: '100dvh',
+          height: '62dvh',
           transform: sheetTransform,
           transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
@@ -962,7 +962,7 @@ export default function MapaSensors({
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
-        <div className="overflow-y-auto px-5 pb-4" style={{ maxHeight: 'calc(62dvh - 5rem)' }}>
+        <div className="flex-1 overflow-y-auto px-5 pb-4">
           {qualityInfo && (
             <>
               {userLocation && nearestName ? (
