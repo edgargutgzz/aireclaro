@@ -620,8 +620,10 @@ export default function MapaSensors({
               <div className="mb-4 flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-1.5">
-                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
                     <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
+                    <span className="text-gray-300">·</span>
+                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                    <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                   </div>
                 </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
@@ -697,8 +699,10 @@ export default function MapaSensors({
               <div className="flex items-start justify-between px-4 py-3.5">
                 <div>
                   <div className="flex items-center gap-1.5">
-                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
                     <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
+                    <span className="text-gray-300">·</span>
+                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                    <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                   </div>
                 </div>
                 <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
@@ -781,8 +785,10 @@ export default function MapaSensors({
               <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
                 {userLocation && nearestName ? (
                   <div className="mb-3 flex items-center gap-1.5">
-                    {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
+                    <span className="text-gray-300">·</span>
+                    {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                    <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                   </div>
                 ) : !userLocation && (
                   <div className="mb-3 flex items-center gap-2">
@@ -905,8 +911,10 @@ export default function MapaSensors({
               <div className="mb-5">
                 {userLocation && nearestName ? (
                   <div className="mb-2 flex items-center gap-1.5">
-                    {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
+                    <span className="text-gray-300">·</span>
+                    {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                    <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                   </div>
                 ) : !userLocation && (
                   <div className="mb-2 flex items-center gap-2">
