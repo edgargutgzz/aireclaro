@@ -621,7 +621,8 @@ export default function MapaSensors({
                 <div>
                   <div className="flex items-center gap-2">
                     <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
                       {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
                     </span>
                   </div>
@@ -700,7 +701,8 @@ export default function MapaSensors({
                 <div>
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
                       {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
                     </span>
                   </div>
@@ -788,7 +790,8 @@ export default function MapaSensors({
                 {userLocation && nearestName ? (
                   <div className="mb-3 flex items-center gap-1.5">
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
                       {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
                     </span>
                   </div>
@@ -916,7 +919,8 @@ export default function MapaSensors({
                 {userLocation && nearestName ? (
                   <div className="mb-2 flex items-center gap-1.5">
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                      {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
                       {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
                     </span>
                   </div>
