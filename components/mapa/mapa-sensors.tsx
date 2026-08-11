@@ -616,7 +616,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="overflow-y-auto px-5 pt-5 pb-4">
+            <div className="flex-1 overflow-y-auto px-5 pt-5 pb-4">
               <div className="mb-4 flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
