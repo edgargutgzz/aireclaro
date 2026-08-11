@@ -438,7 +438,7 @@ export default function MapaSensors({
 
   const sheetTransform = (() => {
     const drag = dragOffset > 0 ? ` + ${dragOffset}px` : '';
-    if (sheetState === 'mid') return `translateY(calc(100% - 50vh${drag}))`;
+    if (sheetState === 'mid') return `translateY(calc(100% - 62dvh${drag}))`;
     return `translateY(calc(100% - 4.5rem${drag}))`;
   })();
 
@@ -962,7 +962,7 @@ export default function MapaSensors({
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
-        <div className="overflow-y-auto px-5 pb-4" style={{ maxHeight: 'calc(50vh - 5rem)' }}>
+        <div className="overflow-y-auto px-5 pb-4" style={{ maxHeight: 'calc(62dvh - 5rem)' }}>
           {qualityInfo && (
             <>
               {userLocation && nearestName ? (
