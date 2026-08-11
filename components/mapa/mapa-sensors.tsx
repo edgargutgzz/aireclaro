@@ -231,7 +231,9 @@ export default function MapaSensors({
       const d = data.find((item) => item.sensor_id === sensor.sensor_id);
       if (d && d.pm25 !== null && d.pm25 > 0.4) {
         const timestamp = format(new Date(d.time_stamp), "h") + ":00 " + format(new Date(d.time_stamp), "a");
-        return { pm25: d.pm25, timestamp };
+        const isSima = sensor.source === "sima";
+        const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+        return { pm25: d.pm25, timestamp, name, isSima };
       }
     }
     return null;
@@ -248,6 +250,8 @@ export default function MapaSensors({
 
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestTimestamp = nearestSensorData?.timestamp ?? null;
+  const nearestName = nearestSensorData?.name ?? null;
+  const nearestIsSima = nearestSensorData?.isSima ?? null;
   const displayPm25 = nearestPm25 ?? areaMedianPm25;
   const qualityInfo = getQualityInfo(displayPm25);
   const [dragOffset, setDragOffset] = useState(0);
@@ -773,14 +777,16 @@ export default function MapaSensors({
             </button>
             {isDesktopCardExpanded && (
               <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
-                {displayPm25 !== null && (
-                  <div className="mb-1 text-sm text-gray-400">
-                    {roundPM25(displayPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                {userLocation && nearestName ? (
+                  <div className="mb-3">
+                    <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
+                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
+                      {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
+                      <span>{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                      {nearestTimestamp && <><span>·</span><span>Actualizado a las {nearestTimestamp}</span></>}
+                    </div>
                   </div>
-                )}
-                {userLocation ? (
-                  <p className="mb-3 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
-                ) : (
+                ) : !userLocation && (
                   <div className="mb-3 flex items-center gap-2">
                     <p className="text-xs text-gray-400">Promedio de los sensores en la zona</p>
                     <button
@@ -790,6 +796,11 @@ export default function MapaSensors({
                       <LocateFixed className="h-3 w-3" />
                       Mi ubicación
                     </button>
+                  </div>
+                )}
+                {displayPm25 !== null && (
+                  <div className="mb-1 text-sm text-gray-400">
+                    {roundPM25(displayPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
                   </div>
                 )}
 
@@ -894,20 +905,17 @@ export default function MapaSensors({
           {qualityInfo && (
             <>
               <div className="mb-5">
-                <div className="flex items-end gap-2">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                    {qualityInfo.label}
-                  </div>
-                  {displayPm25 !== null && (
-                    <div className="mb-0.5 text-sm text-gray-400">
-                      {roundPM25(displayPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                {userLocation && nearestName ? (
+                  <div className="mb-2">
+                    <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
+                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
+                      {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
+                      <span>{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                      {nearestTimestamp && <><span>·</span><span>Actualizado a las {nearestTimestamp}</span></>}
                     </div>
-                  )}
-                </div>
-                {userLocation ? (
-                  <p className="mt-1 text-xs text-gray-400">Basado en el sensor más cercano a tu ubicación</p>
-                ) : (
-                  <div className="mt-2 flex items-center gap-2">
+                  </div>
+                ) : !userLocation && (
+                  <div className="mb-2 flex items-center gap-2">
                     <p className="text-xs text-gray-400">Promedio de los sensores en la zona</p>
                     <button
                       onClick={requestLocation}
@@ -918,6 +926,16 @@ export default function MapaSensors({
                     </button>
                   </div>
                 )}
+                <div className="flex items-end gap-2">
+                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                    {qualityInfo.label}
+                  </div>
+                  {displayPm25 !== null && (
+                    <div className="mb-0.5 text-sm text-gray-400">
+                      {roundPM25(displayPm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* General recommendation */}
