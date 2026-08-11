@@ -814,7 +814,7 @@ export default function MapaSensors({
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
                 <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
-                <div className="flex flex-col gap-2">
+                <div className="mb-3 flex flex-col gap-2">
                   {[
                     { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
                     { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
@@ -831,7 +831,7 @@ export default function MapaSensors({
                   ))}
                 </div>
                 {nearestTimestamp && (
-                  <p className="mt-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+                  <p className="mb-3 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
                 )}
               </div>
             )}
@@ -910,37 +910,35 @@ export default function MapaSensors({
         <div className="overflow-y-auto px-5" style={{ paddingBottom: '3rem', maxHeight: 'calc(50vh - 5rem)' }}>
           {qualityInfo && (
             <>
-              <div className="mb-5">
-                {userLocation && nearestName ? (
-                  <div className="mb-2 flex items-center gap-1.5">
-                    <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                      {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
-                      {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
-                    </span>
-                  </div>
-                ) : !userLocation && (
-                  <div className="mb-2 flex items-center gap-2">
-                    <p className="text-xs text-gray-400">Promedio de los sensores en la zona</p>
-                    <button
-                      onClick={requestLocation}
-                      className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
-                    >
-                      <LocateFixed className="h-3 w-3" />
-                      Mi ubicación
-                    </button>
-                  </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                    {qualityInfo.label}
-                  </div>
-                  {displayPm25 !== null && (
-                    <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
-                      {roundPM25(displayPm25)} μg/m³ · PM2.5
-                    </span>
-                  )}
+              {userLocation && nearestName ? (
+                <div className="mb-4 flex items-center gap-1.5">
+                  <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
+                  <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                    {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
+                    {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
+                  </span>
                 </div>
+              ) : !userLocation && (
+                <div className="mb-4 flex items-center gap-2">
+                  <p className="text-xs text-gray-400">Promedio de los sensores en la zona</p>
+                  <button
+                    onClick={requestLocation}
+                    className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
+                  >
+                    <LocateFixed className="h-3 w-3" />
+                    Mi ubicación
+                  </button>
+                </div>
+              )}
+              <div className="mb-5 flex items-center gap-2">
+                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
+                </div>
+                {displayPm25 !== null && (
+                  <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                    {roundPM25(displayPm25)} μg/m³ · PM2.5
+                  </span>
+                )}
               </div>
 
               {/* General recommendation */}
@@ -950,7 +948,7 @@ export default function MapaSensors({
 
               {/* Sensitive groups */}
               <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
-              <div className="flex flex-col gap-3">
+              <div className="mb-4 flex flex-col gap-3">
                 {[
                   { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
                   { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
@@ -967,7 +965,7 @@ export default function MapaSensors({
                 ))}
               </div>
               {nearestTimestamp && (
-                <p className="mt-4 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
+                <p className="mb-4 text-xs text-gray-300">Actualizado a las {nearestTimestamp}</p>
               )}
             </>
           )}
