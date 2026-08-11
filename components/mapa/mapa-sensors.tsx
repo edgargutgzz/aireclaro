@@ -601,7 +601,7 @@ export default function MapaSensors({
 
       {/* Mobile: sensor info panel — slides up from bottom */}
       <div
-        className={`fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl bg-white/90 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
+        className={`fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
           selectedSensor ? "translate-y-0" : "translate-y-full"
         }`}
         style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))', height: '62dvh' }}
@@ -629,19 +629,21 @@ export default function MapaSensors({
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="mb-4 flex items-end gap-3">
-                <div className="text-4xl font-bold leading-none" style={{ color: textColor }}>
-                  {sensorQuality ? sensorQuality.label : "—"}
-                </div>
-                {pm25 !== null && (
-                  <div className="mb-0.5 text-sm text-gray-400">
-                    {roundPM25(pm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+              <div className="mb-5">
+                <div className="flex items-end gap-2">
+                  <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
+                    {sensorQuality ? sensorQuality.label : "—"}
                   </div>
-                )}
+                  {pm25 !== null && (
+                    <div className="mb-0.5 text-sm text-gray-400">
+                      {roundPM25(pm25)} μg/m³ · <span className="font-medium">PM2.5</span>
+                    </div>
+                  )}
+                </div>
               </div>
               {sensorQuality && (
                 <>
-                  <div className="mb-4 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
+                  <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
                     <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                   </div>
                   <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -689,25 +691,20 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/40 p-2 shadow-sm backdrop-blur-md">
-              <div className="rounded-xl bg-white p-4">
-                <div className="mb-4 flex items-start justify-between">
-                  <div>
-                    <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
-                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-400">
-                      {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
-                      <span>{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                    </div>
-                    {timestamp && (
-                      <div className="mt-0.5 text-xs text-gray-400">Actualizado a las {timestamp}</div>
-                    )}
-                  </div>
-                  <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
-                    <X className="h-5 w-5" />
-                  </button>
+            <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
+              <div className="flex items-start justify-between px-4 py-3.5">
+                <div>
+                  <p className="text-xs font-medium text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</p>
+                  <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
+                  {timestamp && <p className="mt-0.5 text-xs text-gray-400">Actualizado a las {timestamp}</p>}
                 </div>
-                <div className="mb-4 flex items-end gap-3">
-                  <div className="text-3xl font-bold leading-none" style={{ color: textColor }}>
+                <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="border-t border-gray-100 bg-white px-4 pb-4 pt-3">
+                <div className="mb-4 flex items-end gap-2">
+                  <div className="text-lg font-bold leading-tight" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
                   </div>
                   {pm25 !== null && (
@@ -718,8 +715,8 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <div className="mb-4 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
-                      <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
+                    <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${color}12` }}>
+                      <p className="text-xs leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                     </div>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
                     <div className="mb-3 flex flex-col gap-2">
