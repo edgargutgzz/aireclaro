@@ -639,13 +639,13 @@ export default function MapaSensors({
           return (
             <>
               <div
-                className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
+                className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
                 onClick={() => setSelectedSensor(null)}
                 onTouchStart={handleSensorTouchStart}
                 onTouchMove={handleSensorTouchMove}
                 onTouchEnd={handleSensorTouchEnd}
               >
-                <div className="mx-auto h-1 w-10 rounded-full bg-gray-200" />
+                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
               </div>
               <div className="flex-1 overflow-y-auto px-5 pb-4">
               <div className="mb-4 flex items-center gap-2">
