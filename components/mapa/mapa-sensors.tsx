@@ -260,6 +260,8 @@ export default function MapaSensors({
   const dragStartY = useRef(0);
   const [dragSensorOffset, setDragSensorOffset] = useState(0);
   const dragSensorStartY = useRef(0);
+  const [dragLegendOffset, setDragLegendOffset] = useState(0);
+  const dragLegendStartY = useRef(0);
 
   // Initialize map once
   useEffect(() => {
@@ -474,6 +476,20 @@ export default function MapaSensors({
     setDragSensorOffset(0);
   }, [dragSensorOffset]);
 
+  const handleLegendTouchStart = useCallback((e: React.TouchEvent) => {
+    dragLegendStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleLegendTouchMove = useCallback((e: React.TouchEvent) => {
+    const delta = e.touches[0].clientY - dragLegendStartY.current;
+    if (delta > 0) setDragLegendOffset(delta);
+  }, []);
+
+  const handleLegendTouchEnd = useCallback(() => {
+    if (dragLegendOffset > 80) setIsLegendVisible(false);
+    setDragLegendOffset(0);
+  }, [dragLegendOffset]);
+
   return (
     <div className="relative h-screen">
       {/* Map container */}
@@ -600,21 +616,24 @@ export default function MapaSensors({
 
       {/* Legend panel — mobile: slides up from bottom */}
       <div
-        className={`fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] md:hidden ${
-          isLegendVisible ? "translate-y-0" : "translate-y-full"
-        }`}
+        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        style={{
+          transform: isLegendVisible ? `translateY(${dragLegendOffset}px)` : 'translateY(100%)',
+          transition: dragLegendOffset > 0 ? 'none' : 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
       >
-        <div className="flex items-center justify-between px-5 pb-4 pt-5">
+        <div
+          className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
+          onClick={() => setIsLegendVisible(false)}
+          onTouchStart={handleLegendTouchStart}
+          onTouchMove={handleLegendTouchMove}
+          onTouchEnd={handleLegendTouchEnd}
+        >
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold">Calidad del Aire</span>
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
           </div>
-          <button
-            onClick={() => setIsLegendVisible(false)}
-            aria-label="Cerrar"
-          >
-            <X className="h-5 w-5 text-gray-400" />
-          </button>
         </div>
         <div className="px-5 pt-2" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}>
           <LegendContent />
