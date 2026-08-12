@@ -536,7 +536,7 @@ export default function MapaSensors({
       {isDesktopLegendExpanded && (
         <div className="absolute bottom-24 right-6 z-10 hidden w-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm backdrop-blur-md md:block">
           <div className="flex items-center justify-between px-4 pt-3 pb-1">
-            <span className="text-xs font-medium text-gray-400">Calidad del aire · PM2.5</span>
+            <span className="text-xs font-medium text-gray-400">Calidad del aire</span>
             <button onClick={() => setIsDesktopLegendExpanded(false)} className="text-gray-400 hover:text-gray-600">
               <X className="h-4 w-4" />
             </button>
@@ -578,7 +578,7 @@ export default function MapaSensors({
           onClick={() => setIsLegendVisible(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
-          <p className="text-xs font-medium text-gray-400">Calidad del aire · PM2.5</p>
+          <p className="text-xs font-medium text-gray-400">Calidad del aire</p>
         </div>
         <div
           className="overflow-y-auto px-5 pt-2"
