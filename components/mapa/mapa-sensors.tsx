@@ -922,16 +922,18 @@ export default function MapaSensors({
           {qualityInfo && (
             <>
               <div className="mb-5">
-                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
+                <div className="flex items-center gap-2">
+                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                    {qualityInfo.label}
+                  </div>
+                  <button
+                    onClick={() => setShowQualitySource(v => !v)}
+                    className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500 transition-colors hover:bg-gray-200"
+                  >
+                    <Info className="h-2.5 w-2.5" />
+                    {userLocation && nearestName ? "Sensor más cercano" : "Promedio de la zona"}
+                  </button>
                 </div>
-                <button
-                  onClick={() => setShowQualitySource(v => !v)}
-                  className="mt-2 flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500 transition-colors hover:bg-gray-200"
-                >
-                  <Info className="h-2.5 w-2.5" />
-                  {userLocation && nearestName ? "Sensor más cercano" : "Promedio de la zona"}
-                </button>
                 {showQualitySource && (
                   <p className="mt-2 text-xs leading-relaxed text-gray-400">
                     {userLocation && nearestName
