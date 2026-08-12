@@ -970,7 +970,7 @@ export default function MapaSensors({
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="flex flex-col gap-1">
                     <p className="text-sm font-semibold text-gray-700">
-                      {userLocation && nearestName ? nearestName : "Sensores en la zona"}
+                      {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
                     </p>
                     <div className="flex items-center gap-1.5">
                       {userLocation && nearestName ? (
