@@ -646,7 +646,7 @@ export default function MapaSensors({
                   </div>
                 </>
               )}
-              <div className="my-4 border-t border-gray-100" />
+              <p className="mb-3 mt-4 text-xs font-medium uppercase tracking-wide text-gray-400">Fuente</p>
               <div className="rounded-xl bg-gray-50 px-4 py-3 flex flex-col gap-3">
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-semibold text-gray-700">{sensorName}</p>
@@ -969,7 +969,7 @@ export default function MapaSensors({
               {/* Sensor source info */}
               {userLocation && nearestName ? (
                 <>
-                <div className="my-4 border-t border-gray-100" />
+                <p className="mb-3 mt-4 text-xs font-medium uppercase tracking-wide text-gray-400">Fuente</p>
                 <div className="rounded-xl bg-gray-50 px-4 py-3 flex flex-col gap-3">
                   <div className="flex flex-col gap-1">
                     <p className="text-sm font-semibold text-gray-700">{nearestName}</p>
