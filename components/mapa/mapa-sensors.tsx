@@ -624,7 +624,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
+                  <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3 border-l-4" style={{ borderLeftColor: color }}>
                     <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                   </div>
                   <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -717,7 +717,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
+                    <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5 border-l-4" style={{ borderLeftColor: color }}>
                       <p className="text-xs leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                     </div>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -806,7 +806,7 @@ export default function MapaSensors({
                     </span>
                   )}
                 </div>
-                <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
+                <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5 border-l-4" style={{ borderLeftColor: qualityInfo.color }}>
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
                 <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -945,7 +945,7 @@ export default function MapaSensors({
               </div>
 
               {/* General recommendation */}
-              <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
+              <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3 border-l-4" style={{ borderLeftColor: qualityInfo.color }}>
                 <p className="text-sm leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
               </div>
 
