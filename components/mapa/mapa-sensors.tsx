@@ -648,13 +648,14 @@ export default function MapaSensors({
               )}
               <div className="my-4 border-t border-gray-100" />
               <div className="rounded-xl bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="mb-1 flex items-center gap-2">
-                    {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
-                    <p className="text-sm font-semibold text-gray-700 truncate">{sensorName}</p>
+                <div className="min-w-0 flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5">
+                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                    <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                   </div>
+                  <p className="text-sm font-semibold text-gray-700 truncate">{sensorName}</p>
                   {timestamp && (
-                    <div className="flex items-center gap-1.5 pl-[1.375rem]">
+                    <div className="flex items-center gap-1.5">
                       <Clock className="h-3 w-3 flex-shrink-0 text-gray-300" />
                       <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
                     </div>
@@ -970,13 +971,14 @@ export default function MapaSensors({
                 <>
                 <div className="my-4 border-t border-gray-100" />
                 <div className="rounded-xl bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="mb-1 flex items-center gap-2">
-                      {nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
-                      <p className="text-sm font-semibold text-gray-700 truncate">{nearestName}</p>
+                  <div className="min-w-0 flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5">
+                      {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                      <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                     </div>
+                    <p className="text-sm font-semibold text-gray-700 truncate">{nearestName}</p>
                     {nearestTimestamp && (
-                      <div className="flex items-center gap-1.5 pl-[1.375rem]">
+                      <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-300" />
                         <span className="text-xs text-gray-400">Actualizado a las {nearestTimestamp}</span>
                       </div>
