@@ -630,33 +630,6 @@ export default function MapaSensors({
                   )}
                 </div>
               </div>
-              <button
-                onClick={() => setShowSensorDetail(v => !v)}
-                className="mb-2 flex w-full items-center justify-between rounded-xl bg-gray-50 px-4 py-3"
-              >
-                <div className="flex items-center gap-2">
-                  {isSima ? <Landmark className="h-3.5 w-3.5 text-gray-400" /> : <Users className="h-3.5 w-3.5 text-gray-400" />}
-                  <span className="text-sm font-medium text-gray-600">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                </div>
-                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
-              </button>
-              {showSensorDetail && (
-                <div className="mb-2 rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="flex flex-col gap-1">
-                    <p className="text-sm font-semibold text-gray-700">{sensorName}</p>
-                    <div className="flex items-center gap-1.5">
-                      {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                      <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                    </div>
-                    {timestamp && (
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
               {sensorQuality && (
                 <>
                   <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
