@@ -623,10 +623,9 @@ export default function MapaSensors({
                   <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
                   </div>
-                  {pm25 !== null && sensorQuality && (
-                    <span className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
-                      <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: sensorQuality.color }} />
-                      {roundPM25(pm25)} μg/m³
+                  {pm25 !== null && (
+                    <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
+                      {roundPM25(pm25)} μg/m³ · PM2.5
                     </span>
                   )}
                 </div>
@@ -909,10 +908,9 @@ export default function MapaSensors({
                   <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                     {qualityInfo.label}
                   </div>
-                  {displayPm25 !== null && qualityInfo && (
-                    <span className="flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
-                      <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: qualityInfo.color }} />
-                      {roundPM25(displayPm25)} μg/m³
+                  {displayPm25 !== null && (
+                    <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
+                      {roundPM25(displayPm25)} μg/m³ · PM2.5
                     </span>
                   )}
                   {userLocation && nearestName && (
