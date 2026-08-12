@@ -260,8 +260,10 @@ export default function MapaSensors({
   const dragStartY = useRef(0);
   const [dragSensorOffset, setDragSensorOffset] = useState(0);
   const dragSensorStartY = useRef(0);
+  const sensorScrollRef = useRef<HTMLDivElement>(null);
   const [dragLegendOffset, setDragLegendOffset] = useState(0);
   const dragLegendStartY = useRef(0);
+  const legendScrollRef = useRef<HTMLDivElement>(null);
 
   // Initialize map once
   useEffect(() => {
@@ -471,6 +473,11 @@ export default function MapaSensors({
     if (delta > 0) setDragSensorOffset(delta);
   }, []);
 
+  const handleSensorContentTouchMove = useCallback((e: React.TouchEvent) => {
+    const delta = e.touches[0].clientY - dragSensorStartY.current;
+    if (delta > 0 && (sensorScrollRef.current?.scrollTop ?? 0) === 0) setDragSensorOffset(delta);
+  }, []);
+
   const handleSensorTouchEnd = useCallback(() => {
     if (dragSensorOffset > 80) setSelectedSensor(null);
     setDragSensorOffset(0);
@@ -483,6 +490,11 @@ export default function MapaSensors({
   const handleLegendTouchMove = useCallback((e: React.TouchEvent) => {
     const delta = e.touches[0].clientY - dragLegendStartY.current;
     if (delta > 0) setDragLegendOffset(delta);
+  }, []);
+
+  const handleLegendContentTouchMove = useCallback((e: React.TouchEvent) => {
+    const delta = e.touches[0].clientY - dragLegendStartY.current;
+    if (delta > 0 && (legendScrollRef.current?.scrollTop ?? 0) === 0) setDragLegendOffset(delta);
   }, []);
 
   const handleLegendTouchEnd = useCallback(() => {
@@ -635,7 +647,14 @@ export default function MapaSensors({
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">PM2.5</span>
           </div>
         </div>
-        <div className="px-5 pt-2" style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}>
+        <div
+          ref={legendScrollRef}
+          className="overflow-y-auto px-5 pt-2"
+          style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
+          onTouchStart={handleLegendTouchStart}
+          onTouchMove={handleLegendContentTouchMove}
+          onTouchEnd={handleLegendTouchEnd}
+        >
           <LegendContent />
         </div>
       </div>
@@ -666,7 +685,13 @@ export default function MapaSensors({
               >
                 <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
               </div>
-              <div className="flex-1 overflow-y-auto px-5 pb-4">
+              <div
+                ref={sensorScrollRef}
+                className="flex-1 overflow-y-auto px-5 pb-4"
+                onTouchStart={handleSensorTouchStart}
+                onTouchMove={handleSensorContentTouchMove}
+                onTouchEnd={handleSensorTouchEnd}
+              >
               <div className="mb-4 flex items-center gap-2">
                 <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
                 <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
@@ -969,7 +994,15 @@ export default function MapaSensors({
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
-        <div className="flex-1 overflow-y-auto px-5 pb-4">
+        <div
+          className="flex-1 overflow-y-auto px-5 pb-4"
+          onTouchStart={handleTouchStart}
+          onTouchMove={(e) => {
+            const delta = e.touches[0].clientY - dragStartY.current;
+            if (delta > 0 && e.currentTarget.scrollTop === 0) setDragOffset(delta);
+          }}
+          onTouchEnd={handleTouchEnd}
+        >
           {qualityInfo && (
             <>
               {userLocation && nearestName ? (
