@@ -661,17 +661,6 @@ export default function MapaSensors({
                     </div>
                   )}
                 </div>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 1500);
-                  }}
-                  className="flex items-center gap-1.5 self-start rounded-xl bg-gray-100 px-3 py-2 text-gray-500 transition-colors hover:bg-gray-200"
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">{copied ? "Copiado" : "Coordenadas"}</span>
-                </button>
               </div>
             </div>
             </>
@@ -737,17 +726,6 @@ export default function MapaSensors({
                     </div>
                   </>
                 )}
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 1500);
-                  }}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200"
-                >
-                  <Copy className="h-4 w-4" />
-                  <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
-                </button>
                 {timestamp && (
                   <div className="mt-4 flex items-center justify-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 text-gray-400" />
@@ -824,19 +802,6 @@ export default function MapaSensors({
                     </div>
                   ))}
                 </div>
-                {nearestLat !== null && nearestLon !== null && (
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 1500);
-                    }}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-gray-600 transition-colors hover:bg-gray-200"
-                  >
-                    <Copy className="h-4 w-4" />
-                    <span className="text-sm font-medium">{copied ? "Copiado" : "Copiar coordenadas"}</span>
-                  </button>
-                )}
                 {nearestTimestamp && (
                   <div className="mt-4 flex items-center justify-center gap-1.5">
                     <Clock className="h-3.5 w-3.5 text-gray-400" />
@@ -984,19 +949,6 @@ export default function MapaSensors({
                       </div>
                     )}
                   </div>
-                  {nearestLat !== null && nearestLon !== null && (
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
-                      }}
-                      className="flex items-center gap-1.5 self-start rounded-xl bg-gray-100 px-3 py-2 text-gray-500 transition-colors hover:bg-gray-200"
-                    >
-                      <Copy className="h-3.5 w-3.5" />
-                      <span className="text-xs font-medium">{copied ? "Copiado" : "Coordenadas"}</span>
-                    </button>
-                  )}
                 </div>
                 </>
               ) : !userLocation && (
