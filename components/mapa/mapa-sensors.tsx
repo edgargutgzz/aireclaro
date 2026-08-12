@@ -623,7 +623,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${color}12` }}>
+                  <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
                     <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                   </div>
                   <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -716,7 +716,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${color}12` }}>
+                    <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
                       <p className="text-xs leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                     </div>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -805,7 +805,7 @@ export default function MapaSensors({
                     </span>
                   )}
                 </div>
-                <div className="mb-4 rounded-xl px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
                 <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -927,7 +927,7 @@ export default function MapaSensors({
               </div>
 
               {/* General recommendation */}
-              <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+              <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
                 <p className="text-sm leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
               </div>
 
