@@ -258,11 +258,18 @@ export default function MapaSensors({
   const qualityInfo = getQualityInfo(displayPm25);
   const [dragOffset, setDragOffset] = useState(0);
   const dragStartY = useRef(0);
+  const dragStartX = useRef(0);
+  const sheetGesture = useRef<'none' | 'dismiss' | 'scroll'>('none');
+  const sheetScrollRef = useRef<HTMLDivElement>(null);
   const [dragSensorOffset, setDragSensorOffset] = useState(0);
   const dragSensorStartY = useRef(0);
+  const dragSensorStartX = useRef(0);
+  const sensorGesture = useRef<'none' | 'dismiss' | 'scroll'>('none');
   const sensorScrollRef = useRef<HTMLDivElement>(null);
   const [dragLegendOffset, setDragLegendOffset] = useState(0);
   const dragLegendStartY = useRef(0);
+  const dragLegendStartX = useRef(0);
+  const legendGesture = useRef<'none' | 'dismiss' | 'scroll'>('none');
   const legendScrollRef = useRef<HTMLDivElement>(null);
 
   // Initialize map once
@@ -452,53 +459,67 @@ export default function MapaSensors({
 
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     dragStartY.current = e.touches[0].clientY;
+    dragStartX.current = e.touches[0].clientX;
+    sheetGesture.current = 'none';
   }, []);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    const delta = e.touches[0].clientY - dragStartY.current;
-    if (delta > 0) setDragOffset(delta);
+    const dy = e.touches[0].clientY - dragStartY.current;
+    const dx = e.touches[0].clientX - dragStartX.current;
+    const scrollTop = sheetScrollRef.current?.scrollTop ?? 0;
+    if (sheetGesture.current === 'none' && (Math.abs(dy) > 4 || Math.abs(dx) > 4)) {
+      sheetGesture.current = (dy > 0 && scrollTop === 0 && dy > Math.abs(dx)) ? 'dismiss' : 'scroll';
+    }
+    if (sheetGesture.current === 'dismiss' && dy > 0) setDragOffset(dy);
   }, []);
 
   const handleTouchEnd = useCallback(() => {
-    if (dragOffset > 80) setSheetState('peek');
+    if (sheetGesture.current === 'dismiss' && dragOffset > 80) setSheetState('peek');
+    sheetGesture.current = 'none';
     setDragOffset(0);
   }, [dragOffset]);
 
   const handleSensorTouchStart = useCallback((e: React.TouchEvent) => {
     dragSensorStartY.current = e.touches[0].clientY;
+    dragSensorStartX.current = e.touches[0].clientX;
+    sensorGesture.current = 'none';
   }, []);
 
   const handleSensorTouchMove = useCallback((e: React.TouchEvent) => {
-    const delta = e.touches[0].clientY - dragSensorStartY.current;
-    if (delta > 0) setDragSensorOffset(delta);
-  }, []);
-
-  const handleSensorContentTouchMove = useCallback((e: React.TouchEvent) => {
-    const delta = e.touches[0].clientY - dragSensorStartY.current;
-    if (delta > 0 && (sensorScrollRef.current?.scrollTop ?? 0) === 0) setDragSensorOffset(delta);
+    const dy = e.touches[0].clientY - dragSensorStartY.current;
+    const dx = e.touches[0].clientX - dragSensorStartX.current;
+    const scrollTop = sensorScrollRef.current?.scrollTop ?? 0;
+    if (sensorGesture.current === 'none' && (Math.abs(dy) > 4 || Math.abs(dx) > 4)) {
+      sensorGesture.current = (dy > 0 && scrollTop === 0 && dy > Math.abs(dx)) ? 'dismiss' : 'scroll';
+    }
+    if (sensorGesture.current === 'dismiss' && dy > 0) setDragSensorOffset(dy);
   }, []);
 
   const handleSensorTouchEnd = useCallback(() => {
-    if (dragSensorOffset > 80) setSelectedSensor(null);
+    if (sensorGesture.current === 'dismiss' && dragSensorOffset > 80) setSelectedSensor(null);
+    sensorGesture.current = 'none';
     setDragSensorOffset(0);
   }, [dragSensorOffset]);
 
   const handleLegendTouchStart = useCallback((e: React.TouchEvent) => {
     dragLegendStartY.current = e.touches[0].clientY;
+    dragLegendStartX.current = e.touches[0].clientX;
+    legendGesture.current = 'none';
   }, []);
 
   const handleLegendTouchMove = useCallback((e: React.TouchEvent) => {
-    const delta = e.touches[0].clientY - dragLegendStartY.current;
-    if (delta > 0) setDragLegendOffset(delta);
-  }, []);
-
-  const handleLegendContentTouchMove = useCallback((e: React.TouchEvent) => {
-    const delta = e.touches[0].clientY - dragLegendStartY.current;
-    if (delta > 0 && (legendScrollRef.current?.scrollTop ?? 0) === 0) setDragLegendOffset(delta);
+    const dy = e.touches[0].clientY - dragLegendStartY.current;
+    const dx = e.touches[0].clientX - dragLegendStartX.current;
+    const scrollTop = legendScrollRef.current?.scrollTop ?? 0;
+    if (legendGesture.current === 'none' && (Math.abs(dy) > 4 || Math.abs(dx) > 4)) {
+      legendGesture.current = (dy > 0 && scrollTop === 0 && dy > Math.abs(dx)) ? 'dismiss' : 'scroll';
+    }
+    if (legendGesture.current === 'dismiss' && dy > 0) setDragLegendOffset(dy);
   }, []);
 
   const handleLegendTouchEnd = useCallback(() => {
-    if (dragLegendOffset > 80) setIsLegendVisible(false);
+    if (legendGesture.current === 'dismiss' && dragLegendOffset > 80) setIsLegendVisible(false);
+    legendGesture.current = 'none';
     setDragLegendOffset(0);
   }, [dragLegendOffset]);
 
@@ -633,13 +654,13 @@ export default function MapaSensors({
           transform: isLegendVisible ? `translateY(${dragLegendOffset}px)` : 'translateY(100%)',
           transition: dragLegendOffset > 0 ? 'none' : 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
+        onTouchStart={handleLegendTouchStart}
+        onTouchMove={handleLegendTouchMove}
+        onTouchEnd={handleLegendTouchEnd}
       >
         <div
           className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
           onClick={() => setIsLegendVisible(false)}
-          onTouchStart={handleLegendTouchStart}
-          onTouchMove={handleLegendTouchMove}
-          onTouchEnd={handleLegendTouchEnd}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center gap-2">
@@ -649,11 +670,11 @@ export default function MapaSensors({
         </div>
         <div
           ref={legendScrollRef}
-          className="overflow-y-auto px-5 pt-2"
-          style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
-          onTouchStart={handleLegendTouchStart}
-          onTouchMove={handleLegendContentTouchMove}
-          onTouchEnd={handleLegendTouchEnd}
+          className="px-5 pt-2"
+          style={{
+            paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)',
+            overflowY: dragLegendOffset > 0 ? 'hidden' : 'auto',
+          }}
         >
           <LegendContent />
         </div>
@@ -668,6 +689,9 @@ export default function MapaSensors({
           transform: selectedSensor ? `translateY(${dragSensorOffset}px)` : 'translateY(100%)',
           transition: dragSensorOffset > 0 ? 'none' : 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
+        onTouchStart={handleSensorTouchStart}
+        onTouchMove={handleSensorTouchMove}
+        onTouchEnd={handleSensorTouchEnd}
       >
         {selectedSensor && (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
@@ -679,18 +703,13 @@ export default function MapaSensors({
               <div
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
                 onClick={() => setSelectedSensor(null)}
-                onTouchStart={handleSensorTouchStart}
-                onTouchMove={handleSensorTouchMove}
-                onTouchEnd={handleSensorTouchEnd}
               >
                 <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
               </div>
               <div
                 ref={sensorScrollRef}
-                className="flex-1 overflow-y-auto px-5 pb-4"
-                onTouchStart={handleSensorTouchStart}
-                onTouchMove={handleSensorContentTouchMove}
-                onTouchEnd={handleSensorTouchEnd}
+                className="flex-1 px-5 pb-4"
+                style={{ overflowY: dragSensorOffset > 0 ? 'hidden' : 'auto' }}
               >
               <div className="mb-4 flex items-center gap-2">
                 <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
@@ -971,14 +990,14 @@ export default function MapaSensors({
           transform: sheetTransform,
           transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Drag handle + peek summary */}
         <div
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-4"
           onClick={handleSheetTap}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center justify-between">
@@ -995,13 +1014,9 @@ export default function MapaSensors({
 
         {/* Scrollable content — visible when expanded to mid */}
         <div
-          className="flex-1 overflow-y-auto px-5 pb-4"
-          onTouchStart={handleTouchStart}
-          onTouchMove={(e) => {
-            const delta = e.touches[0].clientY - dragStartY.current;
-            if (delta > 0 && e.currentTarget.scrollTop === 0) setDragOffset(delta);
-          }}
-          onTouchEnd={handleTouchEnd}
+          ref={sheetScrollRef}
+          className="flex-1 px-5 pb-4"
+          style={{ overflowY: dragOffset > 0 ? 'hidden' : 'auto' }}
         >
           {qualityInfo && (
             <>
