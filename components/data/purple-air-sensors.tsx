@@ -15,7 +15,8 @@ export default async function PurpleAirSensors() {
     .neq("sensor_id", 174787)
     .neq("sensor_id", 121825) // Grupo Reforma Sierra Madre
     .neq("sensor_id", 286186) // García Online
-    .neq("sensor_id", 267403); // Montenova International School
+    .neq("sensor_id", 267403) // Montenova International School
+    .neq("sensor_id", 203629);
 
   if (error) {
     console.error("PurpleAir Sensors fetch error:", error);
