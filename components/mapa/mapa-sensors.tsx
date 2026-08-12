@@ -646,6 +646,7 @@ export default function MapaSensors({
                   </div>
                 </>
               )}
+              <div className="my-4 border-t border-gray-100" />
               <div className="rounded-xl bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <div className="mb-1 flex items-center gap-2">
@@ -966,6 +967,8 @@ export default function MapaSensors({
 
               {/* Sensor source info */}
               {userLocation && nearestName ? (
+                <>
+                <div className="my-4 border-t border-gray-100" />
                 <div className="rounded-xl bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="mb-1 flex items-center gap-2">
@@ -993,6 +996,7 @@ export default function MapaSensors({
                     </button>
                   )}
                 </div>
+                </>
               ) : !userLocation && (
                 <div className="mb-4">
                   <button
