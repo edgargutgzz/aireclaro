@@ -646,15 +646,15 @@ export default function MapaSensors({
                   </div>
                 </>
               )}
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center justify-between gap-2">
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
                     <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
                       {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
                       {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
                   {timestamp && (
                     <div className="flex items-center gap-1.5">
                       <Clock className="h-3 w-3 text-gray-300" />
@@ -969,15 +969,15 @@ export default function MapaSensors({
 
               {/* Sensor source info */}
               {userLocation && nearestName ? (
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-semibold text-gray-900">{nearestName}</p>
                       <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
                         {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
                         {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
                       </span>
                     </div>
-                    <p className="text-sm font-semibold text-gray-900">{nearestName}</p>
                     {nearestTimestamp && (
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 text-gray-300" />
