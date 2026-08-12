@@ -257,6 +257,15 @@ export default function MapaSensors({
     return sorted[Math.floor(sorted.length / 2)];
   }, [data]);
 
+  const latestPurpleAirTimestamp = useMemo(() => {
+    const purpleAirIds = new Set(sensors.filter(s => s.source !== "sima").map(s => s.sensor_id));
+    const recent = data
+      .filter(d => purpleAirIds.has(d.sensor_id) && d.pm25 !== null && d.pm25 > 0.4)
+      .reduce<Data | null>((a, b) => !a || new Date(b.time_stamp) > new Date(a.time_stamp) ? b : a, null);
+    if (!recent) return null;
+    return format(new Date(recent.time_stamp), "h") + ":00 " + format(new Date(recent.time_stamp), "a");
+  }, [data, sensors]);
+
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestTimestamp = nearestSensorData?.timestamp ?? null;
   const nearestName = nearestSensorData?.name ?? null;
@@ -975,10 +984,10 @@ export default function MapaSensors({
                           : "Promedio del área metropolitana"}
                       </span>
                     </div>
-                    {userLocation && nearestTimestamp && (
+                    {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-xs text-gray-400">Actualizado a las {nearestTimestamp}</span>
+                        <span className="text-xs text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
                       </div>
                     )}
                   </div>
