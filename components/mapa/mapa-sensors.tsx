@@ -924,6 +924,9 @@ export default function MapaSensors({
                 <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
                 </div>
+                <p className="mt-1 text-xs text-gray-400">
+                  {userLocation && nearestName ? "Calidad del aire más cercana a ti" : "Promedio de los sensores en la zona"}
+                </p>
               </div>
 
               {/* General recommendation */}
@@ -965,8 +968,7 @@ export default function MapaSensors({
                   )}
                 </div>
               ) : !userLocation && (
-                <div className="mb-4 flex items-center gap-2">
-                  <p className="text-xs text-gray-400">Promedio de los sensores en la zona</p>
+                <div className="mb-4">
                   <button
                     onClick={requestLocation}
                     className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
