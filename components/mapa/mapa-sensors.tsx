@@ -656,7 +656,7 @@ export default function MapaSensors({
                   </div>
                   {timestamp && (
                     <div className="flex items-center gap-1.5">
-                      <Clock className="h-3 w-3 flex-shrink-0 text-gray-300" />
+                      <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
                       <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
                     </div>
                   )}
@@ -750,8 +750,8 @@ export default function MapaSensors({
                 </button>
                 {timestamp && (
                   <div className="mt-4 flex items-center justify-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-gray-300" />
-                    <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
+                    <Clock className="h-3.5 w-3.5 text-gray-400" />
+                    <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
                   </div>
                 )}
               </div>
@@ -839,8 +839,8 @@ export default function MapaSensors({
                 )}
                 {nearestTimestamp && (
                   <div className="mt-4 flex items-center justify-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5 text-gray-300" />
-                    <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
+                    <Clock className="h-3.5 w-3.5 text-gray-400" />
+                    <span className="text-xs text-gray-400">Actualizado a las {nearestTimestamp}</span>
                   </div>
                 )}
               </div>
@@ -979,7 +979,7 @@ export default function MapaSensors({
                     </div>
                     {nearestTimestamp && (
                       <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-300" />
+                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <span className="text-xs text-gray-400">Actualizado a las {nearestTimestamp}</span>
                       </div>
                     )}
