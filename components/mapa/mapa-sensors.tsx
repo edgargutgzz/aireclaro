@@ -160,31 +160,31 @@ const getQualityInfo = (pm25: number | null): QualityInfo | null => {
 
 function LegendContent() {
   const items = [
-    { color: "#00e400", label: "Buena", range: "0–15" },
-    { color: "#ffff00", label: "Aceptable", range: "15–25" },
-    { color: "#ff7e00", label: "Mala", range: "25–79" },
-    { color: "#ff0000", label: "Muy mala", range: "79–130" },
-    { color: "#8f3f97", label: "Extremadamente mala", range: ">130" },
+    { color: "#00e400", label: "Buena", range: "0 – 15 μg/m³", textColor: "#007200" },
+    { color: "#ffff00", label: "Aceptable", range: "15 – 25 μg/m³", textColor: "#8a7a00" },
+    { color: "#ff7e00", label: "Mala", range: "25 – 79 μg/m³", textColor: "#c05e00" },
+    { color: "#ff0000", label: "Muy mala", range: "79 – 130 μg/m³", textColor: "#b30000" },
+    { color: "#8f3f97", label: "Extremadamente mala", range: "> 130 μg/m³", textColor: "#6b2f72" },
   ];
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex h-1.5 gap-px overflow-hidden rounded-full">
-        {items.map(({ color, label }) => (
-          <div key={label} className="flex-1" style={{ backgroundColor: color }} />
-        ))}
-      </div>
-      <div className="flex flex-col gap-2.5">
-        {items.map(({ color, label, range }) => (
-          <div key={label} className="flex items-center justify-between">
+    <div className="flex flex-col gap-1.5">
+      {items.map(({ color, label, range, textColor }) => (
+        <div
+          key={label}
+          className="rounded-xl px-3 py-2.5"
+          style={{ backgroundColor: `${color}18` }}
+        >
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
-              <span className="text-sm text-gray-700">{label}</span>
+              <div className="h-3 w-3 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
+              <span className="text-sm font-medium" style={{ color: textColor }}>{label}</span>
             </div>
-            <span className="tabular-nums text-xs text-gray-400">{range} μg/m³</span>
+            <span className="text-xs text-gray-400 md:hidden">{range}</span>
           </div>
-        ))}
-      </div>
+          <p className="hidden pl-[22px] pt-0.5 text-xs text-gray-400 md:block">{range}</p>
+        </div>
+      ))}
     </div>
   );
 }
