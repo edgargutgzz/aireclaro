@@ -646,19 +646,16 @@ export default function MapaSensors({
                   </div>
                 </>
               )}
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5">
-                    <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                      {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
-                      {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
-                    </span>
+              <div className="rounded-xl bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="mb-1 flex items-center gap-2">
+                    {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
+                    <p className="text-sm font-semibold text-gray-700 truncate">{sensorName}</p>
                   </div>
                   {timestamp && (
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="h-3 w-3 text-gray-300" />
-                      <span className="text-xs text-gray-300">Actualizado a las {timestamp}</span>
+                    <div className="flex items-center gap-1.5 pl-[1.375rem]">
+                      <Clock className="h-3 w-3 flex-shrink-0 text-gray-300" />
+                      <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
                     </div>
                   )}
                 </div>
@@ -969,19 +966,16 @@ export default function MapaSensors({
 
               {/* Sensor source info */}
               {userLocation && nearestName ? (
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-semibold text-gray-900">{nearestName}</p>
-                      <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                        {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
-                        {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
-                      </span>
+                <div className="rounded-xl bg-gray-50 px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="mb-1 flex items-center gap-2">
+                      {nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
+                      <p className="text-sm font-semibold text-gray-700 truncate">{nearestName}</p>
                     </div>
                     {nearestTimestamp && (
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3 text-gray-300" />
-                        <span className="text-xs text-gray-300">Actualizado a las {nearestTimestamp}</span>
+                      <div className="flex items-center gap-1.5 pl-[1.375rem]">
+                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-300" />
+                        <span className="text-xs text-gray-400">Actualizado a las {nearestTimestamp}</span>
                       </div>
                     )}
                   </div>
