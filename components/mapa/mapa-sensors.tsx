@@ -256,9 +256,6 @@ export default function MapaSensors({
   const nearestLon = nearestSensorData?.lon ?? null;
   const displayPm25 = nearestPm25 ?? areaMedianPm25;
   const qualityInfo = getQualityInfo(displayPm25);
-  const [dragOffset, setDragOffset] = useState(0);
-  const dragStartY = useRef(0);
-
   // Initialize map once
   useEffect(() => {
     if (map.current) return;
@@ -434,29 +431,11 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  const sheetTransform = (() => {
-    const drag = dragOffset > 0 ? `translateY(${dragOffset}px)` : 'translateY(0)';
-    if (sheetState === 'mid') return drag;
-    return `translateY(calc(100% - 4.5rem${dragOffset > 0 ? ` + ${dragOffset}px` : ''}))`;
-  })();
+  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 4.5rem))';
 
   const handleSheetTap = useCallback(() => {
     setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
   }, []);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    dragStartY.current = e.touches[0].clientY;
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    const delta = e.touches[0].clientY - dragStartY.current;
-    if (delta > 0) setDragOffset(delta);
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    if (dragOffset > 80) setSheetState('peek');
-    setDragOffset(0);
-  }, [dragOffset]);
 
   return (
     <div className="relative h-screen">
@@ -907,11 +886,8 @@ export default function MapaSensors({
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
           transform: sheetTransform,
-          transition: dragOffset > 0 ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         {/* Drag handle + peek summary */}
         <div
@@ -933,8 +909,7 @@ export default function MapaSensors({
 
         {/* Scrollable content — visible when expanded to mid */}
         <div
-          className="flex-1 px-5 pb-4"
-          style={{ overflowY: dragOffset > 0 ? 'hidden' : 'auto' }}
+          className="flex-1 overflow-y-auto px-5 pb-4"
         >
           {qualityInfo && (
             <>
