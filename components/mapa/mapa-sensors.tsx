@@ -612,7 +612,7 @@ export default function MapaSensors({
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
                 onClick={() => setSelectedSensor(null)}
               >
-                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
+                <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: color }} />
               </div>
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
@@ -624,7 +624,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3 border-l-4" style={{ borderLeftColor: color }}>
+                  <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
                     <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                   </div>
                   <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -717,7 +717,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5 border-l-4" style={{ borderLeftColor: color }}>
+                    <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
                       <p className="text-xs leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                     </div>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -806,7 +806,7 @@ export default function MapaSensors({
                     </span>
                   )}
                 </div>
-                <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5 border-l-4" style={{ borderLeftColor: qualityInfo.color }}>
+                <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
                 <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
@@ -902,7 +902,7 @@ export default function MapaSensors({
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-4"
           onClick={handleSheetTap}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: qualityInfo?.color ?? '#e5e7eb' }} />
           <div className="flex items-center justify-between">
             {sheetState === 'peek' && <span className="text-sm font-medium text-gray-400">Calidad del aire</span>}
             {sheetState === 'peek' && (qualityInfo ? (
@@ -945,7 +945,7 @@ export default function MapaSensors({
               </div>
 
               {/* General recommendation */}
-              <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3 border-l-4" style={{ borderLeftColor: qualityInfo.color }}>
+              <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
                 <p className="text-sm leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
               </div>
 
