@@ -938,7 +938,7 @@ export default function MapaSensors({
                 {showQualitySource && (
                   <p className="mt-2 text-xs leading-relaxed text-gray-400">
                     {userLocation && nearestName
-                      ? "Basado en el sensor más cercano a tu ubicación."
+                      ? "Calidad del aire más cercana a ti."
                       : "Mostrando el promedio de todos los sensores activos en la zona."}
                   </p>
                 )}
