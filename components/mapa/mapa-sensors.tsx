@@ -956,17 +956,26 @@ export default function MapaSensors({
               </div>
 
               {/* Sensor source info */}
-              {userLocation && nearestName ? (
-                <>
+              <>
                 <div className="my-4 border-t border-gray-100" />
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="flex flex-col gap-1">
-                    <p className="text-sm font-semibold text-gray-700">{nearestName}</p>
+                    <p className="text-sm font-semibold text-gray-700">
+                      {userLocation && nearestName ? nearestName : "Sensores en la zona"}
+                    </p>
                     <div className="flex items-center gap-1.5">
-                      {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                      <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                      {userLocation && nearestName ? (
+                        nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                      ) : (
+                        <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                      )}
+                      <span className="text-xs text-gray-400">
+                        {userLocation && nearestName
+                          ? (nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano")
+                          : "Promedio del área metropolitana"}
+                      </span>
                     </div>
-                    {nearestTimestamp && (
+                    {userLocation && nearestTimestamp && (
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <span className="text-xs text-gray-400">Actualizado a las {nearestTimestamp}</span>
@@ -974,7 +983,7 @@ export default function MapaSensors({
                     )}
                   </div>
                 </div>
-                {nearestLat !== null && nearestLon !== null && (
+                {userLocation && nearestLat !== null && nearestLon !== null ? (
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
@@ -986,19 +995,16 @@ export default function MapaSensors({
                     <Copy className="h-3.5 w-3.5" />
                     {copied ? 'Copiado' : 'Copiar coordenadas'}
                   </button>
-                )}
-                </>
-              ) : !userLocation && (
-                <div className="mb-4">
+                ) : !userLocation && (
                   <button
                     onClick={requestLocation}
-                    className="flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200"
+                    className="mt-3 flex items-center gap-2 self-start rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 active:opacity-70"
                   >
-                    <LocateFixed className="h-3 w-3" />
-                    Mi ubicación
+                    <LocateFixed className="h-3.5 w-3.5" />
+                    Ver sensor más cercano
                   </button>
-                </div>
-              )}
+                )}
+              </>
             </>
           )}
         </div>
