@@ -599,7 +599,6 @@ export default function MapaSensors({
           height: '62dvh',
           transform: selectedSensor ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
-          borderTop: selectedSensor ? `3px solid ${selectedSensor.color}` : 'none',
         }}
       >
         {selectedSensor && (() => {
@@ -896,7 +895,6 @@ export default function MapaSensors({
           height: '62dvh',
           transform: sheetTransform,
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-          borderTop: qualityInfo ? `3px solid ${qualityInfo.color}` : 'none',
         }}
       >
         {/* Drag handle + peek summary */}
