@@ -78,6 +78,13 @@ const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
 };
 
+const hexToRgba = (hex: string, alpha: number): string => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -418,7 +425,7 @@ export default function MapaSensors({
     if (selectedSensor) {
       const entry = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
       if (entry) {
-        entry.el.style.boxShadow = "0 4px 16px rgba(0,0,0,0.35), 0 0 0 2.5px white, 0 0 0 5px rgba(0,0,0,0.85)";
+        entry.el.style.boxShadow = `0 2px 8px rgba(0,0,0,0.2), 0 0 20px 6px ${hexToRgba(selectedSensor.color, 0.55)}`;
       }
     }
   }, [selectedSensor]);
