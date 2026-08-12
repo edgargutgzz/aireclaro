@@ -928,10 +928,9 @@ export default function MapaSensors({
                   </div>
                   <button
                     onClick={() => setShowQualitySource(v => !v)}
-                    className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500 transition-colors hover:bg-gray-200"
+                    className="rounded-full bg-gray-100 p-1 text-gray-400 transition-colors hover:bg-gray-200"
                   >
-                    <Info className="h-2.5 w-2.5" />
-                    {userLocation && nearestName ? "Sensor más cercano" : "Promedio de la zona"}
+                    <Info className="h-3.5 w-3.5" />
                   </button>
                 </div>
                 {showQualitySource && (
