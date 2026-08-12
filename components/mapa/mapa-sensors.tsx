@@ -599,6 +599,7 @@ export default function MapaSensors({
           height: '62dvh',
           transform: selectedSensor ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+          borderTop: selectedSensor ? `3px solid ${selectedSensor.color}` : 'none',
         }}
       >
         {selectedSensor && (() => {
@@ -612,7 +613,7 @@ export default function MapaSensors({
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
                 onClick={() => setSelectedSensor(null)}
               >
-                <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: color }} />
+                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
               </div>
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
@@ -895,6 +896,7 @@ export default function MapaSensors({
           height: '62dvh',
           transform: sheetTransform,
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+          borderTop: qualityInfo ? `3px solid ${qualityInfo.color}` : 'none',
         }}
       >
         {/* Drag handle + peek summary */}
@@ -902,7 +904,7 @@ export default function MapaSensors({
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-4"
           onClick={handleSheetTap}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: qualityInfo?.color ?? '#e5e7eb' }} />
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center justify-between">
             {sheetState === 'peek' && <span className="text-sm font-medium text-gray-400">Calidad del aire</span>}
             {sheetState === 'peek' && (qualityInfo ? (
