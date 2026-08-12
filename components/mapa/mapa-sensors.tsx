@@ -647,7 +647,7 @@ export default function MapaSensors({
                 </>
               )}
               <div className="my-4 border-t border-gray-100" />
-              <div className="rounded-xl bg-gray-50 px-4 py-3 flex flex-col gap-3">
+              <div className="rounded-xl bg-gray-50 px-4 py-3">
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-semibold text-gray-700">{sensorName}</p>
                   <div className="flex items-center gap-1.5">
@@ -660,6 +660,19 @@ export default function MapaSensors({
                       <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
                     </div>
                   )}
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    }}
+                    className="mt-1 flex items-center gap-1.5 active:opacity-70"
+                  >
+                    <Copy className={`h-3 w-3 flex-shrink-0 transition-colors ${copied ? 'text-green-500' : 'text-gray-400'}`} />
+                    <span className={`text-xs transition-colors ${copied ? 'text-green-500' : 'text-gray-400'}`}>
+                      {copied ? 'Copiado' : 'Copiar coordenadas'}
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -935,7 +948,7 @@ export default function MapaSensors({
               {userLocation && nearestName ? (
                 <>
                 <div className="my-4 border-t border-gray-100" />
-                <div className="rounded-xl bg-gray-50 px-4 py-3 flex flex-col gap-3">
+                <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="flex flex-col gap-1">
                     <p className="text-sm font-semibold text-gray-700">{nearestName}</p>
                     <div className="flex items-center gap-1.5">
@@ -947,6 +960,21 @@ export default function MapaSensors({
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <span className="text-xs text-gray-400">Actualizado a las {nearestTimestamp}</span>
                       </div>
+                    )}
+                    {nearestLat !== null && nearestLon !== null && (
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1500);
+                        }}
+                        className="mt-1 flex items-center gap-1.5 active:opacity-70"
+                      >
+                        <Copy className={`h-3 w-3 flex-shrink-0 transition-colors ${copied ? 'text-green-500' : 'text-gray-400'}`} />
+                        <span className={`text-xs transition-colors ${copied ? 'text-green-500' : 'text-gray-400'}`}>
+                          {copied ? 'Copiado' : 'Copiar coordenadas'}
+                        </span>
+                      </button>
                     )}
                   </div>
                 </div>
