@@ -630,13 +630,6 @@ export default function MapaSensors({
               <div
                 className="flex-1 overflow-y-auto px-5 pb-4"
               >
-              <div className="mb-4 flex items-center gap-2">
-                <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
-                <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                  {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
-                  {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
-                </span>
-              </div>
               <div className="mb-5 flex items-center gap-2">
                 <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
                   {sensorQuality ? sensorQuality.label : "—"}
@@ -646,6 +639,13 @@ export default function MapaSensors({
                     {roundPM25(pm25)} μg/m³ · PM2.5
                   </span>
                 )}
+              </div>
+              <div className="mb-4 flex items-center gap-2">
+                <div className="text-sm font-semibold text-gray-900">{sensorName}</div>
+                <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                  {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
+                  {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
+                </span>
               </div>
               {sensorQuality && (
                 <>
@@ -938,6 +938,16 @@ export default function MapaSensors({
         >
           {qualityInfo && (
             <>
+              <div className="mb-5 flex items-center gap-2">
+                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
+                </div>
+                {displayPm25 !== null && (
+                  <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
+                    {roundPM25(displayPm25)} μg/m³ · PM2.5
+                  </span>
+                )}
+              </div>
               {userLocation && nearestName ? (
                 <div className="mb-4 flex items-center gap-2">
                   <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
@@ -958,16 +968,6 @@ export default function MapaSensors({
                   </button>
                 </div>
               )}
-              <div className="mb-5 flex items-center gap-2">
-                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </div>
-                {displayPm25 !== null && (
-                  <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">
-                    {roundPM25(displayPm25)} μg/m³ · PM2.5
-                  </span>
-                )}
-              </div>
 
               {/* General recommendation */}
               <div className="mb-5 rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
