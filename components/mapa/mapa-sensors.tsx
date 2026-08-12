@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin, ChevronDown, Clock, Info } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin, ChevronDown, Clock } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -926,12 +926,14 @@ export default function MapaSensors({
                   <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                     {qualityInfo.label}
                   </div>
-                  <button
-                    onClick={() => setShowQualitySource(v => !v)}
-                    className="rounded-full bg-gray-100 p-1 text-gray-400 transition-colors hover:bg-gray-200"
-                  >
-                    <Info className="h-3.5 w-3.5" />
-                  </button>
+                  {userLocation && nearestName && (
+                    <button
+                      onClick={() => setShowQualitySource(v => !v)}
+                      className="rounded-full bg-gray-100 p-1 text-gray-400 transition-colors hover:bg-gray-200"
+                    >
+                      <LocateFixed className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </div>
                 {showQualitySource && (
                   <p className="mt-2 text-xs leading-relaxed text-gray-400">
