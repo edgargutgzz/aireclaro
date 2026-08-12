@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin, ChevronDown, Clock } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin, ChevronDown, Clock, Info } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -223,6 +223,7 @@ export default function MapaSensors({
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
+  const [showQualitySource, setShowQualitySource] = useState(false);
   const [isDesktopCardExpanded, setIsDesktopCardExpanded] = useState(false);
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
@@ -924,9 +925,20 @@ export default function MapaSensors({
                 <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
                 </div>
-                <p className="mt-1 text-xs text-gray-400">
-                  {userLocation && nearestName ? "Calidad del aire más cercana a ti" : "Promedio de los sensores en la zona"}
-                </p>
+                <button
+                  onClick={() => setShowQualitySource(v => !v)}
+                  className="mt-2 flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500 transition-colors hover:bg-gray-200"
+                >
+                  <Info className="h-2.5 w-2.5" />
+                  {userLocation && nearestName ? "Sensor más cercano" : "Promedio de la zona"}
+                </button>
+                {showQualitySource && (
+                  <p className="mt-2 text-xs leading-relaxed text-gray-400">
+                    {userLocation && nearestName
+                      ? `Basado en el sensor más cercano a tu ubicación: ${nearestName}.`
+                      : "Mostrando el promedio de todos los sensores activos en la zona."}
+                  </p>
+                )}
               </div>
 
               {/* General recommendation */}
