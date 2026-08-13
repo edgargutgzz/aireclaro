@@ -505,7 +505,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop left column — filter pills + quality card */}
-      <div className="absolute left-6 top-[5rem] z-10 hidden w-[300px] flex-col gap-2 md:flex">
+      <div className="absolute left-6 top-[5rem] z-10 hidden w-[380px] flex-col gap-2 md:flex">
         <div className="flex gap-2">
           <button
             onClick={() => setShowSima((v) => !v)}
