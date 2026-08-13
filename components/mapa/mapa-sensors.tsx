@@ -666,7 +666,7 @@ export default function MapaSensors({
                     }}
                     className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs text-gray-400 transition-colors active:opacity-70`}
                   >
-                    <Copy className="h-3 w-3" />
+                    <Copy className="h-2.5 w-2.5 flex-shrink-0" />
                     {copied ? 'Copiado' : 'Copiar coordenadas'}
                   </button>
                 </div>
@@ -997,7 +997,7 @@ export default function MapaSensors({
                       }}
                       className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs text-gray-400 transition-colors active:opacity-70`}
                     >
-                      <Copy className="h-3.5 w-3.5" />
+                      <Copy className="h-2.5 w-2.5 flex-shrink-0" />
                       {copied ? 'Copiado' : 'Copiar coordenadas'}
                     </button>
                   )}
