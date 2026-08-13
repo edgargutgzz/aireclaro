@@ -648,7 +648,7 @@ export default function MapaSensors({
                 <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
                   <div className="flex flex-col gap-3 px-4 py-3">
                     {timestamp && (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-2">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
                       </div>
@@ -949,13 +949,13 @@ export default function MapaSensors({
                 <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
                   <div className="flex flex-col gap-3 px-4 py-3">
                     {userLocation && nearestName && (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-2">
                         <LocateFixed className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <span className="text-sm text-gray-400">Tu sensor más cercano</span>
                       </div>
                     )}
                     {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-2">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
                       </div>
