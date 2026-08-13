@@ -978,7 +978,7 @@ export default function MapaSensors({
                     {userLocation && nearestName && (
                       <div className="flex items-center gap-1.5">
                         <LocateFixed className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-xs text-gray-400">{nearestIsSima ? "Estación más cercana" : "Sensor más cercano"}</span>
+                        <span className="text-xs text-gray-400">Tu sensor más cercano</span>
                       </div>
                     )}
                     {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
@@ -1054,7 +1054,7 @@ export default function MapaSensors({
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600">
                       <LocateFixed className="h-3.5 w-3.5" />
-                      {nearestIsSima ? "Estación más cercana" : "Sensor más cercano"}
+                      Tu sensor más cercano
                     </span>
                     <button
                       onClick={() => {
