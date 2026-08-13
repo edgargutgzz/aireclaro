@@ -124,15 +124,12 @@ export default function Acerca() {
         <p className="mb-4 text-xs font-medium uppercase tracking-wide text-gray-400">Preguntas Frecuentes</p>
         <Questions />
 
-        <div className="mt-10 flex justify-start">
-          <Link
-            href="https://datacomun.com"
-            target="_blank"
-            className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-sm transition-all hover:border-gray-300 hover:shadow-md whitespace-nowrap"
-          >
-            {"Desarrollado por "}<span className="font-medium" style={{ marginLeft: "-2px" }}><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+        <p className="mt-10 text-xs text-gray-400">
+          Desarrollado por{" "}
+          <Link href="https://datacomun.com" target="_blank" className="hover:text-gray-600">
+            <span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span>
           </Link>
-        </div>
+        </p>
 
       </div>
     </div>
