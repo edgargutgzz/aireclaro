@@ -228,6 +228,7 @@ export default function MapaSensors({
   const [showQualitySource, setShowQualitySource] = useState(false);
   const [isDesktopCardExpanded, setIsDesktopCardExpanded] = useState(true);
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
+  const [showDesktopRecs, setShowDesktopRecs] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
 
@@ -568,30 +569,43 @@ export default function MapaSensors({
                   </div>
                 </div>
               )}
-              <p className="mb-3 mt-5 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400"><span>Recomendaciones Oficiales</span><a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-400 hover:text-gray-600 transition-colors"><BadgeCheck className="h-3 w-3" /></a></p>
-              <div className="mb-5 flex flex-col gap-3">
-                <div className="rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="mb-1 flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                    <p className="text-sm font-semibold text-gray-700">Población General</p>
-                  </div>
-                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+              <button
+                onClick={() => setShowDesktopRecs(v => !v)}
+                className="mb-3 mt-5 flex w-full items-center justify-between gap-1.5"
+              >
+                <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400">
+                  <span>Recomendaciones Oficiales</span>
+                  <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex items-center text-gray-400 hover:text-gray-600 transition-colors">
+                    <BadgeCheck className="h-3 w-3" />
+                  </a>
                 </div>
-                {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                ].map(({ label, rec, Icon }) => (
-                  <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
+                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showDesktopRecs ? 'rotate-180' : ''}`} />
+              </button>
+              {showDesktopRecs && (
+                <div className="mb-5 flex flex-col gap-3">
+                  <div className="rounded-xl bg-gray-50 px-4 py-3">
                     <div className="mb-1 flex items-center gap-2">
-                      <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                      <p className="text-sm font-semibold text-gray-700">{label}</p>
+                      <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                      <p className="text-sm font-semibold text-gray-700">Población General</p>
                     </div>
-                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
+                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                   </div>
-                ))}
-              </div>
+                  {[
+                    { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
+                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
+                    { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
+                    { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                  ].map(({ label, rec, Icon }) => (
+                    <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
+                      <div className="mb-1 flex items-center gap-2">
+                        <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                        <p className="text-sm font-semibold text-gray-700">{label}</p>
+                      </div>
+                      <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
