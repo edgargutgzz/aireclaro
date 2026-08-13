@@ -87,7 +87,7 @@ export default function Acerca() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <div className="container mx-auto max-w-2xl px-4 pb-32 pt-16 md:pb-20 md:pt-28">
+      <div className="container mx-auto max-w-2xl px-4 pb-10 pt-16 md:pt-28">
 
         {/* Page label */}
         <p className="mb-4 text-xs font-medium uppercase tracking-wide text-gray-400">Acerca</p>
