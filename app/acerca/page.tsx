@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Questions from "@/components/acerca/questions";
 
 export const metadata: Metadata = {
-  title: "Preguntas Frecuentes",
+  title: "Acerca",
   description:
     "Conoce cómo funciona Aire Claro, qué datos utiliza y quién está detrás del monitoreo de calidad del aire en Monterrey y Zona Metropolitana.",
 };
@@ -89,11 +89,22 @@ export default function Acerca() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <div className="container mx-auto max-w-6xl px-4 pb-20 pt-16 md:pt-28">
-      {/* Observatorio Section */}
-      <div className="mb-16 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-12">
-          <div className="flex-shrink-0">
-            <Link href="https://observatoriodelaire.com" target="_blank" className="inline-block transition-opacity hover:opacity-75">
+
+        {/* Page header */}
+        <h1 className="mb-3 text-5xl font-extrabold tracking-tight text-gray-900">
+          Acerca
+        </h1>
+        <p className="mb-12 max-w-2xl text-lg leading-relaxed text-gray-500">
+          Aire Claro es una plataforma del Observatorio Ciudadano de la Calidad
+          del Aire, una organización de la sociedad civil dedicada a generar
+          esfuerzos colaborativos y fundamento técnico para mejorar la calidad
+          del aire en Nuevo León.
+        </p>
+
+        {/* Observatorio card */}
+        <div className="mb-20 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:gap-10">
+            <Link href="https://observatoriodelaire.com" target="_blank" className="inline-block flex-shrink-0 transition-opacity hover:opacity-75">
               <Image
                 src="/occamm-logo.png"
                 alt="Observatorio del Aire Logo"
@@ -102,30 +113,20 @@ export default function Acerca() {
                 className="h-auto"
               />
             </Link>
-          </div>
-          <div className="h-px w-full bg-gray-200 md:h-12 md:w-px" />
-          <div className="flex flex-col gap-4">
-            <p className="text-base leading-relaxed text-gray-500">
-              Aire Claro es una plataforma del Observatorio Ciudadano de la
-              Calidad del Aire, una organización de la sociedad civil dedicada a
-              generar esfuerzos colaborativos y fundamento técnico para mejorar
-              la calidad del aire en Nuevo León.
-            </p>
+            <div className="h-px w-full bg-gray-200 md:h-12 md:w-px flex-shrink-0" />
             <Link
               href="https://observatoriodelaire.com"
               target="_blank"
-              className="w-fit text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600"
+              className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600"
             >
               observatoriodelaire.com
             </Link>
           </div>
         </div>
-      </div>
 
-      <h1 className="mb-16 text-5xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
-        Preguntas Frecuentes
-      </h1>
-      <Questions />
+        {/* FAQ section */}
+        <p className="mb-6 text-xs font-medium uppercase tracking-wide text-gray-400">Preguntas Frecuentes</p>
+        <Questions />
 
       </div>
       <Footer />
