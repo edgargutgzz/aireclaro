@@ -671,7 +671,7 @@ export default function MapaSensors({
                 <>
                   <p className="mb-3 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400"><span>Recomendaciones Oficiales</span><a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-400 hover:text-gray-600 transition-colors"><BadgeCheck className="h-3 w-3" /></a></p>
                   <div className="mb-5 flex flex-col gap-3">
-                    <div className="rounded-xl px-4 py-3" style={{ backgroundColor: `${sensorQuality.color}12` }}>
+                    <div className="rounded-xl bg-gray-50 border-l-4 px-4 py-3" style={{ borderLeftColor: sensorQuality.textColor }}>
                       <div className="mb-1 flex items-center gap-2">
                         <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
                         <p className="text-sm font-semibold text-gray-700">Población General</p>
@@ -684,7 +684,7 @@ export default function MapaSensors({
                       { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
                       { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
                     ].map(({ label, rec, Icon }) => (
-                      <div key={label} className="rounded-xl px-4 py-3" style={{ backgroundColor: `${sensorQuality.color}12` }}>
+                      <div key={label} className="rounded-xl bg-gray-50 border-l-4 px-4 py-3" style={{ borderLeftColor: sensorQuality.textColor }}>
                         <div className="mb-1 flex items-center gap-2">
                           <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
                           <p className="text-sm font-semibold text-gray-700">{label}</p>
@@ -735,7 +735,7 @@ export default function MapaSensors({
                   <>
                     <p className="mb-2 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400"><span>Recomendaciones Oficiales</span><a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-400 hover:text-gray-600 transition-colors"><BadgeCheck className="h-3 w-3" /></a></p>
                     <div className="mb-3 flex flex-col gap-2">
-                      <div className="rounded-lg px-3 py-2.5" style={{ backgroundColor: `${sensorQuality.color}12` }}>
+                      <div className="rounded-lg bg-gray-50 border-l-4 px-3 py-2.5" style={{ borderLeftColor: sensorQuality.textColor }}>
                         <div className="mb-1 flex items-center gap-1.5">
                           <User className="h-3 w-3 flex-shrink-0 text-gray-400" />
                           <p className="text-sm font-semibold text-gray-700">Población General</p>
@@ -748,7 +748,7 @@ export default function MapaSensors({
                         { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
                         { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
                       ].map(({ label, rec, Icon }) => (
-                        <div key={label} className="rounded-lg px-3 py-2.5" style={{ backgroundColor: `${sensorQuality.color}12` }}>
+                        <div key={label} className="rounded-lg bg-gray-50 border-l-4 px-3 py-2.5" style={{ borderLeftColor: sensorQuality.textColor }}>
                           <div className="mb-1 flex items-center gap-1.5">
                             <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
                             <p className="text-sm font-semibold text-gray-700">{label}</p>
@@ -813,7 +813,7 @@ export default function MapaSensors({
                 </div>
                 <p className="mb-2 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400"><span>Recomendaciones Oficiales</span><a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-400 hover:text-gray-600 transition-colors"><BadgeCheck className="h-3 w-3" /></a></p>
                 <div className="mb-3 flex flex-col gap-2">
-                  <div className="rounded-lg px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                  <div className="rounded-lg bg-gray-50 border-l-4 px-3 py-2.5" style={{ borderLeftColor: qualityInfo.textColor }}>
                     <div className="mb-1 flex items-center gap-1.5">
                       <User className="h-3 w-3 flex-shrink-0 text-gray-400" />
                       <p className="text-sm font-semibold text-gray-700">Población General</p>
@@ -826,7 +826,7 @@ export default function MapaSensors({
                     { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
                     { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
                   ].map(({ label, rec, Icon }) => (
-                    <div key={label} className="rounded-lg px-3 py-2.5" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                    <div key={label} className="rounded-lg bg-gray-50 border-l-4 px-3 py-2.5" style={{ borderLeftColor: qualityInfo.textColor }}>
                       <div className="mb-1 flex items-center gap-1.5">
                         <Icon className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <p className="text-sm font-semibold text-gray-700">{label}</p>
@@ -980,7 +980,7 @@ export default function MapaSensors({
               {/* Recommendations */}
               <p className="mb-3 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400"><span>Recomendaciones Oficiales</span><a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-400 hover:text-gray-600 transition-colors"><BadgeCheck className="h-3 w-3" /></a></p>
               <div className="mb-5 flex flex-col gap-3">
-                <div className="rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                <div className="rounded-xl bg-gray-50 border-l-4 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
                   <div className="mb-1 flex items-center gap-2">
                     <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
                     <p className="text-sm font-semibold text-gray-700">Población General</p>
@@ -993,7 +993,7 @@ export default function MapaSensors({
                   { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
                   { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
                 ].map(({ label, rec, Icon }) => (
-                  <div key={label} className="rounded-xl px-4 py-3" style={{ backgroundColor: `${qualityInfo.color}12` }}>
+                  <div key={label} className="rounded-xl bg-gray-50 border-l-4 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
                     <div className="mb-1 flex items-center gap-2">
                       <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
                       <p className="text-sm font-semibold text-gray-700">{label}</p>
