@@ -483,7 +483,7 @@ export default function MapaSensors({
         <button
           onClick={() => setShowSima((v) => !v)}
           className={`flex-1 rounded-full px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-            showSima ? "border-2 border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border border-white/20 bg-white/20 text-white/60"
+            showSima ? "border-2 border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-2 border-white/20 bg-white/20 text-white/60"
           }`}
         >
           <div className="flex items-center justify-center gap-1.5">
@@ -601,7 +601,7 @@ export default function MapaSensors({
           <button
             onClick={() => setShowSima((v) => !v)}
             className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
-              showSima ? "border-2 border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+              showSima ? "border-2 border-gray-900 bg-white/90 text-gray-900" : "border-2 border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
             }`}
           >
             <Landmark className="h-3.5 w-3.5" />
