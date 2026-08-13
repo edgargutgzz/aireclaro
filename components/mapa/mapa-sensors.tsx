@@ -664,7 +664,7 @@ export default function MapaSensors({
                       setCopied(true);
                       setTimeout(() => setCopied(false), 1500);
                     }}
-                    className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'text-green-600' : 'text-gray-500'}`}
+                    className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs font-medium transition-colors active:opacity-70 text-gray-500`}
                   >
                     <Copy className="h-3.5 w-3.5" />
                     {copied ? 'Copiado' : 'Copiar coordenadas'}
@@ -717,7 +717,7 @@ export default function MapaSensors({
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
                 }}
-                className={`mt-3 flex items-center gap-2 self-start rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-600'}`}
+                className={`mt-3 flex items-center gap-2 self-start rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 bg-gray-100 text-gray-600`}
               >
                 <Copy className="h-3.5 w-3.5" />
                 {copied ? 'Copiado' : 'Copiar coordenadas'}
@@ -995,7 +995,7 @@ export default function MapaSensors({
                         setCopied(true);
                         setTimeout(() => setCopied(false), 1500);
                       }}
-                      className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'text-green-600' : 'text-gray-500'}`}
+                      className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs font-medium transition-colors active:opacity-70 text-gray-500`}
                     >
                       <Copy className="h-3.5 w-3.5" />
                       {copied ? 'Copiado' : 'Copiar coordenadas'}
@@ -1062,7 +1062,7 @@ export default function MapaSensors({
                         setCopied(true);
                         setTimeout(() => setCopied(false), 1500);
                       }}
-                      className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-600'}`}
+                      className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 bg-gray-100 text-gray-600`}
                     >
                       <Copy className="h-3.5 w-3.5" />
                       {copied ? 'Copiado' : 'Copiar coordenadas'}
