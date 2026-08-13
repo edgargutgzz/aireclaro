@@ -641,13 +641,13 @@ export default function MapaSensors({
               </div>
               <button
                 onClick={() => setShowSensorDetail(v => !v)}
-                className="mb-5 flex w-full items-center justify-between rounded-xl bg-gray-50 px-4 py-3"
+                className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
               >
-                <div className="flex items-center gap-2">
-                  {isSima ? <Landmark className="h-3.5 w-3.5 text-gray-400" /> : <Users className="h-3.5 w-3.5 text-gray-400" />}
-                  <span className="text-sm font-medium text-gray-600">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                <div className="flex min-w-0 items-center gap-2">
+                  {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
+                  <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
                 </div>
-                <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
               </button>
               {showSensorDetail && (
                 <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
