@@ -672,7 +672,7 @@ export default function MapaSensors({
                   <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
                     <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                   </div>
-                  <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+                  <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
                   <div className="mb-5 flex flex-col gap-3">
                     {[
                       { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
@@ -732,7 +732,7 @@ export default function MapaSensors({
                     <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
                       <p className="text-xs leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
                     </div>
-                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
                     <div className="mb-3 flex flex-col gap-2">
                       {[
                         { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
@@ -806,7 +806,7 @@ export default function MapaSensors({
                 <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
                   <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
                 </div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
                 <div className="mb-3 flex flex-col gap-2">
                   {[
                     { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
@@ -971,7 +971,7 @@ export default function MapaSensors({
               </div>
 
               {/* Sensitive groups */}
-              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Grupos sensibles</p>
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
               <div className="mb-5 flex flex-col gap-3">
                 {[
                   { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
