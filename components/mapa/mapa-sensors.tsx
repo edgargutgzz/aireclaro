@@ -508,9 +508,12 @@ export default function MapaSensors({
       {/* Desktop left area — quality card + filter pills beside it */}
       <div className="absolute left-6 top-[5rem] z-10 hidden items-start gap-2 md:flex">
 
+        {/* Left column: quality card + legend panel + buttons */}
+        <div className="flex w-[360px] flex-col gap-2">
+
         {/* Quality card */}
         {qualityInfo && (
-          <div className="w-[360px] overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
             <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 10rem)' }}>
               <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del aire</p>
               <div className="mb-5 flex items-center gap-2">
@@ -602,6 +605,43 @@ export default function MapaSensors({
           </div>
         )}
 
+        {/* Legend panel */}
+        {isDesktopLegendExpanded && (
+          <div className="overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
+            <div className="flex items-center justify-between px-4 pt-3 pb-1">
+              <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+              <button onClick={() => setIsDesktopLegendExpanded(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-3">
+              <LegendContent />
+            </div>
+          </div>
+        )}
+
+        {/* Buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsDesktopLegendExpanded((v) => !v)}
+            className="flex flex-1 items-center justify-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+            aria-label="Leyenda"
+          >
+            <GaugeCircle className="h-5 w-5 text-gray-700" />
+            <span className="text-sm font-medium text-gray-700">Leyenda</span>
+          </button>
+          <button
+            onClick={userLocation ? flyToUser : requestLocation}
+            className="flex flex-1 items-center justify-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+            aria-label="Mi ubicación"
+          >
+            <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+            <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>Mi ubicación</span>
+          </button>
+        </div>
+
+        </div>{/* end left column */}
+
         {/* Filter pills */}
         <div className="flex gap-2">
           <button
@@ -624,41 +664,6 @@ export default function MapaSensors({
           </button>
         </div>
       </div>
-
-      {/* Desktop bottom-left buttons — legend + locate */}
-      <div className="absolute bottom-8 left-6 z-10 hidden flex-col items-start gap-2 md:flex">
-        <button
-          onClick={() => setIsDesktopLegendExpanded((v) => !v)}
-          className="flex items-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-          aria-label="Leyenda"
-        >
-          <GaugeCircle className="h-5 w-5 text-gray-700" />
-          <span className="text-sm font-medium text-gray-700">Leyenda</span>
-        </button>
-        <button
-          onClick={userLocation ? flyToUser : requestLocation}
-          className="flex items-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-          aria-label="Mi ubicación"
-        >
-          <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>Mi ubicación</span>
-        </button>
-      </div>
-
-      {/* Desktop legend panel — above bottom-left buttons */}
-      {isDesktopLegendExpanded && (
-        <div className="absolute bottom-24 left-6 z-10 hidden w-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm backdrop-blur-md md:block">
-          <div className="flex items-center justify-between px-4 pt-3 pb-1">
-            <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-            <button onClick={() => setIsDesktopLegendExpanded(false)} className="text-gray-400 hover:text-gray-600">
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="p-3">
-            <LegendContent />
-          </div>
-        </div>
-      )}
 
       {/* Legend toggle button — mobile only, hidden when sheet is expanded */}
       {sheetState === 'peek' && <button
