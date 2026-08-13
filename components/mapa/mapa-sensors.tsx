@@ -691,29 +691,6 @@ export default function MapaSensors({
                   </div>
                 </>
               )}
-              <div className="my-4 border-t border-gray-100" />
-              <div className="rounded-xl bg-gray-50 px-4 py-3">
-                <div className="flex flex-col gap-1">
-                  <p className="text-sm font-semibold text-gray-700">{sensorName}</p>
-                  {timestamp && (
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                      <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1500);
-                }}
-                className={`mt-3 flex items-center gap-2 self-start rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 bg-gray-100 text-gray-600`}
-              >
-                <Copy className="h-3.5 w-3.5" />
-                {copied ? 'Copiado' : 'Copiar coordenadas'}
-              </button>
             </div>
             </>
           );
@@ -1012,42 +989,6 @@ export default function MapaSensors({
                 ))}
               </div>
 
-              {/* Sensor source info */}
-              <>
-                <div className="my-4 border-t border-gray-100" />
-                <div className="rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="flex flex-col gap-1">
-                    <p className="text-sm font-semibold text-gray-700">
-                      {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
-                    </p>
-                    {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-xs text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {userLocation && nearestLat !== null && nearestLon !== null && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600">
-                      <LocateFixed className="h-3.5 w-3.5" />
-                      Tu sensor más cercano
-                    </span>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
-                      }}
-                      className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 bg-gray-100 text-gray-600`}
-                    >
-                      <Copy className="h-3.5 w-3.5" />
-                      {copied ? 'Copiado' : 'Copiar coordenadas'}
-                    </button>
-                  </div>
-                )}
-              </>
             </>
           )}
         </div>
