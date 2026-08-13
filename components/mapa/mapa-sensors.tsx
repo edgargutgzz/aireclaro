@@ -514,8 +514,20 @@ export default function MapaSensors({
         {/* Quality card */}
         {qualityInfo && (
           <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-            <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 10rem)' }}>
-              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del aire</p>
+            <button
+              onClick={() => setIsDesktopCardExpanded(v => !v)}
+              className="flex w-full items-center justify-between px-4 pt-4 pb-3 text-left"
+            >
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del aire</p>
+                {!isDesktopCardExpanded && (
+                  <span className="text-sm font-bold" style={{ color: qualityInfo.textColor }}>{qualityInfo.label}</span>
+                )}
+              </div>
+              <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isDesktopCardExpanded ? 'rotate-180' : ''}`} />
+            </button>
+            {isDesktopCardExpanded && (
+            <div className="overflow-y-auto px-4 pb-4" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
               <div className="mb-5 flex items-center gap-2">
                 <div className="text-2xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
@@ -602,6 +614,7 @@ export default function MapaSensors({
                 </div>
               )}
             </div>
+            )}
           </div>
         )}
 
