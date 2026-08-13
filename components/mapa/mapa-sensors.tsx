@@ -645,8 +645,8 @@ export default function MapaSensors({
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
               </button>
               {showSensorDetail && (
-                <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="flex flex-col gap-1">
+                <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
+                  <div className="flex flex-col gap-1 px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
                       <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
@@ -657,20 +657,18 @@ export default function MapaSensors({
                         <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
                       </div>
                     )}
-                    <div className="mt-2">
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-600'}`}
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                        {copied ? 'Copiado' : 'Copiar coordenadas'}
-                      </button>
-                    </div>
                   </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    }}
+                    className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'text-green-600' : 'text-gray-500'}`}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    {copied ? 'Copiado' : 'Copiar coordenadas'}
+                  </button>
                 </div>
               )}
               {sensorQuality && (
@@ -975,34 +973,34 @@ export default function MapaSensors({
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
               </button>
               {showNearestDetail && (
-                <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="flex flex-col gap-1">
+                <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
+                  <div className="flex flex-col gap-1 px-4 py-3">
+                    {userLocation && nearestName && (
+                      <div className="flex items-center gap-1.5">
+                        <LocateFixed className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <span className="text-xs text-gray-400">{nearestIsSima ? "Estación más cercana" : "Sensor más cercano"}</span>
+                      </div>
+                    )}
                     {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <span className="text-xs text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
                       </div>
                     )}
-                    {userLocation && nearestLat !== null && nearestLon !== null && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        <span className="flex items-center gap-2 rounded-full bg-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600">
-                          <LocateFixed className="h-3.5 w-3.5" />
-                          {nearestIsSima ? "Estación más cercana" : "Sensor más cercano"}
-                        </span>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 1500);
-                          }}
-                          className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-600'}`}
-                        >
-                          <Copy className="h-3.5 w-3.5" />
-                          {copied ? 'Copiado' : 'Copiar coordenadas'}
-                        </button>
-                      </div>
-                    )}
                   </div>
+                  {userLocation && nearestLat !== null && nearestLon !== null && (
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'text-green-600' : 'text-gray-500'}`}
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                      {copied ? 'Copiado' : 'Copiar coordenadas'}
+                    </button>
+                  )}
                 </div>
               )}
 
