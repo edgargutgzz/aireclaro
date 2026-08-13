@@ -975,7 +975,7 @@ export default function MapaSensors({
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600">
                       <LocateFixed className="h-3.5 w-3.5" />
-                      Sensor más cercano
+                      {nearestIsSima ? "Estación SIMA más cercana" : "Sensor Ciudadano más cercano"}
                     </span>
                     <button
                       onClick={() => {
