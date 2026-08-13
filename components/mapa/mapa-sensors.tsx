@@ -971,7 +971,6 @@ export default function MapaSensors({
                     )}
                     {userLocation && nearestLat !== null && nearestLon !== null && (
                       <>
-                        <div className="my-2 border-t border-gray-200" />
                         <div className="flex flex-wrap gap-2">
                           <span className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-gray-600">
                             <LocateFixed className="h-3.5 w-3.5" />
