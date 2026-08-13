@@ -992,7 +992,7 @@ export default function MapaSensors({
                     )}
                   </div>
                 </div>
-                {userLocation && nearestLat !== null && nearestLon !== null ? (
+                {userLocation && nearestLat !== null && nearestLon !== null && (
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
