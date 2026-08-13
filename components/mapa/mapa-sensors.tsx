@@ -671,7 +671,11 @@ export default function MapaSensors({
                 <>
                   <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
                   <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
-                    <p className="text-sm leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
+                    <div className="mb-1 flex items-center gap-2">
+                      <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                      <p className="text-sm font-semibold text-gray-700">Población General</p>
+                    </div>
+                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
                   </div>
                   <div className="mb-5 flex flex-col gap-3">
                     {[
@@ -730,8 +734,12 @@ export default function MapaSensors({
                 {sensorQuality && (
                   <>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
-                    <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
-                      <p className="text-xs leading-relaxed text-gray-600">{sensorQuality.generalRec}</p>
+                    <div className="mb-4 rounded-lg bg-gray-50 px-3 py-2.5">
+                      <div className="mb-1 flex items-center gap-1.5">
+                        <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <p className="text-sm font-semibold text-gray-700">Población General</p>
+                      </div>
+                      <p className="pl-[1.375rem] text-xs leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
                     </div>
                     <div className="mb-3 flex flex-col gap-2">
                       {[
@@ -804,8 +812,12 @@ export default function MapaSensors({
                   )}
                 </div>
                 <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
-                <div className="mb-4 rounded-xl bg-gray-50 px-3 py-2.5">
-                  <p className="text-xs leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
+                <div className="mb-4 rounded-lg bg-gray-50 px-3 py-2.5">
+                  <div className="mb-1 flex items-center gap-1.5">
+                    <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                    <p className="text-sm font-semibold text-gray-700">Población General</p>
+                  </div>
+                  <p className="pl-[1.375rem] text-xs leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
                 <div className="mb-3 flex flex-col gap-2">
                   {[
@@ -968,7 +980,11 @@ export default function MapaSensors({
               {/* Recommendations */}
               <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
               <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
-                <p className="text-sm leading-relaxed text-gray-600">{qualityInfo.generalRec}</p>
+                <div className="mb-1 flex items-center gap-2">
+                  <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                  <p className="text-sm font-semibold text-gray-700">Población General</p>
+                </div>
+                <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
               </div>
               <div className="mb-5 flex flex-col gap-3">
                 {[
