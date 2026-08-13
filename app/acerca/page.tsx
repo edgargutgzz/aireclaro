@@ -89,13 +89,8 @@ export default function Acerca() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <div className="container mx-auto max-w-6xl px-4 pb-20 pt-16 md:pt-28">
-      <h1 className="mb-16 text-5xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
-        Preguntas Frecuentes
-      </h1>
-      <Questions />
-
       {/* Observatorio Section */}
-      <div className="mt-20 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="mb-16 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-8 md:flex-row md:items-center md:gap-12">
           <div className="flex-shrink-0">
             <Link href="https://observatoriodelaire.com" target="_blank" className="inline-block transition-opacity hover:opacity-75">
@@ -126,6 +121,11 @@ export default function Acerca() {
           </div>
         </div>
       </div>
+
+      <h1 className="mb-16 text-5xl font-extrabold tracking-tight text-gray-900 md:text-5xl">
+        Preguntas Frecuentes
+      </h1>
+      <Questions />
 
       </div>
       <Footer />
