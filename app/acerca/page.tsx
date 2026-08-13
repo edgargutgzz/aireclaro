@@ -131,7 +131,7 @@ export default function Acerca() {
         <div className="mx-auto flex max-w-2xl items-center justify-between">
           <p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} OCCAMM</p>
           <Link href="https://datacomun.com" target="_blank" className="text-xs text-gray-400 hover:text-gray-600">
-            Desarrollado por<span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span>
+            Desarrollado por <span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span>
           </Link>
         </div>
       </div>
