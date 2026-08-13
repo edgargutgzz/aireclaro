@@ -953,36 +953,41 @@ export default function MapaSensors({
                 </div>
               </div>
 
-              {userLocation && nearestName && (
-                <>
-                  <button
-                    onClick={() => setShowNearestDetail(v => !v)}
-                    className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
-                  >
-                    <div className="flex min-w-0 items-center gap-2">
-                      {nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
-                      <span className="truncate text-sm font-medium text-gray-600">{nearestName}</span>
-                    </div>
-                    <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
-                  </button>
-                  {showNearestDetail && (
-                    <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
-                      <div className="flex flex-col gap-1">
-                        <p className="text-sm font-semibold text-gray-700">{nearestName}</p>
-                        <div className="flex items-center gap-1.5">
-                          {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                          <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                        </div>
-                        {nearestTimestamp && (
-                          <div className="flex items-center gap-1.5">
-                            <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                            <span className="text-xs text-gray-400">Actualizado a las {nearestTimestamp}</span>
-                          </div>
-                        )}
+              <button
+                onClick={() => setShowNearestDetail(v => !v)}
+                className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
+              >
+                <div className="flex min-w-0 items-center gap-2">
+                  {userLocation && nearestName
+                    ? (nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />)
+                    : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                  }
+                  <span className="truncate text-sm font-medium text-gray-600">
+                    {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
+                  </span>
+                </div>
+                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
+              </button>
+              {showNearestDetail && (
+                <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-semibold text-gray-700">
+                      {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
+                    </p>
+                    {userLocation && nearestName && (
+                      <div className="flex items-center gap-1.5">
+                        {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                        <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
                       </div>
-                    </div>
-                  )}
-                </>
+                    )}
+                    {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <span className="text-xs text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
 
               {/* General recommendation */}
