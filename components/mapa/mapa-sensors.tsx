@@ -504,32 +504,12 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left column — filter pills + quality card */}
-      <div className="absolute left-6 top-[5rem] z-10 hidden w-[380px] flex-col gap-2 md:flex">
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowSima((v) => !v)}
-            className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
-              showSima ? "border-2 border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
-            }`}
-          >
-            <Landmark className="h-3.5 w-3.5" />
-            Estación SIMA
-          </button>
-          <button
-            onClick={() => setShowPurpleAir((v) => !v)}
-            className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
-              showPurpleAir ? "border border-white/60 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
-            }`}
-          >
-            <Users className="h-3.5 w-3.5" />
-            Sensor Ciudadano
-          </button>
-        </div>
+      {/* Desktop left area — quality card + filter pills beside it */}
+      <div className="absolute left-6 top-[5rem] z-10 hidden items-start gap-2 md:flex">
 
         {/* Quality card */}
         {qualityInfo && (
-          <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
+          <div className="w-[300px] overflow-hidden rounded-2xl border border-white/60 bg-white/40 shadow-sm backdrop-blur-md">
             <button
               onClick={() => setIsDesktopCardExpanded((v) => !v)}
               className="flex w-full items-center justify-between px-4 py-3 text-left"
@@ -631,6 +611,28 @@ export default function MapaSensors({
             )}
           </div>
         )}
+
+        {/* Filter pills */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowSima((v) => !v)}
+            className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
+              showSima ? "border-2 border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+            }`}
+          >
+            <Landmark className="h-3.5 w-3.5" />
+            Estación SIMA
+          </button>
+          <button
+            onClick={() => setShowPurpleAir((v) => !v)}
+            className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
+              showPurpleAir ? "border border-white/60 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+            }`}
+          >
+            <Users className="h-3.5 w-3.5" />
+            Sensor Ciudadano
+          </button>
+        </div>
       </div>
 
       {/* Desktop bottom-right buttons — legend + locate */}
