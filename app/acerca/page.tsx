@@ -87,7 +87,7 @@ export default function Acerca() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <div className="container mx-auto max-w-2xl px-4 pb-20 pt-16 md:pt-28">
+      <div className="container mx-auto max-w-2xl px-4 pb-32 pt-16 md:pb-20 md:pt-28">
 
         {/* Page label */}
         <p className="mb-4 text-xs font-medium uppercase tracking-wide text-gray-400">Acerca</p>
@@ -124,7 +124,7 @@ export default function Acerca() {
         <p className="mb-4 text-xs font-medium uppercase tracking-wide text-gray-400">Preguntas Frecuentes</p>
         <Questions />
 
-        <div className="mt-12 flex justify-start">
+        <div className="mt-10 flex justify-start">
           <Link
             href="https://datacomun.com"
             target="_blank"
