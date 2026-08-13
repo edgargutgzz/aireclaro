@@ -212,10 +212,10 @@ const faqData = [
 
 // Styles
 const styles = {
-  card: "group cursor-pointer rounded-xl border bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md",
-  cardOpen: "border-blue-200",
-  cardClosed: "border-gray-200 hover:border-blue-100",
-  chevronOpen: "text-blue-600",
+  card: "group cursor-pointer rounded-xl bg-gray-50 px-4 py-3 transition-all duration-200",
+  cardOpen: "",
+  cardClosed: "",
+  chevronOpen: "text-gray-500",
   chevronClosed: "text-gray-400",
 };
 
@@ -223,23 +223,12 @@ const styles = {
 const FAQIcon = ({ icon: Icon, isOpen }: { icon?: any; isOpen: boolean }) => {
   if (Icon) {
     return (
-      <div
-        className={`flex-shrink-0 rounded-full p-2 transition-colors ${
-          isOpen ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600"
-        }`}
-      >
-        <Icon size={18} />
+      <div className="flex-shrink-0 text-gray-400">
+        <Icon size={16} />
       </div>
     );
   }
-
-  return (
-    <div
-      className={`h-2 w-2 rounded-full transition-colors ${
-        isOpen ? "bg-blue-600" : "bg-gray-300"
-      }`}
-    />
-  );
+  return null;
 };
 
 // FAQ component
@@ -260,23 +249,21 @@ const FAQItem = ({
     className={`${styles.card} ${isOpen ? styles.cardOpen : styles.cardClosed}`}
     onClick={onToggle}
   >
-    <div className="flex items-center justify-between">
-      <div className="flex items-center space-x-3">
+    <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2.5">
         <FAQIcon icon={icon} isOpen={isOpen} />
-        <h3 className="pr-4 text-lg font-semibold text-gray-900">{question}</h3>
+        <h3 className="text-sm font-semibold text-gray-700">{question}</h3>
       </div>
-      <div className="flex-shrink-0 transition-transform duration-200">
+      <div className="flex-shrink-0">
         {isOpen ? (
-          <ChevronUp size={24} className={styles.chevronOpen} />
+          <ChevronUp size={16} className={styles.chevronOpen} />
         ) : (
-          <ChevronDown size={24} className={styles.chevronClosed} />
+          <ChevronDown size={16} className={styles.chevronClosed} />
         )}
       </div>
     </div>
     {isOpen && (
-      <div
-        className={`mt-4 leading-relaxed text-gray-700 ${icon ? "ml-12" : "ml-5"}`}
-      >
+      <div className="mt-3 pl-6 text-sm leading-relaxed text-gray-500">
         {answer}
       </div>
     )}
