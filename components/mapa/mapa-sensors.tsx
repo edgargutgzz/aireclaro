@@ -659,7 +659,7 @@ export default function MapaSensors({
                         setCopied(true);
                         setTimeout(() => setCopied(false), 1500);
                       }}
-                      className="flex items-center gap-2 text-sm text-gray-400 transition-colors active:opacity-70"
+                      className="flex items-center gap-1.5 text-sm text-gray-400 transition-colors active:opacity-70"
                     >
                       <Copy className="h-3 w-3 flex-shrink-0" />
                       {copied ? 'Copiado' : 'Copiar coordenadas'}
@@ -967,7 +967,7 @@ export default function MapaSensors({
                           setCopied(true);
                           setTimeout(() => setCopied(false), 1500);
                         }}
-                        className="flex items-center gap-2 text-sm text-gray-400 transition-colors active:opacity-70"
+                        className="flex items-center gap-1.5 text-sm text-gray-400 transition-colors active:opacity-70"
                       >
                         <Copy className="h-3 w-3 flex-shrink-0" />
                         {copied ? 'Copiado' : 'Copiar coordenadas'}
