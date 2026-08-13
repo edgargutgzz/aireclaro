@@ -669,7 +669,7 @@ export default function MapaSensors({
               )}
               {sensorQuality && (
                 <>
-                  <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
+                  <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones Oficiales</p>
                   <div className="mb-5 flex flex-col gap-3">
                     <div className="rounded-xl bg-gray-50 px-4 py-3">
                       <div className="mb-1 flex items-center gap-2">
@@ -733,7 +733,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
+                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones Oficiales</p>
                     <div className="mb-3 flex flex-col gap-2">
                       <div className="rounded-lg bg-gray-50 px-3 py-2.5">
                         <div className="mb-1 flex items-center gap-1.5">
@@ -811,7 +811,7 @@ export default function MapaSensors({
                     </span>
                   )}
                 </div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones Oficiales</p>
                 <div className="mb-3 flex flex-col gap-2">
                   <div className="rounded-lg bg-gray-50 px-3 py-2.5">
                     <div className="mb-1 flex items-center gap-1.5">
@@ -978,7 +978,7 @@ export default function MapaSensors({
               )}
 
               {/* Recommendations */}
-              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones Oficiales</p>
               <div className="mb-5 flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
