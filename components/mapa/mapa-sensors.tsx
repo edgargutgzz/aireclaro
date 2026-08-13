@@ -969,27 +969,30 @@ export default function MapaSensors({
                         <span className="text-xs text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
                       </div>
                     )}
+                    {userLocation && nearestLat !== null && nearestLon !== null && (
+                      <>
+                        <div className="my-2 border-t border-gray-200" />
+                        <div className="flex flex-wrap gap-2">
+                          <span className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-gray-600">
+                            <LocateFixed className="h-3.5 w-3.5" />
+                            {nearestIsSima ? "Estación más cercana" : "Sensor más cercano"}
+                          </span>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                              setCopied(true);
+                              setTimeout(() => setCopied(false), 1500);
+                            }}
+                            className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'bg-green-100 text-green-600' : 'bg-white text-gray-600'}`}
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                            {copied ? 'Copiado' : 'Copiar coordenadas'}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
-                {userLocation && nearestLat !== null && nearestLon !== null && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600">
-                      <LocateFixed className="h-3.5 w-3.5" />
-                      {nearestIsSima ? "Estación más cercana" : "Sensor más cercano"}
-                    </span>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
-                      }}
-                      className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'bg-green-50 text-green-600' : 'bg-gray-100 text-gray-600'}`}
-                    >
-                      <Copy className="h-3.5 w-3.5" />
-                      {copied ? 'Copiado' : 'Copiar coordenadas'}
-                    </button>
-                  </div>
-                )}
               </>
             </>
           )}
