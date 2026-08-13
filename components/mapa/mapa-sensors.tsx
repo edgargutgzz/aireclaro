@@ -922,22 +922,7 @@ export default function MapaSensors({
                       {roundPM25(displayPm25)} μg/m³ · PM2.5
                     </span>
                   )}
-                  {userLocation && nearestName && (
-                    <button
-                      onClick={() => setShowQualitySource(v => !v)}
-                      className="rounded-full bg-gray-100 p-1 text-gray-400 transition-colors hover:bg-gray-200"
-                    >
-                      <LocateFixed className="h-3.5 w-3.5" />
-                    </button>
-                  )}
                 </div>
-                {showQualitySource && (
-                  <p className="mt-2 text-xs leading-relaxed text-gray-400">
-                    {userLocation && nearestName
-                      ? "Calidad del aire más cercana a ti."
-                      : "Mostrando el promedio de todos los sensores activos en la zona."}
-                  </p>
-                )}
               </div>
 
               {/* General recommendation */}
