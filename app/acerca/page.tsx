@@ -124,16 +124,18 @@ export default function Acerca() {
         <p className="mb-4 text-xs font-medium uppercase tracking-wide text-gray-400">Preguntas Frecuentes</p>
         <Questions />
 
-        <div className="mt-10 border-t border-gray-100 pt-6">
-          <p className="text-xs text-gray-400">
-            Desarrollado por{" "}
-            <Link href="https://datacomun.com" target="_blank" className="hover:text-gray-600">
-              <span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span>
-            </Link>
-          </p>
-        </div>
 
       </div>
+
+      <div className="border-t border-gray-100 px-4 py-4 md:pb-6">
+        <div className="mx-auto flex max-w-2xl items-center justify-between">
+          <p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} Observatorio del Aire</p>
+          <Link href="https://datacomun.com" target="_blank" className="text-xs text-gray-400 hover:text-gray-600">
+            Hecho por <span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span>
+          </Link>
+        </div>
+      </div>
+
     </div>
   );
 }
