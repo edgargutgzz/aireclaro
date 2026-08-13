@@ -89,9 +89,6 @@ export default function Acerca() {
       />
       <div className="container mx-auto max-w-2xl px-4 pb-10 pt-16 md:pt-28">
 
-        {/* Page label */}
-        <p className="mb-4 text-xs font-medium uppercase tracking-wide text-gray-400">Acerca</p>
-
         {/* Observatorio card */}
         <div className="mb-10 rounded-xl bg-gray-50 px-4 py-4">
           <div className="flex flex-col gap-4">
