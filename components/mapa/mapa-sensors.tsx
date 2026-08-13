@@ -283,11 +283,17 @@ export default function MapaSensors({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
       center: [-100.32098588977951, 25.665],
-      zoom: 10,
+      zoom: 8,
     });
 
     map.current.on("load", () => {
       setMapLoaded(true);
+      (map.current as any).flyTo({
+        center: [-100.32098588977951, 25.665],
+        zoom: 10.5,
+        duration: 2000,
+        essential: true,
+      });
     });
 
     if (navigator.geolocation) {
