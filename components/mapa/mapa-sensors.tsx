@@ -972,18 +972,12 @@ export default function MapaSensors({
                     <p className="text-sm font-semibold text-gray-700">
                       {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
                     </p>
-                    <div className="flex items-center gap-1.5">
-                      {userLocation && nearestName ? (
-                        nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                      ) : (
-                        <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                      )}
-                      <span className="text-xs text-gray-400">
-                        {userLocation && nearestName
-                          ? (nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano")
-                          : "Promedio del área metropolitana"}
-                      </span>
-                    </div>
+                    {userLocation && nearestName && (
+                      <div className="flex items-center gap-1.5">
+                        {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
+                        <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
+                      </div>
+                    )}
                     {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
