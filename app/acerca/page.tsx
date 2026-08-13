@@ -87,7 +87,7 @@ export default function Acerca() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <div className="container mx-auto max-w-2xl px-4 pb-10 pt-16 md:pt-28">
+      <div className="container mx-auto max-w-2xl px-4 pb-10 pt-10 md:pt-20">
 
         {/* Observatorio card */}
         <div className="mb-10 rounded-xl bg-gray-50 px-4 py-4">
