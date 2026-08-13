@@ -623,17 +623,19 @@ export default function MapaSensors({
       <div className="absolute bottom-8 left-6 z-10 hidden flex-col items-start gap-2 md:flex">
         <button
           onClick={() => setIsDesktopLegendExpanded((v) => !v)}
-          className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          className="flex items-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label="Leyenda"
         >
           <GaugeCircle className="h-5 w-5 text-gray-700" />
+          <span className="text-sm font-medium text-gray-700">Leyenda</span>
         </button>
         <button
           onClick={userLocation ? flyToUser : requestLocation}
-          className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          className="flex items-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label="Mi ubicación"
         >
           <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>Mi ubicación</span>
         </button>
       </div>
 
