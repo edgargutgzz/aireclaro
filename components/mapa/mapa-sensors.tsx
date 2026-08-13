@@ -657,6 +657,19 @@ export default function MapaSensors({
                         <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
                       </div>
                     )}
+                    <div className="mt-2">
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1500);
+                        }}
+                        className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors active:opacity-70 ${copied ? 'bg-green-100 text-green-600' : 'bg-white text-gray-600'}`}
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                        {copied ? 'Copiado' : 'Copiar coordenadas'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
