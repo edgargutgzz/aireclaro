@@ -619,8 +619,8 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop bottom-right buttons — legend + locate */}
-      <div className="absolute bottom-8 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
+      {/* Desktop bottom-left buttons — legend + locate */}
+      <div className="absolute bottom-8 left-6 z-10 hidden flex-col items-start gap-2 md:flex">
         <button
           onClick={() => setIsDesktopLegendExpanded((v) => !v)}
           className="flex items-center justify-center rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
@@ -637,9 +637,9 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop legend panel — above bottom-right buttons */}
+      {/* Desktop legend panel — above bottom-left buttons */}
       {isDesktopLegendExpanded && (
-        <div className="absolute bottom-24 right-6 z-10 hidden w-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm backdrop-blur-md md:block">
+        <div className="absolute bottom-24 left-6 z-10 hidden w-[240px] overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm backdrop-blur-md md:block">
           <div className="flex items-center justify-between px-4 pt-3 pb-1">
             <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
             <button onClick={() => setIsDesktopLegendExpanded(false)} className="text-gray-400 hover:text-gray-600">
