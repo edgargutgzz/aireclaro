@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, PersonStanding, Heart, HeartPulse, MapPin, ChevronDown, Clock } from "lucide-react";
+import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -670,17 +670,17 @@ export default function MapaSensors({
               {sensorQuality && (
                 <>
                   <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
-                  <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
-                    <div className="mb-1 flex items-center gap-2">
-                      <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                      <p className="text-sm font-semibold text-gray-700">Población General</p>
-                    </div>
-                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
-                  </div>
                   <div className="mb-5 flex flex-col gap-3">
+                    <div className="rounded-xl bg-gray-50 px-4 py-3">
+                      <div className="mb-1 flex items-center gap-2">
+                        <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                        <p className="text-sm font-semibold text-gray-700">Población General</p>
+                      </div>
+                      <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
+                    </div>
                     {[
                       { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
-                      { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: PersonStanding },
+                      { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: Glasses },
                       { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
                       { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
                     ].map(({ label, rec, Icon }) => (
@@ -734,17 +734,17 @@ export default function MapaSensors({
                 {sensorQuality && (
                   <>
                     <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
-                    <div className="mb-4 rounded-lg bg-gray-50 px-3 py-2.5">
-                      <div className="mb-1 flex items-center gap-1.5">
-                        <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <p className="text-sm font-semibold text-gray-700">Población General</p>
-                      </div>
-                      <p className="pl-[1.375rem] text-xs leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
-                    </div>
                     <div className="mb-3 flex flex-col gap-2">
+                      <div className="rounded-lg bg-gray-50 px-3 py-2.5">
+                        <div className="mb-1 flex items-center gap-1.5">
+                          <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <p className="text-sm font-semibold text-gray-700">Población General</p>
+                        </div>
+                        <p className="pl-[1.375rem] text-xs leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
+                      </div>
                       {[
                         { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
-                        { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: PersonStanding },
+                        { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: Glasses },
                         { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
                         { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
                       ].map(({ label, rec, Icon }) => (
@@ -812,17 +812,17 @@ export default function MapaSensors({
                   )}
                 </div>
                 <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
-                <div className="mb-4 rounded-lg bg-gray-50 px-3 py-2.5">
-                  <div className="mb-1 flex items-center gap-1.5">
-                    <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                    <p className="text-sm font-semibold text-gray-700">Población General</p>
-                  </div>
-                  <p className="pl-[1.375rem] text-xs leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
-                </div>
                 <div className="mb-3 flex flex-col gap-2">
+                  <div className="rounded-lg bg-gray-50 px-3 py-2.5">
+                    <div className="mb-1 flex items-center gap-1.5">
+                      <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                      <p className="text-sm font-semibold text-gray-700">Población General</p>
+                    </div>
+                    <p className="pl-[1.375rem] text-xs leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+                  </div>
                   {[
                     { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
+                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
                     { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
                     { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
                   ].map(({ label, rec, Icon }) => (
@@ -979,17 +979,17 @@ export default function MapaSensors({
 
               {/* Recommendations */}
               <p className="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones</p>
-              <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
-                <div className="mb-1 flex items-center gap-2">
-                  <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                  <p className="text-sm font-semibold text-gray-700">Población General</p>
-                </div>
-                <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
-              </div>
               <div className="mb-5 flex flex-col gap-3">
+                <div className="rounded-xl bg-gray-50 px-4 py-3">
+                  <div className="mb-1 flex items-center gap-2">
+                    <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                    <p className="text-sm font-semibold text-gray-700">Población General</p>
+                  </div>
+                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+                </div>
                 {[
                   { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: PersonStanding },
+                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
                   { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
                   { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
                 ].map(({ label, rec, Icon }) => (
