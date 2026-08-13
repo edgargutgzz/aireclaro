@@ -646,7 +646,7 @@ export default function MapaSensors({
               </button>
               {showSensorDetail && (
                 <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
-                  <div className="flex flex-col gap-1 px-4 py-3">
+                  <div className="flex flex-col gap-2 px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
                       <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
@@ -974,7 +974,7 @@ export default function MapaSensors({
               </button>
               {showNearestDetail && (
                 <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
-                  <div className="flex flex-col gap-1 px-4 py-3">
+                  <div className="flex flex-col gap-2 px-4 py-3">
                     {userLocation && nearestName && (
                       <div className="flex items-center gap-1.5">
                         <LocateFixed className="h-3 w-3 flex-shrink-0 text-gray-400" />
