@@ -647,14 +647,10 @@ export default function MapaSensors({
               {showSensorDetail && (
                 <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
                   <div className="flex flex-col gap-2 px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                      <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                    </div>
                     {timestamp && (
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-xs text-gray-400">Actualizado a las {timestamp}</span>
+                        <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
                       </div>
                     )}
                   </div>
@@ -664,7 +660,7 @@ export default function MapaSensors({
                       setCopied(true);
                       setTimeout(() => setCopied(false), 1500);
                     }}
-                    className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs text-gray-400 transition-colors active:opacity-70`}
+                    className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-sm text-gray-400 transition-colors active:opacity-70`}
                   >
                     <Copy className="h-3 w-3 flex-shrink-0" />
                     {copied ? 'Copiado' : 'Copiar coordenadas'}
@@ -699,10 +695,6 @@ export default function MapaSensors({
               <div className="rounded-xl bg-gray-50 px-4 py-3">
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-semibold text-gray-700">{sensorName}</p>
-                  <div className="flex items-center gap-1.5">
-                    {isSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                    <span className="text-xs text-gray-400">{isSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                  </div>
                   {timestamp && (
                     <div className="flex items-center gap-1.5">
                       <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
@@ -743,10 +735,6 @@ export default function MapaSensors({
                 <div className="mb-4 flex items-start justify-between">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-gray-900">{sensorName}</p>
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                      {isSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
-                      {isSima ? "Estación SIMA" : "Sensor Ciudadano"}
-                    </span>
                   </div>
                   <button onClick={() => setSelectedSensor(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
                     <X className="h-5 w-5" />
@@ -815,10 +803,6 @@ export default function MapaSensors({
                 {userLocation && nearestName ? (
                   <div className="mb-3 flex items-center gap-2">
                     <div className="text-sm font-semibold text-gray-900">{nearestName}</div>
-                    <span className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                      {nearestIsSima ? <Landmark className="h-2.5 w-2.5" /> : <Users className="h-2.5 w-2.5" />}
-                      {nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}
-                    </span>
                   </div>
                 ) : !userLocation && (
                   <div className="mb-3 flex items-center gap-2">
@@ -978,13 +962,13 @@ export default function MapaSensors({
                     {userLocation && nearestName && (
                       <div className="flex items-center gap-1.5">
                         <LocateFixed className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-xs text-gray-400">Tu sensor más cercano</span>
+                        <span className="text-sm text-gray-400">Tu sensor más cercano</span>
                       </div>
                     )}
                     {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-xs text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
+                        <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
                       </div>
                     )}
                   </div>
@@ -995,7 +979,7 @@ export default function MapaSensors({
                         setCopied(true);
                         setTimeout(() => setCopied(false), 1500);
                       }}
-                      className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-xs text-gray-400 transition-colors active:opacity-70`}
+                      className={`flex w-full items-center gap-2 border-t border-gray-200 px-4 py-3 text-sm text-gray-400 transition-colors active:opacity-70`}
                     >
                       <Copy className="h-3 w-3 flex-shrink-0" />
                       {copied ? 'Copiado' : 'Copiar coordenadas'}
@@ -1036,12 +1020,6 @@ export default function MapaSensors({
                     <p className="text-sm font-semibold text-gray-700">
                       {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
                     </p>
-                    {userLocation && nearestName && (
-                      <div className="flex items-center gap-1.5">
-                        {nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0 text-gray-400" /> : <Users className="h-3 w-3 flex-shrink-0 text-gray-400" />}
-                        <span className="text-xs text-gray-400">{nearestIsSima ? "Estación SIMA" : "Sensor Ciudadano"}</span>
-                      </div>
-                    )}
                     {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
                       <div className="flex items-center gap-1.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
