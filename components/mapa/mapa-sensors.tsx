@@ -990,7 +990,7 @@ export default function MapaSensors({
                   <div className="mt-3 flex flex-wrap gap-2">
                     <button
                       onClick={() => {
-                        map.current?.flyTo({ center: [nearestLon, nearestLat], zoom: 14, duration: 1000 });
+                        if (map.current) (map.current as any).flyTo({ center: [nearestLon, nearestLat], zoom: 14, duration: 1000 });
                       }}
                       className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 active:opacity-70"
                     >
