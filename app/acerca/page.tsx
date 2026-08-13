@@ -92,28 +92,30 @@ export default function Acerca() {
         {/* Observatorio card */}
         <div className="mb-10 rounded-xl bg-gray-50 px-4 py-4">
           <div className="flex flex-col gap-4">
-            <Link href="https://observatoriodelaire.com" target="_blank" className="inline-block flex-shrink-0 transition-opacity hover:opacity-75">
-              <Image
-                src="/occamm-logo.png"
-                alt="Observatorio del Aire Logo"
-                width={140}
-                height={55}
-                className="h-auto"
-              />
-            </Link>
             <p className="text-sm leading-relaxed text-gray-500">
               Aire Claro es una plataforma del Observatorio Ciudadano de la Calidad
               del Aire, una organización de la sociedad civil dedicada a generar
               esfuerzos colaborativos y fundamento técnico para mejorar la calidad
               del aire en Nuevo León.
             </p>
-            <Link
-              href="https://observatoriodelaire.com"
-              target="_blank"
-              className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600"
-            >
-              observatoriodelaire.com
-            </Link>
+            <div className="flex items-center justify-between">
+              <Link href="https://observatoriodelaire.com" target="_blank" className="inline-block flex-shrink-0 transition-opacity hover:opacity-75">
+                <Image
+                  src="/occamm-logo.png"
+                  alt="Observatorio del Aire Logo"
+                  width={140}
+                  height={55}
+                  className="h-auto"
+                />
+              </Link>
+              <Link
+                href="https://observatoriodelaire.com"
+                target="_blank"
+                className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600"
+              >
+                observatoriodelaire.com
+              </Link>
+            </div>
           </div>
         </div>
 
