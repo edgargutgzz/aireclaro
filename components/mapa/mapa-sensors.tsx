@@ -427,19 +427,13 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Highlight selected marker via box-shadow (avoids touching Mapbox's transform)
+  // Restore default box-shadow on all markers (no selection highlight)
   useEffect(() => {
     markerElementsRef.current.forEach(({ el, source }) => {
       el.style.boxShadow = source === "sima"
         ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937"
         : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
     });
-    if (selectedSensor) {
-      const entry = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
-      if (entry) {
-        entry.el.style.boxShadow = `0 2px 8px rgba(0,0,0,0.2), 0 0 20px 6px ${hexToRgba(selectedSensor.color, 0.55)}`;
-      }
-    }
   }, [selectedSensor]);
 
   // Close selected sensor on map click
