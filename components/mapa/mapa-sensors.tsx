@@ -673,10 +673,10 @@ export default function MapaSensors({
       {/* Desktop locate button — above NavigationControl at bottom-right */}
       <button
         onClick={userLocation ? flyToUser : requestLocation}
-        className="absolute bottom-24 right-[10px] z-10 hidden items-center justify-center rounded-lg border border-white/60 bg-white/80 p-2.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 md:flex"
+        className="absolute bottom-[7.5rem] right-[10px] z-10 hidden h-[29px] w-[29px] items-center justify-center rounded bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] transition-colors hover:bg-gray-50 md:flex"
         aria-label="Mi ubicación"
       >
-        <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+        <LocateFixed className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
       </button>
 
       {/* Legend toggle button — mobile only, hidden when sheet is expanded */}
