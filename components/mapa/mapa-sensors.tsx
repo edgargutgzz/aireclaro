@@ -647,7 +647,7 @@ export default function MapaSensors({
         </div>{/* end left column */}
 
         {/* Filter pills */}
-        <div className="pointer-events-auto mt-2 flex gap-2">
+        <div className="pointer-events-auto mt-4 flex gap-2">
           <button
             onClick={() => setShowSima((v) => !v)}
             className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
