@@ -82,7 +82,7 @@ import Link from "next/link";
 
 export default function Acerca() {
   return (
-    <div className="flex min-h-screen flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="flex min-h-screen flex-col">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -132,6 +132,7 @@ export default function Acerca() {
           </Link>
         </div>
       </div>
+      <div className="shrink-0 md:hidden" style={{ height: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))' }} />
 
     </div>
   );
