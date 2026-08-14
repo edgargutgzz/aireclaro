@@ -1,24 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  HelpCircle,
-  Smartphone,
-  Users,
-  Shield,
-  BarChart3,
-  Download,
-  MessageCircle,
-  CircleGauge,
-} from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 
 // FAQ content
 const faqData = [
   {
-    icon: HelpCircle,
     question: "¿Qué es Aire Claro?",
     answer: (
       <div>
@@ -44,7 +32,6 @@ const faqData = [
     ),
   },
   {
-    icon: Smartphone,
     question:
       "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
     answer: (
@@ -56,7 +43,6 @@ const faqData = [
     ),
   },
   {
-    icon: Users,
     question: "¿Quién mantiene la plataforma?",
     answer: (
       <p>
@@ -75,7 +61,6 @@ const faqData = [
     ),
   },
   {
-    icon: BarChart3,
     question:
       "¿Qué información utiliza Aire Claro para medir la calidad del aire?",
     answer: (
@@ -114,7 +99,6 @@ const faqData = [
     ),
   },
   {
-    icon: CircleGauge,
     question: "¿Cuál es el principal contaminante que mide Aire Claro?",
     answer: (
       <span>
@@ -145,7 +129,6 @@ const faqData = [
     ),
   },
   {
-    icon: Shield,
     question:
       "¿Recolecta Aire Claro información sobre mí al utilizar la plataforma?",
     answer: (
@@ -167,7 +150,6 @@ const faqData = [
     ),
   },
   {
-    icon: Smartphone,
     question: "¿Cómo agrego un ícono de enlace a Aire Claro en mi celular?",
     answer: (
       <span>
@@ -183,7 +165,6 @@ const faqData = [
     ),
   },
   {
-    icon: Download,
     question: "¿Puedo descargar los datos de calidad del aire?",
     answer: (
       <p>
@@ -204,7 +185,6 @@ const faqData = [
     ),
   },
   {
-    icon: MessageCircle,
     question: "Tengo más preguntas, ¿cómo los contacto?",
     answer: <span>Envíanos un correo a <a href="mailto:contacto@observatoriodelaire.com" className="text-blue-500 hover:underline">contacto@observatoriodelaire.com</a></span>,
   },
@@ -219,27 +199,13 @@ const styles = {
   chevronClosed: "text-gray-400",
 };
 
-// Icon component
-const FAQIcon = ({ icon: Icon, isOpen }: { icon?: any; isOpen: boolean }) => {
-  if (Icon) {
-    return (
-      <div className="flex-shrink-0 text-gray-400">
-        <Icon size={16} />
-      </div>
-    );
-  }
-  return null;
-};
-
 // FAQ component
 const FAQItem = ({
-  icon,
   question,
   answer,
   isOpen,
   onToggle,
 }: {
-  icon?: any;
   question: string;
   answer: React.ReactNode;
   isOpen: boolean;
@@ -251,7 +217,6 @@ const FAQItem = ({
   >
     <div className="flex items-center justify-between gap-2">
       <div className="flex items-center gap-2.5">
-        <FAQIcon icon={icon} isOpen={isOpen} />
         <h3 className="text-sm font-semibold text-gray-700">{question}</h3>
       </div>
       <div className="flex-shrink-0">
@@ -263,7 +228,7 @@ const FAQItem = ({
       </div>
     </div>
     {isOpen && (
-      <div className="mt-3 pl-6 text-sm leading-relaxed text-gray-500">
+      <div className="mt-3 text-sm leading-relaxed text-gray-500">
         {answer}
       </div>
     )}
@@ -283,7 +248,6 @@ export default function Questions() {
       {faqData.map((item) => (
         <FAQItem
           key={item.question}
-          icon={item.icon}
           question={item.question}
           answer={item.answer}
           isOpen={openQuestion === item.question}
