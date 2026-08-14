@@ -82,7 +82,7 @@ import Link from "next/link";
 
 export default function Acerca() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -124,7 +124,7 @@ export default function Acerca() {
 
       </div>
 
-      <div className="border-t border-gray-100 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom)+4rem)] md:pb-6">
+      <div className="border-t border-gray-100 px-4 py-4">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
           <p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} OCCAMM</p>
           <Link href="https://datacomun.com" target="_blank" className="text-xs text-gray-400 hover:text-gray-600">
