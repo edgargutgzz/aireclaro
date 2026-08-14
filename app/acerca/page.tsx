@@ -127,8 +127,8 @@ export default function Acerca() {
       <div className="border-t border-gray-100 px-4 py-4">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
           <p className="text-xs text-gray-400">&copy; {new Date().getFullYear()} OCCAMM</p>
-          <Link href="https://datacomun.com" target="_blank" className="text-xs text-gray-400 hover:text-gray-600">
-            Desarrollado por <span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span>
+          <Link href="https://datacomun.com" target="_blank" className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-sm transition-all hover:border-gray-300 hover:shadow-md whitespace-nowrap">
+            Desarrollado por <span className="font-medium" style={{ marginLeft: "-2px" }}><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
           </Link>
         </div>
       </div>
