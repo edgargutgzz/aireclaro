@@ -118,8 +118,7 @@ export default function Acerca() {
         </div>
 
         {/* FAQ section */}
-        {/* <p className="mb-4 text-xs font-medium uppercase tracking-wide text-gray-400">Preguntas Frecuentes</p>
-        <Questions /> */}
+        <Questions />
 
 
       </div>
