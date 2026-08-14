@@ -619,30 +619,15 @@ export default function MapaSensors({
           </div>
         )}
 
-        {/* Legend panel */}
-        {isDesktopLegendExpanded && (
-          <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
-            <div className="flex items-center justify-between px-4 pt-3 pb-1">
-              <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-              <button onClick={() => setIsDesktopLegendExpanded(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="p-3">
-              <LegendContent />
-            </div>
+        {/* Legend panel — always visible on desktop */}
+        <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="px-4 pt-3 pb-1">
+            <span className="text-xs font-medium uppercase tracking-wide text-gray-400">Leyenda</span>
           </div>
-        )}
-
-        {/* Buttons */}
-        <button
-          onClick={() => setIsDesktopLegendExpanded((v) => !v)}
-          className="pointer-events-auto flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-          aria-label="Leyenda"
-        >
-          <GaugeCircle className="h-5 w-5 text-gray-700" />
-          <span className="text-sm font-medium text-gray-700">Leyenda</span>
-        </button>
+          <div className="p-3">
+            <LegendContent />
+          </div>
+        </div>
 
         </div>{/* end left column */}
 
