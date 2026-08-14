@@ -7,31 +7,6 @@ import Link from "next/link";
 // FAQ content
 const faqData = [
   {
-    question: "¿Qué es Aire Claro?",
-    answer: (
-      <div>
-        <p className="mb-4">
-          Aire Claro es una plataforma que brinda información sobre la calidad
-          del aire que respiramos en la Zona Metropolitana de Monterrey y
-          Saltillo.
-        </p>
-        <div className="mt-6 flex justify-center">
-          <iframe
-            width="560"
-            height="315"
-            src="https://www.youtube.com/embed/zUt6HwlZB08?si=z6mAQ8bkuVx25QsP"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            loading="lazy"
-            className="h-64 w-full rounded-lg md:h-96"
-          />
-        </div>
-      </div>
-    ),
-  },
-  {
     question:
       "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
     answer: (

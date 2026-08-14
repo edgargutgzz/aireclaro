@@ -117,6 +117,19 @@ export default function Acerca() {
           </div>
         </div>
 
+        {/* Video */}
+        <div className="mb-10">
+          <iframe
+            src="https://www.youtube.com/embed/zUt6HwlZB08?si=z6mAQ8bkuVx25QsP"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+            className="h-52 w-full rounded-xl md:h-80"
+          />
+        </div>
+
         {/* FAQ section */}
         <Questions />
 
