@@ -670,27 +670,27 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop zoom + locate buttons — bottom-right */}
-      <div className="absolute bottom-8 right-[10px] z-10 hidden flex-col overflow-hidden rounded-lg bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] md:flex">
+      <div className="absolute bottom-8 right-[10px] z-10 hidden flex-col gap-2 md:flex">
         <button
           onClick={userLocation ? flyToUser : requestLocation}
-          className="flex h-[29px] w-[29px] items-center justify-center border-b border-gray-200 transition-colors hover:bg-gray-50"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] transition-colors hover:bg-gray-50"
           aria-label="Mi ubicación"
         >
-          <LocateFixed className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
         </button>
         <button
           onClick={() => (map.current as any)?.zoomIn()}
-          className="flex h-[29px] w-[29px] items-center justify-center border-b border-gray-200 text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-gray-700 shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] transition-colors hover:bg-gray-50"
           aria-label="Acercar"
         >
-          <span className="text-lg font-light leading-none">+</span>
+          <span className="text-xl font-light leading-none">+</span>
         </button>
         <button
           onClick={() => (map.current as any)?.zoomOut()}
-          className="flex h-[29px] w-[29px] items-center justify-center text-gray-700 transition-colors hover:bg-gray-50"
+          className="flex h-10 w-10 items-center justify-center rounded-lg bg-white text-gray-700 shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] transition-colors hover:bg-gray-50"
           aria-label="Alejar"
         >
-          <span className="text-lg font-light leading-none">−</span>
+          <span className="text-xl font-light leading-none">−</span>
         </button>
       </div>
 
