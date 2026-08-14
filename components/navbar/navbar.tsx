@@ -14,7 +14,7 @@ export default function Navbar() {
       </div>
 
       {/* Desktop navbar at top */}
-      <div className="sticky top-0 z-50 hidden border-b border-gray-200 bg-white shadow-sm md:block">
+      <div className="sticky top-0 z-50 hidden border-b border-gray-200 bg-gray-50 shadow-sm md:block">
         <div className="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-3">
           {/* Logo */}
           <div className="flex-shrink-0">

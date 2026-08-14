@@ -655,7 +655,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop zoom + locate buttons — bottom-right */}
-      <div className="pointer-events-auto absolute bottom-14 right-8 z-10 hidden flex-col gap-2 md:flex">
+      <div className="pointer-events-auto absolute bottom-8 right-8 z-10 hidden flex-col gap-2 md:flex">
         <button
           onClick={userLocation ? flyToUser : requestLocation}
           className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] transition-colors hover:bg-gray-50"

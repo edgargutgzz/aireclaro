@@ -54,23 +54,18 @@ export default function Navlinks() {
             {/* Desktop view */}
             <div
               className={clsx(
-                "hidden md:flex md:items-center md:rounded-lg md:px-4 md:py-2.5",
+                "hidden md:flex md:items-center md:rounded-full md:px-4 md:py-2.5",
                 {
-                  "bg-blue-50": isSelected,
-                  "hover:bg-gray-100": !isSelected,
+                  "bg-gray-200 text-gray-900": isSelected,
+                  "text-gray-400 hover:bg-gray-100": !isSelected,
                 },
               )}
             >
-              <IconComponent
-                className={clsx("md:h-5 md:w-5", {
-                  "text-blue-500": isSelected,
-                  "text-gray-500 group-hover:text-gray-600": !isSelected,
-                })}
-              />
+              <IconComponent className="md:h-5 md:w-5" />
               <span
-                className={clsx("md:ml-3 md:text-sm", {
-                  "font-medium text-blue-500": isSelected,
-                  "text-gray-600": !isSelected,
+                className={clsx("md:ml-2 md:text-sm", {
+                  "font-semibold": isSelected,
+                  "font-medium": !isSelected,
                 })}
               >
                 {link.name}
