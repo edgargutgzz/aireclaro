@@ -287,6 +287,8 @@ export default function MapaSensors({
       zoom: 8,
     });
 
+    map.current.addControl(new (mapboxgl as any).NavigationControl({ showCompass: false }), 'bottom-right');
+
     map.current.on("load", () => {
       setMapLoaded(true);
       (map.current as any).flyTo({
