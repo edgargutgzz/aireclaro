@@ -636,24 +636,14 @@ export default function MapaSensors({
         )}
 
         {/* Buttons */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setIsDesktopLegendExpanded((v) => !v)}
-            className="flex flex-1 items-center justify-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-            aria-label="Leyenda"
-          >
-            <GaugeCircle className="h-5 w-5 text-gray-700" />
-            <span className="text-sm font-medium text-gray-700">Leyenda</span>
-          </button>
-          <button
-            onClick={userLocation ? flyToUser : requestLocation}
-            className="flex flex-1 items-center justify-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-            aria-label="Mi ubicación"
-          >
-            <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-            <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>Mi ubicación</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setIsDesktopLegendExpanded((v) => !v)}
+          className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          aria-label="Leyenda"
+        >
+          <GaugeCircle className="h-5 w-5 text-gray-700" />
+          <span className="text-sm font-medium text-gray-700">Leyenda</span>
+        </button>
 
         </div>{/* end left column */}
 
@@ -679,6 +669,15 @@ export default function MapaSensors({
           </button>
         </div>
       </div>
+
+      {/* Desktop locate button — above NavigationControl at bottom-right */}
+      <button
+        onClick={userLocation ? flyToUser : requestLocation}
+        className="absolute bottom-24 right-[10px] z-10 hidden items-center justify-center rounded-lg border border-white/60 bg-white/80 p-2.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 md:flex"
+        aria-label="Mi ubicación"
+      >
+        <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+      </button>
 
       {/* Legend toggle button — mobile only, hidden when sheet is expanded */}
       {sheetState === 'peek' && <button
