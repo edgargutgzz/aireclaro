@@ -19,7 +19,7 @@ const faqData = [
           <iframe
             width="560"
             height="315"
-            src="https://www.youtube.com/embed/zUt6HwlZB08?si=z6mAQ8bkuVx25QsP"
+            src="https://www.youtube.com/embed/zUt6HwlZB08"
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
