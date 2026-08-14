@@ -507,14 +507,14 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop left area — quality card + filter pills beside it */}
-      <div className="absolute left-6 top-[5rem] z-10 hidden items-start gap-2 md:flex">
+      <div className="pointer-events-none absolute left-6 top-[5rem] z-10 hidden items-start gap-2 md:flex">
 
         {/* Left column: quality card + legend panel + buttons */}
         <div className="flex w-[360px] flex-col gap-2">
 
         {/* Quality card */}
         {qualityInfo && (
-          <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
             <button
               onClick={() => setIsDesktopCardExpanded(v => !v)}
               className="flex w-full items-center justify-between px-4 pt-4 pb-3 text-left"
@@ -621,7 +621,7 @@ export default function MapaSensors({
 
         {/* Legend panel */}
         {isDesktopLegendExpanded && (
-          <div className="overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
+          <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
             <div className="flex items-center justify-between px-4 pt-3 pb-1">
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
               <button onClick={() => setIsDesktopLegendExpanded(false)} className="text-gray-400 hover:text-gray-600">
@@ -637,7 +637,7 @@ export default function MapaSensors({
         {/* Buttons */}
         <button
           onClick={() => setIsDesktopLegendExpanded((v) => !v)}
-          className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          className="pointer-events-auto flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label="Leyenda"
         >
           <GaugeCircle className="h-5 w-5 text-gray-700" />
@@ -647,7 +647,7 @@ export default function MapaSensors({
         </div>{/* end left column */}
 
         {/* Filter pills */}
-        <div className="flex gap-2">
+        <div className="pointer-events-auto flex gap-2">
           <button
             onClick={() => setShowSima((v) => !v)}
             className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
@@ -670,7 +670,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop zoom + locate buttons — bottom-right */}
-      <div className="absolute bottom-14 right-8 z-10 hidden flex-col gap-2 md:flex">
+      <div className="pointer-events-auto absolute bottom-14 right-8 z-10 hidden flex-col gap-2 md:flex">
         <button
           onClick={userLocation ? flyToUser : requestLocation}
           className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] transition-colors hover:bg-gray-50"
@@ -845,7 +845,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop: right column — sensor detail + recommendation */}
-      <div className="fixed right-6 top-[5rem] z-[48] hidden w-[300px] flex-col gap-2 md:flex">
+      <div className="pointer-events-none fixed right-6 top-[5rem] z-[48] hidden w-[300px] flex-col gap-2 md:flex">
 
         {/* Sensor detail card */}
         {selectedSensor && (() => {
@@ -854,7 +854,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
+            <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
               <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
                 <div className="mb-5 flex items-start justify-between">
                   <div className="flex items-center gap-2">
