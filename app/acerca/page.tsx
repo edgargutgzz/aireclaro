@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Questions from "@/components/acerca/questions";
-import AireClaroVideo from "@/components/acerca/video";
 
 export const metadata: Metadata = {
   title: "Acerca",
@@ -117,9 +116,6 @@ export default function Acerca() {
             </Link>
           </div>
         </div>
-
-        {/* Video */}
-        <AireClaroVideo />
 
         {/* FAQ section */}
         <Questions />
