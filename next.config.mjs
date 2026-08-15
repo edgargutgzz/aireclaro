@@ -5,6 +5,9 @@ const nextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000, // 1 year for static assets
+    remotePatterns: [
+      { protocol: "https", hostname: "img.youtube.com" },
+    ],
   },
 };
 

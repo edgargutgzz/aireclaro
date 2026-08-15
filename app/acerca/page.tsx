@@ -117,6 +117,17 @@ export default function Acerca() {
           </div>
         </div>
 
+        {/* Video thumbnail */}
+        <Link href="https://www.youtube.com/watch?v=zUt6HwlZB08" target="_blank" className="mb-10 block overflow-hidden rounded-xl transition-opacity hover:opacity-90">
+          <Image
+            src="https://img.youtube.com/vi/zUt6HwlZB08/maxresdefault.jpg"
+            alt="Ver video sobre Aire Claro"
+            width={1280}
+            height={720}
+            className="w-full"
+          />
+        </Link>
+
         {/* FAQ section */}
         <Questions />
 
