@@ -1,15 +1,20 @@
+import { MapPin, Wind, Download, Smartphone } from "lucide-react";
+
 const features = [
   {
+    icon: MapPin,
     title: "Enfocado en Monterrey",
     description:
       "Cobertura local completa combinando estaciones oficiales SIMA y sensores ciudadanos PurpleAir.",
   },
   {
+    icon: Wind,
     title: "PM2.5 en tiempo real",
     description:
       "Medimos el contaminante más dañino para tu salud con base en el Índice de Aire y Salud mexicano (NOM-172-SEMARNAT-2023).",
   },
   {
+    icon: Download,
     title: "Datos abiertos",
     description: (
       <>
@@ -27,6 +32,7 @@ const features = [
     ),
   },
   {
+    icon: Smartphone,
     title: "Acceso rápido desde tu celular",
     description: (
       <>
@@ -48,10 +54,13 @@ const features = [
 export default function Questions() {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      {features.map((feature) => (
-        <div key={feature.title} className="rounded-xl bg-gray-50 px-4 py-4">
-          <p className="mb-1 text-sm font-semibold text-gray-800">{feature.title}</p>
-          <p className="text-sm leading-relaxed text-gray-500">{feature.description}</p>
+      {features.map(({ icon: Icon, title, description }) => (
+        <div key={title} className="rounded-xl bg-gray-50 px-4 py-4">
+          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+            <Icon className="h-4 w-4 text-gray-600" />
+          </div>
+          <p className="mb-1 text-sm font-semibold text-gray-800">{title}</p>
+          <p className="text-sm leading-relaxed text-gray-500">{description}</p>
         </div>
       ))}
     </div>
