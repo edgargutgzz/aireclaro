@@ -9,11 +9,10 @@ const features = [
     title: "Enfocado en Monterrey",
     description: (
       <>
-        Red{" "}
+        Cobertura local completa combinando estaciones oficiales{" "}
         <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">SIMA</a>{" "}
-        y{" "}
-        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PurpleAir</a>{" "}
-        en una sola vista.
+        y sensores ciudadanos{" "}
+        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PurpleAir</a>.
       </>
     ),
   },
