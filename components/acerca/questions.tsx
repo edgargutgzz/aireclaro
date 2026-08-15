@@ -56,10 +56,12 @@ export default function Questions() {
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {features.map(({ icon: Icon, title, description }) => (
         <div key={title} className="rounded-xl bg-gray-50 px-4 py-4">
-          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
-            <Icon className="h-4 w-4 text-gray-600" />
+          <div className="mb-2 flex items-center gap-2.5">
+            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+              <Icon className="h-3.5 w-3.5 text-gray-600" />
+            </div>
+            <p className="text-sm font-semibold text-gray-800">{title}</p>
           </div>
-          <p className="mb-1 text-sm font-semibold text-gray-800">{title}</p>
           <p className="text-sm leading-relaxed text-gray-500">{description}</p>
         </div>
       ))}
