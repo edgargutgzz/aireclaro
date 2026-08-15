@@ -67,7 +67,7 @@ export default function Questions() {
     <div className="-mx-4 overflow-x-auto">
       <div className="flex gap-3 px-4 pb-2">
         {features.map(({ icon: Icon, title, description }) => (
-          <div key={title} className="w-56 flex-shrink-0 rounded-xl bg-gray-50 px-4 py-4">
+          <div key={title} className="w-56 flex-shrink-0 rounded-xl bg-gray-50 px-4 py-6">
             <div className="mb-2 flex items-center gap-2.5">
               <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
                 <Icon className="h-3.5 w-3.5 text-gray-600" />
