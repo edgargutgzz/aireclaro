@@ -77,7 +77,7 @@ export default function Questions() {
                   <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50">
                     <Icon className="h-4 w-4 text-gray-500" />
                   </div>
-                  <p className="text-sm font-semibold text-gray-800">{title}</p>
+                  <p className="text-sm font-semibold text-gray-500">{title}</p>
                 </div>
 
                 {/* Back */}
