@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Wind, Download, Smartphone } from "lucide-react";
+import { MapPin, Wind, Download, Smartphone, ChevronDown } from "lucide-react";
 
 const features = [
   {
@@ -10,14 +10,9 @@ const features = [
     description: (
       <>
         Cobertura local completa combinando estaciones oficiales{" "}
-        <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          SIMA
-        </a>{" "}
+        <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">SIMA</a>{" "}
         y sensores ciudadanos{" "}
-        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          PurpleAir
-        </a>
-        .
+        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PurpleAir</a>.
       </>
     ),
   },
@@ -27,9 +22,7 @@ const features = [
     description: (
       <>
         Medimos el contaminante más dañino para tu salud con base en el{" "}
-        <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          Índice de Aire y Salud
-        </a>{" "}
+        <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Índice de Aire y Salud</a>{" "}
         mexicano (NOM-172-SEMARNAT-2023).
       </>
     ),
@@ -40,10 +33,7 @@ const features = [
     description: (
       <>
         Descarga el historial completo de mediciones en{" "}
-        <a href="https://datamx.io/dataset/calidad-del-aire-en-la-zona-metropolitana-de-monterrey" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          datamx.io
-        </a>
-        .
+        <a href="https://datamx.io/dataset/calidad-del-aire-en-la-zona-metropolitana-de-monterrey" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">datamx.io</a>.
       </>
     ),
   },
@@ -53,10 +43,7 @@ const features = [
     description: (
       <>
         Agrega un ícono a tu pantalla de inicio para consultarlo como una app.{" "}
-        <a href="https://www.youtube.com/shorts/dx0NLeoR3cs" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          Ver cómo hacerlo
-        </a>
-        .
+        <a href="https://www.youtube.com/shorts/dx0NLeoR3cs" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Ver cómo hacerlo</a>.
       </>
     ),
   },
@@ -66,35 +53,30 @@ export default function Questions() {
   const [openCard, setOpenCard] = useState<string | null>(null);
 
   return (
-    <div className="-mx-4 overflow-x-auto">
-      <div className="flex gap-3 px-4 pb-2">
-        {features.map(({ icon: Icon, title, description }) => {
-          const isOpen = openCard === title;
-          return (
-            <div
-              key={title}
-              onClick={() => setOpenCard(isOpen ? null : title)}
-              className="w-56 flex-shrink-0 cursor-pointer rounded-xl bg-gray-50 px-4 py-5 transition-colors"
-            >
-              <div className="mb-3 flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
-                    <Icon className="h-3.5 w-3.5 text-gray-600" />
-                  </div>
-                  <p className="text-sm font-semibold text-gray-800">{title}</p>
+    <div className="flex flex-col gap-2">
+      {features.map(({ icon: Icon, title, description }) => {
+        const isOpen = openCard === title;
+        return (
+          <button
+            key={title}
+            onClick={() => setOpenCard(isOpen ? null : title)}
+            className="flex w-full flex-col rounded-xl bg-gray-50 px-4 py-4 text-left transition-colors"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+                  <Icon className="h-4 w-4 text-gray-600" />
                 </div>
-                <div className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-gray-300 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''}`}>
-                  <span className="text-xs leading-none text-gray-400">+</span>
-                </div>
+                <span className="text-sm font-semibold text-gray-800">{title}</span>
               </div>
-              {isOpen && (
-                <p className="text-sm leading-relaxed text-gray-500">{description}</p>
-              )}
+              <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </div>
-          );
-        })}
-        <div className="w-1 flex-shrink-0" />
-      </div>
+            {isOpen && (
+              <p className="mt-3 pl-11 text-sm leading-relaxed text-gray-500">{description}</p>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
