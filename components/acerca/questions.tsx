@@ -1,26 +1,20 @@
-"use client";
-
-import React, { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 
-// FAQ content
 const faqData = [
   {
-    question:
-      "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
+    question: "¿Cuál es la diferencia con otras aplicaciones de iPhone o Android?",
     answer: (
       <p>
         Aire Claro se enfoca exclusivamente en la Zona Metropolitana de
-        Monterrey, combinando datos de estaciones oficiales y
-        sensores ciudadanos para brindar la cobertura más completa de la región.
+        Monterrey, combinando datos de estaciones oficiales y sensores
+        ciudadanos para brindar la cobertura más completa de la región.
       </p>
     ),
   },
   {
     question: "¿Cuál es el principal contaminante que mide Aire Claro?",
     answer: (
-      <span>
+      <p>
         Aire Claro mide las concentraciones promedio de la última hora de las
         partículas respirables más dañinas para tu salud (PM2.5) y el riesgo a
         la salud asociado por respirarlas, con base en el{" "}
@@ -41,25 +35,21 @@ const faqData = [
         partir de enero de 2026.
         <br />
         <br />
-        Es importante mencionar, que en condiciones de alta humedad o viento
+        Es importante mencionar que en condiciones de alta humedad o viento
         fuerte, los sensores de Purple Air sobreestiman o subestiman las
         concentraciones de partículas finas, respectivamente.
-      </span>
+      </p>
     ),
   },
   {
     question: "¿Cómo agrego un ícono de enlace a Aire Claro en mi celular?",
     answer: (
-      <span>
-        <div>
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/dx0NLeoR3cs"
-            title="YouTube Short"
-            allowFullScreen
-            className="h-96 w-full rounded-xl shadow-lg"
-          ></iframe>
-        </div>
-      </span>
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/dx0NLeoR3cs"
+        title="YouTube Short"
+        allowFullScreen
+        className="mt-2 h-64 w-full rounded-xl"
+      />
     ),
   },
   {
@@ -84,69 +74,14 @@ const faqData = [
   },
 ];
 
-// Styles
-const styles = {
-  card: "group cursor-pointer rounded-xl bg-gray-50 px-4 py-3 transition-all duration-200",
-  cardOpen: "",
-  cardClosed: "",
-  chevronOpen: "text-gray-500",
-  chevronClosed: "text-gray-400",
-};
-
-// FAQ component
-const FAQItem = ({
-  question,
-  answer,
-  isOpen,
-  onToggle,
-}: {
-  question: string;
-  answer: React.ReactNode;
-  isOpen: boolean;
-  onToggle: () => void;
-}) => (
-  <div
-    className={`${styles.card} ${isOpen ? styles.cardOpen : styles.cardClosed}`}
-    onClick={onToggle}
-  >
-    <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-2.5">
-        <h3 className="text-sm font-semibold text-gray-700">{question}</h3>
-      </div>
-      <div className="flex-shrink-0">
-        {isOpen ? (
-          <ChevronUp size={16} className={styles.chevronOpen} />
-        ) : (
-          <ChevronDown size={16} className={styles.chevronClosed} />
-        )}
-      </div>
-    </div>
-    {isOpen && (
-      <div className="mt-3 text-sm leading-relaxed text-gray-500">
-        {answer}
-      </div>
-    )}
-  </div>
-);
-
-// FAQ
 export default function Questions() {
-  const [openQuestion, setOpenQuestion] = useState<string | null>(null);
-
-  const toggleQuestion = (question: string) => {
-    setOpenQuestion(openQuestion === question ? null : question);
-  };
-
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col divide-y divide-gray-100">
       {faqData.map((item) => (
-        <FAQItem
-          key={item.question}
-          question={item.question}
-          answer={item.answer}
-          isOpen={openQuestion === item.question}
-          onToggle={() => toggleQuestion(item.question)}
-        />
+        <div key={item.question} className="py-5">
+          <h3 className="mb-2 text-sm font-semibold text-gray-700">{item.question}</h3>
+          <div className="text-sm leading-relaxed text-gray-500">{item.answer}</div>
+        </div>
       ))}
     </div>
   );
