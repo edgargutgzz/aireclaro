@@ -17,7 +17,7 @@ const faqData = [
         </p>
         <div className="mt-6">
           <iframe
-            src="https://www.youtube.com/embed/zUt6HwlZB08"
+            src="https://www.youtube-nocookie.com/embed/zUt6HwlZB08"
             title="Aire Claro"
             allowFullScreen
             className="h-64 w-full rounded-xl md:h-96"
@@ -150,7 +150,7 @@ const faqData = [
       <span>
         <div>
           <iframe
-            src="https://www.youtube.com/embed/dx0NLeoR3cs"
+            src="https://www.youtube-nocookie.com/embed/dx0NLeoR3cs"
             title="YouTube Short"
             allowFullScreen
             className="h-96 w-full rounded-xl shadow-lg"
