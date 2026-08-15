@@ -4,8 +4,15 @@ const features = [
   {
     icon: MapPin,
     title: "Enfocado en Monterrey",
-    description:
-      "Cobertura local completa combinando estaciones oficiales SIMA y sensores ciudadanos PurpleAir.",
+    description: (
+      <>
+        Cobertura local completa combinando{" "}
+        <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+          estaciones oficiales SIMA
+        </a>{" "}
+        y sensores ciudadanos PurpleAir.
+      </>
+    ),
   },
   {
     icon: Wind,
