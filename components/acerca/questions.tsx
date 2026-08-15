@@ -18,44 +18,6 @@ const faqData = [
     ),
   },
   {
-    question:
-      "¿Qué información utiliza Aire Claro para medir la calidad del aire?",
-    answer: (
-      <div className="flex flex-col space-y-4">
-        <p>
-          1. Las estaciones de monitoreo
-          <span>
-            {" "}
-            <a
-              href="http://aire.nl.gob.mx/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline"
-            >
-              SIMA
-            </a>{" "}
-            de la Secretaría de Medio Ambiente de Nuevo León.
-          </span>
-        </p>
-        <p>
-          2. La red de sensores ciudadanos de
-          <span>
-            {" "}
-            <a
-              href="https://map.purpleair.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline"
-            >
-              Purple Air
-            </a>
-            {"."}
-          </span>
-        </p>
-      </div>
-    ),
-  },
-  {
     question: "¿Cuál es el principal contaminante que mide Aire Claro?",
     answer: (
       <span>
