@@ -49,7 +49,7 @@ export default function Questions() {
 
   return (
     <div className="-mx-4 overflow-x-auto">
-      <div className="flex gap-3 px-4 pb-2">
+      <div className="flex gap-3 px-4 pb-4">
         {features.map(({ icon: Icon, title, description }) => {
           const isFlipped = flipped === title;
           return (
