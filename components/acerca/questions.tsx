@@ -6,13 +6,13 @@ const features = [
     title: "Enfocado en Monterrey",
     description: (
       <>
-        Cobertura local completa combinando{" "}
+        Cobertura local completa combinando estaciones oficiales{" "}
         <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          estaciones oficiales SIMA
+          SIMA
         </a>{" "}
-        y{" "}
+        y sensores ciudadanos{" "}
         <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          sensores ciudadanos PurpleAir
+          PurpleAir
         </a>
         .
       </>
