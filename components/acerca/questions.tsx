@@ -48,27 +48,6 @@ const faqData = [
     ),
   },
   {
-    question:
-      "¿Recolecta Aire Claro información sobre mí al utilizar la plataforma?",
-    answer: (
-      <p>
-        Aire Claro utiliza tu ubicación al inicio para recomendarte el sensor
-        más cercano a ti y proporcionarte información precisa sobre la calidad
-        del aire en tu área.
-        <br />
-        <br />
-        También puedes leer el{" "}
-        <Link
-          href="/aviso-privacidad"
-          className="text-blue-500 hover:underline"
-        >
-          Aviso de Privacidad
-        </Link>{" "}
-        para conocer más.
-      </p>
-    ),
-  },
-  {
     question: "¿Cómo agrego un ícono de enlace a Aire Claro en mi celular?",
     answer: (
       <span>
