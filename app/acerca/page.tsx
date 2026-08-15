@@ -82,12 +82,12 @@ import Link from "next/link";
 
 export default function Acerca() {
   return (
-    <div className="flex flex-col" style={{ minHeight: 'calc(100dvh - 3.5rem - env(safe-area-inset-bottom, 0px))' }}>
+    <div className="flex flex-col" style={{ height: 'calc(100dvh - 3.5rem - env(safe-area-inset-bottom, 0px))' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <div className="container mx-auto max-w-2xl flex-1 px-4 pb-10 pt-6 md:pt-14">
+      <div className="container mx-auto max-w-2xl flex-1 overflow-y-auto px-4 pb-10 pt-6 md:pt-14">
 
         {/* Observatorio card */}
         <div className="mb-10 rounded-xl bg-gray-50 px-4 py-4">
