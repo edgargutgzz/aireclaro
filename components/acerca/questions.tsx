@@ -74,16 +74,21 @@ export default function Questions() {
             <div
               key={title}
               onClick={() => setOpenCard(isOpen ? null : title)}
-              className="w-56 flex-shrink-0 cursor-pointer rounded-xl bg-gray-50 px-4 py-6 transition-colors"
+              className="w-56 flex-shrink-0 cursor-pointer rounded-xl bg-gray-50 px-4 py-5 transition-colors"
             >
-              <div className="mb-2 flex items-center gap-2.5">
-                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
-                  <Icon className="h-3.5 w-3.5 text-gray-600" />
+              <div className="mb-3 flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+                    <Icon className="h-3.5 w-3.5 text-gray-600" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-800">{title}</p>
                 </div>
-                <p className="text-sm font-semibold text-gray-800">{title}</p>
+                <div className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border border-gray-300 transition-transform duration-200 ${isOpen ? 'rotate-45' : ''}`}>
+                  <span className="text-xs leading-none text-gray-400">+</span>
+                </div>
               </div>
               {isOpen && (
-                <p className="mt-2 text-sm leading-relaxed text-gray-500">{description}</p>
+                <p className="text-sm leading-relaxed text-gray-500">{description}</p>
               )}
             </div>
           );
