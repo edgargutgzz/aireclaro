@@ -125,7 +125,7 @@ export default function Acerca() {
 
       <div className="border-t border-gray-100 px-4 py-4">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
-          <Link href="/aviso-privacidad" className="text-xs text-gray-400 hover:text-gray-600">
+          <Link href="/aviso-privacidad" className="text-xs text-gray-400 underline underline-offset-4 hover:text-gray-600">
             Aviso de Privacidad
           </Link>
           <Link href="https://datacomun.com" target="_blank" className="flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs shadow-sm transition-all hover:border-gray-300 hover:shadow-md">
