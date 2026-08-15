@@ -79,7 +79,6 @@ export default function Questions() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-800">{title}</p>
-                    <p className="mt-1 text-xs text-gray-400">Toca para saber más</p>
                   </div>
                 </div>
 
