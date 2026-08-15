@@ -57,7 +57,7 @@ export default function Questions() {
               key={title}
               onClick={() => setFlipped(isFlipped ? null : title)}
               className="w-52 flex-shrink-0 cursor-pointer"
-              style={{ perspective: '1000px', height: '210px' }}
+              style={{ perspective: '1000px', height: '185px' }}
             >
               <div
                 style={{
