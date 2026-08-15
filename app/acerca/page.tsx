@@ -130,7 +130,7 @@ export default function Acerca() {
           </Link>
           <Link href="https://datacomun.com" target="_blank" className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs shadow-sm transition-all hover:border-gray-300 hover:shadow-md">
             <span className="text-gray-400">Desarrollado por</span>
-            <span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span>
+            <span><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
           </Link>
         </div>
       </div>
