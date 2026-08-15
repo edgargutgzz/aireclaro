@@ -128,8 +128,8 @@ export default function Acerca() {
           <Link href="/aviso-privacidad" className="text-xs text-gray-400 hover:text-gray-600">
             Aviso de Privacidad
           </Link>
-          <Link href="https://datacomun.com" target="_blank" className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-sm transition-all hover:border-gray-300 hover:shadow-md whitespace-nowrap">
-            Desarrollado por <span className="font-medium" style={{ marginLeft: "-2px" }}><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+          <Link href="https://datacomun.com" target="_blank" className="flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs shadow-sm transition-all hover:border-gray-300 hover:shadow-md">
+            <span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span>
           </Link>
         </div>
       </div>
