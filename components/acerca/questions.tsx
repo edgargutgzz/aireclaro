@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Wind, Download, Smartphone, ChevronDown } from "lucide-react";
+import { MapPin, Wind, Download, Smartphone } from "lucide-react";
 
 const features = [
   {
@@ -9,74 +9,93 @@ const features = [
     title: "Enfocado en Monterrey",
     description: (
       <>
-        Cobertura local completa combinando estaciones oficiales{" "}
+        Red{" "}
         <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">SIMA</a>{" "}
-        y sensores ciudadanos{" "}
-        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PurpleAir</a>.
+        y{" "}
+        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PurpleAir</a>{" "}
+        en una sola vista.
       </>
     ),
   },
   {
     icon: Wind,
     title: "PM2.5 en tiempo real",
-    description: (
-      <>
-        Medimos el contaminante más dañino para tu salud con base en el{" "}
-        <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Índice de Aire y Salud</a>{" "}
-        mexicano (NOM-172-SEMARNAT-2023).
-      </>
-    ),
+    description: "El contaminante más dañino para tu salud, actualizado cada hora.",
   },
   {
     icon: Download,
     title: "Datos abiertos",
     description: (
       <>
-        Descarga el historial completo de mediciones en{" "}
+        Historial completo disponible en{" "}
         <a href="https://datamx.io/dataset/calidad-del-aire-en-la-zona-metropolitana-de-monterrey" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">datamx.io</a>.
       </>
     ),
   },
   {
     icon: Smartphone,
-    title: "Acceso rápido desde tu celular",
+    title: "Acceso rápido",
     description: (
       <>
-        Agrega un ícono a tu pantalla de inicio para consultarlo como una app.{" "}
-        <a href="https://www.youtube.com/shorts/dx0NLeoR3cs" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Ver cómo hacerlo</a>.
+        <a href="https://www.youtube.com/shorts/dx0NLeoR3cs" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Agrégalo a tu pantalla</a>{" "}
+        de inicio como una app.
       </>
     ),
   },
 ];
 
 export default function Questions() {
-  const [openCard, setOpenCard] = useState<string | null>(null);
+  const [flipped, setFlipped] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col gap-2">
-      {features.map(({ icon: Icon, title, description }) => {
-        const isOpen = openCard === title;
-        return (
-          <button
-            key={title}
-            onClick={() => setOpenCard(isOpen ? null : title)}
-            className="flex w-full flex-col rounded-xl bg-gray-50 px-4 py-4 text-left transition-colors"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
-                  <Icon className="h-4 w-4 text-gray-600" />
+    <div className="-mx-4 overflow-x-auto">
+      <div className="flex gap-3 px-4 pb-2">
+        {features.map(({ icon: Icon, title, description }) => {
+          const isFlipped = flipped === title;
+          return (
+            <div
+              key={title}
+              onClick={() => setFlipped(isFlipped ? null : title)}
+              className="w-52 flex-shrink-0 cursor-pointer"
+              style={{ perspective: '1000px', height: '160px' }}
+            >
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%',
+                  transformStyle: 'preserve-3d',
+                  transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                }}
+              >
+                {/* Front */}
+                <div
+                  className="absolute inset-0 flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
+                  style={{ backfaceVisibility: 'hidden' }}
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50">
+                    <Icon className="h-4 w-4 text-gray-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">{title}</p>
+                    <p className="mt-1 text-xs text-gray-400">Toca para saber más</p>
+                  </div>
                 </div>
-                <span className="text-sm font-semibold text-gray-800">{title}</span>
+
+                {/* Back */}
+                <div
+                  className="absolute inset-0 flex flex-col justify-center rounded-2xl border border-gray-200 bg-gray-50 p-4 shadow-sm"
+                  style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                >
+                  <p className="text-sm leading-relaxed text-gray-600">{description}</p>
+                </div>
               </div>
-              <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
             </div>
-            {isOpen && (
-              <p className="mt-3 pl-11 text-sm leading-relaxed text-gray-500">{description}</p>
-            )}
-          </button>
-        );
-      })}
+          );
+        })}
+        <div className="w-1 flex-shrink-0" />
+      </div>
     </div>
   );
 }
