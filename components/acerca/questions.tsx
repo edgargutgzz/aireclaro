@@ -12,7 +12,7 @@ const faqData = [
     answer: (
       <p>
         Aire Claro se enfoca exclusivamente en la Zona Metropolitana de
-        Monterrey y Saltillo, combinando datos de estaciones oficiales y
+        Monterrey, combinando datos de estaciones oficiales y
         sensores ciudadanos para brindar la cobertura más completa de la región.
       </p>
     ),
