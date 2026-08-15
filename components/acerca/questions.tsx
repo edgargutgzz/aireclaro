@@ -15,17 +15,12 @@ const faqData = [
           del aire que respiramos en la Zona Metropolitana de Monterrey y
           Saltillo.
         </p>
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6">
           <iframe
-            width="560"
-            height="315"
             src="https://www.youtube.com/embed/zUt6HwlZB08"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            title="Aire Claro"
             allowFullScreen
-            loading="lazy"
-            className="h-64 w-full rounded-lg md:h-96"
+            className="h-64 w-full rounded-xl md:h-96"
           />
         </div>
       </div>
