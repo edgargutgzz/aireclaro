@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Navigation, Activity, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User } from "lucide-react";
+import { Navigation, Activity, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -211,6 +211,7 @@ export default function MapaSensors({
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [isLegendVisible, setIsLegendVisible] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
@@ -468,43 +469,60 @@ export default function MapaSensors({
 
 
 
-      {/* Locate me button — mobile only, hidden when sheet is expanded */}
+      {/* Mobile right-side buttons — hidden when sheet is expanded */}
       {sheetState === 'peek' && (
-        <button
-          onClick={userLocation ? flyToUser : requestLocation}
-          className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 9.75rem)' }}
-          aria-label="Mi ubicación"
-        >
-          <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-        </button>
+        <div className="fixed right-6 z-[45] flex flex-col gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}>
+          <button
+            onClick={userLocation ? flyToUser : requestLocation}
+            className="rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm"
+            aria-label="Mi ubicación"
+          >
+            <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          </button>
+          <button
+            onClick={() => setIsLegendVisible(!isLegendVisible)}
+            className="rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200"
+            aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
+          >
+            <Activity className="h-5 w-5 text-gray-700" />
+          </button>
+          <button
+            onClick={() => setShowFilters((v) => !v)}
+            className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showFilters ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
+            aria-label="Filtrar capas"
+          >
+            <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
+          </button>
+        </div>
       )}
 
-      {/* Mobile filter pills — full width 50/50 */}
-      <div className="fixed left-0 right-0 z-[44] flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}>
-        <button
-          onClick={() => setShowSima((v) => !v)}
-          className={`flex-1 rounded-full px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-            showSima ? "border-2 border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-2 border-white/20 bg-white/20 text-white/60"
-          }`}
-        >
-          <div className="flex items-center justify-center gap-1.5">
-            <Landmark className="h-3.5 w-3.5" />
-            <span className="text-xs font-medium">Estación SIMA</span>
-          </div>
-        </button>
-        <button
-          onClick={() => setShowPurpleAir((v) => !v)}
-          className={`flex-1 rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-            showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
-          }`}
-        >
-          <div className="flex items-center justify-center gap-1.5">
-            <Users className="h-3.5 w-3.5" />
-            <span className="text-xs font-medium">Sensor Ciudadano</span>
-          </div>
-        </button>
-      </div>
+      {/* Mobile filter pills — visible when showFilters is true */}
+      {showFilters && (
+        <div className="fixed left-0 right-0 z-[44] flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}>
+          <button
+            onClick={() => setShowSima((v) => !v)}
+            className={`flex-1 rounded-full px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+              showSima ? "border-2 border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-2 border-white/20 bg-white/20 text-white/60"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-1.5">
+              <Landmark className="h-3.5 w-3.5" />
+              <span className="text-xs font-medium">Estación SIMA</span>
+            </div>
+          </button>
+          <button
+            onClick={() => setShowPurpleAir((v) => !v)}
+            className={`flex-1 rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
+              showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-1.5">
+              <Users className="h-3.5 w-3.5" />
+              <span className="text-xs font-medium">Sensor Ciudadano</span>
+            </div>
+          </button>
+        </div>
+      )}
 
       {/* Desktop left area — quality card + filter pills beside it */}
       <div className="pointer-events-none absolute left-6 top-[5rem] z-10 hidden items-start gap-2 md:flex">
@@ -681,15 +699,6 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Legend toggle button — mobile only, hidden when sheet is expanded */}
-      {sheetState === 'peek' && <button
-        onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
-        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}
-        aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
-      >
-        <Activity className="h-5 w-5 text-gray-700" />
-      </button>}
 
       {/* Legend backdrop — mobile only */}
       <div
