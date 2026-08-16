@@ -543,8 +543,6 @@ export default function MapaSensors({
               <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showPurpleAir ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </div>
           </button>
-          <p className="mt-4 text-sm font-medium text-gray-400">Calidad del aire · PM2.5</p>
-          <LegendContent />
         </div>
       </div>
 
