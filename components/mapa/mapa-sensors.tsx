@@ -450,6 +450,43 @@ export default function MapaSensors({
     });
   }, [selectedSensor]);
 
+  // Pulse animation on nearest sensor marker
+  useEffect(() => {
+    if (!mapLoaded) return;
+
+    if (!document.querySelector("style[data-nearest-pulse]")) {
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes nearestPulsePurpleAir {
+          0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white, 0 0 0 2.5px rgba(255,255,255,0.8); }
+          70%  { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white, 0 0 0 12px rgba(255,255,255,0); }
+          100% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white, 0 0 0 2.5px rgba(255,255,255,0); }
+        }
+        @keyframes nearestPulseSima {
+          0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937, 0 0 0 4.5px rgba(255,255,255,0.8); }
+          70%  { box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937, 0 0 0 14px rgba(255,255,255,0); }
+          100% { box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937, 0 0 0 4.5px rgba(255,255,255,0); }
+        }
+      `;
+      style.setAttribute("data-nearest-pulse", "true");
+      document.head.appendChild(style);
+    }
+
+    markerElementsRef.current.forEach(({ el }) => { el.style.animation = ''; });
+
+    if (!nearestSensorData) return;
+
+    const nearestSensor = sensors.find(
+      s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
+    );
+    if (!nearestSensor) return;
+
+    const markerData = markerElementsRef.current.get(nearestSensor.sensor_id);
+    if (!markerData) return;
+
+    markerData.el.style.animation = `${nearestSensorData.isSima ? 'nearestPulseSima' : 'nearestPulsePurpleAir'} 2s ease-out infinite`;
+  }, [nearestSensorData, mapLoaded, sensors, showSima, showPurpleAir]);
+
   // Close selected sensor on map click
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
