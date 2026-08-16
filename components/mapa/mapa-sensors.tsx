@@ -788,7 +788,7 @@ export default function MapaSensors({
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
               >
-              <div className="mb-5 flex flex-col items-center gap-3 text-center">
+              <div className="mb-5 flex items-center gap-2">
                 <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
                   {sensorQuality ? sensorQuality.label : "—"}
                 </div>
@@ -1031,7 +1031,7 @@ export default function MapaSensors({
         >
           {qualityInfo && (
             <>
-              <div className="mb-5 flex flex-col items-center gap-3 text-center">
+              <div className="mb-5 flex items-center gap-2">
                 <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
                 </div>
