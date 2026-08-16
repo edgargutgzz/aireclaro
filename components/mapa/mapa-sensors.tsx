@@ -518,29 +518,37 @@ export default function MapaSensors({
           <p className="text-sm font-medium text-gray-400">Fuente de medición</p>
         </div>
         <div
-          className="px-5"
+          className="flex flex-col gap-3 px-5"
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
-          <div className="flex rounded-2xl bg-gray-100 p-1">
-            <button
-              onClick={() => setShowSima((v) => !v)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-all duration-200 ${
-                showSima ? "bg-white text-gray-900 shadow-sm" : "text-gray-400"
-              }`}
-            >
-              <Landmark className="h-4 w-4" />
-              SIMA
-            </button>
-            <button
-              onClick={() => setShowPurpleAir((v) => !v)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-all duration-200 ${
-                showPurpleAir ? "bg-white text-gray-900 shadow-sm" : "text-gray-400"
-              }`}
-            >
-              <Users className="h-4 w-4" />
-              Ciudadanos
-            </button>
-          </div>
+          <button
+            onClick={() => setShowSima((v) => !v)}
+            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
+              showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Landmark className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
+            </div>
+            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showSima ? 'bg-gray-900' : 'bg-gray-300'}`}>
+              <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showSima ? 'translate-x-4' : 'translate-x-0.5'}`} />
+            </div>
+          </button>
+          <button
+            onClick={() => setShowPurpleAir((v) => !v)}
+            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
+              showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Users className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+            </div>
+            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showPurpleAir ? 'bg-gray-900' : 'bg-gray-300'}`}>
+              <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showPurpleAir ? 'translate-x-4' : 'translate-x-0.5'}`} />
+            </div>
+          </button>
         </div>
       </div>
 
