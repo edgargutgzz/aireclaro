@@ -562,7 +562,7 @@ export default function MapaSensors({
             style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
           >
             <div className="flex items-center gap-3">
-              <Landmark className="h-4 w-4 text-gray-400" />
+              <div className="h-4 w-4 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.45) 6px, rgba(255,255,255,0.45) 8px)', boxShadow: '0 0 0 1.5px white, 0 0 0 2.5px rgba(0,0,0,0.15)' }} />
               <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
             </div>
             <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showSima ? '#3b82f6' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
@@ -576,7 +576,7 @@ export default function MapaSensors({
             }`}
           >
             <div className="flex items-center gap-3">
-              <Users className="h-4 w-4 text-gray-400" />
+              <div className="h-4 w-4 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', boxShadow: '0 0 0 1.5px white, 0 0 0 2.5px rgba(0,0,0,0.15)' }} />
               <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
             </div>
             <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showPurpleAir ? '#3b82f6' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
