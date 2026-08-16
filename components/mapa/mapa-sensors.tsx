@@ -65,7 +65,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
     : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
   if (isSima) {
     el.style.backgroundImage =
-      "repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.25) 6px, rgba(255,255,255,0.25) 8px)";
+      "repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.42) 5px, rgba(255,255,255,0.42) 8px)";
   }
   el.textContent = Math.round(pm25!).toString();
   el.style.color = textColor;
