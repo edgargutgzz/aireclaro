@@ -981,7 +981,7 @@ export default function MapaSensors({
               <span className="text-sm font-medium text-gray-900">Calidad del aire</span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
-              <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
+              <span className="text-lg font-bold text-gray-900">
                 {qualityInfo.label}
               </span>
             ) : (
