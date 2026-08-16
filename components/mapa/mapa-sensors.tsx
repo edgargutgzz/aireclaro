@@ -61,7 +61,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.justifyContent = "center";
   el.style.opacity = "0.9";
   el.style.position = "relative";
-  el.style.overflow = "hidden";
+  if (isSima) el.style.overflow = "hidden";
   el.style.boxShadow = isSima
     ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
     : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
@@ -69,7 +69,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   if (isSima) {
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 40 40");
-    svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;";
+    svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;";
     const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line1.setAttribute("x1", "8"); line1.setAttribute("y1", "32");
     line1.setAttribute("x2", "32"); line1.setAttribute("y2", "8");
