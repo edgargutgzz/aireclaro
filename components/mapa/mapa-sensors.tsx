@@ -452,7 +452,7 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 4.5rem))';
+  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5.5rem))';
 
   const handleSheetTap = useCallback(() => {
     setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
@@ -470,7 +470,7 @@ export default function MapaSensors({
 
       {/* Mobile right-side buttons — hidden when sheet is expanded */}
       {sheetState === 'peek' && (
-        <div className="fixed right-6 z-[45] flex flex-col gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 5.5rem)' }}>
+        <div className="fixed right-6 z-[45] flex flex-col gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}>
           <button
             onClick={userLocation ? flyToUser : requestLocation}
             className="rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm"
