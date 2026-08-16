@@ -1005,18 +1005,6 @@ export default function MapaSensors({
                     </span>
                   )}
                 </div>
-                <div className="relative mt-4">
-                  <div
-                    className="h-1.5 w-full rounded-full"
-                    style={{ background: 'linear-gradient(to right, #00e400 0%, #ffff00 16.7%, #ff7e00 52.7%, #ff0000 86.7%, #8f3f97 100%)' }}
-                  />
-                  {displayPm25 !== null && (
-                    <div
-                      className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-md ring-1 ring-black/10"
-                      style={{ left: `${Math.min((displayPm25 / 150) * 100, 100)}%` }}
-                    />
-                  )}
-                </div>
               </div>
 
               <button
