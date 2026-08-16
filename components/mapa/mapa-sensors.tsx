@@ -973,7 +973,10 @@ export default function MapaSensors({
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-6"
           onClick={handleSheetTap}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
+          <div
+            className="mx-auto mb-3 h-1 w-10 rounded-full transition-colors duration-500"
+            style={{ backgroundColor: qualityInfo ? qualityInfo.color : '#e5e7eb' }}
+          />
           <div className="flex items-center justify-between">
             {sheetState === 'peek' && (
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
