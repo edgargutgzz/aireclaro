@@ -797,10 +797,10 @@ export default function MapaSensors({
                 )}
               </div>
               <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
-                <div className="flex flex-col gap-3">
-                  <div className="flex min-w-0 items-center gap-2">
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <div className="flex items-center gap-2">
                     {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
-                    <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
+                    <span className="text-sm font-medium text-gray-600">{sensorName}</span>
                   </div>
                   {timestamp && (
                     <div className="flex items-center gap-2.5">
