@@ -64,8 +64,9 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
     ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
     : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
   if (isSima) {
+    const stripeColor = (bg === "#ffff00" || bg === "#00e400") ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.25)";
     el.style.backgroundImage =
-      "repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.12) 6px, rgba(0,0,0,0.12) 8px)";
+      `repeating-linear-gradient(45deg, transparent, transparent 6px, ${stripeColor} 6px, ${stripeColor} 8px)`;
   }
   el.textContent = Math.round(pm25!).toString();
   el.style.color = textColor;
@@ -788,7 +789,7 @@ export default function MapaSensors({
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
                 onClick={() => setSelectedSensor(null)}
               >
-                <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: hexToRgba(color, 0.3) }} />
+                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
               </div>
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
@@ -1015,7 +1016,7 @@ export default function MapaSensors({
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-6"
           onClick={handleSheetTap}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={qualityInfo ? { backgroundColor: hexToRgba(qualityInfo.color, 0.3) } : { backgroundColor: 'rgb(229 231 235)' }} />
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
