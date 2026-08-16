@@ -498,7 +498,7 @@ export default function MapaSensors({
 
       {/* Layers filter panel — mobile: slides up from bottom */}
       <div
-        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl border border-white/40 bg-white/70 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-xl md:hidden"
         style={{
           transform: showFilters ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
@@ -508,7 +508,7 @@ export default function MapaSensors({
           className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
           onClick={() => setShowFilters(false)}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
           <p className="text-sm font-medium text-gray-400">Capas</p>
         </div>
         <div
@@ -517,29 +517,29 @@ export default function MapaSensors({
         >
           <button
             onClick={() => setShowSima((v) => !v)}
-            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
-              showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-4 backdrop-blur-md transition-all duration-200 ${
+              showSima ? "border-white/60 bg-white/80 shadow-sm" : "border-white/20 bg-white/20 opacity-50"
             }`}
           >
             <div className="flex items-center gap-3">
               <Landmark className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
             </div>
-            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showSima ? 'bg-gray-900' : 'bg-gray-200'}`}>
+            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showSima ? 'bg-gray-900' : 'bg-gray-300'}`}>
               <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showSima ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </div>
           </button>
           <button
             onClick={() => setShowPurpleAir((v) => !v)}
-            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
-              showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-4 backdrop-blur-md transition-all duration-200 ${
+              showPurpleAir ? "border-white/60 bg-white/80 shadow-sm" : "border-white/20 bg-white/20 opacity-50"
             }`}
           >
             <div className="flex items-center gap-3">
               <Users className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
             </div>
-            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showPurpleAir ? 'bg-gray-900' : 'bg-gray-200'}`}>
+            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showPurpleAir ? 'bg-gray-900' : 'bg-gray-300'}`}>
               <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showPurpleAir ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </div>
           </button>
