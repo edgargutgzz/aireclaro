@@ -659,7 +659,7 @@ export default function MapaSensors({
               </div>
               <button
                 onClick={() => setShowDesktopRecs(v => !v)}
-                className="mb-4 mt-8 flex w-full items-center justify-between gap-1.5"
+                className="mb-4 mt-10 flex w-full items-center justify-between gap-1.5"
               >
                 <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                   <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span>
@@ -787,17 +787,15 @@ export default function MapaSensors({
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
               >
-              <div className="mb-5">
-                <div className="flex items-center gap-2">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
-                    {sensorQuality ? sensorQuality.label : "—"}
-                  </div>
-                  {pm25 !== null && (
-                    <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
-                      {roundPM25(pm25)} μg/m³ · PM2.5
-                    </span>
-                  )}
+              <div className="mb-5 flex items-center gap-2">
+                <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
+                  {sensorQuality ? sensorQuality.label : "—"}
                 </div>
+                {pm25 !== null && (
+                  <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
+                    {roundPM25(pm25)} μg/m³ · PM2.5
+                  </span>
+                )}
               </div>
               <button
                 onClick={() => setShowSensorDetail(v => !v)}
