@@ -990,6 +990,17 @@ export default function MapaSensors({
               <span className="text-sm text-gray-300">—</span>
             ))}
           </div>
+          {sheetState === 'peek' && qualityInfo && displayPm25 !== null && (
+            <div className="mt-2.5 h-1 w-full overflow-hidden rounded-full bg-gray-100">
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${Math.min((displayPm25 / 150) * 100, 100)}%`,
+                  backgroundColor: qualityInfo.color,
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
