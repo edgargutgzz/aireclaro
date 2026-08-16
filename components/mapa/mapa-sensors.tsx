@@ -276,6 +276,11 @@ export default function MapaSensors({
   const nearestLon = nearestSensorData?.lon ?? null;
   const displayPm25 = nearestPm25 ?? areaMedianPm25;
   const qualityInfo = getQualityInfo(displayPm25);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('qualityColorChange', { detail: { color: qualityInfo?.color ?? null } }));
+  }, [qualityInfo]);
+
   // Initialize map once
   useEffect(() => {
     if (map.current) return;
@@ -960,14 +965,11 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white flex flex-col md:hidden overflow-hidden"
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden overflow-hidden"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
           transform: sheetTransform,
-          boxShadow: qualityInfo
-            ? `0 -4px 24px ${qualityInfo.color}40, 0 -1px 8px rgba(0,0,0,0.06)`
-            : '0 -4px 20px rgba(0,0,0,0.08)',
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
