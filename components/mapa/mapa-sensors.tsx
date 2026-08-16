@@ -341,7 +341,7 @@ export default function MapaSensors({
     (map.current as any).flyTo({
       center: [userLocation.longitude, userLocation.latitude],
       zoom: 14,
-      duration: 2500,
+      duration: 3000,
       essential: true,
       padding: isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : undefined,
     });
