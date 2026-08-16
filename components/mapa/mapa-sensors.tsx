@@ -960,12 +960,13 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden overflow-hidden"
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden overflow-hidden"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
           transform: sheetTransform,
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+          backgroundColor: qualityInfo ? `${qualityInfo.color}18` : '#ffffff',
         }}
       >
         {/* Drag handle + peek summary */}
@@ -979,12 +980,9 @@ export default function MapaSensors({
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
-              <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full flex-shrink-0 transition-colors duration-500" style={{ backgroundColor: qualityInfo.color }} />
-                <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </span>
-              </div>
+              <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
+                {qualityInfo.label}
+              </span>
             ) : (
               <span className="text-sm text-gray-300">—</span>
             ))}
