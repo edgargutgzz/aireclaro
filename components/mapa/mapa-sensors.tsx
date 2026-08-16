@@ -470,8 +470,8 @@ export default function MapaSensors({
       styleEl = document.createElement("style");
       styleEl.textContent = `
         @keyframes ${animName} {
-          0%   { box-shadow: ${baseShadow}, 0 0 0 ${startSpread} rgba(${r},${g},${b},0.7); }
-          70%  { box-shadow: ${baseShadow}, 0 0 0 14px rgba(${r},${g},${b},0); }
+          0%   { box-shadow: ${baseShadow}, 0 0 0 ${startSpread} rgba(${r},${g},${b},0.9); }
+          70%  { box-shadow: ${baseShadow}, 0 0 0 22px rgba(${r},${g},${b},0); }
           100% { box-shadow: ${baseShadow}, 0 0 0 ${startSpread} rgba(${r},${g},${b},0); }
         }
       `;
@@ -479,7 +479,7 @@ export default function MapaSensors({
       document.head.appendChild(styleEl);
     }
 
-    markerData.el.style.animation = `${animName} 2s ease-out infinite`;
+    markerData.el.style.animation = `${animName} 1.8s ease-out infinite`;
   }, [nearestSensorData, mapLoaded, sensors, showSima, showPurpleAir]);
 
   // Close selected sensor on map click
