@@ -502,7 +502,7 @@ export default function MapaSensors({
         className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
         style={{
           transform: showFilters ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
         <div
