@@ -995,18 +995,15 @@ export default function MapaSensors({
         >
           {qualityInfo && (
             <>
-              <div className="mb-5">
-                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del aire</p>
-                <div className="flex items-center gap-2">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                    {qualityInfo.label}
-                  </div>
-                  {displayPm25 !== null && (
-                    <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
-                      {roundPM25(displayPm25)} μg/m³ · PM2.5
-                    </span>
-                  )}
+              <div className="mb-5 flex items-center gap-2">
+                <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
                 </div>
+                {displayPm25 !== null && (
+                  <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
+                    {roundPM25(displayPm25)} μg/m³ · PM2.5
+                  </span>
+                )}
               </div>
 
               <button
