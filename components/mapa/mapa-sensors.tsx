@@ -61,7 +61,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.justifyContent = "center";
   el.style.opacity = "0.9";
   el.style.boxShadow = isSima
-    ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937"
+    ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px #1f2937"
     : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
   el.style.color = textColor;
   el.style.fontSize = "12px";
@@ -445,7 +445,7 @@ export default function MapaSensors({
   useEffect(() => {
     markerElementsRef.current.forEach(({ el, source }) => {
       el.style.boxShadow = source === "sima"
-        ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937"
+        ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px #1f2937"
         : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
     });
   }, [selectedSensor]);
@@ -474,9 +474,9 @@ export default function MapaSensors({
 
     const isSima = nearestSensorData.isSima;
     const baseShadow = isSima
-      ? '0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937'
+      ? '0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px #1f2937'
       : '0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white';
-    const startSpread = isSima ? '4.5px' : '2.5px';
+    const startSpread = '2.5px';
     const animName = `nearestPulse_${hex.slice(1)}`;
 
     let styleEl = document.querySelector(`style[data-nearest-pulse="${animName}"]`) as HTMLStyleElement | null;
