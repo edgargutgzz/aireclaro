@@ -979,7 +979,7 @@ export default function MapaSensors({
           <div className="flex items-center justify-between">
             {sheetState === 'peek' && (
               <span className="text-sm font-medium text-gray-400">
-                Calidad del aire{userLocation && " en mi ubicación"}
+                {userLocation ? "Tu calidad del aire" : "Calidad del aire"}
               </span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
