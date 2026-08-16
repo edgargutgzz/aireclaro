@@ -995,6 +995,7 @@ export default function MapaSensors({
           {qualityInfo && (
             <>
               <div className="mb-5">
+                <p className="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del aire</p>
                 <div className="flex items-center gap-2">
                   <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                     {qualityInfo.label}
