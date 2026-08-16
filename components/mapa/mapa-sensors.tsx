@@ -64,7 +64,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
     ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
     : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
   if (isSima) {
-    const stripeColor = bg === "#ffff00" ? "rgba(0,0,0,0.18)" : "rgba(255,255,255,0.25)";
+    const stripeColor = bg === "#ffff00" ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.25)";
     el.style.backgroundImage =
       `repeating-linear-gradient(45deg, transparent, transparent 6px, ${stripeColor} 6px, ${stripeColor} 8px)`;
   }
