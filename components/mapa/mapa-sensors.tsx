@@ -557,11 +557,11 @@ export default function MapaSensors({
           <button
             onClick={() => setShowSima((v) => !v)}
             className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
-              showSima ? "border-gray-100 border-l-2 border-l-gray-800 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+              showSima ? "border-gray-100 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
           >
             <div className="flex items-center gap-3">
-              <div className="h-4 w-4 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.45) 2px, rgba(255,255,255,0.45) 3px)', boxShadow: '0 0 0 1.5px white, 0 0 0 2.5px rgba(0,0,0,0.15)' }} />
+              <Landmark className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
             </div>
             <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showSima ? '#3b82f6' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
@@ -718,7 +718,7 @@ export default function MapaSensors({
               showSima ? "border border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
             }`}
           >
-            <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.45) 2px, rgba(255,255,255,0.45) 3px)', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.12)' }} />
+            <Landmark className="h-3.5 w-3.5" />
             Estación SIMA
           </button>
           <button
