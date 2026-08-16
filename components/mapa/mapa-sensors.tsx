@@ -974,7 +974,7 @@ export default function MapaSensors({
           onClick={handleSheetTap}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
-          <div className="flex items-center justify-between">
+          <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
             )}
