@@ -621,9 +621,9 @@ export default function MapaSensors({
               <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
                 <div className="flex flex-col gap-3 px-4 py-3">
                   <div className="flex min-w-0 items-center gap-2">
-                    {userLocation && nearestName
-                      ? (nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />)
-                      : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                    {userLocation && nearestName && nearestIsSima
+                      ? <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.45) 6px, rgba(255,255,255,0.45) 8px)', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.15)' }} />
+                      : <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.15)' }} />
                     }
                     <span className="truncate text-sm font-medium text-gray-600">
                       {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
@@ -803,7 +803,10 @@ export default function MapaSensors({
                 className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
               >
                 <div className="flex min-w-0 items-center gap-2">
-                  {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
+                  {isSima
+                      ? <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.45) 6px, rgba(255,255,255,0.45) 8px)', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.15)' }} />
+                      : <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.15)' }} />
+                    }
                   <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
                 </div>
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
@@ -897,7 +900,10 @@ export default function MapaSensors({
                   className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
                 >
                   <div className="flex min-w-0 items-center gap-2">
-                    {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
+                    {isSima
+                      ? <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.45) 6px, rgba(255,255,255,0.45) 8px)', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.15)' }} />
+                      : <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.15)' }} />
+                    }
                     <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
                   </div>
                   <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
@@ -1047,9 +1053,9 @@ export default function MapaSensors({
                 className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
               >
                 <div className="flex min-w-0 items-center gap-2">
-                  {userLocation && nearestName
-                    ? (nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />)
-                    : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                  {userLocation && nearestName && nearestIsSima
+                    ? <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.45) 6px, rgba(255,255,255,0.45) 8px)', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.15)' }} />
+                    : <div className="h-3.5 w-3.5 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', boxShadow: '0 0 0 1px white, 0 0 0 2px rgba(0,0,0,0.15)' }} />
                   }
                   <span className="truncate text-sm font-medium text-gray-600">
                     {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
