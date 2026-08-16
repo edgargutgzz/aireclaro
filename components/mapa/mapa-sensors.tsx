@@ -473,7 +473,7 @@ export default function MapaSensors({
         <button
           onClick={userLocation ? flyToUser : requestLocation}
           className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 14rem)' }}
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 9.75rem)' }}
           aria-label="Mi ubicación"
         >
           <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
@@ -685,7 +685,7 @@ export default function MapaSensors({
       {sheetState === 'peek' && <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
         className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
-        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 9.75rem)' }}
+        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         <Palette className="h-5 w-5 text-gray-700" />
