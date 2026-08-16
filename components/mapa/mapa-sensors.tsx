@@ -293,7 +293,7 @@ export default function MapaSensors({
       setMapLoaded(true);
       (map.current as any).flyTo({
         center: [-100.32098588977951, 25.665],
-        zoom: 11,
+        zoom: 11.5,
         duration: 2000,
         essential: true,
       });
