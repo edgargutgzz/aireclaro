@@ -971,7 +971,7 @@ export default function MapaSensors({
           transform: sheetTransform,
           boxShadow: qualityInfo
             ? `0 -4px 24px ${qualityInfo.color}40, 0 -1px 8px rgba(0,0,0,0.06)`
-            : '0 -4px_20px rgba(0,0,0,0.08)',
+            : '0 -4px 20px rgba(0,0,0,0.08)',
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
