@@ -937,9 +937,9 @@ export default function MapaSensors({
                 <Navigation className="h-6 w-6 text-gray-400" />
               </div>
             </div>
-            <p className="mb-1.5 text-center text-base font-semibold text-gray-900">Activa tu ubicación</p>
+            <p className="mb-1.5 text-center text-base font-semibold text-gray-900">Descubre el aire en tu zona</p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
-              Para ver la calidad del aire más cercana a ti, activa el acceso a tu ubicación en los ajustes de tu navegador.
+              Activa el acceso a tu ubicación en los ajustes de tu navegador para ver el sensor más cercano a ti.
             </p>
             <button
               onClick={() => setShowLocationTip(false)}
