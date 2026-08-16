@@ -789,7 +789,7 @@ export default function MapaSensors({
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
                 onClick={() => setSelectedSensor(null)}
               >
-                <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: hexToRgba(color, 0.3) }} />
+                <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: hexToRgba(textColor, 0.35) }} />
               </div>
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
@@ -1016,7 +1016,7 @@ export default function MapaSensors({
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
           onClick={handleSheetTap}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={qualityInfo ? { backgroundColor: hexToRgba(qualityInfo.color, 0.3) } : { backgroundColor: 'rgb(229 231 235)' }} />
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={qualityInfo ? { backgroundColor: hexToRgba(qualityInfo.textColor, 0.35) } : { backgroundColor: 'rgb(229 231 235)' }} />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
