@@ -7,7 +7,7 @@ export default function Navbar() {
   return (
     <>
       {/* Mobile navbar at bottom */}
-      <div className="relative fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-gray-50 shadow-sm md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-gray-50 shadow-sm md:hidden">
         <NavQualityColor />
         <div className="flex w-full items-center justify-around px-4 pt-3 pb-1">
           <Navlinks />
