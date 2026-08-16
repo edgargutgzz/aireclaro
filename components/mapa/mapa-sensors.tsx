@@ -50,7 +50,6 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   const { bg } = colorInfo;
   const isSima = source === "sima";
   const textColor = bg === "#ffff00" ? "#6b7280" : "white";
-  const labelText = Math.round(pm25!).toString();
 
   const el = document.createElement("div");
   el.style.width = "40px";
@@ -64,50 +63,14 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.boxShadow = isSima
     ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
     : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
-
   if (isSima) {
-    el.style.position = "relative";
-    el.style.overflow = "hidden";
-
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 40 40");
-    svg.style.position = "absolute";
-    svg.style.top = "0";
-    svg.style.left = "0";
-    svg.style.width = "100%";
-    svg.style.height = "100%";
-    svg.style.pointerEvents = "none";
-
-    const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line1.setAttribute("x1", "8"); line1.setAttribute("y1", "32");
-    line1.setAttribute("x2", "32"); line1.setAttribute("y2", "8");
-    line1.setAttribute("stroke", "rgba(255,255,255,0.35)");
-    line1.setAttribute("stroke-width", "2.5");
-
-    const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line2.setAttribute("x1", "16"); line2.setAttribute("y1", "38");
-    line2.setAttribute("x2", "38"); line2.setAttribute("y2", "16");
-    line2.setAttribute("stroke", "rgba(255,255,255,0.35)");
-    line2.setAttribute("stroke-width", "2.5");
-
-    svg.appendChild(line1);
-    svg.appendChild(line2);
-    el.appendChild(svg);
-
-    const label = document.createElement("span");
-    label.textContent = labelText;
-    label.style.color = textColor;
-    label.style.fontSize = "12px";
-    label.style.fontWeight = "700";
-    label.style.position = "relative";
-    label.style.zIndex = "1";
-    el.appendChild(label);
-  } else {
-    el.textContent = labelText;
-    el.style.color = textColor;
-    el.style.fontSize = "12px";
-    el.style.fontWeight = "700";
+    el.style.backgroundImage =
+      "repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.25) 6px, rgba(255,255,255,0.25) 8px)";
   }
+  el.textContent = Math.round(pm25!).toString();
+  el.style.color = textColor;
+  el.style.fontSize = "12px";
+  el.style.fontWeight = "700";
 
   return el;
 };
