@@ -989,7 +989,7 @@ export default function MapaSensors({
             ))}
           </div>
           {sheetState === 'peek' && (
-            <div className="relative mt-3">
+            <div className="relative mt-5">
               <div
                 className="h-1.5 w-full rounded-full opacity-40"
                 style={{
