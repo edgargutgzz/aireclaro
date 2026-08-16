@@ -470,7 +470,7 @@ export default function MapaSensors({
 
       {/* Mobile right-side buttons — hidden when sheet is expanded */}
       {sheetState === 'peek' && (
-        <div className="fixed right-6 z-[45] flex flex-col gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7rem)' }}>
+        <div className="fixed right-6 z-[45] flex flex-col gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}>
           <button
             onClick={userLocation ? flyToUser : requestLocation}
             className="rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm"
