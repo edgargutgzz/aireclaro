@@ -90,7 +90,7 @@ export default function Acerca() {
       <div className="container mx-auto max-w-2xl flex-1 overflow-y-auto px-4 pb-10 pt-6 md:pt-14">
 
         {/* Observatorio card */}
-        <div className="mb-10 rounded-xl bg-gray-50 px-4 py-4">
+        <div className="mb-14 rounded-xl bg-gray-50 px-4 py-4">
           <div className="flex flex-col gap-4">
             <Link href="https://observatoriodelaire.com" target="_blank" className="inline-block flex-shrink-0 transition-opacity hover:opacity-75">
               <Image
