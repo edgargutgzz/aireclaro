@@ -452,6 +452,10 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('qualityColorChange', { detail: qualityInfo?.color ?? null }));
+  }, [qualityInfo]);
+
   const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5rem))';
 
   const handleSheetTap = useCallback(() => {
