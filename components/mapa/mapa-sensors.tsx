@@ -498,7 +498,7 @@ export default function MapaSensors({
 
       {/* Layers filter panel — mobile: slides up from bottom */}
       <div
-        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl border border-white/40 bg-white/70 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-xl md:hidden"
+        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
         style={{
           transform: showFilters ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
@@ -517,8 +517,8 @@ export default function MapaSensors({
         >
           <button
             onClick={() => setShowSima((v) => !v)}
-            className={`flex items-center justify-between rounded-2xl border px-4 py-4 backdrop-blur-md transition-all duration-200 ${
-              showSima ? "border-white/60 bg-white/80 shadow-sm" : "border-white/20 bg-white/20 opacity-50"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
+              showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -531,8 +531,8 @@ export default function MapaSensors({
           </button>
           <button
             onClick={() => setShowPurpleAir((v) => !v)}
-            className={`flex items-center justify-between rounded-2xl border px-4 py-4 backdrop-blur-md transition-all duration-200 ${
-              showPurpleAir ? "border-white/60 bg-white/80 shadow-sm" : "border-white/20 bg-white/20 opacity-50"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
+              showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
           >
             <div className="flex items-center gap-3">
@@ -960,7 +960,7 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl border border-white/40 bg-white/70 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-xl flex flex-col md:hidden"
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
