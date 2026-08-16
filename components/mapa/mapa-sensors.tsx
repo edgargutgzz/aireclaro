@@ -224,8 +224,6 @@ export default function MapaSensors({
     timestamp: string | null;
   } | null>(null);
   const [copied, setCopied] = useState(false);
-  const [showSensorDetail, setShowSensorDetail] = useState(false);
-  const [showNearestDetail, setShowNearestDetail] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [showQualitySource, setShowQualitySource] = useState(false);
   const [isDesktopCardExpanded, setIsDesktopCardExpanded] = useState(true);
@@ -804,39 +802,31 @@ export default function MapaSensors({
                   </span>
                 )}
               </div>
-              <button
-                onClick={() => setShowSensorDetail(v => !v)}
-                className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
-                  <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
-                </div>
-                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
-              </button>
-              {showSensorDetail && (
-                <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
-                  <div className="flex flex-col gap-3 px-4 py-3">
-                    {timestamp && (
-                      <div className="flex items-center gap-2.5">
-                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
-                      }}
-                      className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                    >
-                      <Copy className="h-3 w-3 flex-shrink-0" />
-                      {copied ? 'Copiado' : 'Copiar coordenadas'}
-                    </button>
+              <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
+                <div className="flex flex-col gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
+                    <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
                   </div>
+                  {timestamp && (
+                    <div className="flex items-center gap-2.5">
+                      <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                      <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    }}
+                    className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
+                  >
+                    <Copy className="h-3 w-3 flex-shrink-0" />
+                    {copied ? 'Copiado' : 'Copiar coordenadas'}
+                  </button>
                 </div>
-              )}
+              </div>
               {sensorQuality && (
                 <>
                   <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span><BadgeCheck className="h-3 w-3" /></a>
@@ -898,39 +888,31 @@ export default function MapaSensors({
                     <X className="h-5 w-5" />
                   </button>
                 </div>
-                <button
-                  onClick={() => setShowSensorDetail(v => !v)}
-                  className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
-                >
-                  <div className="flex min-w-0 items-center gap-2">
-                    {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
-                    <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
-                  </div>
-                  <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
-                </button>
-                {showSensorDetail && (
-                  <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
-                    <div className="flex flex-col gap-3 px-4 py-3">
-                      {timestamp && (
-                        <div className="flex items-center gap-2.5">
-                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
-                        </div>
-                      )}
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                      >
-                        <Copy className="h-3 w-3 flex-shrink-0" />
-                        {copied ? 'Copiado' : 'Copiar coordenadas'}
-                      </button>
+                <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
+                      <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
                     </div>
+                    {timestamp && (
+                      <div className="flex items-center gap-2.5">
+                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
+                    >
+                      <Copy className="h-3 w-3 flex-shrink-0" />
+                      {copied ? 'Copiado' : 'Copiar coordenadas'}
+                    </button>
                   </div>
-                )}
+                </div>
                 {sensorQuality && (
                   <>
                     <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span><BadgeCheck className="h-3 w-3" /></a>
@@ -1048,52 +1030,44 @@ export default function MapaSensors({
                 )}
               </div>
 
-              <button
-                onClick={() => setShowNearestDetail(v => !v)}
-                className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  {userLocation && nearestName
-                    ? (nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />)
-                    : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                  }
-                  <span className="truncate text-sm font-medium text-gray-600">
-                    {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
-                  </span>
-                </div>
-                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
-              </button>
-              {showNearestDetail && (
-                <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
-                  <div className="flex flex-col gap-3 px-4 py-3">
-                    {userLocation && nearestName && (
-                      <div className="flex items-center gap-2.5">
-                        <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-sm text-gray-400">Tu sensor más cercano</span>
-                      </div>
-                    )}
-                    {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
-                      <div className="flex items-center gap-2.5">
-                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
-                      </div>
-                    )}
-                    {userLocation && nearestLat !== null && nearestLon !== null && (
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                      >
-                        <Copy className="h-3 w-3 flex-shrink-0" />
-                        {copied ? 'Copiado' : 'Copiar coordenadas'}
-                      </button>
-                    )}
+              <div className="mb-5 rounded-xl bg-gray-50 px-4 py-3">
+                <div className="flex flex-col gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    {userLocation && nearestName
+                      ? (nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />)
+                      : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                    }
+                    <span className="truncate text-sm font-medium text-gray-600">
+                      {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
+                    </span>
                   </div>
+                  {userLocation && nearestName && (
+                    <div className="flex items-center gap-2.5">
+                      <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                      <span className="text-sm text-gray-400">Tu sensor más cercano</span>
+                    </div>
+                  )}
+                  {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
+                    <div className="flex items-center gap-2.5">
+                      <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                      <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
+                    </div>
+                  )}
+                  {userLocation && nearestLat !== null && nearestLon !== null && (
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
+                    >
+                      <Copy className="h-3 w-3 flex-shrink-0" />
+                      {copied ? 'Copiado' : 'Copiar coordenadas'}
+                    </button>
+                  )}
                 </div>
-              )}
+              </div>
 
               {/* Recommendations */}
               <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span><BadgeCheck className="h-3 w-3" /></a>
