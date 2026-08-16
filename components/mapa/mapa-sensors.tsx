@@ -972,7 +972,7 @@ export default function MapaSensors({
       >
         {/* Drag handle + peek summary */}
         <div
-          className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-4"
+          className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-6"
           onClick={handleSheetTap}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
