@@ -55,15 +55,33 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.width = "40px";
   el.style.height = "40px";
   el.style.backgroundColor = bg;
-  el.style.borderRadius = isSima ? "6px" : "50%";
+  el.style.borderRadius = "50%";
   el.style.display = "flex";
   el.style.alignItems = "center";
   el.style.justifyContent = "center";
   el.style.opacity = "0.9";
+  el.style.position = "relative";
+  el.style.overflow = "hidden";
   el.style.boxShadow = isSima
     ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
     : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
-  if (isSima) el.style.transform = "rotate(45deg)";
+
+  if (isSima) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 40 40");
+    svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;";
+    const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line1.setAttribute("x1", "8"); line1.setAttribute("y1", "32");
+    line1.setAttribute("x2", "32"); line1.setAttribute("y2", "8");
+    line1.setAttribute("stroke", "rgba(255,255,255,0.35)"); line1.setAttribute("stroke-width", "2.5");
+    const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line2.setAttribute("x1", "16"); line2.setAttribute("y1", "38");
+    line2.setAttribute("x2", "38"); line2.setAttribute("y2", "16");
+    line2.setAttribute("stroke", "rgba(255,255,255,0.35)"); line2.setAttribute("stroke-width", "2.5");
+    svg.appendChild(line1);
+    svg.appendChild(line2);
+    el.appendChild(svg);
+  }
 
   if (pm25 !== null && pm25 > 0.4) {
     const label = document.createElement("span");
@@ -71,7 +89,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
     label.style.color = textColor;
     label.style.fontSize = "12px";
     label.style.fontWeight = "700";
-    if (isSima) label.style.transform = "rotate(-45deg)";
+    label.style.position = "relative";
     el.appendChild(label);
   }
 
