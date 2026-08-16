@@ -404,7 +404,7 @@ export default function MapaSensors({
         : null;
 
       markerElement.style.cursor = "pointer";
-      markerElement.style.transition = "box-shadow 0.15s ease, transform 0.15s ease";
+      markerElement.style.transition = "box-shadow 0.15s ease";
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
@@ -434,15 +434,11 @@ export default function MapaSensors({
       el.style.boxShadow = source === "sima"
         ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
         : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
-      el.style.transform = "";
-      el.style.zIndex = "";
     });
     if (selectedSensor) {
       const markerData = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
       if (markerData) {
-        markerData.el.style.boxShadow = "0 4px 14px rgba(0,0,0,0.3), 0 0 0 3px white, 0 0 0 5.5px rgba(0,0,0,0.75)";
-        markerData.el.style.transform = "scale(1.2)";
-        markerData.el.style.zIndex = "10";
+        markerData.el.style.boxShadow = "0 4px 14px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 6px rgba(0,0,0,0.8)";
       }
     }
   }, [selectedSensor]);
