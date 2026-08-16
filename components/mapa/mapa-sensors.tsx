@@ -55,7 +55,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.width = "40px";
   el.style.height = "40px";
   el.style.backgroundColor = bg;
-  el.style.borderRadius = isSima ? "10px" : "50%";
+  el.style.borderRadius = isSima ? "6px" : "50%";
   el.style.display = "flex";
   el.style.alignItems = "center";
   el.style.justifyContent = "center";
@@ -63,12 +63,16 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
   el.style.boxShadow = isSima
     ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
     : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
-  el.style.color = textColor;
-  el.style.fontSize = "12px";
-  el.style.fontWeight = "700";
+  if (isSima) el.style.transform = "rotate(45deg)";
 
   if (pm25 !== null && pm25 > 0.4) {
-    el.textContent = Math.round(pm25).toString();
+    const label = document.createElement("span");
+    label.textContent = Math.round(pm25).toString();
+    label.style.color = textColor;
+    label.style.fontSize = "12px";
+    label.style.fontWeight = "700";
+    if (isSima) label.style.transform = "rotate(-45deg)";
+    el.appendChild(label);
   }
 
   return el;
