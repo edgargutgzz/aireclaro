@@ -968,11 +968,6 @@ export default function MapaSensors({
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
-        {/* Quality color tint overlay */}
-        {qualityInfo && (
-          <div className="pointer-events-none absolute inset-0 transition-colors duration-500" style={{ backgroundColor: `${qualityInfo.color}18` }} />
-        )}
-
         {/* Drag handle + peek summary */}
         <div
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-6"
