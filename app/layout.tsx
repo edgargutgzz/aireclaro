@@ -13,6 +13,14 @@ export const metadata: Metadata = {
     default: "Aire Claro — Calidad del Aire en Monterrey",
     template: "%s | Aire Claro",
   },
+  appleWebApp: {
+    capable: true,
+    title: "Aire Claro",
+    statusBarStyle: "default",
+  },
+  icons: {
+    apple: "/apple-touch-icon.png",
+  },
   description:
     "Monitorea en tiempo real la calidad del aire (PM2.5) en Monterrey y Zona Metropolitana. Datos de estaciones SIMA y sensores ciudadanos PurpleAir.",
   keywords: [
