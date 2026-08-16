@@ -991,7 +991,7 @@ export default function MapaSensors({
           {sheetState === 'peek' && (
             <div className="relative mt-3">
               <div
-                className="h-1.5 w-full rounded-full"
+                className="h-1.5 w-full rounded-full opacity-40"
                 style={{
                   background: 'linear-gradient(to right, #00e400 0%, #ffff00 16.7%, #ff7e00 52.7%, #ff0000 86.7%, #8f3f97 100%)',
                 }}
