@@ -337,7 +337,7 @@ export default function MapaSensors({
     if (!userLocation || !map.current) return;
     (map.current as any).flyTo({
       center: [userLocation.longitude, userLocation.latitude],
-      zoom: 13,
+      zoom: 14,
       duration: 1500,
     });
   };
