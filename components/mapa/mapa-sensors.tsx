@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { LocateFixed, GaugeCircle, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User } from "lucide-react";
+import { Navigation, GaugeCircle, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -476,7 +476,7 @@ export default function MapaSensors({
           style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}
           aria-label="Mi ubicación"
         >
-          <LocateFixed className={`h-6 w-6 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          <Navigation className={`h-6 w-6 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
         </button>
       )}
 
@@ -552,7 +552,7 @@ export default function MapaSensors({
                   </div>
                   {userLocation && nearestName && (
                     <div className="flex items-center gap-2.5">
-                      <LocateFixed className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                      <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
                       <span className="text-sm text-gray-400">Tu sensor más cercano</span>
                     </div>
                   )}
@@ -661,7 +661,7 @@ export default function MapaSensors({
           className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] transition-colors hover:bg-gray-50"
           aria-label="Mi ubicación"
         >
-          <LocateFixed className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
         </button>
         <div className="overflow-hidden rounded-lg bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)]">
           <button
@@ -934,7 +934,7 @@ export default function MapaSensors({
           <div className="fixed left-1/2 top-1/2 z-[71] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-xl">
             <div className="mb-4 flex justify-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-                <LocateFixed className="h-6 w-6 text-gray-400" />
+                <Navigation className="h-6 w-6 text-gray-400" />
               </div>
             </div>
             <p className="mb-1.5 text-center text-base font-semibold text-gray-900">Activa tu ubicación</p>
@@ -1026,7 +1026,7 @@ export default function MapaSensors({
                   <div className="flex flex-col gap-3 px-4 py-3">
                     {userLocation && nearestName && (
                       <div className="flex items-center gap-2.5">
-                        <LocateFixed className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
                         <span className="text-sm text-gray-400">Tu sensor más cercano</span>
                       </div>
                     )}
