@@ -1027,7 +1027,7 @@ export default function MapaSensors({
 
         {/* Scrollable content — visible when expanded to mid */}
         <div
-          className="flex-1 overflow-y-auto px-5 pb-8"
+          className={`flex-1 overflow-y-auto px-5 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
         >
           {qualityInfo && (
             <>
