@@ -80,12 +80,6 @@ const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
 };
 
-const hexToRgba = (hex: string, alpha: number): string => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
 
 const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
   const R = 6371;
@@ -787,7 +781,7 @@ export default function MapaSensors({
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
                 onClick={() => setSelectedSensor(null)}
               >
-                <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: hexToRgba(textColor, 0.35) }} />
+                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
               </div>
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
@@ -998,7 +992,7 @@ export default function MapaSensors({
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
           onClick={handleSheetTap}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={qualityInfo ? { backgroundColor: hexToRgba(qualityInfo.textColor, 0.35) } : { backgroundColor: 'rgb(229 231 235)' }} />
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
