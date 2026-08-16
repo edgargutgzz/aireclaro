@@ -548,7 +548,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="text-sm font-medium text-gray-400">Fuente de medición</p>
+          <p className="text-sm font-medium text-gray-400">Capas</p>
         </div>
         <div
           className="flex flex-col gap-3 px-5"
