@@ -277,6 +277,10 @@ export default function MapaSensors({
   const displayPm25 = nearestPm25 ?? areaMedianPm25;
   const qualityInfo = getQualityInfo(displayPm25);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('qualityColorChange', { detail: { color: qualityInfo?.color ?? null } }));
+  }, [qualityInfo]);
+
   // Initialize map once
   useEffect(() => {
     if (map.current) return;
