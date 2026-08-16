@@ -297,7 +297,7 @@ export default function MapaSensors({
         zoom: 12,
         duration: 2000,
         essential: true,
-        padding: isMobile ? { top: 0, bottom: 140, left: 0, right: 0 } : undefined,
+        padding: isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : undefined,
       });
     });
 
@@ -343,7 +343,7 @@ export default function MapaSensors({
       zoom: 14,
       duration: 2000,
       essential: true,
-      padding: isMobile ? { top: 0, bottom: 140, left: 0, right: 0 } : undefined,
+      padding: isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : undefined,
     });
   };
 
