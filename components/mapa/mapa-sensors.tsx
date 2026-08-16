@@ -794,7 +794,7 @@ export default function MapaSensors({
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
               >
-              <div className="mb-5 flex items-center gap-2">
+              <div className="mb-5 flex flex-col items-center gap-2 text-center">
                 <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
                   {sensorQuality ? sensorQuality.label : "—"}
                 </div>
@@ -884,7 +884,7 @@ export default function MapaSensors({
             <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
               <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
                 <div className="mb-5 flex items-start justify-between">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-start gap-2">
                     <div className="text-2xl font-bold leading-tight" style={{ color: textColor }}>
                       {sensorQuality ? sensorQuality.label : "—"}
                     </div>
@@ -1037,7 +1037,7 @@ export default function MapaSensors({
         >
           {qualityInfo && (
             <>
-              <div className="mb-5 flex items-center gap-2">
+              <div className="mb-5 flex flex-col items-center gap-2 text-center">
                 <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
                 </div>
