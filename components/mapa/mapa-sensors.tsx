@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Navigation, Activity, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User } from "lucide-react";
+import { Navigation, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -210,7 +210,6 @@ export default function MapaSensors({
   const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; source: string }>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
-  const [isLegendVisible, setIsLegendVisible] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
@@ -480,13 +479,6 @@ export default function MapaSensors({
             <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
           </button>
           <button
-            onClick={() => setIsLegendVisible(!isLegendVisible)}
-            className="rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200"
-            aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
-          >
-            <Activity className="h-5 w-5 text-gray-700" />
-          </button>
-          <button
             onClick={() => setShowFilters((v) => !v)}
             className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showFilters ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
             aria-label="Filtrar capas"
@@ -551,6 +543,8 @@ export default function MapaSensors({
               <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showPurpleAir ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </div>
           </button>
+          <p className="mt-4 text-sm font-medium text-gray-400">Calidad del aire · PM2.5</p>
+          <LegendContent />
         </div>
       </div>
 
@@ -730,38 +724,6 @@ export default function MapaSensors({
       </div>
 
 
-      {/* Legend backdrop — mobile only */}
-      <div
-        className={`fixed inset-0 z-[46] bg-black/20 transition-opacity duration-300 md:hidden ${
-          isLegendVisible ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        onClick={() => setIsLegendVisible(false)}
-      />
-
-      {/* Legend panel — mobile: slides up from bottom */}
-      <div
-        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
-        style={{
-          transform: isLegendVisible ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
-      >
-        <div
-          className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
-          onClick={() => setIsLegendVisible(false)}
-        >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
-          <p className="text-sm font-medium text-gray-400">Calidad del aire</p>
-        </div>
-        <div
-          className="overflow-y-auto px-5 pt-2"
-          style={{
-            paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)',
-          }}
-        >
-          <LegendContent />
-        </div>
-      </div>
 
       {/* Mobile: sensor info panel — slides up from bottom */}
       <div
