@@ -960,7 +960,7 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden"
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl border border-white/40 bg-white/70 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-xl flex flex-col md:hidden"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
