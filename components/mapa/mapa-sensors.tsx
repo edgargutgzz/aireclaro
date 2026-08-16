@@ -621,7 +621,7 @@ export default function MapaSensors({
                   {qualityInfo.label}
                 </div>
                 {displayPm25 !== null && (
-                  <span className="rounded-full px-3 py-1.5 text-sm font-medium" style={{ backgroundColor: hexToRgba(qualityInfo.color, 0.12), color: qualityInfo.textColor }}>
+                  <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
                     {roundPM25(displayPm25)} μg/m³ · PM2.5
                   </span>
                 )}
@@ -799,7 +799,7 @@ export default function MapaSensors({
                   {sensorQuality ? sensorQuality.label : "—"}
                 </div>
                 {pm25 !== null && (
-                  <span className="rounded-full px-3 py-1.5 text-sm font-medium" style={{ backgroundColor: hexToRgba(color, 0.12), color: textColor }}>
+                  <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
                     {roundPM25(pm25)} μg/m³ · PM2.5
                   </span>
                 )}
@@ -1042,7 +1042,7 @@ export default function MapaSensors({
                   {qualityInfo.label}
                 </div>
                 {displayPm25 !== null && (
-                  <span className="rounded-full px-3 py-1.5 text-sm font-medium" style={{ backgroundColor: hexToRgba(qualityInfo.color, 0.12), color: qualityInfo.textColor }}>
+                  <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
                     {roundPM25(displayPm25)} μg/m³ · PM2.5
                   </span>
                 )}
