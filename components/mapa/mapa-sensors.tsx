@@ -291,11 +291,13 @@ export default function MapaSensors({
 
     map.current.on("load", () => {
       setMapLoaded(true);
+      const isMobile = window.innerWidth < 768;
       (map.current as any).flyTo({
         center: [-100.32098588977951, 25.665],
         zoom: 12,
         duration: 2000,
         essential: true,
+        padding: isMobile ? { top: 0, bottom: 140, left: 0, right: 0 } : undefined,
       });
     });
 
@@ -335,11 +337,13 @@ export default function MapaSensors({
 
   const flyToUser = () => {
     if (!userLocation || !map.current) return;
+    const isMobile = window.innerWidth < 768;
     (map.current as any).flyTo({
       center: [userLocation.longitude, userLocation.latitude],
       zoom: 14,
       duration: 2000,
       essential: true,
+      padding: isMobile ? { top: 0, bottom: 140, left: 0, right: 0 } : undefined,
     });
   };
 
