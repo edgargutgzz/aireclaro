@@ -29,7 +29,7 @@ export default function NavQualityColor() {
       style={{
         top: '-14px',
         height: '14px',
-        background: `linear-gradient(to top, ${hexToRgba(color, 0.45)}, transparent)`,
+        background: `linear-gradient(to top, ${hexToRgba(color, 0.25)}, transparent)`,
       }}
     />
   );
