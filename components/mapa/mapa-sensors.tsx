@@ -559,7 +559,6 @@ export default function MapaSensors({
             className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
               showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
-            style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
           >
             <div className="flex items-center gap-3">
               <div className="h-4 w-4 flex-shrink-0 rounded-full" style={{ backgroundColor: '#9ca3af', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(255,255,255,0.45) 6px, rgba(255,255,255,0.45) 8px)', boxShadow: '0 0 0 1.5px white, 0 0 0 2.5px rgba(0,0,0,0.15)' }} />
