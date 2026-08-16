@@ -454,24 +454,6 @@ export default function MapaSensors({
   useEffect(() => {
     if (!mapLoaded) return;
 
-    if (!document.querySelector("style[data-nearest-pulse]")) {
-      const style = document.createElement("style");
-      style.textContent = `
-        @keyframes nearestPulsePurpleAir {
-          0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white, 0 0 0 2.5px rgba(255,255,255,0.8); }
-          70%  { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white, 0 0 0 12px rgba(255,255,255,0); }
-          100% { box-shadow: 0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white, 0 0 0 2.5px rgba(255,255,255,0); }
-        }
-        @keyframes nearestPulseSima {
-          0%   { box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937, 0 0 0 4.5px rgba(255,255,255,0.8); }
-          70%  { box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937, 0 0 0 14px rgba(255,255,255,0); }
-          100% { box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937, 0 0 0 4.5px rgba(255,255,255,0); }
-        }
-      `;
-      style.setAttribute("data-nearest-pulse", "true");
-      document.head.appendChild(style);
-    }
-
     markerElementsRef.current.forEach(({ el }) => { el.style.animation = ''; });
 
     if (!nearestSensorData) return;
@@ -484,7 +466,34 @@ export default function MapaSensors({
     const markerData = markerElementsRef.current.get(nearestSensor.sensor_id);
     if (!markerData) return;
 
-    markerData.el.style.animation = `${nearestSensorData.isSima ? 'nearestPulseSima' : 'nearestPulsePurpleAir'} 2s ease-out infinite`;
+    const colorInfo = getPM25Color(nearestSensorData.pm25 ?? null);
+    const hex = colorInfo?.bg ?? '#ffffff';
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    const isSima = nearestSensorData.isSima;
+    const baseShadow = isSima
+      ? '0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white, 0 0 0 4.5px #1f2937'
+      : '0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white';
+    const startSpread = isSima ? '4.5px' : '2.5px';
+    const animName = `nearestPulse_${hex.slice(1)}`;
+
+    let styleEl = document.querySelector(`style[data-nearest-pulse="${animName}"]`) as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.textContent = `
+        @keyframes ${animName} {
+          0%   { box-shadow: ${baseShadow}, 0 0 0 ${startSpread} rgba(${r},${g},${b},0.7); }
+          70%  { box-shadow: ${baseShadow}, 0 0 0 14px rgba(${r},${g},${b},0); }
+          100% { box-shadow: ${baseShadow}, 0 0 0 ${startSpread} rgba(${r},${g},${b},0); }
+        }
+      `;
+      styleEl.setAttribute("data-nearest-pulse", animName);
+      document.head.appendChild(styleEl);
+    }
+
+    markerData.el.style.animation = `${animName} 2s ease-out infinite`;
   }, [nearestSensorData, mapLoaded, sensors, showSima, showPurpleAir]);
 
   // Close selected sensor on map click
