@@ -278,8 +278,9 @@ export default function MapaSensors({
   const qualityInfo = getQualityInfo(displayPm25);
 
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent('qualityColorChange', { detail: { color: qualityInfo?.color ?? null } }));
-  }, [qualityInfo]);
+    const color = sheetState === 'mid' ? null : (qualityInfo?.color ?? null);
+    window.dispatchEvent(new CustomEvent('qualityColorChange', { detail: { color } }));
+  }, [qualityInfo, sheetState]);
 
   // Initialize map once
   useEffect(() => {
