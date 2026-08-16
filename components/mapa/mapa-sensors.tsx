@@ -684,8 +684,8 @@ export default function MapaSensors({
       {/* Legend toggle button — mobile only, hidden when sheet is expanded */}
       {sheetState === 'peek' && <button
         onClick={() => setIsLegendVisible(!isLegendVisible)}
-        className="fixed left-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
-        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6rem)' }}
+        className="fixed right-6 z-[45] rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md shadow-sm transition-colors duration-200 md:hidden"
+        style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 9.75rem)' }}
         aria-label={isLegendVisible ? "Ocultar leyenda" : "Mostrar leyenda"}
       >
         <Layers className="h-5 w-5 text-gray-700" />
