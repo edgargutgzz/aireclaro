@@ -561,7 +561,7 @@ export default function MapaSensors({
           <button
             onClick={() => setShowSima((v) => !v)}
             className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
-              showSima ? "border-gray-100 border-l-4 border-l-gray-800 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+              showSima ? "border-gray-100 border-l-2 border-l-gray-800 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
           >
             <div className="flex items-center gap-3">
