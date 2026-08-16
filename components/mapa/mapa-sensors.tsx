@@ -786,7 +786,7 @@ export default function MapaSensors({
           return (
             <>
               <div
-                className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
+                className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
                 onClick={() => setSelectedSensor(null)}
               >
                 <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={{ backgroundColor: hexToRgba(color, 0.3) }} />
@@ -1013,7 +1013,7 @@ export default function MapaSensors({
       >
         {/* Drag handle + peek summary */}
         <div
-          className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-6"
+          className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
           onClick={handleSheetTap}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full" style={qualityInfo ? { backgroundColor: hexToRgba(qualityInfo.color, 0.3) } : { backgroundColor: 'rgb(229 231 235)' }} />
