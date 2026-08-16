@@ -661,12 +661,10 @@ export default function MapaSensors({
                 onClick={() => setShowDesktopRecs(v => !v)}
                 className="mb-3 mt-5 flex w-full items-center justify-between gap-1.5"
               >
-                <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400">
-                  <span>Recomendaciones Oficiales</span>
-                  <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex items-center text-gray-400 hover:text-gray-600 transition-colors">
-                    <BadgeCheck className="h-3 w-3" />
-                  </a>
-                </div>
+                <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                  <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span>
+                  <BadgeCheck className="h-3 w-3" />
+                </a>
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showDesktopRecs ? 'rotate-180' : ''}`} />
               </button>
               {showDesktopRecs && (
@@ -836,7 +834,7 @@ export default function MapaSensors({
               )}
               {sensorQuality && (
                 <>
-                  <p className="mb-3 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400"><span>Recomendaciones Oficiales</span><a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-400 hover:text-gray-600 transition-colors"><BadgeCheck className="h-3 w-3" /></a></p>
+                  <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-3 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span><BadgeCheck className="h-3 w-3" /></a>
                   <div className="mb-5 flex flex-col gap-3">
                     <div className="rounded-xl bg-gray-50 px-4 py-3">
                       <div className="mb-1 flex items-center gap-2">
@@ -930,7 +928,7 @@ export default function MapaSensors({
                 )}
                 {sensorQuality && (
                   <>
-                    <p className="mb-3 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400"><span>Recomendaciones Oficiales</span><a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-400 hover:text-gray-600 transition-colors"><BadgeCheck className="h-3 w-3" /></a></p>
+                    <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-3 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span><BadgeCheck className="h-3 w-3" /></a>
                     <div className="mb-5 flex flex-col gap-3">
                       <div className="rounded-xl bg-gray-50 px-4 py-3">
                         <div className="mb-1 flex items-center gap-2">
@@ -1093,7 +1091,7 @@ export default function MapaSensors({
               )}
 
               {/* Recommendations */}
-              <p className="mb-3 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400"><span>Recomendaciones Oficiales</span><a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-400 hover:text-gray-600 transition-colors"><BadgeCheck className="h-3 w-3" /></a></p>
+              <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-3 mt-7 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span><BadgeCheck className="h-3 w-3" /></a>
               <div className="mb-5 flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
