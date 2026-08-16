@@ -25,8 +25,12 @@ export default function NavQualityColor() {
 
   return (
     <div
-      className="pointer-events-none absolute inset-x-0 top-0 h-px"
-      style={{ boxShadow: `0 0 16px 6px ${hexToRgba(color, 0.45)}` }}
+      className="pointer-events-none absolute inset-x-0"
+      style={{
+        top: '-14px',
+        height: '14px',
+        background: `linear-gradient(to top, ${hexToRgba(color, 0.45)}, transparent)`,
+      }}
     />
   );
 }
