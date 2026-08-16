@@ -1016,10 +1016,9 @@ export default function MapaSensors({
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
           <div className="flex items-center justify-between">
             {sheetState === 'peek' && (
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-                {userLocation && <span className="text-xs text-gray-300">en mi ubicación</span>}
-              </div>
+              <span className="text-sm font-medium text-gray-400">
+                Calidad del aire{userLocation && " en mi ubicación"}
+              </span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
               <span className="text-lg font-bold" style={{ color: qualityInfo.textColor }}>
