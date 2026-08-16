@@ -531,7 +531,7 @@ export default function MapaSensors({
               <Landmark className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
             </div>
-            <div className={`relative h-7 w-12 flex-shrink-0 rounded-full transition-colors duration-300 ${showSima ? 'bg-gray-400' : 'bg-gray-200'}`}>
+            <div className={`relative h-7 w-12 flex-shrink-0 rounded-full transition-colors duration-300 ${showSima ? 'bg-blue-500' : 'bg-gray-200'}`}>
               <span className={`absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform duration-300 ${showSima ? 'translate-x-5' : 'translate-x-0'}`} />
             </div>
           </button>
@@ -545,7 +545,7 @@ export default function MapaSensors({
               <Users className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
             </div>
-            <div className={`relative h-7 w-12 flex-shrink-0 rounded-full transition-colors duration-300 ${showPurpleAir ? 'bg-gray-400' : 'bg-gray-200'}`}>
+            <div className={`relative h-7 w-12 flex-shrink-0 rounded-full transition-colors duration-300 ${showPurpleAir ? 'bg-blue-500' : 'bg-gray-200'}`}>
               <span className={`absolute left-0.5 top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform duration-300 ${showPurpleAir ? 'translate-x-5' : 'translate-x-0'}`} />
             </div>
           </button>
