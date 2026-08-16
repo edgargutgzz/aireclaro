@@ -531,8 +531,8 @@ export default function MapaSensors({
               <Landmark className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
             </div>
-            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showSima ? 'bg-gray-400' : 'bg-gray-200'}`}>
-              <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showSima ? 'translate-x-4' : 'translate-x-0.5'}`} />
+            <div className={`flex h-6 w-11 items-center rounded-full px-0.5 transition-colors duration-200 ${showSima ? 'bg-gray-400' : 'bg-gray-200'}`}>
+              <div className={`h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${showSima ? 'translate-x-5' : 'translate-x-0'}`} />
             </div>
           </button>
           <button
@@ -545,8 +545,8 @@ export default function MapaSensors({
               <Users className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
             </div>
-            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showPurpleAir ? 'bg-gray-400' : 'bg-gray-200'}`}>
-              <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showPurpleAir ? 'translate-x-4' : 'translate-x-0.5'}`} />
+            <div className={`flex h-6 w-11 items-center rounded-full px-0.5 transition-colors duration-200 ${showPurpleAir ? 'bg-gray-400' : 'bg-gray-200'}`}>
+              <div className={`h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${showPurpleAir ? 'translate-x-5' : 'translate-x-0'}`} />
             </div>
           </button>
         </div>
