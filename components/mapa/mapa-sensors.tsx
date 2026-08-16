@@ -496,33 +496,63 @@ export default function MapaSensors({
         </div>
       )}
 
-      {/* Mobile filter pills — visible when showFilters is true */}
-      {showFilters && (
-        <div className="fixed left-0 right-0 z-[44] flex flex-row gap-2 px-4 md:hidden" style={{ top: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}>
+      {/* Layers filter backdrop — mobile only */}
+      <div
+        className={`fixed inset-0 z-[46] bg-black/20 transition-opacity duration-300 md:hidden ${
+          showFilters ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setShowFilters(false)}
+      />
+
+      {/* Layers filter panel — mobile: slides up from bottom */}
+      <div
+        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        style={{
+          transform: showFilters ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+      >
+        <div
+          className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
+          onClick={() => setShowFilters(false)}
+        >
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-200" />
+          <p className="text-sm font-medium text-gray-400">Capas</p>
+        </div>
+        <div
+          className="flex flex-col gap-3 px-5"
+          style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
+        >
           <button
             onClick={() => setShowSima((v) => !v)}
-            className={`flex-1 rounded-full px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-              showSima ? "border-2 border-gray-900 bg-white/80 text-gray-900 shadow-sm" : "border-2 border-white/20 bg-white/20 text-white/60"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
+              showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
           >
-            <div className="flex items-center justify-center gap-1.5">
-              <Landmark className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium">Estación SIMA</span>
+            <div className="flex items-center gap-3">
+              <Landmark className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
+            </div>
+            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showSima ? 'bg-gray-900' : 'bg-gray-200'}`}>
+              <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showSima ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </div>
           </button>
           <button
             onClick={() => setShowPurpleAir((v) => !v)}
-            className={`flex-1 rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-200 ${
-              showPurpleAir ? "border-white/60 bg-white/80 text-gray-900 shadow-sm" : "border-white/20 bg-white/20 text-white/60"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
+              showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
           >
-            <div className="flex items-center justify-center gap-1.5">
-              <Users className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium">Sensor Ciudadano</span>
+            <div className="flex items-center gap-3">
+              <Users className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+            </div>
+            <div className={`h-5 w-9 rounded-full transition-colors duration-200 ${showPurpleAir ? 'bg-gray-900' : 'bg-gray-200'}`}>
+              <div className={`mt-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${showPurpleAir ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </div>
           </button>
         </div>
-      )}
+      </div>
 
       {/* Desktop left area — quality card + filter pills beside it */}
       <div className="pointer-events-none absolute left-6 top-[5rem] z-10 hidden items-start gap-2 md:flex">
