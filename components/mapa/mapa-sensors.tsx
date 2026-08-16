@@ -360,22 +360,8 @@ export default function MapaSensors({
       background: #3b82f6;
       border: 2px solid white;
       border-radius: 50%;
-      box-shadow: 0 0 0 rgba(59, 130, 246, 0.4);
-      animation: pulsate 2s ease-out infinite;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
     `;
-
-    if (!document.querySelector("style[data-user-marker]")) {
-      const style = document.createElement("style");
-      style.textContent = `
-        @keyframes pulsate {
-          0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
-          70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-        }
-      `;
-      style.setAttribute("data-user-marker", "true");
-      document.head.appendChild(style);
-    }
 
     new Marker({ element: userMarkerElement })
       .setLngLat([userLocation.longitude, userLocation.latitude])
