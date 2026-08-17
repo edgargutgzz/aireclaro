@@ -227,7 +227,6 @@ export default function MapaSensors({
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
-  const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
 
   const nearestSensorData = useMemo(() => {
     if (!userLocation || !sensors.length || !data.length) return null;
@@ -615,10 +614,8 @@ export default function MapaSensors({
                   </span>
                 )}
               </div>
-              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
-              </button>
-              <div className="mb-5 flex flex-col gap-3">
+              <p className="mb-4 mt-10 text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
+              <div className="mb-3 flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
                     <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
@@ -641,6 +638,7 @@ export default function MapaSensors({
                   </div>
                 ))}
               </div>
+              <p className="mb-5 text-xs text-gray-400">Fuente: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
               <button onClick={() => setShowNearestDetail(v => !v)} className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3">
                 <div className="flex min-w-0 items-center gap-2">
                   {userLocation && nearestName
@@ -750,10 +748,8 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                      <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
-                    </button>
-                    <div className="mb-5 flex flex-col gap-3">
+                    <p className="mb-4 mt-10 text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
+                    <div className="mb-3 flex flex-col gap-3">
                       <div className="rounded-xl bg-gray-50 px-4 py-3">
                         <div className="mb-1 flex items-center gap-2">
                           <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
@@ -776,6 +772,7 @@ export default function MapaSensors({
                         </div>
                       ))}
                     </div>
+                    <p className="mb-5 text-xs text-gray-400">Fuente: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
                   </>
                 )}
               </div>
@@ -912,10 +909,8 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                    <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
-                  </button>
-                  <div className="mb-5 flex flex-col gap-3">
+                  <p className="mb-4 mt-10 text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
+                  <div className="mb-3 flex flex-col gap-3">
                     <div className="rounded-xl bg-gray-50 px-4 py-3">
                       <div className="mb-1 flex items-center gap-2">
                         <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
@@ -938,6 +933,7 @@ export default function MapaSensors({
                       </div>
                     ))}
                   </div>
+                  <p className="mb-5 text-xs text-gray-400">Fuente: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
                 </>
               )}
             </div>
@@ -1076,10 +1072,8 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
-              </button>
-              <div className="mb-5 flex flex-col gap-3">
+              <p className="mb-4 mt-10 text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
+              <div className="mb-3 flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
                     <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
@@ -1102,38 +1096,13 @@ export default function MapaSensors({
                   </div>
                 ))}
               </div>
+              <p className="mb-5 text-xs text-gray-400">Fuente: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
 
             </>
           )}
         </div>
       </div>
 
-      {/* ¿Cómo cuidarme? info popup */}
-      {cuidarmeQuality && (
-        <>
-          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setCuidarmeQuality(null)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-xl">
-            <p className="text-center text-sm leading-relaxed text-gray-500">
-              Las recomendaciones provienen de la Norma Oficial Mexicana{' '}
-              <a
-                href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 text-gray-600 hover:text-gray-800"
-              >
-                NOM-172-SEMARNAT-2023
-              </a>
-              {' '}sobre calidad del aire y salud.
-            </p>
-            <button
-              onClick={() => setCuidarmeQuality(null)}
-              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
-            >
-              Entendido
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 }
