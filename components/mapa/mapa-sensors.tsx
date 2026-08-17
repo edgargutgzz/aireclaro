@@ -601,7 +601,7 @@ export default function MapaSensors({
 
         {/* Quality card */}
         {qualityInfo && (
-          <div className="pointer-events-auto overflow-hidden rounded-2xl shadow-sm" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}99 0%, transparent 30%)` }}>
+          <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
             <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
               <div className="mb-5 flex flex-col items-center gap-2">
                 <div className="text-2xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
@@ -696,7 +696,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto w-[300px] overflow-hidden rounded-2xl shadow-sm" style={{ background: `linear-gradient(to bottom, ${color}99 0%, transparent 30%)` }}>
+            <div className="pointer-events-auto w-[300px] overflow-hidden rounded-2xl bg-white shadow-sm">
               <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
                 <div className="mb-5">
                   <div className="mb-2 flex items-center justify-between">
@@ -839,13 +839,12 @@ export default function MapaSensors({
 
       {/* Mobile: sensor info panel — slides up from bottom */}
       <div
-        className="fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        className="fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
           transform: selectedSensor ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-          background: selectedSensor ? `linear-gradient(to bottom, ${selectedSensor.color}99 0%, transparent 35%)` : 'white',
         }}
       >
         {selectedSensor && (() => {
@@ -979,13 +978,12 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden overflow-hidden"
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden overflow-hidden"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
           transform: sheetTransform,
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-          background: qualityInfo && sheetState === 'mid' ? `linear-gradient(to bottom, ${qualityInfo.color}99 0%, transparent 35%)` : 'white',
         }}
       >
         {/* Drag handle + peek summary */}
