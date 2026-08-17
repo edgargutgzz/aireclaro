@@ -1034,12 +1034,6 @@ export default function MapaSensors({
                   <span className="truncate">
                     {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
                   </span>
-                  {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
-                    <>
-                      <span className="flex-shrink-0">·</span>
-                      <span className="flex-shrink-0">{userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
-                    </>
-                  )}
                   <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
                 </button>
                 {showNearestDetail && (
