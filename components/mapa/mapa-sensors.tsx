@@ -107,8 +107,6 @@ interface QualityInfo {
   };
 }
 
-const isBadQuality = (info: QualityInfo | null) =>
-  !!info && info.label !== 'Buena' && info.label !== 'Aceptable';
 
 const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
@@ -613,7 +611,7 @@ export default function MapaSensors({
                   {qualityInfo.label}
                 </div>
                 {displayPm25 !== null && (
-                  <span className="text-sm" style={{ color: qualityInfo.textColor, opacity: 0.7 }}>
+                  <span className="text-sm text-gray-400">
                     {roundPM25(displayPm25)} μg/m³ · PM2.5
                   </span>
                 )}
@@ -711,7 +709,7 @@ export default function MapaSensors({
                         {sensorQuality ? sensorQuality.label : "—"}
                       </div>
                       {pm25 !== null && (
-                        <span className="text-sm" style={{ color: sensorQuality?.textColor ?? '#9ca3af', opacity: 0.7 }}>
+                        <span className="text-sm text-gray-400">
                           {roundPM25(pm25)} μg/m³ · PM2.5
                         </span>
                       )}
@@ -722,8 +720,7 @@ export default function MapaSensors({
                   </div>
                   <button
                     onClick={() => setShowSensorDetail(v => !v)}
-                    className="flex min-w-0 w-full items-center gap-1.5 text-sm"
-                    style={{ color: sensorQuality?.textColor ?? '#9ca3af', opacity: 0.7 }}
+                    className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                   >
                     {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
                     <span className="truncate">{sensorName}</span>
@@ -879,7 +876,7 @@ export default function MapaSensors({
                     {sensorQuality ? sensorQuality.label : "—"}
                   </div>
                   {pm25 !== null && (
-                    <span className="text-sm" style={{ color: sensorQuality?.textColor ?? '#9ca3af', opacity: 0.7 }}>
+                    <span className="text-sm text-gray-400">
                       {roundPM25(pm25)} μg/m³ · PM2.5
                     </span>
                   )}
@@ -1034,15 +1031,14 @@ export default function MapaSensors({
                     {qualityInfo.label}
                   </div>
                   {displayPm25 !== null && (
-                    <span className="text-sm" style={{ color: qualityInfo.textColor, opacity: 0.7 }}>
+                    <span className="text-sm text-gray-400">
                       {roundPM25(displayPm25)} μg/m³ · PM2.5
                     </span>
                   )}
                 </div>
                 <button
                   onClick={() => setShowNearestDetail(v => !v)}
-                  className="flex min-w-0 w-full items-center gap-1.5 text-sm"
-                  style={{ color: qualityInfo.textColor, opacity: 0.7 }}
+                  className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                 >
                   {userLocation && nearestName
                     ? (nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />)
