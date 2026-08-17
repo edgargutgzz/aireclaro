@@ -993,9 +993,6 @@ export default function MapaSensors({
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
-        {qualityInfo && sheetState === 'mid' && (
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-40" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}55, transparent)` }} />
-        )}
         {/* Drag handle + peek summary */}
         <div
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
