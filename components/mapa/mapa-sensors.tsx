@@ -631,7 +631,7 @@ export default function MapaSensors({
                   </div>
                 ))}
               </div>
-              <p className="mb-5 text-xs text-gray-400">Fuente: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
+              <p className="mb-5 text-xs text-gray-400">Recomendaciones oficiales: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
               <button onClick={() => setShowNearestDetail(v => !v)} className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3">
                 <div className="flex min-w-0 items-center gap-2">
                   {userLocation && nearestName
@@ -758,7 +758,7 @@ export default function MapaSensors({
                         </div>
                       ))}
                     </div>
-                    <p className="mb-5 text-xs text-gray-400">Fuente: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
+                    <p className="mb-5 text-xs text-gray-400">Recomendaciones oficiales: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
                   </>
                 )}
               </div>
@@ -912,7 +912,7 @@ export default function MapaSensors({
                       </div>
                     ))}
                   </div>
-                  <p className="mb-5 text-xs text-gray-400">Fuente: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
+                  <p className="mb-5 text-xs text-gray-400">Recomendaciones oficiales: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
                 </>
               )}
             </div>
@@ -1068,7 +1068,7 @@ export default function MapaSensors({
                   </div>
                 ))}
               </div>
-              <p className="mb-5 text-xs text-gray-400">Fuente: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
+              <p className="mb-5 text-xs text-gray-400">Recomendaciones oficiales: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
 
             </>
           )}
