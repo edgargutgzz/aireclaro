@@ -754,17 +754,21 @@ export default function MapaSensors({
         <div className="pointer-events-auto flex flex-col gap-2">
           <button
             onClick={userLocation ? flyToUser : requestLocation}
-            className="flex h-10 w-full items-center justify-center rounded-lg bg-white shadow-sm transition-colors hover:bg-gray-50"
-            aria-label="Mi ubicación"
+            className="flex h-10 w-full items-center gap-3 rounded-lg bg-white px-4 shadow-sm transition-colors hover:bg-gray-50"
           >
-            <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+            <Navigation className={`h-4 w-4 flex-shrink-0 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+            <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
+              {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
+            </span>
           </button>
           <button
             onClick={() => setShowFilters((v) => !v)}
-            className={`flex h-10 w-full items-center justify-center rounded-lg shadow-sm transition-colors hover:bg-gray-50 ${showFilters ? 'bg-gray-100' : 'bg-white'}`}
-            aria-label="Filtrar capas"
+            className={`flex h-10 w-full items-center gap-3 rounded-lg px-4 shadow-sm transition-colors hover:bg-gray-50 ${showFilters ? 'bg-gray-100' : 'bg-white'}`}
           >
-            <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
+            <Layers className={`h-4 w-4 flex-shrink-0 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
+            <span className={`text-sm font-medium ${showFilters ? 'text-gray-900' : 'text-gray-700'}`}>
+              {showFilters ? 'Ocultar capas' : 'Mostrar capas'}
+            </span>
           </button>
         </div>
 
