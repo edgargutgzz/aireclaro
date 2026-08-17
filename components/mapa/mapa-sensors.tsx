@@ -591,7 +591,7 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute left-6 top-[5rem] z-10 hidden items-start gap-2 md:flex">
 
         {/* Left column: quality card + legend panel + buttons */}
-        <div className="flex w-[360px] flex-col gap-2">
+        <div className="flex w-[300px] flex-col gap-2">
 
         {/* Quality card */}
         {qualityInfo && (
@@ -717,6 +717,96 @@ export default function MapaSensors({
         </div>
 
         </div>{/* end left column */}
+
+        {/* Column 2: selected sensor */}
+        {selectedSensor && (() => {
+          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+          const isSima = sensor.source === "sima";
+          const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+          const sensorQuality = getQualityInfo(pm25);
+          return (
+            <div className="pointer-events-auto w-[300px] overflow-hidden rounded-2xl bg-white shadow-sm">
+              <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
+                <div className="mb-5 flex items-center justify-between">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <div className="text-2xl font-bold leading-tight" style={{ color: textColor }}>
+                      {sensorQuality ? sensorQuality.label : "—"}
+                    </div>
+                    {pm25 !== null && (
+                      <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
+                        {roundPM25(pm25)} μg/m³ · PM2.5
+                      </span>
+                    )}
+                  </div>
+                  <button onClick={() => setSelectedSensor(null)} className="ml-2 flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowSensorDetail(v => !v)}
+                  className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
+                >
+                  <div className="flex min-w-0 items-center gap-2">
+                    {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
+                    <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
+                  </div>
+                  <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
+                </button>
+                {showSensorDetail && (
+                  <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
+                    <div className="flex flex-col gap-3 px-4 py-3">
+                      {timestamp && (
+                        <div className="flex items-center gap-2.5">
+                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1500);
+                        }}
+                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
+                      >
+                        <Copy className="h-3 w-3 flex-shrink-0" />
+                        {copied ? 'Copiado' : 'Copiar coordenadas'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {sensorQuality && (
+                  <>
+                    <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span><BadgeCheck className="h-3 w-3" /></a>
+                    <div className="mb-5 flex flex-col gap-4">
+                      <div className="rounded-xl bg-gray-50 px-4 py-3">
+                        <div className="mb-1 flex items-center gap-2">
+                          <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                          <p className="text-sm font-semibold text-gray-700">Población General</p>
+                        </div>
+                        <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
+                      </div>
+                      {[
+                        { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
+                        { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: Glasses },
+                        { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
+                        { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                      ].map(({ label, rec, Icon }) => (
+                        <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
+                          <div className="mb-1 flex items-center gap-2">
+                            <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                            <p className="text-sm font-semibold text-gray-700">{label}</p>
+                          </div>
+                          <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Filter pills */}
         <div className="pointer-events-auto mt-4 flex gap-2">
@@ -873,100 +963,6 @@ export default function MapaSensors({
         })()}
       </div>
 
-      {/* Desktop: right column — sensor detail + recommendation */}
-      <div className="pointer-events-none fixed right-6 top-[5rem] z-[48] hidden w-[300px] flex-col gap-2 md:flex">
-
-        {/* Sensor detail card */}
-        {selectedSensor && (() => {
-          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
-          const isSima = sensor.source === "sima";
-          const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-          const sensorQuality = getQualityInfo(pm25);
-          return (
-            <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white shadow-sm">
-              <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
-                <div className="mb-5 flex items-center justify-between">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <div className="text-2xl font-bold leading-tight" style={{ color: textColor }}>
-                      {sensorQuality ? sensorQuality.label : "—"}
-                    </div>
-                    {pm25 !== null && (
-                      <span className="rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500">
-                        {roundPM25(pm25)} μg/m³ · PM2.5
-                      </span>
-                    )}
-                  </div>
-                  <button onClick={() => setSelectedSensor(null)} className="ml-2 flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600">
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-                <button
-                  onClick={() => setShowSensorDetail(v => !v)}
-                  className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3"
-                >
-                  <div className="flex min-w-0 items-center gap-2">
-                    {isSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />}
-                    <span className="truncate text-sm font-medium text-gray-600">{sensorName}</span>
-                  </div>
-                  <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
-                </button>
-                {showSensorDetail && (
-                  <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
-                    <div className="flex flex-col gap-3 px-4 py-3">
-                      {timestamp && (
-                        <div className="flex items-center gap-2.5">
-                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
-                        </div>
-                      )}
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                      >
-                        <Copy className="h-3 w-3 flex-shrink-0" />
-                        {copied ? 'Copiado' : 'Copiar coordenadas'}
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {sensorQuality && (
-                  <>
-                    <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span><BadgeCheck className="h-3 w-3" /></a>
-                    <div className="mb-5 flex flex-col gap-4">
-                      <div className="rounded-xl bg-gray-50 px-4 py-3">
-                        <div className="mb-1 flex items-center gap-2">
-                          <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                          <p className="text-sm font-semibold text-gray-700">Población General</p>
-                        </div>
-                        <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
-                      </div>
-                      {[
-                        { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
-                        { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: Glasses },
-                        { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
-                        { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                      ].map(({ label, rec, Icon }) => (
-                        <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                          <div className="mb-1 flex items-center gap-2">
-                            <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                            <p className="text-sm font-semibold text-gray-700">{label}</p>
-                          </div>
-                          <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          );
-        })()}
-
-      </div>
 
       {/* Location denied modal — centered, both mobile and desktop */}
       {showLocationTip && (
