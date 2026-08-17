@@ -602,7 +602,7 @@ export default function MapaSensors({
         {/* Quality card */}
         {qualityInfo && (
           <div className="pointer-events-auto relative overflow-hidden rounded-2xl bg-white shadow-sm">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-24" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}55, transparent)` }} />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-40" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}55, transparent)` }} />
             <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
               <div className="mb-5 flex flex-col items-center gap-2">
                 <div className="text-2xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
@@ -856,7 +856,7 @@ export default function MapaSensors({
           const sensorQuality = getQualityInfo(pm25);
           return (
             <>
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-28 z-10" style={{ background: `linear-gradient(to bottom, ${color}55, transparent)` }} />
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-40 z-10" style={{ background: `linear-gradient(to bottom, ${color}55, transparent)` }} />
               <div
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
                 onClick={() => setSelectedSensor(null)}
@@ -990,7 +990,7 @@ export default function MapaSensors({
         }}
       >
         {qualityInfo && sheetState === 'mid' && (
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-28 z-10" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}55, transparent)` }} />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-40 z-10" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}55, transparent)` }} />
         )}
         {/* Drag handle + peek summary */}
         <div
