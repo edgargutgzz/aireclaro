@@ -751,17 +751,17 @@ export default function MapaSensors({
         )}
 
         {/* Action buttons */}
-        <div className="pointer-events-auto flex gap-2">
+        <div className="pointer-events-auto flex flex-col gap-2">
           <button
             onClick={userLocation ? flyToUser : requestLocation}
-            className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm transition-colors hover:bg-gray-50"
+            className="flex h-10 w-full items-center justify-center rounded-lg bg-white shadow-sm transition-colors hover:bg-gray-50"
             aria-label="Mi ubicación"
           >
             <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
           </button>
           <button
             onClick={() => setShowFilters((v) => !v)}
-            className={`flex h-10 w-10 items-center justify-center rounded-lg shadow-sm transition-colors hover:bg-gray-50 ${showFilters ? 'bg-gray-100' : 'bg-white'}`}
+            className={`flex h-10 w-full items-center justify-center rounded-lg shadow-sm transition-colors hover:bg-gray-50 ${showFilters ? 'bg-gray-100' : 'bg-white'}`}
             aria-label="Filtrar capas"
           >
             <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
