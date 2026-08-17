@@ -1025,7 +1025,7 @@ export default function MapaSensors({
                 </div>
                 <button
                   onClick={() => setShowNearestDetail(v => !v)}
-                  className="flex min-w-0 w-full items-center gap-1.5 text-xs text-gray-400"
+                  className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                 >
                   {userLocation && nearestName
                     ? (nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />)
