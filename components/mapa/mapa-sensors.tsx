@@ -807,28 +807,43 @@ export default function MapaSensors({
           );
         })()}
 
-        {/* Filter pills */}
-        <div className="pointer-events-auto mt-4 flex gap-2">
+      </div>
+
+      {/* Desktop filter panel — above layers button */}
+      {showFilters && (
+        <div className="pointer-events-auto absolute bottom-[13.5rem] right-8 z-10 hidden w-[220px] flex-col gap-3 rounded-2xl bg-white p-4 shadow-lg md:flex">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Capas</p>
           <button
             onClick={() => setShowSima((v) => !v)}
-            className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
-              showSima ? "border border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-200 ${
+              showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
+            style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
           >
-            <Landmark className="h-3.5 w-3.5" />
-            Estación SIMA
+            <div className="flex items-center gap-3">
+              <Landmark className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
+            </div>
+            <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showSima ? '#3b82f6' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+              <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(16px)' : 'translateX(0)' }} />
+            </div>
           </button>
           <button
             onClick={() => setShowPurpleAir((v) => !v)}
-            className={`flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium backdrop-blur-md shadow-sm transition-all duration-200 ${
-              showPurpleAir ? "border border-gray-900 bg-white/90 text-gray-900" : "border border-white/60 bg-white/60 text-gray-500 hover:bg-white/80"
+            className={`flex items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-200 ${
+              showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
             }`}
           >
-            <Users className="h-3.5 w-3.5" />
-            Sensor Ciudadano
+            <div className="flex items-center gap-3">
+              <Users className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+            </div>
+            <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showPurpleAir ? '#3b82f6' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+              <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(16px)' : 'translateX(0)' }} />
+            </div>
           </button>
         </div>
-      </div>
+      )}
 
       {/* Desktop zoom + locate buttons — bottom-right */}
       <div className="pointer-events-auto absolute bottom-8 right-8 z-10 hidden flex-col gap-2 md:flex">
@@ -838,6 +853,13 @@ export default function MapaSensors({
           aria-label="Mi ubicación"
         >
           <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+        </button>
+        <button
+          onClick={() => setShowFilters((v) => !v)}
+          className={`flex h-10 w-10 items-center justify-center rounded-lg shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)] transition-colors hover:bg-gray-50 ${showFilters ? 'bg-gray-100' : 'bg-white'}`}
+          aria-label="Filtrar capas"
+        >
+          <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
         </button>
         <div className="overflow-hidden rounded-lg bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)]">
           <button
