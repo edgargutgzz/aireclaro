@@ -861,22 +861,6 @@ export default function MapaSensors({
         >
           <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
         </button>
-        <div className="overflow-hidden rounded-lg bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.1),0_1px_4px_rgba(0,0,0,0.18)]">
-          <button
-            onClick={() => (map.current as any)?.zoomIn()}
-            className="flex h-10 w-10 items-center justify-center border-b border-gray-200 text-gray-700 transition-colors hover:bg-gray-50"
-            aria-label="Acercar"
-          >
-            <span className="text-xl font-light leading-none">+</span>
-          </button>
-          <button
-            onClick={() => (map.current as any)?.zoomOut()}
-            className="flex h-10 w-10 items-center justify-center text-gray-700 transition-colors hover:bg-gray-50"
-            aria-label="Alejar"
-          >
-            <span className="text-xl font-light leading-none">−</span>
-          </button>
-        </div>
       </div>
 
 
