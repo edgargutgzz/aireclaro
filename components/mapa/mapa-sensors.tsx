@@ -226,6 +226,7 @@ export default function MapaSensors({
   const [showQualitySource, setShowQualitySource] = useState(false);
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
   const [desktopCardOpen, setDesktopCardOpen] = useState(false);
+  const [desktopSensitiveOpen, setDesktopSensitiveOpen] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
 
@@ -631,7 +632,14 @@ export default function MapaSensors({
                     <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                     <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                   </div>
-                  {[
+                  <button
+                    onClick={() => setDesktopSensitiveOpen(v => !v)}
+                    className="flex w-full items-center justify-between rounded-xl bg-gray-50 px-4 py-3"
+                  >
+                    <span className="text-sm font-medium text-gray-600">Grupos sensibles</span>
+                    <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${desktopSensitiveOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {desktopSensitiveOpen && [
                     { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores },
                     { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
                     { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
