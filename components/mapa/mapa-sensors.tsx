@@ -5,8 +5,6 @@ import { Navigation, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, Hea
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
-import Image from "next/image";
-import Link from "next/link";
 import Navlinks from "@/components/navbar/navlinks";
 
 // Initialize Mapbox
@@ -596,15 +594,10 @@ export default function MapaSensors({
         {/* Left column: logo + nav + quality card + legend */}
         <div className="flex w-[300px] flex-col gap-2">
 
-        {/* Logo + Nav */}
+        {/* Nav */}
         <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white px-4 py-3 shadow-sm">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <Image src="/aireclaro-logo.png" alt="Aire Claro" width={130} height={21} className="h-auto" priority />
-            </Link>
-            <div className="flex items-center">
-              <Navlinks />
-            </div>
+          <div className="flex items-center gap-2">
+            <Navlinks />
           </div>
         </div>
 
