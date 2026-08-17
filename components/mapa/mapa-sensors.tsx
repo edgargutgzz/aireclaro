@@ -856,7 +856,7 @@ export default function MapaSensors({
           const sensorQuality = getQualityInfo(pm25);
           return (
             <>
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-40 z-10" style={{ background: `linear-gradient(to bottom, ${color}55, transparent)` }} />
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-40" style={{ background: `linear-gradient(to bottom, ${color}55, transparent)` }} />
               <div
                 className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
                 onClick={() => setSelectedSensor(null)}
@@ -990,7 +990,7 @@ export default function MapaSensors({
         }}
       >
         {qualityInfo && sheetState === 'mid' && (
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-40 z-10" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}55, transparent)` }} />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-40" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}55, transparent)` }} />
         )}
         {/* Drag handle + peek summary */}
         <div
