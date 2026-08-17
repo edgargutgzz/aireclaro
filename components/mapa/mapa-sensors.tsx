@@ -614,8 +614,7 @@ export default function MapaSensors({
                   </span>
                 )}
               </div>
-              <p className="mb-4 mt-10 text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
-              <div className="mb-3 flex flex-col gap-3">
+              <div className="mb-3 mt-10 flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
                     <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
@@ -748,8 +747,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <p className="mb-4 mt-10 text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
-                    <div className="mb-3 flex flex-col gap-3">
+                    <div className="mb-3 mt-10 flex flex-col gap-3">
                       <div className="rounded-xl bg-gray-50 px-4 py-3">
                         <div className="mb-1 flex items-center gap-2">
                           <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
@@ -909,8 +907,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <p className="mb-4 mt-10 text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
-                  <div className="mb-3 flex flex-col gap-3">
+                  <div className="mb-3 mt-10 flex flex-col gap-3">
                     <div className="rounded-xl bg-gray-50 px-4 py-3">
                       <div className="mb-1 flex items-center gap-2">
                         <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
@@ -1072,8 +1069,7 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <p className="mb-4 mt-10 text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
-              <div className="mb-3 flex flex-col gap-3">
+              <div className="mb-3 mt-10 flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
                     <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
