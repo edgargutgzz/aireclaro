@@ -595,7 +595,7 @@ export default function MapaSensors({
         <div className="flex w-[300px] flex-col gap-2">
 
         {/* Nav */}
-        <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
+        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
           <div className="flex w-full items-center justify-around px-4 py-3">
             <Navlinks />
           </div>
@@ -603,7 +603,7 @@ export default function MapaSensors({
 
         {/* Quality card */}
         {qualityInfo && (
-          <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
             {/* Peek header — always visible, click to toggle */}
             <div
               className="cursor-pointer select-none px-5 pt-4 pb-3"
@@ -716,7 +716,7 @@ export default function MapaSensors({
 
         {/* Filter panel */}
         {showFilters && (
-          <div className="pointer-events-auto flex flex-col gap-3 rounded-2xl bg-white p-4 shadow-sm">
+          <div className="pointer-events-auto flex flex-col gap-3 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
             <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Capas</p>
             <button
               onClick={() => setShowSima((v) => !v)}
@@ -754,7 +754,7 @@ export default function MapaSensors({
         <div className="pointer-events-auto flex flex-col gap-2">
           <button
             onClick={userLocation ? flyToUser : requestLocation}
-            className="flex h-10 w-full items-center gap-3 rounded-lg bg-white px-4 shadow-sm transition-colors hover:bg-gray-50"
+            className="flex h-10 w-full items-center gap-3 rounded-lg border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           >
             <Navigation className={`h-4 w-4 flex-shrink-0 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
             <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
@@ -763,7 +763,7 @@ export default function MapaSensors({
           </button>
           <button
             onClick={() => setShowFilters((v) => !v)}
-            className={`flex h-10 w-full items-center gap-3 rounded-lg px-4 shadow-sm transition-colors hover:bg-gray-50 ${showFilters ? 'bg-gray-100' : 'bg-white'}`}
+            className={`flex h-10 w-full items-center gap-3 rounded-lg border border-white/60 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 ${showFilters ? 'bg-white/90' : 'bg-white/80'}`}
           >
             <Layers className={`h-4 w-4 flex-shrink-0 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
             <span className={`text-sm font-medium ${showFilters ? 'text-gray-900' : 'text-gray-700'}`}>
@@ -781,7 +781,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto w-[300px] overflow-hidden rounded-2xl bg-white shadow-sm">
+            <div className="pointer-events-auto w-[300px] overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
               <div className="relative z-[1] overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
                 <div className="mb-5">
                   <div className="mb-2 flex items-center justify-between">
