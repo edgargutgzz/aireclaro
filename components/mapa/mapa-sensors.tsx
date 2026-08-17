@@ -714,17 +714,8 @@ export default function MapaSensors({
           </div>
         )}
 
-        {/* Legend panel — always visible on desktop */}
-        <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
-          <div className="px-4 pt-3 pb-1">
-            <span className="text-xs font-medium uppercase tracking-wide text-gray-400">Leyenda</span>
-          </div>
-          <div className="p-3">
-            <LegendContent />
-          </div>
-        </div>
 
-        </div>{/* end left column */}
+</div>{/* end left column */}
 
         {/* Column 2: selected sensor */}
         {selectedSensor && (() => {
