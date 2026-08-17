@@ -618,7 +618,7 @@ export default function MapaSensors({
                   </span>
                 )}
               </div>
-              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                 <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
               </button>
               <div className="mb-5 flex flex-col gap-3">
@@ -754,7 +754,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 mt-6 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                    <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                       <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
                     </button>
                     <div className="mb-5 flex flex-col gap-3">
@@ -917,7 +917,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 mt-6 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
                   </button>
                   <div className="mb-5 flex flex-col gap-3">
@@ -1084,7 +1084,7 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 mt-6 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                 <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
               </button>
               <div className="mb-5 flex flex-col gap-3">
