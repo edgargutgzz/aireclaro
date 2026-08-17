@@ -614,7 +614,7 @@ export default function MapaSensors({
                   </span>
                 )}
               </div>
-              <div className="mb-3 mt-10 flex flex-col gap-4">
+              <div className="mb-3 mt-8 flex flex-col gap-4">
                 <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                   <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
@@ -741,7 +741,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <div className="mb-3 mt-10 flex flex-col gap-4">
+                    <div className="mb-3 mt-8 flex flex-col gap-4">
                       <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.textColor }}>
                         <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                         <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
@@ -895,7 +895,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="mb-3 mt-10 flex flex-col gap-4">
+                  <div className="mb-3 mt-8 flex flex-col gap-4">
                     <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.textColor }}>
                       <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                       <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
@@ -1051,7 +1051,7 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <div className="mb-3 mt-10 flex flex-col gap-4">
+              <div className="mb-3 mt-8 flex flex-col gap-4">
                 <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                   <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
