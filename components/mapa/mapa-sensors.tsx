@@ -603,7 +603,7 @@ export default function MapaSensors({
         {qualityInfo && (
           <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
             <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
-              <div className="mb-5 flex flex-col items-center gap-2">
+              <div className="-mx-4 -mt-4 mb-5 px-4 pt-4 pb-4 flex flex-col items-center gap-2" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}20, transparent)` }}>
                 <div className="text-2xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
                 </div>
@@ -698,7 +698,7 @@ export default function MapaSensors({
           return (
             <div className="pointer-events-auto w-[300px] overflow-hidden rounded-2xl bg-white shadow-sm">
               <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
-                <div className="mb-5">
+                <div className="-mx-4 -mt-4 mb-5 px-4 pt-4 pb-4" style={{ background: `linear-gradient(to bottom, ${color}20, transparent)` }}>
                   <div className="mb-2 flex items-center justify-between">
                     <div className="flex min-w-0 items-center gap-2">
                       <div className="text-2xl font-bold leading-tight" style={{ color: textColor }}>
@@ -863,7 +863,7 @@ export default function MapaSensors({
               <div
                 className="flex-1 overflow-y-auto px-5 pb-8"
               >
-              <div className="mb-5">
+              <div className="-mx-5 mb-5 px-5 pt-5 pb-4" style={{ background: `linear-gradient(to bottom, ${color}20, transparent)` }}>
                 <div className="mb-2 flex items-center gap-2">
                   <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
@@ -1012,7 +1012,7 @@ export default function MapaSensors({
         >
           {qualityInfo && (
             <>
-              <div className="mb-5">
+              <div className="-mx-5 mb-5 px-5 pt-5 pb-4" style={{ background: `linear-gradient(to bottom, ${qualityInfo.color}20, transparent)` }}>
                 <div className="mb-2 flex items-center gap-2">
                   <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                     {qualityInfo.label}
