@@ -225,6 +225,7 @@ export default function MapaSensors({
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [showQualitySource, setShowQualitySource] = useState(false);
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
+  const [desktopCardOpen, setDesktopCardOpen] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
 
@@ -603,79 +604,91 @@ export default function MapaSensors({
         {/* Quality card */}
         {qualityInfo && (
           <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
-            <div className="relative z-[1] overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
-              <div className="mb-5 flex flex-col items-center gap-2">
-                <div className="text-2xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                  {qualityInfo.label}
-                </div>
-                {displayPm25 !== null && (
-                  <span className="text-sm text-gray-400">
-                    {roundPM25(displayPm25)} μg/m³ · PM2.5
+            {/* Peek header — always visible, click to toggle */}
+            <div
+              className="cursor-pointer select-none px-5 pb-3 pt-4"
+              onClick={() => setDesktopCardOpen(v => !v)}
+            >
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
+                    {qualityInfo.label}
                   </span>
-                )}
+                  <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-400 transition-transform duration-200 ${desktopCardOpen ? 'rotate-180' : ''}`} />
+                </div>
               </div>
-              <div className="mb-3 mt-8 flex flex-col gap-4">
-                <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
-                  <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
-                  <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
-                </div>
-                {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
-                ].map(({ label, rec }) => (
-                  <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
-                    <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
-                    <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="mb-5 mt-3 text-xs text-gray-400">Recomendaciones oficiales: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
-              <button onClick={() => setShowNearestDetail(v => !v)} className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3">
-                <div className="flex min-w-0 items-center gap-2">
-                  {userLocation && nearestName
-                    ? (nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />)
-                    : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                  }
-                  <span className="truncate text-sm font-medium text-gray-600">
-                    {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
-                  </span>
-                </div>
-                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
-              </button>
-              {showNearestDetail && (
-                <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
-                  <div className="flex flex-col gap-3 px-4 py-3">
-                    {userLocation && nearestName && (
-                      <div className="flex items-center gap-2.5">
-                        <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-sm text-gray-400">Tu sensor más cercano</span>
-                      </div>
-                    )}
-                    {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
-                      <div className="flex items-center gap-2.5">
-                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
-                      </div>
-                    )}
-                    {userLocation && nearestLat !== null && nearestLon !== null && (
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                      >
-                        <Copy className="h-3 w-3 flex-shrink-0" />
-                        {copied ? 'Copiado' : 'Copiar coordenadas'}
-                      </button>
-                    )}
-                  </div>
-                </div>
+              {displayPm25 !== null && (
+                <p className="mt-0.5 text-right text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ · PM2.5</p>
               )}
             </div>
+
+            {/* Expanded content */}
+            {desktopCardOpen && (
+              <div className="relative z-[1] overflow-y-auto px-4 pb-4" style={{ maxHeight: 'calc(100vh - 14rem)' }}>
+                <div className="mb-3 mt-4 flex flex-col gap-4">
+                  <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
+                    <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+                    <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+                  </div>
+                  {[
+                    { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores },
+                    { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
+                    { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
+                    { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
+                  ].map(({ label, rec }) => (
+                    <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
+                      <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
+                      <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="mb-5 mt-3 text-xs text-gray-400">Recomendaciones oficiales: <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-gray-600">NOM-172-SEMARNAT-2023</a></p>
+                <button onClick={() => setShowNearestDetail(v => !v)} className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    {userLocation && nearestName
+                      ? (nearestIsSima ? <Landmark className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" /> : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />)
+                      : <Users className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                    }
+                    <span className="truncate text-sm font-medium text-gray-600">
+                      {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
+                    </span>
+                  </div>
+                  <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
+                </button>
+                {showNearestDetail && (
+                  <div className="mb-5 overflow-hidden rounded-xl bg-gray-50">
+                    <div className="flex flex-col gap-3 px-4 py-3">
+                      {userLocation && nearestName && (
+                        <div className="flex items-center gap-2.5">
+                          <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Tu sensor más cercano</span>
+                        </div>
+                      )}
+                      {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
+                        <div className="flex items-center gap-2.5">
+                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
+                        </div>
+                      )}
+                      {userLocation && nearestLat !== null && nearestLon !== null && (
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 1500);
+                          }}
+                          className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
+                        >
+                          <Copy className="h-3 w-3 flex-shrink-0" />
+                          {copied ? 'Copiado' : 'Copiar coordenadas'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
