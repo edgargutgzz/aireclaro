@@ -985,7 +985,7 @@ export default function MapaSensors({
           height: '62dvh',
           transform: sheetTransform,
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-          background: qualityInfo ? `linear-gradient(to bottom, ${qualityInfo.color}20 0%, white 35%)` : 'white',
+          background: qualityInfo && sheetState === 'mid' ? `linear-gradient(to bottom, ${qualityInfo.color}20 0%, white 35%)` : 'white',
         }}
       >
         {/* Drag handle + peek summary */}
