@@ -226,6 +226,7 @@ export default function MapaSensors({
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
+  const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
 
   const nearestSensorData = useMemo(() => {
     if (!userLocation || !sensors.length || !data.length) return null;
@@ -614,32 +615,9 @@ export default function MapaSensors({
                   </span>
                 )}
               </div>
-              <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                 <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
-              </a>
-              <div className="mb-5 flex flex-col gap-4">
-                <div className="rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="mb-1 flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                    <p className="text-sm font-semibold text-gray-700">Población General</p>
-                  </div>
-                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
-                </div>
-                {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                ].map(({ label, rec, Icon }) => (
-                  <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                    <div className="mb-1 flex items-center gap-2">
-                      <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                      <p className="text-sm font-semibold text-gray-700">{label}</p>
-                    </div>
-                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
-                  </div>
-                ))}
-              </div>
+              </button>
               <button onClick={() => setShowNearestDetail(v => !v)} className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3">
                 <div className="flex min-w-0 items-center gap-2">
                   {userLocation && nearestName
@@ -749,32 +727,9 @@ export default function MapaSensors({
                   )}
                 </div>
                 {sensorQuality && (
-                  <>
-                    <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span></a>
-                    <div className="mb-5 flex flex-col gap-4">
-                      <div className="rounded-xl bg-gray-50 px-4 py-3">
-                        <div className="mb-1 flex items-center gap-2">
-                          <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                          <p className="text-sm font-semibold text-gray-700">Población General</p>
-                        </div>
-                        <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
-                      </div>
-                      {[
-                        { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
-                        { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: Glasses },
-                        { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
-                        { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                      ].map(({ label, rec, Icon }) => (
-                        <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                          <div className="mb-1 flex items-center gap-2">
-                            <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                            <p className="text-sm font-semibold text-gray-700">{label}</p>
-                          </div>
-                          <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </>
+                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 mt-6 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                    <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
+                  </button>
                 )}
               </div>
             </div>
@@ -910,32 +865,9 @@ export default function MapaSensors({
                 )}
               </div>
               {sensorQuality && (
-                <>
-                  <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span></a>
-                  <div className="mb-5 flex flex-col gap-4">
-                    <div className="rounded-xl bg-gray-50 px-4 py-3">
-                      <div className="mb-1 flex items-center gap-2">
-                        <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                        <p className="text-sm font-semibold text-gray-700">Población General</p>
-                      </div>
-                      <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
-                    </div>
-                    {[
-                      { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
-                      { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: Glasses },
-                      { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
-                      { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                    ].map(({ label, rec, Icon }) => (
-                      <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                        <div className="mb-1 flex items-center gap-2">
-                          <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                          <p className="text-sm font-semibold text-gray-700">{label}</p>
-                        </div>
-                        <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
-                      </div>
-                    ))}
-                  </div>
-                </>
+                <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 mt-6 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                  <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
+                </button>
               )}
             </div>
             </>
@@ -1076,20 +1008,43 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span></a>
-              <div className="mb-5 flex flex-col gap-4">
+              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 mt-6 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
+              </button>
+
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* ¿Cómo cuidarme? modal */}
+      {cuidarmeQuality && (
+        <>
+          <div className="fixed inset-0 z-[70] bg-black/40" onClick={() => setCuidarmeQuality(null)} />
+          <div className="fixed inset-x-4 bottom-4 top-16 z-[71] flex flex-col overflow-hidden rounded-2xl bg-white shadow-xl md:inset-x-auto md:left-1/2 md:top-1/2 md:w-[420px] md:-translate-x-1/2 md:-translate-y-1/2 md:bottom-auto md:max-h-[85vh]">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 px-5 pb-4 pt-5">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-gray-400">¿Cómo cuidarme?</p>
+                <p className="mt-0.5 text-lg font-bold" style={{ color: cuidarmeQuality.textColor }}>{cuidarmeQuality.label}</p>
+              </div>
+              <button onClick={() => setCuidarmeQuality(null)} className="rounded-full p-1 text-gray-400 hover:text-gray-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-5 py-5">
+              <div className="flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
                     <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
                     <p className="text-sm font-semibold text-gray-700">Población General</p>
                   </div>
-                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{cuidarmeQuality.generalRec}</p>
                 </div>
                 {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                  { label: "Niños menores de 12", rec: cuidarmeQuality.sensitiveRecs.menores, Icon: Baby },
+                  { label: "Adultos mayores", rec: cuidarmeQuality.sensitiveRecs.adultos, Icon: Glasses },
+                  { label: "Mujeres embarazadas", rec: cuidarmeQuality.sensitiveRecs.embarazadas, Icon: Heart },
+                  { label: "Condiciones cardiovasculares o respiratorias", rec: cuidarmeQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
                 ].map(({ label, rec, Icon }) => (
                   <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
                     <div className="mb-1 flex items-center gap-2">
@@ -1100,11 +1055,18 @@ export default function MapaSensors({
                   </div>
                 ))}
               </div>
-
-            </>
-          )}
-        </div>
-      </div>
+              <a
+                href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 flex items-center gap-1.5 text-xs text-gray-400 underline underline-offset-4 decoration-gray-300 hover:text-gray-600 transition-colors"
+              >
+                Ver recomendaciones oficiales (NOM-172-SEMARNAT-2023)
+              </a>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
