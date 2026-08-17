@@ -603,7 +603,7 @@ export default function MapaSensors({
         {qualityInfo && (
           <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
             <div className="overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
-              <div className="mb-5 flex items-center gap-2">
+              <div className="mb-5 flex flex-col items-center gap-2">
                 <div className="text-2xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                   {qualityInfo.label}
                 </div>
