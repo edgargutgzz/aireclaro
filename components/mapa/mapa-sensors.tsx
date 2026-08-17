@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Navigation, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, User } from "lucide-react";
+import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -616,24 +616,18 @@ export default function MapaSensors({
               </div>
               <div className="mb-3 mt-10 flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="mb-1 flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                    <p className="text-sm font-semibold text-gray-700">Población General</p>
-                  </div>
-                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+                  <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+                  <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
                 {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                ].map(({ label, rec, Icon }) => (
+                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores },
+                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
+                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
+                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
+                ].map(({ label, rec }) => (
                   <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                    <div className="mb-1 flex items-center gap-2">
-                      <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                      <p className="text-sm font-semibold text-gray-700">{label}</p>
-                    </div>
-                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
+                    <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
+                    <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                   </div>
                 ))}
               </div>
@@ -749,24 +743,18 @@ export default function MapaSensors({
                   <>
                     <div className="mb-3 mt-10 flex flex-col gap-3">
                       <div className="rounded-xl bg-gray-50 px-4 py-3">
-                        <div className="mb-1 flex items-center gap-2">
-                          <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                          <p className="text-sm font-semibold text-gray-700">Población General</p>
-                        </div>
-                        <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
+                        <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+                        <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
                       </div>
                       {[
-                        { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
-                        { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: Glasses },
-                        { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
-                        { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                      ].map(({ label, rec, Icon }) => (
+                        { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores },
+                        { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos },
+                        { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas },
+                        { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades },
+                      ].map(({ label, rec }) => (
                         <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                          <div className="mb-1 flex items-center gap-2">
-                            <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                            <p className="text-sm font-semibold text-gray-700">{label}</p>
-                          </div>
-                          <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
+                          <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
+                          <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                         </div>
                       ))}
                     </div>
@@ -909,24 +897,18 @@ export default function MapaSensors({
                 <>
                   <div className="mb-3 mt-10 flex flex-col gap-3">
                     <div className="rounded-xl bg-gray-50 px-4 py-3">
-                      <div className="mb-1 flex items-center gap-2">
-                        <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                        <p className="text-sm font-semibold text-gray-700">Población General</p>
-                      </div>
-                      <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
+                      <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+                      <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
                     </div>
                     {[
-                      { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores, Icon: Baby },
-                      { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos, Icon: Glasses },
-                      { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas, Icon: Heart },
-                      { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                    ].map(({ label, rec, Icon }) => (
+                      { label: "Niños menores de 12", rec: sensorQuality.sensitiveRecs.menores },
+                      { label: "Adultos mayores", rec: sensorQuality.sensitiveRecs.adultos },
+                      { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas },
+                      { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades },
+                    ].map(({ label, rec }) => (
                       <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                        <div className="mb-1 flex items-center gap-2">
-                          <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                          <p className="text-sm font-semibold text-gray-700">{label}</p>
-                        </div>
-                        <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
+                        <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
+                        <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                       </div>
                     ))}
                   </div>
@@ -1071,24 +1053,18 @@ export default function MapaSensors({
               {/* Recommendations */}
               <div className="mb-3 mt-10 flex flex-col gap-3">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="mb-1 flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                    <p className="text-sm font-semibold text-gray-700">Población General</p>
-                  </div>
-                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+                  <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+                  <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
                 {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                ].map(({ label, rec, Icon }) => (
+                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores },
+                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos },
+                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
+                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
+                ].map(({ label, rec }) => (
                   <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                    <div className="mb-1 flex items-center gap-2">
-                      <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                      <p className="text-sm font-semibold text-gray-700">{label}</p>
-                    </div>
-                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
+                    <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
+                    <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                   </div>
                 ))}
               </div>
