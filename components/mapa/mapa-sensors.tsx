@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Navigation, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User, Map, Info } from "lucide-react";
+import { Navigation, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User, Map as MapIcon, Info } from "lucide-react";
 import Link from "next/link";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -598,7 +598,7 @@ export default function MapaSensors({
         <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
           <div className="flex divide-x divide-gray-100">
             <Link href="/" className="flex flex-1 items-center justify-center gap-2 bg-gray-100 py-3 text-gray-900">
-              <Map className="h-4 w-4" />
+              <MapIcon className="h-4 w-4" />
               <span className="text-sm font-semibold">Mapa</span>
             </Link>
             <Link href="/acerca" className="flex flex-1 items-center justify-center gap-2 py-3 text-gray-400 transition-colors hover:bg-gray-50">
