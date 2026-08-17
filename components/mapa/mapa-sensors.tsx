@@ -613,6 +613,32 @@ export default function MapaSensors({
                   </span>
                 )}
               </div>
+              <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span>
+              </a>
+              <div className="mb-5 flex flex-col gap-4">
+                <div className="rounded-xl bg-gray-50 px-4 py-3">
+                  <div className="mb-1 flex items-center gap-2">
+                    <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                    <p className="text-sm font-semibold text-gray-700">Población General</p>
+                  </div>
+                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+                </div>
+                {[
+                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
+                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
+                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
+                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
+                ].map(({ label, rec, Icon }) => (
+                  <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
+                    <div className="mb-1 flex items-center gap-2">
+                      <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                      <p className="text-sm font-semibold text-gray-700">{label}</p>
+                    </div>
+                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
+                  </div>
+                ))}
+              </div>
               <button onClick={() => setShowNearestDetail(v => !v)} className="mb-5 flex w-full items-center justify-between gap-2 rounded-xl bg-gray-50 px-4 py-3">
                 <div className="flex min-w-0 items-center gap-2">
                   {userLocation && nearestName
@@ -656,32 +682,6 @@ export default function MapaSensors({
                   </div>
                 </div>
               )}
-              <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span>
-              </a>
-              <div className="mb-5 flex flex-col gap-4">
-                <div className="rounded-xl bg-gray-50 px-4 py-3">
-                  <div className="mb-1 flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                    <p className="text-sm font-semibold text-gray-700">Población General</p>
-                  </div>
-                  <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
-                </div>
-                {[
-                  { label: "Niños menores de 12", rec: qualityInfo.sensitiveRecs.menores, Icon: Baby },
-                  { label: "Adultos mayores", rec: qualityInfo.sensitiveRecs.adultos, Icon: Glasses },
-                  { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas, Icon: Heart },
-                  { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades, Icon: HeartPulse },
-                ].map(({ label, rec, Icon }) => (
-                  <div key={label} className="rounded-xl bg-gray-50 px-4 py-3">
-                    <div className="mb-1 flex items-center gap-2">
-                      <Icon className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                      <p className="text-sm font-semibold text-gray-700">{label}</p>
-                    </div>
-                    <p className="pl-[1.375rem] text-sm leading-relaxed text-gray-500">{rec}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         )}
