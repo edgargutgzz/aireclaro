@@ -615,7 +615,7 @@ export default function MapaSensors({
                 )}
               </div>
               <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span>
+                <span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span>
               </a>
               <div className="mb-5 flex flex-col gap-4">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
@@ -750,7 +750,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span></a>
+                    <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span></a>
                     <div className="mb-5 flex flex-col gap-4">
                       <div className="rounded-xl bg-gray-50 px-4 py-3">
                         <div className="mb-1 flex items-center gap-2">
@@ -911,7 +911,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span></a>
+                  <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span></a>
                   <div className="mb-5 flex flex-col gap-4">
                     <div className="rounded-xl bg-gray-50 px-4 py-3">
                       <div className="mb-1 flex items-center gap-2">
@@ -1076,7 +1076,7 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">Recomendaciones Oficiales</span></a>
+              <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="mb-4 mt-10 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors"><span className="underline underline-offset-2 decoration-gray-300">¿Cómo cuidarme?</span></a>
               <div className="mb-5 flex flex-col gap-4">
                 <div className="rounded-xl bg-gray-50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
