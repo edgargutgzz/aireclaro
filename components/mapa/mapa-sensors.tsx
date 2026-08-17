@@ -1114,7 +1114,7 @@ export default function MapaSensors({
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setCuidarmeQuality(null)} />
           <div className="fixed left-1/2 top-1/2 z-[71] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-xl">
-            <p className="mb-2 text-center text-base font-semibold text-gray-900">Recomendaciones Oficiales</p>
+            <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-gray-400">Recomendaciones Oficiales</p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Las recomendaciones que ves abajo provienen de la norma oficial mexicana{' '}
               <a
