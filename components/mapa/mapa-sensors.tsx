@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Navigation, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User } from "lucide-react";
+import { Navigation, Layers, X, Landmark, Users, Copy, Baby, Glasses, Heart, HeartPulse, MapPin, ChevronDown, Clock, BadgeCheck, User, Map, Info } from "lucide-react";
+import Link from "next/link";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
-import Navlinks from "@/components/navbar/navlinks";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -595,9 +595,16 @@ export default function MapaSensors({
         <div className="flex w-[300px] flex-col gap-2">
 
         {/* Nav */}
-        <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white px-4 py-3 shadow-sm">
-          <div className="flex items-center gap-2">
-            <Navlinks />
+        <div className="pointer-events-auto overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="flex divide-x divide-gray-100">
+            <Link href="/" className="flex flex-1 items-center justify-center gap-2 bg-gray-100 py-3 text-gray-900">
+              <Map className="h-4 w-4" />
+              <span className="text-sm font-semibold">Mapa</span>
+            </Link>
+            <Link href="/acerca" className="flex flex-1 items-center justify-center gap-2 py-3 text-gray-400 transition-colors hover:bg-gray-50">
+              <Info className="h-4 w-4" />
+              <span className="text-sm font-medium">Acerca</span>
+            </Link>
           </div>
         </div>
 
