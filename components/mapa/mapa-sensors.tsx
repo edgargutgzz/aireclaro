@@ -880,8 +880,7 @@ export default function MapaSensors({
                 </div>
                 <button
                   onClick={() => setShowSensorDetail(v => !v)}
-                  className="flex min-w-0 w-full items-center gap-1.5 text-sm"
-                  style={{ color: sensorQuality?.textColor ?? '#9ca3af', opacity: 0.7 }}
+                  className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                 >
                   {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
                   <span className="truncate">{sensorName}</span>
