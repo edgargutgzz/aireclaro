@@ -615,7 +615,7 @@ export default function MapaSensors({
                 )}
               </div>
               <div className="mb-3 mt-10 flex flex-col gap-3">
-                <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.color }}>
+                <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                   <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
@@ -625,7 +625,7 @@ export default function MapaSensors({
                   { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
                   { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
                 ].map(({ label, rec }) => (
-                  <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.color }}>
+                  <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
                     <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
                     <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                   </div>
@@ -742,7 +742,7 @@ export default function MapaSensors({
                 {sensorQuality && (
                   <>
                     <div className="mb-3 mt-10 flex flex-col gap-3">
-                      <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.color }}>
+                      <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.textColor }}>
                         <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                         <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
                       </div>
@@ -752,7 +752,7 @@ export default function MapaSensors({
                         { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas },
                         { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades },
                       ].map(({ label, rec }) => (
-                        <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.color }}>
+                        <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.textColor }}>
                           <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
                           <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                         </div>
@@ -896,7 +896,7 @@ export default function MapaSensors({
               {sensorQuality && (
                 <>
                   <div className="mb-3 mt-10 flex flex-col gap-3">
-                    <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.color }}>
+                    <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.textColor }}>
                       <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                       <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
                     </div>
@@ -906,7 +906,7 @@ export default function MapaSensors({
                       { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas },
                       { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades },
                     ].map(({ label, rec }) => (
-                      <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.color }}>
+                      <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: sensorQuality.textColor }}>
                         <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
                         <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                       </div>
@@ -1052,7 +1052,7 @@ export default function MapaSensors({
 
               {/* Recommendations */}
               <div className="mb-3 mt-10 flex flex-col gap-3">
-                <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.color }}>
+                <div className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                   <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
@@ -1062,7 +1062,7 @@ export default function MapaSensors({
                   { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
                   { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
                 ].map(({ label, rec }) => (
-                  <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.color }}>
+                  <div key={label} className="rounded-xl border-l-[3px] bg-gray-50 px-4 py-3" style={{ borderLeftColor: qualityInfo.textColor }}>
                     <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
                     <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                   </div>
