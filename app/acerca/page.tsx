@@ -102,7 +102,7 @@ export default function Acerca() {
               />
             </Link>
             <p className="text-sm leading-relaxed text-gray-500">
-              Aire Claro es impulsado por el Observatorio Ciudadano de la Calidad
+              Aire Claro es posible gracias al Observatorio Ciudadano de la Calidad
               del Aire, una organización de la sociedad civil dedicada a generar
               esfuerzos colaborativos y fundamento técnico para mejorar la calidad
               del aire en Nuevo León.
