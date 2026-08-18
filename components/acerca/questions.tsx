@@ -73,10 +73,10 @@ export default function Questions() {
                   className="absolute inset-0 flex flex-col justify-end rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
                   style={{ backfaceVisibility: 'hidden' }}
                 >
-                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50">
+                  <div className="mb-3 hidden h-9 w-9 items-center justify-center rounded-xl bg-gray-50 md:flex">
                     <Icon className="h-4 w-4 text-gray-500" />
                   </div>
-                  <p className="text-sm font-semibold text-gray-500">{title}</p>
+                  <p className="text-base font-semibold text-gray-500 md:text-sm">{title}</p>
                   {!isFlipped && <p className="mt-1 text-xs text-gray-400">Toca para saber más</p>}
                 </div>
 
