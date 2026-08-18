@@ -675,7 +675,7 @@ export default function MapaSensors({
                     <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                   </div>
                   <div className="mt-3 flex justify-center">
-                    <ChevronDown className="h-3.5 w-3.5 text-gray-300" />
+                    <ChevronDown className="h-4 w-4 text-gray-500" />
                   </div>
                 </>
               ) : (
