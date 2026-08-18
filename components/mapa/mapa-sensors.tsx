@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock, Loader2 } from "lucide-react";
+import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -521,15 +521,6 @@ export default function MapaSensors({
         ref={mapContainer}
         className="absolute left-0 top-0 h-full w-full md:h-screen"
       />
-
-      {/* Loading overlay — shown until the map finishes its initial render */}
-      <div
-        className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-gray-50/80 transition-opacity duration-300 ${
-          mapLoaded ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
-      </div>
 
       {/* Mobile right-side buttons — hidden when sheet is expanded */}
       {sheetState === 'peek' && (
