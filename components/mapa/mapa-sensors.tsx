@@ -782,7 +782,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto w-[340px] overflow-hidden rounded-2xl border-2 border-gray-900 bg-white shadow-md">
+            <div className="pointer-events-auto w-[340px] overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
               <div className="relative z-[1] overflow-y-auto px-4 pb-4 pt-4" style={{ maxHeight: 'calc(100vh - 8rem)' }}>
                 <div className="mb-5">
                   <div className="mb-2 flex items-center justify-between">
