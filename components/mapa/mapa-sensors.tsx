@@ -417,6 +417,7 @@ export default function MapaSensors({
           return;
         }
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
+        if (window.innerWidth >= 768) setDesktopCardOpen(false);
       });
 
       markerElementsRef.current.set(sensor.sensor_id, { el: markerElement, source: sensor.source });
