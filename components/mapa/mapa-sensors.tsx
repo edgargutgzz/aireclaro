@@ -494,7 +494,7 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 7rem))';
+  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 6rem))';
 
   const handleSheetTap = useCallback(() => {
     setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
