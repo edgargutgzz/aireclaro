@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Wind, Download, Smartphone } from "lucide-react";
+import { MapPin, Wind, Download, Smartphone, Plus } from "lucide-react";
 
 const features = [
   {
@@ -76,8 +76,15 @@ export default function Questions() {
                   <div className="mb-3 hidden h-9 w-9 items-center justify-center rounded-xl bg-gray-50 md:flex">
                     <Icon className="h-4 w-4 text-gray-500" />
                   </div>
-                  <p className="text-base font-semibold text-gray-500 md:text-sm">{title}</p>
-                  {!isFlipped && <p className="mt-1 text-xs text-gray-400">Toca para saber más</p>}
+                  {!isFlipped && (
+                    <div className="mb-2 flex h-7 w-7 items-center justify-center rounded-full border border-gray-200 bg-gray-50 md:hidden">
+                      <Plus className="h-3.5 w-3.5 text-gray-400" />
+                    </div>
+                  )}
+                  <p className="text-xl font-bold leading-tight text-gray-700 md:text-sm md:font-semibold md:text-gray-500">
+                    {title}
+                  </p>
+                  {!isFlipped && <p className="mt-1 hidden text-xs text-gray-400 md:block">Toca para saber más</p>}
                 </div>
 
                 {/* Back */}
