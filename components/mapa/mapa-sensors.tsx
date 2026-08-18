@@ -683,9 +683,6 @@ export default function MapaSensors({
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                   <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
-                <div className="mt-3 flex cursor-pointer justify-center" onClick={() => setDesktopCardOpen(true)}>
-                  <ChevronDown className="h-4 w-4 text-gray-500" />
-                </div>
               </div>
             )}
 
