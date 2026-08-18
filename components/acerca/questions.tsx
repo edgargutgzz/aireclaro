@@ -50,15 +50,13 @@ export default function Questions() {
                 className="flex w-full items-center justify-between gap-3 py-3.5 pr-2"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gray-50">
-                    <Icon className="h-3.5 w-3.5 text-gray-400" />
-                  </div>
+                  <Icon className="h-4 w-4 flex-shrink-0 text-gray-400" />
                   <span className="truncate text-sm font-normal text-gray-600">{title}</span>
                 </div>
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
-                <div className="pb-4 pl-11">
+                <div className="pb-4 pl-7">
                   <p className="text-sm leading-relaxed text-gray-600">{description}</p>
                 </div>
               )}
