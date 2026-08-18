@@ -37,9 +37,9 @@ export default function Navlinks() {
           >
             {/* Mobile view — horizontal pill */}
             <div
-              className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden transition-colors", {
-                "bg-gray-200 text-gray-900": isSelected,
-                "text-gray-400": !isSelected,
+              className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden transition-colors border", {
+                "border-white/60 bg-white/60 backdrop-blur-sm text-gray-900": isSelected,
+                "border-transparent text-gray-400": !isSelected,
               })}
             >
               <IconComponent className="h-5 w-5" />
@@ -54,10 +54,10 @@ export default function Navlinks() {
             {/* Desktop view */}
             <div
               className={clsx(
-                "hidden md:flex md:items-center md:rounded-full md:px-4 md:py-2.5",
+                "hidden md:flex md:items-center md:rounded-full md:px-4 md:py-2.5 md:border md:transition-colors",
                 {
-                  "bg-gray-200 text-gray-900": isSelected,
-                  "text-gray-400 hover:bg-gray-100": !isSelected,
+                  "md:border-white/60 md:bg-white/60 md:backdrop-blur-sm md:text-gray-900": isSelected,
+                  "md:border-transparent md:text-gray-400 md:hover:bg-white/40": !isSelected,
                 },
               )}
             >
