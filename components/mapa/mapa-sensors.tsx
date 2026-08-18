@@ -691,7 +691,7 @@ export default function MapaSensors({
                     </div>
                   )}
                 </div>
-                <div className="my-6 border-t" style={{ borderColor: qualityInfo.textColor }} />
+                <div className="my-6 border-t border-gray-100" />
                 <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                   <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                 </button>
@@ -837,7 +837,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <div className="my-6 border-t" style={{ borderColor: sensorQuality.textColor }} />
+                    <div className="my-6 border-t border-gray-100" />
                     <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                       <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                     </button>
@@ -941,7 +941,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="my-6 border-t" style={{ borderColor: sensorQuality.textColor }} />
+                  <div className="my-6 border-t border-gray-100" />
                   <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                   </button>
@@ -1100,7 +1100,7 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <div className="my-6 border-t" style={{ borderColor: qualityInfo.textColor }} />
+              <div className="my-6 border-t border-gray-100" />
               <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                 <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
               </button>
