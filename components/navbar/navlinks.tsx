@@ -38,7 +38,7 @@ export default function Navlinks() {
             {/* Mobile view — horizontal pill */}
             <div
               className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden transition-colors border", {
-                "border-white/60 bg-white/60 backdrop-blur-sm text-gray-900": isSelected,
+                "border-gray-200 bg-gray-200/80 text-gray-900": isSelected,
                 "border-transparent text-gray-400": !isSelected,
               })}
             >
@@ -56,8 +56,8 @@ export default function Navlinks() {
               className={clsx(
                 "hidden md:flex md:items-center md:rounded-full md:px-4 md:py-2.5 md:border md:transition-colors",
                 {
-                  "md:border-white/60 md:bg-white/60 md:backdrop-blur-sm md:text-gray-900": isSelected,
-                  "md:border-transparent md:text-gray-400 md:hover:bg-white/40": !isSelected,
+                  "md:border-gray-200 md:bg-gray-200/80 md:text-gray-900": isSelected,
+                  "md:border-transparent md:text-gray-400 md:hover:bg-gray-100": !isSelected,
                 },
               )}
             >
