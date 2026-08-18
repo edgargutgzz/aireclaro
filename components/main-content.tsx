@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 export default function MainContent({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     ref.current?.scrollTo(0, 0);
   }, [pathname]);
 
