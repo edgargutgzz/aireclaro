@@ -607,13 +607,9 @@ export default function MapaSensors({
           <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
-              {/* Top row: label + chevron toggle */}
-              <div
-                className="flex cursor-pointer select-none items-center justify-between"
-                onClick={() => setDesktopCardOpen(v => !v)}
-              >
+              {/* Top row: label */}
+              <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-                <ChevronDown className={`h-3.5 w-3.5 text-gray-600 transition-transform duration-200 ${desktopCardOpen ? 'rotate-180' : ''}`} />
               </div>
               {/* Quality label + PM2.5 — always shown */}
               <div className="mt-1 flex items-center gap-3">
@@ -683,6 +679,9 @@ export default function MapaSensors({
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                   <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
+                <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setDesktopCardOpen(true)}>
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                </div>
               </div>
             )}
 
@@ -709,6 +708,9 @@ export default function MapaSensors({
                       <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                     </div>
                   ))}
+                </div>
+                <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setDesktopCardOpen(false)}>
+                  <ChevronDown className="h-4 w-4 rotate-180 text-gray-500" />
                 </div>
               </div>
             )}
