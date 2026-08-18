@@ -242,7 +242,7 @@ export default function MapaSensors({
         const timestamp = format(new Date(d.time_stamp), "h") + ":00 " + format(new Date(d.time_stamp), "a");
         const isSima = sensor.source === "sima";
         const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-        return { pm25: d.pm25, timestamp, name, isSima, lat: sensor.lat, lon: sensor.lon };
+        return { pm25: d.pm25, timestamp, name, isSima, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
       }
     }
     return null;
@@ -404,6 +404,9 @@ export default function MapaSensors({
       markerElement.style.transition = "box-shadow 0.15s ease";
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
+        const isDesktop = window.innerWidth >= 768;
+        const isNearest = nearestSensorData?.sensorId === sensor.sensor_id;
+        if (isDesktop && isNearest) return;
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
       });
 
