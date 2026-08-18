@@ -100,7 +100,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <div className="flex min-h-dvh flex-col">
+        <div className="flex min-h-svh flex-col">
           {/* Navbar */}
           <div className="fixed top-0 z-[55] w-full">
             <Navbar />
