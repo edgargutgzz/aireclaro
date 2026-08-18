@@ -621,6 +621,18 @@ export default function MapaSensors({
                       <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ (PM2.5)</span>
                     )}
                   </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowNearestDetail(v => !v); }}
+                    className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
+                  >
+                    {userLocation && nearestName
+                      ? (nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />)
+                      : <Users className="h-3 w-3 flex-shrink-0" />
+                    }
+                    <span className="truncate">
+                      {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
+                    </span>
+                  </button>
                   <div className="mt-3 mb-6 border-t border-gray-100" />
                   <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
