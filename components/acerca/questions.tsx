@@ -69,9 +69,7 @@ export default function Questions() {
               </button>
               {isOpen && (
                 <div className="px-4 pb-4">
-                  <div className="rounded-xl bg-gray-50 px-4 py-3">
-                    <p className="text-sm leading-relaxed text-gray-600">{description}</p>
-                  </div>
+                  <p className="text-sm leading-relaxed text-gray-600">{description}</p>
                 </div>
               )}
             </div>
