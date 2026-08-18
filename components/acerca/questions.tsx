@@ -40,7 +40,7 @@ export default function Questions() {
   return (
     <>
       {/* Mobile: dropdown list, matching the mapa section's expandable rows */}
-      <div className="flex flex-col gap-3 md:hidden">
+      <div className="flex flex-col gap-3 px-4 md:hidden">
         {features.map(({ icon: Icon, title, description }) => {
           const isOpen = openMobile === title;
           return (
