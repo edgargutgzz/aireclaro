@@ -601,6 +601,47 @@ export default function MapaSensors({
         </div>
       </div>
 
+      {/* Desktop layers modal — centered */}
+      {showFilters && (
+        <div className="fixed inset-0 z-[60] hidden md:flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
+          <div className="relative z-10 w-[85%] max-w-sm rounded-3xl bg-white p-6 shadow-xl">
+            <p className="mb-4 text-center text-sm font-medium uppercase tracking-wide text-gray-400">Capas</p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => setShowSima((v) => !v)}
+                className={`flex items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-200 ${
+                  showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+                }`}
+                style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
+              >
+                <div className="flex items-center gap-3">
+                  <Landmark className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
+                </div>
+                <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showSima ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+                  <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(16px)' : 'translateX(0)' }} />
+                </div>
+              </button>
+              <button
+                onClick={() => setShowPurpleAir((v) => !v)}
+                className={`flex items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-200 ${
+                  showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Users className="h-4 w-4 text-gray-400" />
+                  <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+                </div>
+                <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showPurpleAir ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+                  <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(16px)' : 'translateX(0)' }} />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Desktop right-side floating controls */}
       <div className="pointer-events-none absolute bottom-14 right-12 z-10 hidden flex-col gap-4 md:flex">
         <button
@@ -748,41 +789,6 @@ export default function MapaSensors({
         )}
 
 
-        {/* Filter panel */}
-        {showFilters && (
-          <div className="pointer-events-auto flex flex-col gap-3 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Capas</p>
-            <button
-              onClick={() => setShowSima((v) => !v)}
-              className={`flex items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-200 ${
-                showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
-              }`}
-              style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
-            >
-              <div className="flex items-center gap-3">
-                <Landmark className="h-4 w-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
-              </div>
-              <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showSima ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
-                <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(16px)' : 'translateX(0)' }} />
-              </div>
-            </button>
-            <button
-              onClick={() => setShowPurpleAir((v) => !v)}
-              className={`flex items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-200 ${
-                showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Users className="h-4 w-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
-              </div>
-              <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showPurpleAir ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
-                <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(16px)' : 'translateX(0)' }} />
-              </div>
-            </button>
-          </div>
-        )}
 
 
 </div>{/* end left column */}
