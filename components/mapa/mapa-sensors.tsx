@@ -605,147 +605,94 @@ export default function MapaSensors({
         {/* Quality card */}
         {qualityInfo && (
           <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
-            {/* Peek header — always visible, click to toggle */}
-            <div
-              className="cursor-pointer select-none px-5 pt-4 pb-3"
-              onClick={() => setDesktopCardOpen(v => !v)}
-            >
-              {!desktopCardOpen ? (
-                <>
-                  <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-                  <div className="mt-1 flex items-center gap-3">
-                    <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
-                      {qualityInfo.label}
-                    </span>
-                    {displayPm25 !== null && (
-                      <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ (PM2.5)</span>
+            {/* Always-visible header */}
+            <div className="px-5 pt-4 pb-3">
+              {/* Top row: label + chevron toggle */}
+              <div
+                className="flex cursor-pointer select-none items-center justify-between"
+                onClick={() => setDesktopCardOpen(v => !v)}
+              >
+                <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+                <ChevronDown className={`h-3.5 w-3.5 text-gray-600 transition-transform duration-200 ${desktopCardOpen ? 'rotate-180' : ''}`} />
+              </div>
+              {/* Quality label + PM2.5 — always shown */}
+              <div className="mt-1 flex items-center gap-3">
+                <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
+                  {qualityInfo.label}
+                </span>
+                {displayPm25 !== null && (
+                  <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ (PM2.5)</span>
+                )}
+              </div>
+              {/* Sensor name — always shown */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowNearestDetail(v => !v); }}
+                className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
+              >
+                {userLocation && nearestName
+                  ? (nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />)
+                  : <Users className="h-3 w-3 flex-shrink-0" />
+                }
+                <span className="truncate">
+                  {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
+                </span>
+                <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
+              </button>
+              {showNearestDetail && (
+                <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
+                  <div className="flex flex-col gap-3 px-4 py-3">
+                    {userLocation && nearestName && (
+                      <div className="flex items-center gap-2.5">
+                        <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <span className="text-sm text-gray-400">Tu sensor más cercano</span>
+                      </div>
+                    )}
+                    {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
+                      <div className="flex items-center gap-2.5">
+                        <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                        <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
+                      </div>
+                    )}
+                    {userLocation && nearestLat !== null && nearestLon !== null && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1500);
+                        }}
+                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
+                      >
+                        <Copy className="h-3 w-3 flex-shrink-0" />
+                        {copied ? 'Copiado' : 'Copiar coordenadas'}
+                      </button>
                     )}
                   </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setShowNearestDetail(v => !v); }}
-                    className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
-                  >
-                    {userLocation && nearestName
-                      ? (nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />)
-                      : <Users className="h-3 w-3 flex-shrink-0" />
-                    }
-                    <span className="truncate">
-                      {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
-                    </span>
-                    <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
-                  </button>
-                  {showNearestDetail && (
-                    <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
-                      <div className="flex flex-col gap-3 px-4 py-3">
-                        {userLocation && nearestName && (
-                          <div className="flex items-center gap-2.5">
-                            <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                            <span className="text-sm text-gray-400">Tu sensor más cercano</span>
-                          </div>
-                        )}
-                        {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
-                          <div className="flex items-center gap-2.5">
-                            <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                            <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
-                          </div>
-                        )}
-                        {userLocation && nearestLat !== null && nearestLon !== null && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                              setCopied(true);
-                              setTimeout(() => setCopied(false), 1500);
-                            }}
-                            className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                          >
-                            <Copy className="h-3 w-3 flex-shrink-0" />
-                            {copied ? 'Copiado' : 'Copiar coordenadas'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  <div className="mt-3 mb-6 border-t border-gray-100" />
-                  <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                    <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
-                  </button>
-                  <div className="rounded-xl bg-gray-50 px-4 py-3">
-                    <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
-                    <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
-                  </div>
-                  <div className="mt-3 flex justify-center">
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
-                  </div>
-                </>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-                  <ChevronDown className="h-3.5 w-3.5 rotate-180 text-gray-600" />
                 </div>
               )}
             </div>
 
-            {/* Expanded content — mirrors mobile layout */}
-            {desktopCardOpen && (
-              <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
-                <div className="mb-5">
-                  <div className="mb-2 flex items-center gap-2">
-                    <div className="text-2xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                      {qualityInfo.label}
-                    </div>
-                    {displayPm25 !== null && (
-                      <span className="text-sm text-gray-400">
-                        {roundPM25(displayPm25)} μg/m³ (PM2.5)
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => setShowNearestDetail(v => !v)}
-                    className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
-                  >
-                    {userLocation && nearestName
-                      ? (nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />)
-                      : <Users className="h-3 w-3 flex-shrink-0" />
-                    }
-                    <span className="truncate">
-                      {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
-                    </span>
-                    <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
-                  </button>
-                  {showNearestDetail && (
-                    <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
-                      <div className="flex flex-col gap-3 px-4 py-3">
-                        {userLocation && nearestName && (
-                          <div className="flex items-center gap-2.5">
-                            <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                            <span className="text-sm text-gray-400">Tu sensor más cercano</span>
-                          </div>
-                        )}
-                        {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
-                          <div className="flex items-center gap-2.5">
-                            <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                            <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
-                          </div>
-                        )}
-                        {userLocation && nearestLat !== null && nearestLon !== null && (
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                              setCopied(true);
-                              setTimeout(() => setCopied(false), 1500);
-                            }}
-                            className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                          >
-                            <Copy className="h-3 w-3 flex-shrink-0" />
-                            {copied ? 'Copiado' : 'Copiar coordenadas'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
+            {/* Closed-only: divider + rec preview + expand hint */}
+            {!desktopCardOpen && (
+              <div className="px-5 pb-4">
+                <div className="mt-0 mb-6 border-t border-gray-100" />
+                <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                  <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
+                </button>
+                <div className="rounded-xl bg-gray-50 px-4 py-3">
+                  <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+                  <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
-                <div className="mt-3 mb-6 border-t border-gray-100" />
+                <div className="mt-3 flex cursor-pointer justify-center" onClick={() => setDesktopCardOpen(true)}>
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                </div>
+              </div>
+            )}
+
+            {/* Expanded content */}
+            {desktopCardOpen && (
+              <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
+                <div className="mt-0 mb-6 border-t border-gray-100" />
                 <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                   <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                 </button>
