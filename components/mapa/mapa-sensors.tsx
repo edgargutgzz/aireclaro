@@ -1026,10 +1026,10 @@ export default function MapaSensors({
       >
         {/* Drag handle + peek summary */}
         <div
-          className="flex-shrink-0 cursor-pointer select-none px-5 pt-2 pb-3"
+          className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
           onClick={handleSheetTap}
         >
-          <div className="mx-auto mb-1.5 h-1 w-10 rounded-full bg-gray-300/60" />
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
