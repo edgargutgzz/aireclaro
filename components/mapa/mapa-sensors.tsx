@@ -681,7 +681,12 @@ export default function MapaSensors({
               ) : (
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-                  <ChevronDown className="h-3.5 w-3.5 rotate-180 text-gray-600" />
+                  <button
+                    onClick={() => setDesktopCardOpen(false)}
+                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    Cerrar <ChevronDown className="h-3.5 w-3.5 rotate-180" />
+                  </button>
                 </div>
               )}
             </div>
