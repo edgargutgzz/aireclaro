@@ -635,7 +635,7 @@ export default function MapaSensors({
                 <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
               </button>
               {showNearestDetail && (
-                <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
+                <div className="mt-3 overflow-hidden rounded-xl bg-gray-100">
                   <div className="flex flex-col gap-3 px-4 py-3">
                     {userLocation && nearestName && (
                       <div className="flex items-center gap-2.5">
@@ -812,7 +812,7 @@ export default function MapaSensors({
                     <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
                   </button>
                   {showSensorDetail && (
-                    <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
+                    <div className="mt-3 overflow-hidden rounded-xl bg-gray-100">
                       <div className="flex flex-col gap-3 px-4 py-3">
                         {timestamp && (
                           <div className="flex items-center gap-2.5">
