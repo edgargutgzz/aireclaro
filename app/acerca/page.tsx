@@ -135,7 +135,7 @@ export default function Acerca() {
       </div>
 
       {/* Mobile footer — pinned to the bottom of the viewport, not part of the scroll */}
-      <div className="border-t border-gray-100 px-4 py-5 md:hidden">
+      <div className="border-t border-gray-100 px-8 py-5 md:hidden">
         <div className="mx-auto flex max-w-2xl flex-col items-start gap-2">
           <Link href="/aviso-privacidad" className="text-sm text-gray-400 hover:text-gray-600">
             Aviso de Privacidad
