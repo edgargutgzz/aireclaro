@@ -58,7 +58,7 @@ export default function Questions() {
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
-                <div className="pb-4">
+                <div className="pb-4 pl-11">
                   <p className="text-sm leading-relaxed text-gray-600">{description}</p>
                 </div>
               )}
