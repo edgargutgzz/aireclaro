@@ -624,7 +624,11 @@ export default function MapaSensors({
                   {displayPm25 !== null && (
                     <p className="mt-0.5 text-right text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ de PM2.5</p>
                   )}
-                  <div className="mt-3 rounded-xl bg-gray-50 px-4 py-3">
+                  <div className="mt-3 mb-6 border-t border-gray-100" />
+                  <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                    <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
+                  </button>
+                  <div className="rounded-xl bg-gray-50 px-4 py-3">
                     <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                     <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                   </div>
