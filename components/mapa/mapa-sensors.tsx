@@ -606,7 +606,7 @@ export default function MapaSensors({
         <div className="fixed inset-0 z-[60] hidden md:flex items-center justify-center">
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
           <div className="relative z-10 w-[85%] max-w-sm rounded-3xl bg-white p-6 shadow-xl">
-            <p className="mb-4 text-center text-sm font-medium uppercase tracking-wide text-gray-400">Capas</p>
+            <p className="mb-4 text-sm font-medium uppercase tracking-wide text-gray-400">Capas</p>
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => setShowSima((v) => !v)}
