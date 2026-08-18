@@ -524,7 +524,7 @@ export default function MapaSensors({
 
       {/* Loading overlay — shown until the map finishes its initial render */}
       <div
-        className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-gray-50 transition-opacity duration-300 ${
+        className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-gray-50/80 transition-opacity duration-300 ${
           mapLoaded ? "opacity-0" : "opacity-100"
         }`}
       >
