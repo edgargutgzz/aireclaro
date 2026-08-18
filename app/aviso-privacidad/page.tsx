@@ -54,7 +54,7 @@ const privacySections = [
 export default function Aviso() {
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="container mx-auto max-w-2xl flex-1 px-4 pb-10 pt-6 md:pt-14">
+      <div className="container mx-auto max-w-2xl flex-1 px-4 pb-10 pt-6 md:pt-28">
 
         <h1 className="mb-8 text-lg font-semibold text-gray-800">Aviso de Privacidad</h1>
 

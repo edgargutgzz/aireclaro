@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import Navlinks from "@/components/navbar/navlinks";
 import { usePathname } from "next/navigation";
 
@@ -18,23 +16,11 @@ export default function Navbar() {
         <div className="h-[env(safe-area-inset-bottom)]" />
       </div>
 
-      {/* Desktop navbar at top — hidden on map page */}
+      {/* Desktop navbar — floating pill card, hidden on map page (which renders its own) */}
       {pathname !== "/" && (
-        <div className="sticky top-0 z-50 hidden border-b border-white/60 bg-white/80 shadow-sm backdrop-blur-md md:block">
-          <div className="mx-auto flex max-w-screen-xl items-center justify-between px-6 py-3">
-            <div className="flex-shrink-0">
-              <Link href="/">
-                <Image
-                  src="/aireclaro-logo.png"
-                  alt="Aire Claro Logo"
-                  width={180}
-                  height={21}
-                  className="h-auto"
-                  priority
-                />
-              </Link>
-            </div>
-            <div className="flex justify-end gap-10">
+        <div className="fixed left-6 top-6 z-50 hidden md:block">
+          <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+            <div className="flex items-center justify-around gap-2 px-4 py-3">
               <Navlinks />
             </div>
           </div>
