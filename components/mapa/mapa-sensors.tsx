@@ -618,7 +618,7 @@ export default function MapaSensors({
                       {qualityInfo.label}
                     </span>
                     {displayPm25 !== null && (
-                      <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ de PM2.5</span>
+                      <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ (PM2.5)</span>
                     )}
                   </div>
                   <div className="mt-3 mb-6 border-t border-gray-100" />
@@ -650,7 +650,7 @@ export default function MapaSensors({
                     </div>
                     {displayPm25 !== null && (
                       <span className="text-sm text-gray-400">
-                        {roundPM25(displayPm25)} μg/m³ de PM2.5
+                        {roundPM25(displayPm25)} μg/m³ (PM2.5)
                       </span>
                     )}
                   </div>
@@ -803,7 +803,7 @@ export default function MapaSensors({
                       </div>
                       {pm25 !== null && (
                         <span className="text-sm text-gray-400">
-                          {roundPM25(pm25)} μg/m³ de PM2.5
+                          {roundPM25(pm25)} μg/m³ (PM2.5)
                         </span>
                       )}
                     </div>
@@ -911,7 +911,7 @@ export default function MapaSensors({
                   </div>
                   {pm25 !== null && (
                     <span className="text-sm text-gray-400">
-                      {roundPM25(pm25)} μg/m³ de PM2.5
+                      {roundPM25(pm25)} μg/m³ (PM2.5)
                     </span>
                   )}
                 </div>
@@ -1057,7 +1057,7 @@ export default function MapaSensors({
                   </div>
                   {displayPm25 !== null && (
                     <span className="text-sm text-gray-400">
-                      {roundPM25(displayPm25)} μg/m³ de PM2.5
+                      {roundPM25(displayPm25)} μg/m³ (PM2.5)
                     </span>
                   )}
                 </div>
