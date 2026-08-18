@@ -314,6 +314,12 @@ export default function MapaSensors({
         },
       );
     }
+
+    return () => {
+      (map.current as any)?.remove();
+      map.current = null;
+      setMapLoaded(false);
+    };
   }, []);
 
   const requestLocation = useCallback(() => {
