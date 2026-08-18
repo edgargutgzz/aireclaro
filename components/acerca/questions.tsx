@@ -44,10 +44,10 @@ export default function Questions() {
         {features.map(({ icon: Icon, title, description }) => {
           const isOpen = openMobile === title;
           return (
-            <div key={title} className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
+            <div key={title}>
               <button
                 onClick={() => setOpenMobile(isOpen ? null : title)}
-                className="flex w-full items-center justify-between gap-3 px-4 py-3.5"
+                className="flex w-full items-center justify-between gap-3 py-3.5"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gray-50">
@@ -58,7 +58,7 @@ export default function Questions() {
                 <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-300 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
-                <div className="px-4 pb-4">
+                <div className="pb-4">
                   <p className="text-sm leading-relaxed text-gray-600">{description}</p>
                 </div>
               )}
