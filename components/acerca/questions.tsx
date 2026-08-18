@@ -9,9 +9,9 @@ const features = [
     title: "Recomendaciones de salud",
     description: (
       <>
-        Según el Índice de Aire y Salud{" "}
+        Recomendaciones oficiales según el Índice de Aire y Salud{" "}
         <a href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-gray-600 hover:text-gray-800">NOM-172-SEMARNAT-2023</a>
-        , para niños, adultos mayores, embarazadas y más.
+        , para población general y grupos sensibles.
       </>
     ),
   },
