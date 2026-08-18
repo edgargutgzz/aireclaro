@@ -277,32 +277,26 @@ export default function MapaSensors({
   const displayPm25 = nearestPm25 ?? areaMedianPm25;
   const qualityInfo = getQualityInfo(displayPm25);
 
-  // Initialize map once — deferred a frame so the sheet/card and buttons
-  // paint first instead of competing with map/WebGL init on the same frame.
+  // Initialize map once
   useEffect(() => {
     if (map.current) return;
 
-    let cancelled = false;
-    const rafId = requestAnimationFrame(() => {
-      if (cancelled) return;
+    map.current = new Map({
+      container: mapContainer.current!,
+      style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
+      center: [-100.32098588977951, 25.665],
+      zoom: 8,
+    });
 
-      map.current = new Map({
-        container: mapContainer.current!,
-        style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
+    map.current.on("load", () => {
+      setMapLoaded(true);
+      const isMobile = window.innerWidth < 768;
+      (map.current as any).flyTo({
         center: [-100.32098588977951, 25.665],
-        zoom: 8,
-      });
-
-      map.current.on("load", () => {
-        setMapLoaded(true);
-        const isMobile = window.innerWidth < 768;
-        (map.current as any).flyTo({
-          center: [-100.32098588977951, 25.665],
-          zoom: 12,
-          duration: 2000,
-          essential: true,
-          padding: isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 280, right: 0 },
-        });
+        zoom: 12,
+        duration: 2000,
+        essential: true,
+        padding: isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 280, right: 0 },
       });
     });
 
@@ -321,8 +315,6 @@ export default function MapaSensors({
     }
 
     return () => {
-      cancelled = true;
-      cancelAnimationFrame(rafId);
       (map.current as any)?.remove();
       map.current = null;
       setMapLoaded(false);
