@@ -755,7 +755,7 @@ export default function MapaSensors({
         )}
 
         {/* Action buttons */}
-        <div className="pointer-events-auto flex flex-col gap-2">
+        <div className="pointer-events-auto hidden flex-col gap-2">
           <button
             onClick={userLocation ? flyToUser : requestLocation}
             className="flex h-10 w-full items-center gap-3 rounded-lg border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
