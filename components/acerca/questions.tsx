@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Wind, Download, Smartphone, ChevronDown } from "lucide-react";
+import { MapPin, Wind, Download, ChevronDown } from "lucide-react";
 
 const features = [
   {
@@ -28,16 +28,6 @@ const features = [
       <>
         Historial completo disponible en{" "}
         <a href="https://datamx.io/dataset/calidad-del-aire-en-la-zona-metropolitana-de-monterrey" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">datamx.io</a>.
-      </>
-    ),
-  },
-  {
-    icon: Smartphone,
-    title: "Acceso rápido",
-    description: (
-      <>
-        <a href="https://www.youtube.com/shorts/dx0NLeoR3cs" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Agrégalo a tu pantalla</a>{" "}
-        de inicio como una app.
       </>
     ),
   },
