@@ -1,35 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Wind, Download, ChevronDown } from "lucide-react";
+import { Heart, MapPin, Wind, ChevronDown } from "lucide-react";
 
 const features = [
   {
+    icon: Heart,
+    title: "Recomendaciones de salud",
+    description: "Con base en el Índice de Aire y Salud mexicano (NOM-172-SEMARNAT-2023), te decimos cómo cuidarte según tu grupo de población.",
+  },
+  {
     icon: MapPin,
-    title: "Enfocado en Monterrey",
+    title: "Todos los sensores",
     description: (
       <>
-        Cobertura local completa combinando estaciones oficiales{" "}
+        Combinamos estaciones oficiales{" "}
         <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">SIMA</a>{" "}
         y sensores ciudadanos{" "}
-        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PurpleAir</a>.
+        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PurpleAir</a>{" "}
+        para darte la cobertura más completa.
       </>
     ),
   },
   {
     icon: Wind,
     title: "PM2.5 en tiempo real",
-    description: "El contaminante más dañino para tu salud, actualizado cada hora.",
-  },
-  {
-    icon: Download,
-    title: "Datos abiertos",
-    description: (
-      <>
-        Historial completo disponible en{" "}
-        <a href="https://datamx.io/dataset/calidad-del-aire-en-la-zona-metropolitana-de-monterrey" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">datamx.io</a>.
-      </>
-    ),
+    description: "El contaminante más peligroso para tu salud, con datos actualizados cada hora.",
   },
 ];
 
