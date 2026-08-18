@@ -21,9 +21,9 @@ const features = [
     description: (
       <>
         Combinamos estaciones oficiales{" "}
-        <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">SIMA</a>{" "}
+        <a href="https://aire.nl.gob.mx/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-gray-600 hover:text-gray-800">SIMA</a>{" "}
         y sensores ciudadanos{" "}
-        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PurpleAir</a>{" "}
+        <a href="https://www.purpleair.com/" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 text-gray-600 hover:text-gray-800">PurpleAir</a>{" "}
         para darte la cobertura más completa.
       </>
     ),
