@@ -632,7 +632,40 @@ export default function MapaSensors({
                     <span className="truncate">
                       {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
                     </span>
+                    <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
                   </button>
+                  {showNearestDetail && (
+                    <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
+                      <div className="flex flex-col gap-3 px-4 py-3">
+                        {userLocation && nearestName && (
+                          <div className="flex items-center gap-2.5">
+                            <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                            <span className="text-sm text-gray-400">Tu sensor más cercano</span>
+                          </div>
+                        )}
+                        {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
+                          <div className="flex items-center gap-2.5">
+                            <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                            <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
+                          </div>
+                        )}
+                        {userLocation && nearestLat !== null && nearestLon !== null && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                              setCopied(true);
+                              setTimeout(() => setCopied(false), 1500);
+                            }}
+                            className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
+                          >
+                            <Copy className="h-3 w-3 flex-shrink-0" />
+                            {copied ? 'Copiado' : 'Copiar coordenadas'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   <div className="mt-3 mb-6 border-t border-gray-100" />
                   <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
