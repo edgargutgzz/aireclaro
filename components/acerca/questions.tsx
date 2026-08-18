@@ -7,7 +7,7 @@ const features = [
   {
     icon: Heart,
     title: "Recomendaciones de salud",
-    description: "Con base en el Índice de Aire y Salud mexicano (NOM-172-SEMARNAT-2023), te decimos cómo cuidarte según tu grupo de población.",
+    description: "Con base en el Índice de Aire y Salud mexicano (NOM-172-SEMARNAT-2023), te decimos cómo cuidarte, con recomendaciones específicas para niños, adultos mayores, embarazadas y personas con condiciones respiratorias.",
   },
   {
     icon: MapPin,
