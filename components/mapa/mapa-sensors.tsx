@@ -679,7 +679,7 @@ export default function MapaSensors({
                 <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                   <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                 </button>
-                <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                <div className="rounded-xl bg-gray-100 px-4 py-3">
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                   <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
@@ -697,7 +697,7 @@ export default function MapaSensors({
                   <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                 </button>
                 <div className="mb-3 flex flex-col gap-4">
-                  <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                  <div className="rounded-xl bg-gray-100 px-4 py-3">
                     <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                     <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                   </div>
@@ -707,7 +707,7 @@ export default function MapaSensors({
                     { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
                     { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
                   ].map(({ label, rec }) => (
-                    <div key={label} className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                    <div key={label} className="rounded-xl bg-gray-100 px-4 py-3">
                       <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
                       <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                     </div>
@@ -843,7 +843,7 @@ export default function MapaSensors({
                       <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                     </button>
                     <div className="mb-3 flex flex-col gap-4">
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                      <div className="rounded-xl bg-gray-100 px-4 py-3">
                         <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                         <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
                       </div>
@@ -853,7 +853,7 @@ export default function MapaSensors({
                         { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas },
                         { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades },
                       ].map(({ label, rec }) => (
-                        <div key={label} className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                        <div key={label} className="rounded-xl bg-gray-100 px-4 py-3">
                           <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
                           <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                         </div>
@@ -947,7 +947,7 @@ export default function MapaSensors({
                     <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                   </button>
                   <div className="mb-3 flex flex-col gap-4">
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                    <div className="rounded-xl bg-gray-100 px-4 py-3">
                       <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                       <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
                     </div>
@@ -957,7 +957,7 @@ export default function MapaSensors({
                       { label: "Mujeres embarazadas", rec: sensorQuality.sensitiveRecs.embarazadas },
                       { label: "Condiciones cardiovasculares o respiratorias", rec: sensorQuality.sensitiveRecs.enfermedades },
                     ].map(({ label, rec }) => (
-                      <div key={label} className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                      <div key={label} className="rounded-xl bg-gray-100 px-4 py-3">
                         <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
                         <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                       </div>
@@ -1106,7 +1106,7 @@ export default function MapaSensors({
                 <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
               </button>
               <div className="mb-3 flex flex-col gap-4">
-                <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                <div className="rounded-xl bg-gray-100 px-4 py-3">
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                   <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
                 </div>
@@ -1116,7 +1116,7 @@ export default function MapaSensors({
                   { label: "Mujeres embarazadas", rec: qualityInfo.sensitiveRecs.embarazadas },
                   { label: "Condiciones cardiovasculares o respiratorias", rec: qualityInfo.sensitiveRecs.enfermedades },
                 ].map(({ label, rec }) => (
-                  <div key={label} className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                  <div key={label} className="rounded-xl bg-gray-100 px-4 py-3">
                     <p className="mb-1 text-sm font-semibold text-gray-700">{label}</p>
                     <p className="text-sm leading-relaxed text-gray-500">{rec}</p>
                   </div>
