@@ -614,23 +614,23 @@ export default function MapaSensors({
                 <>
                   <div className="flex items-baseline justify-between">
                     <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
-                        {qualityInfo.label}
-                      </span>
-                      <ChevronDown className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
-                    </div>
+                    <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
+                      {qualityInfo.label}
+                    </span>
                   </div>
                   {displayPm25 !== null && (
                     <p className="mt-0.5 text-right text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ de PM2.5</p>
                   )}
                   <div className="mt-3 mb-6 border-t border-gray-100" />
-                  <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                  <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                   </button>
                   <div className="rounded-xl bg-gray-50 px-4 py-3">
                     <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
                     <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
+                  </div>
+                  <div className="mt-3 flex justify-center">
+                    <ChevronDown className="h-3.5 w-3.5 text-gray-300" />
                   </div>
                 </>
               ) : (
