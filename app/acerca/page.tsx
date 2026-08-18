@@ -120,8 +120,10 @@ export default function Acerca() {
         {/* FAQ section */}
         <Questions />
 
+        <div className="mt-10 border-t border-gray-100" />
+
         {/* Footer */}
-        <div className="mt-10 px-4 py-5 md:py-4">
+        <div className="px-4 py-5 md:py-4">
           <div className="mx-auto flex max-w-2xl flex-col items-start gap-2 md:flex-row md:items-center md:justify-between md:gap-0">
             <Link href="/aviso-privacidad" className="text-sm text-gray-400 hover:text-gray-600">
               Aviso de Privacidad
