@@ -646,17 +646,17 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute bottom-14 right-12 z-10 hidden flex-col gap-4 md:flex">
         <button
           onClick={userLocation ? flyToUser : requestLocation}
-          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
-          <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          <Navigation className={`h-6 w-6 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
         </button>
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className={`pointer-events-auto flex h-12 w-12 items-center justify-center rounded-xl border shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 ${showFilters ? 'border-gray-900/20 bg-white/90' : 'border-white/60 bg-white/80'}`}
+          className={`pointer-events-auto flex h-14 w-14 items-center justify-center rounded-xl border shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 ${showFilters ? 'border-gray-900/20 bg-white/90' : 'border-white/60 bg-white/80'}`}
           aria-label="Capas"
         >
-          <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
+          <Layers className={`h-6 w-6 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
         </button>
       </div>
 
