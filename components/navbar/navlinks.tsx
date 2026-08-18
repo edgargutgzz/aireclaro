@@ -54,7 +54,7 @@ export default function Navlinks() {
             {/* Desktop view */}
             <div
               className={clsx(
-                "hidden md:flex md:items-center md:rounded-full md:px-4 md:py-2.5 md:border md:transition-colors",
+                "hidden md:flex md:items-center md:rounded-full md:px-6 md:py-2.5 md:border md:transition-colors",
                 {
                   "md:border-gray-200 md:bg-gray-200/80 md:text-gray-900": isSelected,
                   "md:border-transparent md:text-gray-400 md:hover:bg-gray-100": !isSelected,
