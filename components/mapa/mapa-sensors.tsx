@@ -1008,7 +1008,7 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className={`fixed left-0 right-0 z-[40] rounded-t-3xl flex flex-col md:hidden overflow-hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 ${sheetState === 'peek' ? 'bg-white/80 backdrop-blur-md border-t border-white/60' : 'bg-white'}`}
+        className="fixed left-0 right-0 z-[40] rounded-t-3xl flex flex-col md:hidden overflow-hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] bg-white"
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
