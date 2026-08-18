@@ -47,7 +47,7 @@ export default function Questions() {
             <div key={title}>
               <button
                 onClick={() => setOpenMobile(isOpen ? null : title)}
-                className="flex w-full items-center justify-between gap-3 py-3.5"
+                className="flex w-full items-center justify-between gap-3 py-3.5 pr-2"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gray-50">
@@ -55,7 +55,7 @@ export default function Questions() {
                   </div>
                   <span className="truncate text-sm font-normal text-gray-600">{title}</span>
                 </div>
-                <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-300 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
                 <div className="pb-4">
