@@ -612,15 +612,15 @@ export default function MapaSensors({
             >
               {!desktopCardOpen ? (
                 <>
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+                  <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+                  <div className="mt-1 flex items-center gap-3">
                     <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
                       {qualityInfo.label}
                     </span>
+                    {displayPm25 !== null && (
+                      <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ de PM2.5</span>
+                    )}
                   </div>
-                  {displayPm25 !== null && (
-                    <p className="mt-0.5 text-right text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ de PM2.5</p>
-                  )}
                   <div className="mt-3 mb-6 border-t border-gray-100" />
                   <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
