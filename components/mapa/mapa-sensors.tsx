@@ -691,7 +691,7 @@ export default function MapaSensors({
                     </div>
                   )}
                 </div>
-                <div className="my-6 border-t border-gray-100" />
+                <div className="mt-3 mb-6 border-t border-gray-100" />
                 <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                   <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                 </button>
@@ -837,7 +837,7 @@ export default function MapaSensors({
                 </div>
                 {sensorQuality && (
                   <>
-                    <div className="my-6 border-t border-gray-100" />
+                    <div className="mt-3 mb-6 border-t border-gray-100" />
                     <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                       <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                     </button>
@@ -941,7 +941,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="my-6 border-t border-gray-100" />
+                  <div className="mt-3 mb-6 border-t border-gray-100" />
                   <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span className="underline underline-offset-2 decoration-gray-300">Cuida tu salud</span>
                   </button>
@@ -1008,7 +1008,7 @@ export default function MapaSensors({
 
       {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
       <div
-        className="fixed left-0 right-0 z-[40] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col md:hidden overflow-hidden"
+        className={`fixed left-0 right-0 z-[40] rounded-t-3xl flex flex-col md:hidden overflow-hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 ${sheetState === 'peek' ? 'bg-white/80 backdrop-blur-md border-t border-white/60' : 'bg-white'}`}
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
