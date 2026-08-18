@@ -412,6 +412,10 @@ export default function MapaSensors({
           setTimeout(() => setHighlightQualityCard(false), 600);
           return;
         }
+        if (isDesktop && selectedSensor?.sensor.sensor_id === sensor.sensor_id) {
+          setSelectedSensor(null);
+          return;
+        }
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
       });
 
