@@ -634,7 +634,7 @@ export default function MapaSensors({
 
         {/* Quality card */}
         {qualityInfo && (
-          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ${highlightQualityCard ? 'scale-[1.02] shadow-md' : 'scale-100'} ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
+          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${highlightQualityCard ? 'shake' : ''} ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
               {/* Top row: label */}
