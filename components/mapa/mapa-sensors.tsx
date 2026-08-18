@@ -355,7 +355,7 @@ export default function MapaSensors({
     userMarkerElement.style.cssText = `
       width: 16px;
       height: 16px;
-      background: #6b7280;
+      background: #3b82f6;
       border: 2px solid white;
       border-radius: 50%;
       box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
