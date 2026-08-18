@@ -226,6 +226,7 @@ export default function MapaSensors({
   const [showQualitySource, setShowQualitySource] = useState(false);
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
   const [desktopCardOpen, setDesktopCardOpen] = useState(false);
+  const [highlightQualityCard, setHighlightQualityCard] = useState(false);
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
@@ -406,7 +407,11 @@ export default function MapaSensors({
         e.stopPropagation();
         const isDesktop = window.innerWidth >= 768;
         const isNearest = nearestSensorData?.sensorId === sensor.sensor_id;
-        if (isDesktop && isNearest) return;
+        if (isDesktop && isNearest) {
+          setHighlightQualityCard(true);
+          setTimeout(() => setHighlightQualityCard(false), 600);
+          return;
+        }
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
       });
 
@@ -593,7 +598,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop right-side floating controls */}
-      <div className="pointer-events-none absolute right-6 top-1/2 z-10 hidden -translate-y-1/2 flex-col gap-2 md:flex">
+      <div className="pointer-events-none absolute bottom-8 right-6 z-10 hidden flex-col gap-2 md:flex">
         <button
           onClick={userLocation ? flyToUser : requestLocation}
           className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
@@ -625,7 +630,7 @@ export default function MapaSensors({
 
         {/* Quality card */}
         {qualityInfo && (
-          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
+          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 ${highlightQualityCard ? 'border-gray-900 ring-2 ring-gray-900/20' : desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
               {/* Top row: label */}
