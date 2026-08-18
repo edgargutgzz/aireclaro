@@ -120,20 +120,19 @@ export default function Acerca() {
         {/* FAQ section */}
         <Questions />
 
-
-      </div>
-
-      <div className="border-t border-gray-100 px-4 py-5 md:py-4">
-        <div className="mx-auto flex max-w-2xl items-center justify-between">
-          <Link href="/aviso-privacidad" className="text-xs text-gray-400 underline underline-offset-4 hover:text-gray-600">
-            Aviso de Privacidad
-          </Link>
-          <Link href="https://datacomun.com" target="_blank" className="text-xs text-gray-400 hover:text-gray-600">
-            Desarrollado por <span><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
-          </Link>
+        {/* Footer */}
+        <div className="mt-10 border-t border-gray-100 py-5 md:py-4">
+          <div className="mx-auto flex max-w-2xl items-center justify-between">
+            <Link href="/aviso-privacidad" className="text-xs text-gray-400 underline underline-offset-4 hover:text-gray-600">
+              Aviso de Privacidad
+            </Link>
+            <Link href="https://datacomun.com" target="_blank" className="text-xs text-gray-400 hover:text-gray-600">
+              Desarrollado por <span><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+            </Link>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
   );
 }
