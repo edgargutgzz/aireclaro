@@ -755,24 +755,20 @@ export default function MapaSensors({
         )}
 
         {/* Action buttons */}
-        <div className="pointer-events-auto hidden flex-col gap-2">
+        <div className="pointer-events-auto flex gap-2">
           <button
             onClick={userLocation ? flyToUser : requestLocation}
-            className="flex h-10 w-full items-center gap-3 rounded-lg border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+            aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
           >
-            <Navigation className={`h-4 w-4 flex-shrink-0 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-            <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
-              {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
-            </span>
+            <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
           </button>
           <button
             onClick={() => setShowFilters((v) => !v)}
-            className={`flex h-10 w-full items-center gap-3 rounded-lg border border-white/60 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 ${showFilters ? 'bg-white/90' : 'bg-white/80'}`}
+            className={`flex h-10 w-10 items-center justify-center rounded-xl border shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 ${showFilters ? 'border-gray-900/20 bg-white/90' : 'border-white/60 bg-white/80'}`}
+            aria-label="Capas"
           >
-            <Layers className={`h-4 w-4 flex-shrink-0 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
-            <span className={`text-sm font-medium ${showFilters ? 'text-gray-900' : 'text-gray-700'}`}>
-              {showFilters ? 'Ocultar capas' : 'Mostrar capas'}
-            </span>
+            <Layers className={`h-4 w-4 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
           </button>
         </div>
 
