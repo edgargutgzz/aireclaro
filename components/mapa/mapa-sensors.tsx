@@ -50,7 +50,7 @@ const createMarker = (pm25: number | null, source: string): HTMLElement | null =
 
   const { bg } = colorInfo;
   const isSima = source === "sima";
-  const textColor = bg === "#ffff00" ? "#6b7280" : "white";
+  const textColor = bg === "#ffff00" ? "#9ca3af" : "white";
 
   const el = document.createElement("div");
   el.style.width = "40px";
@@ -568,7 +568,7 @@ export default function MapaSensors({
               <Landmark className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
             </div>
-            <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showSima ? '#6b7280' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+            <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showSima ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
               <span style={{ position: 'absolute', top: 2, left: 2, width: 18, height: 18, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(18px)' : 'translateX(0)' }} />
             </div>
           </button>
@@ -582,7 +582,7 @@ export default function MapaSensors({
               <Users className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
             </div>
-            <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showPurpleAir ? '#6b7280' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+            <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showPurpleAir ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
               <span style={{ position: 'absolute', top: 2, left: 2, width: 18, height: 18, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(18px)' : 'translateX(0)' }} />
             </div>
           </button>
@@ -733,7 +733,7 @@ export default function MapaSensors({
                 <Landmark className="h-4 w-4 text-gray-400" />
                 <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
               </div>
-              <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showSima ? '#6b7280' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+              <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showSima ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
                 <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(16px)' : 'translateX(0)' }} />
               </div>
             </button>
@@ -747,7 +747,7 @@ export default function MapaSensors({
                 <Users className="h-4 w-4 text-gray-400" />
                 <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
               </div>
-              <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showPurpleAir ? '#6b7280' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+              <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showPurpleAir ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
                 <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(16px)' : 'translateX(0)' }} />
               </div>
             </button>
