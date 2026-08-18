@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <>
       {/* Mobile navbar at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/60 bg-white/80 backdrop-blur-md shadow-sm md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/60 bg-blue-500 backdrop-blur-md shadow-sm md:hidden">
         <div className="flex w-full items-center justify-around px-4 pt-3 pb-3">
           <Navlinks />
         </div>
