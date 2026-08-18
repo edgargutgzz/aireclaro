@@ -589,6 +589,24 @@ export default function MapaSensors({
         </div>
       </div>
 
+      {/* Desktop right-side floating controls */}
+      <div className="pointer-events-none absolute right-6 top-1/2 z-10 hidden -translate-y-1/2 flex-col gap-2 md:flex">
+        <button
+          onClick={userLocation ? flyToUser : requestLocation}
+          className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
+        >
+          <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+        </button>
+        <button
+          onClick={() => setShowFilters((v) => !v)}
+          className={`pointer-events-auto flex h-10 w-10 items-center justify-center rounded-xl border shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 ${showFilters ? 'border-gray-900/20 bg-white/90' : 'border-white/60 bg-white/80'}`}
+          aria-label="Capas"
+        >
+          <Layers className={`h-4 w-4 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
+        </button>
+      </div>
+
       {/* Desktop left area — quality card + filter pills beside it */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden items-start gap-2 md:flex">
 
@@ -754,23 +772,6 @@ export default function MapaSensors({
           </div>
         )}
 
-        {/* Action buttons */}
-        <div className="pointer-events-auto flex gap-2">
-          <button
-            onClick={userLocation ? flyToUser : requestLocation}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-            aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
-          >
-            <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          </button>
-          <button
-            onClick={() => setShowFilters((v) => !v)}
-            className={`flex h-10 w-10 items-center justify-center rounded-xl border shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 ${showFilters ? 'border-gray-900/20 bg-white/90' : 'border-white/60 bg-white/80'}`}
-            aria-label="Capas"
-          >
-            <Layers className={`h-4 w-4 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
-          </button>
-        </div>
 
 </div>{/* end left column */}
 
