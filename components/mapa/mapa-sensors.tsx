@@ -681,7 +681,7 @@ export default function MapaSensors({
               ) : (
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-                  <ChevronDown className="h-3.5 w-3.5 rotate-180 text-gray-400" />
+                  <ChevronDown className="h-3.5 w-3.5 rotate-180 text-gray-600" />
                 </div>
               )}
             </div>
