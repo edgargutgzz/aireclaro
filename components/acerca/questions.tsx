@@ -54,18 +54,18 @@ export default function Questions() {
         {features.map(({ icon: Icon, title, description }) => {
           const isOpen = openMobile === title;
           return (
-            <div key={title} className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+            <div key={title} className="overflow-hidden rounded-2xl border border-gray-100 bg-white">
               <button
                 onClick={() => setOpenMobile(isOpen ? null : title)}
-                className="flex w-full items-center justify-between gap-3 px-4 py-4"
+                className="flex w-full items-center justify-between gap-3 px-4 py-3.5"
               >
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gray-50">
-                    <Icon className="h-4 w-4 text-gray-500" />
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gray-50">
+                    <Icon className="h-3.5 w-3.5 text-gray-400" />
                   </div>
-                  <span className="truncate text-sm font-semibold text-gray-700">{title}</span>
+                  <span className="truncate text-sm font-medium text-gray-600">{title}</span>
                 </div>
-                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-300 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
                 <div className="px-4 pb-4">
