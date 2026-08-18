@@ -30,8 +30,8 @@ const features = [
   },
   {
     icon: Wind,
-    title: "PM2.5 en tiempo real",
-    description: "El contaminante más peligroso para tu salud, con datos actualizados cada hora.",
+    title: "El contaminante más peligroso",
+    description: "PM2.5, actualizado cada hora: la partícula más dañina para tu salud.",
   },
 ];
 
