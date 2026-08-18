@@ -122,7 +122,7 @@ export default function Acerca() {
 
         {/* Footer */}
         <div className="mt-10 px-4 py-5 md:py-4">
-          <div className="mx-auto flex max-w-2xl items-center justify-between">
+          <div className="mx-auto flex max-w-2xl flex-col items-start gap-2 md:flex-row md:items-center md:justify-between md:gap-0">
             <Link href="/aviso-privacidad" className="text-xs text-gray-400 hover:text-gray-600">
               Aviso de Privacidad
             </Link>
