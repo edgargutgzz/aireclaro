@@ -123,7 +123,7 @@ export default function Acerca() {
 
       </div>
 
-      <div className="border-t border-gray-100 px-4 pt-4 pb-6 md:py-4">
+      <div className="border-t border-gray-100 px-4 py-5 md:py-4">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
           <Link href="/aviso-privacidad" className="text-xs text-gray-400 underline underline-offset-4 hover:text-gray-600">
             Aviso de Privacidad
