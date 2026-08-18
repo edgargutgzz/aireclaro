@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar/navbar";
+import MainContent from "@/components/main-content";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -106,9 +107,7 @@ export default function RootLayout({
             <Navbar />
           </div>
           {/* Content - no padding */}
-          <main className="w-full flex-grow overflow-y-auto bg-gray-50">
-            {children}
-          </main>
+          <MainContent>{children}</MainContent>
         </div>
         <Analytics />
         <SpeedInsights />
