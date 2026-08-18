@@ -63,7 +63,7 @@ export default function Questions() {
                   <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-gray-50">
                     <Icon className="h-3.5 w-3.5 text-gray-400" />
                   </div>
-                  <span className="truncate text-sm font-medium text-gray-600">{title}</span>
+                  <span className="truncate text-sm font-medium text-gray-400">{title}</span>
                 </div>
                 <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-300 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
               </button>
