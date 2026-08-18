@@ -662,22 +662,22 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left area — quality card + filter pills beside it */}
-      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden items-start gap-2 md:flex">
-
-        {/* Left column: logo + nav + quality card + legend */}
-        <div className="flex w-[340px] flex-col gap-2">
+      {/* Desktop left area — nav + (quality card + selected sensor) */}
+      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden flex-col gap-2 md:flex">
 
         {/* Nav */}
-        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+        <div className="pointer-events-auto w-[340px] overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
           <div className="flex w-full items-center justify-around px-4 py-3">
             <Navlinks />
           </div>
         </div>
 
+        {/* Row: quality card + selected sensor — both start at same level */}
+        <div className="flex items-start gap-2">
+
         {/* Quality card */}
         {qualityInfo && (
-          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${highlightQualityCard ? 'shake' : ''} ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
+          <div className={`pointer-events-auto w-[340px] overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${highlightQualityCard ? 'shake' : ''} ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
               {/* Top row: label */}
@@ -790,11 +790,6 @@ export default function MapaSensors({
           </div>
         )}
 
-
-
-
-</div>{/* end left column */}
-
         {/* Column 2: selected sensor */}
         {selectedSensor && (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
@@ -901,7 +896,8 @@ export default function MapaSensors({
           );
         })()}
 
-      </div>
+        </div>{/* end inner flex row */}
+      </div>{/* end outer flex-col */}
 
 
 
