@@ -123,11 +123,11 @@ export default function Acerca() {
         {/* Mobile footer — scrolls with the content, below the last dropdown */}
         <div className="mt-10 border-t border-gray-100 px-4 pt-5 pb-2 md:hidden">
           <div className="mx-auto flex max-w-2xl flex-col items-start gap-2">
-            <Link href="/aviso-privacidad" className="text-sm text-gray-400 hover:text-gray-600">
+            <Link href="/aviso-privacidad" className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600">
               Aviso de Privacidad
             </Link>
             <Link href="https://datacomun.com" target="_blank" className="text-sm text-gray-400 hover:text-gray-600">
-              Desarrollado por <span><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+              Desarrollado por <span className="underline underline-offset-4"><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
             </Link>
           </div>
         </div>
@@ -137,11 +137,11 @@ export default function Acerca() {
       {/* Desktop footer — pinned to the bottom of the viewport, not part of the scroll */}
       <div className="hidden min-h-16 items-center px-4 pb-4 md:flex">
         <div className="mx-auto flex w-full max-w-2xl items-center justify-between border-t border-gray-100 pt-4">
-          <Link href="/aviso-privacidad" className="text-sm text-gray-400 hover:text-gray-600">
+          <Link href="/aviso-privacidad" className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600">
             Aviso de Privacidad
           </Link>
           <Link href="https://datacomun.com" target="_blank" className="text-sm text-gray-400 hover:text-gray-600">
-            Desarrollado por <span><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+            Desarrollado por <span className="underline underline-offset-4"><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
           </Link>
         </div>
       </div>
