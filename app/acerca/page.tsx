@@ -120,18 +120,18 @@ export default function Acerca() {
         {/* FAQ section */}
         <Questions />
 
-      </div>
-
-      {/* Mobile footer — pinned to the bottom of the viewport, not part of the scroll */}
-      <div className="flex min-h-16 items-center px-8 pb-7 md:hidden">
-        <div className="mx-auto flex w-full max-w-2xl flex-col items-start gap-2 border-t border-gray-100 pt-5">
-          <Link href="/aviso-privacidad" className="text-sm text-gray-400 hover:text-gray-600">
-            Aviso de Privacidad
-          </Link>
-          <Link href="https://datacomun.com" target="_blank" className="text-sm text-gray-400 hover:text-gray-600">
-            Desarrollado por <span><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
-          </Link>
+        {/* Mobile footer — scrolls with the content, below the last dropdown */}
+        <div className="mt-10 border-t border-gray-100 px-4 pt-5 pb-2 md:hidden">
+          <div className="mx-auto flex max-w-2xl flex-col items-start gap-2">
+            <Link href="/aviso-privacidad" className="text-sm text-gray-400 hover:text-gray-600">
+              Aviso de Privacidad
+            </Link>
+            <Link href="https://datacomun.com" target="_blank" className="text-sm text-gray-400 hover:text-gray-600">
+              Desarrollado por <span><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+            </Link>
+          </div>
         </div>
+
       </div>
 
       {/* Desktop footer — pinned to the bottom of the viewport, not part of the scroll */}
