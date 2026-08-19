@@ -122,7 +122,7 @@ export default function Acerca() {
 
         {/* Mobile footer — scrolls with the content, below the last dropdown */}
         <div className="mt-10 border-t border-gray-100 px-4 pt-5 pb-2 md:hidden">
-          <div className="mx-auto flex max-w-2xl flex-col items-start gap-2">
+          <div className="mx-auto flex max-w-2xl flex-col items-start gap-3">
             <Link href="/aviso-privacidad" className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600">
               Aviso de Privacidad
             </Link>
