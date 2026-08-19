@@ -53,13 +53,13 @@ export default function Questions() {
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <Icon className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                  <span className="truncate text-sm font-normal text-gray-600">{title}</span>
+                  <span className="truncate text-sm font-normal text-gray-600 md:text-base">{title}</span>
                 </div>
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
                 <div className="pb-4 pl-7">
-                  <p className="text-sm leading-relaxed text-gray-600">{description}</p>
+                  <p className="text-sm leading-relaxed text-gray-600 md:text-base">{description}</p>
                 </div>
               )}
             </div>
@@ -79,13 +79,13 @@ export default function Questions() {
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <Icon className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                  <span className="truncate text-sm font-normal text-gray-600">{title}</span>
+                  <span className="truncate text-sm font-normal text-gray-600 md:text-base">{title}</span>
                 </div>
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
                 <div className="pb-4 pl-7">
-                  <p className="text-sm leading-relaxed text-gray-600">{description}</p>
+                  <p className="text-sm leading-relaxed text-gray-600 md:text-base">{description}</p>
                 </div>
               )}
             </div>
