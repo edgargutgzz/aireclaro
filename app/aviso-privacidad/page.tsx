@@ -75,7 +75,7 @@ export default function Aviso() {
             Aviso de Privacidad
           </Link>
           <Link href="https://datacomun.com" target="_blank" className="text-xs text-gray-400 hover:text-gray-600">
-            Desarrollado por <span><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+            Desarrollado por datacomun
           </Link>
         </div>
       </div>

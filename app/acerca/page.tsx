@@ -127,7 +127,7 @@ export default function Acerca() {
               Aviso de Privacidad
             </Link>
             <Link href="https://datacomun.com" target="_blank" className="text-sm text-gray-400 hover:text-gray-600">
-              Desarrollado por <span className="underline underline-offset-4"><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+              Desarrollado por <span className="underline underline-offset-4">datacomun</span>
             </Link>
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function Acerca() {
             Aviso de Privacidad
           </Link>
           <Link href="https://datacomun.com" target="_blank" className="text-sm text-gray-400 hover:text-gray-600">
-            Desarrollado por <span className="underline underline-offset-4"><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+            Desarrollado por <span className="underline underline-offset-4">datacomun</span>
           </Link>
         </div>
       </div>
