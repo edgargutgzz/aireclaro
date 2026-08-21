@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock, Shield } from "lucide-react";
+import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock, Award } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -838,8 +838,8 @@ export default function MapaSensors({
                       )}
                       {sensor.red && (
                         <div className="flex items-center gap-2.5">
-                          <Shield className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Red {sensor.red}</span>
+                          <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Red: {sensor.red}</span>
                         </div>
                       )}
                       <button
@@ -969,8 +969,8 @@ export default function MapaSensors({
                       )}
                       {sensor.red && (
                         <div className="flex items-center gap-2.5">
-                          <Shield className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Red {sensor.red}</span>
+                          <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Red: {sensor.red}</span>
                         </div>
                       )}
                       <button
