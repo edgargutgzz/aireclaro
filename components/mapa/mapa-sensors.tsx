@@ -884,16 +884,16 @@ export default function MapaSensors({
                 {showSensorDetail && (
                   <div className="mt-3 overflow-hidden rounded-xl bg-gray-100">
                     <div className="flex flex-col gap-3 px-4 py-3">
-                      {timestamp && (
-                        <div className="flex items-center gap-2.5">
-                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
-                        </div>
-                      )}
                       {sensor.red && (
                         <div className="flex items-center gap-2.5">
                           <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
                           <span className="text-sm text-gray-400">Red: {sensor.red}</span>
+                        </div>
+                      )}
+                      {timestamp && (
+                        <div className="flex items-center gap-2.5">
+                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
                         </div>
                       )}
                       <button
@@ -1015,16 +1015,16 @@ export default function MapaSensors({
                 {showSensorDetail && (
                   <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
                     <div className="flex flex-col gap-3 px-4 py-3">
-                      {timestamp && (
-                        <div className="flex items-center gap-2.5">
-                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
-                        </div>
-                      )}
                       {sensor.red && (
                         <div className="flex items-center gap-2.5">
                           <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
                           <span className="text-sm text-gray-400">Red: {sensor.red}</span>
+                        </div>
+                      )}
+                      {timestamp && (
+                        <div className="flex items-center gap-2.5">
+                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
                         </div>
                       )}
                       <button
