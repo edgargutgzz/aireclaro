@@ -126,9 +126,12 @@ export default function Acerca() {
             <Link href="/aviso-privacidad" className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600">
               Aviso de Privacidad
             </Link>
-            <Link href="https://datacomun.com" target="_blank" className="text-sm text-gray-400 hover:text-gray-600">
-              Desarrollado por <span className="underline underline-offset-4">datacomun</span>
-            </Link>
+            <span className="text-sm text-gray-400">
+              Desarrollado por{" "}
+              <Link href="https://datacomun.com" target="_blank" className="underline underline-offset-4 hover:text-gray-600">
+                datacomun
+              </Link>
+            </span>
           </div>
         </div>
 
