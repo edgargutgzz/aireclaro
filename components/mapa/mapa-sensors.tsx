@@ -213,6 +213,7 @@ export default function MapaSensors({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showPurpleAir, setShowPurpleAir] = useState(true);
   const [showSima, setShowSima] = useState(true);
+  const [showOccamm, setShowOccamm] = useState(true);
   const [selectedSensor, setSelectedSensor] = useState<{
     sensor: Sensor;
     pm25: number | null;
@@ -389,6 +390,7 @@ export default function MapaSensors({
 
       if (isSima && !showSima) return;
       if (!isSima && !showPurpleAir) return;
+      if (!isSima && sensor.red && !showOccamm) return;
 
       const latestData = data.find(
         (dataItem) => dataItem.sensor_id === sensor.sensor_id,
@@ -435,7 +437,7 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, sensors, data, showPurpleAir, showSima]);
+  }, [mapLoaded, sensors, data, showPurpleAir, showSima, showOccamm]);
 
   // Cleanup markers when component unmounts
   useEffect(() => {
@@ -604,6 +606,21 @@ export default function MapaSensors({
               <span style={{ position: 'absolute', top: 2, left: 2, width: 18, height: 18, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(18px)' : 'translateX(0)' }} />
             </div>
           </button>
+          <button
+            onClick={() => showPurpleAir && setShowOccamm((v) => !v)}
+            disabled={!showPurpleAir}
+            className={`ml-4 flex items-center justify-between rounded-xl border px-3 py-2.5 transition-all duration-200 ${
+              showOccamm && showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Award className="h-3.5 w-3.5 text-gray-400" />
+              <span className="text-xs font-medium text-gray-600">Red OCCAMM</span>
+            </div>
+            <div style={{ width: 32, height: 18, borderRadius: 9, backgroundColor: showOccamm ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+              <span style={{ position: 'absolute', top: 2, left: 2, width: 14, height: 14, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showOccamm ? 'translateX(14px)' : 'translateX(0)' }} />
+            </div>
+          </button>
         </div>
       </div>
 
@@ -641,6 +658,21 @@ export default function MapaSensors({
                 </div>
                 <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showPurpleAir ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
                   <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(16px)' : 'translateX(0)' }} />
+                </div>
+              </button>
+              <button
+                onClick={() => showPurpleAir && setShowOccamm((v) => !v)}
+                disabled={!showPurpleAir}
+                className={`ml-4 flex items-center justify-between rounded-xl border px-3 py-2 transition-all duration-200 ${
+                  showOccamm && showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Award className="h-3.5 w-3.5 text-gray-400" />
+                  <span className="text-xs font-medium text-gray-600">Red OCCAMM</span>
+                </div>
+                <div style={{ width: 32, height: 18, borderRadius: 9, backgroundColor: showOccamm ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
+                  <span style={{ position: 'absolute', top: 2, left: 2, width: 14, height: 14, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showOccamm ? 'translateX(14px)' : 'translateX(0)' }} />
                 </div>
               </button>
             </div>
