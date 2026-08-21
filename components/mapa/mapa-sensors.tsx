@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock } from "lucide-react";
+import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock, Tag } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -20,6 +20,7 @@ interface Sensor {
   lat: number;
   lon: number;
   source: string; // purpleAir o sima
+  red?: string | null;
 }
 
 // Air Quality Data interface
@@ -835,6 +836,12 @@ export default function MapaSensors({
                           <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
                         </div>
                       )}
+                      {sensor.red && (
+                        <div className="flex items-center gap-2.5">
+                          <Tag className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Red {sensor.red}</span>
+                        </div>
+                      )}
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
@@ -958,6 +965,12 @@ export default function MapaSensors({
                         <div className="flex items-center gap-2.5">
                           <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
                           <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
+                        </div>
+                      )}
+                      {sensor.red && (
+                        <div className="flex items-center gap-2.5">
+                          <Tag className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Red {sensor.red}</span>
                         </div>
                       )}
                       <button
