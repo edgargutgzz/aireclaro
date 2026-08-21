@@ -626,7 +626,7 @@ export default function MapaSensors({
           >
             <div className="flex items-center gap-3">
               <Landmark className="h-4 w-4 text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
+              <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
             </div>
             <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showSima ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
               <span style={{ position: 'absolute', top: 2, left: 2, width: 18, height: 18, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(18px)' : 'translateX(0)' }} />
@@ -691,7 +691,7 @@ export default function MapaSensors({
               >
                 <div className="flex items-center gap-3">
                   <Landmark className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm font-medium text-gray-700">Estaciones SIMA</span>
+                  <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
                 </div>
                 <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showSima ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
                   <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(16px)' : 'translateX(0)' }} />
