@@ -7,7 +7,7 @@ export default async function PurpleAirData() {
     .from("purpleair_mediciones")
     .select("id, sensor_id, pm25, time_stamp")
     .order("time_stamp", { ascending: false })
-    .limit(200);
+    .limit(250);
 
   if (error) {
     console.error("PurpleAir Data fetch error:", error);
