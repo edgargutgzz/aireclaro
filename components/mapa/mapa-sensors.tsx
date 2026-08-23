@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
 import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock, Award } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
@@ -191,6 +191,114 @@ function LegendContent() {
           <p className="hidden pl-[22px] pt-0.5 text-xs text-gray-400 md:block">{range}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+function LayersFilterContent({
+  compact,
+  showPurpleAir,
+  setShowPurpleAir,
+  purpleAirMode,
+  setPurpleAirMode,
+  showSima,
+  setShowSima,
+}: {
+  compact: boolean;
+  showPurpleAir: boolean;
+  setShowPurpleAir: Dispatch<SetStateAction<boolean>>;
+  purpleAirMode: 'all' | 'occamm';
+  setPurpleAirMode: Dispatch<SetStateAction<'all' | 'occamm'>>;
+  showSima: boolean;
+  setShowSima: Dispatch<SetStateAction<boolean>>;
+}) {
+  const trackWidth = compact ? 36 : 40;
+  const trackHeight = compact ? 20 : 22;
+  const trackRadius = compact ? 10 : 11;
+  const thumbSize = compact ? 16 : 18;
+  const headerPadding = compact ? "py-3" : "py-4";
+  const bodyPadding = compact ? "py-2.5" : "py-3";
+
+  const toggleTrack = (on: boolean) => ({
+    width: trackWidth,
+    height: trackHeight,
+    borderRadius: trackRadius,
+    backgroundColor: on ? '#9ca3af' : '#e5e7eb',
+    transition: 'background-color 300ms',
+    position: 'relative' as const,
+    flexShrink: 0,
+  });
+
+  const toggleThumb = (on: boolean) => ({
+    position: 'absolute' as const,
+    top: 2,
+    left: 2,
+    width: thumbSize,
+    height: thumbSize,
+    borderRadius: '50%',
+    backgroundColor: 'white',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+    transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
+    transform: on ? `translateX(${thumbSize}px)` : 'translateX(0)',
+  });
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div
+        className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
+          showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+        }`}
+      >
+        <button
+          onClick={() => setShowPurpleAir((v) => !v)}
+          className={`flex w-full items-center justify-between px-4 ${headerPadding}`}
+        >
+          <div className="flex items-center gap-3">
+            <Users className="h-4 w-4 text-gray-400" />
+            <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+          </div>
+          <div style={toggleTrack(showPurpleAir)}>
+            <span style={toggleThumb(showPurpleAir)} />
+          </div>
+        </button>
+        <div className={`border-t border-gray-100 px-4 ${bodyPadding} ${!showPurpleAir ? "opacity-40" : ""}`}>
+          <div className="mb-2 flex items-center gap-2">
+            <Award className="h-3.5 w-3.5 text-gray-400" />
+            <span className="text-xs font-medium text-gray-500">Red OCCAMM</span>
+          </div>
+          <div className="flex gap-1 rounded-full bg-gray-100 p-1">
+            <button
+              onClick={() => showPurpleAir && setPurpleAirMode('all')}
+              disabled={!showPurpleAir}
+              className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-colors ${purpleAirMode === 'all' ? 'bg-white text-gray-700 shadow-sm' : 'text-gray-400'}`}
+            >
+              Todos
+            </button>
+            <button
+              onClick={() => showPurpleAir && setPurpleAirMode('occamm')}
+              disabled={!showPurpleAir}
+              className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-colors ${purpleAirMode === 'occamm' ? 'bg-white text-gray-700 shadow-sm' : 'text-gray-400'}`}
+            >
+              Solo OCCAMM
+            </button>
+          </div>
+        </div>
+      </div>
+      <button
+        onClick={() => setShowSima((v) => !v)}
+        className={`flex items-center justify-between rounded-2xl border px-4 ${headerPadding} transition-all duration-200 ${
+          showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
+        }`}
+        style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
+      >
+        <div className="flex items-center gap-3">
+          <Landmark className="h-4 w-4 text-gray-400" />
+          <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
+        </div>
+        <div style={toggleTrack(showSima)}>
+          <span style={toggleThumb(showSima)} />
+        </div>
+      </button>
     </div>
   );
 }
@@ -577,61 +685,15 @@ export default function MapaSensors({
           className="flex flex-col gap-3 px-5"
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
-          <div
-            className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
-              showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
-            }`}
-          >
-            <button
-              onClick={() => setShowPurpleAir((v) => !v)}
-              className="flex w-full items-center justify-between px-4 py-4"
-            >
-              <div className="flex items-center gap-3">
-                <Users className="h-4 w-4 text-gray-400" />
-                <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
-              </div>
-              <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showPurpleAir ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
-                <span style={{ position: 'absolute', top: 2, left: 2, width: 18, height: 18, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(18px)' : 'translateX(0)' }} />
-              </div>
-            </button>
-            <div className={`border-t border-gray-100 px-4 py-3 ${!showPurpleAir ? "opacity-40" : ""}`}>
-              <div className="mb-2 flex items-center gap-2">
-                <Award className="h-3.5 w-3.5 text-gray-400" />
-                <span className="text-xs font-medium text-gray-500">Red OCCAMM</span>
-              </div>
-              <div className="flex gap-1 rounded-full bg-gray-100 p-1">
-                <button
-                  onClick={() => showPurpleAir && setPurpleAirMode('all')}
-                  disabled={!showPurpleAir}
-                  className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-colors ${purpleAirMode === 'all' ? 'bg-white text-gray-700 shadow-sm' : 'text-gray-400'}`}
-                >
-                  Todos
-                </button>
-                <button
-                  onClick={() => showPurpleAir && setPurpleAirMode('occamm')}
-                  disabled={!showPurpleAir}
-                  className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-colors ${purpleAirMode === 'occamm' ? 'bg-white text-gray-700 shadow-sm' : 'text-gray-400'}`}
-                >
-                  Solo OCCAMM
-                </button>
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowSima((v) => !v)}
-            className={`flex items-center justify-between rounded-2xl border px-4 py-4 transition-all duration-200 ${
-              showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
-            }`}
-            style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
-          >
-            <div className="flex items-center gap-3">
-              <Landmark className="h-4 w-4 text-gray-400" />
-              <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
-            </div>
-            <div style={{ width: 40, height: 22, borderRadius: 11, backgroundColor: showSima ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
-              <span style={{ position: 'absolute', top: 2, left: 2, width: 18, height: 18, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(18px)' : 'translateX(0)' }} />
-            </div>
-          </button>
+          <LayersFilterContent
+            compact={false}
+            showPurpleAir={showPurpleAir}
+            setShowPurpleAir={setShowPurpleAir}
+            purpleAirMode={purpleAirMode}
+            setPurpleAirMode={setPurpleAirMode}
+            showSima={showSima}
+            setShowSima={setShowSima}
+          />
         </div>
       </div>
 
@@ -641,63 +703,15 @@ export default function MapaSensors({
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
           <div className="relative z-10 w-[85%] max-w-sm rounded-3xl bg-white p-6 shadow-xl">
             <p className="mb-4 text-center text-sm font-medium uppercase tracking-wide text-gray-400">Capas</p>
-            <div className="flex flex-col gap-3">
-              <div
-                className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
-                  showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
-                }`}
-              >
-                <button
-                  onClick={() => setShowPurpleAir((v) => !v)}
-                  className="flex w-full items-center justify-between px-4 py-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <Users className="h-4 w-4 text-gray-400" />
-                    <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
-                  </div>
-                  <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showPurpleAir ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
-                    <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showPurpleAir ? 'translateX(16px)' : 'translateX(0)' }} />
-                  </div>
-                </button>
-                <div className={`border-t border-gray-100 px-4 py-2.5 ${!showPurpleAir ? "opacity-40" : ""}`}>
-                  <div className="mb-2 flex items-center gap-2">
-                    <Award className="h-3.5 w-3.5 text-gray-400" />
-                    <span className="text-xs font-medium text-gray-500">Red OCCAMM</span>
-                  </div>
-                  <div className="flex gap-1 rounded-full bg-gray-100 p-1">
-                    <button
-                      onClick={() => showPurpleAir && setPurpleAirMode('all')}
-                      disabled={!showPurpleAir}
-                      className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-colors ${purpleAirMode === 'all' ? 'bg-white text-gray-700 shadow-sm' : 'text-gray-400'}`}
-                    >
-                      Todos
-                    </button>
-                    <button
-                      onClick={() => showPurpleAir && setPurpleAirMode('occamm')}
-                      disabled={!showPurpleAir}
-                      className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-colors ${purpleAirMode === 'occamm' ? 'bg-white text-gray-700 shadow-sm' : 'text-gray-400'}`}
-                    >
-                      Solo OCCAMM
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowSima((v) => !v)}
-                className={`flex items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-200 ${
-                  showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
-                }`}
-                style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
-              >
-                <div className="flex items-center gap-3">
-                  <Landmark className="h-4 w-4 text-gray-400" />
-                  <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
-                </div>
-                <div style={{ width: 36, height: 20, borderRadius: 10, backgroundColor: showSima ? '#9ca3af' : '#e5e7eb', transition: 'background-color 300ms', position: 'relative', flexShrink: 0 }}>
-                  <span style={{ position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', backgroundColor: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.2)', transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)', transform: showSima ? 'translateX(16px)' : 'translateX(0)' }} />
-                </div>
-              </button>
-            </div>
+            <LayersFilterContent
+              compact={true}
+              showPurpleAir={showPurpleAir}
+              setShowPurpleAir={setShowPurpleAir}
+              purpleAirMode={purpleAirMode}
+              setPurpleAirMode={setPurpleAirMode}
+              showSima={showSima}
+              setShowSima={setShowSima}
+            />
           </div>
         </div>
       )}
