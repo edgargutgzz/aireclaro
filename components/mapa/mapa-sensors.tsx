@@ -114,28 +114,31 @@ function LayersFilterContent({
   const headerPadding = compact ? "py-3" : "py-4";
   const bodyPadding = compact ? "py-2.5" : "py-3";
 
-  const toggleTrack = (on: boolean) => ({
-    width: trackWidth,
-    height: trackHeight,
-    borderRadius: trackRadius,
+  const toggleTrack = (on: boolean, small = false) => ({
+    width: small ? trackWidth - 6 : trackWidth,
+    height: small ? trackHeight - 4 : trackHeight,
+    borderRadius: small ? trackRadius - 2 : trackRadius,
     backgroundColor: on ? '#9ca3af' : '#e5e7eb',
     transition: 'background-color 300ms',
     position: 'relative' as const,
     flexShrink: 0,
   });
 
-  const toggleThumb = (on: boolean) => ({
-    position: 'absolute' as const,
-    top: 2,
-    left: 2,
-    width: thumbSize,
-    height: thumbSize,
-    borderRadius: '50%',
-    backgroundColor: 'white',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-    transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
-    transform: on ? `translateX(${thumbSize}px)` : 'translateX(0)',
-  });
+  const toggleThumb = (on: boolean, small = false) => {
+    const size = small ? thumbSize - 4 : thumbSize;
+    return {
+      position: 'absolute' as const,
+      top: 2,
+      left: 2,
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      backgroundColor: 'white',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+      transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
+      transform: on ? `translateX(${size}px)` : 'translateX(0)',
+    };
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -156,28 +159,19 @@ function LayersFilterContent({
             <span style={toggleThumb(showPurpleAir)} />
           </div>
         </button>
-        <div className={`border-t border-gray-100 px-4 ${bodyPadding} ${!showPurpleAir ? "opacity-40" : ""}`}>
-          <div className="mb-2 flex items-center gap-2">
+        <button
+          onClick={() => showPurpleAir && setPurpleAirMode((v) => (v === 'occamm' ? 'all' : 'occamm'))}
+          disabled={!showPurpleAir}
+          className={`flex w-full items-center justify-between border-t border-gray-100 px-4 ${bodyPadding} ${!showPurpleAir ? "opacity-40" : ""}`}
+        >
+          <div className="flex items-center gap-2">
             <Award className="h-3.5 w-3.5 text-gray-400" />
-            <span className="text-xs font-medium text-gray-500">Red OCCAMM</span>
+            <span className="text-sm text-gray-600">Solo Red OCCAMM</span>
           </div>
-          <div className="flex gap-1 rounded-full bg-gray-100 p-1">
-            <button
-              onClick={() => showPurpleAir && setPurpleAirMode('all')}
-              disabled={!showPurpleAir}
-              className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-colors ${purpleAirMode === 'all' ? 'bg-white text-gray-700 shadow-sm' : 'text-gray-400'}`}
-            >
-              Todos
-            </button>
-            <button
-              onClick={() => showPurpleAir && setPurpleAirMode('occamm')}
-              disabled={!showPurpleAir}
-              className={`flex-1 rounded-full py-1.5 text-xs font-medium transition-colors ${purpleAirMode === 'occamm' ? 'bg-white text-gray-700 shadow-sm' : 'text-gray-400'}`}
-            >
-              Solo OCCAMM
-            </button>
+          <div style={toggleTrack(purpleAirMode === 'occamm', true)}>
+            <span style={toggleThumb(purpleAirMode === 'occamm', true)} />
           </div>
-        </div>
+        </button>
       </div>
       <button
         onClick={() => setShowSima((v) => !v)}
