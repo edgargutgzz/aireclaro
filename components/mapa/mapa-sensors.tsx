@@ -159,18 +159,18 @@ function LayersFilterContent({
           <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
         </button>
         <div className="flex flex-col border-t border-gray-100">
-          <div className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}>
+          <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
             <button
               onClick={() => setShowOccamm((v) => !v)}
-              className="flex min-w-0 flex-1 items-center gap-3"
+              className="flex items-center gap-3"
             >
               <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-              <span className="text-sm text-gray-600">Red OCCAMM</span>
+              <span className="text-sm text-gray-600">OCCAMM</span>
             </button>
             <button
               onClick={onShowOccammInfo}
               className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-              aria-label="Más información sobre Red OCCAMM"
+              aria-label="Más información sobre OCCAMM"
             >
               <Info className="h-4 w-4" />
             </button>
@@ -1095,7 +1095,7 @@ export default function MapaSensors({
         </>
       )}
 
-      {/* Red OCCAMM info popup */}
+      {/* OCCAMM info popup */}
       {showOccammInfo && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowOccammInfo(false)} />
@@ -1104,8 +1104,8 @@ export default function MapaSensors({
               <Image src="/occamm-logo.png" alt="OCCAMM" width={130} height={24} className="h-auto w-[130px]" />
             </div>
             <p className="text-center text-sm leading-relaxed text-gray-500">
-              Red OCCAMM es la red de sensores del Observatorio Ciudadano de la
-              Calidad del Aire (OCCAMM), una organización de la sociedad civil
+              OCCAMM es la red de sensores del Observatorio Ciudadano de la
+              Calidad del Aire, una organización de la sociedad civil
               dedicada a mejorar la calidad del aire en Nuevo León.
             </p>
             <p className="text-center text-sm text-gray-500">
