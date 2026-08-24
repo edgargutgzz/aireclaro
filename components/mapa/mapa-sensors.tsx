@@ -639,7 +639,7 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left area — quality card + selected sensor beside it */}
+      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden items-start gap-2 md:flex">
 
         {/* Left column: nav + quality card */}
@@ -652,8 +652,101 @@ export default function MapaSensors({
           </div>
         </div>
 
-        {/* Quality card */}
-        {qualityInfo && (
+        {/* Quality card, replaced by the selected sensor's card when one is selected */}
+        {selectedSensor ? (() => {
+          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+          const isSima = sensor.source === "sima";
+          const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+          const sensorQuality = getQualityInfo(pm25);
+          return (
+            <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${selectedSensorCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
+              {/* Always-visible header */}
+              <div className="px-5 pt-4 pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="text-2xl font-bold" style={{ color: textColor }}>
+                      {sensorQuality ? sensorQuality.label : "—"}
+                    </span>
+                    {pm25 !== null && (
+                      <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ (PM2.5)</span>
+                    )}
+                  </div>
+                  <button onClick={() => setSelectedSensor(null)} className="ml-2 flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600">
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <button
+                  onClick={() => setShowSensorDetail(v => !v)}
+                  className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
+                >
+                  {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
+                  <span className="truncate">{sensorName}</span>
+                  <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
+                </button>
+                {showSensorDetail && (
+                  <div className="mt-3 overflow-hidden rounded-xl bg-gray-100">
+                    <div className="flex flex-col gap-3 px-4 py-3">
+                      {sensor.red && (
+                        <div className="flex items-center gap-2.5">
+                          <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Red: {sensor.red}</span>
+                        </div>
+                      )}
+                      {timestamp && (
+                        <div className="flex items-center gap-2.5">
+                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1500);
+                        }}
+                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
+                      >
+                        <Copy className="h-3 w-3 flex-shrink-0" />
+                        {copied ? 'Copiado' : 'Copiar coordenadas'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Closed state: Población General + expand hint */}
+              {!selectedSensorCardOpen && sensorQuality && (
+                <div className="px-5 pb-4">
+                  <div className="mt-0 mb-6 border-t border-gray-100" />
+                  <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(sensorQuality); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                    <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
+                  </button>
+                  <div className="rounded-xl bg-gray-100 px-4 py-3">
+                    <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+                    <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
+                  </div>
+                  <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setSelectedSensorCardOpen(true)}>
+                    <ChevronDown className="h-4 w-4 text-gray-500" />
+                  </div>
+                </div>
+              )}
+
+              {/* Expanded state: all rec cards */}
+              {selectedSensorCardOpen && sensorQuality && (
+                <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
+                  <div className="mt-0 mb-6 border-t border-gray-100" />
+                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                    <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
+                  </button>
+                  <HealthRecommendationCards info={sensorQuality} />
+                  <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setSelectedSensorCardOpen(false)}>
+                    <ChevronDown className="h-4 w-4 rotate-180 text-gray-500" />
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })() : qualityInfo && (
           <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${highlightQualityCard ? 'shake' : ''} ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
@@ -752,103 +845,6 @@ export default function MapaSensors({
         )}
 
         </div>{/* end left column */}
-
-        {/* Column 2: selected sensor */}
-        {selectedSensor && (() => {
-          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
-          const isSima = sensor.source === "sima";
-          const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-          const sensorQuality = getQualityInfo(pm25);
-          return (
-            <div className={`pointer-events-auto w-[340px] overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${selectedSensorCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
-              {/* Always-visible header */}
-              <div className="px-5 pt-4 pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className="text-2xl font-bold" style={{ color: textColor }}>
-                      {sensorQuality ? sensorQuality.label : "—"}
-                    </span>
-                    {pm25 !== null && (
-                      <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ (PM2.5)</span>
-                    )}
-                  </div>
-                  <button onClick={() => setSelectedSensor(null)} className="ml-2 flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600">
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
-                <button
-                  onClick={() => setShowSensorDetail(v => !v)}
-                  className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
-                >
-                  {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
-                  <span className="truncate">{sensorName}</span>
-                  <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
-                </button>
-                {showSensorDetail && (
-                  <div className="mt-3 overflow-hidden rounded-xl bg-gray-100">
-                    <div className="flex flex-col gap-3 px-4 py-3">
-                      {sensor.red && (
-                        <div className="flex items-center gap-2.5">
-                          <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Red: {sensor.red}</span>
-                        </div>
-                      )}
-                      {timestamp && (
-                        <div className="flex items-center gap-2.5">
-                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
-                        </div>
-                      )}
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                      >
-                        <Copy className="h-3 w-3 flex-shrink-0" />
-                        {copied ? 'Copiado' : 'Copiar coordenadas'}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Closed state: Población General + expand hint */}
-              {!selectedSensorCardOpen && sensorQuality && (
-                <div className="px-5 pb-4">
-                  <div className="mt-0 mb-6 border-t border-gray-100" />
-                  <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(sensorQuality); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                    <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
-                  </button>
-                  <div className="rounded-xl bg-gray-100 px-4 py-3">
-                    <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
-                    <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
-                  </div>
-                  <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setSelectedSensorCardOpen(true)}>
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
-                  </div>
-                </div>
-              )}
-
-              {/* Expanded state: all rec cards */}
-              {selectedSensorCardOpen && sensorQuality && (
-                <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
-                  <div className="mt-0 mb-6 border-t border-gray-100" />
-                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                    <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
-                  </button>
-                  <HealthRecommendationCards info={sensorQuality} />
-                  <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setSelectedSensorCardOpen(false)}>
-                    <ChevronDown className="h-4 w-4 rotate-180 text-gray-500" />
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })()}
-
       </div>
 
 
