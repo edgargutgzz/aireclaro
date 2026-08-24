@@ -116,16 +116,16 @@ function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
 
 function LayersFilterContent({
   compact,
-  showIndependientes,
-  setShowIndependientes,
+  showOtros,
+  setShowOtros,
   showOccamm,
   setShowOccamm,
   showSima,
   setShowSima,
 }: {
   compact: boolean;
-  showIndependientes: boolean;
-  setShowIndependientes: Dispatch<SetStateAction<boolean>>;
+  showOtros: boolean;
+  setShowOtros: Dispatch<SetStateAction<boolean>>;
   showOccamm: boolean;
   setShowOccamm: Dispatch<SetStateAction<boolean>>;
   showSima: boolean;
@@ -136,12 +136,12 @@ function LayersFilterContent({
   const boxSize = compact ? 16 : 18;
 
   const citizenState: CheckState =
-    showIndependientes && showOccamm ? 'checked' :
-    !showIndependientes && !showOccamm ? 'unchecked' : 'indeterminate';
+    showOtros && showOccamm ? 'checked' :
+    !showOtros && !showOccamm ? 'unchecked' : 'indeterminate';
 
   const toggleCitizenGroup = () => {
     const next = citizenState !== 'checked';
-    setShowIndependientes(next);
+    setShowOtros(next);
     setShowOccamm(next);
   };
 
@@ -158,18 +158,17 @@ function LayersFilterContent({
         </button>
         <div className="flex flex-col border-t border-gray-100">
           <button
-            onClick={() => setShowIndependientes((v) => !v)}
+            onClick={() => setShowOtros((v) => !v)}
             className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
           >
-            <LayerCheckbox state={showIndependientes ? 'checked' : 'unchecked'} size={boxSize} />
-            <span className="text-sm text-gray-600">Independientes</span>
+            <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
+            <span className="text-sm text-gray-600">Otros</span>
           </button>
           <button
             onClick={() => setShowOccamm((v) => !v)}
             className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
           >
             <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-            <Award className="h-3.5 w-3.5 text-gray-400" />
             <span className="text-sm text-gray-600">Red OCCAMM</span>
           </button>
         </div>
@@ -203,7 +202,7 @@ export default function MapaSensors({
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [showIndependientes, setShowIndependientes] = useState(true);
+  const [showOtros, setShowOtros] = useState(true);
   const [showSima, setShowSima] = useState(true);
   const [showOccamm, setShowOccamm] = useState(true);
   const [selectedSensor, setSelectedSensor] = useState<{
@@ -383,7 +382,7 @@ export default function MapaSensors({
       if (isSima && !showSima) return;
       if (!isSima) {
         const inOccamm = !!sensor.red;
-        if (inOccamm ? !showOccamm : !showIndependientes) return;
+        if (inOccamm ? !showOccamm : !showOtros) return;
       }
 
       const latestData = data.find(
@@ -431,7 +430,7 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, sensors, data, showIndependientes, showOccamm, showSima]);
+  }, [mapLoaded, sensors, data, showOtros, showOccamm, showSima]);
 
   // Cleanup markers when component unmounts
   useEffect(() => {
@@ -500,7 +499,7 @@ export default function MapaSensors({
     }
 
     markerData.el.style.animation = `${animName} 1.8s ease-out infinite`;
-  }, [nearestSensorData, mapLoaded, sensors, showSima, showIndependientes, showOccamm]);
+  }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm]);
 
   // Close selected sensor on map click
   useEffect(() => {
@@ -573,8 +572,8 @@ export default function MapaSensors({
         >
           <LayersFilterContent
             compact={false}
-            showIndependientes={showIndependientes}
-            setShowIndependientes={setShowIndependientes}
+            showOtros={showOtros}
+            setShowOtros={setShowOtros}
             showOccamm={showOccamm}
             setShowOccamm={setShowOccamm}
             showSima={showSima}
@@ -611,8 +610,8 @@ export default function MapaSensors({
           <div className="px-5 pb-5">
             <LayersFilterContent
               compact={false}
-              showIndependientes={showIndependientes}
-              setShowIndependientes={setShowIndependientes}
+              showOtros={showOtros}
+              setShowOtros={setShowOtros}
               showOccamm={showOccamm}
               setShowOccamm={setShowOccamm}
               showSima={showSima}
