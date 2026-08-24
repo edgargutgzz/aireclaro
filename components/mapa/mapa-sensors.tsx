@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock, Award } from "lucide-react";
+import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -90,103 +90,98 @@ function LegendContent() {
   );
 }
 
+type CheckState = 'checked' | 'indeterminate' | 'unchecked';
+
+function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
+  if (state === 'unchecked') {
+    return (
+      <div
+        style={{ width: size, height: size, borderRadius: 5, border: '1.5px solid #d1d5db', flexShrink: 0 }}
+      />
+    );
+  }
+  return (
+    <div
+      className="flex items-center justify-center"
+      style={{ width: size, height: size, borderRadius: 5, backgroundColor: '#9ca3af', flexShrink: 0 }}
+    >
+      {state === 'checked' ? (
+        <Check className="text-white" style={{ width: size - 6, height: size - 6 }} strokeWidth={3} />
+      ) : (
+        <Minus className="text-white" style={{ width: size - 7, height: size - 7 }} strokeWidth={3} />
+      )}
+    </div>
+  );
+}
+
 function LayersFilterContent({
   compact,
-  showPurpleAir,
-  setShowPurpleAir,
-  purpleAirMode,
-  setPurpleAirMode,
+  showIndependientes,
+  setShowIndependientes,
+  showOccamm,
+  setShowOccamm,
   showSima,
   setShowSima,
 }: {
   compact: boolean;
-  showPurpleAir: boolean;
-  setShowPurpleAir: Dispatch<SetStateAction<boolean>>;
-  purpleAirMode: 'all' | 'occamm';
-  setPurpleAirMode: Dispatch<SetStateAction<'all' | 'occamm'>>;
+  showIndependientes: boolean;
+  setShowIndependientes: Dispatch<SetStateAction<boolean>>;
+  showOccamm: boolean;
+  setShowOccamm: Dispatch<SetStateAction<boolean>>;
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
 }) {
-  const trackWidth = compact ? 36 : 40;
-  const trackHeight = compact ? 20 : 22;
-  const trackRadius = compact ? 10 : 11;
-  const thumbSize = compact ? 16 : 18;
-  const headerPadding = compact ? "py-3" : "py-4";
-  const bodyPadding = compact ? "py-2.5" : "py-3";
+  const rowPadding = compact ? "py-3" : "py-3.5";
+  const subRowPadding = compact ? "py-2.5" : "py-3";
+  const boxSize = compact ? 16 : 18;
 
-  const toggleTrack = (on: boolean, small = false) => ({
-    width: small ? trackWidth - 6 : trackWidth,
-    height: small ? trackHeight - 4 : trackHeight,
-    borderRadius: small ? trackRadius - 2 : trackRadius,
-    backgroundColor: on ? '#9ca3af' : '#e5e7eb',
-    transition: 'background-color 300ms',
-    position: 'relative' as const,
-    flexShrink: 0,
-  });
+  const citizenState: CheckState =
+    showIndependientes && showOccamm ? 'checked' :
+    !showIndependientes && !showOccamm ? 'unchecked' : 'indeterminate';
 
-  const toggleThumb = (on: boolean, small = false) => {
-    const size = small ? thumbSize - 4 : thumbSize;
-    return {
-      position: 'absolute' as const,
-      top: 2,
-      left: 2,
-      width: size,
-      height: size,
-      borderRadius: '50%',
-      backgroundColor: 'white',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-      transition: 'transform 300ms cubic-bezier(0.4,0,0.2,1)',
-      transform: on ? `translateX(${size}px)` : 'translateX(0)',
-    };
+  const toggleCitizenGroup = () => {
+    const next = citizenState !== 'checked';
+    setShowIndependientes(next);
+    setShowOccamm(next);
   };
 
   return (
     <div className="flex flex-col gap-3">
-      <div
-        className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
-          showPurpleAir ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
-        }`}
-      >
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <button
-          onClick={() => setShowPurpleAir((v) => !v)}
-          className={`flex w-full items-center justify-between px-4 ${headerPadding}`}
+          onClick={toggleCitizenGroup}
+          className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}
         >
-          <div className="flex items-center gap-3">
-            <Users className="h-4 w-4 text-gray-400" />
-            <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
-          </div>
-          <div style={toggleTrack(showPurpleAir)}>
-            <span style={toggleThumb(showPurpleAir)} />
-          </div>
+          <LayerCheckbox state={citizenState} size={boxSize} />
+          <Users className="h-4 w-4 text-gray-400" />
+          <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
         </button>
-        <button
-          onClick={() => showPurpleAir && setPurpleAirMode((v) => (v === 'occamm' ? 'all' : 'occamm'))}
-          disabled={!showPurpleAir}
-          className={`flex w-full items-center justify-between border-t border-gray-100 px-4 ${bodyPadding} ${!showPurpleAir ? "opacity-40" : ""}`}
-        >
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col border-t border-gray-100">
+          <button
+            onClick={() => setShowIndependientes((v) => !v)}
+            className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
+          >
+            <LayerCheckbox state={showIndependientes ? 'checked' : 'unchecked'} size={boxSize} />
+            <span className="text-sm text-gray-600">Independientes</span>
+          </button>
+          <button
+            onClick={() => setShowOccamm((v) => !v)}
+            className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
+          >
+            <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
             <Award className="h-3.5 w-3.5 text-gray-400" />
-            <span className="text-sm text-gray-600">Solo Red OCCAMM</span>
-          </div>
-          <div style={toggleTrack(purpleAirMode === 'occamm', true)}>
-            <span style={toggleThumb(purpleAirMode === 'occamm', true)} />
-          </div>
-        </button>
+            <span className="text-sm text-gray-600">Red OCCAMM</span>
+          </button>
+        </div>
       </div>
       <button
         onClick={() => setShowSima((v) => !v)}
-        className={`flex items-center justify-between rounded-2xl border px-4 ${headerPadding} transition-all duration-200 ${
-          showSima ? "border-gray-200 bg-white shadow-sm" : "border-gray-100 bg-gray-50 opacity-50"
-        }`}
-        style={showSima ? { backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' } : undefined}
+        className={`flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 ${rowPadding} shadow-sm`}
+        style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' }}
       >
-        <div className="flex items-center gap-3">
-          <Landmark className="h-4 w-4 text-gray-400" />
-          <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
-        </div>
-        <div style={toggleTrack(showSima)}>
-          <span style={toggleThumb(showSima)} />
-        </div>
+        <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
+        <Landmark className="h-4 w-4 text-gray-400" />
+        <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
       </button>
     </div>
   );
@@ -208,9 +203,9 @@ export default function MapaSensors({
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [showPurpleAir, setShowPurpleAir] = useState(true);
+  const [showIndependientes, setShowIndependientes] = useState(true);
   const [showSima, setShowSima] = useState(true);
-  const [purpleAirMode, setPurpleAirMode] = useState<'all' | 'occamm'>('all');
+  const [showOccamm, setShowOccamm] = useState(true);
   const [selectedSensor, setSelectedSensor] = useState<{
     sensor: Sensor;
     pm25: number | null;
@@ -386,8 +381,10 @@ export default function MapaSensors({
       const isSima = sensor.source === "sima";
 
       if (isSima && !showSima) return;
-      if (!isSima && !showPurpleAir) return;
-      if (!isSima && purpleAirMode === 'occamm' && !sensor.red) return;
+      if (!isSima) {
+        const inOccamm = !!sensor.red;
+        if (inOccamm ? !showOccamm : !showIndependientes) return;
+      }
 
       const latestData = data.find(
         (dataItem) => dataItem.sensor_id === sensor.sensor_id,
@@ -434,7 +431,7 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, sensors, data, showPurpleAir, showSima, purpleAirMode]);
+  }, [mapLoaded, sensors, data, showIndependientes, showOccamm, showSima]);
 
   // Cleanup markers when component unmounts
   useEffect(() => {
@@ -503,7 +500,7 @@ export default function MapaSensors({
     }
 
     markerData.el.style.animation = `${animName} 1.8s ease-out infinite`;
-  }, [nearestSensorData, mapLoaded, sensors, showSima, showPurpleAir]);
+  }, [nearestSensorData, mapLoaded, sensors, showSima, showIndependientes, showOccamm]);
 
   // Close selected sensor on map click
   useEffect(() => {
@@ -576,10 +573,10 @@ export default function MapaSensors({
         >
           <LayersFilterContent
             compact={false}
-            showPurpleAir={showPurpleAir}
-            setShowPurpleAir={setShowPurpleAir}
-            purpleAirMode={purpleAirMode}
-            setPurpleAirMode={setPurpleAirMode}
+            showIndependientes={showIndependientes}
+            setShowIndependientes={setShowIndependientes}
+            showOccamm={showOccamm}
+            setShowOccamm={setShowOccamm}
             showSima={showSima}
             setShowSima={setShowSima}
           />
@@ -594,10 +591,10 @@ export default function MapaSensors({
             <p className="mb-4 text-center text-sm font-medium uppercase tracking-wide text-gray-400">Capas</p>
             <LayersFilterContent
               compact={true}
-              showPurpleAir={showPurpleAir}
-              setShowPurpleAir={setShowPurpleAir}
-              purpleAirMode={purpleAirMode}
-              setPurpleAirMode={setPurpleAirMode}
+              showIndependientes={showIndependientes}
+              setShowIndependientes={setShowIndependientes}
+              showOccamm={showOccamm}
+              setShowOccamm={setShowOccamm}
               showSima={showSima}
               setShowSima={setShowSima}
             />
