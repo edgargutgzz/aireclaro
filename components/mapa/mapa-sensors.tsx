@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus } from "lucide-react";
+import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
@@ -169,9 +169,10 @@ function LayersFilterContent({
             </button>
             <button
               onClick={onShowOccammInfo}
-              className="flex-shrink-0 text-xs text-gray-400 underline underline-offset-2 hover:text-gray-600"
+              className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+              aria-label="Más información sobre Red OCCAMM"
             >
-              Más información
+              <Info className="h-4 w-4" />
             </button>
           </div>
           <button
@@ -1098,16 +1099,16 @@ export default function MapaSensors({
       {showOccammInfo && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowOccammInfo(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-xl">
-            <div className="mb-4 flex justify-center">
-              <Image src="/occamm-logo.png" alt="OCCAMM" width={200} height={37} className="h-auto w-[200px]" />
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-3xl bg-white p-7 shadow-xl">
+            <div className="flex justify-center">
+              <Image src="/occamm-logo.png" alt="OCCAMM" width={130} height={24} className="h-auto w-[130px]" />
             </div>
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Red OCCAMM es la red de sensores del Observatorio Ciudadano de la
               Calidad del Aire (OCCAMM), una organización de la sociedad civil
               dedicada a mejorar la calidad del aire en Nuevo León.
             </p>
-            <p className="mt-3 text-center text-sm text-gray-500">
+            <p className="text-center text-sm text-gray-500">
               Conoce más en{' '}
               <a
                 href="https://observatoriodelaire.com"
@@ -1120,7 +1121,7 @@ export default function MapaSensors({
             </p>
             <button
               onClick={() => setShowOccammInfo(false)}
-              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
             >
               Entendido
             </button>
