@@ -138,8 +138,8 @@ export default function Acerca() {
       </div>
 
       {/* Desktop footer — pinned to the bottom of the viewport, not part of the scroll */}
-      <div className="hidden min-h-16 items-center px-4 pb-4 md:flex">
-        <div className="mx-auto flex w-full max-w-2xl items-center justify-between border-t border-gray-100 pt-4">
+      <div className="hidden min-h-16 items-center px-4 pb-4 md:flex md:px-0">
+        <div className="mx-auto flex w-full max-w-2xl items-center justify-between border-t border-gray-100 pt-4 md:pl-28">
           <Link href="/aviso-privacidad" className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600">
             Aviso de Privacidad
           </Link>
