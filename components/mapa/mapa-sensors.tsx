@@ -583,42 +583,48 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop layers backdrop — right-side panel */}
-      <div
-        className={`fixed inset-0 z-[60] hidden bg-black/20 backdrop-blur-sm transition-opacity duration-300 md:block ${
-          showFilters ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        onClick={() => setShowFilters(false)}
-      />
+      {/* Desktop layers click-away catcher */}
+      {showFilters && (
+        <div
+          className="fixed inset-0 z-[60] hidden md:block"
+          onClick={() => setShowFilters(false)}
+        />
+      )}
 
-      {/* Desktop layers panel — slides in from the right */}
+      {/* Desktop layers panel — floats in from the right, same glass style as the left cards */}
       <div
-        className="fixed right-0 top-0 z-[61] hidden h-full w-[380px] flex-col bg-white shadow-xl md:flex"
-        style={{
-          transform: showFilters ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
+        className="pointer-events-none fixed right-6 top-6 z-[61] hidden w-[340px] md:block"
       >
-        <div className="flex items-center justify-between px-6 pt-6 pb-4">
-          <p className="text-sm font-medium uppercase tracking-wide text-gray-400">Capas</p>
-          <button
-            onClick={() => setShowFilters(false)}
-            className="rounded-full p-1 text-gray-400 hover:text-gray-600"
-            aria-label="Cerrar"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto px-6 pb-6">
-          <LayersFilterContent
-            compact={false}
-            showIndependientes={showIndependientes}
-            setShowIndependientes={setShowIndependientes}
-            showOccamm={showOccamm}
-            setShowOccamm={setShowOccamm}
-            showSima={showSima}
-            setShowSima={setShowSima}
-          />
+        <div
+          className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md"
+          style={{
+            transform: showFilters ? 'translateX(0)' : 'translateX(16px)',
+            opacity: showFilters ? 1 : 0,
+            transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease',
+            pointerEvents: showFilters ? 'auto' : 'none',
+          }}
+        >
+          <div className="flex items-center justify-between px-5 pt-4 pb-3">
+            <span className="text-sm font-medium text-gray-400">Capas</span>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="rounded-full p-1 text-gray-400 hover:text-gray-600"
+              aria-label="Cerrar"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="px-5 pb-5">
+            <LayersFilterContent
+              compact={false}
+              showIndependientes={showIndependientes}
+              setShowIndependientes={setShowIndependientes}
+              showOccamm={showOccamm}
+              setShowOccamm={setShowOccamm}
+              showSima={showSima}
+              setShowSima={setShowSima}
+            />
+          </div>
         </div>
       </div>
 
