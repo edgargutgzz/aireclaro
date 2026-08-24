@@ -16,11 +16,9 @@ export default function Navbar() {
         <div className="h-[env(safe-area-inset-bottom)]" />
       </div>
 
-      {/* Desktop navbar — floating pill card, hidden on map page (which renders its own).
-          Sits top-right instead of top-left so it doesn't collide with page content
-          that starts near the left edge (e.g. the Acerca page's logo/description). */}
+      {/* Desktop navbar — floating pill card, hidden on map page (which renders its own) */}
       {pathname !== "/" && (
-        <div className="fixed right-6 top-6 z-50 hidden md:block">
+        <div className="fixed left-6 top-6 z-50 hidden md:block">
           <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
             <div className="flex items-center gap-3 px-4 py-3">
               <Navlinks />
