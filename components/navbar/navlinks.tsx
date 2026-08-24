@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Info, Map } from "lucide-react";
+import { Info, Map, BarChart3 } from "lucide-react";
 
 export default function Navlinks() {
   const pathname = usePathname();
@@ -14,6 +14,13 @@ export default function Navlinks() {
       href: "/",
       icon: Map,
       alt: "Mapa",
+    },
+    {
+      name: "Datos",
+      href: "/datos",
+      icon: BarChart3,
+      alt: "Datos",
+      desktopOnly: true,
     },
     {
       name: "Acerca",
@@ -32,24 +39,28 @@ export default function Navlinks() {
           <Link
             key={link.name}
             href={link.href}
-            className="group transition-opacity active:opacity-70"
+            className={clsx("group transition-opacity active:opacity-70", {
+              "hidden md:inline-block": link.desktopOnly,
+            })}
             aria-label={link.alt}
           >
             {/* Mobile view — horizontal pill */}
-            <div
-              className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden transition-colors border", {
-                "border-gray-200 bg-gray-200/80 text-gray-900": isSelected,
-                "border-transparent text-gray-400": !isSelected,
-              })}
-            >
-              <IconComponent className="h-5 w-5" />
-              <span className={clsx("text-sm", {
-                "font-semibold": isSelected,
-                "font-medium": !isSelected,
-              })}>
-                {link.name}
-              </span>
-            </div>
+            {!link.desktopOnly && (
+              <div
+                className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden transition-colors border", {
+                  "border-gray-200 bg-gray-200/80 text-gray-900": isSelected,
+                  "border-transparent text-gray-400": !isSelected,
+                })}
+              >
+                <IconComponent className="h-5 w-5" />
+                <span className={clsx("text-sm", {
+                  "font-semibold": isSelected,
+                  "font-medium": !isSelected,
+                })}>
+                  {link.name}
+                </span>
+              </div>
+            )}
 
             {/* Desktop view */}
             <div
