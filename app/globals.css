@@ -2,18 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%       { transform: translateX(-5px); }
-  40%       { transform: translateX(5px); }
-  60%       { transform: translateX(-4px); }
-  80%       { transform: translateX(4px); }
-}
-
-.shake {
-  animation: shake 0.4s ease;
-}
-
 @keyframes colorCycle {
   0%   { color: #06b6d4; }
   33%  { color: #8b5cf6; }

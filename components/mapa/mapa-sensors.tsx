@@ -220,7 +220,6 @@ export default function MapaSensors({
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
   const [desktopCardOpen, setDesktopCardOpen] = useState(false);
   const [selectedSensorCardOpen, setSelectedSensorCardOpen] = useState(false);
-  const [highlightQualityCard, setHighlightQualityCard] = useState(false);
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
@@ -408,12 +407,6 @@ export default function MapaSensors({
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
         const isDesktop = window.innerWidth >= 768;
-        const isNearest = nearestSensorData?.sensorId === sensor.sensor_id;
-        if (isDesktop && isNearest) {
-          setHighlightQualityCard(true);
-          setTimeout(() => setHighlightQualityCard(false), 600);
-          return;
-        }
         if (isDesktop && selectedSensor?.sensor.sensor_id === sensor.sensor_id) {
           setSelectedSensor(null);
           return;
@@ -663,17 +656,18 @@ export default function MapaSensors({
               {/* Always-visible header */}
               <div className="px-5 pt-4 pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className="text-2xl font-bold" style={{ color: textColor }}>
-                      {sensorQuality ? sensorQuality.label : "—"}
-                    </span>
-                    {pm25 !== null && (
-                      <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ (PM2.5)</span>
-                    )}
-                  </div>
+                  <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
                   <button onClick={() => setSelectedSensor(null)} className="ml-2 flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600">
                     <X className="h-5 w-5" />
                   </button>
+                </div>
+                <div className="mt-1 flex items-center gap-3">
+                  <span className="text-2xl font-bold" style={{ color: textColor }}>
+                    {sensorQuality ? sensorQuality.label : "—"}
+                  </span>
+                  {pm25 !== null && (
+                    <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ (PM2.5)</span>
+                  )}
                 </div>
                 <button
                   onClick={() => setShowSensorDetail(v => !v)}
@@ -747,7 +741,7 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${highlightQualityCard ? 'shake' : ''} ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
+          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
               {/* Top row: label */}
