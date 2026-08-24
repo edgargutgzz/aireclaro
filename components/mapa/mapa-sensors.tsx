@@ -158,18 +158,18 @@ function LayersFilterContent({
         </button>
         <div className="flex flex-col border-t border-gray-100">
           <button
-            onClick={() => setShowOtros((v) => !v)}
-            className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
-          >
-            <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-            <span className="text-sm text-gray-600">Otros</span>
-          </button>
-          <button
             onClick={() => setShowOccamm((v) => !v)}
             className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
           >
             <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
             <span className="text-sm text-gray-600">Red OCCAMM</span>
+          </button>
+          <button
+            onClick={() => setShowOtros((v) => !v)}
+            className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
+          >
+            <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
+            <span className="text-sm text-gray-600">Otros</span>
           </button>
         </div>
       </div>
