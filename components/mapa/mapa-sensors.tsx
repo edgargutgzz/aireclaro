@@ -645,20 +645,19 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected */}
+      {/* Desktop left area — nav rail column, then the quality card as its own column to the right */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden items-start gap-2 md:flex">
 
-        {/* Left column: nav + quality card */}
-        <div className="flex w-[340px] flex-col gap-2">
-
-        {/* Nav */}
+        {/* Nav column — vertical rail */}
         <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
-          <div className="flex w-full items-center justify-around px-4 py-3">
+          <div className="flex flex-col items-stretch gap-1 px-3 py-4">
             <Navlinks />
           </div>
         </div>
 
-        {/* Quality card, replaced by the selected sensor's card when one is selected */}
+        {/* Card column: quality card, replaced by the selected sensor's card when one is selected */}
+        <div className="flex w-[340px] flex-col gap-2">
+
         {selectedSensor ? (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
@@ -840,7 +839,7 @@ export default function MapaSensors({
           </div>
         )}
 
-        </div>{/* end left column */}
+        </div>{/* end card column */}
       </div>
 
 
