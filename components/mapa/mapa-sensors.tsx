@@ -583,15 +583,9 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop layers click-away catcher */}
-      {showFilters && (
-        <div
-          className="fixed inset-0 z-[60] hidden md:block"
-          onClick={() => setShowFilters(false)}
-        />
-      )}
-
-      {/* Desktop layers panel — floats in from the right, same glass style as the left cards */}
+      {/* Desktop layers panel — floats in from the right, same glass style as the left cards.
+          No click-away backdrop: the map stays interactive (zoom/pan) while this is open,
+          close via the X or the Layers toggle button. */}
       <div
         className="pointer-events-none fixed right-6 top-6 z-[61] hidden w-[340px] md:block"
       >
