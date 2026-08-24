@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
+import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
@@ -159,20 +159,15 @@ function LayersFilterContent({
           <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
         </button>
         <div className="flex flex-col border-t border-gray-100">
-          <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
-            <button
-              onClick={() => setShowOccamm((v) => !v)}
-              className="flex items-center gap-3"
-            >
+          <div className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}>
+            <button onClick={() => setShowOccamm((v) => !v)} className="flex-shrink-0">
               <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-              <span className="text-sm text-gray-600">OCCAMM</span>
             </button>
             <button
               onClick={onShowOccammInfo}
-              className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-              aria-label="Más información sobre OCCAMM"
+              className="text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
             >
-              <Info className="h-4 w-4" />
+              OCCAMM
             </button>
           </div>
           <button
@@ -1104,9 +1099,9 @@ export default function MapaSensors({
               <Image src="/occamm-logo.png" alt="OCCAMM" width={130} height={24} className="h-auto w-[130px]" />
             </div>
             <p className="text-center text-sm leading-relaxed text-gray-500">
-              OCCAMM es la red de sensores del Observatorio Ciudadano de la
-              Calidad del Aire, una organización de la sociedad civil
-              dedicada a mejorar la calidad del aire en Nuevo León.
+              Red de sensores del Observatorio Ciudadano de la Calidad del
+              Aire, una organización de la sociedad civil dedicada a mejorar
+              la calidad del aire en Nuevo León.
             </p>
             <p className="text-center text-sm text-gray-500">
               Conoce más en{' '}
