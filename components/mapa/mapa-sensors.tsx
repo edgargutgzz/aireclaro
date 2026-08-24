@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, X, Landmark, Users, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus } from "lucide-react";
+import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -153,7 +153,6 @@ function LayersFilterContent({
           className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}
         >
           <LayerCheckbox state={citizenState} size={boxSize} />
-          <Users className="h-4 w-4 text-gray-400" />
           <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
         </button>
         <div className="flex flex-col border-t border-gray-100">
@@ -179,7 +178,6 @@ function LayersFilterContent({
         style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' }}
       >
         <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-        <Landmark className="h-4 w-4 text-gray-400" />
         <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
       </button>
     </div>
@@ -668,8 +666,7 @@ export default function MapaSensors({
                   onClick={() => setShowSensorDetail(v => !v)}
                   className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                 >
-                  {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
-                  <span className="truncate">{sensorName}</span>
+                  <span className="truncate">{isSima ? "Estación" : "Sensor"}: {sensorName}</span>
                   <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
                 </button>
                 {showSensorDetail && (
@@ -757,12 +754,10 @@ export default function MapaSensors({
                 onClick={(e) => { e.stopPropagation(); setShowNearestDetail(v => !v); }}
                 className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
               >
-                {userLocation && nearestName
-                  ? (nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />)
-                  : <Users className="h-3 w-3 flex-shrink-0" />
-                }
                 <span className="truncate">
-                  {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
+                  {userLocation && nearestName
+                    ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
+                    : "Promedio del área metropolitana"}
                 </span>
                 <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
               </button>
@@ -880,8 +875,7 @@ export default function MapaSensors({
                   onClick={() => setShowSensorDetail(v => !v)}
                   className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                 >
-                  {isSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />}
-                  <span className="truncate">{sensorName}</span>
+                  <span className="truncate">{isSima ? "Estación" : "Sensor"}: {sensorName}</span>
                   <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
                 </button>
                 {showSensorDetail && (
@@ -1016,12 +1010,10 @@ export default function MapaSensors({
                   onClick={() => setShowNearestDetail(v => !v)}
                   className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                 >
-                  {userLocation && nearestName
-                    ? (nearestIsSima ? <Landmark className="h-3 w-3 flex-shrink-0" /> : <Users className="h-3 w-3 flex-shrink-0" />)
-                    : <Users className="h-3 w-3 flex-shrink-0" />
-                  }
                   <span className="truncate">
-                    {userLocation && nearestName ? nearestName : "Promedio del área metropolitana"}
+                    {userLocation && nearestName
+                      ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
+                      : "Promedio del área metropolitana"}
                   </span>
                   <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
                 </button>
