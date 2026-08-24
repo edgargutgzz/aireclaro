@@ -583,24 +583,44 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop layers modal — centered */}
-      {showFilters && (
-        <div className="fixed inset-0 z-[60] hidden md:flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
-          <div className="relative z-10 w-[85%] max-w-sm rounded-3xl bg-white p-6 shadow-xl">
-            <p className="mb-4 text-center text-sm font-medium uppercase tracking-wide text-gray-400">Capas</p>
-            <LayersFilterContent
-              compact={true}
-              showIndependientes={showIndependientes}
-              setShowIndependientes={setShowIndependientes}
-              showOccamm={showOccamm}
-              setShowOccamm={setShowOccamm}
-              showSima={showSima}
-              setShowSima={setShowSima}
-            />
-          </div>
+      {/* Desktop layers backdrop — right-side panel */}
+      <div
+        className={`fixed inset-0 z-[60] hidden bg-black/20 backdrop-blur-sm transition-opacity duration-300 md:block ${
+          showFilters ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setShowFilters(false)}
+      />
+
+      {/* Desktop layers panel — slides in from the right */}
+      <div
+        className="fixed right-0 top-0 z-[61] hidden h-full w-[380px] flex-col bg-white shadow-xl md:flex"
+        style={{
+          transform: showFilters ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+      >
+        <div className="flex items-center justify-between px-6 pt-6 pb-4">
+          <p className="text-sm font-medium uppercase tracking-wide text-gray-400">Capas</p>
+          <button
+            onClick={() => setShowFilters(false)}
+            className="rounded-full p-1 text-gray-400 hover:text-gray-600"
+            aria-label="Cerrar"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
-      )}
+        <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <LayersFilterContent
+            compact={false}
+            showIndependientes={showIndependientes}
+            setShowIndependientes={setShowIndependientes}
+            showOccamm={showOccamm}
+            setShowOccamm={setShowOccamm}
+            showSima={showSima}
+            setShowSima={setShowSima}
+          />
+        </div>
+      </div>
 
       {/* Desktop right-side floating controls */}
       <div className="pointer-events-none absolute bottom-12 right-12 z-10 hidden flex-col gap-2 md:flex">
