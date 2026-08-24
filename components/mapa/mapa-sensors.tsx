@@ -655,12 +655,7 @@ export default function MapaSensors({
             <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${selectedSensorCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
               {/* Always-visible header */}
               <div className="px-5 pt-4 pb-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-                  <button onClick={() => setSelectedSensor(null)} className="ml-2 flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600">
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
+                <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
                 <div className="mt-1 flex items-center gap-3">
                   <span className="text-2xl font-bold" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
