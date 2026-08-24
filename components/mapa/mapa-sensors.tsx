@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
 import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
+import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -122,6 +123,7 @@ function LayersFilterContent({
   setShowOccamm,
   showSima,
   setShowSima,
+  onShowOccammInfo,
 }: {
   compact: boolean;
   showOtros: boolean;
@@ -130,6 +132,7 @@ function LayersFilterContent({
   setShowOccamm: Dispatch<SetStateAction<boolean>>;
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
+  onShowOccammInfo: () => void;
 }) {
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
@@ -156,13 +159,21 @@ function LayersFilterContent({
           <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
         </button>
         <div className="flex flex-col border-t border-gray-100">
-          <button
-            onClick={() => setShowOccamm((v) => !v)}
-            className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
-          >
-            <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-            <span className="text-sm text-gray-600">Red OCCAMM</span>
-          </button>
+          <div className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}>
+            <button
+              onClick={() => setShowOccamm((v) => !v)}
+              className="flex min-w-0 flex-1 items-center gap-3"
+            >
+              <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
+              <span className="text-sm text-gray-600">Red OCCAMM</span>
+            </button>
+            <button
+              onClick={onShowOccammInfo}
+              className="flex-shrink-0 text-xs text-gray-400 underline underline-offset-2 hover:text-gray-600"
+            >
+              Más información
+            </button>
+          </div>
           <button
             onClick={() => setShowOtros((v) => !v)}
             className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
@@ -201,6 +212,7 @@ export default function MapaSensors({
   const [showFilters, setShowFilters] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showOtros, setShowOtros] = useState(true);
+  const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showSima, setShowSima] = useState(true);
   const [showOccamm, setShowOccamm] = useState(true);
   const [selectedSensor, setSelectedSensor] = useState<{
@@ -569,6 +581,7 @@ export default function MapaSensors({
             setShowOccamm={setShowOccamm}
             showSima={showSima}
             setShowSima={setShowSima}
+            onShowOccammInfo={() => setShowOccammInfo(true)}
           />
         </div>
       </div>
@@ -607,6 +620,7 @@ export default function MapaSensors({
               setShowOccamm={setShowOccamm}
               showSima={showSima}
               setShowSima={setShowSima}
+              onShowOccammInfo={() => setShowOccammInfo(true)}
             />
           </div>
         </div>
@@ -1076,6 +1090,40 @@ export default function MapaSensors({
               </a>
               , para la población general y grupos sensibles.
             </p>
+          </div>
+        </>
+      )}
+
+      {/* Red OCCAMM info popup */}
+      {showOccammInfo && (
+        <>
+          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowOccammInfo(false)} />
+          <div className="fixed left-1/2 top-1/2 z-[71] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-xl">
+            <div className="mb-4 flex justify-center">
+              <Image src="/occamm-logo.png" alt="OCCAMM" width={200} height={37} className="h-auto w-[200px]" />
+            </div>
+            <p className="text-center text-sm leading-relaxed text-gray-500">
+              Red OCCAMM es la red de sensores del Observatorio Ciudadano de la
+              Calidad del Aire (OCCAMM), una organización de la sociedad civil
+              dedicada a mejorar la calidad del aire en Nuevo León.
+            </p>
+            <p className="mt-3 text-center text-sm text-gray-500">
+              Conoce más en{' '}
+              <a
+                href="https://observatoriodelaire.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 text-gray-600 hover:text-gray-800"
+              >
+                observatoriodelaire.com
+              </a>
+            </p>
+            <button
+              onClick={() => setShowOccammInfo(false)}
+              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              Entendido
+            </button>
           </div>
         </>
       )}
