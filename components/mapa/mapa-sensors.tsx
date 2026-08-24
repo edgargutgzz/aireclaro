@@ -645,19 +645,21 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left area — nav rail column, then the quality card as its own column to the right */}
+      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden items-start gap-2 md:flex">
 
-        {/* Nav column — vertical rail */}
-        <div className="pointer-events-auto w-[210px] flex-shrink-0 overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
-          <div className="flex flex-col items-stretch gap-1 p-2.5">
+        {/* Left column: nav + quality card */}
+        <div className="flex flex-col items-start gap-2">
+
+        {/* Nav — sized to fit its buttons, not tied to the card's width below */}
+        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+          <div className="flex items-center gap-3 px-4 py-3">
             <Navlinks />
           </div>
         </div>
 
-        {/* Card column: quality card, replaced by the selected sensor's card when one is selected */}
-        <div className="flex w-[340px] flex-col gap-2">
-
+        {/* Quality card, replaced by the selected sensor's card when one is selected */}
+        <div className="w-[340px]">
         {selectedSensor ? (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
@@ -838,8 +840,9 @@ export default function MapaSensors({
             )}
           </div>
         )}
+        </div>{/* end card width wrapper */}
 
-        </div>{/* end card column */}
+        </div>{/* end left column */}
       </div>
 
 

@@ -39,8 +39,8 @@ export default function Navlinks() {
           <Link
             key={link.name}
             href={link.href}
-            className={clsx("group transition-opacity active:opacity-70 md:block md:w-full", {
-              "hidden md:block": link.desktopOnly,
+            className={clsx("group transition-opacity active:opacity-70", {
+              "hidden md:inline-block": link.desktopOnly,
             })}
             aria-label={link.alt}
           >
@@ -62,19 +62,19 @@ export default function Navlinks() {
               </div>
             )}
 
-            {/* Desktop view — vertical rail row: full-width, left-aligned icon + label */}
+            {/* Desktop view */}
             <div
               className={clsx(
-                "hidden md:flex md:w-full md:items-center md:gap-3 md:rounded-xl md:px-3.5 md:py-2.5 md:transition-colors",
+                "hidden md:flex md:items-center md:rounded-full md:px-6 md:py-2.5 md:border md:transition-colors",
                 {
-                  "md:bg-gray-100 md:text-gray-900": isSelected,
-                  "md:text-gray-500 md:hover:bg-gray-50 md:hover:text-gray-700": !isSelected,
+                  "md:border-gray-200 md:bg-gray-200/80 md:text-gray-900": isSelected,
+                  "md:border-transparent md:text-gray-400 md:hover:bg-gray-100": !isSelected,
                 },
               )}
             >
-              <IconComponent className="md:h-5 md:w-5 md:flex-shrink-0" />
+              <IconComponent className="md:h-5 md:w-5" />
               <span
-                className={clsx("md:text-sm", {
+                className={clsx("md:ml-2 md:text-sm", {
                   "font-semibold": isSelected,
                   "font-medium": !isSelected,
                 })}

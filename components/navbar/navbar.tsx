@@ -16,11 +16,11 @@ export default function Navbar() {
         <div className="h-[env(safe-area-inset-bottom)]" />
       </div>
 
-      {/* Desktop navbar — floating vertical rail, hidden on map page (which renders its own) */}
+      {/* Desktop navbar — floating pill card, hidden on map page (which renders its own) */}
       {pathname !== "/" && (
-        <div className="fixed left-6 top-6 z-50 hidden w-[210px] md:block">
+        <div className="fixed left-6 top-6 z-50 hidden md:block">
           <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
-            <div className="flex flex-col items-stretch gap-1 p-2.5">
+            <div className="flex items-center gap-3 px-4 py-3">
               <Navlinks />
             </div>
           </div>
