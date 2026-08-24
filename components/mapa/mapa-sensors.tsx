@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus } from "lucide-react";
+import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
 import Navlinks from "@/components/navbar/navlinks";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
@@ -159,15 +159,20 @@ function LayersFilterContent({
           <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
         </button>
         <div className="flex flex-col border-t border-gray-100">
-          <div className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}>
-            <button onClick={() => setShowOccamm((v) => !v)} className="flex-shrink-0">
+          <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
+            <button
+              onClick={() => setShowOccamm((v) => !v)}
+              className="flex items-center gap-3"
+            >
               <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
+              <span className="text-sm text-gray-600">OCCAMM</span>
             </button>
             <button
               onClick={onShowOccammInfo}
-              className="text-sm text-gray-600 underline underline-offset-2 hover:text-gray-800"
+              className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+              aria-label="Más información sobre OCCAMM"
             >
-              OCCAMM
+              <Info className="h-4 w-4" />
             </button>
           </div>
           <button
