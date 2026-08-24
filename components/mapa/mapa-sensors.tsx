@@ -649,8 +649,8 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden items-start gap-2 md:flex">
 
         {/* Nav column — vertical rail */}
-        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
-          <div className="flex flex-col items-stretch gap-1 px-3 py-4">
+        <div className="pointer-events-auto w-[210px] flex-shrink-0 overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+          <div className="flex flex-col items-stretch gap-1 p-2.5">
             <Navlinks />
           </div>
         </div>
