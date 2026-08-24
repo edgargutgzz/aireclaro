@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import MapaSensors from "@/components/mapa/mapa-sensors";
+import MapaSensors from "@/components/mapa/mapa-sensors-loader";
 import PurpleAirSensors from "@/components/data/purple-air-sensors";
 import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
