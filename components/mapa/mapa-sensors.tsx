@@ -1101,7 +1101,7 @@ export default function MapaSensors({
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Red de sensores del Observatorio Ciudadano de la Calidad del
               Aire, una organización de la sociedad civil dedicada a mejorar
-              la calidad del aire en Nuevo León.
+              la calidad del aire en la Zona Metropolitana de Monterrey.
             </p>
             <p className="text-center text-sm text-gray-500">
               Conoce más en{' '}
