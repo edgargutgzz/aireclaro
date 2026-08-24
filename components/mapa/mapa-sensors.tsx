@@ -736,10 +736,7 @@ export default function MapaSensors({
           <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
-              {/* Top row: label */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
-              </div>
+              <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
               {/* Quality label + PM2.5 — always shown */}
               <div className="mt-1 flex items-center gap-3">
                 <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
