@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Info, Map, BarChart3 } from "lucide-react";
+import { Map, BarChart3 } from "lucide-react";
 
 // Mobile bottom nav only - desktop uses SiteHeader instead.
 export default function Navlinks() {
@@ -12,7 +12,6 @@ export default function Navlinks() {
   const links = [
     { name: "Mapa", href: "/", icon: Map, alt: "Mapa" },
     { name: "Datos", href: "/datos", icon: BarChart3, alt: "Datos" },
-    { name: "Acerca", href: "/acerca", icon: Info, alt: "Acerca" },
   ];
 
   return (
