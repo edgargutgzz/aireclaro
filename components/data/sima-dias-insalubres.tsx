@@ -27,29 +27,41 @@ export default async function SimaDiasInsalubres(
   const end = new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 19);
   const daysInMonth = new Date(year, month, 0).getDate();
 
-  const rows: { sensor_id: string; pm25: number; time_stamp: string }[] = [];
   const pageSize = 1000;
-  let from = 0;
 
-  while (true) {
-    const { data, error } = await supabase
-      .from("sima_mediciones")
-      .select("sensor_id, pm25, time_stamp")
-      .neq("sensor_id", "FIN") // exclude the Saltillo station
-      .gte("time_stamp", start)
-      .lt("time_stamp", end)
-      .order("time_stamp", { ascending: true })
-      .order("sensor_id", { ascending: true })
-      .range(from, from + pageSize - 1);
+  const { count, error: countError } = await supabase
+    .from("sima_mediciones")
+    .select("sensor_id", { count: "exact", head: true })
+    .neq("sensor_id", "FIN") // exclude the Saltillo station
+    .gte("time_stamp", start)
+    .lt("time_stamp", end);
+  if (countError) {
+    console.error("SIMA días insalubres count error:", countError);
+    throw new Error(`Failed to count SIMA mediciones: ${countError.message}`);
+  }
 
+  const pageCount = Math.ceil((count ?? 0) / pageSize);
+  const pages = await Promise.all(
+    Array.from({ length: pageCount }, (_, i) =>
+      supabase
+        .from("sima_mediciones")
+        .select("sensor_id, pm25, time_stamp")
+        .neq("sensor_id", "FIN")
+        .gte("time_stamp", start)
+        .lt("time_stamp", end)
+        .order("time_stamp", { ascending: true })
+        .order("sensor_id", { ascending: true })
+        .range(i * pageSize, i * pageSize + pageSize - 1),
+    ),
+  );
+
+  const rows: { sensor_id: string; pm25: number; time_stamp: string }[] = [];
+  for (const { data, error } of pages) {
     if (error) {
       console.error("SIMA días insalubres fetch error:", error);
       throw new Error(`Failed to fetch SIMA mediciones: ${error.message}`);
     }
-    if (!data || data.length === 0) break;
-    rows.push(...data);
-    if (data.length < pageSize) break;
-    from += pageSize;
+    if (data) rows.push(...data);
   }
 
   const byStationDay = new Map<string, StationDayStats>();
