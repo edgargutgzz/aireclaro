@@ -38,6 +38,8 @@ export default async function SimaDiasInsalubres(
       .neq("sensor_id", "FIN") // exclude the Saltillo station
       .gte("time_stamp", start)
       .lt("time_stamp", end)
+      .order("time_stamp", { ascending: true })
+      .order("sensor_id", { ascending: true })
       .range(from, from + pageSize - 1);
 
     if (error) {
