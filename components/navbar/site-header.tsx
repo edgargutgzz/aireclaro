@@ -26,7 +26,7 @@ export default function SiteHeader() {
             alt="OCCAMM Logo"
             width={150}
             height={28}
-            className="h-7 w-auto"
+            className="h-[27.5px] w-[150px]"
           />
         </Link>
         <div className="flex items-center gap-10">
