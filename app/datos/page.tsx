@@ -14,7 +14,7 @@ const MESES = [
 
 export default async function Datos() {
   const year = 2026;
-  const month = 7; // julio
+  const month = 8; // agosto
   const dias = await SimaDiasInsalubres(year, month);
   const totalInsalubres = dias.filter((d) => d.estatus === "insalubre").length;
 
