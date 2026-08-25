@@ -76,7 +76,7 @@ export default async function SimaDiasInsalubres(
   for (const [key, entry] of byStationDay) {
     if (entry.hours.size < MIN_VALID_HOURS) continue;
     const day = Number(key.split("_").pop());
-    const dailyValue = Math.floor(entry.sum / entry.count);
+    const dailyValue = Math.round(entry.sum / entry.count);
     if (dailyValue > PM25_LIMIT) {
       dayStatus.set(day, "insalubre");
     } else if (dayStatus.get(day) !== "insalubre") {
