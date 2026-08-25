@@ -36,9 +36,9 @@ export default function SiteHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={clsx("text-base transition-colors hover:text-gray-500", {
-                  "font-semibold text-gray-900": isSelected,
-                  "font-normal text-gray-900": !isSelected,
+                className={clsx("text-base text-[rgb(2,8,23)] transition-colors hover:text-gray-500", {
+                  "font-semibold": isSelected,
+                  "font-normal": !isSelected,
                 })}
               >
                 {link.name}
