@@ -12,6 +12,7 @@ const MESES_A_MOSTRAR = [
   { year: 2026, month: 8 },
   { year: 2026, month: 7 },
   { year: 2026, month: 6 },
+  { year: 2026, month: 5 },
 ];
 
 export default async function Datos() {
