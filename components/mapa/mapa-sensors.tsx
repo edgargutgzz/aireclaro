@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
 import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
-import Navlinks from "@/components/navbar/navlinks";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -520,11 +519,11 @@ export default function MapaSensors({
   }, []);
 
   return (
-    <div className="relative h-svh">
+    <div className="relative h-svh md:h-[calc(100svh-72px)]">
       {/* Map container */}
       <div
         ref={mapContainer}
-        className="absolute left-0 top-0 h-full w-full md:h-screen"
+        className="absolute left-0 top-0 h-full w-full"
       />
 
       {/* Mobile right-side buttons — hidden when sheet is expanded */}
@@ -591,7 +590,7 @@ export default function MapaSensors({
           No click-away backdrop: the map stays interactive (zoom/pan) while this is open,
           close via the X or the Layers toggle button. */}
       <div
-        className="pointer-events-none fixed right-6 top-6 z-[61] hidden w-[340px] md:block"
+        className="pointer-events-none absolute right-6 top-6 z-[61] hidden w-[340px] md:block"
       >
         <div
           className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md"
@@ -645,18 +644,9 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected */}
+      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected.
+          Nav lives in the site-wide header now, not floating here. */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden items-start gap-2 md:flex">
-
-        {/* Left column: nav + quality card */}
-        <div className="flex flex-col items-start gap-2">
-
-        {/* Nav — same fixed width as the quality card below, so both columns line up */}
-        <div className="pointer-events-auto w-[416px] overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
-          <div className="flex items-center justify-around px-4 py-3">
-            <Navlinks />
-          </div>
-        </div>
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-[416px]">
@@ -841,8 +831,6 @@ export default function MapaSensors({
           </div>
         )}
         </div>{/* end card width wrapper */}
-
-        </div>{/* end left column */}
       </div>
 
 

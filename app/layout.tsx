@@ -102,10 +102,8 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <div className="flex min-h-svh flex-col">
-          {/* Navbar */}
-          <div className="fixed top-0 z-[55] w-full">
-            <Navbar />
-          </div>
+          {/* Navbar - mobile bottom bar is self-contained fixed; desktop header is in normal flow */}
+          <Navbar />
           {/* Content - no padding */}
           <MainContent>{children}</MainContent>
         </div>

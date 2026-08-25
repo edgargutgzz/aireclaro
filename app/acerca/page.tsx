@@ -87,7 +87,7 @@ export default function Acerca() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <div className="container mx-auto max-w-2xl flex-1 overflow-y-auto px-4 pb-10 pt-8 md:pt-6 md:pl-24">
+      <div className="container mx-auto max-w-2xl flex-1 overflow-y-auto px-4 pb-10 pt-8 md:pt-6">
 
         {/* Observatorio card */}
         <div className="mb-6 rounded-2xl bg-gray-50 px-4 py-4 md:mb-14">
@@ -139,7 +139,7 @@ export default function Acerca() {
 
       {/* Desktop footer — pinned to the bottom of the viewport, not part of the scroll */}
       <div className="hidden min-h-16 items-center px-4 pb-4 md:flex md:px-0">
-        <div className="mx-auto flex w-full max-w-2xl items-center justify-between border-t border-gray-100 pt-4 md:pl-28">
+        <div className="mx-auto flex w-full max-w-2xl items-center justify-between border-t border-gray-100 pt-4">
           <Link href="/aviso-privacidad" className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600">
             Aviso de Privacidad
           </Link>

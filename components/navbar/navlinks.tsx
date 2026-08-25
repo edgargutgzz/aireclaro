@@ -5,49 +5,32 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { Info, Map, BarChart3 } from "lucide-react";
 
+// Mobile bottom nav only - desktop uses SiteHeader instead.
 export default function Navlinks() {
   const pathname = usePathname();
 
   const links = [
-    {
-      name: "Mapa",
-      href: "/",
-      icon: Map,
-      alt: "Mapa",
-    },
-    {
-      name: "Datos",
-      href: "/datos",
-      icon: BarChart3,
-      alt: "Datos",
-      desktopOnly: true,
-    },
-    {
-      name: "Acerca",
-      href: "/acerca",
-      icon: Info,
-      alt: "Acerca",
-    },
+    { name: "Mapa", href: "/", icon: Map, alt: "Mapa" },
+    { name: "Datos", href: "/datos", icon: BarChart3, alt: "Datos", desktopOnly: true },
+    { name: "Acerca", href: "/acerca", icon: Info, alt: "Acerca" },
   ];
 
   return (
     <>
-      {links.map((link) => {
-        const IconComponent = link.icon;
-        const isSelected = pathname === link.href;
-        return (
-          <Link
-            key={link.name}
-            href={link.href}
-            className={clsx("group transition-opacity active:opacity-70", {
-              "hidden md:inline-block": link.desktopOnly,
-            })}
-            aria-label={link.alt}
-          >
-            {/* Mobile view — horizontal pill */}
-            {!link.desktopOnly && (
+      {links
+        .filter((link) => !link.desktopOnly)
+        .map((link) => {
+          const IconComponent = link.icon;
+          const isSelected = pathname === link.href;
+          return (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="group transition-opacity active:opacity-70"
+              aria-label={link.alt}
+            >
               <div
-                className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 md:hidden transition-colors border", {
+                className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 transition-colors border", {
                   "border-gray-200 bg-gray-200/80 text-gray-900": isSelected,
                   "border-transparent text-gray-400": !isSelected,
                 })}
@@ -60,31 +43,9 @@ export default function Navlinks() {
                   {link.name}
                 </span>
               </div>
-            )}
-
-            {/* Desktop view */}
-            <div
-              className={clsx(
-                "hidden md:flex md:items-center md:rounded-full md:px-6 md:py-2.5 md:border md:transition-colors",
-                {
-                  "md:border-gray-200 md:bg-gray-200/80 md:text-gray-900": isSelected,
-                  "md:border-transparent md:text-gray-400 md:hover:bg-gray-100": !isSelected,
-                },
-              )}
-            >
-              <IconComponent className="md:h-5 md:w-5" />
-              <span
-                className={clsx("md:ml-2 md:text-sm", {
-                  "font-semibold": isSelected,
-                  "font-medium": !isSelected,
-                })}
-              >
-                {link.name}
-              </span>
-            </div>
-          </Link>
-        );
-      })}
+            </Link>
+          );
+        })}
     </>
   );
 }
