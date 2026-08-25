@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { DiaInsalubre } from "@/components/data/sima-dias-insalubres";
+import DiasInsalubresYearChart from "@/components/datos/dias-insalubres-year-chart";
 
 const MESES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -45,26 +46,45 @@ export default function DiasInsalubresPager({ meses }: { meses: MesDiasInsalubre
     setMonth(monthsForYear[monthsForYear.length - 1].month);
   }
 
-  const totalInsalubres = current.dias.filter((d) => d.estatus === "insalubre").length;
+  const monthTotals = useMemo(
+    () =>
+      monthsInYear.map((m) => ({
+        month: m.month,
+        insalubre: m.dias.filter((d) => d.estatus === "insalubre").length,
+        saludable: m.dias.filter((d) => d.estatus === "saludable").length,
+      })),
+    [monthsInYear],
+  );
+
+  const yearTotalInsalubres = monthTotals.reduce((sum, m) => sum + m.insalubre, 0);
+  const currentMonthInsalubres = current.dias.filter((d) => d.estatus === "insalubre").length;
 
   return (
     <div className="rounded-2xl bg-gray-50 px-5 py-5">
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="text-lg font-semibold text-gray-800">
-            Días Insalubres en la Zona Metropolitana de Monterrey
-          </h1>
-          {years.length > 1 && (
-            <div className="flex flex-shrink-0 gap-1 rounded-full bg-gray-100 p-1">
-              {years.map((y) => (
-                <button key={y} onClick={() => selectYear(y)} className={pillClass(y === year)}>
-                  {y}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-lg font-semibold text-gray-800">
+          Días Insalubres en la Zona Metropolitana de Monterrey
+        </h1>
+        {years.length > 1 && (
+          <div className="flex flex-shrink-0 gap-1 rounded-full bg-gray-100 p-1">
+            {years.map((y) => (
+              <button key={y} onClick={() => selectYear(y)} className={pillClass(y === year)}>
+                {y}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <p className="mt-1 text-sm text-gray-500">
+        <span className="font-semibold text-red-500">{yearTotalInsalubres}</span>{" "}
+        días insalubres de PM2.5 en {year}
+      </p>
 
+      <div className="mt-6">
+        <DiasInsalubresYearChart year={year} months={monthTotals} selectedMonth={current.month} onSelectMonth={setMonth} />
+      </div>
+
+      <div className="mt-6 border-t border-gray-200 pt-5">
         <div className="flex flex-wrap gap-1 self-start rounded-xl bg-gray-100 p-1">
           {monthsInYear.map((m) => (
             <button key={m.month} onClick={() => setMonth(m.month)} className={pillClass(m.month === current.month)}>
@@ -72,39 +92,39 @@ export default function DiasInsalubresPager({ meses }: { meses: MesDiasInsalubre
             </button>
           ))}
         </div>
-      </div>
 
-      <p className="mt-4 text-sm text-gray-500">
-        <span className="font-semibold text-red-500">{totalInsalubres}</span>{" "}
-        días insalubres de PM2.5 en {MESES[current.month - 1]} {current.year}
-      </p>
+        <p className="mt-4 text-sm text-gray-500">
+          <span className="font-semibold text-red-500">{currentMonthInsalubres}</span>{" "}
+          días insalubres de PM2.5 en {MESES[current.month - 1]} {current.year}
+        </p>
 
-      <div className="mt-6 grid grid-cols-7 gap-2">
-        {current.dias.map(({ dia, estatus }) => (
-          <div
-            key={dia}
-            className={`flex aspect-square flex-col items-center justify-center rounded-lg text-sm font-medium ${
-              estatus === "insalubre"
-                ? "bg-red-100 text-red-700"
-                : estatus === "saludable"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-400"
-            }`}
-          >
-            {dia}
+        <div className="mt-6 grid grid-cols-7 gap-2">
+          {current.dias.map(({ dia, estatus }) => (
+            <div
+              key={dia}
+              className={`flex aspect-square flex-col items-center justify-center rounded-lg text-sm font-medium ${
+                estatus === "insalubre"
+                  ? "bg-red-100 text-red-700"
+                  : estatus === "saludable"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-gray-100 text-gray-400"
+              }`}
+            >
+              {dia}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex gap-4 text-xs text-gray-500">
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-red-400" /> Insalubre
           </div>
-        ))}
-      </div>
-
-      <div className="mt-4 flex gap-4 text-xs text-gray-500">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-red-400" /> Insalubre
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-green-400" /> Saludable
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-gray-300" /> Sin datos
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-green-400" /> Saludable
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-gray-300" /> Sin datos
+          </div>
         </div>
       </div>
     </div>
