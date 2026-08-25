@@ -8,6 +8,8 @@ export const metadata: Metadata = {
     "Explora y descarga los datos históricos de calidad del aire de Aire Claro.",
 };
 
+export const revalidate = 3600; // 1 hour - matches how often new hourly readings land
+
 const MESES_A_MOSTRAR = [
   { year: 2026, month: 8 },
   { year: 2026, month: 7 },
