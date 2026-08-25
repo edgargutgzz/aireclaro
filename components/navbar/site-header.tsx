@@ -12,7 +12,7 @@ const LINKS = [
 // current page, so ours doesn't either.
 export default function SiteHeader() {
   return (
-    <div className="hidden h-[86px] border-b border-stone-200 bg-stone-50 md:flex md:items-center">
+    <div className="hidden h-[86px] bg-stone-50 md:flex md:items-center">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link href="https://observatoriodelaire.com" target="_blank">
           <Image

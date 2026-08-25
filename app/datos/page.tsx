@@ -29,7 +29,7 @@ export default async function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pt-28">
-        <div className="mb-8 flex items-end justify-between">
+        <div className="mb-8 flex items-end justify-between border-b border-gray-200 pb-6">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
               Zona Metropolitana de Monterrey
