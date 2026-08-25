@@ -4,7 +4,6 @@ import Image from "next/image";
 const LINKS = [
   { name: "Mapa", href: "/" },
   { name: "Datos", href: "/datos" },
-  { name: "Acerca", href: "/acerca" },
 ];
 
 // Matches observatoriodelaire.com's own top bar so Aire Claro reads as
