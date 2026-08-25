@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { DiaInsalubre } from "@/components/data/sima-dias-insalubres";
 
 const MESES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
   "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+];
+
+const MESES_CORTOS = [
+  "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+  "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
 ];
 
 export interface MesDiasInsalubres {
@@ -16,36 +20,31 @@ export interface MesDiasInsalubres {
 }
 
 export default function DiasInsalubresPager({ meses }: { meses: MesDiasInsalubres[] }) {
-  const [index, setIndex] = useState(0);
-  const { year, month, dias } = meses[index];
+  // meses arrives newest-first; show tabs oldest-to-newest (reads left-to-right like a timeline)
+  // but default to the most recent month, since that's what you almost always want first.
+  const ordered = [...meses].reverse();
+  const [index, setIndex] = useState(ordered.length - 1);
+  const { year, month, dias } = ordered[index];
   const totalInsalubres = dias.filter((d) => d.estatus === "insalubre").length;
 
   return (
     <div className="rounded-2xl bg-gray-50 px-5 py-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h1 className="text-lg font-semibold text-gray-800">
           Días Insalubres en la Zona Metropolitana de Monterrey
         </h1>
-        <div className="flex flex-shrink-0 items-center gap-1">
-          <button
-            onClick={() => setIndex((i) => Math.min(i + 1, meses.length - 1))}
-            disabled={index >= meses.length - 1}
-            className="rounded-full p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:hover:text-gray-400"
-            aria-label="Mes anterior"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <span className="w-8 text-center text-xs text-gray-400">
-            {index + 1}/{meses.length}
-          </span>
-          <button
-            onClick={() => setIndex((i) => Math.max(i - 1, 0))}
-            disabled={index <= 0}
-            className="rounded-full p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:hover:text-gray-400"
-            aria-label="Mes siguiente"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
+        <div className="flex flex-shrink-0 gap-1 rounded-full bg-gray-100 p-1">
+          {ordered.map((m, i) => (
+            <button
+              key={`${m.year}-${m.month}`}
+              onClick={() => setIndex(i)}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                i === index ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              {MESES_CORTOS[m.month - 1]}
+            </button>
+          ))}
         </div>
       </div>
       <p className="mt-1 text-sm text-gray-500">
