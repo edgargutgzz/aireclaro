@@ -82,12 +82,12 @@ import Link from "next/link";
 
 export default function Acerca() {
   return (
-    <div className="flex flex-col" style={{ height: 'calc(100svh - 3.5rem - env(safe-area-inset-bottom, 0px))' }}>
+    <div className="min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <div className="container mx-auto max-w-2xl flex-1 overflow-y-auto px-4 pb-10 pt-8 md:pt-6">
+      <div className="container mx-auto max-w-2xl px-4 pb-10 pt-8 md:pt-6">
 
         {/* Observatorio card */}
         <div className="mb-6 rounded-2xl bg-gray-50 px-4 py-4 md:mb-14">
@@ -120,33 +120,13 @@ export default function Acerca() {
         {/* FAQ section */}
         <Questions />
 
-        {/* Mobile footer — scrolls with the content, below the last dropdown */}
-        <div className="mt-10 border-t border-gray-100 px-4 pt-5 pb-2 md:hidden">
-          <div className="mx-auto flex max-w-2xl flex-col items-start gap-3">
-            <Link href="/aviso-privacidad" className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600">
-              Aviso de Privacidad
-            </Link>
-            <span className="text-sm text-gray-400">
-              Desarrollado por{" "}
-              <Link href="https://datacomun.com" target="_blank" className="underline underline-offset-4 hover:text-gray-600">
-                datacomun
-              </Link>
-            </span>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Desktop footer — pinned to the bottom of the viewport, not part of the scroll */}
-      <div className="hidden min-h-16 items-center px-4 pb-4 md:flex md:px-0">
-        <div className="mx-auto flex w-full max-w-2xl items-center justify-between border-t border-gray-100 pt-4">
+        {/* Aviso de Privacidad link — the shared site footer below covers contact/social/copyright */}
+        <div className="mt-10 border-t border-gray-100 pt-5">
           <Link href="/aviso-privacidad" className="text-sm text-gray-400 underline underline-offset-4 hover:text-gray-600">
             Aviso de Privacidad
           </Link>
-          <Link href="https://datacomun.com" target="_blank" className="text-sm text-gray-400 hover:text-gray-600">
-            Desarrollado por <span className="underline underline-offset-4">datacomun</span>
-          </Link>
         </div>
+
       </div>
     </div>
   );

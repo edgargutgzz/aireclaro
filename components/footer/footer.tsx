@@ -5,8 +5,8 @@ import { FaSquareXTwitter } from "react-icons/fa6";
 
 export default function Footer() {
   return (
-    <footer className="bg-zinc-100">
-      <div className="mx-auto max-w-6xl px-4 pt-10 pb-8">
+    <footer className="bg-stone-100">
+      <div className="mx-auto max-w-7xl px-6 pt-24 pb-8 md:py-8 lg:px-8">
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-1">
           <Link
