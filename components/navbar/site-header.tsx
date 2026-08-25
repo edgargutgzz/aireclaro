@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
 
 const LINKS = [
   { name: "Mapa", href: "/" },
@@ -9,8 +13,11 @@ const LINKS = [
 // Matches observatoriodelaire.com's own top bar so Aire Claro reads as
 // part of the same site, not a separate product. Desktop only - mobile
 // keeps its own bottom nav bar. Reference nav links never bold the
-// current page, so ours doesn't either.
+// current page, so ours doesn't either — a thin underline marks the
+// active page instead, without the extra visual weight bolding added.
 export default function SiteHeader() {
+  const pathname = usePathname();
+
   return (
     <div className="hidden h-[86px] bg-stone-50 md:flex md:items-center">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 lg:px-8">
@@ -24,15 +31,21 @@ export default function SiteHeader() {
           />
         </Link>
         <div className="flex items-center gap-10">
-          {LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-base font-normal text-[rgb(2,8,23)] transition-colors hover:text-gray-500"
-            >
-              {link.name}
-            </Link>
-          ))}
+          {LINKS.map((link) => {
+            const isSelected = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={clsx(
+                  "border-b-2 pb-1 text-base font-normal text-[rgb(2,8,23)] transition-colors hover:text-gray-500",
+                  isSelected ? "border-[rgb(2,8,23)]" : "border-transparent",
+                )}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
