@@ -519,7 +519,7 @@ export default function MapaSensors({
   }, []);
 
   return (
-    <div className="relative h-svh md:h-[calc(100svh-72px)]">
+    <div className="relative h-svh md:h-[calc(100svh-86px)]">
       {/* Map container */}
       <div
         ref={mapContainer}

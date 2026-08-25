@@ -18,7 +18,7 @@ export default function SiteHeader() {
   const pathname = usePathname();
 
   return (
-    <div className="hidden h-[72px] border-b border-stone-200 bg-stone-50 md:flex md:items-center">
+    <div className="hidden h-[86px] border-b border-stone-200 bg-stone-50 md:flex md:items-center">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link href="/">
           <Image
