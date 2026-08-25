@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SimaDiasInsalubres from "@/components/data/sima-dias-insalubres";
+import getDiasInsalubres from "@/lib/get-dias-insalubres";
 import DiasInsalubresPager from "@/components/datos/dias-insalubres-pager";
 
 export const metadata: Metadata = {
@@ -10,9 +10,11 @@ export const metadata: Metadata = {
 
 export const revalidate = 21600; // 6 hours - only today's day-cell can actually change; past days are settled
 
+// 2025 is fully historical (static files); 2026 runs through the current
+// month, backed by static files up to June and live SIMA data after that.
 const MESES_A_MOSTRAR = [
-  { year: 2026, month: 8 },
-  { year: 2026, month: 7 },
+  ...Array.from({ length: 12 }, (_, i) => ({ year: 2025, month: i + 1 })),
+  ...Array.from({ length: 8 }, (_, i) => ({ year: 2026, month: i + 1 })),
 ];
 
 export default async function Datos() {
@@ -20,7 +22,7 @@ export default async function Datos() {
     MESES_A_MOSTRAR.map(async ({ year, month }) => ({
       year,
       month,
-      dias: await SimaDiasInsalubres(year, month),
+      dias: await getDiasInsalubres(year, month),
     })),
   );
 

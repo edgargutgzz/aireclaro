@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { DiaInsalubre } from "@/components/data/sima-dias-insalubres";
 
 const MESES = [
@@ -19,41 +19,68 @@ export interface MesDiasInsalubres {
   dias: DiaInsalubre[];
 }
 
+function pillClass(selected: boolean) {
+  return `rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+    selected ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+  }`;
+}
+
 export default function DiasInsalubresPager({ meses }: { meses: MesDiasInsalubres[] }) {
-  // meses arrives newest-first; show tabs oldest-to-newest (reads left-to-right like a timeline)
-  // but default to the most recent month, since that's what you almost always want first.
-  const ordered = [...meses].reverse();
-  const [index, setIndex] = useState(ordered.length - 1);
-  const { year, month, dias } = ordered[index];
-  const totalInsalubres = dias.filter((d) => d.estatus === "insalubre").length;
+  const sorted = useMemo(
+    () => [...meses].sort((a, b) => a.year - b.year || a.month - b.month),
+    [meses],
+  );
+  const years = useMemo(() => Array.from(new Set(sorted.map((m) => m.year))), [sorted]);
+  const latest = sorted[sorted.length - 1];
+
+  const [year, setYear] = useState(latest.year);
+  const [month, setMonth] = useState(latest.month);
+
+  const monthsInYear = sorted.filter((m) => m.year === year);
+  const current = monthsInYear.find((m) => m.month === month) ?? monthsInYear[monthsInYear.length - 1];
+
+  function selectYear(y: number) {
+    const monthsForYear = sorted.filter((m) => m.year === y);
+    setYear(y);
+    setMonth(monthsForYear[monthsForYear.length - 1].month);
+  }
+
+  const totalInsalubres = current.dias.filter((d) => d.estatus === "insalubre").length;
 
   return (
     <div className="rounded-2xl bg-gray-50 px-5 py-5">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-lg font-semibold text-gray-800">
-          Días Insalubres en la Zona Metropolitana de Monterrey
-        </h1>
-        <div className="flex flex-shrink-0 gap-1 rounded-full bg-gray-100 p-1">
-          {ordered.map((m, i) => (
-            <button
-              key={`${m.year}-${m.month}`}
-              onClick={() => setIndex(i)}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                i === index ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
-              }`}
-            >
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-lg font-semibold text-gray-800">
+            Días Insalubres en la Zona Metropolitana de Monterrey
+          </h1>
+          {years.length > 1 && (
+            <div className="flex flex-shrink-0 gap-1 rounded-full bg-gray-100 p-1">
+              {years.map((y) => (
+                <button key={y} onClick={() => selectYear(y)} className={pillClass(y === year)}>
+                  {y}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-1 self-start rounded-xl bg-gray-100 p-1">
+          {monthsInYear.map((m) => (
+            <button key={m.month} onClick={() => setMonth(m.month)} className={pillClass(m.month === current.month)}>
               {MESES_CORTOS[m.month - 1]}
             </button>
           ))}
         </div>
       </div>
-      <p className="mt-1 text-sm text-gray-500">
+
+      <p className="mt-4 text-sm text-gray-500">
         <span className="font-semibold text-red-500">{totalInsalubres}</span>{" "}
-        días insalubres de PM2.5 en {MESES[month - 1]} {year}
+        días insalubres de PM2.5 en {MESES[current.month - 1]} {current.year}
       </p>
 
       <div className="mt-6 grid grid-cols-7 gap-2">
-        {dias.map(({ dia, estatus }) => (
+        {current.dias.map(({ dia, estatus }) => (
           <div
             key={dia}
             className={`flex aspect-square flex-col items-center justify-center rounded-lg text-sm font-medium ${
