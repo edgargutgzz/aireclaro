@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Explora y descarga los datos históricos de calidad del aire de Aire Claro.",
 };
 
-export const revalidate = 3600; // 1 hour - matches how often new hourly readings land
+export const revalidate = 21600; // 6 hours - only today's day-cell can actually change; past days are settled
 
 const MESES_A_MOSTRAR = [
   { year: 2026, month: 8 },
