@@ -28,7 +28,7 @@ export default async function Datos() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto flex max-w-2xl flex-col gap-6 px-4 pb-10 pt-8 md:pt-6">
+      <div className="container mx-auto flex max-w-4xl flex-col gap-6 px-4 pb-10 pt-8 md:pt-6">
         <DiasInsalubresPager meses={meses} />
       </div>
     </div>
