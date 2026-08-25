@@ -29,6 +29,27 @@ export default async function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 pb-10 pt-8 md:pt-6 lg:px-8">
+        <div className="flex items-end justify-between border-b border-gray-200 pb-6">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+              Zona Metropolitana de Monterrey
+            </p>
+            <h1 className="mt-1 text-2xl font-bold text-gray-900 md:text-3xl">Calidad del Aire</h1>
+          </div>
+          <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
+            <button className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm">
+              PM2.5
+            </button>
+            <button
+              disabled
+              title="Próximamente"
+              className="cursor-not-allowed rounded-xl px-5 py-2 text-sm font-semibold text-gray-300"
+            >
+              PM10
+            </button>
+          </div>
+        </div>
+
         <DiasInsalubresChart meses={meses} />
       </div>
     </div>
