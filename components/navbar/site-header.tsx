@@ -24,9 +24,9 @@ export default function SiteHeader() {
           <Image
             src="/occamm-logo.png"
             alt="OCCAMM Logo"
-            width={140}
-            height={26}
-            className="h-9 w-auto"
+            width={150}
+            height={28}
+            className="h-7 w-auto"
           />
         </Link>
         <div className="flex items-center gap-10">
