@@ -14,9 +14,9 @@ export default function Navbar() {
           <Image
             src="/occamm-logo.png"
             alt="OCCAMM Logo"
-            width={150}
-            height={28}
-            className="h-[27.5px] w-[150px]"
+            width={130}
+            height={24}
+            className="h-[24px] w-[130px]"
           />
         </Link>
       </div>
