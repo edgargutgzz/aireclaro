@@ -612,10 +612,13 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute bottom-12 right-12 z-10 hidden flex-col gap-2 md:flex">
         <button
           onClick={userLocation ? flyToUser : requestLocation}
-          className="pointer-events-auto flex h-[52px] w-[52px] items-center justify-center rounded-xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          className="pointer-events-auto flex h-[52px] items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
           <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
+            {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
+          </span>
         </button>
       </div>
 
