@@ -606,7 +606,7 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start gap-3 overflow-y-auto md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
-        <div className="w-[416px]">
+        <div className="w-[380px]">
         {selectedSensor ? (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
@@ -790,7 +790,7 @@ export default function MapaSensors({
         </div>{/* end card width wrapper */}
 
         {/* Capas panel — always open on desktop (there's room for it), no toggle/close */}
-        <div className="w-[416px] pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+        <div className="w-[380px] pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
           <div className="px-5 pt-4 pb-3">
             <span className="text-sm font-medium text-gray-400">Capas</span>
           </div>
