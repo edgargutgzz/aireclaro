@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, X, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
+import { Navigation, Layers, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -587,29 +587,11 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop layers panel — floats in from the right, same glass style as the left cards.
-          No click-away backdrop: the map stays interactive (zoom/pan) while this is open,
-          close via the X or the Layers toggle button. */}
-      <div
-        className="pointer-events-none absolute right-6 top-6 z-[61] hidden w-[340px] md:block"
-      >
-        <div
-          className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md"
-          style={{
-            transform: showFilters ? 'translateX(0)' : 'translateX(16px)',
-            opacity: showFilters ? 1 : 0,
-            transition: 'transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease',
-            pointerEvents: showFilters ? 'auto' : 'none',
-          }}
-        >
-          <div className="flex items-center justify-between px-5 pt-4 pb-3">
+          Always open on desktop (there's room for it), no toggle/close. */}
+      <div className="pointer-events-none absolute right-6 top-6 z-[61] hidden w-[340px] md:block">
+        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+          <div className="px-5 pt-4 pb-3">
             <span className="text-sm font-medium text-gray-400">Capas</span>
-            <button
-              onClick={() => setShowFilters(false)}
-              className="rounded-full p-1 text-gray-400 hover:text-gray-600"
-              aria-label="Cerrar"
-            >
-              <X className="h-4 w-4" />
-            </button>
           </div>
           <div className="px-5 pb-5">
             <LayersFilterContent
@@ -634,13 +616,6 @@ export default function MapaSensors({
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
           <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-        </button>
-        <button
-          onClick={() => setShowFilters((v) => !v)}
-          className={`pointer-events-auto flex h-[52px] w-[52px] items-center justify-center rounded-xl border shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 ${showFilters ? 'border-gray-900/20 bg-white/90' : 'border-white/60 bg-white/80'}`}
-          aria-label="Capas"
-        >
-          <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
         </button>
       </div>
 
