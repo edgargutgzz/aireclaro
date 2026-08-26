@@ -519,7 +519,7 @@ export default function MapaSensors({
   }, []);
 
   return (
-    <div className="relative h-[calc(100svh-56px)] md:h-[calc(100svh-86px)]">
+    <div className="relative h-[calc(100svh-56px)] md:h-[calc(100svh-72px)]">
       {/* Map container */}
       <div
         ref={mapContainer}
@@ -586,28 +586,6 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop layers panel — floats in from the right, same glass style as the left cards.
-          Always open on desktop (there's room for it), no toggle/close. */}
-      <div className="pointer-events-none absolute right-6 top-6 z-[61] hidden w-[340px] md:block">
-        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
-          <div className="px-5 pt-4 pb-3">
-            <span className="text-sm font-medium text-gray-400">Capas</span>
-          </div>
-          <div className="px-5 pb-5">
-            <LayersFilterContent
-              compact={false}
-              showOtros={showOtros}
-              setShowOtros={setShowOtros}
-              showOccamm={showOccamm}
-              setShowOccamm={setShowOccamm}
-              showSima={showSima}
-              setShowSima={setShowSima}
-              onShowOccammInfo={() => setShowOccammInfo(true)}
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Desktop right-side floating controls */}
       <div className="pointer-events-none absolute bottom-12 right-6 z-10 hidden flex-col gap-2 md:flex">
         <button
@@ -622,9 +600,10 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected.
-          Nav lives in the site-wide header now, not floating here. */}
-      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden items-start gap-2 md:flex">
+      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected,
+          with the always-open Capas panel stacked below it. Nav lives in the site-wide header now,
+          not floating here. */}
+      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start gap-3 overflow-y-auto md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-[416px]">
@@ -809,6 +788,25 @@ export default function MapaSensors({
           </div>
         )}
         </div>{/* end card width wrapper */}
+
+        {/* Capas panel — always open on desktop (there's room for it), no toggle/close */}
+        <div className="w-[416px] pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+          <div className="px-5 pt-4 pb-3">
+            <span className="text-sm font-medium text-gray-400">Capas</span>
+          </div>
+          <div className="px-5 pb-5">
+            <LayersFilterContent
+              compact={false}
+              showOtros={showOtros}
+              setShowOtros={setShowOtros}
+              showOccamm={showOccamm}
+              setShowOccamm={setShowOccamm}
+              showSima={showSima}
+              setShowSima={setShowSima}
+              onShowOccammInfo={() => setShowOccammInfo(true)}
+            />
+          </div>
+        </div>
       </div>
 
 

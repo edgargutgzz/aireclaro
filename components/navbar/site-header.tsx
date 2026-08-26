@@ -19,7 +19,7 @@ export default function SiteHeader() {
   const pathname = usePathname();
 
   return (
-    <div className="hidden h-[86px] bg-stone-50 md:flex md:items-center">
+    <div className="hidden h-[72px] bg-stone-50 md:flex md:items-center">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link href="https://observatoriodelaire.com" target="_blank">
           <Image
