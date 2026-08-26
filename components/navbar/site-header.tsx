@@ -10,11 +10,11 @@ const LINKS = [
   { name: "Datos", href: "/datos" },
 ];
 
-// Matches observatoriodelaire.com's own top bar so Aire Claro reads as
-// part of the same site, not a separate product. Desktop only - mobile
-// keeps its own bottom nav bar. Reference nav links never bold the
-// current page, so ours doesn't either — a thin underline marks the
-// active page instead, without the extra visual weight bolding added.
+// Same org as observatoriodelaire.com (shared logo, links there), but the
+// nav itself follows Aire Claro's own visual language — the rounded
+// segmented-pill pattern already used for the Capas year toggle and the
+// PM2.5/PM10 toggle — rather than copying the reference site's plain
+// text links. Desktop only - mobile keeps its own bottom nav bar.
 export default function SiteHeader() {
   const pathname = usePathname();
 
@@ -30,7 +30,7 @@ export default function SiteHeader() {
             className="h-[27.5px] w-[150px]"
           />
         </Link>
-        <div className="flex items-center gap-10">
+        <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
           {LINKS.map((link) => {
             const isSelected = pathname === link.href;
             return (
@@ -38,8 +38,8 @@ export default function SiteHeader() {
                 key={link.href}
                 href={link.href}
                 className={clsx(
-                  "border-b-2 pb-1 text-base font-normal text-[rgb(2,8,23)] transition-colors hover:text-gray-500",
-                  isSelected ? "border-[rgb(2,8,23)]" : "border-transparent",
+                  "rounded-xl px-5 py-2 text-sm font-semibold transition-colors",
+                  isSelected ? "bg-white text-stone-800 shadow-sm" : "text-gray-400 hover:text-gray-600",
                 )}
               >
                 {link.name}
