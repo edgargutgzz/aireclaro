@@ -609,7 +609,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop right-side floating controls */}
-      <div className="pointer-events-none absolute bottom-12 right-12 z-10 hidden flex-col gap-2 md:flex">
+      <div className="pointer-events-none absolute bottom-12 right-6 z-10 hidden flex-col gap-2 md:flex">
         <button
           onClick={userLocation ? flyToUser : requestLocation}
           className="pointer-events-auto flex h-[52px] items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
