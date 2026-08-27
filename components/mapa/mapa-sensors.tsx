@@ -73,7 +73,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   }
 
   const width = 320;
-  const height = 130;
+  const height = 160;
   const verticalPadding = 10; // keeps peaks/troughs from touching the chart edges
   const drawableHeight = height - verticalPadding * 2;
   const values = data.map((d) => d.pm25);
@@ -91,10 +91,10 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   // IMECA thresholds — only draw the ones this window's range actually
   // crosses, so it stays a quiet reference instead of cluttering the chart.
   const thresholds = [
-    { value: 15, color: "#eab308" }, // entering Aceptable
-    { value: 25, color: "#f97316" }, // entering Mala
-    { value: 79, color: "#ef4444" }, // entering Muy mala
-    { value: 130, color: "#a855f7" }, // entering Extremadamente mala
+    { value: 15, color: "#eab308", label: "Aceptable" },
+    { value: 25, color: "#f97316", label: "Mala" },
+    { value: 79, color: "#ef4444", label: "Muy mala" },
+    { value: 130, color: "#a855f7", label: "Extrem. mala" },
   ].filter((t) => t.value > min && t.value < max);
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
@@ -163,7 +163,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           {thresholds.map((t) => (
             <g key={t.value}>
               <line x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
-              <text x={width - 2} y={toY(t.value) - 3} textAnchor="end" fontSize={9} fill={t.color} fillOpacity={0.8}>{t.value}</text>
+              <text x={width - 2} y={toY(t.value) - 3} textAnchor="end" fontSize={9} fontWeight={600} fill={t.color} fillOpacity={0.85}>{t.label}</text>
             </g>
           ))}
           {dayBoundaries.map((b) => (
@@ -457,7 +457,7 @@ export default function MapaSensors({
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
-      center: [-100.32098588977951, 25.665],
+      center: [-100.301, 25.685],
       zoom: 8,
     });
 
@@ -465,7 +465,7 @@ export default function MapaSensors({
       setMapLoaded(true);
       const isMobile = window.innerWidth < 768;
       (map.current as any).flyTo({
-        center: [-100.32098588977951, 25.665],
+        center: [-100.301, 25.685],
         zoom: 12,
         duration: 2000,
         essential: true,
@@ -804,7 +804,7 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start overflow-y-auto md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
-        <div className="w-[380px]">
+        <div className="w-[460px]">
         {selectedSensor ? (() => {
           const { sensor, pm25, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
