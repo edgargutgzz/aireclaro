@@ -54,7 +54,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   }
 
   const width = 320;
-  const height = 44;
+  const height = 80;
   const values = data.map((d) => d.pm25);
   const max = Math.max(...values);
   const min = Math.min(...values);
@@ -181,7 +181,7 @@ function LayersFilterContent({
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
   const boxSize = compact ? 16 : 18;
-  const [showCitizenGroup, setShowCitizenGroup] = useState(true);
+  const [showCitizenGroup, setShowCitizenGroup] = useState(false);
 
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
