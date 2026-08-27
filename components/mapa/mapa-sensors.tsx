@@ -530,15 +530,21 @@ export default function MapaSensors({
       zoom: 8,
     });
 
+    // Set padding instantly (not as part of flyTo) so it doesn't get
+    // interpolated alongside the zoom animation, which looked like the map
+    // veering sideways partway through the fly-in.
+    const initialIsMobile = window.innerWidth < 768;
+    (map.current as any).setPadding(
+      initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
+    );
+
     map.current.on("load", () => {
       setMapLoaded(true);
-      const isMobile = window.innerWidth < 768;
       (map.current as any).flyTo({
         center: [-100.301, 25.685],
         zoom: 12,
         duration: 2000,
         essential: true,
-        padding: isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 },
       });
     });
 
@@ -585,12 +591,14 @@ export default function MapaSensors({
   const flyToUser = () => {
     if (!userLocation || !map.current) return;
     const isMobile = window.innerWidth < 768;
+    (map.current as any).setPadding(
+      isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
+    );
     (map.current as any).flyTo({
       center: [userLocation.longitude, userLocation.latitude],
       zoom: 14,
       duration: 3000,
       essential: true,
-      padding: isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 },
     });
   };
 
