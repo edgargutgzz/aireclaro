@@ -187,6 +187,24 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   );
 }
 
+// Matches Sparkline's layout (header row, chart area, footer row) so there's
+// no layout shift once the real data replaces it.
+function SparklineSkeleton() {
+  return (
+    <div className="animate-pulse">
+      <div className="mb-1.5 flex items-center justify-between">
+        <span className="h-3 w-24 rounded bg-gray-200" />
+        <span className="h-3 w-32 rounded bg-gray-200" />
+      </div>
+      <div className="h-[190px] w-full rounded-lg bg-gray-100" />
+      <div className="mt-1 flex items-center justify-between">
+        <span className="h-2.5 w-16 rounded bg-gray-200" />
+        <span className="h-2.5 w-16 rounded bg-gray-200" />
+      </div>
+    </div>
+  );
+}
+
 function HealthRecommendationCards({ info }: { info: QualityInfo }) {
   return (
     <div className="mb-3 flex flex-col gap-4">
@@ -310,7 +328,7 @@ function LayersFilterContent({
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <button type="button" className="rounded-xl bg-blue-50/60 px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm">
+          <button type="button" className="rounded-xl border border-blue-200 bg-white px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm">
             PM2.5
           </button>
           <div className="relative">
@@ -418,6 +436,7 @@ export default function MapaSensors({
     timestamp: string | null;
   } | null>(null);
   const [sensorHistory, setSensorHistory] = useState<HistoryPoint[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showSensorDetail, setShowSensorDetail] = useState(false);
   const [showNearestDetail, setShowNearestDetail] = useState(false);
@@ -678,9 +697,11 @@ export default function MapaSensors({
 
     if (!target) {
       setSensorHistory([]);
+      setHistoryLoading(false);
       return;
     }
     let cancelled = false;
+    setHistoryLoading(true);
     fetch(`/api/sensor-history?sensor_id=${target.sensorId}&source=${target.source}`)
       .then((res) => res.json())
       .then((data) => {
@@ -688,6 +709,9 @@ export default function MapaSensors({
       })
       .catch(() => {
         if (!cancelled) setSensorHistory([]);
+      })
+      .finally(() => {
+        if (!cancelled) setHistoryLoading(false);
       });
     return () => {
       cancelled = true;
@@ -863,7 +887,7 @@ export default function MapaSensors({
 
                 {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
                 <div className="mt-3">
-                  <Sparkline data={sensorHistory} />
+                  {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
                 </div>
 
                 <button
@@ -967,7 +991,7 @@ export default function MapaSensors({
 
               {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
               <div className="mt-3">
-                <Sparkline data={sensorHistory} />
+                {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
               </div>
 
               {/* Sensor name — always shown */}
