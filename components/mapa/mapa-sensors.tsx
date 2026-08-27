@@ -801,7 +801,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="text-sm font-medium text-gray-400">Filtros</p>
+          <p className="text-base font-semibold text-gray-800">Filtros</p>
         </div>
         <div
           className="flex flex-col gap-3 px-5"
@@ -849,7 +849,7 @@ export default function MapaSensors({
             <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${selectedSensorCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
               {/* Always-visible header */}
               <div className="px-5 pt-4 pb-3">
-                <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+                <span className="text-base font-semibold text-gray-800">Calidad del aire</span>
                 <div className="mt-1 flex items-center gap-3">
                   <span className="text-2xl font-bold" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
@@ -938,7 +938,7 @@ export default function MapaSensors({
           <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
-              <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+              <span className="text-base font-semibold text-gray-800">Calidad del aire</span>
               {/* Quality label + PM2.5 — always shown */}
               <div className="mt-1 flex items-center gap-3">
                 <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
@@ -1039,7 +1039,7 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute right-6 top-6 z-10 hidden w-[310px] md:block">
         <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
           <div className="px-5 pt-4 pb-3">
-            <span className="text-sm font-medium text-gray-400">Filtros</span>
+            <span className="text-base font-semibold text-gray-800">Filtros</span>
           </div>
           <div className="px-5 pb-5">
             <LayersFilterContent
@@ -1202,7 +1202,7 @@ export default function MapaSensors({
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
-              <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
+              <span className="text-base font-semibold text-gray-800">Calidad del aire</span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
               <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
