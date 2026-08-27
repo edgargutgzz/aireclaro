@@ -546,20 +546,6 @@ export default function MapaSensors({
       });
     });
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        (error) => {
-          if (error.code === 1) setLocationDenied(true);
-        },
-      );
-    }
-
     return () => {
       (map.current as any)?.remove();
       map.current = null;
