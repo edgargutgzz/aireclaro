@@ -907,7 +907,8 @@ export default function MapaSensors({
                 <div className="px-5 pb-4">
                   <div className="mt-0 mb-6 border-t border-gray-100" />
                   <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(sensorQuality); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                    <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
+                    <span>Recomendaciones de salud</span>
+                    <Info className="h-3 w-3" />
                   </button>
                   <div className="rounded-xl bg-gray-100 px-4 py-3">
                     <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
@@ -924,7 +925,8 @@ export default function MapaSensors({
                 <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
                   <div className="mt-0 mb-6 border-t border-gray-100" />
                   <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                    <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
+                    <span>Recomendaciones de salud</span>
+                    <Info className="h-3 w-3" />
                   </button>
                   <HealthRecommendationCards info={sensorQuality} />
                   <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setSelectedSensorCardOpen(false)}>
@@ -1005,7 +1007,8 @@ export default function MapaSensors({
               <div className="px-5 pb-4">
                 <div className="mt-0 mb-6 border-t border-gray-100" />
                 <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                  <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
+                  <span>Recomendaciones de salud</span>
+                  <Info className="h-3 w-3" />
                 </button>
                 <div className="rounded-xl bg-gray-100 px-4 py-3">
                   <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
@@ -1022,7 +1025,8 @@ export default function MapaSensors({
               <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
                 <div className="mt-0 mb-6 border-t border-gray-100" />
                 <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                  <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
+                  <span>Recomendaciones de salud</span>
+                  <Info className="h-3 w-3" />
                 </button>
                 <HealthRecommendationCards info={qualityInfo} />
                 <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setDesktopCardOpen(false)}>
@@ -1137,7 +1141,8 @@ export default function MapaSensors({
                 <>
                   <div className="mt-3 mb-6 border-t border-gray-100" />
                   <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                    <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
+                    <span>Recomendaciones de salud</span>
+                    <Info className="h-3 w-3" />
                   </button>
                   <HealthRecommendationCards info={sensorQuality} />
                 </>
@@ -1278,7 +1283,8 @@ export default function MapaSensors({
               {/* Recommendations */}
               <div className="my-6 border-t border-gray-100" />
               <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
-                <span className="underline underline-offset-2 decoration-gray-300">Recomendaciones de salud</span>
+                <span>Recomendaciones de salud</span>
+                <Info className="h-3 w-3" />
               </button>
               <HealthRecommendationCards info={qualityInfo} />
 
