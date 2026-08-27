@@ -42,13 +42,23 @@ interface HistoryPoint {
   time_stamp: string;
 }
 
-// Small inline trend chart for the selected sensor's last 48h — no axes/legend,
-// just enough to see the shape of the trend and its range at a glance. Fixed
-// color regardless of the sensor's air-quality color: the yellow "Aceptable"
-// tone in particular is too low-contrast on white to read as a line/fill.
+// Small inline trend chart for the selected sensor's last 48h. Fixed color
+// regardless of the sensor's air-quality color: the yellow "Aceptable" tone
+// in particular is too low-contrast on white to read as a line/fill.
 const SPARKLINE_COLOR = "#3b82f6";
 
+function formatHistoryTime(dateStr: string) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const dayDiff = Math.floor((now.setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000);
+  const dayLabel = dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM");
+  return `${dayLabel} ${format(date, "h")}:${format(date, "mm")} ${format(date, "a")}`;
+}
+
 function Sparkline({ data }: { data: HistoryPoint[] }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+
   if (data.length < 2) {
     return <p className="text-xs text-gray-400">Sin datos suficientes para mostrar la tendencia</p>;
   }
@@ -68,16 +78,60 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
   const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
 
+  const updateHover = (clientX: number) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    setHoverIndex(Math.round(ratio * (data.length - 1)));
+  };
+
+  const hovered = hoverIndex !== null ? data[hoverIndex] : null;
+  const hoverPoint = hoverIndex !== null ? points[hoverIndex] : null;
+  const tooltipLeftPct = hoverPoint ? (hoverPoint.x / width) * 100 : 0;
+
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between text-xs text-gray-400">
         <span>Últimas 48 horas</span>
         <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
-      <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
-        <path d={areaPath} fill={SPARKLINE_COLOR} fillOpacity={0.12} stroke="none" />
-        <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      <div className="relative">
+        {hovered && hoverPoint && (
+          <div
+            className="pointer-events-none absolute z-10 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-xs text-white shadow-sm"
+            style={{ left: `${tooltipLeftPct}%`, top: -6, transform: `translate(-50%, -100%)` }}
+          >
+            <span className="font-semibold">{Math.round(hovered.pm25)} μg/m³</span>
+            <span className="ml-1.5 text-gray-300">{formatHistoryTime(hovered.time_stamp)}</span>
+          </div>
+        )}
+        <svg
+          ref={svgRef}
+          width="100%"
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+          preserveAspectRatio="none"
+          className="cursor-crosshair"
+          onMouseMove={(e) => updateHover(e.clientX)}
+          onMouseLeave={() => setHoverIndex(null)}
+          onTouchMove={(e) => updateHover(e.touches[0].clientX)}
+          onTouchEnd={() => setHoverIndex(null)}
+        >
+          <path d={areaPath} fill={SPARKLINE_COLOR} fillOpacity={0.12} stroke="none" />
+          <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          {hoverPoint && (
+            <>
+              <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
+              <circle cx={hoverPoint.x} cy={hoverPoint.y} r={4} fill="white" stroke={SPARKLINE_COLOR} strokeWidth={2} />
+            </>
+          )}
+        </svg>
+      </div>
+      <div className="mt-1 flex items-center justify-between text-[10px] text-gray-400">
+        <span>{formatHistoryTime(data[0].time_stamp)}</span>
+        <span>{formatHistoryTime(data[data.length - 1].time_stamp)}</span>
+      </div>
     </div>
   );
 }
