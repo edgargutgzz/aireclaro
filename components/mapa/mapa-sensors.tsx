@@ -310,7 +310,7 @@ function LayersFilterContent({
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <button type="button" className="rounded-xl bg-blue-50 px-5 py-2 text-sm font-semibold text-blue-600 shadow-sm">
+          <button type="button" className="rounded-xl bg-blue-50/60 px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm">
             PM2.5
           </button>
           <div className="relative">
@@ -329,6 +329,7 @@ function LayersFilterContent({
           </div>
         </div>
       </div>
+      <div className="border-t border-gray-200" />
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Fuente</p>
         <div className="flex flex-col gap-3">
