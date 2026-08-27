@@ -116,7 +116,6 @@ function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
 
 function LayersFilterContent({
   compact,
-  flat,
   showOtros,
   setShowOtros,
   showOccamm,
@@ -126,7 +125,6 @@ function LayersFilterContent({
   onShowOccammInfo,
 }: {
   compact: boolean;
-  flat?: boolean;
   showOtros: boolean;
   setShowOtros: Dispatch<SetStateAction<boolean>>;
   showOccamm: boolean;
@@ -138,12 +136,6 @@ function LayersFilterContent({
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
   const boxSize = compact ? 16 : 18;
-  // Nested inside another white/bordered/shadowed card (the desktop merged
-  // panel), a second layer of card chrome reads as redundant "card in a
-  // card" — flat swaps to plain gray-100 blocks, matching the recommendation
-  // cards elsewhere in that same panel, instead of white+border+shadow.
-  const groupClass = flat ? "rounded-xl bg-gray-100" : "rounded-2xl border border-gray-200 bg-white shadow-sm";
-  const dividerClass = flat ? "border-gray-200" : "border-gray-100";
 
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
@@ -157,7 +149,7 @@ function LayersFilterContent({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className={`overflow-hidden ${groupClass}`}>
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <button
           onClick={toggleCitizenGroup}
           className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}
@@ -165,7 +157,7 @@ function LayersFilterContent({
           <LayerCheckbox state={citizenState} size={boxSize} />
           <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
         </button>
-        <div className={`flex flex-col border-t ${dividerClass}`}>
+        <div className="flex flex-col border-t border-gray-100">
           <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
             <button
               onClick={() => setShowOccamm((v) => !v)}
@@ -193,7 +185,7 @@ function LayersFilterContent({
       </div>
       <button
         onClick={() => setShowSima((v) => !v)}
-        className={`flex items-center gap-3 px-4 ${rowPadding} ${groupClass}`}
+        className={`flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 ${rowPadding} shadow-sm`}
         style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' }}
       >
         <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
@@ -611,22 +603,17 @@ export default function MapaSensors({
       {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected,
           with the always-open Capas panel stacked below it. Nav lives in the site-wide header now,
           not floating here. */}
-      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start overflow-y-auto md:flex">
+      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start gap-3 overflow-y-auto md:flex">
 
-        {/* Single merged panel: quality/selected-sensor section on top, Capas below,
-            one shared card instead of two separate floating pieces. */}
-        <div
-          className={`pointer-events-auto w-[380px] overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${
-            (selectedSensor ? selectedSensorCardOpen : desktopCardOpen) ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'
-          }`}
-        >
+        {/* Quality card, replaced by the selected sensor's card when one is selected */}
+        <div className="w-[380px]">
         {selectedSensor ? (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <>
+            <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${selectedSensorCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
               {/* Always-visible header */}
               <div className="px-5 pt-4 pb-3">
                 <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
@@ -706,10 +693,10 @@ export default function MapaSensors({
                   </div>
                 </div>
               )}
-            </>
+            </div>
           );
-        })() : qualityInfo ? (
-          <>
+        })() : qualityInfo && (
+          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
             {/* Always-visible header */}
             <div className="px-5 pt-4 pb-3">
               <span className="text-sm font-medium text-gray-400">Calidad del aire</span>
@@ -798,30 +785,28 @@ export default function MapaSensors({
                 </div>
               </div>
             )}
-          </>
-        ) : null}
+          </div>
+        )}
+        </div>{/* end card width wrapper */}
 
-        {/* Divider between the quality section and Capas, only when the quality section rendered */}
-        {(selectedSensor || qualityInfo) && <div className="border-t border-gray-100" />}
-
-        {/* Capas — always open on desktop (there's room for it), no toggle/close */}
-        <div className="px-5 pt-4 pb-3">
-          <span className="text-sm font-medium text-gray-400">Capas</span>
+        {/* Capas panel — always open on desktop (there's room for it), no toggle/close */}
+        <div className="w-[380px] pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+          <div className="px-5 pt-4 pb-3">
+            <span className="text-sm font-medium text-gray-400">Capas</span>
+          </div>
+          <div className="px-5 pb-5">
+            <LayersFilterContent
+              compact={false}
+              showOtros={showOtros}
+              setShowOtros={setShowOtros}
+              showOccamm={showOccamm}
+              setShowOccamm={setShowOccamm}
+              showSima={showSima}
+              setShowSima={setShowSima}
+              onShowOccammInfo={() => setShowOccammInfo(true)}
+            />
+          </div>
         </div>
-        <div className="px-5 pb-5">
-          <LayersFilterContent
-            compact={false}
-            flat
-            showOtros={showOtros}
-            setShowOtros={setShowOtros}
-            showOccamm={showOccamm}
-            setShowOccamm={setShowOccamm}
-            showSima={showSima}
-            setShowSima={setShowSima}
-            onShowOccammInfo={() => setShowOccammInfo(true)}
-          />
-        </div>
-        </div>{/* end merged panel */}
       </div>
 
 
