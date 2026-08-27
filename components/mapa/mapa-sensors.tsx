@@ -204,7 +204,7 @@ function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
   return (
     <div
       className="flex items-center justify-center"
-      style={{ width: size, height: size, borderRadius: 5, backgroundColor: '#9ca3af', flexShrink: 0 }}
+      style={{ width: size, height: size, borderRadius: 5, backgroundColor: '#3b82f6', flexShrink: 0 }}
     >
       {state === 'checked' ? (
         <Check className="text-white" style={{ width: size - 6, height: size - 6 }} strokeWidth={3} />
