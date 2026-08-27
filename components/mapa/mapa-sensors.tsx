@@ -1464,11 +1464,11 @@ export default function MapaSensors({
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowPM25Info(false)} />
           <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-3xl bg-white p-7 shadow-xl">
-            <p className="text-center text-base font-semibold text-gray-800">Invisible, pero peligroso</p>
+            <p className="text-center text-base font-semibold text-gray-800">Sobre el PM2.5</p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
-              El PM2.5 es unas 30 veces más delgado que un cabello: tan
-              pequeño que llega hasta los pulmones y la sangre. Por eso es el
-              contaminante que más monitoreamos.
+              Son partículas finas, unas 30 veces más delgadas que un
+              cabello, capaces de llegar hasta los pulmones y el torrente
+              sanguíneo. Por eso es el contaminante que monitoreamos.
             </p>
             <button
               onClick={() => setShowPM25Info(false)}
