@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { Map, BarChart3 } from "lucide-react";
 
-// Mobile bottom nav only - desktop uses SiteHeader instead.
+// Shared pill-style nav links, used in both the mobile bottom bar and
+// the desktop SiteHeader.
 export default function Navlinks() {
   const pathname = usePathname();
 
