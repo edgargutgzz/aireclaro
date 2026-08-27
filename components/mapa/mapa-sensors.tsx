@@ -240,6 +240,7 @@ const SENSITIVE_GROUPS = [
 
 function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
   const [activeGroup, setActiveGroup] = useState<typeof SENSITIVE_GROUPS[number]["key"]>("menores");
+  const [showGroups, setShowGroups] = useState(false);
   const active = SENSITIVE_GROUPS.find((g) => g.key === activeGroup)!;
 
   return (
@@ -248,24 +249,36 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
         <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
         <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
       </div>
-      <div className="inline-flex flex-wrap items-center gap-1 rounded-2xl bg-gray-100 p-1">
-        {SENSITIVE_GROUPS.map((g) => (
-          <button
-            key={g.key}
-            type="button"
-            onClick={() => setActiveGroup(g.key)}
-            className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
-              activeGroup === g.key ? "bg-white text-stone-800 shadow-sm" : "text-gray-400"
-            }`}
-          >
-            {g.label}
-          </button>
-        ))}
-      </div>
-      <div className="rounded-xl bg-gray-100 px-4 py-3">
-        <p className="mb-1 text-sm font-semibold text-gray-700">{active.label}</p>
-        <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[active.key]}</p>
-      </div>
+      <button
+        type="button"
+        onClick={() => setShowGroups((v) => !v)}
+        className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-gray-600"
+      >
+        <span>Ver por grupo sensible</span>
+        <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${showGroups ? 'rotate-180' : ''}`} />
+      </button>
+      {showGroups && (
+        <>
+          <div className="inline-flex flex-wrap items-center gap-1 rounded-2xl bg-gray-100 p-1">
+            {SENSITIVE_GROUPS.map((g) => (
+              <button
+                key={g.key}
+                type="button"
+                onClick={() => setActiveGroup(g.key)}
+                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  activeGroup === g.key ? "bg-white text-stone-800 shadow-sm" : "text-gray-400"
+                }`}
+              >
+                {g.label}
+              </button>
+            ))}
+          </div>
+          <div className="rounded-xl bg-gray-100 px-4 py-3">
+            <p className="mb-1 text-sm font-semibold text-gray-700">{active.label}</p>
+            <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[active.key]}</p>
+          </div>
+        </>
+      )}
     </div>
   );
 }
