@@ -65,6 +65,8 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   const width = 320;
   const height = 80;
+  const verticalPadding = 10; // keeps peaks/troughs from touching the chart edges
+  const drawableHeight = height - verticalPadding * 2;
   const values = data.map((d) => d.pm25);
   const max = Math.max(...values);
   const min = Math.min(...values);
@@ -72,7 +74,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   const points = data.map((d, i) => ({
     x: (i / (data.length - 1)) * width,
-    y: height - ((d.pm25 - min) / range) * height,
+    y: verticalPadding + drawableHeight - ((d.pm25 - min) / range) * drawableHeight,
   }));
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
