@@ -51,6 +51,10 @@ const SPARKLINE_COLOR = "#3b82f6";
 // the visitor hasn't shared their location, instead of a nameless area median.
 const DEFAULT_SENSOR_ID = "Norte2";
 
+// Ring around a selected/default-station marker — subtle blue (matching the
+// app's accent color) instead of a harsh black outline.
+const SELECTED_RING_SHADOW = "0 4px 14px rgba(0,0,0,0.15), 0 0 0 3px white, 0 0 0 6px rgba(59,130,246,0.9)";
+
 function getRelativeDayLabel(date: Date) {
   const now = new Date();
   const dayDiff = Math.floor((now.setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000);
@@ -736,18 +740,21 @@ export default function MapaSensors({
         ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
         : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
     });
-    if (selectedSensor) {
-      const markerData = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
-      if (markerData) {
-        markerData.el.style.boxShadow = "0 4px 14px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 6px rgba(0,0,0,0.8)";
-      }
-    } else if (nearestSensorData) {
+    // Nearest/default sensor keeps its ring even when another one is
+    // selected — it marks "your default station" independent of selection.
+    if (nearestSensorData) {
       const nearestSensor = sensors.find(
         s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
       );
       const markerData = nearestSensor && markerElementsRef.current.get(nearestSensor.sensor_id);
       if (markerData) {
-        markerData.el.style.boxShadow = "0 4px 14px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 6px rgba(0,0,0,0.8)";
+        markerData.el.style.boxShadow = SELECTED_RING_SHADOW;
+      }
+    }
+    if (selectedSensor) {
+      const markerData = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
+      if (markerData) {
+        markerData.el.style.boxShadow = SELECTED_RING_SHADOW;
       }
     }
   }, [selectedSensor, nearestSensorData, sensors]);
@@ -808,9 +815,9 @@ export default function MapaSensors({
     const b = parseInt(hex.slice(5, 7), 16);
 
     // Same ring as a click-selected marker — the pulse animation drives
-    // box-shadow every frame, so it must include the black ring itself or
-    // it overwrites it with the plain (unselected) marker shadow.
-    const baseShadow = '0 4px 14px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 6px rgba(0,0,0,0.8)';
+    // box-shadow every frame, so it must include the ring itself or it
+    // overwrites it with the plain (unselected) marker shadow.
+    const baseShadow = SELECTED_RING_SHADOW;
     const startSpread = '6px';
     const animName = `nearestPulse_${hex.slice(1)}`;
 
