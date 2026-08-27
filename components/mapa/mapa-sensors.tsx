@@ -73,7 +73,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   }
 
   const width = 320;
-  const height = 80;
+  const height = 130;
   const verticalPadding = 10; // keeps peaks/troughs from touching the chart edges
   const drawableHeight = height - verticalPadding * 2;
   const values = data.map((d) => d.pm25);
@@ -81,10 +81,21 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   const min = Math.min(...values);
   const range = max - min || 1;
 
+  const toY = (value: number) => verticalPadding + drawableHeight - ((value - min) / range) * drawableHeight;
+
   const points = data.map((d, i) => ({
     x: (i / (data.length - 1)) * width,
-    y: verticalPadding + drawableHeight - ((d.pm25 - min) / range) * drawableHeight,
+    y: toY(d.pm25),
   }));
+
+  // IMECA thresholds — only draw the ones this window's range actually
+  // crosses, so it stays a quiet reference instead of cluttering the chart.
+  const thresholds = [
+    { value: 15, color: "#eab308" }, // entering Aceptable
+    { value: 25, color: "#f97316" }, // entering Mala
+    { value: 79, color: "#ef4444" }, // entering Muy mala
+    { value: 130, color: "#a855f7" }, // entering Extremadamente mala
+  ].filter((t) => t.value > min && t.value < max);
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
   const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
@@ -149,6 +160,12 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           onTouchEnd={() => setHoverIndex(null)}
         >
           <path d={areaPath} fill={SPARKLINE_COLOR} fillOpacity={0.12} stroke="none" />
+          {thresholds.map((t) => (
+            <g key={t.value}>
+              <line x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
+              <text x={width - 2} y={toY(t.value) - 3} textAnchor="end" fontSize={9} fill={t.color} fillOpacity={0.8}>{t.value}</text>
+            </g>
+          ))}
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
           ))}
