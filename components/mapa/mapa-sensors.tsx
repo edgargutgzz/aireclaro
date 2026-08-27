@@ -138,10 +138,23 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
             {b.label}
           </div>
         ))}
+        {thresholds.map((t) => (
+          <div
+            key={t.value}
+            className="pointer-events-none absolute right-1 whitespace-nowrap text-[9px] font-semibold"
+            style={{ top: toY(t.value) - 12, color: t.color, opacity: 0.85 }}
+          >
+            {t.label}
+          </div>
+        ))}
         {hovered && hoverPoint && (
           <div
-            className="pointer-events-none absolute z-10 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-xs text-white shadow-sm"
-            style={{ left: `${tooltipLeftPct}%`, top: -6, transform: `translate(-50%, -100%)` }}
+            className="pointer-events-none absolute z-10 whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-xs text-white shadow-sm"
+            style={{
+              left: `clamp(70px, ${tooltipLeftPct}%, calc(100% - 70px))`,
+              top: -6,
+              transform: `translate(-50%, -100%)`,
+            }}
           >
             <span className="font-semibold">{Math.round(hovered.pm25)} μg/m³</span>
             <span className="ml-1.5 text-gray-300">{formatHistoryTime(hovered.time_stamp)}</span>
@@ -161,10 +174,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
         >
           <path d={areaPath} fill={SPARKLINE_COLOR} fillOpacity={0.12} stroke="none" />
           {thresholds.map((t) => (
-            <g key={t.value}>
-              <line x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
-              <text x={width - 2} y={toY(t.value) - 3} textAnchor="end" fontSize={9} fontWeight={600} fill={t.color} fillOpacity={0.85}>{t.label}</text>
-            </g>
+            <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
           ))}
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
