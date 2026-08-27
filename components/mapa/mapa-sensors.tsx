@@ -691,7 +691,8 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Highlight selected marker, restore all others
+  // Highlight selected marker (or, when nothing is selected, the nearest
+  // sensor backing the default Calidad del aire card), restore all others
   useEffect(() => {
     markerElementsRef.current.forEach(({ el, source }) => {
       el.style.boxShadow = source === "sima"
@@ -703,8 +704,16 @@ export default function MapaSensors({
       if (markerData) {
         markerData.el.style.boxShadow = "0 4px 14px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 6px rgba(0,0,0,0.8)";
       }
+    } else if (nearestSensorData) {
+      const nearestSensor = sensors.find(
+        s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
+      );
+      const markerData = nearestSensor && markerElementsRef.current.get(nearestSensor.sensor_id);
+      if (markerData) {
+        markerData.el.style.boxShadow = "0 4px 14px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 6px rgba(0,0,0,0.8)";
+      }
     }
-  }, [selectedSensor]);
+  }, [selectedSensor, nearestSensorData, sensors]);
 
   // Fetch the last 48h of readings for the trend sparkline — the selected
   // sensor if one is picked, otherwise the nearest sensor (same one backing
