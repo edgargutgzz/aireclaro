@@ -29,7 +29,7 @@ export default function Navlinks() {
           >
             <div
               className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 transition-colors border", {
-                "border-gray-200 bg-gray-200/80 text-gray-900": isSelected,
+                "border-blue-200 bg-blue-50 text-blue-600": isSelected,
                 "border-transparent text-gray-400": !isSelected,
               })}
             >
