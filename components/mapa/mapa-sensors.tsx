@@ -539,7 +539,7 @@ export default function MapaSensors({
           <button
             onClick={() => setShowFilters((v) => !v)}
             className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showFilters ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
-            aria-label="Filtrar capas"
+            aria-label="Filtros"
           >
             <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
           </button>
@@ -567,7 +567,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="text-sm font-medium text-gray-400">Capas</p>
+          <p className="text-sm font-medium text-gray-400">Filtros</p>
         </div>
         <div
           className="flex flex-col gap-3 px-5"
@@ -601,7 +601,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected,
-          with the always-open Capas panel stacked below it. Nav lives in the site-wide header now,
+          with the always-open Filtros panel stacked below it. Nav lives in the site-wide header now,
           not floating here. */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start gap-3 overflow-y-auto md:flex">
 
@@ -789,10 +789,10 @@ export default function MapaSensors({
         )}
         </div>{/* end card width wrapper */}
 
-        {/* Capas panel — always open on desktop (there's room for it), no toggle/close */}
+        {/* Filtros panel — always open on desktop (there's room for it), no toggle/close */}
         <div className="w-[380px] pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
           <div className="px-5 pt-4 pb-3">
-            <span className="text-sm font-medium text-gray-400">Capas</span>
+            <span className="text-sm font-medium text-gray-400">Filtros</span>
           </div>
           <div className="px-5 pb-5">
             <LayersFilterContent
