@@ -456,8 +456,6 @@ export default function MapaSensors({
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [showQualitySource, setShowQualitySource] = useState(false);
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
-  const [desktopCardOpen, setDesktopCardOpen] = useState(false);
-  const [selectedSensorCardOpen, setSelectedSensorCardOpen] = useState(false);
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
@@ -670,7 +668,6 @@ export default function MapaSensors({
           return;
         }
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
-        if (window.innerWidth >= 768) { setDesktopCardOpen(false); setSelectedSensorCardOpen(false); }
       });
 
       markerElementsRef.current.set(sensor.sensor_id, { el: markerElement, source: sensor.source });
@@ -903,7 +900,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${selectedSensorCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
+            <div className="pointer-events-auto overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
               {/* Always-visible header */}
               <button
                 onClick={() => setShowCalidadContent(v => !v)}
@@ -968,31 +965,8 @@ export default function MapaSensors({
                     )}
                   </div>
 
-                  {/* Closed state: Población General + expand hint */}
-                  {!selectedSensorCardOpen && sensorQuality && (
-                    <div className="px-5 pb-4">
-                      <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                        <span>Recomendaciones de salud</span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(sensorQuality); }}
-                          className="hover:text-gray-600 transition-colors"
-                          aria-label="Más información sobre recomendaciones de salud"
-                        >
-                          <Info className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <div className="rounded-xl bg-gray-100 px-4 py-3">
-                        <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
-                        <p className="text-sm leading-relaxed text-gray-500">{sensorQuality.generalRec}</p>
-                      </div>
-                      <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setSelectedSensorCardOpen(true)}>
-                        <ChevronDown className="h-4 w-4 text-gray-500" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Expanded state: all rec cards */}
-                  {selectedSensorCardOpen && sensorQuality && (
+                  {/* Recommendations — always shown on desktop, no expand/collapse */}
+                  {sensorQuality && (
                     <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
                       <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                         <span>Recomendaciones de salud</span>
@@ -1005,9 +979,6 @@ export default function MapaSensors({
                         </button>
                       </div>
                       <HealthRecommendationCards info={sensorQuality} />
-                      <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setSelectedSensorCardOpen(false)}>
-                        <ChevronDown className="h-4 w-4 rotate-180 text-gray-500" />
-                      </div>
                     </div>
                   )}
                 </>
@@ -1015,7 +986,7 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className={`pointer-events-auto overflow-hidden rounded-2xl border shadow-sm transition-colors duration-300 ${desktopCardOpen ? 'border-gray-100 bg-white' : 'border-white/60 bg-white/80 backdrop-blur-md'}`}>
+          <div className="pointer-events-auto overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
             {/* Always-visible header */}
             <button
               onClick={() => setShowCalidadContent(v => !v)}
@@ -1089,48 +1060,20 @@ export default function MapaSensors({
                   )}
                 </div>
 
-                {/* Closed-only: divider + rec preview + expand hint */}
-                {!desktopCardOpen && (
-                  <div className="px-5 pb-4">
-                    <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                      <span>Recomendaciones de salud</span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }}
-                        className="hover:text-gray-600 transition-colors"
-                        aria-label="Más información sobre recomendaciones de salud"
-                      >
-                        <Info className="h-3 w-3" />
-                      </button>
-                    </div>
-                    <div className="rounded-xl bg-gray-100 px-4 py-3">
-                      <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
-                      <p className="text-sm leading-relaxed text-gray-500">{qualityInfo.generalRec}</p>
-                    </div>
-                    <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setDesktopCardOpen(true)}>
-                      <ChevronDown className="h-4 w-4 text-gray-500" />
-                    </div>
+                {/* Recommendations — always shown on desktop, no expand/collapse */}
+                <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
+                  <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                    <span>Recomendaciones de salud</span>
+                    <button
+                      onClick={() => setCuidarmeQuality(qualityInfo)}
+                      className="hover:text-gray-600 transition-colors"
+                      aria-label="Más información sobre recomendaciones de salud"
+                    >
+                      <Info className="h-3 w-3" />
+                    </button>
                   </div>
-                )}
-
-                {/* Expanded content */}
-                {desktopCardOpen && (
-                  <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
-                    <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                      <span>Recomendaciones de salud</span>
-                      <button
-                        onClick={() => setCuidarmeQuality(qualityInfo)}
-                        className="hover:text-gray-600 transition-colors"
-                        aria-label="Más información sobre recomendaciones de salud"
-                      >
-                        <Info className="h-3 w-3" />
-                      </button>
-                    </div>
-                    <HealthRecommendationCards info={qualityInfo} />
-                    <div className="mt-3 flex cursor-pointer justify-center pb-1" onClick={() => setDesktopCardOpen(false)}>
-                      <ChevronDown className="h-4 w-4 rotate-180 text-gray-500" />
-                    </div>
-                  </div>
-                )}
+                  <HealthRecommendationCards info={qualityInfo} />
+                </div>
               </>
             )}
           </div>
