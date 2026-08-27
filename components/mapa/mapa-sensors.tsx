@@ -299,11 +299,11 @@ function LayersFilterContent({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className={`overflow-hidden rounded-2xl border shadow-sm transition-colors ${citizenState !== 'unchecked' ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'}`}>
         <div className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}>
           <button onClick={toggleCitizenGroup} className="flex flex-1 items-center gap-3">
             <LayerCheckbox state={citizenState} size={boxSize} />
-            <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+            <span className={`text-sm font-medium ${citizenState !== 'unchecked' ? 'text-blue-600' : 'text-gray-700'}`}>Sensores Ciudadanos</span>
           </button>
           <button
             onClick={() => setShowCitizenGroup((v) => !v)}
@@ -314,7 +314,7 @@ function LayersFilterContent({
           </button>
         </div>
         {showCitizenGroup && (
-        <div className="flex flex-col border-t border-gray-100">
+        <div className={`flex flex-col border-t ${citizenState !== 'unchecked' ? 'border-blue-100' : 'border-gray-100'}`}>
           <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
             <button
               onClick={() => setShowOccamm((v) => !v)}
@@ -343,11 +343,11 @@ function LayersFilterContent({
       </div>
       <button
         onClick={() => setShowSima((v) => !v)}
-        className={`flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 ${rowPadding} shadow-sm`}
+        className={`flex items-center gap-3 rounded-2xl border px-4 ${rowPadding} shadow-sm transition-colors ${showSima ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'}`}
         style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' }}
       >
         <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-        <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
+        <span className={`text-sm font-medium ${showSima ? 'text-blue-600' : 'text-gray-700'}`}>Estaciones de Gobierno</span>
       </button>
     </div>
   );
