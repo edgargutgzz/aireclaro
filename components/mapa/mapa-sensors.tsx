@@ -189,6 +189,10 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
 // Matches Sparkline's layout (header row, chart area, footer row) so there's
 // no layout shift once the real data replaces it.
+// A generic wavy line + fill, drawn in gray, so the loading state actually
+// reads as "a chart" instead of a plain flat rectangle.
+const SKELETON_PATH = "M0,150 L20,130 L40,142 L60,95 L80,108 L100,72 L120,90 L140,58 L160,100 L180,78 L200,115 L220,92 L240,60 L260,85 L280,50 L300,72 L320,58";
+
 function SparklineSkeleton() {
   return (
     <div className="animate-pulse">
@@ -196,7 +200,10 @@ function SparklineSkeleton() {
         <span className="h-3 w-24 rounded bg-gray-200" />
         <span className="h-3 w-32 rounded bg-gray-200" />
       </div>
-      <div className="h-[190px] w-full rounded-lg bg-gray-100" />
+      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none">
+        <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
+        <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
       <div className="mt-1 flex items-center justify-between">
         <span className="h-2.5 w-16 rounded bg-gray-200" />
         <span className="h-2.5 w-16 rounded bg-gray-200" />
@@ -328,7 +335,7 @@ function LayersFilterContent({
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <button type="button" className="rounded-xl border border-blue-200 bg-white px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm">
+          <button type="button" className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm">
             PM2.5
           </button>
           <div className="relative">
