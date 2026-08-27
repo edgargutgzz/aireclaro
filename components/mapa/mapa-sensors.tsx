@@ -939,7 +939,7 @@ export default function MapaSensors({
       </div>
 
       {/* Filtros panel — floats on the right, always open on desktop (there's room for it), no toggle/close */}
-      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden w-[380px] md:block">
+      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden w-[310px] md:block">
         <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
           <div className="px-5 pt-4 pb-3">
             <span className="text-sm font-medium text-gray-400">Filtros</span>
