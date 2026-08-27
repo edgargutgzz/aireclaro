@@ -51,9 +51,9 @@ const SPARKLINE_COLOR = "#3b82f6";
 // the visitor hasn't shared their location, instead of a nameless area median.
 const DEFAULT_SENSOR_ID = "Norte2";
 
-// Ring around a selected/default-station marker — subtle blue (matching the
-// app's accent color) instead of a harsh black outline.
-const SELECTED_RING_SHADOW = "0 4px 14px rgba(0,0,0,0.15), 0 0 0 3px white, 0 0 0 6px rgba(59,130,246,0.9)";
+// Ring around a selected/default-station marker — subtle gray instead of a
+// harsh black outline.
+const SELECTED_RING_SHADOW = "0 4px 14px rgba(0,0,0,0.15), 0 0 0 3px white, 0 0 0 6px rgba(107,114,128,0.9)";
 
 function getRelativeDayLabel(date: Date) {
   const now = new Date();
