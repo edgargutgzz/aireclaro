@@ -856,7 +856,7 @@ export default function MapaSensors({
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
           <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          <span className={`text-base font-semibold ${userLocation ? 'text-gray-800' : 'text-gray-400'}`}>
+          <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
             {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
           </span>
         </button>
