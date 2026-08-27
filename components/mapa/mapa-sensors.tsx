@@ -880,7 +880,7 @@ export default function MapaSensors({
                 onClick={() => setShowCalidadContent(v => !v)}
                 className="flex w-full items-center justify-between px-5 pt-4 pb-3"
               >
-                <span className="text-base font-semibold text-gray-800">Calidad del aire</span>
+                <span className="text-base font-semibold text-gray-800">Calidad del Aire</span>
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-180' : ''}`} />
               </button>
               {showCalidadContent && (
@@ -993,7 +993,7 @@ export default function MapaSensors({
               onClick={() => setShowCalidadContent(v => !v)}
               className="flex w-full items-center justify-between px-5 pt-4 pb-3"
             >
-              <span className="text-base font-semibold text-gray-800">Calidad del aire</span>
+              <span className="text-base font-semibold text-gray-800">Calidad del Aire</span>
               <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-180' : ''}`} />
             </button>
             {showCalidadContent && (
@@ -1291,7 +1291,7 @@ export default function MapaSensors({
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
-              <span className="text-base font-semibold text-gray-800">Calidad del aire</span>
+              <span className="text-base font-semibold text-gray-800">Calidad del Aire</span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
               <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
