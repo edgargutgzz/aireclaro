@@ -10,7 +10,7 @@ export default function Navbar() {
     <>
       {/* Mobile top bar — logo only, in normal document flow; nav links stay in the bottom bar */}
       <div className="flex h-14 flex-shrink-0 items-center bg-stone-50 px-4 md:hidden">
-        <Link href="https://observatoriodelaire.com" target="_blank">
+        <Link href="/">
           <Image
             src="/occamm-logo.png"
             alt="OCCAMM Logo"

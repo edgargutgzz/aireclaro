@@ -10,18 +10,18 @@ const LINKS = [
   { name: "Datos", href: "/datos" },
 ];
 
-// Same org as observatoriodelaire.com (shared logo, links there), but the
-// nav itself follows Aire Claro's own visual language — the rounded
-// segmented-pill pattern already used for the Capas year toggle and the
-// PM2.5/PM10 toggle — rather than copying the reference site's plain
-// text links. Desktop only - mobile keeps its own bottom nav bar.
+// Same org as observatoriodelaire.com (shared logo), but the nav itself
+// follows Aire Claro's own visual language — the rounded segmented-pill
+// pattern already used for the Capas year toggle and the PM2.5/PM10
+// toggle — rather than copying the reference site's plain text links.
+// Desktop only - mobile keeps its own bottom nav bar.
 export default function SiteHeader() {
   const pathname = usePathname();
 
   return (
     <div className="hidden h-[72px] bg-stone-50 md:flex md:items-center">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 lg:px-8">
-        <Link href="https://observatoriodelaire.com" target="_blank">
+        <Link href="/">
           <Image
             src="/occamm-logo.png"
             alt="OCCAMM Logo"
