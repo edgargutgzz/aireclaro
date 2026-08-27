@@ -47,12 +47,18 @@ interface HistoryPoint {
 // in particular is too low-contrast on white to read as a line/fill.
 const SPARKLINE_COLOR = "#3b82f6";
 
+// Shown as the default "Calidad del aire" station (San Nicolás: UANL) when
+// the visitor hasn't shared their location, instead of a nameless area median.
+const DEFAULT_SENSOR_ID = "Norte2";
+
 function formatHistoryTime(dateStr: string) {
   const date = new Date(dateStr);
   const now = new Date();
   const dayDiff = Math.floor((now.setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000);
   const dayLabel = dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM");
-  return `${dayLabel} ${format(date, "h")}:${format(date, "mm")} ${format(date, "a")}`;
+  // Readings land ~30 min past the hour but represent that hour's data —
+  // floor to the hour, matching how timestamps are shown everywhere else.
+  return `${dayLabel} ${format(date, "h")}:00 ${format(date, "a")}`;
 }
 
 function Sparkline({ data }: { data: HistoryPoint[] }) {
@@ -346,21 +352,33 @@ export default function MapaSensors({
   const [showLocationTip, setShowLocationTip] = useState(false);
 
   const nearestSensorData = useMemo(() => {
-    if (!userLocation || !sensors.length || !data.length) return null;
-    const sorted = [...sensors].sort((a, b) =>
-      getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
-      getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lon)
-    );
-    for (const sensor of sorted) {
+    if (!sensors.length || !data.length) return null;
+
+    const buildFromSensor = (sensor: Sensor) => {
       const d = data.find((item) => item.sensor_id === sensor.sensor_id);
-      if (d && d.pm25 !== null && d.pm25 > 0.4) {
-        const timestamp = format(new Date(d.time_stamp), "h") + ":00 " + format(new Date(d.time_stamp), "a");
-        const isSima = sensor.source === "sima";
-        const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-        return { pm25: d.pm25, timestamp, name, isSima, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
+      if (!d || d.pm25 === null || d.pm25 <= 0.4) return null;
+      const timestamp = format(new Date(d.time_stamp), "h") + ":00 " + format(new Date(d.time_stamp), "a");
+      const isSima = sensor.source === "sima";
+      const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+      return { pm25: d.pm25, timestamp, name, isSima, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
+    };
+
+    if (userLocation) {
+      const sorted = [...sensors].sort((a, b) =>
+        getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
+        getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lon)
+      );
+      for (const sensor of sorted) {
+        const result = buildFromSensor(sensor);
+        if (result) return result;
       }
+      return null;
     }
-    return null;
+
+    // No location shared — default to a fixed representative station
+    // (San Nicolás: UANL) instead of just an area median with no identity.
+    const defaultSensor = sensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
+    return defaultSensor ? buildFromSensor(defaultSensor) : null;
   }, [userLocation, sensors, data]);
 
   const areaMedianPm25 = useMemo(() => {
@@ -865,7 +883,7 @@ export default function MapaSensors({
                 className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
               >
                 <span className="truncate">
-                  {userLocation && nearestName
+                  {nearestName
                     ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
                     : "Promedio del área metropolitana"}
                 </span>
@@ -880,13 +898,13 @@ export default function MapaSensors({
                         <span className="text-sm text-gray-400">Tu sensor más cercano</span>
                       </div>
                     )}
-                    {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
+                    {(nearestTimestamp ?? latestPurpleAirTimestamp) && (
                       <div className="flex items-center gap-2.5">
                         <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                        <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
+                        <span className="text-sm text-gray-400">Actualizado a las {nearestTimestamp ?? latestPurpleAirTimestamp}</span>
                       </div>
                     )}
-                    {userLocation && nearestLat !== null && nearestLon !== null && (
+                    {nearestLat !== null && nearestLon !== null && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -1141,7 +1159,7 @@ export default function MapaSensors({
                   className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                 >
                   <span className="truncate">
-                    {userLocation && nearestName
+                    {nearestName
                       ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
                       : "Promedio del área metropolitana"}
                   </span>
@@ -1156,13 +1174,13 @@ export default function MapaSensors({
                           <span className="text-sm text-gray-400">Tu sensor más cercano</span>
                         </div>
                       )}
-                      {(userLocation ? nearestTimestamp : latestPurpleAirTimestamp) && (
+                      {(nearestTimestamp ?? latestPurpleAirTimestamp) && (
                         <div className="flex items-center gap-2.5">
                           <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Actualizado a las {userLocation ? nearestTimestamp : latestPurpleAirTimestamp}</span>
+                          <span className="text-sm text-gray-400">Actualizado a las {nearestTimestamp ?? latestPurpleAirTimestamp}</span>
                         </div>
                       )}
-                      {userLocation && nearestLat !== null && nearestLon !== null && (
+                      {nearestLat !== null && nearestLon !== null && (
                         <button
                           onClick={() => {
                             navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
