@@ -971,7 +971,6 @@ export default function MapaSensors({
                   {/* Closed state: Población General + expand hint */}
                   {!selectedSensorCardOpen && sensorQuality && (
                     <div className="px-5 pb-4">
-                      <div className="mt-0 mb-6 border-t border-gray-100" />
                       <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                         <span>Recomendaciones de salud</span>
                         <button
@@ -995,7 +994,6 @@ export default function MapaSensors({
                   {/* Expanded state: all rec cards */}
                   {selectedSensorCardOpen && sensorQuality && (
                     <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
-                      <div className="mt-0 mb-6 border-t border-gray-100" />
                       <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                         <span>Recomendaciones de salud</span>
                         <button
@@ -1094,7 +1092,6 @@ export default function MapaSensors({
                 {/* Closed-only: divider + rec preview + expand hint */}
                 {!desktopCardOpen && (
                   <div className="px-5 pb-4">
-                    <div className="mt-0 mb-6 border-t border-gray-100" />
                     <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                       <span>Recomendaciones de salud</span>
                       <button
@@ -1118,7 +1115,6 @@ export default function MapaSensors({
                 {/* Expanded content */}
                 {desktopCardOpen && (
                   <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
-                    <div className="mt-0 mb-6 border-t border-gray-100" />
                     <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                       <span>Recomendaciones de salud</span>
                       <button
@@ -1249,7 +1245,6 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="mt-3 mb-6 border-t border-gray-100" />
                   <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                     <span>Recomendaciones de salud</span>
                     <button
@@ -1397,7 +1392,6 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <div className="my-6 border-t border-gray-100" />
               <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                 <span>Recomendaciones de salud</span>
                 <button
