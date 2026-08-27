@@ -403,6 +403,7 @@ export default function MapaSensors({
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showOtros, setShowOtros] = useState(true);
   const [showOccammInfo, setShowOccammInfo] = useState(false);
@@ -906,7 +907,7 @@ export default function MapaSensors({
               {!selectedSensorCardOpen && sensorQuality && (
                 <div className="px-5 pb-4">
                   <div className="mt-0 mb-6 border-t border-gray-100" />
-                  <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(sensorQuality); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                  <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(sensorQuality); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span>Recomendaciones de salud</span>
                     <Info className="h-3 w-3" />
                   </button>
@@ -924,7 +925,7 @@ export default function MapaSensors({
               {selectedSensorCardOpen && sensorQuality && (
                 <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
                   <div className="mt-0 mb-6 border-t border-gray-100" />
-                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span>Recomendaciones de salud</span>
                     <Info className="h-3 w-3" />
                   </button>
@@ -1006,7 +1007,7 @@ export default function MapaSensors({
             {!desktopCardOpen && (
               <div className="px-5 pb-4">
                 <div className="mt-0 mb-6 border-t border-gray-100" />
-                <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                <button onClick={(e) => { e.stopPropagation(); setCuidarmeQuality(qualityInfo); }} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                   <span>Recomendaciones de salud</span>
                   <Info className="h-3 w-3" />
                 </button>
@@ -1024,7 +1025,7 @@ export default function MapaSensors({
             {desktopCardOpen && (
               <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
                 <div className="mt-0 mb-6 border-t border-gray-100" />
-                <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                   <span>Recomendaciones de salud</span>
                   <Info className="h-3 w-3" />
                 </button>
@@ -1039,24 +1040,30 @@ export default function MapaSensors({
         </div>{/* end card width wrapper */}
       </div>
 
-      {/* Filtros panel — floats on the left, always open on desktop (there's room for it), no toggle/close */}
+      {/* Filtros panel — floats on the left, collapsed by default on desktop */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden w-[310px] md:block">
         <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
-          <div className="px-5 pt-4 pb-3">
+          <button
+            onClick={() => setShowFiltrosContent((v) => !v)}
+            className="flex w-full items-center justify-between px-5 pt-4 pb-3"
+          >
             <span className="text-base font-semibold text-gray-800">Filtros</span>
-          </div>
-          <div className="px-5 pb-5">
-            <LayersFilterContent
-              compact={false}
-              showOtros={showOtros}
-              setShowOtros={setShowOtros}
-              showOccamm={showOccamm}
-              setShowOccamm={setShowOccamm}
-              showSima={showSima}
-              setShowSima={setShowSima}
-              onShowOccammInfo={() => setShowOccammInfo(true)}
-            />
-          </div>
+            <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
+          </button>
+          {showFiltrosContent && (
+            <div className="px-5 pb-5">
+              <LayersFilterContent
+                compact={false}
+                showOtros={showOtros}
+                setShowOtros={setShowOtros}
+                showOccamm={showOccamm}
+                setShowOccamm={setShowOccamm}
+                showSima={showSima}
+                setShowSima={setShowSima}
+                onShowOccammInfo={() => setShowOccammInfo(true)}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -1140,7 +1147,7 @@ export default function MapaSensors({
               {sensorQuality && (
                 <>
                   <div className="mt-3 mb-6 border-t border-gray-100" />
-                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+                  <button onClick={() => setCuidarmeQuality(sensorQuality)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                     <span>Recomendaciones de salud</span>
                     <Info className="h-3 w-3" />
                   </button>
@@ -1282,7 +1289,7 @@ export default function MapaSensors({
 
               {/* Recommendations */}
               <div className="my-6 border-t border-gray-100" />
-              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
+              <button onClick={() => setCuidarmeQuality(qualityInfo)} className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600 transition-colors">
                 <span>Recomendaciones de salud</span>
                 <Info className="h-3 w-3" />
               </button>
