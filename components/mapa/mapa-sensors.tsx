@@ -435,6 +435,7 @@ export default function MapaSensors({
   const [showFilters, setShowFilters] = useState(false);
   const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
   const [showCalidadContent, setShowCalidadContent] = useState(true); // desktop only — Calidad del aire body starts expanded
+  const [showHealthRecs, setShowHealthRecs] = useState(false); // desktop only — Recomendaciones de salud starts collapsed
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showOtros, setShowOtros] = useState(true);
   const [showOccammInfo, setShowOccammInfo] = useState(false);
@@ -951,20 +952,28 @@ export default function MapaSensors({
                     )}
                   </div>
 
-                  {/* Recommendations — always shown on desktop, no expand/collapse */}
+                  {/* Recommendations — collapsed by default, secondary info on a data-first platform */}
                   {sensorQuality && (
                     <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
-                      <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                        <span>Recomendaciones de salud</span>
+                      <div className="mb-4 flex items-center justify-between gap-1.5">
+                        <div className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                          <span>Recomendaciones de salud</span>
+                          <button
+                            onClick={() => setCuidarmeQuality(sensorQuality)}
+                            className="hover:text-gray-600 transition-colors"
+                            aria-label="Más información sobre recomendaciones de salud"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                        </div>
                         <button
-                          onClick={() => setCuidarmeQuality(sensorQuality)}
-                          className="hover:text-gray-600 transition-colors"
-                          aria-label="Más información sobre recomendaciones de salud"
+                          onClick={() => setShowHealthRecs(v => !v)}
+                          aria-label={showHealthRecs ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
                         >
-                          <Info className="h-3 w-3" />
+                          <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showHealthRecs ? 'rotate-180' : ''}`} />
                         </button>
                       </div>
-                      <HealthRecommendationCards info={sensorQuality} />
+                      {showHealthRecs && <HealthRecommendationCards info={sensorQuality} />}
                     </div>
                   )}
                 </>
@@ -1046,19 +1055,27 @@ export default function MapaSensors({
                   )}
                 </div>
 
-                {/* Recommendations — always shown on desktop, no expand/collapse */}
+                {/* Recommendations — collapsed by default, secondary info on a data-first platform */}
                 <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
-                  <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                    <span>Recomendaciones de salud</span>
+                  <div className="mb-4 flex items-center justify-between gap-1.5">
+                    <div className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                      <span>Recomendaciones de salud</span>
+                      <button
+                        onClick={() => setCuidarmeQuality(qualityInfo)}
+                        className="hover:text-gray-600 transition-colors"
+                        aria-label="Más información sobre recomendaciones de salud"
+                      >
+                        <Info className="h-3 w-3" />
+                      </button>
+                    </div>
                     <button
-                      onClick={() => setCuidarmeQuality(qualityInfo)}
-                      className="hover:text-gray-600 transition-colors"
-                      aria-label="Más información sobre recomendaciones de salud"
+                      onClick={() => setShowHealthRecs(v => !v)}
+                      aria-label={showHealthRecs ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
                     >
-                      <Info className="h-3 w-3" />
+                      <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showHealthRecs ? 'rotate-180' : ''}`} />
                     </button>
                   </div>
-                  <HealthRecommendationCards info={qualityInfo} />
+                  {showHealthRecs && <HealthRecommendationCards info={qualityInfo} />}
                 </div>
               </>
             )}
