@@ -181,6 +181,7 @@ function LayersFilterContent({
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
   const boxSize = compact ? 16 : 18;
+  const [showCitizenGroup, setShowCitizenGroup] = useState(true);
 
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
@@ -195,13 +196,20 @@ function LayersFilterContent({
   return (
     <div className="flex flex-col gap-3">
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-        <button
-          onClick={toggleCitizenGroup}
-          className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}
-        >
-          <LayerCheckbox state={citizenState} size={boxSize} />
-          <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
-        </button>
+        <div className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}>
+          <button onClick={toggleCitizenGroup} className="flex flex-1 items-center gap-3">
+            <LayerCheckbox state={citizenState} size={boxSize} />
+            <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+          </button>
+          <button
+            onClick={() => setShowCitizenGroup((v) => !v)}
+            className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+            aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
+          >
+            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showCitizenGroup ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+        {showCitizenGroup && (
         <div className="flex flex-col border-t border-gray-100">
           <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
             <button
@@ -227,6 +235,7 @@ function LayersFilterContent({
             <span className="text-sm text-gray-600">Otros</span>
           </button>
         </div>
+        )}
       </div>
       <button
         onClick={() => setShowSima((v) => !v)}
