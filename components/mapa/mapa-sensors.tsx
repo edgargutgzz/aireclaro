@@ -43,8 +43,12 @@ interface HistoryPoint {
 }
 
 // Small inline trend chart for the selected sensor's last 48h — no axes/legend,
-// just enough to see the shape of the trend and its range at a glance.
-function Sparkline({ data, color }: { data: HistoryPoint[]; color: string }) {
+// just enough to see the shape of the trend and its range at a glance. Fixed
+// color regardless of the sensor's air-quality color: the yellow "Aceptable"
+// tone in particular is too low-contrast on white to read as a line/fill.
+const SPARKLINE_COLOR = "#3b82f6";
+
+function Sparkline({ data }: { data: HistoryPoint[] }) {
   if (data.length < 2) {
     return <p className="text-xs text-gray-400">Sin datos suficientes para mostrar la tendencia</p>;
   }
@@ -71,8 +75,8 @@ function Sparkline({ data, color }: { data: HistoryPoint[]; color: string }) {
         <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
       <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
-        <path d={areaPath} fill={color} fillOpacity={0.12} stroke="none" />
-        <path d={linePath} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <path d={areaPath} fill={SPARKLINE_COLOR} fillOpacity={0.12} stroke="none" />
+        <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </div>
   );
@@ -671,7 +675,7 @@ export default function MapaSensors({
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-[380px]">
         {selectedSensor ? (() => {
-          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+          const { sensor, pm25, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
@@ -691,7 +695,7 @@ export default function MapaSensors({
 
                 {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
                 <div className="mt-3">
-                  <Sparkline data={sensorHistory} color={color} />
+                  <Sparkline data={sensorHistory} />
                 </div>
 
                 <button
