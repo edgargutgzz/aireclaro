@@ -581,7 +581,7 @@ export default function MapaSensors({
       setMapLoaded(true);
       (map.current as any).flyTo({
         center: [-100.301, 25.685],
-        zoom: 12,
+        zoom: 11,
         duration: 2000,
         essential: true,
       });
@@ -794,11 +794,11 @@ export default function MapaSensors({
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
 
-    const isSima = nearestSensorData.isSima;
-    const baseShadow = isSima
-      ? '0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white'
-      : '0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white';
-    const startSpread = '2.5px';
+    // Same ring as a click-selected marker — the pulse animation drives
+    // box-shadow every frame, so it must include the black ring itself or
+    // it overwrites it with the plain (unselected) marker shadow.
+    const baseShadow = '0 4px 14px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 6px rgba(0,0,0,0.8)';
+    const startSpread = '6px';
     const animName = `nearestPulse_${hex.slice(1)}`;
 
     let styleEl = document.querySelector(`style[data-nearest-pulse="${animName}"]`) as HTMLStyleElement | null;
