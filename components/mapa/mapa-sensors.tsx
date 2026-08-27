@@ -504,15 +504,22 @@ export default function MapaSensors({
     }
   }, [selectedSensor]);
 
-  // Fetch the last 48h of readings for the selected sensor, for the trend sparkline
+  // Fetch the last 48h of readings for the trend sparkline — the selected
+  // sensor if one is picked, otherwise the nearest sensor (same one backing
+  // the default "Calidad del aire" card), so the graph is visible by default.
   useEffect(() => {
-    if (!selectedSensor) {
+    const target = selectedSensor
+      ? { sensorId: selectedSensor.sensor.sensor_id, source: selectedSensor.sensor.source }
+      : nearestSensorData
+        ? { sensorId: nearestSensorData.sensorId, source: nearestSensorData.isSima ? "sima" : "purpleAir" }
+        : null;
+
+    if (!target) {
       setSensorHistory([]);
       return;
     }
-    const { sensor_id, source } = selectedSensor.sensor;
     let cancelled = false;
-    fetch(`/api/sensor-history?sensor_id=${sensor_id}&source=${source}`)
+    fetch(`/api/sensor-history?sensor_id=${target.sensorId}&source=${target.source}`)
       .then((res) => res.json())
       .then((data) => {
         if (!cancelled) setSensorHistory(Array.isArray(data) ? data : []);
@@ -523,7 +530,7 @@ export default function MapaSensors({
     return () => {
       cancelled = true;
     };
-  }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source]);
+  }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
 
   // Pulse animation on nearest sensor marker
   useEffect(() => {
@@ -781,6 +788,12 @@ export default function MapaSensors({
                   <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ (PM2.5)</span>
                 )}
               </div>
+
+              {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
+              <div className="mt-3">
+                <Sparkline data={sensorHistory} />
+              </div>
+
               {/* Sensor name — always shown */}
               <button
                 onClick={(e) => { e.stopPropagation(); setShowNearestDetail(v => !v); }}
