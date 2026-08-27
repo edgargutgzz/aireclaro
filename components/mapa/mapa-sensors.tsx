@@ -91,10 +91,10 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   // IMECA thresholds — only draw the ones this window's range actually
   // crosses, so it stays a quiet reference instead of cluttering the chart.
   const thresholds = [
-    { value: 15, color: "#eab308", label: "Aceptable" },
-    { value: 25, color: "#f97316", label: "Mala" },
-    { value: 79, color: "#ef4444", label: "Muy mala" },
-    { value: 130, color: "#a855f7", label: "Extrem. mala" },
+    { value: 15, color: "#eab308" },
+    { value: 25, color: "#f97316" },
+    { value: 79, color: "#ef4444" },
+    { value: 130, color: "#a855f7" },
   ].filter((t) => t.value > min && t.value < max);
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
@@ -136,15 +136,6 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
             style={{ left: `${b.leftPct}%`, top: 1 }}
           >
             {b.label}
-          </div>
-        ))}
-        {thresholds.map((t) => (
-          <div
-            key={t.value}
-            className="pointer-events-none absolute right-1 whitespace-nowrap text-[9px] font-semibold"
-            style={{ top: toY(t.value) - 12, color: t.color, opacity: 0.85 }}
-          >
-            {t.label}
           </div>
         ))}
         {hovered && hoverPoint && (
