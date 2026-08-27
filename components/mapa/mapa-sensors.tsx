@@ -37,6 +37,47 @@ interface UserLocation {
   longitude: number;
 }
 
+interface HistoryPoint {
+  pm25: number;
+  time_stamp: string;
+}
+
+// Small inline trend chart for the selected sensor's last 48h — no axes/legend,
+// just enough to see the shape of the trend and its range at a glance.
+function Sparkline({ data, color }: { data: HistoryPoint[]; color: string }) {
+  if (data.length < 2) {
+    return <p className="text-xs text-gray-400">Sin datos suficientes para mostrar la tendencia</p>;
+  }
+
+  const width = 320;
+  const height = 44;
+  const values = data.map((d) => d.pm25);
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const range = max - min || 1;
+
+  const points = data.map((d, i) => ({
+    x: (i / (data.length - 1)) * width,
+    y: height - ((d.pm25 - min) / range) * height,
+  }));
+
+  const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
+
+  return (
+    <div>
+      <div className="mb-1.5 flex items-center justify-between text-xs text-gray-400">
+        <span>Últimas 48 horas</span>
+        <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
+      </div>
+      <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+        <path d={areaPath} fill={color} fillOpacity={0.12} stroke="none" />
+        <path d={linePath} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
+}
+
 function HealthRecommendationCards({ info }: { info: QualityInfo }) {
   return (
     <div className="mb-3 flex flex-col gap-4">
@@ -222,6 +263,7 @@ export default function MapaSensors({
     textColor: string;
     timestamp: string | null;
   } | null>(null);
+  const [sensorHistory, setSensorHistory] = useState<HistoryPoint[]>([]);
   const [copied, setCopied] = useState(false);
   const [showSensorDetail, setShowSensorDetail] = useState(false);
   const [showNearestDetail, setShowNearestDetail] = useState(false);
@@ -458,6 +500,27 @@ export default function MapaSensors({
     }
   }, [selectedSensor]);
 
+  // Fetch the last 48h of readings for the selected sensor, for the trend sparkline
+  useEffect(() => {
+    if (!selectedSensor) {
+      setSensorHistory([]);
+      return;
+    }
+    const { sensor_id, source } = selectedSensor.sensor;
+    let cancelled = false;
+    fetch(`/api/sensor-history?sensor_id=${sensor_id}&source=${source}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setSensorHistory(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        if (!cancelled) setSensorHistory([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source]);
+
   // Pulse animation on nearest sensor marker
   useEffect(() => {
     if (!mapLoaded) return;
@@ -625,6 +688,12 @@ export default function MapaSensors({
                     <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ (PM2.5)</span>
                   )}
                 </div>
+
+                {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
+                <div className="mt-3">
+                  <Sparkline data={sensorHistory} color={color} />
+                </div>
+
                 <button
                   onClick={() => setShowSensorDetail(v => !v)}
                   className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
