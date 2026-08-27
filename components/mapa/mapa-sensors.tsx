@@ -296,6 +296,13 @@ function LayersFilterContent({
   const subRowPadding = compact ? "py-2.5" : "py-3";
   const boxSize = compact ? 16 : 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
+  const [showPM10Tooltip, setShowPM10Tooltip] = useState(false);
+
+  useEffect(() => {
+    if (!showPM10Tooltip) return;
+    const timeout = setTimeout(() => setShowPM10Tooltip(false), 2000);
+    return () => clearTimeout(timeout);
+  }, [showPM10Tooltip]);
 
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
@@ -309,6 +316,28 @@ function LayersFilterContent({
 
   return (
     <div className="flex flex-col gap-3">
+      <div>
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
+        <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
+          <button type="button" className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm">
+            PM2.5
+          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowPM10Tooltip(true)}
+              className="rounded-xl px-5 py-2 text-sm font-semibold text-gray-400"
+            >
+              PM10
+            </button>
+            {showPM10Tooltip && (
+              <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm">
+                No disponible
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}>
           <button onClick={toggleCitizenGroup} className="flex flex-1 items-center gap-3">
