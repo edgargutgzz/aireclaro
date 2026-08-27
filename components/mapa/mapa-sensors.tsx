@@ -915,7 +915,7 @@ export default function MapaSensors({
               {showCalidadContent && (
                 <>
                   <div className="px-5 pb-3">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold" style={{ color: textColor }}>
                         {sensorQuality ? sensorQuality.label : "—"}
                       </span>
@@ -1028,7 +1028,7 @@ export default function MapaSensors({
               <>
                 <div className="px-5 pb-3">
                   {/* Quality label + PM2.5 — always shown */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
                       {qualityInfo.label}
                     </span>
@@ -1196,7 +1196,7 @@ export default function MapaSensors({
                 className="relative z-[1] flex-1 overflow-y-auto px-5 pb-8"
               >
               <div className="mb-5">
-                <div className="mb-2 flex items-center gap-4">
+                <div className="mb-2 flex items-center justify-between">
                   <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
                     {sensorQuality ? sensorQuality.label : "—"}
                   </div>
@@ -1337,7 +1337,7 @@ export default function MapaSensors({
           {qualityInfo && (
             <>
               <div className="mb-5">
-                <div className="mb-2 flex items-center gap-4">
+                <div className="mb-2 flex items-center justify-between">
                   <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
                     {qualityInfo.label}
                   </div>
