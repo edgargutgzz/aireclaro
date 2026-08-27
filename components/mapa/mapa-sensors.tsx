@@ -954,7 +954,7 @@ export default function MapaSensors({
 
                   {/* Recommendations — collapsed by default, secondary info on a data-first platform */}
                   {sensorQuality && (
-                    <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
+                    <div className="relative z-[1] overflow-y-auto px-5 pb-8 pt-3" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
                       <div className="mb-4 flex items-center justify-between gap-1.5">
                         <div className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                           <span>Recomendaciones de salud</span>
@@ -1056,7 +1056,7 @@ export default function MapaSensors({
                 </div>
 
                 {/* Recommendations — collapsed by default, secondary info on a data-first platform */}
-                <div className="relative z-[1] overflow-y-auto px-5 pb-8" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
+                <div className="relative z-[1] overflow-y-auto px-5 pb-8 pt-3" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
                   <div className="mb-4 flex items-center justify-between gap-1.5">
                     <div className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                       <span>Recomendaciones de salud</span>
