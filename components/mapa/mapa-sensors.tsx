@@ -381,7 +381,7 @@ function LayersFilterContent({
                   className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
                   aria-label="Más información sobre OCCAMM"
                 >
-                  <Info className="h-4 w-4" />
+                  <Info className="h-3 w-3" />
                 </button>
               </div>
               <button
