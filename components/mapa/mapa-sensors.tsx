@@ -1468,8 +1468,6 @@ export default function MapaSensors({
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Viajan profundamente en los pulmones, depositándose en los
               alvéolos y, en ocasiones, llegan hasta el torrente sanguíneo.
-              Esto la convierte en la partícula más peligrosa para la salud,
-              por eso es la que medimos.
             </p>
             <button
               onClick={() => setShowPM25Info(false)}
