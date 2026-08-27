@@ -293,6 +293,7 @@ function LayersFilterContent({
   showSima,
   setShowSima,
   onShowOccammInfo,
+  onShowPM25Info,
 }: {
   compact: boolean;
   showOtros: boolean;
@@ -302,6 +303,7 @@ function LayersFilterContent({
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
   onShowOccammInfo: () => void;
+  onShowPM25Info: () => void;
 }) {
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
@@ -329,6 +331,7 @@ function LayersFilterContent({
     <div className="flex flex-col gap-3">
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
+        <div className="inline-flex items-center gap-2">
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
           <button type="button" className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm">
             PM2.5
@@ -347,6 +350,15 @@ function LayersFilterContent({
               </div>
             )}
           </div>
+        </div>
+        <button
+          type="button"
+          onClick={onShowPM25Info}
+          className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+          aria-label="Por qué medimos PM2.5"
+        >
+          <Info className="h-3.5 w-3.5" />
+        </button>
         </div>
       </div>
       <div>
@@ -428,6 +440,7 @@ export default function MapaSensors({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showOtros, setShowOtros] = useState(true);
   const [showOccammInfo, setShowOccammInfo] = useState(false);
+  const [showPM25Info, setShowPM25Info] = useState(false);
   const [showSima, setShowSima] = useState(true);
   const [showOccamm, setShowOccamm] = useState(true);
   const [selectedSensor, setSelectedSensor] = useState<{
@@ -844,6 +857,7 @@ export default function MapaSensors({
             showSima={showSima}
             setShowSima={setShowSima}
             onShowOccammInfo={() => setShowOccammInfo(true)}
+            onShowPM25Info={() => setShowPM25Info(true)}
           />
         </div>
       </div>
@@ -1132,6 +1146,7 @@ export default function MapaSensors({
                 showSima={showSima}
                 setShowSima={setShowSima}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
+                onShowPM25Info={() => setShowPM25Info(true)}
               />
             </div>
           )}
@@ -1430,6 +1445,29 @@ export default function MapaSensors({
             </p>
             <button
               onClick={() => setShowOccammInfo(false)}
+              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              Entendido
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* PM2.5 info popup */}
+      {showPM25Info && (
+        <>
+          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowPM25Info(false)} />
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-3xl bg-white p-7 shadow-xl">
+            <p className="text-center text-base font-semibold text-gray-800">¿Por qué medimos PM2.5?</p>
+            <p className="text-center text-sm leading-relaxed text-gray-500">
+              El PM2.5 son partículas tan pequeñas (2.5 micras o menos) que
+              pueden penetrar hasta los pulmones y pasar directamente al
+              torrente sanguíneo. Por su tamaño representan el mayor riesgo
+              para la salud entre los contaminantes del aire, por eso es el
+              que priorizamos monitorear.
+            </p>
+            <button
+              onClick={() => setShowPM25Info(false)}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
             >
               Entendido
