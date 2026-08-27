@@ -924,18 +924,19 @@ export default function MapaSensors({
                       )}
                     </div>
 
+                    <button
+                      onClick={() => setShowSensorDetail(v => !v)}
+                      className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-600"
+                    >
+                      <span className="truncate">{isSima ? "Estación" : "Sensor"}: {sensorName}</span>
+                      <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
+                    </button>
+
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
                     <div className="mt-3">
                       {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
                     </div>
 
-                    <button
-                      onClick={() => setShowSensorDetail(v => !v)}
-                      className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
-                    >
-                      <span className="truncate">{isSima ? "Estación" : "Sensor"}: {sensorName}</span>
-                      <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
-                    </button>
                     {showSensorDetail && (
                       <div className="mt-3 overflow-hidden rounded-xl bg-gray-100">
                         <div className="flex flex-col gap-3 px-4 py-3">
@@ -1038,15 +1039,10 @@ export default function MapaSensors({
                     )}
                   </div>
 
-                  {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                  <div className="mt-3">
-                    {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
-                  </div>
-
                   {/* Sensor name — always shown */}
                   <button
                     onClick={(e) => { e.stopPropagation(); setShowNearestDetail(v => !v); }}
-                    className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
+                    className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-600"
                   >
                     <span className="truncate">
                       {nearestName
@@ -1055,6 +1051,12 @@ export default function MapaSensors({
                     </span>
                     <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
                   </button>
+
+                  {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
+                  <div className="mt-3">
+                    {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                  </div>
+
                   {showNearestDetail && (
                     <div className="mt-3 overflow-hidden rounded-xl bg-gray-100">
                       <div className="flex flex-col gap-3 px-4 py-3">
