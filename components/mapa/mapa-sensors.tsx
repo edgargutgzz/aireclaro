@@ -195,16 +195,15 @@ const SKELETON_PATH = "M0,150 L20,130 L40,142 L60,95 L80,108 L100,72 L120,90 L14
 
 function SparklineSkeleton() {
   return (
-    <div className="animate-pulse">
-      <div className="mb-1.5 flex items-center justify-between">
-        <span className="h-3 w-24 rounded bg-gray-200" />
-        <span className="h-3 w-32 rounded bg-gray-200" />
+    <div>
+      <div className="mb-1.5 flex items-center justify-between text-xs text-gray-400">
+        <span>Últimas 48 horas</span>
       </div>
-      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none">
+      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="animate-pulse">
         <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
         <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      <div className="mt-1 flex items-center justify-between">
+      <div className="mt-1 flex animate-pulse items-center justify-between">
         <span className="h-2.5 w-16 rounded bg-gray-200" />
         <span className="h-2.5 w-16 rounded bg-gray-200" />
       </div>
