@@ -73,7 +73,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   }
 
   const width = 320;
-  const height = 160;
+  const height = 190;
   const verticalPadding = 10; // keeps peaks/troughs from touching the chart edges
   const drawableHeight = height - verticalPadding * 2;
   const values = data.map((d) => d.pm25);
@@ -310,7 +310,7 @@ function LayersFilterContent({
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <button type="button" className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-stone-800 shadow-sm">
+          <button type="button" className="rounded-xl bg-blue-50 px-5 py-2 text-sm font-semibold text-blue-600 shadow-sm">
             PM2.5
           </button>
           <div className="relative">
