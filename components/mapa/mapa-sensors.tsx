@@ -667,10 +667,9 @@ export default function MapaSensors({
         </button>
       </div>
 
-      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is selected,
-          with the always-open Filtros panel stacked below it. Nav lives in the site-wide header now,
-          not floating here. */}
-      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start gap-3 overflow-y-auto md:flex">
+      {/* Desktop left area — quality card, replaced by the selected sensor's card when one is
+          selected. Nav lives in the site-wide header now, not floating here. */}
+      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start overflow-y-auto md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-[380px]">
@@ -861,9 +860,11 @@ export default function MapaSensors({
           </div>
         )}
         </div>{/* end card width wrapper */}
+      </div>
 
-        {/* Filtros panel — always open on desktop (there's room for it), no toggle/close */}
-        <div className="w-[380px] pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+      {/* Filtros panel — floats on the right, always open on desktop (there's room for it), no toggle/close */}
+      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden w-[380px] md:block">
+        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
           <div className="px-5 pt-4 pb-3">
             <span className="text-sm font-medium text-gray-400">Filtros</span>
           </div>
