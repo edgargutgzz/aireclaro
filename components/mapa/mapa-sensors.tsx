@@ -203,10 +203,6 @@ function SparklineSkeleton() {
         <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
         <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      <div className="mt-1 flex animate-pulse items-center justify-between">
-        <span className="h-2.5 w-16 rounded bg-gray-200" />
-        <span className="h-2.5 w-16 rounded bg-gray-200" />
-      </div>
     </div>
   );
 }
