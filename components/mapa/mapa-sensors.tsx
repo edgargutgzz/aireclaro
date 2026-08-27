@@ -116,6 +116,7 @@ function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
 
 function LayersFilterContent({
   compact,
+  flat,
   showOtros,
   setShowOtros,
   showOccamm,
@@ -125,6 +126,7 @@ function LayersFilterContent({
   onShowOccammInfo,
 }: {
   compact: boolean;
+  flat?: boolean;
   showOtros: boolean;
   setShowOtros: Dispatch<SetStateAction<boolean>>;
   showOccamm: boolean;
@@ -136,6 +138,12 @@ function LayersFilterContent({
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
   const boxSize = compact ? 16 : 18;
+  // Nested inside another white/bordered/shadowed card (the desktop merged
+  // panel), a second layer of card chrome reads as redundant "card in a
+  // card" — flat swaps to plain gray-100 blocks, matching the recommendation
+  // cards elsewhere in that same panel, instead of white+border+shadow.
+  const groupClass = flat ? "rounded-xl bg-gray-100" : "rounded-2xl border border-gray-200 bg-white shadow-sm";
+  const dividerClass = flat ? "border-gray-200" : "border-gray-100";
 
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
@@ -149,7 +157,7 @@ function LayersFilterContent({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className={`overflow-hidden ${groupClass}`}>
         <button
           onClick={toggleCitizenGroup}
           className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}
@@ -157,7 +165,7 @@ function LayersFilterContent({
           <LayerCheckbox state={citizenState} size={boxSize} />
           <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
         </button>
-        <div className="flex flex-col border-t border-gray-100">
+        <div className={`flex flex-col border-t ${dividerClass}`}>
           <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
             <button
               onClick={() => setShowOccamm((v) => !v)}
@@ -185,7 +193,7 @@ function LayersFilterContent({
       </div>
       <button
         onClick={() => setShowSima((v) => !v)}
-        className={`flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 ${rowPadding} shadow-sm`}
+        className={`flex items-center gap-3 px-4 ${rowPadding} ${groupClass}`}
         style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' }}
       >
         <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
@@ -803,6 +811,7 @@ export default function MapaSensors({
         <div className="px-5 pb-5">
           <LayersFilterContent
             compact={false}
+            flat
             showOtros={showOtros}
             setShowOtros={setShowOtros}
             showOccamm={showOccamm}
