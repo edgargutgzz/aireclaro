@@ -354,7 +354,6 @@ function LayersFilterContent({
           </div>
         </div>
       </div>
-      <div className="border-t border-gray-200" />
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Fuente</p>
         <div className="flex flex-col gap-3">
