@@ -51,14 +51,17 @@ const SPARKLINE_COLOR = "#3b82f6";
 // the visitor hasn't shared their location, instead of a nameless area median.
 const DEFAULT_SENSOR_ID = "Norte2";
 
-function formatHistoryTime(dateStr: string) {
-  const date = new Date(dateStr);
+function getRelativeDayLabel(date: Date) {
   const now = new Date();
   const dayDiff = Math.floor((now.setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000);
-  const dayLabel = dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM");
+  return dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM");
+}
+
+function formatHistoryTime(dateStr: string) {
+  const date = new Date(dateStr);
   // Readings land ~30 min past the hour but represent that hour's data —
   // floor to the hour, matching how timestamps are shown everywhere else.
-  return `${dayLabel} ${format(date, "h")}:00 ${format(date, "a")}`;
+  return `${getRelativeDayLabel(date)} ${format(date, "h")}:00 ${format(date, "a")}`;
 }
 
 function Sparkline({ data }: { data: HistoryPoint[] }) {
@@ -86,6 +89,16 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
   const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
 
+  // Mark where one calendar day ends and the next begins, so the daily
+  // shape (morning/evening peaks) is easy to read instead of one blur.
+  const dayBoundaries = data.flatMap((d, i) => {
+    if (i === 0) return [];
+    const prev = new Date(data[i - 1].time_stamp);
+    const curr = new Date(d.time_stamp);
+    if (curr.getDate() === prev.getDate() && curr.getMonth() === prev.getMonth()) return [];
+    return [{ x: points[i].x, leftPct: (points[i].x / width) * 100, label: getRelativeDayLabel(curr) }];
+  });
+
   const updateHover = (clientX: number) => {
     const svg = svgRef.current;
     if (!svg) return;
@@ -105,6 +118,15 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
         <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
       <div className="relative">
+        {dayBoundaries.map((b) => (
+          <div
+            key={b.x}
+            className="pointer-events-none absolute -translate-x-1/2 whitespace-nowrap rounded bg-white/80 px-1 text-[10px] font-medium text-gray-400"
+            style={{ left: `${b.leftPct}%`, top: 1 }}
+          >
+            {b.label}
+          </div>
+        ))}
         {hovered && hoverPoint && (
           <div
             className="pointer-events-none absolute z-10 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-xs text-white shadow-sm"
@@ -127,6 +149,9 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           onTouchEnd={() => setHoverIndex(null)}
         >
           <path d={areaPath} fill={SPARKLINE_COLOR} fillOpacity={0.12} stroke="none" />
+          {dayBoundaries.map((b) => (
+            <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
+          ))}
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           {hoverPoint && (
             <>
