@@ -1513,8 +1513,8 @@ export default function MapaSensors({
               30 veces más delgadas que un cabello humano.
             </p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
-              A diferencia del PM10, evade las defensas de la nariz y la
-              garganta — por eso es el contaminante más peligroso.
+              A diferencia de las PM10, evaden las defensas de la nariz y la
+              garganta, por eso es el contaminante más peligroso.
             </p>
             <button
               onClick={() => setShowPM25Info(false)}
