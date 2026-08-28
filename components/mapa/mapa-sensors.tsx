@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -292,8 +292,7 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
                 </button>
               ))}
             </div>
-            <p className="mb-1 mt-3 text-sm font-semibold text-gray-700">{active.label}</p>
-            <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[active.key]}</p>
+            <p className="mt-3 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[active.key]}</p>
           </>
         )}
       </div>
@@ -898,10 +897,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="flex items-center gap-2 text-base font-semibold text-gray-800">
-            <Layers className="h-4 w-4 text-gray-400" strokeWidth={2.5} />
-            Capas
-          </p>
+          <p className="text-base font-semibold text-gray-800">Capas</p>
         </div>
         <div
           className="flex flex-col gap-3 px-5"
@@ -942,7 +938,7 @@ export default function MapaSensors({
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-[460px]">
         {selectedSensor ? (() => {
-          const { sensor, pm25, textColor, timestamp } = selectedSensor;
+          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
@@ -973,7 +969,10 @@ export default function MapaSensors({
                         {isSima ? "Estación" : "Sensor"}
                       </p>
                       <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                        <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                        <span
+                          className="h-3.5 w-3.5 flex-shrink-0 rounded-full"
+                          style={{ backgroundColor: color, boxShadow: '0 0 0 2px white, 0 1px 2px rgba(0,0,0,0.2)' }}
+                        />
                         <div className="min-w-0 flex-1 text-left">
                           <p className="truncate text-sm font-medium text-gray-700">{sensorName}</p>
                           {(sensor.red || timestamp) && (
@@ -1050,7 +1049,10 @@ export default function MapaSensors({
                       {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
                     </p>
                     <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                      <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                      <span
+                        className="h-3.5 w-3.5 flex-shrink-0 rounded-full"
+                        style={{ backgroundColor: qualityInfo.color, boxShadow: '0 0 0 2px white, 0 1px 2px rgba(0,0,0,0.2)' }}
+                      />
                       <div className="min-w-0 flex-1 text-left">
                         <p className="truncate text-sm font-medium text-gray-700">
                           {nearestName ?? "Promedio del área metropolitana"}
@@ -1114,10 +1116,7 @@ export default function MapaSensors({
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
           >
-            <span className="flex items-center gap-2 text-base font-semibold text-gray-800">
-              <Layers className="h-4 w-4 text-gray-400" strokeWidth={2.5} />
-              Capas
-            </span>
+            <span className="text-base font-semibold text-gray-800">Capas</span>
             <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
           </button>
           {showFiltrosContent && (
