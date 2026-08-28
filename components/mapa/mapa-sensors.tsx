@@ -278,7 +278,6 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowGruposSensibles(false)} />
           <div className="fixed left-1/2 top-1/2 z-[71] flex max-h-[80vh] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 overflow-y-auto rounded-3xl bg-white p-7 shadow-xl">
-            <p className="text-center text-base font-semibold text-gray-800">Grupos sensibles</p>
             <div className="flex flex-col gap-4">
               {SENSITIVE_GROUPS.map((g) => (
                 <div key={g.key}>
