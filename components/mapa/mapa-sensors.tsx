@@ -406,7 +406,7 @@ function LayersFilterContent({
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-5">
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
@@ -1141,7 +1141,7 @@ export default function MapaSensors({
             <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
           </button>
           {showFiltrosContent && (
-            <div className="px-5 pb-5 pt-2">
+            <div className="px-5 pb-6 pt-3">
               <LayersFilterContent
                 compact={false}
                 showOtros={showOtros}
