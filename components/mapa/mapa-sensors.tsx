@@ -51,9 +51,8 @@ const SPARKLINE_COLOR = "#3b82f6";
 // the visitor hasn't shared their location, instead of a nameless area median.
 const DEFAULT_SENSOR_ID = "Norte2";
 
-// Ring around a selected/default-station marker — subtle gray instead of a
-// harsh black outline.
-const SELECTED_RING_SHADOW = "0 4px 14px rgba(0,0,0,0.15), 0 0 0 3px white, 0 0 0 6px rgba(107,114,128,0.9)";
+// Plain marker shadow — the pulse animation's base state, no static ring.
+const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 
 function getRelativeDayLabel(date: Date) {
   const now = new Date();
@@ -805,10 +804,8 @@ export default function MapaSensors({
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
 
-    // The pulse animation drives box-shadow every frame, so it must
-    // include the ring itself or it overwrites it with the plain shadow.
-    const baseShadow = SELECTED_RING_SHADOW;
-    const startSpread = '6px';
+    const baseShadow = PLAIN_MARKER_SHADOW;
+    const startSpread = '2.5px';
     const animName = `nearestPulse_${hex.slice(1)}`;
 
     let styleEl = document.querySelector(`style[data-nearest-pulse="${animName}"]`) as HTMLStyleElement | null;
