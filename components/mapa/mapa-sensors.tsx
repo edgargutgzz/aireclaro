@@ -901,7 +901,7 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute right-6 top-6 z-10 hidden flex-col items-start md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
-        <div className="w-[460px]">
+        <div className="w-panel-lg">
         {selectedSensor ? (() => {
           const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
           const isSima = sensor.source === "sima";
@@ -1065,7 +1065,7 @@ export default function MapaSensors({
       </div>
 
       {/* Filtros panel — floats on the left, collapsed by default on desktop */}
-      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden w-[310px] md:block">
+      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden w-panel-sm md:block">
         <div className="pointer-events-auto overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
