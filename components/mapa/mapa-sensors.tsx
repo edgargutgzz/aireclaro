@@ -914,8 +914,8 @@ export default function MapaSensors({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-xs font-medium text-gray-600">
-              <span className="text-gray-400">Última actualización</span> {latestDataHour}
+            <span className="whitespace-nowrap text-xs font-medium text-gray-500">
+              Última actualización: {latestDataHour}
             </span>
           </div>
         )}
@@ -968,28 +968,29 @@ export default function MapaSensors({
                     </div>
 
                     <div>
-                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                        {isSima ? "Estación" : "Sensor"}
-                      </p>
-                      <div className="flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-                        <div className="min-w-0 flex-1 text-left">
-                          <p className="truncate text-sm font-medium text-gray-700">
-                            {isSima ? "Red: SIMA" : sensor.red ? `Red: ${sensor.red}` : "Sensor Ciudadano"}
-                          </p>
-                        </div>
+                      {/* Label left, copy action right, value underneath: same
+                          grammar as the quality section above, without the
+                          boxed pill that outweighed the one fact it held. */}
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                          {isSima ? "Estación" : "Sensor"}
+                        </p>
                         <button
                           onClick={() => {
                             navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
                             setCopied(true);
                             setTimeout(() => setCopied(false), 1500);
                           }}
-                          className="flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs text-gray-400 hover:text-gray-600"
+                          className="flex flex-shrink-0 items-center gap-1 text-xs leading-none text-gray-400 transition-colors hover:text-gray-600"
                           aria-label="Copiar coordenadas"
                         >
                           <Copy className="h-3.5 w-3.5" />
                           <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
                         </button>
                       </div>
+                      <p className="truncate text-sm font-medium text-gray-700">
+                        {isSima ? "Red: SIMA" : sensor.red ? `Red: ${sensor.red}` : "Sensor Ciudadano"}
+                      </p>
                     </div>
 
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
@@ -1066,19 +1067,10 @@ export default function MapaSensors({
                   </div>
 
                   <div>
-                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                      {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
-                    </p>
-                    <div className="flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-                      <div className="min-w-0 flex-1 text-left">
-                        <p className="truncate text-sm font-medium text-gray-700">
-                          {nearestName
-                            ? userLocation
-                              ? "Tu sensor más cercano"
-                              : nearestIsSima ? "Red: SIMA" : "Sensor Ciudadano"
-                            : "Promedio del área metropolitana"}
-                        </p>
-                      </div>
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                        {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
+                      </p>
                       {nearestLat !== null && nearestLon !== null && (
                         <button
                           onClick={() => {
@@ -1086,7 +1078,7 @@ export default function MapaSensors({
                             setCopied(true);
                             setTimeout(() => setCopied(false), 1500);
                           }}
-                          className="flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs text-gray-400 hover:text-gray-600"
+                          className="flex flex-shrink-0 items-center gap-1 text-xs leading-none text-gray-400 transition-colors hover:text-gray-600"
                           aria-label="Copiar coordenadas"
                         >
                           <Copy className="h-3.5 w-3.5" />
@@ -1094,6 +1086,13 @@ export default function MapaSensors({
                         </button>
                       )}
                     </div>
+                    <p className="truncate text-sm font-medium text-gray-700">
+                      {nearestName
+                        ? userLocation
+                          ? "Tu sensor más cercano"
+                          : nearestIsSima ? "Red: SIMA" : "Sensor Ciudadano"
+                        : "Promedio del área metropolitana"}
+                    </p>
                   </div>
 
                   {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
@@ -1178,8 +1177,8 @@ export default function MapaSensors({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-xs font-medium text-gray-600">
-              <span className="text-gray-400">Última actualización</span> {latestDataHour}
+            <span className="whitespace-nowrap text-xs font-medium text-gray-500">
+              Última actualización: {latestDataHour}
             </span>
           </div>
         )}
