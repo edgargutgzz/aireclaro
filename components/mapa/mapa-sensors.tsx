@@ -285,7 +285,7 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
                   type="button"
                   onClick={() => setActiveGroup(g.key)}
                   className={`truncate rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    activeGroup === g.key ? "bg-gray-100 text-stone-800 shadow-sm" : "text-gray-400"
+                    activeGroup === g.key ? "bg-gray-100 text-gray-800 shadow-sm" : "text-gray-400"
                   }`}
                 >
                   {g.label}
@@ -403,7 +403,7 @@ function LayersFilterContent({
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <div className="flex items-center gap-1.5 rounded-xl bg-white pl-5 pr-3 py-2 text-sm font-semibold text-stone-800 shadow-sm">
+          <div className="flex items-center gap-1.5 rounded-xl bg-white pl-5 pr-3 py-2 text-sm font-semibold text-gray-800 shadow-sm">
             <span>PM2.5</span>
             <button
               type="button"
@@ -444,7 +444,7 @@ function LayersFilterContent({
                 className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
                 aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
               >
-                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showCitizenGroup ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${showCitizenGroup ? 'rotate-180' : ''}`} />
               </button>
             </div>
             {showCitizenGroup && (
@@ -1108,7 +1108,7 @@ export default function MapaSensors({
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
           >
             <span className="text-base font-medium text-gray-800">Capas</span>
-            <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
           </button>
           {showFiltrosContent && (
             <div className="px-5 pb-5 pt-2">
