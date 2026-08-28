@@ -929,7 +929,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto max-h-[calc(100vh-14rem)] overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div className="pointer-events-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
               {/* Always-visible header */}
               <button
                 onClick={() => setShowCalidadContent(v => !v)}
@@ -984,7 +984,7 @@ export default function MapaSensors({
 
                   {/* Recommendations — Población General always visible, sensitive groups via tabs */}
                   {sensorQuality && (
-                    <div className="relative z-[1] max-h-[280px] overflow-y-auto px-5 pb-8 pt-3">
+                    <div className="relative z-[1] px-5 pb-8 pt-3">
                       <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                         <span>Recomendaciones de salud</span>
                         <button
@@ -1003,7 +1003,7 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className="pointer-events-auto max-h-[calc(100vh-14rem)] overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <div className="pointer-events-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
             {/* Always-visible header */}
             <button
               onClick={() => setShowCalidadContent(v => !v)}
@@ -1065,7 +1065,7 @@ export default function MapaSensors({
                 </div>
 
                 {/* Recommendations — Población General always visible, sensitive groups via tabs */}
-                <div className="relative z-[1] max-h-[280px] overflow-y-auto px-5 pb-8 pt-3">
+                <div className="relative z-[1] px-5 pb-8 pt-3">
                   <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                     <span>Recomendaciones de salud</span>
                     <button
