@@ -478,7 +478,6 @@ function LayersFilterContent({
           <button
             onClick={() => setShowSima((v) => !v)}
             className={`flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 ${rowPadding} shadow-sm`}
-            style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' }}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
