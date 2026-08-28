@@ -442,11 +442,12 @@ function LayersFilterContent({
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
           <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
             <div className="flex min-w-0 items-center gap-2">
-              <button onClick={toggleCitizenGroup} className="flex items-center gap-3">
+              <button type="button" onClick={toggleCitizenGroup} className="flex items-center gap-3">
                 <LayerCheckbox state={citizenState} size={boxSize} />
                 <span className="text-sm font-semibold text-gray-800">Sensores Ciudadanos</span>
               </button>
               <button
+                type="button"
                 onClick={onShowSensoresCiudadanosInfo}
                 className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
                 aria-label="Más información sobre Sensores Ciudadanos"
@@ -455,6 +456,7 @@ function LayersFilterContent({
               </button>
             </div>
             <button
+              type="button"
               onClick={() => setShowCitizenGroup((v) => !v)}
               className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
               aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
@@ -466,6 +468,7 @@ function LayersFilterContent({
           <div className="flex flex-col border-t border-gray-100">
             <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
               <button
+                type="button"
                 onClick={() => setShowOccamm((v) => !v)}
                 className="flex items-center gap-3"
               >
@@ -473,14 +476,16 @@ function LayersFilterContent({
                 <span className="text-sm text-gray-600">OCCAMM</span>
               </button>
               <button
+                type="button"
                 onClick={onShowOccammInfo}
                 className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
                 aria-label="Más información sobre OCCAMM"
               >
-                <Info className="h-3 w-3" />
+                <Info className="h-3.5 w-3.5" />
               </button>
             </div>
             <button
+              type="button"
               onClick={() => setShowOtros((v) => !v)}
               className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
             >
@@ -490,11 +495,12 @@ function LayersFilterContent({
           </div>
           )}
           <div className={`flex w-full items-center gap-2 border-t border-gray-100 px-4 ${rowPadding}`}>
-            <button onClick={() => setShowSima((v) => !v)} className="flex items-center gap-3">
+            <button type="button" onClick={() => setShowSima((v) => !v)} className="flex items-center gap-3">
               <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
               <span className="text-sm font-semibold text-gray-800">Estaciones de Gobierno</span>
             </button>
             <button
+              type="button"
               onClick={onShowEstacionesInfo}
               className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
               aria-label="Más información sobre Estaciones de Gobierno"
