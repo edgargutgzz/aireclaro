@@ -262,13 +262,49 @@ function SparklineSkeleton() {
   );
 }
 
-// Sensitive groups the official index singles out, in the order it lists them.
 const SENSITIVE_GROUPS = [
   { key: "menores", label: "Niñas y Niños", icon: Baby },
   { key: "adultos", label: "Adultos mayores", icon: PersonStanding },
   { key: "embarazadas", label: "Personas embarazadas", icon: Heart },
   { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
+
+// Built like the Capas panel: one white card, a row per topic, and the
+// sensitive groups nested behind a chevron that opens them in place instead
+// of throwing a modal over the map.
+function HealthRecommendations({ info }: { info: QualityInfo }) {
+  const [showGruposSensibles, setShowGruposSensibles] = useState(false);
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="px-4 py-3.5">
+        <p className="mb-1 text-sm font-semibold text-gray-800">Población General</p>
+        <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
+      </div>
+      <button
+        type="button"
+        onClick={() => setShowGruposSensibles((v) => !v)}
+        className="flex w-full items-center justify-between gap-3 border-t border-gray-100 px-4 py-3.5"
+      >
+        <span className="text-sm font-semibold text-gray-800">Grupos sensibles</span>
+        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showGruposSensibles ? 'rotate-90' : ''}`} />
+      </button>
+      {showGruposSensibles && (
+        <div className="flex flex-col">
+          {SENSITIVE_GROUPS.map((g) => (
+            <div key={g.key} className="border-t border-gray-100 px-4 py-3">
+              <div className="mb-1 flex items-center gap-2">
+                <g.icon className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                <p className="text-sm text-gray-600">{g.label}</p>
+              </div>
+              <p className="pl-6 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 type CheckState = 'checked' | 'indeterminate' | 'unchecked';
 
@@ -464,6 +500,7 @@ export default function MapaSensors({
   const [showFilters, setShowFilters] = useState(false);
   const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
   const [showCalidadContent, setShowCalidadContent] = useState(true); // desktop only — Calidad del aire body starts expanded
+  const [showRecomendaciones, setShowRecomendaciones] = useState(false); // desktop only — Recomendaciones de salud starts collapsed
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showOtros, setShowOtros] = useState(true);
   const [showOccammInfo, setShowOccammInfo] = useState(false);
@@ -943,23 +980,38 @@ export default function MapaSensors({
                     </div>
                   </div>
 
-                  {/* Recommendations — label and info icon on the Capas panel's
-                      pattern; the icon opens the popup holding all of them. */}
+                  {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                   {sensorQuality && (
                     <div className="relative z-[1] px-5 pb-8 pt-3">
-                      <div className="flex items-center gap-1.5">
-                        <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                          Recomendaciones de salud
-                        </p>
+                      <div className="flex w-full items-center justify-between gap-1.5">
                         <button
-                          type="button"
-                          onClick={() => setCuidarmeQuality(sensorQuality)}
-                          className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-                          aria-label="Ver recomendaciones de salud"
+                          onClick={() => setShowRecomendaciones((v) => !v)}
+                          className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600"
                         >
-                          <Info className="h-3 w-3" />
+                          Recomendaciones de salud
                         </button>
+                        <div className="flex flex-shrink-0 items-center gap-1.5 text-gray-400">
+                          <button
+                            onClick={() => setCuidarmeQuality(sensorQuality)}
+                            className="hover:text-gray-600 transition-colors"
+                            aria-label="Más información sobre recomendaciones de salud"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => setShowRecomendaciones((v) => !v)}
+                            className="hover:text-gray-600 transition-colors"
+                            aria-label={showRecomendaciones ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
+                          >
+                            <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${showRecomendaciones ? 'rotate-90' : ''}`} />
+                          </button>
+                        </div>
                       </div>
+                      {showRecomendaciones && (
+                        <div className="mt-4">
+                          <HealthRecommendations info={sensorQuality} />
+                        </div>
+                      )}
                     </div>
                   )}
                 </>
@@ -1026,22 +1078,37 @@ export default function MapaSensors({
                   </div>
                 </div>
 
-                {/* Recommendations — label and info icon on the Capas panel's
-                    pattern; the icon opens the popup holding all of them. */}
+                {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                 <div className="relative z-[1] px-5 pb-8 pt-3">
-                  <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                      Recomendaciones de salud
-                    </p>
+                  <div className="flex w-full items-center justify-between gap-1.5">
                     <button
-                      type="button"
-                      onClick={() => setCuidarmeQuality(qualityInfo)}
-                      className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-                      aria-label="Ver recomendaciones de salud"
+                      onClick={() => setShowRecomendaciones((v) => !v)}
+                      className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600"
                     >
-                      <Info className="h-3 w-3" />
+                      Recomendaciones de salud
                     </button>
+                    <div className="flex flex-shrink-0 items-center gap-1.5 text-gray-400">
+                      <button
+                        onClick={() => setCuidarmeQuality(qualityInfo)}
+                        className="hover:text-gray-600 transition-colors"
+                        aria-label="Más información sobre recomendaciones de salud"
+                      >
+                        <Info className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={() => setShowRecomendaciones((v) => !v)}
+                        className="hover:text-gray-600 transition-colors"
+                        aria-label={showRecomendaciones ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
+                      >
+                        <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${showRecomendaciones ? 'rotate-90' : ''}`} />
+                      </button>
+                    </div>
                   </div>
+                  {showRecomendaciones && (
+                    <div className="mt-4">
+                      <HealthRecommendations info={qualityInfo} />
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -1166,19 +1233,17 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="mb-4 flex items-center gap-1.5">
-                    <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                      Recomendaciones de salud
-                    </p>
+                  <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                    <span>Recomendaciones de salud</span>
                     <button
-                      type="button"
                       onClick={() => setCuidarmeQuality(sensorQuality)}
-                      className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-                      aria-label="Ver recomendaciones de salud"
+                      className="hover:text-gray-600 transition-colors"
+                      aria-label="Más información sobre recomendaciones de salud"
                     >
                       <Info className="h-3 w-3" />
                     </button>
                   </div>
+                  <HealthRecommendations info={sensorQuality} />
                 </>
               )}
             </div>
@@ -1309,19 +1374,17 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <div className="mb-4 flex items-center gap-1.5">
-                <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                  Recomendaciones de salud
-                </p>
+              <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                <span>Recomendaciones de salud</span>
                 <button
-                  type="button"
                   onClick={() => setCuidarmeQuality(qualityInfo)}
-                  className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-                  aria-label="Ver recomendaciones de salud"
+                  className="hover:text-gray-600 transition-colors"
+                  aria-label="Más información sobre recomendaciones de salud"
                 >
                   <Info className="h-3 w-3" />
                 </button>
               </div>
+              <HealthRecommendations info={qualityInfo} />
 
             </>
           )}
@@ -1332,24 +1395,7 @@ export default function MapaSensors({
       {cuidarmeQuality && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setCuidarmeQuality(null)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex max-h-[80vh] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 overflow-y-auto rounded-3xl bg-white p-8 shadow-xl">
-            {/* Every recommendation for this air quality lives here, so the
-                card itself only carries the label and its info icon. */}
-            <div className="flex flex-col gap-5">
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
-                <p className="text-sm leading-relaxed text-gray-500">{cuidarmeQuality.generalRec}</p>
-              </div>
-              {SENSITIVE_GROUPS.map((g) => (
-                <div key={g.key}>
-                  <div className="mb-1 flex items-center gap-1.5">
-                    <g.icon className="h-4 w-4 flex-shrink-0 text-gray-500" />
-                    <p className="text-sm font-semibold text-gray-700">{g.label}</p>
-                  </div>
-                  <p className="text-sm leading-relaxed text-gray-500">{cuidarmeQuality.sensitiveRecs[g.key]}</p>
-                </div>
-              ))}
-            </div>
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Recomendaciones oficiales según el Índice de Aire y Salud{' '}
               <a
