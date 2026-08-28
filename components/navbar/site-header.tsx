@@ -8,7 +8,7 @@ import Navlinks from "@/components/navbar/navlinks";
 // text links. Desktop only - mobile keeps its own bottom nav bar.
 export default function SiteHeader() {
   return (
-    <div className="hidden h-[72px] border-b border-white/60 bg-white/80 backdrop-blur-md md:flex md:items-center">
+    <div className="hidden h-[72px] bg-stone-50 md:flex md:items-center">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link href="/">
           <Image
