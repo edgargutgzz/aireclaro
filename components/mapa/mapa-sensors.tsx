@@ -444,7 +444,7 @@ function LayersFilterContent({
             <div className="flex min-w-0 items-center gap-2">
               <button onClick={toggleCitizenGroup} className="flex items-center gap-3">
                 <LayerCheckbox state={citizenState} size={boxSize} />
-                <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+                <span className="text-sm font-semibold text-gray-800">Sensores Ciudadanos</span>
               </button>
               <button
                 onClick={onShowSensoresCiudadanosInfo}
@@ -492,7 +492,7 @@ function LayersFilterContent({
           <div className={`flex w-full items-center gap-2 border-t border-gray-100 px-4 ${rowPadding}`}>
             <button onClick={() => setShowSima((v) => !v)} className="flex items-center gap-3">
               <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-              <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
+              <span className="text-sm font-semibold text-gray-800">Estaciones de Gobierno</span>
             </button>
             <button
               onClick={onShowEstacionesInfo}
@@ -525,6 +525,7 @@ export default function MapaSensors({
   const [showFilters, setShowFilters] = useState(false);
   const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
   const [showCalidadContent, setShowCalidadContent] = useState(true); // desktop only — Calidad del aire body starts expanded
+  const [showRecomendaciones, setShowRecomendaciones] = useState(false); // desktop only — Recomendaciones de salud starts collapsed
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showOtros, setShowOtros] = useState(true);
   const [showOccammInfo, setShowOccammInfo] = useState(false);
@@ -984,20 +985,38 @@ export default function MapaSensors({
                     <div className="mt-2">{historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}</div>
                   </div>
 
-                  {/* Recommendations — Población General always visible, sensitive groups via tabs */}
+                  {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                   {sensorQuality && (
                     <div className="relative z-[1] px-5 pb-8 pt-3">
-                      <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                        <span>Recomendaciones de salud</span>
+                      <div className="flex w-full items-center justify-between gap-1.5">
                         <button
-                          onClick={() => setCuidarmeQuality(sensorQuality)}
-                          className="hover:text-gray-600 transition-colors"
-                          aria-label="Más información sobre recomendaciones de salud"
+                          onClick={() => setShowRecomendaciones((v) => !v)}
+                          className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600"
                         >
-                          <Info className="h-3 w-3" />
+                          Recomendaciones de salud
                         </button>
+                        <div className="flex flex-shrink-0 items-center gap-1.5 text-gray-400">
+                          <button
+                            onClick={() => setCuidarmeQuality(sensorQuality)}
+                            className="hover:text-gray-600 transition-colors"
+                            aria-label="Más información sobre recomendaciones de salud"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => setShowRecomendaciones((v) => !v)}
+                            className="hover:text-gray-600 transition-colors"
+                            aria-label={showRecomendaciones ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
+                          >
+                            <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${showRecomendaciones ? 'rotate-90' : ''}`} />
+                          </button>
+                        </div>
                       </div>
-                      <HealthRecommendationTabs info={sensorQuality} />
+                      {showRecomendaciones && (
+                        <div className="mt-4">
+                          <HealthRecommendationTabs info={sensorQuality} />
+                        </div>
+                      )}
                     </div>
                   )}
                 </>
@@ -1066,19 +1085,37 @@ export default function MapaSensors({
                   <div className="mt-2">{historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}</div>
                 </div>
 
-                {/* Recommendations — Población General always visible, sensitive groups via tabs */}
+                {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                 <div className="relative z-[1] px-5 pb-8 pt-3">
-                  <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                    <span>Recomendaciones de salud</span>
+                  <div className="flex w-full items-center justify-between gap-1.5">
                     <button
-                      onClick={() => setCuidarmeQuality(qualityInfo)}
-                      className="hover:text-gray-600 transition-colors"
-                      aria-label="Más información sobre recomendaciones de salud"
+                      onClick={() => setShowRecomendaciones((v) => !v)}
+                      className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600"
                     >
-                      <Info className="h-3 w-3" />
+                      Recomendaciones de salud
                     </button>
+                    <div className="flex flex-shrink-0 items-center gap-1.5 text-gray-400">
+                      <button
+                        onClick={() => setCuidarmeQuality(qualityInfo)}
+                        className="hover:text-gray-600 transition-colors"
+                        aria-label="Más información sobre recomendaciones de salud"
+                      >
+                        <Info className="h-3 w-3" />
+                      </button>
+                      <button
+                        onClick={() => setShowRecomendaciones((v) => !v)}
+                        className="hover:text-gray-600 transition-colors"
+                        aria-label={showRecomendaciones ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
+                      >
+                        <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${showRecomendaciones ? 'rotate-90' : ''}`} />
+                      </button>
+                    </div>
                   </div>
-                  <HealthRecommendationTabs info={qualityInfo} />
+                  {showRecomendaciones && (
+                    <div className="mt-4">
+                      <HealthRecommendationTabs info={qualityInfo} />
+                    </div>
+                  )}
                 </div>
               </>
             )}
