@@ -55,12 +55,12 @@ const DEFAULT_SENSOR_ID = "Norte2";
 // Plain marker shadow — the pulse animation's base state, no static ring.
 const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 
-// What kind of source this is, in the same words the Capas panel uses:
-// government stations, a citizen network (`red`, e.g. OCCAMM) when the sensor
-// belongs to one, and plain citizen sensors for the rest.
+// What kind of source this is first, in the same words the Capas panel uses,
+// then the network it belongs to when it has one (`red`, e.g. OCCAMM). Sensors
+// with no network just say what they are.
 function getSourceLabel(isSima: boolean, red?: string | null) {
   if (isSima) return "Estación de Gobierno";
-  return red ? red : "Sensor Ciudadano";
+  return red ? `Sensor Ciudadano · ${red}` : "Sensor Ciudadano";
 }
 
 function getRelativeDayLabel(date: Date) {
