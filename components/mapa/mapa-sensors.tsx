@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, MapPin, MapPinned, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
+import { Navigation, Layers, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -101,16 +101,6 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     y: toY(d.pm25),
   }));
 
-  // IMECA zones — used both for the chart's background bands and to color
-  // individual points (e.g. the current-hour marker) by their own reading.
-  const zoneColorAt = (value: number) => {
-    if (value <= 15) return "#22c55e";
-    if (value <= 25) return "#eab308";
-    if (value <= 79) return "#f97316";
-    if (value <= 130) return "#ef4444";
-    return "#a855f7";
-  };
-
   // Faint colored background per quality level, so it's clear which zone the
   // line sits in without having to read the threshold lines. Clipped to the
   // padded domain so they fill the chart edge-to-edge.
@@ -197,8 +187,8 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           ))}
           <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          {/* Current hour — the rightmost point, always marked, colored by its own zone */}
-          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={zoneColorAt(data[data.length - 1].pm25)} stroke="white" strokeWidth={2} />
+          {/* Current hour — the rightmost point, always marked */}
+          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={SPARKLINE_COLOR} stroke="white" strokeWidth={2} />
           {hoverPoint && (
             <>
               <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
@@ -957,7 +947,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto max-h-[calc(100%-10rem)] overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div className="pointer-events-auto max-h-[calc(100vh-14rem)] overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
               {/* Always-visible header */}
               <button
                 onClick={() => setShowCalidadContent(v => !v)}
@@ -1001,8 +991,8 @@ export default function MapaSensors({
                           className="flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs text-gray-400 hover:text-gray-600"
                           aria-label="Copiar coordenadas"
                         >
+                          <Copy className="h-3.5 w-3.5" />
                           <span>Coordenadas</span>
-                          <MapPinned className="h-3.5 w-3.5" />
                         </button>
                       </div>
                       {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
@@ -1033,7 +1023,7 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className="pointer-events-auto max-h-[calc(100%-10rem)] overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <div className="pointer-events-auto max-h-[calc(100vh-14rem)] overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
             {/* Always-visible header */}
             <button
               onClick={() => setShowCalidadContent(v => !v)}
@@ -1084,8 +1074,8 @@ export default function MapaSensors({
                           className="flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs text-gray-400 hover:text-gray-600"
                           aria-label="Copiar coordenadas"
                         >
+                          <Copy className="h-3.5 w-3.5" />
                           <span>Coordenadas</span>
-                          <MapPinned className="h-3.5 w-3.5" />
                         </button>
                       )}
                     </div>
