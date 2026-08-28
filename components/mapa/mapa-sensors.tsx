@@ -187,6 +187,8 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           ))}
           <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          {/* Current hour — the rightmost point, always marked */}
+          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={SPARKLINE_COLOR} stroke="white" strokeWidth={2} />
           {hoverPoint && (
             <>
               <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
