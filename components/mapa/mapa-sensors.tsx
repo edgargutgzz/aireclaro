@@ -45,10 +45,9 @@ interface HistoryPoint {
 // Small inline trend chart for the selected sensor's last 48h. Fixed color
 // regardless of the sensor's air-quality color: the yellow "Aceptable" tone
 // in particular is too low-contrast on white to read as a line/fill. Drawn
-// with a white halo (see linePath rendering below) so a single dark color
-// reads cleanly over every IMECA zone band color instead of needing to pick
-// a hue that happens to contrast with all five.
-const SPARKLINE_COLOR = "#1e293b";
+// with a white halo (see linePath rendering below) so this original blue
+// reads cleanly over every IMECA zone band color behind it.
+const SPARKLINE_COLOR = "#3b82f6";
 
 // Shown as the default "Calidad del aire" station (San Nicolás: UANL) when
 // the visitor hasn't shared their location, instead of a nameless area median.
