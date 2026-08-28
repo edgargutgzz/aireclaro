@@ -478,10 +478,10 @@ function LayersFilterContent({
               <button
                 type="button"
                 onClick={onShowOccammInfo}
-                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                className="flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
                 aria-label="Más información sobre OCCAMM"
               >
-                <Info className="h-3.5 w-3.5" />
+                <Info className="h-3 w-3" />
               </button>
             </div>
             <button
