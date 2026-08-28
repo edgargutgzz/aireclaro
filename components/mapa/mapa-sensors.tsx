@@ -982,18 +982,18 @@ export default function MapaSensors({
                 onClick={() => setShowCalidadContent(v => !v)}
                 className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
               >
-                <span className="truncate text-base font-medium text-gray-700">{sensorName}</span>
+                <span className="truncate text-base text-gray-700">{sensorName}</span>
                 <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
               </button>
               {showCalidadContent && (
                 <>
                   <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                     {/* What kind of source this is, in the Capas panel's own
-                        words. A rule underneath is enough to close the group
-                        off from the reading below; a full card was too much
-                        furniture for one line. */}
-                    <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                      <span className="min-w-0 truncate text-sm font-medium text-gray-700">{getSourceLabel(isSima, sensor.red)}</span>
+                        words, on its row padding: a soft gray row instead of
+                        Capas' white card, which was too much furniture for a
+                        single line. */}
+                    <div className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3.5">
+                      <span className="min-w-0 truncate text-sm text-gray-600">{getSourceLabel(isSima, sensor.red)}</span>
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
@@ -1075,7 +1075,7 @@ export default function MapaSensors({
               onClick={() => setShowCalidadContent(v => !v)}
               className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
             >
-              <span className="truncate text-base font-medium text-gray-700">
+              <span className="truncate text-base text-gray-700">
                 {nearestName ?? "Calidad del Aire"}
               </span>
               <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
@@ -1084,8 +1084,8 @@ export default function MapaSensors({
               <>
                 <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                   {/* Quality label + PM2.5 — always shown */}
-                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                    <span className="min-w-0 truncate text-sm font-medium text-gray-700">
+                  <div className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3.5">
+                    <span className="min-w-0 truncate text-sm text-gray-600">
                       {nearestName
                         ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
                         : "Promedio del área metropolitana"}
