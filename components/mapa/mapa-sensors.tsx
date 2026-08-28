@@ -897,7 +897,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="flex items-center gap-2 text-base font-semibold text-gray-800">
+          <p className="flex items-center gap-2 text-base font-medium text-gray-800">
             <Layers className="h-5 w-5 text-gray-500" />
             Capas
           </p>
@@ -952,7 +952,7 @@ export default function MapaSensors({
                 onClick={() => setShowCalidadContent(v => !v)}
                 className="flex w-full items-center justify-between px-5 pt-4 pb-3"
               >
-                <span className="text-base font-semibold text-gray-800">Calidad del Aire</span>
+                <span className="text-base font-medium text-gray-800">Calidad del Aire</span>
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-180' : ''}`} />
               </button>
               {showCalidadContent && (
@@ -972,7 +972,6 @@ export default function MapaSensors({
                         {isSima ? "Estación" : "Sensor"}
                       </p>
                       <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                        <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full bg-gray-400" style={{ boxShadow: '0 0 0 2px white, 0 1px 2px rgba(0,0,0,0.15)' }} />
                         <div className="min-w-0 flex-1 text-left">
                           <p className="truncate text-sm font-medium text-gray-700">{sensorName}</p>
                           {(sensor.red || timestamp) && (
@@ -1028,7 +1027,7 @@ export default function MapaSensors({
               onClick={() => setShowCalidadContent(v => !v)}
               className="flex w-full items-center justify-between px-5 pt-4 pb-3"
             >
-              <span className="text-base font-semibold text-gray-800">Calidad del Aire</span>
+              <span className="text-base font-medium text-gray-800">Calidad del Aire</span>
               <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-180' : ''}`} />
             </button>
             {showCalidadContent && (
@@ -1049,7 +1048,6 @@ export default function MapaSensors({
                       {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
                     </p>
                     <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                      <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full bg-gray-400" style={{ boxShadow: '0 0 0 2px white, 0 1px 2px rgba(0,0,0,0.15)' }} />
                       <div className="min-w-0 flex-1 text-left">
                         <p className="truncate text-sm font-medium text-gray-700">
                           {nearestName ?? "Promedio del área metropolitana"}
@@ -1113,7 +1111,7 @@ export default function MapaSensors({
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
           >
-            <span className="flex items-center gap-2 text-base font-semibold text-gray-800">
+            <span className="flex items-center gap-2 text-base font-medium text-gray-800">
               <Layers className="h-5 w-5 text-gray-500" />
               Capas
             </span>
@@ -1289,7 +1287,7 @@ export default function MapaSensors({
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
-              <span className="text-base font-semibold text-gray-800">Calidad del Aire</span>
+              <span className="text-base font-medium text-gray-800">Calidad del Aire</span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
               <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
