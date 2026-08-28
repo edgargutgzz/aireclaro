@@ -411,7 +411,7 @@ function LayersFilterContent({
           <button
             type="button"
             onClick={onShowPM25Info}
-            className="flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
             aria-label="Por qué medimos PM2.5"
           >
             <Info className="h-3.5 w-3.5" />
@@ -443,7 +443,7 @@ function LayersFilterContent({
           <button
             type="button"
             onClick={onShowFuenteInfo}
-            className="flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
             aria-label="Más información sobre las fuentes de datos"
           >
             <Info className="h-3.5 w-3.5" />
