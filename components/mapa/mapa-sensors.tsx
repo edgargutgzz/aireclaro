@@ -256,8 +256,7 @@ const SENSITIVE_GROUPS = [
 ] as const;
 
 function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
-  const [openGroup, setOpenGroup] = useState<typeof SENSITIVE_GROUPS[number]["key"] | null>(null);
-  const [showGroups, setShowGroups] = useState(false);
+  const [showGruposSensibles, setShowGruposSensibles] = useState(false);
 
   return (
     <div className="mb-3 overflow-hidden rounded-xl bg-gray-100">
@@ -268,35 +267,35 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
       <div className="border-t border-gray-200/70 px-4 py-3">
         <button
           type="button"
-          onClick={() => setShowGroups((v) => !v)}
-          className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-gray-600"
+          onClick={() => setShowGruposSensibles(true)}
+          className="text-xs font-medium text-gray-400 hover:text-gray-600"
         >
-          <span>Ver por grupo sensible</span>
-          <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${showGroups ? 'rotate-180' : ''}`} />
+          Ver por grupo sensible
         </button>
-        {showGroups && (
-          <div className="mt-3 flex flex-col gap-1.5">
-            {SENSITIVE_GROUPS.map((g) => {
-              const isOpen = openGroup === g.key;
-              return (
-                <div key={g.key} className="overflow-hidden rounded-lg bg-white">
-                  <button
-                    type="button"
-                    onClick={() => setOpenGroup(isOpen ? null : g.key)}
-                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-gray-700"
-                  >
-                    <span>{g.label}</span>
-                    <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {isOpen && (
-                    <p className="px-3 pb-3 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
       </div>
+
+      {showGruposSensibles && (
+        <>
+          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowGruposSensibles(false)} />
+          <div className="fixed left-1/2 top-1/2 z-[71] flex max-h-[80vh] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 overflow-y-auto rounded-3xl bg-white p-7 shadow-xl">
+            <p className="text-center text-base font-semibold text-gray-800">Grupos sensibles</p>
+            <div className="flex flex-col gap-4">
+              {SENSITIVE_GROUPS.map((g) => (
+                <div key={g.key}>
+                  <p className="mb-1 text-sm font-semibold text-gray-700">{g.label}</p>
+                  <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setShowGruposSensibles(false)}
+              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              Entendido
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
