@@ -451,7 +451,7 @@ function LayersFilterContent({
                 className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
                 aria-label="Más información sobre Sensores Ciudadanos"
               >
-                <Info className="h-3 w-3" />
+                <Info className="h-3.5 w-3.5" />
               </button>
             </div>
             <button
@@ -499,7 +499,7 @@ function LayersFilterContent({
               className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
               aria-label="Más información sobre Estaciones de Gobierno"
             >
-              <Info className="h-3 w-3" />
+              <Info className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
