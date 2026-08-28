@@ -896,10 +896,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="flex items-center gap-2 text-base font-medium text-gray-800">
-            <Layers className="h-5 w-5" />
-            Capas
-          </p>
+          <p className="text-base font-medium text-gray-800">Capas</p>
         </div>
         <div
           className="flex flex-col gap-3 px-5"
@@ -1110,10 +1107,7 @@ export default function MapaSensors({
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
           >
-            <span className="flex items-center gap-2 text-base font-medium text-gray-800">
-              <Layers className="h-5 w-5" />
-              Capas
-            </span>
+            <span className="text-base font-medium text-gray-800">Capas</span>
             <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
           </button>
           {showFiltrosContent && (
