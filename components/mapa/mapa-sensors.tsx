@@ -744,14 +744,6 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Restore the plain marker shadow on everything before the pulse effect
-  // (below) applies the animation to whichever one is active.
-  useEffect(() => {
-    markerElementsRef.current.forEach(({ el }) => {
-      el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
-    });
-  }, [selectedSensor, nearestSensorData]);
-
   // Fetch the last 48h of readings for the trend sparkline — the selected
   // sensor if one is picked, otherwise the nearest sensor (same one backing
   // the default "Calidad del aire" card), so the graph is visible by default.
@@ -785,61 +777,28 @@ export default function MapaSensors({
     };
   }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
 
-  // Pulse animation on the active marker — the explicitly selected sensor
-  // if there is one, otherwise the nearest/default sensor. Dimming every
-  // other marker (a "spotlight" effect) only applies once the visitor has
-  // explicitly clicked a sensor — there's always a "nearest" default even
-  // on first load, so gating dim-others on selectedSensor (not just
-  // "active") keeps the whole map at full brightness until they interact.
+  // Highlight the active marker — the explicitly selected sensor if there
+  // is one, otherwise the nearest/default sensor — with a plain static
+  // border. No pulse, no resize, no dimming of other markers: those all
+  // read as broken/too much in one way or another (pulse got lost in
+  // dense same-color clusters, resize looked strange, dimming washed out
+  // the whole map since there's always a default "active" sensor).
   useEffect(() => {
     if (!mapLoaded) return;
 
-    const active = selectedSensor
-      ? { sensorId: selectedSensor.sensor.sensor_id, pm25: selectedSensor.pm25 }
+    const activeSensorId = selectedSensor
+      ? selectedSensor.sensor.sensor_id
       : nearestSensorData
-        ? {
-            sensorId: sensors.find(
-              s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
-            )?.sensor_id,
-            pm25: nearestSensorData.pm25,
-          }
-        : null;
+        ? sensors.find(s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon)?.sensor_id
+        : undefined;
 
     markerElementsRef.current.forEach(({ el }, sensorId) => {
       el.style.animation = '';
-      el.style.opacity = selectedSensor && sensorId !== active?.sensorId ? '0.35' : '0.9';
+      el.style.opacity = '0.9';
+      el.style.boxShadow = sensorId === activeSensorId
+        ? '0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px rgba(107,114,128,0.9)'
+        : PLAIN_MARKER_SHADOW;
     });
-
-    if (!active || active.sensorId === undefined) return;
-
-    const markerData = markerElementsRef.current.get(active.sensorId);
-    if (!markerData) return;
-
-    const colorInfo = getPM25Color(active.pm25 ?? null);
-    const hex = colorInfo?.bg ?? '#ffffff';
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-
-    const baseShadow = PLAIN_MARKER_SHADOW;
-    const startSpread = '2.5px';
-    const animName = `nearestPulse_${hex.slice(1)}`;
-
-    let styleEl = document.querySelector(`style[data-nearest-pulse="${animName}"]`) as HTMLStyleElement | null;
-    if (!styleEl) {
-      styleEl = document.createElement("style");
-      styleEl.textContent = `
-        @keyframes ${animName} {
-          0%   { box-shadow: ${baseShadow}, 0 0 0 ${startSpread} rgba(${r},${g},${b},0.9); }
-          70%  { box-shadow: ${baseShadow}, 0 0 0 22px rgba(${r},${g},${b},0); }
-          100% { box-shadow: ${baseShadow}, 0 0 0 ${startSpread} rgba(${r},${g},${b},0); }
-        }
-      `;
-      styleEl.setAttribute("data-nearest-pulse", animName);
-      document.head.appendChild(styleEl);
-    }
-
-    markerData.el.style.animation = `${animName} 1.8s ease-out infinite`;
   }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm, selectedSensor]);
 
   // Close selected sensor on map click
