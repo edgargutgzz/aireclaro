@@ -994,14 +994,14 @@ export default function MapaSensors({
                         reading below: a card or a filled row is too much
                         furniture for a single line. */}
                     <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                      <span className="min-w-0 truncate text-xs text-gray-400">{getSourceLabel(isSima, sensor.red)}</span>
+                      <span className="min-w-0 truncate text-[13px] text-gray-400">{getSourceLabel(isSima, sensor.red)}</span>
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
                           setCopied(true);
                           setTimeout(() => setCopied(false), 1500);
                         }}
-                        className="flex flex-shrink-0 items-center gap-1 text-xs text-gray-400 transition-colors hover:text-gray-600"
+                        className="flex flex-shrink-0 items-center gap-1 text-[13px] text-gray-400 transition-colors hover:text-gray-600"
                         aria-label="Copiar coordenadas"
                       >
                         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
@@ -1085,7 +1085,7 @@ export default function MapaSensors({
                 <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                   {/* Quality label + PM2.5 — always shown */}
                   <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                    <span className="min-w-0 truncate text-xs text-gray-400">
+                    <span className="min-w-0 truncate text-[13px] text-gray-400">
                       {nearestName
                         ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
                         : "Promedio del área metropolitana"}
@@ -1097,7 +1097,7 @@ export default function MapaSensors({
                           setCopied(true);
                           setTimeout(() => setCopied(false), 1500);
                         }}
-                        className="flex flex-shrink-0 items-center gap-1 text-xs text-gray-400 transition-colors hover:text-gray-600"
+                        className="flex flex-shrink-0 items-center gap-1 text-[13px] text-gray-400 transition-colors hover:text-gray-600"
                         aria-label="Copiar coordenadas"
                       >
                         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
