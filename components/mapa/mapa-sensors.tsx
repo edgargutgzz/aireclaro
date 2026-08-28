@@ -791,13 +791,15 @@ export default function MapaSensors({
     };
   }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
 
-  // Pulse animation on nearest sensor marker
+  // Pulse animation on nearest sensor marker — only when it's the one acting
+  // as the selected marker. Otherwise another marker is explicitly selected
+  // and the nearest one shouldn't show the ring (via animation) too.
   useEffect(() => {
     if (!mapLoaded) return;
 
     markerElementsRef.current.forEach(({ el }) => { el.style.animation = ''; });
 
-    if (!nearestSensorData) return;
+    if (!nearestSensorData || selectedSensor) return;
 
     const nearestSensor = sensors.find(
       s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
@@ -835,7 +837,7 @@ export default function MapaSensors({
     }
 
     markerData.el.style.animation = `${animName} 1.8s ease-out infinite`;
-  }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm]);
+  }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm, selectedSensor]);
 
   // Close selected sensor on map click
   useEffect(() => {
@@ -1460,8 +1462,8 @@ export default function MapaSensors({
           <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-3xl bg-white p-7 shadow-xl">
             <p className="text-center text-base font-semibold text-gray-800">Partícula PM2.5</p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
-              Las PM2.5 son 100% respirables: viajan profundamente en los
-              pulmones y pueden llegar hasta el torrente sanguíneo.
+              Las partículas PM2.5 son 100% respirables: viajan profundamente
+              en los pulmones y pueden llegar hasta el torrente sanguíneo.
             </p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
               A diferencia del PM10, que queda atrapado en la nariz y la
