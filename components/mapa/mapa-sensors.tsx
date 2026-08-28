@@ -943,9 +943,12 @@ export default function MapaSensors({
                 <>
                   <div className="flex flex-col gap-3 px-5 pb-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold" style={{ color: textColor }}>
-                        {sensorQuality ? sensorQuality.label : "—"}
-                      </span>
+                      <div>
+                        <p className="mb-0.5 text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del Aire</p>
+                        <span className="text-2xl font-bold" style={{ color: textColor }}>
+                          {sensorQuality ? sensorQuality.label : "—"}
+                        </span>
+                      </div>
                       {pm25 !== null && (
                         <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ PM2.5</span>
                       )}
@@ -957,12 +960,9 @@ export default function MapaSensors({
                       </p>
                       <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
                         <div className="min-w-0 flex-1 text-left">
-                          <p className="truncate text-sm font-medium text-gray-700">{sensorName}</p>
-                          {(sensor.red || timestamp) && (
-                            <p className="truncate text-xs text-gray-400">
-                              {[sensor.red ? `Red: ${sensor.red}` : null, timestamp ? `Actualizado a las ${timestamp}` : null].filter(Boolean).join(' · ')}
-                            </p>
-                          )}
+                          <p className="truncate text-sm font-medium text-gray-700">
+                            {sensor.red ? `Red: ${sensor.red}` : isSima ? "Estación de Gobierno" : "Sensor Ciudadano"}
+                          </p>
                         </div>
                         <button
                           onClick={() => {
@@ -1038,9 +1038,12 @@ export default function MapaSensors({
                 <div className="flex flex-col gap-3 px-5 pb-3">
                   {/* Quality label + PM2.5 — always shown */}
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
-                      {qualityInfo.label}
-                    </span>
+                    <div>
+                      <p className="mb-0.5 text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del Aire</p>
+                      <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
+                        {qualityInfo.label}
+                      </span>
+                    </div>
                     {displayPm25 !== null && (
                       <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ PM2.5</span>
                     )}
@@ -1053,16 +1056,12 @@ export default function MapaSensors({
                     <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
                       <div className="min-w-0 flex-1 text-left">
                         <p className="truncate text-sm font-medium text-gray-700">
-                          {nearestName ?? "Promedio del área metropolitana"}
+                          {nearestName
+                            ? userLocation
+                              ? "Tu sensor más cercano"
+                              : nearestIsSima ? "Estación de Gobierno" : "Sensor Ciudadano"
+                            : "Promedio del área metropolitana"}
                         </p>
-                        {(userLocation && nearestName || (nearestTimestamp ?? latestPurpleAirTimestamp)) && (
-                          <p className="truncate text-xs text-gray-400">
-                            {[
-                              userLocation && nearestName ? "Tu sensor más cercano" : null,
-                              (nearestTimestamp ?? latestPurpleAirTimestamp) ? `Actualizado a las ${nearestTimestamp ?? latestPurpleAirTimestamp}` : null,
-                            ].filter(Boolean).join(' · ')}
-                          </p>
-                        )}
                       </div>
                       {nearestLat !== null && nearestLon !== null && (
                         <button
