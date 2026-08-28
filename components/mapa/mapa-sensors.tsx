@@ -1461,14 +1461,11 @@ export default function MapaSensors({
             <p className="text-center text-base font-semibold text-gray-800">Partícula PM2.5</p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Las PM2.5 son 100% respirables: viajan profundamente en los
-              pulmones, penetrando en el aparato respiratorio y
-              depositándose en los alvéolos pulmonares, incluso pueden
-              llegar al torrente sanguíneo.
+              pulmones y pueden llegar hasta el torrente sanguíneo.
             </p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
-              A diferencia del PM10, partículas más grandes que quedan
-              atrapadas en la nariz y la garganta, el PM2.5 es tan pequeño
-              que evade estas defensas naturales, lo que lo convierte en el
+              A diferencia del PM10, que queda atrapado en la nariz y la
+              garganta, el PM2.5 evade esas defensas — por eso es el
               contaminante más peligroso para la salud.
             </p>
             <button
