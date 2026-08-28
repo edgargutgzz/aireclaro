@@ -1118,7 +1118,7 @@ export default function MapaSensors({
             <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
           </button>
           {showFiltrosContent && (
-            <div className="px-5 pb-5">
+            <div className="px-5 pb-5 pt-2">
               <LayersFilterContent
                 compact={false}
                 showOtros={showOtros}
