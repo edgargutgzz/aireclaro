@@ -275,13 +275,13 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
       </button>
       {showGroups && (
         <>
-          <div className="inline-flex flex-wrap items-center gap-1 rounded-2xl bg-gray-100 p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-2xl bg-gray-100 p-1">
             {SENSITIVE_GROUPS.map((g) => (
               <button
                 key={g.key}
                 type="button"
                 onClick={() => setActiveGroup(g.key)}
-                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
+                className={`truncate rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
                   activeGroup === g.key ? "bg-white text-stone-800 shadow-sm" : "text-gray-400"
                 }`}
               >
