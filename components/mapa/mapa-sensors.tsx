@@ -957,10 +957,14 @@ export default function MapaSensors({
 
                     <button
                       onClick={() => setShowSensorDetail(v => !v)}
-                      className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-600"
+                      className="mt-2 flex w-full items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5"
                     >
-                      <span className="truncate">{isSima ? "Estación" : "Sensor"}: {sensorName}</span>
-                      <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
+                      <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                      <div className="min-w-0 flex-1 text-left">
+                        <p className="truncate text-sm font-medium text-gray-700">{isSima ? "Estación" : "Sensor"}: {sensorName}</p>
+                        {timestamp && <p className="text-xs text-gray-400">Actualizado a las {timestamp}</p>}
+                      </div>
+                      <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
                     </button>
 
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
@@ -975,12 +979,6 @@ export default function MapaSensors({
                             <div className="flex items-center gap-2.5">
                               <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
                               <span className="text-sm text-gray-400">Red: {sensor.red}</span>
-                            </div>
-                          )}
-                          {timestamp && (
-                            <div className="flex items-center gap-2.5">
-                              <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                              <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
                             </div>
                           )}
                           <button
@@ -1045,14 +1043,20 @@ export default function MapaSensors({
                   {/* Sensor name — always shown */}
                   <button
                     onClick={(e) => { e.stopPropagation(); setShowNearestDetail(v => !v); }}
-                    className="mt-1.5 flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-600"
+                    className="mt-2 flex w-full items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5"
                   >
-                    <span className="truncate">
-                      {nearestName
-                        ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
-                        : "Promedio del área metropolitana"}
-                    </span>
-                    <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
+                    <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                    <div className="min-w-0 flex-1 text-left">
+                      <p className="truncate text-sm font-medium text-gray-700">
+                        {nearestName
+                          ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
+                          : "Promedio del área metropolitana"}
+                      </p>
+                      {(nearestTimestamp ?? latestPurpleAirTimestamp) && (
+                        <p className="text-xs text-gray-400">Actualizado a las {nearestTimestamp ?? latestPurpleAirTimestamp}</p>
+                      )}
+                    </div>
+                    <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
@@ -1067,12 +1071,6 @@ export default function MapaSensors({
                           <div className="flex items-center gap-2.5">
                             <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
                             <span className="text-sm text-gray-400">Tu sensor más cercano</span>
-                          </div>
-                        )}
-                        {(nearestTimestamp ?? latestPurpleAirTimestamp) && (
-                          <div className="flex items-center gap-2.5">
-                            <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                            <span className="text-sm text-gray-400">Actualizado a las {nearestTimestamp ?? latestPurpleAirTimestamp}</span>
                           </div>
                         )}
                         {nearestLat !== null && nearestLon !== null && (
@@ -1390,7 +1388,7 @@ export default function MapaSensors({
       {cuidarmeQuality && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setCuidarmeQuality(null)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-xl">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-3xl bg-white p-7 shadow-xl">
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Recomendaciones oficiales según el Índice de Aire y Salud{' '}
               <a
@@ -1403,6 +1401,12 @@ export default function MapaSensors({
               </a>
               , para la población general y grupos sensibles.
             </p>
+            <button
+              onClick={() => setCuidarmeQuality(null)}
+              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              Entendido
+            </button>
           </div>
         </>
       )}
