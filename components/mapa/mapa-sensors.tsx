@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronDown, Clock, Award, Check, Minus, Info, Wind, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronDown, Clock, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -907,10 +907,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="flex items-center gap-2 text-base font-medium text-gray-700">
-            <Layers className="h-5 w-5" />
-            Capas
-          </p>
+          <p className="text-base font-medium text-gray-700">Capas</p>
         </div>
         <div
           className="flex flex-col gap-3 px-5"
@@ -962,10 +959,7 @@ export default function MapaSensors({
                 onClick={() => setShowCalidadContent(v => !v)}
                 className="flex w-full items-center justify-between px-5 pt-4 pb-3"
               >
-                <span className="flex items-center gap-2 text-base font-medium text-gray-700">
-                  <Wind className="h-5 w-5" />
-                  Calidad del Aire
-                </span>
+                <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
                 <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-180' : ''}`} />
               </button>
               {showCalidadContent && (
@@ -1039,10 +1033,7 @@ export default function MapaSensors({
               onClick={() => setShowCalidadContent(v => !v)}
               className="flex w-full items-center justify-between px-5 pt-4 pb-3"
             >
-              <span className="flex items-center gap-2 text-base font-medium text-gray-700">
-                <Wind className="h-5 w-5" />
-                Calidad del Aire
-              </span>
+              <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
               <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-180' : ''}`} />
             </button>
             {showCalidadContent && (
@@ -1125,10 +1116,7 @@ export default function MapaSensors({
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
           >
-            <span className="flex items-center gap-2 text-base font-medium text-gray-700">
-              <Layers className="h-5 w-5" />
-              Capas
-            </span>
+            <span className="text-base font-medium text-gray-700">Capas</span>
             <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
           </button>
           {showFiltrosContent && (
@@ -1301,10 +1289,7 @@ export default function MapaSensors({
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
-              <span className="flex items-center gap-2 text-base font-medium text-gray-700">
-                <Wind className="h-5 w-5" />
-                Calidad del Aire
-              </span>
+              <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
               <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
