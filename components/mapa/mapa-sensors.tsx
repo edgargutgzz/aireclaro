@@ -414,7 +414,7 @@ function LayersFilterContent({
             className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
             aria-label="Por qué medimos PM2.5"
           >
-            <Info className="h-3.5 w-3.5" />
+            <Info className="h-3 w-3" />
           </button>
         </div>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
@@ -446,7 +446,7 @@ function LayersFilterContent({
             className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
             aria-label="Más información sobre las fuentes de datos"
           >
-            <Info className="h-3.5 w-3.5" />
+            <Info className="h-3 w-3" />
           </button>
         </div>
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
