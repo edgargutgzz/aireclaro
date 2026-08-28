@@ -435,52 +435,50 @@ function LayersFilterContent({
       </div>
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Fuente</p>
-        <div className="flex flex-col gap-3">
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-            <div className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}>
-              <button onClick={toggleCitizenGroup} className="flex flex-1 items-center gap-3">
-                <LayerCheckbox state={citizenState} size={boxSize} />
-                <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
-              </button>
-              <button
-                onClick={() => setShowCitizenGroup((v) => !v)}
-                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-                aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
-              >
-                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showCitizenGroup ? 'rotate-180' : ''}`} />
-              </button>
-            </div>
-            {showCitizenGroup && (
-            <div className="flex flex-col border-t border-gray-100">
-              <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
-                <button
-                  onClick={() => setShowOccamm((v) => !v)}
-                  className="flex items-center gap-3"
-                >
-                  <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-                  <span className="text-sm text-gray-600">OCCAMM</span>
-                </button>
-                <button
-                  onClick={onShowOccammInfo}
-                  className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-                  aria-label="Más información sobre OCCAMM"
-                >
-                  <Info className="h-3 w-3" />
-                </button>
-              </div>
-              <button
-                onClick={() => setShowOtros((v) => !v)}
-                className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
-              >
-                <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-                <span className="text-sm text-gray-600">Otros</span>
-              </button>
-            </div>
-            )}
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}>
+            <button onClick={toggleCitizenGroup} className="flex flex-1 items-center gap-3">
+              <LayerCheckbox state={citizenState} size={boxSize} />
+              <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+            </button>
+            <button
+              onClick={() => setShowCitizenGroup((v) => !v)}
+              className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+              aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
+            >
+              <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showCitizenGroup ? 'rotate-180' : ''}`} />
+            </button>
           </div>
+          {showCitizenGroup && (
+          <div className="flex flex-col border-t border-gray-100">
+            <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
+              <button
+                onClick={() => setShowOccamm((v) => !v)}
+                className="flex items-center gap-3"
+              >
+                <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
+                <span className="text-sm text-gray-600">OCCAMM</span>
+              </button>
+              <button
+                onClick={onShowOccammInfo}
+                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                aria-label="Más información sobre OCCAMM"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
+            <button
+              onClick={() => setShowOtros((v) => !v)}
+              className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
+            >
+              <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
+              <span className="text-sm text-gray-600">Otros</span>
+            </button>
+          </div>
+          )}
           <button
             onClick={() => setShowSima((v) => !v)}
-            className={`flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 ${rowPadding} shadow-sm`}
+            className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 ${rowPadding}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
