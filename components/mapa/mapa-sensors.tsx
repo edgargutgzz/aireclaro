@@ -788,11 +788,11 @@ export default function MapaSensors({
   }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
 
   // Pulse animation on the active marker — the explicitly selected sensor
-  // if there is one, otherwise the nearest/default sensor. Also dims every
-  // other marker (a "spotlight" effect) so the active one pops by contrast
-  // instead of needing to look different itself — resizing it read as
-  // strange, and a same-hue pulse alone got lost in dense same-color
-  // clusters.
+  // if there is one, otherwise the nearest/default sensor. Dimming every
+  // other marker (a "spotlight" effect) only applies once the visitor has
+  // explicitly clicked a sensor — there's always a "nearest" default even
+  // on first load, so gating dim-others on selectedSensor (not just
+  // "active") keeps the whole map at full brightness until they interact.
   useEffect(() => {
     if (!mapLoaded) return;
 
@@ -809,7 +809,7 @@ export default function MapaSensors({
 
     markerElementsRef.current.forEach(({ el }, sensorId) => {
       el.style.animation = '';
-      el.style.opacity = active && sensorId !== active.sensorId ? '0.35' : '0.9';
+      el.style.opacity = selectedSensor && sensorId !== active?.sensorId ? '0.35' : '0.9';
     });
 
     if (!active || active.sensorId === undefined) return;
