@@ -95,8 +95,10 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   const toY = (value: number) => height - ((value - domainMin) / domainRange) * height;
 
+  const horizontalPadding = 8; // keeps the first/last points off the chart's side edges
+  const drawableWidth = width - horizontalPadding * 2;
   const points = data.map((d, i) => ({
-    x: (i / (data.length - 1)) * width,
+    x: horizontalPadding + (i / (data.length - 1)) * drawableWidth,
     y: toY(d.pm25),
   }));
 
