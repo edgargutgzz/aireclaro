@@ -101,9 +101,19 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     y: toY(d.pm25),
   }));
 
-  // IMECA zone bands — a faint colored background per quality level, so it's
-  // clear which zone the line sits in without having to read the threshold
-  // lines. Clipped to the padded domain so they fill the chart edge-to-edge.
+  // IMECA zones — used both for the chart's background bands and to color
+  // individual points (e.g. the current-hour marker) by their own reading.
+  const zoneColorAt = (value: number) => {
+    if (value <= 15) return "#22c55e";
+    if (value <= 25) return "#eab308";
+    if (value <= 79) return "#f97316";
+    if (value <= 130) return "#ef4444";
+    return "#a855f7";
+  };
+
+  // Faint colored background per quality level, so it's clear which zone the
+  // line sits in without having to read the threshold lines. Clipped to the
+  // padded domain so they fill the chart edge-to-edge.
   const zoneBands = [
     { lo: 0, hi: 15, color: "#22c55e" },
     { lo: 15, hi: 25, color: "#eab308" },
@@ -187,8 +197,8 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           ))}
           <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          {/* Current hour — the rightmost point, always marked */}
-          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={SPARKLINE_COLOR} stroke="white" strokeWidth={2} />
+          {/* Current hour — the rightmost point, always marked, colored by its own zone */}
+          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={zoneColorAt(data[data.length - 1].pm25)} stroke="white" strokeWidth={2} />
           {hoverPoint && (
             <>
               <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
