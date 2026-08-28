@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronDown, Clock, Award, Check, Minus, Info, Wind } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronDown, Clock, Award, Check, Minus, Info, Wind, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -249,10 +249,10 @@ function HealthRecommendationCards({ info }: { info: QualityInfo }) {
 // Desktop-only variant: Población General always visible, sensitive groups
 // behind a compact tab selector instead of a big stacked list.
 const SENSITIVE_GROUPS = [
-  { key: "menores", label: "Niños" },
-  { key: "adultos", label: "Adultos mayores" },
-  { key: "embarazadas", label: "Embarazadas" },
-  { key: "enfermedades", label: "Condiciones" },
+  { key: "menores", label: "Niños", icon: Baby },
+  { key: "adultos", label: "Adultos mayores", icon: PersonStanding },
+  { key: "embarazadas", label: "Embarazadas", icon: Heart },
+  { key: "enfermedades", label: "Condiciones", icon: Stethoscope },
 ] as const;
 
 function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
@@ -282,7 +282,10 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
             <div className="flex flex-col gap-4">
               {SENSITIVE_GROUPS.map((g) => (
                 <div key={g.key}>
-                  <p className="mb-1 text-sm font-semibold text-gray-700">{g.label}</p>
+                  <div className="mb-1 flex items-center gap-1.5">
+                    <g.icon className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                    <p className="text-sm font-semibold text-gray-700">{g.label}</p>
+                  </div>
                   <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
                 </div>
               ))}
