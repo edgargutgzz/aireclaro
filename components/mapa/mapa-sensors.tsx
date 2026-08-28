@@ -907,7 +907,18 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop right-side floating controls */}
-      <div className="pointer-events-none absolute bottom-12 right-6 z-10 hidden flex-col gap-2 md:flex">
+      <div className="pointer-events-none absolute bottom-12 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
+        {latestDataHour && (
+          <div className="flex h-[52px] items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md">
+            <span className="relative flex h-2 w-2 flex-shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+            </span>
+            <span className="whitespace-nowrap text-sm font-medium text-gray-600">
+              <span className="text-gray-400">Última actualización</span> {latestDataHour}
+            </span>
+          </div>
+        )}
         <button
           onClick={userLocation ? flyToUser : requestLocation}
           className="pointer-events-auto flex h-[52px] items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
@@ -1160,13 +1171,14 @@ export default function MapaSensors({
           )}
         </div>
 
+        {/* Mobile only: on desktop this badge sits above the location button. */}
         {latestDataHour && (
-          <div className="flex h-11 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3 shadow-sm backdrop-blur-md md:h-[52px] md:px-4">
+          <div className="flex h-11 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3 shadow-sm backdrop-blur-md md:hidden">
             <span className="relative flex h-2 w-2 flex-shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-xs font-medium text-gray-600 md:text-sm">
+            <span className="whitespace-nowrap text-xs font-medium text-gray-600">
               <span className="text-gray-400">Última actualización</span> {latestDataHour}
             </span>
           </div>
