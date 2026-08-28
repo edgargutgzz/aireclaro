@@ -55,6 +55,14 @@ const DEFAULT_SENSOR_ID = "Norte2";
 // Plain marker shadow — the pulse animation's base state, no static ring.
 const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 
+// Who operates the sensor. Only values that exist in the data: SIMA runs the
+// government stations, `red` carries the citizen network (OCCAMM) when the
+// sensor belongs to one, and the rest are unaffiliated citizen sensors.
+function getSourceLabel(isSima: boolean, red?: string | null) {
+  if (isSima) return "SIMA";
+  return red ? red : "Sensor Ciudadano";
+}
+
 function getRelativeDayLabel(date: Date) {
   const now = new Date();
   const dayDiff = Math.floor((now.setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000);
@@ -561,7 +569,7 @@ export default function MapaSensors({
       const timestamp = format(new Date(d.time_stamp), "h") + ":00 " + format(new Date(d.time_stamp), "a");
       const isSima = sensor.source === "sima";
       const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-      return { pm25: d.pm25, timestamp, name, isSima, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
+      return { pm25: d.pm25, timestamp, name, isSima, red: sensor.red ?? null, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
     };
 
     if (userLocation) {
@@ -606,6 +614,7 @@ export default function MapaSensors({
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestName = nearestSensorData?.name ?? null;
   const nearestIsSima = nearestSensorData?.isSima ?? null;
+  const nearestRed = nearestSensorData?.red ?? null;
   const nearestLat = nearestSensorData?.lat ?? null;
   const nearestLon = nearestSensorData?.lon ?? null;
   const displayPm25 = nearestPm25 ?? areaMedianPm25;
@@ -914,7 +923,7 @@ export default function MapaSensors({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-xs font-medium text-gray-500">
+            <span className="whitespace-nowrap text-[13px] font-medium text-gray-500">
               Última actualización: {latestDataHour}
             </span>
           </div>
@@ -925,7 +934,7 @@ export default function MapaSensors({
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
           <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          <span className={`text-xs font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
+          <span className={`text-[13px] font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
             {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
           </span>
         </button>
@@ -973,7 +982,7 @@ export default function MapaSensors({
                           boxed pill that outweighed the one fact it held. */}
                       <div className="mb-2 flex items-center justify-between gap-3">
                         <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                          {isSima ? "Estación" : "Sensor"}
+                          Fuente
                         </p>
                         <button
                           onClick={() => {
@@ -989,7 +998,7 @@ export default function MapaSensors({
                         </button>
                       </div>
                       <p className="truncate text-sm font-medium text-gray-700">
-                        {isSima ? "Red: SIMA" : sensor.red ? `Red: ${sensor.red}` : "Sensor Ciudadano"}
+                        {getSourceLabel(isSima, sensor.red)}
                       </p>
                     </div>
 
@@ -1069,7 +1078,7 @@ export default function MapaSensors({
                   <div>
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                        {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
+                        {nearestName ? "Fuente" : "Área metropolitana"}
                       </p>
                       {nearestLat !== null && nearestLon !== null && (
                         <button
@@ -1088,9 +1097,7 @@ export default function MapaSensors({
                     </div>
                     <p className="truncate text-sm font-medium text-gray-700">
                       {nearestName
-                        ? userLocation
-                          ? "Tu sensor más cercano"
-                          : nearestIsSima ? "Red: SIMA" : "Sensor Ciudadano"
+                        ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
                         : "Promedio del área metropolitana"}
                     </p>
                   </div>
@@ -1177,7 +1184,7 @@ export default function MapaSensors({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-xs font-medium text-gray-500">
+            <span className="whitespace-nowrap text-[13px] font-medium text-gray-500">
               Última actualización: {latestDataHour}
             </span>
           </div>
