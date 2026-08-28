@@ -55,11 +55,11 @@ const DEFAULT_SENSOR_ID = "Norte2";
 // Plain marker shadow — the pulse animation's base state, no static ring.
 const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 
-// Who operates the sensor. Only values that exist in the data: SIMA runs the
-// government stations, `red` carries the citizen network (OCCAMM) when the
-// sensor belongs to one, and the rest are unaffiliated citizen sensors.
+// What kind of source this is, in the same words the Capas panel uses:
+// government stations, a citizen network (`red`, e.g. OCCAMM) when the sensor
+// belongs to one, and plain citizen sensors for the rest.
 function getSourceLabel(isSima: boolean, red?: string | null) {
-  if (isSima) return "SIMA";
+  if (isSima) return "Estación de Gobierno";
   return red ? red : "Sensor Ciudadano";
 }
 
