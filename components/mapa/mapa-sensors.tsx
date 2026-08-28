@@ -1102,7 +1102,7 @@ export default function MapaSensors({
 
       {/* Filtros panel — floats on the left, collapsed by default on desktop */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden w-[310px] md:block">
-        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
