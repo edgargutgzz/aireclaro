@@ -6,7 +6,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, roundPM25, getDistance, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -114,12 +114,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   // IMECA limits as dashed reference lines, each in the color of the zone it
   // opens. Only the ones inside this window's range are drawn, so the chart
   // never carries a line the data never approaches.
-  const thresholds = [
-    { value: 15, color: "#eab308" },
-    { value: 25, color: "#f97316" },
-    { value: 79, color: "#ef4444" },
-    { value: 130, color: "#a855f7" },
-  ].filter((t) => t.value > domainMin && t.value < domainMax);
+  const thresholds = IMECA_THRESHOLDS.filter((t) => t.value > domainMin && t.value < domainMax);
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
   // Area closes on the chart floor, filled with a fade of the line's own hue.
@@ -338,13 +333,9 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
 }
 
 function LegendContent() {
-  const items = [
-    { color: "#00e400", label: "Buena", range: "0 – 15 μg/m³", textColor: "#007200" },
-    { color: "#ffff00", label: "Aceptable", range: "15 – 25 μg/m³", textColor: "#8a7a00" },
-    { color: "#ff7e00", label: "Mala", range: "25 – 79 μg/m³", textColor: "#c05e00" },
-    { color: "#ff0000", label: "Muy mala", range: "79 – 130 μg/m³", textColor: "#b30000" },
-    { color: "#8f3f97", label: "Extremadamente mala", range: "> 130 μg/m³", textColor: "#6b2f72" },
-  ];
+  const items = IMECA_LEVELS.map(({ color, label, range, legendInk }) => ({
+    color, label, range, textColor: legendInk,
+  }));
 
   return (
     <div className="flex flex-col gap-1.5">
