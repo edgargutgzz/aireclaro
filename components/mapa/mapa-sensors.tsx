@@ -914,7 +914,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="flex items-center gap-2 text-base font-medium text-gray-800">
+          <p className="flex items-center gap-2 text-base font-medium text-gray-700">
             <Layers className="h-5 w-5" />
             Capas
           </p>
@@ -969,7 +969,7 @@ export default function MapaSensors({
                 onClick={() => setShowCalidadContent(v => !v)}
                 className="flex w-full items-center justify-between px-5 pt-4 pb-3"
               >
-                <span className="flex items-center gap-2 text-base font-medium text-gray-800">
+                <span className="flex items-center gap-2 text-base font-medium text-gray-700">
                   <Wind className="h-5 w-5" />
                   Calidad del Aire
                 </span>
@@ -1046,7 +1046,7 @@ export default function MapaSensors({
               onClick={() => setShowCalidadContent(v => !v)}
               className="flex w-full items-center justify-between px-5 pt-4 pb-3"
             >
-              <span className="flex items-center gap-2 text-base font-medium text-gray-800">
+              <span className="flex items-center gap-2 text-base font-medium text-gray-700">
                 <Wind className="h-5 w-5" />
                 Calidad del Aire
               </span>
@@ -1132,7 +1132,7 @@ export default function MapaSensors({
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
           >
-            <span className="flex items-center gap-2 text-base font-medium text-gray-800">
+            <span className="flex items-center gap-2 text-base font-medium text-gray-700">
               <Layers className="h-5 w-5" />
               Capas
             </span>
@@ -1308,7 +1308,7 @@ export default function MapaSensors({
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
           <div className="flex items-baseline justify-between">
             {sheetState === 'peek' && (
-              <span className="flex items-center gap-2 text-base font-medium text-gray-800">
+              <span className="flex items-center gap-2 text-base font-medium text-gray-700">
                 <Wind className="h-5 w-5" />
                 Calidad del Aire
               </span>
