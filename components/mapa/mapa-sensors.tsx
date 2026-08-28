@@ -986,29 +986,26 @@ export default function MapaSensors({
               {showCalidadContent && (
                 <>
                   <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
-                    <div>
-                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                        Fuente
-                      </p>
-                      {/* Value and copy action share one grounded row: loose on
-                          the card background they read as floating fragments. */}
-                      <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-3.5 py-2.5">
-                        <p className="min-w-0 truncate text-sm font-medium text-gray-700">
-                          {getSourceLabel(isSima, sensor.red)}
-                        </p>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 1500);
-                          }}
-                          className="flex flex-shrink-0 items-center gap-1 text-xs leading-none text-gray-400 transition-colors hover:text-gray-600"
-                          aria-label="Copiar coordenadas"
-                        >
-                          <Copy className="h-3.5 w-3.5" />
-                          <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                        </button>
-                      </div>
+                    {/* Identity line under the title: who runs the sensor and
+                        where it is. A labeled section and a boxed row were a
+                        lot of structure for two short facts, and the
+                        coordinates say more than a button reading
+                        "Coordenadas". */}
+                    <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                      <span className="flex-shrink-0">{getSourceLabel(isSima, sensor.red)}</span>
+                      <span aria-hidden="true">·</span>
+                      <span className="truncate">{sensor.lat.toFixed(4)}, {sensor.lon.toFixed(4)}</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 1500);
+                        }}
+                        className="flex-shrink-0 rounded-full transition-colors hover:text-gray-600"
+                        aria-label="Copiar coordenadas"
+                      >
+                        {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                      </button>
                     </div>
 
                     {/* Reading now and the last 48h are one story: the big
@@ -1087,31 +1084,29 @@ export default function MapaSensors({
               <>
                 <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                   {/* Quality label + PM2.5 — always shown */}
-                  <div>
-                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                      {nearestName ? "Fuente" : "Área metropolitana"}
-                    </p>
-                    <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-3.5 py-2.5">
-                      <p className="min-w-0 truncate text-sm font-medium text-gray-700">
-                        {nearestName
-                          ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
-                          : "Promedio del área metropolitana"}
-                      </p>
-                      {nearestLat !== null && nearestLon !== null && (
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                    <span className={nearestName ? "flex-shrink-0" : "truncate"}>
+                      {nearestName
+                        ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
+                        : "Promedio del área metropolitana"}
+                    </span>
+                    {nearestLat !== null && nearestLon !== null && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span className="truncate">{nearestLat.toFixed(4)}, {nearestLon.toFixed(4)}</span>
                         <button
                           onClick={() => {
                             navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
                             setCopied(true);
                             setTimeout(() => setCopied(false), 1500);
                           }}
-                          className="flex flex-shrink-0 items-center gap-1 text-xs leading-none text-gray-400 transition-colors hover:text-gray-600"
+                          className="flex-shrink-0 rounded-full transition-colors hover:text-gray-600"
                           aria-label="Copiar coordenadas"
                         >
-                          <Copy className="h-3.5 w-3.5" />
-                          <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                         </button>
-                      )}
-                    </div>
+                      </>
+                    )}
                   </div>
 
                   <div className="flex flex-col gap-3">
