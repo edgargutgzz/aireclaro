@@ -47,7 +47,7 @@ interface HistoryPoint {
 // in particular is too low-contrast on white to read as a line/fill. Neutral
 // dark tone (not blue) so the line doesn't compete with the colored IMECA
 // zone bands behind it.
-const SPARKLINE_COLOR = "#1f2937";
+const SPARKLINE_COLOR = "#4b5563";
 
 // Shown as the default "Calidad del aire" station (San Nicolás: UANL) when
 // the visitor hasn't shared their location, instead of a nameless area median.
