@@ -992,10 +992,10 @@ export default function MapaSensors({
                 <>
                   <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                     {/* What kind of source this is, in the Capas panel's own
-                        words, on its row padding: a soft gray row instead of
-                        Capas' white card, which was too much furniture for a
-                        single line. */}
-                    <div className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3.5">
+                        words. A rule underneath closes the group off from the
+                        reading below: a card or a filled row is too much
+                        furniture for a single line. */}
+                    <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
                       <span className="min-w-0 truncate text-sm text-gray-600">{getSourceLabel(isSima, sensor.red)}</span>
                       <button
                         onClick={() => {
@@ -1086,7 +1086,7 @@ export default function MapaSensors({
               <>
                 <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                   {/* Quality label + PM2.5 — always shown */}
-                  <div className="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-4 py-3.5">
+                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
                     <span className="min-w-0 truncate text-sm text-gray-600">
                       {nearestName
                         ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
