@@ -789,11 +789,16 @@ export default function MapaSensors({
         : undefined;
 
     markerElementsRef.current.forEach(({ el }, sensorId) => {
+      const isActive = sensorId === activeSensorId;
       el.style.animation = '';
       el.style.opacity = '0.9';
-      el.style.boxShadow = sensorId === activeSensorId
+      el.style.boxShadow = isActive
         ? '0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px rgba(107,114,128,0.9)'
         : PLAIN_MARKER_SHADOW;
+      // Markers stack in DOM order, so in a dense cluster the selected one can
+      // sit under its neighbours and lose its ring. Lift it above them.
+      const parent = el.parentElement;
+      if (parent) parent.style.zIndex = isActive ? '1' : '';
     });
   }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm, selectedSensor]);
 
