@@ -1461,9 +1461,7 @@ export default function MapaSensors({
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">Sensores Ciudadanos</p>
                 <p className="text-sm leading-relaxed text-gray-500">
-                  Sensores de bajo costo instalados y operados por ciudadanos,
-                  escuelas y organizaciones independientes, que comparten sus
-                  datos a través de la red de{" "}
+                  Sensores de bajo costo que forman parte de{" "}
                   <a
                     href="https://www.purpleair.com/"
                     target="_blank"
@@ -1472,7 +1470,9 @@ export default function MapaSensors({
                   >
                     PurpleAir
                   </a>
-                  . Incluyen los sensores de la Red OCCAMM y de otras fuentes
+                  , una red global de monitoreo comunitario instalada por
+                  ciudadanos, escuelas y organizaciones independientes.
+                  Incluyen los sensores de la Red OCCAMM y de otras fuentes
                   independientes.
                 </p>
               </div>
@@ -1480,8 +1480,16 @@ export default function MapaSensors({
                 <p className="mb-1 text-sm font-semibold text-gray-700">Estaciones de Gobierno</p>
                 <p className="text-sm leading-relaxed text-gray-500">
                   Los datos de calidad del aire (PM2.5 μg/m³) provienen de
-                  las estaciones de monitoreo del Sistema Integral de
-                  Monitoreo Ambiental (SIMA) de Nuevo León.
+                  las estaciones de monitoreo del{" "}
+                  <a
+                    href="https://aire.nl.gob.mx/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-gray-700"
+                  >
+                    Sistema Integral de Monitoreo Ambiental (SIMA)
+                  </a>{" "}
+                  de Nuevo León.
                 </p>
               </div>
             </div>
