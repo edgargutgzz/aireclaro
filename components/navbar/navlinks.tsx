@@ -33,7 +33,11 @@ export default function Navlinks() {
         const pill = (
           <div
             className={clsx("flex items-center gap-2 rounded-full px-5 py-2.5 transition-colors border", {
-              "border-blue-200 bg-blue-50 text-blue-600": isSelected,
+              // Desktop selection uses the same glass recipe as the map's
+              // floating cards. Mobile keeps the blue fill: its bottom bar is
+              // already translucent, so glass on glass wouldn't read as
+              // selected at all.
+              "border-blue-200 bg-blue-50 text-blue-600 md:border-white/60 md:bg-white/80 md:text-gray-700 md:shadow-sm md:backdrop-blur-md": isSelected,
               "border-transparent text-gray-400": !isSelected,
             })}
           >
