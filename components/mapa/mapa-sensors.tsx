@@ -897,7 +897,10 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <p className="text-base font-semibold text-gray-800">Capas</p>
+          <p className="flex items-center gap-2 text-base font-semibold text-gray-800">
+            <Layers className="h-5 w-5 text-gray-500" />
+            Capas
+          </p>
         </div>
         <div
           className="flex flex-col gap-3 px-5"
@@ -969,10 +972,7 @@ export default function MapaSensors({
                         {isSima ? "Estación" : "Sensor"}
                       </p>
                       <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                        <span
-                          className="h-3.5 w-3.5 flex-shrink-0 rounded-full"
-                          style={{ backgroundColor: color, boxShadow: '0 0 0 2px white, 0 1px 2px rgba(0,0,0,0.2)' }}
-                        />
+                        <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full bg-gray-400" />
                         <div className="min-w-0 flex-1 text-left">
                           <p className="truncate text-sm font-medium text-gray-700">{sensorName}</p>
                           {(sensor.red || timestamp) && (
@@ -1049,10 +1049,7 @@ export default function MapaSensors({
                       {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
                     </p>
                     <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                      <span
-                        className="h-3.5 w-3.5 flex-shrink-0 rounded-full"
-                        style={{ backgroundColor: qualityInfo.color, boxShadow: '0 0 0 2px white, 0 1px 2px rgba(0,0,0,0.2)' }}
-                      />
+                      <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full bg-gray-400" />
                       <div className="min-w-0 flex-1 text-left">
                         <p className="truncate text-sm font-medium text-gray-700">
                           {nearestName ?? "Promedio del área metropolitana"}
@@ -1116,7 +1113,10 @@ export default function MapaSensors({
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
           >
-            <span className="text-base font-semibold text-gray-800">Capas</span>
+            <span className="flex items-center gap-2 text-base font-semibold text-gray-800">
+              <Layers className="h-5 w-5 text-gray-500" />
+              Capas
+            </span>
             <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
           </button>
           {showFiltrosContent && (
