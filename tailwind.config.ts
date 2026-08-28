@@ -10,7 +10,7 @@ const config: Config = {
       width: {
         // Floating map-overlay panel widths — named so they read as
         // intentional design decisions instead of one-off magic numbers.
-        'panel-md': '310px',
+        'panel-md': '340px',
         'panel-lg': '460px',
       },
     },
