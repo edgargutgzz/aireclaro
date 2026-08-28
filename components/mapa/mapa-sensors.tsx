@@ -1161,12 +1161,12 @@ export default function MapaSensors({
         </div>
 
         {latestDataHour && (
-          <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-3 py-1.5 shadow-sm backdrop-blur-md">
+          <div className="flex h-11 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3 shadow-sm backdrop-blur-md md:h-[52px] md:px-4">
             <span className="relative flex h-2 w-2 flex-shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-xs font-medium text-gray-600">
+            <span className="whitespace-nowrap text-xs font-medium text-gray-600 md:text-sm">
               <span className="text-gray-400">Última actualización</span> {latestDataHour}
             </span>
           </div>
