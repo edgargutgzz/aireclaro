@@ -249,10 +249,10 @@ function HealthRecommendationCards({ info }: { info: QualityInfo }) {
 // Desktop-only variant: Población General always visible, sensitive groups
 // behind a compact tab selector instead of a big stacked list.
 const SENSITIVE_GROUPS = [
-  { key: "menores", label: "Niños", icon: Baby },
+  { key: "menores", label: "Niñas y Niños", icon: Baby },
   { key: "adultos", label: "Adultos mayores", icon: PersonStanding },
-  { key: "embarazadas", label: "Embarazadas", icon: Heart },
-  { key: "enfermedades", label: "Condiciones", icon: Stethoscope },
+  { key: "embarazadas", label: "Personas embarazadas", icon: Heart },
+  { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
 
 function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
