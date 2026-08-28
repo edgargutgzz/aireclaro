@@ -909,23 +909,23 @@ export default function MapaSensors({
       {/* Desktop right-side floating controls */}
       <div className="pointer-events-none absolute bottom-8 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
         {latestDataHour && (
-          <div className="flex h-[52px] items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md">
+          <div className="flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
             <span className="relative flex h-2 w-2 flex-shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-sm font-medium text-gray-600">
+            <span className="whitespace-nowrap text-xs font-medium text-gray-600">
               <span className="text-gray-400">Última actualización</span> {latestDataHour}
             </span>
           </div>
         )}
         <button
           onClick={userLocation ? flyToUser : requestLocation}
-          className="pointer-events-auto flex h-[52px] items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-4 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+          className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
-          <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          <span className={`text-sm font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
+          <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          <span className={`text-xs font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
             {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
           </span>
         </button>
