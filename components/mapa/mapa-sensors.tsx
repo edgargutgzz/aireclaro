@@ -149,9 +149,10 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   return (
     <div>
-      {/* Title lives on the section label above the chart, so only the range
-          summary belongs here. */}
-      <div className="mb-1.5 flex items-center justify-end text-xs text-gray-400">
+      {/* The chart owns its section label so it can share a line with the
+          range summary, which only this component can compute. */}
+      <div className="mb-2 flex items-center justify-between gap-3 text-xs leading-none text-gray-400">
+        <span className="font-medium uppercase tracking-wide">Últimas 48 horas</span>
         <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
       <div className="relative">
@@ -242,7 +243,9 @@ const SKELETON_PATH = "M0,150 L20,130 L40,142 L60,95 L80,108 L100,72 L120,90 L14
 function SparklineSkeleton() {
   return (
     <div>
-      <div className="mb-1.5 h-4" />
+      <div className="mb-2 flex items-center text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+        Últimas 48 horas
+      </div>
       <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="animate-pulse">
         <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
         <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
@@ -1024,7 +1027,6 @@ export default function MapaSensors({
                       </div>
                       {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
                       <div>
-                        <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Últimas 48 horas</p>
                         {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
                       </div>
                     </div>
@@ -1120,7 +1122,6 @@ export default function MapaSensors({
                     </div>
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
                     <div>
-                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Últimas 48 horas</p>
                       {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
                     </div>
                   </div>
