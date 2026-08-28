@@ -740,19 +740,18 @@ export default function MapaSensors({
         ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
         : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
     });
-    // Nearest/default sensor keeps its ring even when another one is
-    // selected — it marks "your default station" independent of selection.
-    if (nearestSensorData) {
+    // Only one marker shows the ring at a time: the explicitly selected
+    // sensor if there is one, otherwise the nearest/default sensor.
+    if (selectedSensor) {
+      const markerData = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
+      if (markerData) {
+        markerData.el.style.boxShadow = SELECTED_RING_SHADOW;
+      }
+    } else if (nearestSensorData) {
       const nearestSensor = sensors.find(
         s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
       );
       const markerData = nearestSensor && markerElementsRef.current.get(nearestSensor.sensor_id);
-      if (markerData) {
-        markerData.el.style.boxShadow = SELECTED_RING_SHADOW;
-      }
-    }
-    if (selectedSensor) {
-      const markerData = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
       if (markerData) {
         markerData.el.style.boxShadow = SELECTED_RING_SHADOW;
       }
