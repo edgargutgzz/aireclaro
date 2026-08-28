@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronRight, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronRight, Landmark, Users, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -62,6 +62,12 @@ const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 function getSourceLabel(isSima: boolean, red?: string | null) {
   if (isSima) return "Estación de Gobierno";
   return red ? `Sensor Ciudadano · ${red}` : "Sensor Ciudadano";
+}
+
+// A government building or people, matching the two groups the Capas panel
+// splits the map into.
+function getSourceIcon(isSima: boolean) {
+  return isSima ? Landmark : Users;
 }
 
 function getRelativeDayLabel(date: Date) {
@@ -898,7 +904,10 @@ export default function MapaSensors({
                         reading below: a card or a filled row is too much
                         furniture for a single line. */}
                     <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                      <span className="min-w-0 truncate text-[13px] text-gray-400">{getSourceLabel(isSima, sensor.red)}</span>
+                      <span className="flex min-w-0 items-center gap-1.5 text-[13px] text-gray-400">
+                        {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon className="h-3.5 w-3.5 flex-shrink-0" />; })()}
+                        <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
+                      </span>
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
@@ -974,10 +983,13 @@ export default function MapaSensors({
                 <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                   {/* Quality label + PM2.5 — always shown */}
                   <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                    <span className="min-w-0 truncate text-[13px] text-gray-400">
-                      {nearestName
-                        ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
-                        : "Promedio del área metropolitana"}
+                    <span className="flex min-w-0 items-center gap-1.5 text-[13px] text-gray-400">
+                      {nearestName && (() => { const SourceIcon = getSourceIcon(Boolean(nearestIsSima)); return <SourceIcon className="h-3.5 w-3.5 flex-shrink-0" />; })()}
+                      <span className="truncate">
+                        {nearestName
+                          ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
+                          : "Promedio del área metropolitana"}
+                      </span>
                     </span>
                     {nearestLat !== null && nearestLon !== null && (
                       <button
@@ -1133,7 +1145,7 @@ export default function MapaSensors({
                     <div className="flex flex-col gap-3 px-4 py-3">
                       {(isSima || sensor.red) && (
                         <div className="flex items-center gap-2.5">
-                          <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
+                          {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon className="h-3 w-3 flex-shrink-0 text-gray-400" />; })()}
                           <span className="text-sm text-gray-400">{getSourceLabel(isSima, sensor.red)}</span>
                         </div>
                       )}
