@@ -955,8 +955,10 @@ export default function MapaSensors({
           className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
-          <Navigation className="h-4 w-4 text-gray-700" />
-          <span className="text-[13px] font-medium text-gray-700">
+          {/* Dimmed until location is granted, so "off" is visible at a
+              glance. Weight stays the same in both states. */}
+          <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+          <span className={`text-[13px] font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
             {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
           </span>
         </button>
