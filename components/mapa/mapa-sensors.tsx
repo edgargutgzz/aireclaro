@@ -946,24 +946,24 @@ export default function MapaSensors({
               </button>
               {showCalidadContent && (
                 <>
-                  <div className="flex flex-col gap-3 px-5 pb-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="mb-0.5 text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del Aire</p>
+                  <div className="flex flex-col gap-5 px-5 pb-3">
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+                      <div className="flex items-center justify-between">
                         <span className="text-2xl font-bold" style={{ color: textColor }}>
                           {sensorQuality ? sensorQuality.label : "—"}
                         </span>
+                        {pm25 !== null && (
+                          <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ PM2.5</span>
+                        )}
                       </div>
-                      {pm25 !== null && (
-                        <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ PM2.5</span>
-                      )}
                     </div>
 
                     <div>
-                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                         {isSima ? "Estación" : "Sensor"}
                       </p>
-                      <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
+                      <div className="flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                         <div className="min-w-0 flex-1 text-left">
                           <p className="truncate text-sm font-medium text-gray-700">
                             {sensor.red ? `Red: ${sensor.red}` : isSima ? "Estación de Gobierno" : "Sensor Ciudadano"}
@@ -985,7 +985,10 @@ export default function MapaSensors({
                     </div>
 
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                    <div className="mt-2">{historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}</div>
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Últimas 48 horas</p>
+                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                    </div>
                   </div>
 
                   {/* Recommendations — collapsed by default, not needed for a data-first platform */}
@@ -1040,25 +1043,25 @@ export default function MapaSensors({
             </button>
             {showCalidadContent && (
               <>
-                <div className="flex flex-col gap-3 px-5 pb-3">
+                <div className="flex flex-col gap-5 px-5 pb-3">
                   {/* Quality label + PM2.5 — always shown */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="mb-0.5 text-xs font-medium uppercase tracking-wide text-gray-400">Calidad del Aire</p>
+                  <div>
+                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+                    <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
                         {qualityInfo.label}
                       </span>
+                      {displayPm25 !== null && (
+                        <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ PM2.5</span>
+                      )}
                     </div>
-                    {displayPm25 !== null && (
-                      <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ PM2.5</span>
-                    )}
                   </div>
 
                   <div>
-                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                       {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
                     </p>
-                    <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
+                    <div className="flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                       <div className="min-w-0 flex-1 text-left">
                         <p className="truncate text-sm font-medium text-gray-700">
                           {nearestName
@@ -1086,7 +1089,10 @@ export default function MapaSensors({
                   </div>
 
                   {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                  <div className="mt-2">{historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}</div>
+                  <div>
+                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Últimas 48 horas</p>
+                    {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                  </div>
                 </div>
 
                 {/* Recommendations — collapsed by default, not needed for a data-first platform */}
