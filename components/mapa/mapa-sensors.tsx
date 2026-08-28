@@ -934,9 +934,9 @@ export default function MapaSensors({
               {/* Always-visible header */}
               <button
                 onClick={() => setShowCalidadContent(v => !v)}
-                className="flex w-full items-center justify-between px-5 pt-4 pb-3"
+                className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
               >
-                <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
+                <span className="truncate text-base font-medium text-gray-700">{sensorName}</span>
                 <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
               </button>
               {showCalidadContent && (
@@ -1026,9 +1026,11 @@ export default function MapaSensors({
             {/* Always-visible header */}
             <button
               onClick={() => setShowCalidadContent(v => !v)}
-              className="flex w-full items-center justify-between px-5 pt-4 pb-3"
+              className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
             >
-              <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
+              <span className="truncate text-base font-medium text-gray-700">
+                {nearestName ?? "Calidad del Aire"}
+              </span>
               <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
             </button>
             {showCalidadContent && (
