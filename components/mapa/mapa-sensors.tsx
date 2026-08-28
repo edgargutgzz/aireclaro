@@ -1477,8 +1477,7 @@ export default function MapaSensors({
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">Estaciones de Gobierno</p>
                 <p className="text-sm leading-relaxed text-gray-500">
-                  Los datos de calidad del aire (PM2.5 μg/m³) provienen de
-                  las estaciones de monitoreo del{" "}
+                  Estaciones de monitoreo que forman parte del{" "}
                   <a
                     href="https://aire.nl.gob.mx/"
                     target="_blank"
@@ -1486,8 +1485,8 @@ export default function MapaSensors({
                     className="underline hover:text-gray-700"
                   >
                     Sistema Integral de Monitoreo Ambiental (SIMA)
-                  </a>{" "}
-                  de Nuevo León.
+                  </a>
+                  , operado por el Gobierno de Nuevo León.
                 </p>
               </div>
             </div>
