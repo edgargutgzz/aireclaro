@@ -941,7 +941,7 @@ export default function MapaSensors({
 
       {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
           selected. Nav lives in the site-wide header now, not floating here. */}
-      <div className="pointer-events-none absolute left-[350px] top-6 z-10 hidden flex-col items-start md:flex">
+      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden flex-col items-start md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-[460px]">
