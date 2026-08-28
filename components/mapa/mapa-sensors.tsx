@@ -1514,7 +1514,8 @@ export default function MapaSensors({
             </p>
             <p className="text-center text-sm leading-relaxed text-gray-500">
               A diferencia de las PM10, evaden las defensas de la nariz y la
-              garganta, por eso es el contaminante más peligroso.
+              garganta, por lo que son las partículas más peligrosas para la
+              salud.
             </p>
             <button
               onClick={() => setShowPM25Info(false)}
