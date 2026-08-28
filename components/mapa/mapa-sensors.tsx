@@ -1472,8 +1472,6 @@ export default function MapaSensors({
                   </a>
                   , una red global de monitoreo comunitario instalada por
                   ciudadanos, escuelas y organizaciones independientes.
-                  Incluyen los sensores de la Red OCCAMM y de otras fuentes
-                  independientes.
                 </p>
               </div>
               <div>
