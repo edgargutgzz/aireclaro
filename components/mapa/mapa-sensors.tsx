@@ -159,7 +159,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
       {/* The chart owns its section label so it can share a line with the
           range summary, which only this component can compute. */}
       <div className="mb-2 flex items-center justify-between gap-3 text-xs leading-none text-gray-400">
-        <span className="font-medium uppercase tracking-wide">Últimas 48 horas</span>
+        <span className="font-medium">Últimas 48 horas</span>
         <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
       <div className="relative">
@@ -251,7 +251,7 @@ const SKELETON_PATH = "M0,150 L20,130 L40,142 L60,95 L80,108 L100,72 L120,90 L14
 function SparklineSkeleton() {
   return (
     <div>
-      <div className="mb-2 flex items-center text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+      <div className="mb-2 flex items-center text-xs font-medium leading-none text-gray-400">
         Últimas 48 horas
       </div>
       <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="animate-pulse">
@@ -923,8 +923,11 @@ export default function MapaSensors({
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
+          // Capped so a long card (recommendations open, grupos sensibles
+          // expanded) scrolls instead of running past the viewport and over
+          // the location button.
           return (
-            <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+            <div className="pointer-events-auto max-h-[calc(100vh-14rem)] overflow-y-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
               {/* Always-visible header */}
               <button
                 onClick={() => setShowCalidadContent(v => !v)}
@@ -1019,7 +1022,7 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+          <div className="pointer-events-auto max-h-[calc(100vh-14rem)] overflow-y-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
             {/* Always-visible header */}
             <button
               onClick={() => setShowCalidadContent(v => !v)}
