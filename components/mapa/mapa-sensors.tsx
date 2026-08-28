@@ -1491,16 +1491,27 @@ export default function MapaSensors({
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowPM25Info(false)} />
           <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
-            <p className="text-center text-sm leading-relaxed text-gray-500">
-              Las PM2.5 son partículas en suspensión en el aire con un
-              diámetro de 2.5 micrómetros o menos, lo que equivale a unas
-              30 veces más delgadas que un cabello humano.
-            </p>
-            <p className="text-center text-sm leading-relaxed text-gray-500">
-              A diferencia de las PM10, evaden las defensas de la nariz y la
-              garganta, por lo que son las partículas más peligrosas para la
-              salud.
-            </p>
+            <div className="flex flex-col gap-4">
+              <div>
+                <p className="mb-1 text-sm font-semibold text-gray-700">PM2.5</p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Partículas en suspensión en el aire con un diámetro de
+                  2.5 micrómetros o menos, unas 30 veces más delgadas que
+                  un cabello humano. Evaden las defensas de la nariz y la
+                  garganta, por lo que son las más peligrosas para la
+                  salud.
+                </p>
+              </div>
+              <div>
+                <p className="mb-1 text-sm font-semibold text-gray-700">PM10</p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Partículas de mayor tamaño, con un diámetro de hasta 10
+                  micrómetros. Quedan retenidas principalmente en la nariz
+                  y la garganta, por lo que representan un menor riesgo
+                  para la salud que las PM2.5.
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => setShowPM25Info(false)}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
