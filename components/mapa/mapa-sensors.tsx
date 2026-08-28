@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
+import { Navigation, Layers, Copy, MapPin, MapPinned, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -44,10 +44,11 @@ interface HistoryPoint {
 
 // Small inline trend chart for the selected sensor's last 48h. Fixed color
 // regardless of the sensor's air-quality color: the yellow "Aceptable" tone
-// in particular is too low-contrast on white to read as a line/fill. Neutral
-// dark tone (not blue) so the line doesn't compete with the colored IMECA
-// zone bands behind it.
-const SPARKLINE_COLOR = "#4b5563";
+// in particular is too low-contrast on white to read as a line/fill. None of
+// the IMECA zone band colors (green/yellow/orange/red/purple) are blue, so a
+// deep blue reads clearly as "the line" against any of them without being
+// mistaken for a status color.
+const SPARKLINE_COLOR = "#1d4ed8";
 
 // Shown as the default "Calidad del aire" station (San Nicolás: UANL) when
 // the visitor hasn't shared their location, instead of a nameless area median.
@@ -79,14 +80,20 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   const width = 320;
   const height = 190;
-  const verticalPadding = 20; // keeps peaks/troughs from touching the chart edges
-  const drawableHeight = height - verticalPadding * 2;
   const values = data.map((d) => d.pm25);
   const max = Math.max(...values);
   const min = Math.min(...values);
   const range = max - min || 1;
 
-  const toY = (value: number) => verticalPadding + drawableHeight - ((value - min) / range) * drawableHeight;
+  // Pad the value domain (not just pixel space) so the line's own peak/trough
+  // sit inside the colored zone bands with room to breathe, instead of the
+  // bands (which are clipped to the same domain) touching the line exactly.
+  const domainPadding = range * 0.15;
+  const domainMin = min - domainPadding;
+  const domainMax = max + domainPadding;
+  const domainRange = domainMax - domainMin;
+
+  const toY = (value: number) => height - ((value - domainMin) / domainRange) * height;
 
   const points = data.map((d, i) => ({
     x: (i / (data.length - 1)) * width,
@@ -95,7 +102,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   // IMECA zone bands — a faint colored background per quality level, so it's
   // clear which zone the line sits in without having to read the threshold
-  // lines. Clipped to this window's actual min/max range.
+  // lines. Clipped to the padded domain so they fill the chart edge-to-edge.
   const zoneBands = [
     { lo: 0, hi: 15, color: "#22c55e" },
     { lo: 15, hi: 25, color: "#eab308" },
@@ -103,7 +110,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     { lo: 79, hi: 130, color: "#ef4444" },
     { lo: 130, hi: Infinity, color: "#a855f7" },
   ]
-    .map((z) => ({ ...z, lo: Math.max(z.lo, min), hi: Math.min(z.hi, max) }))
+    .map((z) => ({ ...z, lo: Math.max(z.lo, domainMin), hi: Math.min(z.hi, domainMax) }))
     .filter((z) => z.lo < z.hi);
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
@@ -928,7 +935,7 @@ export default function MapaSensors({
 
       {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
           selected. Nav lives in the site-wide header now, not floating here. */}
-      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden max-h-[calc(100%-10rem)] flex-col items-start overflow-y-auto md:flex">
+      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden flex-col items-start md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-[460px]">
@@ -981,8 +988,9 @@ export default function MapaSensors({
                           }}
                           className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600"
                           aria-label="Copiar coordenadas"
+                          title="Copiar coordenadas"
                         >
-                          <Copy className="h-3.5 w-3.5" />
+                          <MapPinned className="h-3.5 w-3.5" />
                         </button>
                       </div>
                       {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
@@ -994,7 +1002,7 @@ export default function MapaSensors({
 
                   {/* Recommendations — Población General always visible, sensitive groups via tabs */}
                   {sensorQuality && (
-                    <div className="relative z-[1] overflow-y-auto px-5 pb-8 pt-3" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
+                    <div className="relative z-[1] max-h-[280px] overflow-y-auto px-5 pb-8 pt-3">
                       <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                         <span>Recomendaciones de salud</span>
                         <button
@@ -1063,8 +1071,9 @@ export default function MapaSensors({
                           }}
                           className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600"
                           aria-label="Copiar coordenadas"
+                          title="Copiar coordenadas"
                         >
-                          <Copy className="h-3.5 w-3.5" />
+                          <MapPinned className="h-3.5 w-3.5" />
                         </button>
                       )}
                     </div>
@@ -1076,7 +1085,7 @@ export default function MapaSensors({
                 </div>
 
                 {/* Recommendations — Población General always visible, sensitive groups via tabs */}
-                <div className="relative z-[1] overflow-y-auto px-5 pb-8 pt-3" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
+                <div className="relative z-[1] max-h-[280px] overflow-y-auto px-5 pb-8 pt-3">
                   <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                     <span>Recomendaciones de salud</span>
                     <button
