@@ -987,28 +987,31 @@ export default function MapaSensors({
                   {sensorQuality && (
                     <div className="relative z-[1] px-5 pb-8 pt-3">
                       <div className="flex w-full items-center justify-between gap-1.5">
-                        <button
-                          onClick={() => setShowRecomendaciones((v) => !v)}
-                          className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600"
-                        >
-                          Recomendaciones de salud
-                        </button>
-                        <div className="flex flex-shrink-0 items-center gap-1.5 text-gray-400">
+                        {/* Info icon sits right beside the label, the way it does next to
+                            Contaminante and Fuente in Capas; the chevron stays at the far right. */}
+                        <div className="flex min-w-0 items-center gap-1.5">
                           <button
+                            onClick={() => setShowRecomendaciones((v) => !v)}
+                            className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600"
+                          >
+                            Recomendaciones de salud
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => setCuidarmeQuality(sensorQuality)}
-                            className="hover:text-gray-600 transition-colors"
+                            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 transition-colors hover:text-gray-600"
                             aria-label="Más información sobre recomendaciones de salud"
                           >
                             <Info className="h-3 w-3" />
                           </button>
-                          <button
-                            onClick={() => setShowRecomendaciones((v) => !v)}
-                            className="hover:text-gray-600 transition-colors"
-                            aria-label={showRecomendaciones ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
-                          >
-                            <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${showRecomendaciones ? 'rotate-90' : ''}`} />
-                          </button>
                         </div>
+                        <button
+                          onClick={() => setShowRecomendaciones((v) => !v)}
+                          className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-600"
+                          aria-label={showRecomendaciones ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
+                        >
+                          <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${showRecomendaciones ? 'rotate-90' : ''}`} />
+                        </button>
                       </div>
                       {showRecomendaciones && (
                         <div className="mt-4">
@@ -1084,28 +1087,31 @@ export default function MapaSensors({
                 {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                 <div className="relative z-[1] px-5 pb-8 pt-3">
                   <div className="flex w-full items-center justify-between gap-1.5">
-                    <button
-                      onClick={() => setShowRecomendaciones((v) => !v)}
-                      className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600"
-                    >
-                      Recomendaciones de salud
-                    </button>
-                    <div className="flex flex-shrink-0 items-center gap-1.5 text-gray-400">
+                    {/* Info icon sits right beside the label, the way it does next to
+                        Contaminante and Fuente in Capas; the chevron stays at the far right. */}
+                    <div className="flex min-w-0 items-center gap-1.5">
                       <button
+                        onClick={() => setShowRecomendaciones((v) => !v)}
+                        className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400 hover:text-gray-600"
+                      >
+                        Recomendaciones de salud
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => setCuidarmeQuality(qualityInfo)}
-                        className="hover:text-gray-600 transition-colors"
+                        className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 transition-colors hover:text-gray-600"
                         aria-label="Más información sobre recomendaciones de salud"
                       >
                         <Info className="h-3 w-3" />
                       </button>
-                      <button
-                        onClick={() => setShowRecomendaciones((v) => !v)}
-                        className="hover:text-gray-600 transition-colors"
-                        aria-label={showRecomendaciones ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
-                      >
-                        <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${showRecomendaciones ? 'rotate-90' : ''}`} />
-                      </button>
                     </div>
+                    <button
+                      onClick={() => setShowRecomendaciones((v) => !v)}
+                      className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-600"
+                      aria-label={showRecomendaciones ? "Ocultar recomendaciones de salud" : "Mostrar recomendaciones de salud"}
+                    >
+                      <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${showRecomendaciones ? 'rotate-90' : ''}`} />
+                    </button>
                   </div>
                   {showRecomendaciones && (
                     <div className="mt-4">
@@ -1239,8 +1245,9 @@ export default function MapaSensors({
                   <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                     <span>Recomendaciones de salud</span>
                     <button
+                      type="button"
                       onClick={() => setCuidarmeQuality(sensorQuality)}
-                      className="hover:text-gray-600 transition-colors"
+                      className="-translate-y-px flex-shrink-0 rounded-full transition-colors hover:text-gray-600"
                       aria-label="Más información sobre recomendaciones de salud"
                     >
                       <Info className="h-3 w-3" />
@@ -1380,8 +1387,9 @@ export default function MapaSensors({
               <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                 <span>Recomendaciones de salud</span>
                 <button
+                  type="button"
                   onClick={() => setCuidarmeQuality(qualityInfo)}
-                  className="hover:text-gray-600 transition-colors"
+                  className="-translate-y-px flex-shrink-0 rounded-full transition-colors hover:text-gray-600"
                   aria-label="Más información sobre recomendaciones de salud"
                 >
                   <Info className="h-3 w-3" />
