@@ -1430,19 +1430,18 @@ export default function MapaSensors({
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">Red OCCAMM</p>
                 <p className="text-sm leading-relaxed text-gray-500">
-                  Red de sensores del Observatorio Ciudadano de la Calidad
-                  del Aire, una organización de la sociedad civil dedicada
-                  a mejorar la calidad del aire en la Zona Metropolitana
-                  de Monterrey. Conoce más en{" "}
+                  Red de sensores del{" "}
                   <a
                     href="https://observatoriodelaire.com"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline hover:text-gray-700"
                   >
-                    observatoriodelaire.com
+                    Observatorio Ciudadano de la Calidad del Aire
                   </a>
-                  .
+                  , una organización de la sociedad civil dedicada a
+                  mejorar la calidad del aire en la Zona Metropolitana de
+                  Monterrey.
                 </p>
               </div>
             </div>
