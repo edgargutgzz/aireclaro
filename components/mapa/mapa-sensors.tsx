@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
 import { Navigation, Layers, Copy, ChevronRight, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -44,8 +44,8 @@ interface HistoryPoint {
 // Small inline trend chart for the selected sensor's last 48h. Fixed color
 // regardless of the sensor's air-quality color: the yellow "Aceptable" tone
 // in particular is too low-contrast on white to read as a line/fill. Drawn
-// with a white halo (see linePath rendering below) so this original blue
-// reads cleanly over every IMECA zone band color behind it.
+// with a white halo (see linePath rendering below) so the line stays legible
+// where it crosses a dashed threshold line.
 const SPARKLINE_COLOR = "#3b82f6";
 
 // Shown as the default "Calidad del aire" station (San Nicolás: UANL) when
@@ -78,6 +78,8 @@ function formatHistoryTime(dateStr: string) {
 
 function Sparkline({ data }: { data: HistoryPoint[] }) {
   const svgRef = useRef<SVGSVGElement>(null);
+  // useId() contains colons; strip them so the url(#id) reference is safe.
+  const gradientId = `spark-${useId().replace(/:/g, "")}`;
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   if (data.length < 2) {
@@ -91,9 +93,9 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   const min = Math.min(...values);
   const range = max - min || 1;
 
-  // Pad the value domain (not just pixel space) so the line's own peak/trough
-  // sit inside the colored zone bands with room to breathe, instead of the
-  // bands (which are clipped to the same domain) touching the line exactly.
+  // Pad the value domain (not just pixel space) so the line's own peak and
+  // trough sit inside the chart with room to breathe instead of touching the
+  // top and bottom edges.
   const domainPadding = range * 0.15;
   const domainMin = min - domainPadding;
   const domainMax = max + domainPadding;
@@ -108,20 +110,19 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     y: toY(d.pm25),
   }));
 
-  // Faint colored background per quality level, so it's clear which zone the
-  // line sits in without having to read the threshold lines. Clipped to the
-  // padded domain so they fill the chart edge-to-edge.
-  const zoneBands = [
-    { lo: 0, hi: 15, color: "#22c55e" },
-    { lo: 15, hi: 25, color: "#eab308" },
-    { lo: 25, hi: 79, color: "#f97316" },
-    { lo: 79, hi: 130, color: "#ef4444" },
-    { lo: 130, hi: Infinity, color: "#a855f7" },
-  ]
-    .map((z) => ({ ...z, lo: Math.max(z.lo, domainMin), hi: Math.min(z.hi, domainMax) }))
-    .filter((z) => z.lo < z.hi);
+  // IMECA limits as dashed reference lines, each in the color of the zone it
+  // opens. Only the ones inside this window's range are drawn, so the chart
+  // never carries a line the data never approaches.
+  const thresholds = [
+    { value: 15, color: "#eab308" },
+    { value: 25, color: "#f97316" },
+    { value: 79, color: "#ef4444" },
+    { value: 130, color: "#a855f7" },
+  ].filter((t) => t.value > domainMin && t.value < domainMax);
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  // Area closes on the chart floor, filled with a fade of the line's own hue.
+  const areaPath = `${linePath} L${points[points.length - 1].x.toFixed(1)},${height} L0,${height} Z`;
 
   // Mark where one calendar day ends and the next begins, so the daily
   // shape (morning/evening peaks) is easy to read instead of one blur.
@@ -147,8 +148,9 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   return (
     <div>
-      <div className="mb-1.5 flex items-center justify-between text-xs text-gray-400">
-        <span>Últimas 48 horas</span>
+      {/* Title lives on the section label above the chart, so only the range
+          summary belongs here. */}
+      <div className="mb-1.5 flex items-center justify-end text-xs text-gray-400">
         <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
       <div className="relative">
@@ -186,8 +188,15 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           onTouchMove={(e) => updateHover(e.touches[0].clientX)}
           onTouchEnd={() => setHoverIndex(null)}
         >
-          {zoneBands.map((z) => (
-            <rect key={z.color} x={0} y={toY(z.hi)} width={width} height={toY(z.lo) - toY(z.hi)} fill={z.color} fillOpacity={0.1} />
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={SPARKLINE_COLOR} stopOpacity={0.28} />
+              <stop offset="100%" stopColor={SPARKLINE_COLOR} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
+          {thresholds.map((t) => (
+            <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
           ))}
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
@@ -221,9 +230,7 @@ const SKELETON_PATH = "M0,150 L20,130 L40,142 L60,95 L80,108 L100,72 L120,90 L14
 function SparklineSkeleton() {
   return (
     <div>
-      <div className="mb-1.5 flex items-center justify-between text-xs text-gray-400">
-        <span>Últimas 48 horas</span>
-      </div>
+      <div className="mb-1.5 h-4" />
       <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="animate-pulse">
         <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
         <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
