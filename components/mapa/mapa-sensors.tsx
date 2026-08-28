@@ -499,7 +499,7 @@ export default function MapaSensors({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; source: string }>());
+  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement }>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -700,10 +700,7 @@ export default function MapaSensors({
         (dataItem) => dataItem.sensor_id === sensor.sensor_id,
       );
 
-      const markerElement = createMarker(
-        latestData ? latestData.pm25 : null,
-        sensor.source,
-      );
+      const markerElement = createMarker(latestData ? latestData.pm25 : null);
 
       if (!markerElement) return;
 
@@ -726,7 +723,7 @@ export default function MapaSensors({
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
       });
 
-      markerElementsRef.current.set(sensor.sensor_id, { el: markerElement, source: sensor.source });
+      markerElementsRef.current.set(sensor.sensor_id, { el: markerElement });
 
       const marker = new Marker({ element: markerElement })
         .setLngLat([sensor.lon, sensor.lat])
@@ -747,10 +744,8 @@ export default function MapaSensors({
   // Restore the plain marker shadow on everything before the pulse effect
   // (below) applies the animation to whichever one is active.
   useEffect(() => {
-    markerElementsRef.current.forEach(({ el, source }) => {
-      el.style.boxShadow = source === "sima"
-        ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
-        : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
+    markerElementsRef.current.forEach(({ el }) => {
+      el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
     });
   }, [selectedSensor, nearestSensorData]);
 

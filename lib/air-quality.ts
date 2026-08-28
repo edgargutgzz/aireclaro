@@ -7,12 +7,11 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
   return { bg: "#8f3f97", text: "#8f3f97" };
 };
 
-export const createMarker = (pm25: number | null, source: string): HTMLElement | null => {
+export const createMarker = (pm25: number | null): HTMLElement | null => {
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
 
   const { bg } = colorInfo;
-  const isSima = source === "sima";
   const textColor = bg === "#ffff00" ? "#9ca3af" : "white";
 
   const el = document.createElement("div");
@@ -24,14 +23,7 @@ export const createMarker = (pm25: number | null, source: string): HTMLElement |
   el.style.alignItems = "center";
   el.style.justifyContent = "center";
   el.style.opacity = "0.9";
-  el.style.boxShadow = isSima
-    ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
-    : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
-  if (isSima) {
-    const stripeColor = (bg === "#ffff00" || bg === "#00e400") ? "rgba(0,0,0,0.09)" : "rgba(255,255,255,0.25)";
-    el.style.backgroundImage =
-      `repeating-linear-gradient(45deg, transparent, transparent 6px, ${stripeColor} 6px, ${stripeColor} 8px)`;
-  }
+  el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
   el.textContent = Math.round(pm25!).toString();
   el.style.color = textColor;
   el.style.fontSize = "12px";
