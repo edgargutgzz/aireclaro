@@ -954,7 +954,7 @@ export default function MapaSensors({
               </button>
               {showCalidadContent && (
                 <>
-                  <div className="flex flex-col gap-5 px-5 pb-3">
+                  <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                     <div>
                       <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                       <div className="flex items-center justify-between">
@@ -1051,7 +1051,7 @@ export default function MapaSensors({
             </button>
             {showCalidadContent && (
               <>
-                <div className="flex flex-col gap-5 px-5 pb-3">
+                <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                   {/* Quality label + PM2.5 — always shown */}
                   <div>
                     <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
