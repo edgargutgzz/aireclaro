@@ -1167,7 +1167,7 @@ export default function MapaSensors({
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
             <span className="whitespace-nowrap text-xs font-medium text-gray-600">
-              Datos de las {latestDataHour}
+              <span className="text-gray-400">Última actualización</span> {latestDataHour}
             </span>
           </div>
         )}
