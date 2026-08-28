@@ -444,7 +444,7 @@ function LayersFilterContent({
                 className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
                 aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
               >
-                <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${showCitizenGroup ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showCitizenGroup ? 'rotate-180' : ''}`} />
               </button>
             </div>
             {showCitizenGroup && (
