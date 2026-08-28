@@ -986,18 +986,6 @@ export default function MapaSensors({
                 <>
                   <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                     <div>
-                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold" style={{ color: textColor }}>
-                          {sensorQuality ? sensorQuality.label : "—"}
-                        </span>
-                        {pm25 !== null && (
-                          <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ PM2.5</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
                       <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                         Fuente
                       </p>
@@ -1022,10 +1010,25 @@ export default function MapaSensors({
                       </div>
                     </div>
 
-                    {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                    <div>
-                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Últimas 48 horas</p>
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                    {/* Reading now and the last 48h are one story: the big
+                        number is just the newest point on the chart below it. */}
+                    <div className="flex flex-col gap-3">
+                      <div>
+                        <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl font-bold" style={{ color: textColor }}>
+                            {sensorQuality ? sensorQuality.label : "—"}
+                          </span>
+                          {pm25 !== null && (
+                            <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ PM2.5</span>
+                          )}
+                        </div>
+                      </div>
+                      {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
+                      <div>
+                        <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Últimas 48 horas</p>
+                        {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                      </div>
                     </div>
                   </div>
 
@@ -1084,18 +1087,6 @@ export default function MapaSensors({
                 <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
                   {/* Quality label + PM2.5 — always shown */}
                   <div>
-                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
-                        {qualityInfo.label}
-                      </span>
-                      {displayPm25 !== null && (
-                        <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ PM2.5</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
                     <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
                       {nearestName ? "Fuente" : "Área metropolitana"}
                     </p>
@@ -1122,10 +1113,23 @@ export default function MapaSensors({
                     </div>
                   </div>
 
-                  {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                  <div>
-                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Últimas 48 horas</p>
-                    {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
+                          {qualityInfo.label}
+                        </span>
+                        {displayPm25 !== null && (
+                          <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ PM2.5</span>
+                        )}
+                      </div>
+                    </div>
+                    {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Últimas 48 horas</p>
+                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                    </div>
                   </div>
                 </div>
 
