@@ -977,12 +977,14 @@ export default function MapaSensors({
                     </div>
 
                     <div>
-                      {/* Label left, copy action right, value underneath: same
-                          grammar as the quality section above, without the
-                          boxed pill that outweighed the one fact it held. */}
-                      <div className="mb-2 flex items-center justify-between gap-3">
-                        <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                          Fuente
+                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                        Fuente
+                      </p>
+                      {/* Value and copy action share one grounded row: loose on
+                          the card background they read as floating fragments. */}
+                      <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-3.5 py-2.5">
+                        <p className="min-w-0 truncate text-sm font-medium text-gray-700">
+                          {getSourceLabel(isSima, sensor.red)}
                         </p>
                         <button
                           onClick={() => {
@@ -997,9 +999,6 @@ export default function MapaSensors({
                           <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
                         </button>
                       </div>
-                      <p className="truncate text-sm font-medium text-gray-700">
-                        {getSourceLabel(isSima, sensor.red)}
-                      </p>
                     </div>
 
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
@@ -1076,9 +1075,14 @@ export default function MapaSensors({
                   </div>
 
                   <div>
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                        {nearestName ? "Fuente" : "Área metropolitana"}
+                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+                      {nearestName ? "Fuente" : "Área metropolitana"}
+                    </p>
+                    <div className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-3.5 py-2.5">
+                      <p className="min-w-0 truncate text-sm font-medium text-gray-700">
+                        {nearestName
+                          ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
+                          : "Promedio del área metropolitana"}
                       </p>
                       {nearestLat !== null && nearestLon !== null && (
                         <button
@@ -1095,11 +1099,6 @@ export default function MapaSensors({
                         </button>
                       )}
                     </div>
-                    <p className="truncate text-sm font-medium text-gray-700">
-                      {nearestName
-                        ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
-                        : "Promedio del área metropolitana"}
-                    </p>
                   </div>
 
                   {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
