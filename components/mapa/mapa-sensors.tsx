@@ -945,7 +945,7 @@ export default function MapaSensors({
               </button>
               {showCalidadContent && (
                 <>
-                  <div className="px-5 pb-3">
+                  <div className="flex flex-col gap-3 px-5 pb-3">
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold" style={{ color: textColor }}>
                         {sensorQuality ? sensorQuality.label : "—"}
@@ -955,34 +955,37 @@ export default function MapaSensors({
                       )}
                     </div>
 
-                    <div className="mt-2 flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                      <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                      <div className="min-w-0 flex-1 text-left">
-                        <p className="truncate text-sm font-medium text-gray-700">{isSima ? "Estación" : "Sensor"}: {sensorName}</p>
-                        {(sensor.red || timestamp) && (
-                          <p className="truncate text-xs text-gray-400">
-                            {[sensor.red ? `Red: ${sensor.red}` : null, timestamp ? `Actualizado a las ${timestamp}` : null].filter(Boolean).join(' · ')}
-                          </p>
-                        )}
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+                        {isSima ? "Estación" : "Sensor"}
+                      </p>
+                      <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
+                        <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                        <div className="min-w-0 flex-1 text-left">
+                          <p className="truncate text-sm font-medium text-gray-700">{sensorName}</p>
+                          {(sensor.red || timestamp) && (
+                            <p className="truncate text-xs text-gray-400">
+                              {[sensor.red ? `Red: ${sensor.red}` : null, timestamp ? `Actualizado a las ${timestamp}` : null].filter(Boolean).join(' · ')}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 1500);
+                          }}
+                          className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600"
+                          aria-label="Copiar coordenadas"
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </button>
                       </div>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600"
-                        aria-label="Copiar coordenadas"
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                      </button>
+                      {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
                     </div>
-                    {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
 
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                    <div className="mt-3">
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
-                    </div>
+                    {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
                   </div>
 
                   {/* Recommendations — Población General always visible, sensitive groups via tabs */}
@@ -1017,7 +1020,7 @@ export default function MapaSensors({
             </button>
             {showCalidadContent && (
               <>
-                <div className="px-5 pb-3">
+                <div className="flex flex-col gap-3 px-5 pb-3">
                   {/* Quality label + PM2.5 — always shown */}
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
@@ -1028,45 +1031,44 @@ export default function MapaSensors({
                     )}
                   </div>
 
-                  {/* Sensor name — always shown */}
-                  <div className="mt-2 flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                    <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                    <div className="min-w-0 flex-1 text-left">
-                      <p className="truncate text-sm font-medium text-gray-700">
-                        {nearestName
-                          ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
-                          : "Promedio del área metropolitana"}
-                      </p>
-                      {(userLocation && nearestName || (nearestTimestamp ?? latestPurpleAirTimestamp)) && (
-                        <p className="truncate text-xs text-gray-400">
-                          {[
-                            userLocation && nearestName ? "Tu sensor más cercano" : null,
-                            (nearestTimestamp ?? latestPurpleAirTimestamp) ? `Actualizado a las ${nearestTimestamp ?? latestPurpleAirTimestamp}` : null,
-                          ].filter(Boolean).join(' · ')}
+                  <div>
+                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">
+                      {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
+                    </p>
+                    <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
+                      <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                      <div className="min-w-0 flex-1 text-left">
+                        <p className="truncate text-sm font-medium text-gray-700">
+                          {nearestName ?? "Promedio del área metropolitana"}
                         </p>
+                        {(userLocation && nearestName || (nearestTimestamp ?? latestPurpleAirTimestamp)) && (
+                          <p className="truncate text-xs text-gray-400">
+                            {[
+                              userLocation && nearestName ? "Tu sensor más cercano" : null,
+                              (nearestTimestamp ?? latestPurpleAirTimestamp) ? `Actualizado a las ${nearestTimestamp ?? latestPurpleAirTimestamp}` : null,
+                            ].filter(Boolean).join(' · ')}
+                          </p>
+                        )}
+                      </div>
+                      {nearestLat !== null && nearestLon !== null && (
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 1500);
+                          }}
+                          className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600"
+                          aria-label="Copiar coordenadas"
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </button>
                       )}
                     </div>
-                    {nearestLat !== null && nearestLon !== null && (
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600"
-                        aria-label="Copiar coordenadas"
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                      </button>
-                    )}
+                    {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
                   </div>
-                  {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
 
                   {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                  <div className="mt-3">
-                    {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
-                  </div>
-
+                  {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
                 </div>
 
                 {/* Recommendations — Población General always visible, sensitive groups via tabs */}
