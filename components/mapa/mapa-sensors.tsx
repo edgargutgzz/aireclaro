@@ -440,18 +440,20 @@ function LayersFilterContent({
       <div>
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Fuente</p>
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}>
-            <button onClick={toggleCitizenGroup} className="flex flex-1 items-center gap-3">
-              <LayerCheckbox state={citizenState} size={boxSize} />
-              <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
-            </button>
-            <button
-              onClick={onShowSensoresCiudadanosInfo}
-              className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-              aria-label="Más información sobre Sensores Ciudadanos"
-            >
-              <Info className="h-3 w-3" />
-            </button>
+          <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
+            <div className="flex min-w-0 items-center gap-2">
+              <button onClick={toggleCitizenGroup} className="flex items-center gap-3">
+                <LayerCheckbox state={citizenState} size={boxSize} />
+                <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+              </button>
+              <button
+                onClick={onShowSensoresCiudadanosInfo}
+                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                aria-label="Más información sobre Sensores Ciudadanos"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <button
               onClick={() => setShowCitizenGroup((v) => !v)}
               className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
@@ -487,8 +489,8 @@ function LayersFilterContent({
             </button>
           </div>
           )}
-          <div className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 ${rowPadding}`}>
-            <button onClick={() => setShowSima((v) => !v)} className="flex flex-1 items-center gap-3">
+          <div className={`flex w-full items-center gap-2 border-t border-gray-100 px-4 ${rowPadding}`}>
+            <button onClick={() => setShowSima((v) => !v)} className="flex items-center gap-3">
               <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
               <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
             </button>
