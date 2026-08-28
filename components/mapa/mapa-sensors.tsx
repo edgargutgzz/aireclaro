@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronRight, Clock, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronRight, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -591,17 +591,7 @@ export default function MapaSensors({
     return sorted[Math.floor(sorted.length / 2)];
   }, [data]);
 
-  const latestPurpleAirTimestamp = useMemo(() => {
-    const purpleAirIds = new Set(sensors.filter(s => s.source !== "sima").map(s => s.sensor_id));
-    const recent = data
-      .filter(d => purpleAirIds.has(d.sensor_id) && d.pm25 !== null && d.pm25 > 0.4)
-      .reduce<Data | null>((a, b) => !a || new Date(b.time_stamp) > new Date(a.time_stamp) ? b : a, null);
-    if (!recent) return null;
-    return format(new Date(recent.time_stamp), "h") + ":00 " + format(new Date(recent.time_stamp), "a");
-  }, [data, sensors]);
-
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
-  const nearestTimestamp = nearestSensorData?.timestamp ?? null;
   const nearestName = nearestSensorData?.name ?? null;
   const nearestIsSima = nearestSensorData?.isSima ?? null;
   const nearestLat = nearestSensorData?.lat ?? null;
@@ -842,6 +832,21 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full"
       />
 
+      {/* Live-data indicator — communicates this is a live, auto-updating map,
+          not a one-off snapshot. Top-center is the one spot free of other
+          floating controls on both mobile and desktop. */}
+      <div className="pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 md:top-6">
+        <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-3 py-1.5 shadow-sm backdrop-blur-md">
+          <span className="relative flex h-2 w-2 flex-shrink-0">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+          </span>
+          <span className="whitespace-nowrap text-xs font-medium text-gray-600">
+            En vivo <span className="text-gray-400">· actualiza cada hora</span>
+          </span>
+        </div>
+      </div>
+
       {/* Mobile right-side buttons — hidden when sheet is expanded */}
       {sheetState === 'peek' && (
         <div className="fixed right-6 z-[45] flex flex-col gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}>
@@ -925,7 +930,7 @@ export default function MapaSensors({
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-panel-lg">
         {selectedSensor ? (() => {
-          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+          const { sensor, pm25, color, textColor } = selectedSensor;
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
@@ -1166,7 +1171,7 @@ export default function MapaSensors({
         }}
       >
         {selectedSensor && (() => {
-          const { sensor, pm25, color, textColor, timestamp } = selectedSensor;
+          const { sensor, pm25, color, textColor } = selectedSensor;
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
@@ -1206,12 +1211,6 @@ export default function MapaSensors({
                         <div className="flex items-center gap-2.5">
                           <Award className="h-3 w-3 flex-shrink-0 text-gray-400" />
                           <span className="text-sm text-gray-400">Red: {sensor.red}</span>
-                        </div>
-                      )}
-                      {timestamp && (
-                        <div className="flex items-center gap-2.5">
-                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Actualizado a las {timestamp}</span>
                         </div>
                       )}
                       <button
@@ -1351,12 +1350,6 @@ export default function MapaSensors({
                         <div className="flex items-center gap-2.5">
                           <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
                           <span className="text-sm text-gray-400">Tu sensor más cercano</span>
-                        </div>
-                      )}
-                      {(nearestTimestamp ?? latestPurpleAirTimestamp) && (
-                        <div className="flex items-center gap-2.5">
-                          <Clock className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Actualizado a las {nearestTimestamp ?? latestPurpleAirTimestamp}</span>
                         </div>
                       )}
                       {nearestLat !== null && nearestLon !== null && (
