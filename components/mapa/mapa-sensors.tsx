@@ -972,7 +972,7 @@ export default function MapaSensors({
                         {isSima ? "Estación" : "Sensor"}
                       </p>
                       <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                        <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full bg-gray-400" />
+                        <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full bg-gray-400" style={{ boxShadow: '0 0 0 2px white, 0 1px 2px rgba(0,0,0,0.15)' }} />
                         <div className="min-w-0 flex-1 text-left">
                           <p className="truncate text-sm font-medium text-gray-700">{sensorName}</p>
                           {(sensor.red || timestamp) && (
@@ -1049,7 +1049,7 @@ export default function MapaSensors({
                       {nearestName ? (nearestIsSima ? "Estación" : "Sensor") : "Área metropolitana"}
                     </p>
                     <div className="flex items-center gap-2.5 rounded-xl bg-gray-100 px-3 py-2.5">
-                      <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full bg-gray-400" />
+                      <span className="h-3.5 w-3.5 flex-shrink-0 rounded-full bg-gray-400" style={{ boxShadow: '0 0 0 2px white, 0 1px 2px rgba(0,0,0,0.15)' }} />
                       <div className="min-w-0 flex-1 text-left">
                         <p className="truncate text-sm font-medium text-gray-700">
                           {nearestName ?? "Promedio del área metropolitana"}
