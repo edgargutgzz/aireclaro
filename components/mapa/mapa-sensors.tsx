@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronRight, Clock, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope, FileText, ExternalLink } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronRight, Clock, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -1521,18 +1521,6 @@ export default function MapaSensors({
                 </p>
               </div>
             </div>
-            <a
-              href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 rounded-xl bg-gray-50 px-4 py-3 hover:bg-gray-100"
-            >
-              <FileText className="h-5 w-5 flex-shrink-0 text-gray-400" />
-              <span className="flex-1 text-sm font-medium text-gray-700">
-                Infografía: cómo afecta tu salud
-              </span>
-              <ExternalLink className="h-4 w-4 flex-shrink-0 text-gray-400" />
-            </a>
             <button
               onClick={() => setShowPM25Info(false)}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
