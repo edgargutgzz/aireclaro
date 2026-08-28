@@ -44,8 +44,10 @@ interface HistoryPoint {
 
 // Small inline trend chart for the selected sensor's last 48h. Fixed color
 // regardless of the sensor's air-quality color: the yellow "Aceptable" tone
-// in particular is too low-contrast on white to read as a line/fill.
-const SPARKLINE_COLOR = "#3b82f6";
+// in particular is too low-contrast on white to read as a line/fill. Neutral
+// dark tone (not blue) so the line doesn't compete with the colored IMECA
+// zone bands behind it.
+const SPARKLINE_COLOR = "#1f2937";
 
 // Shown as the default "Calidad del aire" station (San Nicolás: UANL) when
 // the visitor hasn't shared their location, instead of a nameless area median.
@@ -114,7 +116,6 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     .filter((z) => z.lo < z.hi);
 
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
-  const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
 
   // Mark where one calendar day ends and the next begins, so the daily
   // shape (morning/evening peaks) is easy to read instead of one blur.
@@ -180,9 +181,8 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           onTouchEnd={() => setHoverIndex(null)}
         >
           {zoneBands.map((z) => (
-            <rect key={z.color} x={0} y={toY(z.hi)} width={width} height={toY(z.lo) - toY(z.hi)} fill={z.color} fillOpacity={0.08} />
+            <rect key={z.color} x={0} y={toY(z.hi)} width={width} height={toY(z.lo) - toY(z.hi)} fill={z.color} fillOpacity={0.1} />
           ))}
-          <path d={areaPath} fill={SPARKLINE_COLOR} fillOpacity={0.12} stroke="none" />
           {thresholds.map((t) => (
             <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
           ))}
@@ -940,7 +940,7 @@ export default function MapaSensors({
 
       {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
           selected. Nav lives in the site-wide header now, not floating here. */}
-      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden max-h-[calc(100%-3rem)] flex-col items-start overflow-y-auto md:flex">
+      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden max-h-[calc(100%-10rem)] flex-col items-start overflow-y-auto md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-[460px]">
@@ -1001,7 +1001,7 @@ export default function MapaSensors({
                     </div>
 
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                    {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                    <div className="mt-2">{historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}</div>
                   </div>
 
                   {/* Recommendations — Población General always visible, sensitive groups via tabs */}
@@ -1084,7 +1084,7 @@ export default function MapaSensors({
                   </div>
 
                   {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                  {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                  <div className="mt-2">{historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}</div>
                 </div>
 
                 {/* Recommendations — Población General always visible, sensitive groups via tabs */}
