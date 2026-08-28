@@ -966,7 +966,7 @@ export default function MapaSensors({
                       <div className="flex items-center gap-2.5 rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                         <div className="min-w-0 flex-1 text-left">
                           <p className="truncate text-sm font-medium text-gray-700">
-                            {sensor.red ? `Red: ${sensor.red}` : isSima ? "Estación de Gobierno" : "Sensor Ciudadano"}
+                            {isSima ? "Red: SIMA" : sensor.red ? `Red: ${sensor.red}` : "Sensor Ciudadano"}
                           </p>
                         </div>
                         <button
@@ -1067,7 +1067,7 @@ export default function MapaSensors({
                           {nearestName
                             ? userLocation
                               ? "Tu sensor más cercano"
-                              : nearestIsSima ? "Estación de Gobierno" : "Sensor Ciudadano"
+                              : nearestIsSima ? "Red: SIMA" : "Sensor Ciudadano"
                             : "Promedio del área metropolitana"}
                         </p>
                       </div>
