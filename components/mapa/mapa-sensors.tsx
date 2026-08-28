@@ -44,11 +44,11 @@ interface HistoryPoint {
 
 // Small inline trend chart for the selected sensor's last 48h. Fixed color
 // regardless of the sensor's air-quality color: the yellow "Aceptable" tone
-// in particular is too low-contrast on white to read as a line/fill. None of
-// the IMECA zone band colors (green/yellow/orange/red/purple) are blue, so a
-// deep blue reads clearly as "the line" against any of them without being
-// mistaken for a status color.
-const SPARKLINE_COLOR = "#1d4ed8";
+// in particular is too low-contrast on white to read as a line/fill. Drawn
+// with a white halo (see linePath rendering below) so a single dark color
+// reads cleanly over every IMECA zone band color instead of needing to pick
+// a hue that happens to contrast with all five.
+const SPARKLINE_COLOR = "#1e293b";
 
 // Shown as the default "Calidad del aire" station (San Nicolás: UANL) when
 // the visitor hasn't shared their location, instead of a nameless area median.
@@ -184,6 +184,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
           ))}
+          <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           {hoverPoint && (
             <>
