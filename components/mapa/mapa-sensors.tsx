@@ -94,10 +94,10 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   const toY = (value: number) => height - ((value - domainMin) / domainRange) * height;
 
-  const horizontalPadding = 8; // keeps the first/last points off the chart's side edges
-  const drawableWidth = width - horizontalPadding * 2;
+  const rightPadding = 8; // keeps the latest point off the chart's right edge
+  const drawableWidth = width - rightPadding;
   const points = data.map((d, i) => ({
-    x: horizontalPadding + (i / (data.length - 1)) * drawableWidth,
+    x: (i / (data.length - 1)) * drawableWidth,
     y: toY(d.pm25),
   }));
 
@@ -947,7 +947,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div className="pointer-events-auto max-h-[calc(100%-10rem)] overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
               {/* Always-visible header */}
               <button
                 onClick={() => setShowCalidadContent(v => !v)}
@@ -1023,7 +1023,7 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className="pointer-events-auto overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <div className="pointer-events-auto max-h-[calc(100%-10rem)] overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
             {/* Always-visible header */}
             <button
               onClick={() => setShowCalidadContent(v => !v)}
