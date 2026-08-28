@@ -368,6 +368,8 @@ function LayersFilterContent({
   setShowSima,
   onShowOccammInfo,
   onShowPM25Info,
+  onShowSensoresCiudadanosInfo,
+  onShowEstacionesInfo,
 }: {
   compact: boolean;
   showOtros: boolean;
@@ -378,6 +380,8 @@ function LayersFilterContent({
   setShowSima: Dispatch<SetStateAction<boolean>>;
   onShowOccammInfo: () => void;
   onShowPM25Info: () => void;
+  onShowSensoresCiudadanosInfo: () => void;
+  onShowEstacionesInfo: () => void;
 }) {
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
@@ -442,6 +446,13 @@ function LayersFilterContent({
               <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
             </button>
             <button
+              onClick={onShowSensoresCiudadanosInfo}
+              className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+              aria-label="Más información sobre Sensores Ciudadanos"
+            >
+              <Info className="h-3 w-3" />
+            </button>
+            <button
               onClick={() => setShowCitizenGroup((v) => !v)}
               className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
               aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
@@ -476,13 +487,19 @@ function LayersFilterContent({
             </button>
           </div>
           )}
-          <button
-            onClick={() => setShowSima((v) => !v)}
-            className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 ${rowPadding}`}
-          >
-            <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-            <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
-          </button>
+          <div className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 ${rowPadding}`}>
+            <button onClick={() => setShowSima((v) => !v)} className="flex flex-1 items-center gap-3">
+              <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
+              <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
+            </button>
+            <button
+              onClick={onShowEstacionesInfo}
+              className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+              aria-label="Más información sobre Estaciones de Gobierno"
+            >
+              <Info className="h-3 w-3" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -510,6 +527,8 @@ export default function MapaSensors({
   const [showOtros, setShowOtros] = useState(true);
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showPM25Info, setShowPM25Info] = useState(false);
+  const [showSensoresCiudadanosInfo, setShowSensoresCiudadanosInfo] = useState(false);
+  const [showEstacionesInfo, setShowEstacionesInfo] = useState(false);
   const [showSima, setShowSima] = useState(true);
   const [showOccamm, setShowOccamm] = useState(true);
   const [selectedSensor, setSelectedSensor] = useState<{
@@ -878,6 +897,8 @@ export default function MapaSensors({
             setShowSima={setShowSima}
             onShowOccammInfo={() => setShowOccammInfo(true)}
             onShowPM25Info={() => setShowPM25Info(true)}
+            onShowSensoresCiudadanosInfo={() => setShowSensoresCiudadanosInfo(true)}
+            onShowEstacionesInfo={() => setShowEstacionesInfo(true)}
           />
         </div>
       </div>
@@ -1086,6 +1107,8 @@ export default function MapaSensors({
                 setShowSima={setShowSima}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
                 onShowPM25Info={() => setShowPM25Info(true)}
+                onShowSensoresCiudadanosInfo={() => setShowSensoresCiudadanosInfo(true)}
+                onShowEstacionesInfo={() => setShowEstacionesInfo(true)}
               />
             </div>
           )}
@@ -1385,6 +1408,47 @@ export default function MapaSensors({
             </p>
             <button
               onClick={() => setShowOccammInfo(false)}
+              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              Entendido
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Sensores Ciudadanos info popup */}
+      {showSensoresCiudadanosInfo && (
+        <>
+          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowSensoresCiudadanosInfo(false)} />
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
+            <p className="text-center text-sm leading-relaxed text-gray-500">
+              Sensores de bajo costo instalados y operados por ciudadanos,
+              escuelas y organizaciones independientes, no por el gobierno.
+              Incluyen los sensores de la Red OCCAMM y de otras fuentes
+              independientes.
+            </p>
+            <button
+              onClick={() => setShowSensoresCiudadanosInfo(false)}
+              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              Entendido
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Estaciones de Gobierno info popup */}
+      {showEstacionesInfo && (
+        <>
+          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowEstacionesInfo(false)} />
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
+            <p className="text-center text-sm leading-relaxed text-gray-500">
+              Los datos de calidad del aire (PM2.5 μg/m³) provienen de las
+              estaciones de monitoreo del Sistema Integral de Monitoreo
+              Ambiental (SIMA) de Nuevo León.
+            </p>
+            <button
+              onClick={() => setShowEstacionesInfo(false)}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
             >
               Entendido
