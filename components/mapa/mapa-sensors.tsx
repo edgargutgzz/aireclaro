@@ -928,7 +928,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+            <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
               {/* Always-visible header */}
               <button
                 onClick={() => setShowCalidadContent(v => !v)}
@@ -1020,7 +1020,7 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className="pointer-events-auto rounded-2xl border border-gray-100 bg-white shadow-sm">
+          <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
             {/* Always-visible header */}
             <button
               onClick={() => setShowCalidadContent(v => !v)}
@@ -1122,7 +1122,7 @@ export default function MapaSensors({
 
       {/* Filtros panel — floats on the left, collapsed by default on desktop */}
       <div className="pointer-events-none absolute left-6 top-6 z-10 hidden w-panel-md md:block">
-        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
