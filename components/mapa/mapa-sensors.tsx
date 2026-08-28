@@ -259,20 +259,18 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
   const [showGruposSensibles, setShowGruposSensibles] = useState(false);
 
   return (
-    <div className="mb-3 overflow-hidden rounded-xl bg-gray-100">
-      <div className="px-4 py-3">
-        <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
-        <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
-      </div>
-      <div className="border-t border-gray-200/70 px-4 py-3">
+    <div className="mb-3 overflow-hidden rounded-xl bg-gray-100 px-4 py-3">
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold text-gray-700">Población General</p>
         <button
           type="button"
           onClick={() => setShowGruposSensibles(true)}
-          className="text-xs font-medium text-gray-400 hover:text-gray-600"
+          className="flex-shrink-0 text-xs font-medium text-gray-400 hover:text-gray-600"
         >
           Ver por grupo sensible
         </button>
       </div>
+      <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
 
       {showGruposSensibles && (
         <>
