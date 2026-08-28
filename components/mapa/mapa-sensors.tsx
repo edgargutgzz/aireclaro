@@ -5,6 +5,7 @@ import { Navigation, Layers, Copy, ChevronRight, Award, Check, Minus, Info, Baby
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import { getPM25Color, createMarker, roundPM25, getDistance, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
@@ -66,7 +67,7 @@ function getSourceLabel(isSima: boolean, red?: string | null) {
 function getRelativeDayLabel(date: Date) {
   const now = new Date();
   const dayDiff = Math.floor((now.setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000);
-  return dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM");
+  return dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM", { locale: es });
 }
 
 function formatHistoryTime(dateStr: string) {
@@ -986,7 +987,7 @@ export default function MapaSensors({
                 onClick={() => setShowCalidadContent(v => !v)}
                 className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
               >
-                <span className="truncate text-base text-gray-700">{sensorName}</span>
+                <span className="truncate text-base font-medium text-gray-700">{sensorName}</span>
                 <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
               </button>
               {showCalidadContent && (
@@ -1078,7 +1079,7 @@ export default function MapaSensors({
               onClick={() => setShowCalidadContent(v => !v)}
               className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
             >
-              <span className="truncate text-base text-gray-700">
+              <span className="truncate text-base font-medium text-gray-700">
                 {nearestName ?? "Calidad del Aire"}
               </span>
               <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
