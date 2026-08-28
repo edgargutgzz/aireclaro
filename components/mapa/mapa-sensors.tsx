@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, MapPin, ChevronDown, Clock, Award, Check, Minus, Info } from "lucide-react";
+import { Navigation, Layers, Copy, MapPin, ChevronDown, Clock, Award, Info } from "lucide-react";
 import Image from "next/image";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -319,28 +319,6 @@ function LegendContent() {
 
 type CheckState = 'checked' | 'indeterminate' | 'unchecked';
 
-function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
-  if (state === 'unchecked') {
-    return (
-      <div
-        style={{ width: size, height: size, borderRadius: 5, border: '1.5px solid #d1d5db', flexShrink: 0 }}
-      />
-    );
-  }
-  return (
-    <div
-      className="flex items-center justify-center"
-      style={{ width: size, height: size, borderRadius: 5, backgroundColor: '#3b82f6', flexShrink: 0 }}
-    >
-      {state === 'checked' ? (
-        <Check className="text-white" style={{ width: size - 6, height: size - 6 }} strokeWidth={3} />
-      ) : (
-        <Minus className="text-white" style={{ width: size - 7, height: size - 7 }} strokeWidth={3} />
-      )}
-    </div>
-  );
-}
-
 function LayersFilterContent({
   compact,
   showOtros,
@@ -364,7 +342,6 @@ function LayersFilterContent({
 }) {
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
-  const boxSize = compact ? 16 : 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
   const [showPM10Tooltip, setShowPM10Tooltip] = useState(false);
 
@@ -422,8 +399,9 @@ function LayersFilterContent({
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div className={`flex w-full items-center gap-3 px-4 ${rowPadding}`}>
               <button onClick={toggleCitizenGroup} className="flex flex-1 items-center gap-3">
-                <LayerCheckbox state={citizenState} size={boxSize} />
-                <span className="text-sm font-medium text-gray-700">Sensores Ciudadanos</span>
+                <span className={`text-sm ${citizenState !== 'unchecked' ? 'font-semibold text-stone-800' : 'font-medium text-gray-400'}`}>
+                  Sensores Ciudadanos
+                </span>
               </button>
               <button
                 onClick={() => setShowCitizenGroup((v) => !v)}
@@ -440,8 +418,9 @@ function LayersFilterContent({
                   onClick={() => setShowOccamm((v) => !v)}
                   className="flex items-center gap-3"
                 >
-                  <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-                  <span className="text-sm text-gray-600">OCCAMM</span>
+                  <span className={`text-sm ${showOccamm ? 'font-semibold text-stone-800' : 'font-medium text-gray-400'}`}>
+                    OCCAMM
+                  </span>
                 </button>
                 <button
                   onClick={onShowOccammInfo}
@@ -455,8 +434,9 @@ function LayersFilterContent({
                 onClick={() => setShowOtros((v) => !v)}
                 className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
               >
-                <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-                <span className="text-sm text-gray-600">Otros</span>
+                <span className={`text-sm ${showOtros ? 'font-semibold text-stone-800' : 'font-medium text-gray-400'}`}>
+                  Otros
+                </span>
               </button>
             </div>
             )}
@@ -466,8 +446,9 @@ function LayersFilterContent({
             className={`flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 ${rowPadding} shadow-sm`}
             style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0,0,0,0.04) 6px, rgba(0,0,0,0.04) 8px)' }}
           >
-            <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-            <span className="text-sm font-medium text-gray-700">Estaciones de Gobierno</span>
+            <span className={`text-sm ${showSima ? 'font-semibold text-stone-800' : 'font-medium text-gray-400'}`}>
+              Estaciones de Gobierno
+            </span>
           </button>
         </div>
       </div>
