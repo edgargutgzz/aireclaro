@@ -1521,6 +1521,14 @@ export default function MapaSensors({
                 </p>
               </div>
             </div>
+            <a
+              href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-center text-sm font-medium text-gray-500 underline hover:text-gray-700"
+            >
+              Ver infografía: cómo afecta tu salud
+            </a>
             <button
               onClick={() => setShowPM25Info(false)}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
