@@ -4,24 +4,25 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Map, BarChart3 } from "lucide-react";
+import { Map, BarChart3, Info } from "lucide-react";
 
 // Shared pill-style nav links, used in both the mobile bottom bar and
 // the desktop SiteHeader.
 export default function Navlinks() {
   const pathname = usePathname();
-  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [comingSoonFor, setComingSoonFor] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!showComingSoon) return;
-    const timeout = setTimeout(() => setShowComingSoon(false), 2000);
+    if (!comingSoonFor) return;
+    const timeout = setTimeout(() => setComingSoonFor(null), 2000);
     return () => clearTimeout(timeout);
-  }, [showComingSoon]);
+  }, [comingSoonFor]);
 
   const links = [
     { name: "Mapa", href: "/", icon: Map, alt: "Mapa" },
-    // Datos isn't ready yet — clicking shows a "Próximamente" tooltip instead of navigating.
+    // Datos and Acerca aren't ready yet — clicking shows a "Próximamente" tooltip instead of navigating.
     { name: "Datos", href: "/datos", icon: BarChart3, alt: "Datos", disabled: true },
+    { name: "Acerca", href: "/acerca", icon: Info, alt: "Acerca", disabled: true },
   ];
 
   return (
@@ -49,7 +50,7 @@ export default function Navlinks() {
         if (link.disabled) {
           return (
             <div key={link.name} className="relative">
-              {showComingSoon && (
+              {comingSoonFor === link.name && (
                 <>
                   {/* Mobile: pill sits in the bottom bar, so the tooltip opens upward */}
                   <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm md:hidden">
@@ -63,7 +64,7 @@ export default function Navlinks() {
               )}
               <button
                 type="button"
-                onClick={() => setShowComingSoon(true)}
+                onClick={() => setComingSoonFor(link.name)}
                 className="group transition-opacity active:opacity-70"
                 aria-label={`${link.alt} (próximamente)`}
               >
