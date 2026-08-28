@@ -919,11 +919,13 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute bottom-8 right-6 z-10 hidden flex-col items-stretch gap-2 md:flex">
         {latestDataHour && (
           <div className="flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
-            <span className="relative flex h-2 w-2 flex-shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+            {/* Dot sits in a 16px box so its label starts on the same x as the
+                location button's, whose icon is 16px wide. */}
+            <span className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
+              <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
+              <span className="relative h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-[13px] font-medium text-gray-500">
+            <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">
               Última actualización: {latestDataHour}
             </span>
           </div>
@@ -933,8 +935,8 @@ export default function MapaSensors({
           className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
-          <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          <span className={`text-[13px] font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
+          <Navigation className="h-4 w-4 text-gray-700" />
+          <span className="text-[13px] font-medium text-gray-700">
             {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
           </span>
         </button>
@@ -1183,7 +1185,7 @@ export default function MapaSensors({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            <span className="whitespace-nowrap text-[13px] font-medium text-gray-500">
+            <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">
               Última actualización: {latestDataHour}
             </span>
           </div>
