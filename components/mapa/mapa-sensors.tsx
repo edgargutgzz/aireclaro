@@ -1462,9 +1462,8 @@ export default function MapaSensors({
                 <p className="mb-1 text-sm font-semibold text-gray-700">Sensores Ciudadanos</p>
                 <p className="text-sm leading-relaxed text-gray-500">
                   Sensores de bajo costo instalados y operados por ciudadanos,
-                  escuelas y organizaciones independientes. Incluyen los
-                  sensores de la Red OCCAMM y de otras fuentes
-                  independientes. Los datos provienen de{" "}
+                  escuelas y organizaciones independientes, que comparten sus
+                  datos a través de la red de{" "}
                   <a
                     href="https://www.purpleair.com/"
                     target="_blank"
@@ -1473,7 +1472,8 @@ export default function MapaSensors({
                   >
                     PurpleAir
                   </a>
-                  .
+                  . Incluyen los sensores de la Red OCCAMM y de otras fuentes
+                  independientes.
                 </p>
               </div>
               <div>
