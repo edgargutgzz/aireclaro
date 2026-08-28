@@ -732,31 +732,15 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Highlight selected marker (or, when nothing is selected, the nearest
-  // sensor backing the default Calidad del aire card), restore all others
+  // Restore the plain marker shadow on everything before the pulse effect
+  // (below) applies the animation to whichever one is active.
   useEffect(() => {
     markerElementsRef.current.forEach(({ el, source }) => {
       el.style.boxShadow = source === "sima"
         ? "0 2px 8px rgba(0,0,0,0.2), 0 0 0 2.5px white"
         : "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
     });
-    // Only one marker shows the ring at a time: the explicitly selected
-    // sensor if there is one, otherwise the nearest/default sensor.
-    if (selectedSensor) {
-      const markerData = markerElementsRef.current.get(selectedSensor.sensor.sensor_id);
-      if (markerData) {
-        markerData.el.style.boxShadow = SELECTED_RING_SHADOW;
-      }
-    } else if (nearestSensorData) {
-      const nearestSensor = sensors.find(
-        s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
-      );
-      const markerData = nearestSensor && markerElementsRef.current.get(nearestSensor.sensor_id);
-      if (markerData) {
-        markerData.el.style.boxShadow = SELECTED_RING_SHADOW;
-      }
-    }
-  }, [selectedSensor, nearestSensorData, sensors]);
+  }, [selectedSensor, nearestSensorData]);
 
   // Fetch the last 48h of readings for the trend sparkline — the selected
   // sensor if one is picked, otherwise the nearest sensor (same one backing
@@ -791,33 +775,38 @@ export default function MapaSensors({
     };
   }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
 
-  // Pulse animation on nearest sensor marker — only when it's the one acting
-  // as the selected marker. Otherwise another marker is explicitly selected
-  // and the nearest one shouldn't show the ring (via animation) too.
+  // Pulse animation on the active marker — the explicitly selected sensor
+  // if there is one, otherwise the nearest/default sensor. Replaces the
+  // static ring entirely: whichever marker is "active" pulses instead.
   useEffect(() => {
     if (!mapLoaded) return;
 
     markerElementsRef.current.forEach(({ el }) => { el.style.animation = ''; });
 
-    if (!nearestSensorData || selectedSensor) return;
+    const active = selectedSensor
+      ? { sensorId: selectedSensor.sensor.sensor_id, pm25: selectedSensor.pm25 }
+      : nearestSensorData
+        ? {
+            sensorId: sensors.find(
+              s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
+            )?.sensor_id,
+            pm25: nearestSensorData.pm25,
+          }
+        : null;
 
-    const nearestSensor = sensors.find(
-      s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon
-    );
-    if (!nearestSensor) return;
+    if (!active || active.sensorId === undefined) return;
 
-    const markerData = markerElementsRef.current.get(nearestSensor.sensor_id);
+    const markerData = markerElementsRef.current.get(active.sensorId);
     if (!markerData) return;
 
-    const colorInfo = getPM25Color(nearestSensorData.pm25 ?? null);
+    const colorInfo = getPM25Color(active.pm25 ?? null);
     const hex = colorInfo?.bg ?? '#ffffff';
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
 
-    // Same ring as a click-selected marker — the pulse animation drives
-    // box-shadow every frame, so it must include the ring itself or it
-    // overwrites it with the plain (unselected) marker shadow.
+    // The pulse animation drives box-shadow every frame, so it must
+    // include the ring itself or it overwrites it with the plain shadow.
     const baseShadow = SELECTED_RING_SHADOW;
     const startSpread = '6px';
     const animName = `nearestPulse_${hex.slice(1)}`;
