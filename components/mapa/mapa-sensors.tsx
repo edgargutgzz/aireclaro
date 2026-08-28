@@ -100,6 +100,19 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     { value: 130, color: "#a855f7" },
   ].filter((t) => t.value > min && t.value < max);
 
+  // IMECA zone bands — a faint colored background per quality level, so it's
+  // clear which zone the line sits in without having to read the threshold
+  // lines. Clipped to this window's actual min/max range.
+  const zoneBands = [
+    { lo: 0, hi: 15, color: "#22c55e" },
+    { lo: 15, hi: 25, color: "#eab308" },
+    { lo: 25, hi: 79, color: "#f97316" },
+    { lo: 79, hi: 130, color: "#ef4444" },
+    { lo: 130, hi: Infinity, color: "#a855f7" },
+  ]
+    .map((z) => ({ ...z, lo: Math.max(z.lo, min), hi: Math.min(z.hi, max) }))
+    .filter((z) => z.lo < z.hi);
+
   const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
   const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
 
@@ -166,6 +179,9 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           onTouchMove={(e) => updateHover(e.touches[0].clientX)}
           onTouchEnd={() => setHoverIndex(null)}
         >
+          {zoneBands.map((z) => (
+            <rect key={z.color} x={0} y={toY(z.hi)} width={width} height={toY(z.lo) - toY(z.hi)} fill={z.color} fillOpacity={0.08} />
+          ))}
           <path d={areaPath} fill={SPARKLINE_COLOR} fillOpacity={0.12} stroke="none" />
           {thresholds.map((t) => (
             <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
