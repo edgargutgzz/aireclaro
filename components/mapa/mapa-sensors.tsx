@@ -1462,9 +1462,9 @@ export default function MapaSensors({
                 <p className="mb-1 text-sm font-semibold text-gray-700">Sensores Ciudadanos</p>
                 <p className="text-sm leading-relaxed text-gray-500">
                   Sensores de bajo costo instalados y operados por ciudadanos,
-                  escuelas y organizaciones independientes, no por el
-                  gobierno. Incluyen los sensores de la Red OCCAMM y de
-                  otras fuentes independientes.
+                  escuelas y organizaciones independientes. Incluyen los
+                  sensores de la Red OCCAMM y de otras fuentes
+                  independientes.
                 </p>
               </div>
               <div>
