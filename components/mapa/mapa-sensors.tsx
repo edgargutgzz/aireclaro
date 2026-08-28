@@ -998,11 +998,11 @@ export default function MapaSensors({
                             setCopied(true);
                             setTimeout(() => setCopied(false), 1500);
                           }}
-                          className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600"
+                          className="flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs text-gray-400 hover:text-gray-600"
                           aria-label="Copiar coordenadas"
-                          title="Copiar coordenadas"
                         >
                           <MapPinned className="h-3.5 w-3.5" />
+                          <span>Coordenadas</span>
                         </button>
                       </div>
                       {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
@@ -1081,11 +1081,11 @@ export default function MapaSensors({
                             setCopied(true);
                             setTimeout(() => setCopied(false), 1500);
                           }}
-                          className="flex-shrink-0 rounded-full p-1 text-gray-400 hover:text-gray-600"
+                          className="flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs text-gray-400 hover:text-gray-600"
                           aria-label="Copiar coordenadas"
-                          title="Copiar coordenadas"
                         >
                           <MapPinned className="h-3.5 w-3.5" />
+                          <span>Coordenadas</span>
                         </button>
                       )}
                     </div>
