@@ -256,9 +256,8 @@ const SENSITIVE_GROUPS = [
 ] as const;
 
 function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
-  const [activeGroup, setActiveGroup] = useState<typeof SENSITIVE_GROUPS[number]["key"]>("menores");
+  const [openGroup, setOpenGroup] = useState<typeof SENSITIVE_GROUPS[number]["key"] | null>(null);
   const [showGroups, setShowGroups] = useState(false);
-  const active = SENSITIVE_GROUPS.find((g) => g.key === activeGroup)!;
 
   return (
     <div className="mb-3 overflow-hidden rounded-xl bg-gray-100">
@@ -276,23 +275,26 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
           <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${showGroups ? 'rotate-180' : ''}`} />
         </button>
         {showGroups && (
-          <>
-            <div className="mt-3 grid grid-cols-2 gap-1 rounded-2xl bg-white p-1">
-              {SENSITIVE_GROUPS.map((g) => (
-                <button
-                  key={g.key}
-                  type="button"
-                  onClick={() => setActiveGroup(g.key)}
-                  className={`truncate rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors ${
-                    activeGroup === g.key ? "bg-gray-100 text-gray-800 shadow-sm" : "text-gray-400"
-                  }`}
-                >
-                  {g.label}
-                </button>
-              ))}
-            </div>
-            <p className="mt-3 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[active.key]}</p>
-          </>
+          <div className="mt-3 flex flex-col gap-1.5">
+            {SENSITIVE_GROUPS.map((g) => {
+              const isOpen = openGroup === g.key;
+              return (
+                <div key={g.key} className="overflow-hidden rounded-lg bg-white">
+                  <button
+                    type="button"
+                    onClick={() => setOpenGroup(isOpen ? null : g.key)}
+                    className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-gray-700"
+                  >
+                    <span>{g.label}</span>
+                    <ChevronDown className={`h-3.5 w-3.5 flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {isOpen && (
+                    <p className="px-3 pb-3 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
