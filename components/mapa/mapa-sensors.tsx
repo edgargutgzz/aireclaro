@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronDown, ChevronRight, Clock, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronRight, Clock, Award, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -938,7 +938,7 @@ export default function MapaSensors({
                 className="flex w-full items-center justify-between px-5 pt-4 pb-3"
               >
                 <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
-                <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-180' : ''}`} />
+                <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
               </button>
               {showCalidadContent && (
                 <>
@@ -1012,7 +1012,7 @@ export default function MapaSensors({
               className="flex w-full items-center justify-between px-5 pt-4 pb-3"
             >
               <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
-              <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-180' : ''}`} />
+              <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
             </button>
             {showCalidadContent && (
               <>
@@ -1095,7 +1095,7 @@ export default function MapaSensors({
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
           >
             <span className="text-base font-medium text-gray-700">Capas</span>
-            <ChevronDown className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-180' : ''}`} />
+            <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
           </button>
           {showFiltrosContent && (
             <div className="px-5 pb-5 pt-2">
@@ -1162,7 +1162,7 @@ export default function MapaSensors({
                   className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
                 >
                   <span className="truncate">{isSima ? "Estación" : "Sensor"}: {sensorName}</span>
-                  <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-180' : ''}`} />
+                  <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-90' : ''}`} />
                 </button>
                 {showSensorDetail && (
                   <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
@@ -1307,7 +1307,7 @@ export default function MapaSensors({
                       ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
                       : "Promedio del área metropolitana"}
                   </span>
-                  <ChevronDown className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-180' : ''}`} />
+                  <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-90' : ''}`} />
                 </button>
                 {showNearestDetail && (
                   <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
