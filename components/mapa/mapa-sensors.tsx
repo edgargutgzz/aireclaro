@@ -717,7 +717,7 @@ export default function MapaSensors({
         : null;
 
       markerElement.style.cursor = "pointer";
-      markerElement.style.transition = "box-shadow 0.15s ease";
+      markerElement.style.transition = "box-shadow 0.15s ease, width 0.2s ease, height 0.2s ease, font-size 0.2s ease";
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
         const isDesktop = window.innerWidth >= 768;
@@ -793,7 +793,16 @@ export default function MapaSensors({
   useEffect(() => {
     if (!mapLoaded) return;
 
-    markerElementsRef.current.forEach(({ el }) => { el.style.animation = ''; });
+    // Reset size/stacking on everything — width/height (not transform, which
+    // Mapbox itself uses for positioning) so the active marker can grow
+    // without fighting the library for control of the element's transform.
+    markerElementsRef.current.forEach(({ el }) => {
+      el.style.animation = '';
+      el.style.width = '40px';
+      el.style.height = '40px';
+      el.style.fontSize = '12px';
+      el.style.zIndex = '';
+    });
 
     const active = selectedSensor
       ? { sensorId: selectedSensor.sensor.sensor_id, pm25: selectedSensor.pm25 }
@@ -836,6 +845,10 @@ export default function MapaSensors({
     }
 
     markerData.el.style.animation = `${animName} 1.8s ease-out infinite`;
+    markerData.el.style.width = '52px';
+    markerData.el.style.height = '52px';
+    markerData.el.style.fontSize = '15px';
+    markerData.el.style.zIndex = '10';
   }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm, selectedSensor]);
 
   // Close selected sensor on map click
