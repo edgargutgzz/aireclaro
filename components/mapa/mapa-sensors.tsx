@@ -988,10 +988,9 @@ export default function MapaSensors({
                           aria-label="Copiar coordenadas"
                         >
                           <Copy className="h-3.5 w-3.5" />
-                          <span>Coordenadas</span>
+                          <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
                         </button>
                       </div>
-                      {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
                     </div>
 
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
@@ -1070,11 +1069,10 @@ export default function MapaSensors({
                           aria-label="Copiar coordenadas"
                         >
                           <Copy className="h-3.5 w-3.5" />
-                          <span>Coordenadas</span>
+                          <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
                         </button>
                       )}
                     </div>
-                    {copied && <p className="mt-1 text-right text-xs text-gray-400">Copiado</p>}
                   </div>
 
                   {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
