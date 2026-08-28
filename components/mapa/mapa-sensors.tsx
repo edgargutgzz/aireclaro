@@ -143,6 +143,11 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     setHoverIndex(Math.round(ratio * (data.length - 1)));
   };
 
+  // The latest point wears its own air-quality color; the IMECA text tones
+  // (not the marker fills) so pale zones like yellow still read on white.
+  const latestQuality = getQualityInfo(data[data.length - 1].pm25);
+  const latestColor = latestQuality?.textColor ?? SPARKLINE_COLOR;
+
   const hovered = hoverIndex !== null ? data[hoverIndex] : null;
   const hoveredQuality = hovered ? getQualityInfo(hovered.pm25) : null;
   const hoverPoint = hoverIndex !== null ? points[hoverIndex] : null;
@@ -218,7 +223,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           {/* Current hour — the rightmost point, always marked */}
-          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={SPARKLINE_COLOR} stroke="white" strokeWidth={2} />
+          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={latestColor} stroke="white" strokeWidth={2} />
           {hoverPoint && (
             <>
               <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
