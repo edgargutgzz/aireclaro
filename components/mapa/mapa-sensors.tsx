@@ -407,7 +407,7 @@ function LayersFilterContent({
     <div className="flex flex-col gap-5">
       <div>
         <div className="mb-2 flex items-center gap-1.5">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contaminante</p>
           <button
             type="button"
             onClick={onShowPM25Info}
@@ -439,7 +439,7 @@ function LayersFilterContent({
       </div>
       <div>
         <div className="mb-2 flex items-center gap-1.5">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Fuente</p>
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Fuente</p>
           <button
             type="button"
             onClick={onShowFuenteInfo}
