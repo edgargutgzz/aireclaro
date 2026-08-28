@@ -450,32 +450,30 @@ function LayersFilterContent({
             </button>
           </div>
           {showCitizenGroup && (
-          <div className="border-t border-gray-100 py-1">
-            <div className="ml-6 flex flex-col border-l border-gray-200">
-              <div className={`flex w-full items-center gap-2 pl-5 pr-4 ${subRowPadding}`}>
-                <button
-                  onClick={() => setShowOccamm((v) => !v)}
-                  className="flex items-center gap-3"
-                >
-                  <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-                  <span className="text-sm text-gray-600">OCCAMM</span>
-                </button>
-                <button
-                  onClick={onShowOccammInfo}
-                  className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-                  aria-label="Más información sobre OCCAMM"
-                >
-                  <Info className="h-3 w-3" />
-                </button>
-              </div>
+          <div className="flex flex-col border-t border-gray-100">
+            <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
               <button
-                onClick={() => setShowOtros((v) => !v)}
-                className={`flex w-full items-center gap-3 pl-5 pr-4 ${subRowPadding}`}
+                onClick={() => setShowOccamm((v) => !v)}
+                className="flex items-center gap-3"
               >
-                <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-                <span className="text-sm text-gray-600">Otros</span>
+                <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
+                <span className="text-sm text-gray-600">OCCAMM</span>
+              </button>
+              <button
+                onClick={onShowOccammInfo}
+                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                aria-label="Más información sobre OCCAMM"
+              >
+                <Info className="h-3 w-3" />
               </button>
             </div>
+            <button
+              onClick={() => setShowOtros((v) => !v)}
+              className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
+            >
+              <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
+              <span className="text-sm text-gray-600">Otros</span>
+            </button>
           </div>
           )}
           <button
