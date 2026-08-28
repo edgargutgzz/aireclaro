@@ -406,18 +406,20 @@ function LayersFilterContent({
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
+        <div className="mb-2 flex items-center gap-1.5">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Contaminante</p>
+          <button
+            type="button"
+            onClick={onShowPM25Info}
+            className="flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+            aria-label="Por qué medimos PM2.5"
+          >
+            <Info className="h-3.5 w-3.5" />
+          </button>
+        </div>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <div className="flex items-center gap-1.5 rounded-xl bg-white pl-5 pr-3 py-2 text-sm font-semibold text-gray-800 shadow-sm">
-            <span>PM2.5</span>
-            <button
-              type="button"
-              onClick={onShowPM25Info}
-              className="flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-              aria-label="Por qué medimos PM2.5"
-            >
-              <Info className="h-3.5 w-3.5" />
-            </button>
+          <div className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm">
+            PM2.5
           </div>
           <div className="relative">
             <button
