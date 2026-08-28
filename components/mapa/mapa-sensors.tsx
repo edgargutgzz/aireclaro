@@ -591,6 +591,18 @@ export default function MapaSensors({
     return sorted[Math.floor(sorted.length / 2)];
   }, [data]);
 
+  // Hour of the most recent reading in the dataset — the badge shows the data's
+  // own timestamp instead of a vague "live" claim.
+  const latestDataHour = useMemo(() => {
+    if (!data.length) return null;
+    const latest = data.reduce((acc, d) => {
+      const t = new Date(d.time_stamp).getTime();
+      return Number.isNaN(t) ? acc : Math.max(acc, t);
+    }, 0);
+    if (!latest) return null;
+    return format(new Date(latest), "h") + ":00 " + format(new Date(latest), "a");
+  }, [data]);
+
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestName = nearestSensorData?.name ?? null;
   const nearestIsSima = nearestSensorData?.isSima ?? null;
@@ -831,21 +843,6 @@ export default function MapaSensors({
         ref={mapContainer}
         className="absolute left-0 top-0 h-full w-full"
       />
-
-      {/* Live-data indicator — communicates this is a live, auto-updating map,
-          not a one-off snapshot. Top-center is the one spot free of other
-          floating controls on both mobile and desktop. */}
-      <div className="pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 md:top-6">
-        <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-3 py-1.5 shadow-sm backdrop-blur-md">
-          <span className="relative flex h-2 w-2 flex-shrink-0">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
-          </span>
-          <span className="whitespace-nowrap text-xs font-medium text-gray-600">
-            En vivo <span className="text-gray-400">· actualiza cada hora</span>
-          </span>
-        </div>
-      </div>
 
       {/* Mobile right-side buttons — hidden when sheet is expanded */}
       {sheetState === 'peek' && (
@@ -1134,9 +1131,10 @@ export default function MapaSensors({
         </div>{/* end card width wrapper */}
       </div>
 
-      {/* Filtros panel — floats on the left, collapsed by default on desktop */}
-      <div className="pointer-events-none absolute left-6 top-6 z-10 hidden w-panel-md md:block">
-        <div className="pointer-events-auto overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+      {/* Left column: layers panel (desktop) with the data-freshness badge under it.
+          On mobile the panel is a bottom sheet, so only the badge shows here. */}
+      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:left-6 md:top-6">
+        <div className="pointer-events-auto hidden w-full overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md md:block">
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
             className="flex w-full items-center justify-between px-5 pt-4 pb-3"
@@ -1161,6 +1159,18 @@ export default function MapaSensors({
             </div>
           )}
         </div>
+
+        {latestDataHour && (
+          <div className="flex items-center gap-2 rounded-full border border-white/60 bg-white/80 px-3 py-1.5 shadow-sm backdrop-blur-md">
+            <span className="relative flex h-2 w-2 flex-shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+            </span>
+            <span className="whitespace-nowrap text-xs font-medium text-gray-600">
+              Datos de las {latestDataHour}
+            </span>
+          </div>
+        )}
       </div>
 
 
