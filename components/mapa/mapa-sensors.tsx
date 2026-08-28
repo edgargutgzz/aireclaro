@@ -907,7 +907,7 @@ export default function MapaSensors({
       </div>
 
       {/* Desktop right-side floating controls */}
-      <div className="pointer-events-none absolute bottom-8 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
+      <div className="pointer-events-none absolute bottom-8 right-6 z-10 hidden flex-col items-stretch gap-2 md:flex">
         {latestDataHour && (
           <div className="flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
             <span className="relative flex h-2 w-2 flex-shrink-0">
