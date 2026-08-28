@@ -277,8 +277,8 @@ function HealthRecommendationTabs({ info }: { info: QualityInfo }) {
       {showGruposSensibles && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowGruposSensibles(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex max-h-[80vh] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 overflow-y-auto rounded-3xl bg-white p-7 shadow-xl">
-            <div className="flex flex-col gap-4">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex max-h-[80vh] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 overflow-y-auto rounded-3xl bg-white p-8 shadow-xl">
+            <div className="flex flex-col gap-5">
               {SENSITIVE_GROUPS.map((g) => (
                 <div key={g.key}>
                   <div className="mb-1 flex items-center gap-1.5">
@@ -1393,7 +1393,7 @@ export default function MapaSensors({
       {cuidarmeQuality && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setCuidarmeQuality(null)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-3xl bg-white p-7 shadow-xl">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Recomendaciones oficiales según el Índice de Aire y Salud{' '}
               <a
@@ -1420,7 +1420,7 @@ export default function MapaSensors({
       {showOccammInfo && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowOccammInfo(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-3xl bg-white p-7 shadow-xl">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Red de sensores del Observatorio Ciudadano de la Calidad del
               Aire, una organización de la sociedad civil dedicada a mejorar
@@ -1451,7 +1451,7 @@ export default function MapaSensors({
       {showPM25Info && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowPM25Info(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-5 rounded-3xl bg-white p-7 shadow-xl">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             <p className="text-center text-sm leading-relaxed text-gray-500">
               Las partículas PM2.5 son 100% respirables: viajan profundamente
               en los pulmones y pueden llegar hasta el torrente sanguíneo.
