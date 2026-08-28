@@ -93,15 +93,6 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     y: toY(d.pm25),
   }));
 
-  // IMECA thresholds — only draw the ones this window's range actually
-  // crosses, so it stays a quiet reference instead of cluttering the chart.
-  const thresholds = [
-    { value: 15, color: "#eab308" },
-    { value: 25, color: "#f97316" },
-    { value: 79, color: "#ef4444" },
-    { value: 130, color: "#a855f7" },
-  ].filter((t) => t.value > min && t.value < max);
-
   // IMECA zone bands — a faint colored background per quality level, so it's
   // clear which zone the line sits in without having to read the threshold
   // lines. Clipped to this window's actual min/max range.
@@ -182,9 +173,6 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
         >
           {zoneBands.map((z) => (
             <rect key={z.color} x={0} y={toY(z.hi)} width={width} height={toY(z.lo) - toY(z.hi)} fill={z.color} fillOpacity={0.1} />
-          ))}
-          {thresholds.map((t) => (
-            <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
           ))}
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
