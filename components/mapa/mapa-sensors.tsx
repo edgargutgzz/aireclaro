@@ -143,6 +143,7 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   };
 
   const hovered = hoverIndex !== null ? data[hoverIndex] : null;
+  const hoveredQuality = hovered ? getQualityInfo(hovered.pm25) : null;
   const hoverPoint = hoverIndex !== null ? points[hoverIndex] : null;
   const tooltipLeftPct = hoverPoint ? (hoverPoint.x / width) * 100 : 0;
 
@@ -165,15 +166,26 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
         ))}
         {hovered && hoverPoint && (
           <div
-            className="pointer-events-none absolute z-10 whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-xs text-white shadow-sm"
+            className="pointer-events-none absolute z-10 flex flex-col whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-xs text-white shadow-sm"
             style={{
               left: `clamp(70px, ${tooltipLeftPct}%, calc(100% - 70px))`,
               top: -6,
               transform: `translate(-50%, -100%)`,
             }}
           >
-            <span className="font-semibold">{Math.round(hovered.pm25)} μg/m³</span>
-            <span className="ml-1.5 text-gray-300">{formatHistoryTime(hovered.time_stamp)}</span>
+            <span>
+              <span className="font-semibold">{Math.round(hovered.pm25)} μg/m³</span>
+              <span className="ml-1.5 text-gray-300">{formatHistoryTime(hovered.time_stamp)}</span>
+            </span>
+            {hoveredQuality && (
+              /* The color rides a swatch, not the word: the IMECA text colors
+                 are tuned for white and several fall under contrast on this
+                 dark pill. */
+              <span className="mt-0.5 flex items-center gap-1.5 text-[11px] text-gray-100">
+                <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: hoveredQuality.color }} />
+                {hoveredQuality.label}
+              </span>
+            )}
           </div>
         )}
         <svg
