@@ -615,15 +615,15 @@ function LayersFilterContent({
             single-select list works in iOS Settings. No box or circle to
             suggest you could turn several on, and the unavailable ones say so
             in place instead of only on tap. */}
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className={`flex items-center gap-3 px-4 ${rowPadding}`}>
+        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
+          <div className={`flex items-center gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}>
             <LayerCheckbox state="checked" size={boxSize} />
             <span className="text-sm font-medium text-gray-800">PM2.5</span>
           </div>
           {["PM10", "Ozono"].map((name) => (
             <div
               key={name}
-              className={`flex items-center justify-between gap-3 border-t border-gray-100 px-4 ${rowPadding}`}
+              className={`flex items-center justify-between gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}
             >
               <span className="flex min-w-0 items-center gap-3">
                 <LayerCheckbox state="unchecked" size={boxSize} />
