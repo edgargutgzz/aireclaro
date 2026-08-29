@@ -511,14 +511,19 @@ function LayersFilterContent({
       <div>
         {sectionHeader('ubicacion', 'Ubicación', ubicacionSummary)}
         {openSection === 'ubicacion' && (
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          {estados.map((estado) => {
+        {/* One grouped list per section: a single bordered card with hairline
+            separators, the way an inset list works. A card per row meant a
+            stack of elevated surfaces for what is a checklist, and elevation
+            on a row that isn't a control (see Contaminante) promises
+            something to press. */}
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+          {estados.map((estado, i) => {
             const keys = estado.municipios.map((m) => m.key);
             const hidden = keys.filter((k) => hiddenMunicipios.includes(k)).length;
             const state: CheckState = hidden === 0 ? 'checked' : hidden === keys.length ? 'unchecked' : 'indeterminate';
             const open = openEstados.includes(estado.key);
             return (
-              <div key={estado.key} className="overflow-hidden rounded-xl bg-white shadow-sm">
+              <div key={estado.key} className={i > 0 ? "border-t border-gray-100" : ""}>
                 <div className="flex w-full items-center gap-1">
                   <button
                     type="button"
@@ -527,7 +532,7 @@ function LayersFilterContent({
                     onClick={() => setHiddenMunicipios((prev) => state === 'checked'
                       ? [...prev, ...keys.filter((k) => !prev.includes(k))]
                       : prev.filter((k) => !keys.includes(k)))}
-                    className={`flex min-w-0 flex-1 items-center gap-3 rounded-xl pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
+                    className={`flex min-w-0 flex-1 items-center gap-3 pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
                   >
                     <LayerCheckbox state={state} size={boxSize} />
                     <span className={`truncate text-sm font-medium ${state === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
@@ -586,15 +591,15 @@ function LayersFilterContent({
             checkbox and the label's tone: dropping the card on "off" left
             nothing to aim at. */}
         {openSection === 'fuente' && (
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+          <div>
             <div className="flex w-full items-center gap-1">
               <button
                 type="button"
                 role="checkbox"
                 aria-checked={citizenState === 'indeterminate' ? 'mixed' : citizenState === 'checked'}
                 onClick={toggleCitizenGroup}
-                className={`flex min-w-0 flex-1 items-center gap-3 rounded-xl pl-3 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
+                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
               >
                 <LayerCheckbox state={citizenState} size={boxSize} />
                 <span className={`text-sm font-medium ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
@@ -649,7 +654,7 @@ function LayersFilterContent({
             role="checkbox"
             aria-checked={showSima}
             onClick={() => setShowSima((v) => !v)}
-            className={`flex w-full items-center gap-3 rounded-xl bg-white px-3 text-left shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
+            className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className={`text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
@@ -668,15 +673,15 @@ function LayersFilterContent({
             invite a click that could only empty the map. Make it a radio the
             day PM10 or Ozono lands and the choice becomes real. */}
         {openSection === 'contaminante' && (
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          <div className={`flex items-center justify-between gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}>
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+          <div className={`flex items-center justify-between gap-3 px-4 ${rowPadding}`}>
             <span className="text-sm font-medium text-gray-800">PM2.5</span>
             <Check className="h-4 w-4 flex-shrink-0 text-gray-700" strokeWidth={2.5} />
           </div>
           {["PM10", "Ozono"].map((name) => (
             <div
               key={name}
-              className={`flex items-center justify-between gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}
+              className={`flex items-center justify-between gap-3 border-t border-gray-100 px-4 ${rowPadding}`}
             >
               <span className="text-sm font-medium text-gray-400">{name}</span>
               <span className="flex-shrink-0 text-xs text-gray-300">No disponible</span>
