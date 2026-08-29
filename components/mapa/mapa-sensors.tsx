@@ -408,7 +408,7 @@ function LayersFilterContent({
           </button>
         </div>
         <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <div className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm">
+          <div className="rounded-xl bg-white px-5 py-2 text-sm font-medium text-gray-800 shadow-sm">
             PM2.5
           </div>
           {["PM10", "Ozono"].map((name) => (
@@ -416,7 +416,7 @@ function LayersFilterContent({
               <button
                 type="button"
                 onClick={() => setUnavailableTooltip(name)}
-                className="rounded-xl px-5 py-2 text-sm font-semibold text-gray-400"
+                className="rounded-xl px-5 py-2 text-sm font-medium text-gray-400"
               >
                 {name}
               </button>
@@ -452,7 +452,7 @@ function LayersFilterContent({
             <div className={`flex w-full items-center justify-between gap-3 px-3 ${rowPadding}`}>
               <button type="button" onClick={toggleCitizenGroup} className="flex min-w-0 items-center gap-3">
                 <LayerCheckbox state={citizenState} size={boxSize} />
-                <span className={`text-sm font-semibold ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
+                <span className={`text-sm font-medium ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
               </button>
               <button
                 type="button"
@@ -500,7 +500,7 @@ function LayersFilterContent({
             className={`flex w-full items-center gap-3 rounded-xl bg-white px-3 shadow-sm ${rowPadding}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-            <span className={`text-sm font-semibold ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
+            <span className={`text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
           </button>
         </div>
       </div>
