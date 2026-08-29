@@ -430,7 +430,7 @@ function LayersFilterContent({
             <Info className="h-3 w-3" />
           </button>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/50 shadow-sm backdrop-blur-md">
           <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
             <button type="button" onClick={toggleCitizenGroup} className="flex min-w-0 items-center gap-3">
               <LayerCheckbox state={citizenState} size={boxSize} />
@@ -446,7 +446,7 @@ function LayersFilterContent({
             </button>
           </div>
           {showCitizenGroup && (
-          <div className="flex flex-col border-t border-gray-100">
+          <div className="flex flex-col border-t border-white/70">
             <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
               <button
                 type="button"
@@ -478,7 +478,7 @@ function LayersFilterContent({
           <button
             type="button"
             onClick={() => setShowSima((v) => !v)}
-            className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 ${rowPadding}`}
+            className={`flex w-full items-center gap-3 border-t border-white/70 px-4 ${rowPadding}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className="text-sm font-semibold text-gray-800">Estaciones de Gobierno</span>
