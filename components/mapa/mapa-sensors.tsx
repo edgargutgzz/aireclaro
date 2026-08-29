@@ -1918,10 +1918,10 @@ export default function MapaSensors({
       </div>
 
 
-      {/* Location modal — centered, both mobile and desktop. Its own layout, an
-          illustrated prompt rather than a titled sheet, but on the same dialog
-          shell as the info popups, so it is named for assistive tech and
-          answers to Escape like the rest.
+      {/* Location modal. Same format as the popups reached from the Capas
+          panel: the shared InfoDialog, so the title sits in the header beside
+          the close button rather than centred under an illustration, on the
+          same glass, padding and measure as Fuente and Contaminante.
 
           The copy follows what actually happened. It used to open with
           "Habilita el acceso a tu ubicación" in every case, which is priming
@@ -1930,47 +1930,34 @@ export default function MapaSensors({
           setting lives, and wrong again after a timeout, which is nobody's
           decision and is worth retrying. */}
       {showLocationTip && (
-        <DialogShell
+        <InfoDialog
+          title={locationStatus === 'denied' ? 'Ubicación bloqueada' : 'No pudimos ubicarte'}
           onClose={() => setShowLocationTip(false)}
-          labelledBy="location-tip-title"
-          className="w-[85%] max-w-sm rounded-3xl bg-white p-6 shadow-xl"
         >
-          <div className="mb-4 flex justify-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-              <Navigation className="h-6 w-6 text-gray-500" aria-hidden="true" />
-            </div>
-          </div>
-          <h2 id="location-tip-title" className="mb-1.5 text-center text-base font-semibold text-gray-900">
-            {locationStatus === 'denied' ? 'Ubicación bloqueada' : 'No pudimos ubicarte'}
-          </h2>
-          <p className="text-center text-sm leading-relaxed text-gray-500">
+          <p className="text-sm leading-relaxed text-gray-500">
             {locationStatus === 'denied'
               ? 'Tu navegador tiene bloqueada la ubicación para este sitio, así que no podemos volver a pedirla desde aquí. Para activarla, abre la configuración del sitio junto a la barra de direcciones y permite el acceso a la ubicación.'
               : 'No fue posible obtener tu ubicación en este momento. Revisa que la ubicación esté activada en tu dispositivo e inténtalo de nuevo.'}
           </p>
-          {locationStatus === 'denied' ? (
-            <button
-              type="button"
-              onClick={() => setShowLocationTip(false)}
-              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-            >
-              Entendido
-            </button>
-          ) : (
-            /* A timeout or a failed fix is worth another go, so the dialog
-               offers one instead of just acknowledging itself. */
+          {/* The other dialogs carry no footer button, because they present
+              information and ask for nothing. This one is the exception that
+              proves the rule: a timeout or a failed fix is worth another go,
+              so there is a real action here rather than a dismissal wearing
+              an action's clothes. A denial is not retryable from the page, so
+              that case keeps the header's close button and nothing else. */}
+          {locationStatus !== 'denied' && (
             <button
               type="button"
               onClick={() => {
                 setShowLocationTip(false);
                 locate();
               }}
-              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+              className="mt-6 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
             >
               Reintentar
             </button>
           )}
-        </DialogShell>
+        </InfoDialog>
       )}
 
       {/* Bottom sheet backdrop — mobile only */}
