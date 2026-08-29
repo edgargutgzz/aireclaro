@@ -504,7 +504,11 @@ function LayersFilterContent({
   );
 
   return (
-    <div className="flex flex-col gap-6">
+    /* Sections are separated by whitespace alone: each already carries an
+       uppercase header and a bounded card, so a rule between them would be a
+       third signal for the same boundary. Rules stay where they belong,
+       between rows inside a group. */
+    <div className="flex flex-col gap-7">
       {/* Ubicación — state, then its municipalities, on the same nesting the
           Fuente group uses. Every sensor sits under a row, so hiding
           everything really does empty the map. */}
@@ -580,7 +584,7 @@ function LayersFilterContent({
         )}
       </div>
 
-      <div className="-mt-3 border-t border-gray-100 pt-3">
+      <div>
         {sectionHeader('fuente', 'Fuente', fuenteSummary, {
           onClick: onShowFuenteInfo,
           ariaLabel: "Más información sobre las fuentes de datos",
@@ -671,7 +675,7 @@ function LayersFilterContent({
         </div>
         )}
       </div>
-      <div className="-mt-3 border-t border-gray-100 pt-3">
+      <div>
         {sectionHeader('contaminante', 'Contaminante', 'PM2.5', {
           onClick: onShowPM25Info,
           ariaLabel: "Por qué medimos PM2.5",
