@@ -399,9 +399,12 @@ function InfoDialog({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="dialog-in fixed left-1/2 top-1/2 z-[71] flex max-h-[85svh] w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 overflow-y-auto rounded-3xl bg-white p-8 shadow-xl focus:outline-none"
+        className="dialog-in fixed left-1/2 top-1/2 z-[71] flex max-h-[85svh] w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl bg-white p-8 shadow-xl focus:outline-none"
       >
-        <div className="flex items-start justify-between gap-4">
+        {/* Header and footer stay put, only the body scrolls: a dismiss button
+            that scrolls out of reach is worse than no dismiss button, and long
+            content is exactly when you need it. */}
+        <div className="flex flex-shrink-0 items-start justify-between gap-4 pb-6">
           <h2 id={titleId} className="text-base font-medium text-gray-800">{title}</h2>
           <button
             type="button"
@@ -412,11 +415,11 @@ function InfoDialog({
             <X className="h-4 w-4" />
           </button>
         </div>
-        {children}
+        <div className="-mx-1 min-h-0 flex-1 overflow-y-auto overscroll-contain px-1">{children}</div>
         <button
           type="button"
           onClick={onClose}
-          className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="mt-6 w-full flex-shrink-0 rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           Entendido
         </button>
