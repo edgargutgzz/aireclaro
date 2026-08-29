@@ -68,9 +68,9 @@ const MUNICIPIO_ALIASES: Record<string, string> = {
   "general escobedo": "escobedo",
 };
 
-// The map covers the Zona Metropolitana de Monterrey and nothing else, so
-// sensors in Saltillo, Arteaga or Allende never reach the map or the filter.
-// Keys are the normalised form produced by municipioKey().
+// The municipio filter lists the Zona Metropolitana de Monterrey only. Sensors
+// outside it (Saltillo, Arteaga, Allende) still appear on the map, they just
+// don't get a row of their own. Keys are the form municipioKey() produces.
 const ZMM_MUNICIPIOS = new Set([
   "abasolo",
   "apodaca",
@@ -695,6 +695,7 @@ export default function MapaSensors({
 
   // One entry per municipality that actually has sensors, labelled with its
   // best spelling and counted so the list says how much each filter holds.
+  // Only the metro area gets filter rows.
   const zmmSensors = useMemo(
     () => sensors.filter((sensor) => ZMM_MUNICIPIOS.has(municipioKey(sensor.municipio) ?? "")),
     [sensors],
@@ -722,12 +723,12 @@ export default function MapaSensors({
   // it can never describe sensors the filters have hidden — and when the
   // filters hide everything, there is nothing left for it to say.
   const visibleSensors = useMemo(
-    () => zmmSensors.filter((sensor) => {
+    () => sensors.filter((sensor) => {
       if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return false;
       if (sensor.source === "sima") return showSima;
       return sensor.red ? showOccamm : showOtros;
     }),
-    [zmmSensors, hiddenMunicipios, showSima, showOccamm, showOtros],
+    [sensors, hiddenMunicipios, showSima, showOccamm, showOtros],
   );
 
   const nearestSensorData = useMemo(() => {
@@ -924,7 +925,7 @@ export default function MapaSensors({
     markersRef.current = [];
     markerElementsRef.current.clear();
 
-    zmmSensors.forEach((sensor) => {
+    sensors.forEach((sensor) => {
       const isSima = sensor.source === "sima";
 
       if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return;
@@ -978,7 +979,7 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, zmmSensors, data, showOtros, showOccamm, showSima, hiddenMunicipios]);
+  }, [mapLoaded, sensors, data, showOtros, showOccamm, showSima, hiddenMunicipios]);
 
   // Cleanup markers when component unmounts
   useEffect(() => {
@@ -1680,9 +1681,10 @@ export default function MapaSensors({
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">Zona Metropolitana de Monterrey</p>
                 <p className="text-sm leading-relaxed text-gray-500">
-                  El mapa cubre únicamente los municipios de la Zona
-                  Metropolitana de Monterrey. Los sensores de otras zonas, como
-                  Saltillo o Arteaga, no se muestran aunque envíen datos.
+                  El filtro cubre los municipios de la Zona Metropolitana de
+                  Monterrey, el área que este observatorio sigue. En el mapa
+                  también verás sensores de zonas cercanas, como Saltillo, que
+                  no aparecen en esta lista.
                 </p>
               </div>
             </div>
