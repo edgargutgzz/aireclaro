@@ -43,7 +43,7 @@ export default function Navlinks() {
                 <Icon className="h-5 w-5" aria-hidden="true" />
                 <span className="text-sm font-medium">{link.name}</span>
                 <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-600">
-                  Pronto
+                  Próx.
                 </span>
               </span>
 
