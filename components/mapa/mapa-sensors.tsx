@@ -1358,11 +1358,12 @@ export default function MapaSensors({
             <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
           </button>
           {showFiltrosContent && (
-            /* Only the body scrolls, so the "Capas" header stays in place. The
-               cap is viewport-relative (svh, not vh, for mobile browser
-               chrome) and overscroll-contain stops a scroll that reaches the
-               end from panning the map underneath. */
-            <div className="max-h-[calc(100svh-13rem)] overflow-y-auto overscroll-contain px-5 pb-6 pt-3">
+            /* Only the body scrolls, so the "Capas" header stays in place, and
+               overscroll-contain stops a scroll that reaches the end from
+               panning the map underneath. The cap stops the panel short of the
+               "Última actualización" badge: 72px site header + 24px top offset
+               + 52px card header + 88px for the badge and its gap. */
+            <div className="max-h-[calc(100svh-236px)] overflow-y-auto overscroll-contain px-5 pb-6 pt-3">
               <LayersFilterContent
                 compact={false}
                 showOtros={showOtros}
