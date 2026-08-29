@@ -346,20 +346,20 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
 // opens on the part that matters and keeps the rest one click away.
 function InfoSection({
   title,
-  defaultOpen = false,
+  open,
+  onToggle,
   children,
 }: {
   title: string;
-  defaultOpen?: boolean;
+  open: boolean;
+  onToggle: () => void;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
-
   return (
     <div>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={onToggle}
         className="flex w-full items-center justify-between gap-3 text-left"
       >
         <p className="text-sm font-semibold text-gray-700">{title}</p>
@@ -640,6 +640,8 @@ export default function MapaSensors({
   const [showOtros, setShowOtros] = useState(true);
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showPM25Info, setShowPM25Info] = useState(false);
+  // One pollutant open at a time in its popup; opening another closes it.
+  const [openPollutant, setOpenPollutant] = useState<string | null>("PM2.5");
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
   const [showSima, setShowSima] = useState(true);
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>([]);
@@ -1722,25 +1724,37 @@ export default function MapaSensors({
       {/* PM2.5 info popup */}
       {showPM25Info && (
         <>
-          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowPM25Info(false)} />
+          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => { setShowPM25Info(false); setOpenPollutant("PM2.5"); }} />
           <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             {/* PM2.5 is what the map shows, so it reads straight away; the two
                 we don't have yet stay one click away. */}
-            <div className="flex flex-col gap-4">
-              <InfoSection title="PM2.5" defaultOpen>
+            <div className="flex flex-col gap-6">
+              <InfoSection
+                title="PM2.5"
+                open={openPollutant === "PM2.5"}
+                onToggle={() => setOpenPollutant((v) => (v === "PM2.5" ? null : "PM2.5"))}
+              >
                 Partículas en suspensión en el aire con un diámetro de
                 2.5 micrómetros o menos, unas 30 veces más delgadas que
                 un cabello humano. Evaden las defensas de la nariz y la
                 garganta, por lo que son las más peligrosas para la
                 salud.
               </InfoSection>
-              <InfoSection title="PM10">
+              <InfoSection
+                title="PM10"
+                open={openPollutant === "PM10"}
+                onToggle={() => setOpenPollutant((v) => (v === "PM10" ? null : "PM10"))}
+              >
                 Partículas de mayor tamaño, con un diámetro de hasta 10
                 micrómetros. Quedan retenidas principalmente en la nariz
                 y la garganta, por lo que representan un menor riesgo
                 para la salud que las PM2.5.
               </InfoSection>
-              <InfoSection title="Ozono">
+              <InfoSection
+                title="Ozono"
+                open={openPollutant === "Ozono"}
+                onToggle={() => setOpenPollutant((v) => (v === "Ozono" ? null : "Ozono"))}
+              >
                 Gas que no se emite directamente: se forma cuando la luz
                 solar reacciona con los gases del tráfico y la industria.
                 Alcanza sus niveles más altos en las tardes soleadas e
@@ -1749,7 +1763,7 @@ export default function MapaSensors({
               </InfoSection>
             </div>
             <button
-              onClick={() => setShowPM25Info(false)}
+              onClick={() => { setShowPM25Info(false); setOpenPollutant("PM2.5"); }}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
             >
               Entendido
