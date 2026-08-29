@@ -660,15 +660,20 @@ export default function MapaSensors({
     return Array.from(byKey.values()).sort((a, b) => a.label.localeCompare(b.label, "es"));
   }, [sensors]);
 
-  const sensorsInMunicipio = useMemo(
-    () => (hiddenMunicipios.length
-      ? sensors.filter((s) => !hiddenMunicipios.includes(municipioKey(s.municipio) ?? ""))
-      : sensors),
-    [sensors, hiddenMunicipios],
+  // Everything the map is currently drawing. The card reads from this too, so
+  // it can never describe sensors the filters have hidden — and when the
+  // filters hide everything, there is nothing left for it to say.
+  const visibleSensors = useMemo(
+    () => sensors.filter((sensor) => {
+      if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return false;
+      if (sensor.source === "sima") return showSima;
+      return sensor.red ? showOccamm : showOtros;
+    }),
+    [sensors, hiddenMunicipios, showSima, showOccamm, showOtros],
   );
 
   const nearestSensorData = useMemo(() => {
-    if (!sensorsInMunicipio.length || !data.length) return null;
+    if (!visibleSensors.length || !data.length) return null;
 
     const buildFromSensor = (sensor: Sensor) => {
       const d = data.find((item) => item.sensor_id === sensor.sensor_id);
@@ -680,7 +685,7 @@ export default function MapaSensors({
     };
 
     if (userLocation) {
-      const sorted = [...sensorsInMunicipio].sort((a, b) =>
+      const sorted = [...visibleSensors].sort((a, b) =>
         getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
         getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lon)
       );
@@ -694,25 +699,27 @@ export default function MapaSensors({
     // representative station (San Nicolás: UANL), then fall through to any
     // sensor that has a reading: the card always speaks for a real sensor,
     // never for an area average.
-    const defaultSensor = sensorsInMunicipio.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
+    const defaultSensor = visibleSensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
     const fromDefault = defaultSensor ? buildFromSensor(defaultSensor) : null;
     if (fromDefault) return fromDefault;
 
-    for (const sensor of sensorsInMunicipio) {
+    for (const sensor of visibleSensors) {
       const result = buildFromSensor(sensor);
       if (result) return result;
     }
     return null;
-  }, [userLocation, sensorsInMunicipio, data]);
+  }, [userLocation, visibleSensors, data]);
 
   const areaMedianPm25 = useMemo(() => {
+    const visibleIds = new Set(visibleSensors.map((sensor) => sensor.sensor_id));
     const values = data
+      .filter((d) => visibleIds.has(d.sensor_id))
       .map((d) => d.pm25)
       .filter((v): v is number => v !== null && v > 0.4);
     if (!values.length) return null;
     const sorted = [...values].sort((a, b) => a - b);
     return sorted[Math.floor(sorted.length / 2)];
-  }, [data]);
+  }, [data, visibleSensors]);
 
   // Hour of the most recent reading anywhere in the dataset — the badge's
   // fallback when no station is on screen to speak for itself.
@@ -1002,6 +1009,15 @@ export default function MapaSensors({
   useEffect(() => {
     setHoveredHistory(null);
   }, [sensorHistory, selectedSensor]);
+
+  // Filters can hide whatever is open: drop the selection rather than leave the
+  // card describing a sensor that is no longer on the map.
+  useEffect(() => {
+    if (!selectedSensor) return;
+    if (!visibleSensors.some((sensor) => sensor.sensor_id === selectedSensor.sensor.sensor_id)) {
+      setSelectedSensor(null);
+    }
+  }, [visibleSensors, selectedSensor]);
 
   // Tapping the map dismisses the sensor sheet on mobile, where that gesture
   // is how you get back to the map. On desktop the card stays on whatever was
