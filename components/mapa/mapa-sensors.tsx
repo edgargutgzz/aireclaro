@@ -951,12 +951,12 @@ export default function MapaSensors({
               </button>
               {showCalidadContent && (
                 <>
-                  <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
+                  <div className="flex flex-col gap-5 px-5 pb-0 pt-3">
                     {/* What kind of source this is, in the Capas panel's own
                         words. A rule underneath closes the group off from the
                         reading below: a card or a filled row is too much
                         furniture for a single line. */}
-                    <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
+                    <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
                       <span className="flex min-w-0 items-center gap-1.5 text-[13px] text-gray-400">
                         {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon className="h-3.5 w-3.5 flex-shrink-0" />; })()}
                         <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
@@ -998,7 +998,7 @@ export default function MapaSensors({
 
                   {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                   {sensorQuality && (
-                    <div className="relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-4">
+                    <div className="relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
                       <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
                     </div>
                   )}
@@ -1020,9 +1020,9 @@ export default function MapaSensors({
             </button>
             {showCalidadContent && (
               <>
-                <div className="flex flex-col gap-5 px-5 pb-3 pt-3">
+                <div className="flex flex-col gap-5 px-5 pb-0 pt-3">
                   {/* Quality label + PM2.5 — always shown */}
-                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
+                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
                     <span className="flex min-w-0 items-center gap-1.5 text-[13px] text-gray-400">
                       {nearestName && (() => { const SourceIcon = getSourceIcon(Boolean(nearestIsSima)); return <SourceIcon className="h-3.5 w-3.5 flex-shrink-0" />; })()}
                       <span className="truncate">
@@ -1067,7 +1067,7 @@ export default function MapaSensors({
                 </div>
 
                 {/* Recommendations — collapsed by default, not needed for a data-first platform */}
-                <div className="relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-4">
+                <div className="relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
                   <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} />
                 </div>
               </>
