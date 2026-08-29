@@ -441,55 +441,58 @@ function LayersFilterContent({
             <Info className="h-3 w-3" />
           </button>
         </div>
-        {/* Same material as the Contaminante control above: a soft gray track
-            with each active layer raised on a white pill. The glass panel read
-            as a muddy box, and a bordered white card inside a white card was
-            one frame too many. */}
+        {/* One card per source group on a soft gray track, the way an inset
+            grouped list works: children live inside their parent's card and are
+            indented by their label, with a separator that starts where the text
+            does. Insetting the child rows themselves made them read as
+            misaligned cards rather than as part of the group. */}
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          <div className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 ${rowPadding} ${citizenState === 'unchecked' ? '' : 'bg-white shadow-sm'}`}>
-            <button type="button" onClick={toggleCitizenGroup} className="flex min-w-0 items-center gap-3">
-              <LayerCheckbox state={citizenState} size={boxSize} />
-              <span className="text-sm font-semibold text-gray-800">Sensores Ciudadanos</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowCitizenGroup((v) => !v)}
-              className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-              aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
-            >
-              <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showCitizenGroup ? 'rotate-90' : ''}`} />
-            </button>
-          </div>
-          {showCitizenGroup && (
-          <div className="flex flex-col gap-1.5">
-            <div className={`ml-6 flex items-center gap-2 rounded-xl px-3 ${subRowPadding} ${showOccamm ? 'bg-white shadow-sm' : ''}`}>
-              <button
-                type="button"
-                onClick={() => setShowOccamm((v) => !v)}
-                className="flex items-center gap-3"
-              >
-                <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-                <span className="text-sm text-gray-600">OCCAMM</span>
+          <div className={`overflow-hidden rounded-xl ${citizenState === 'unchecked' ? '' : 'bg-white shadow-sm'}`}>
+            <div className={`flex w-full items-center justify-between gap-3 px-3 ${rowPadding}`}>
+              <button type="button" onClick={toggleCitizenGroup} className="flex min-w-0 items-center gap-3">
+                <LayerCheckbox state={citizenState} size={boxSize} />
+                <span className="text-sm font-semibold text-gray-800">Sensores Ciudadanos</span>
               </button>
               <button
                 type="button"
-                onClick={onShowOccammInfo}
-                className="flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-                aria-label="Más información sobre OCCAMM"
+                onClick={() => setShowCitizenGroup((v) => !v)}
+                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
               >
-                <Info className="h-3 w-3" />
+                <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showCitizenGroup ? 'rotate-90' : ''}`} />
               </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowOtros((v) => !v)}
-              className={`ml-6 flex items-center gap-3 rounded-xl px-3 ${subRowPadding} ${showOtros ? 'bg-white shadow-sm' : ''}`}
-            >
-              <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-              <span className="text-sm text-gray-600">Otros</span>
-            </button>
+            {showCitizenGroup && (
+              <div className="flex flex-col">
+                <div className={`ml-11 flex items-center gap-2 border-t border-gray-100 pr-3 ${subRowPadding}`}>
+                  <button
+                    type="button"
+                    onClick={() => setShowOccamm((v) => !v)}
+                    className="flex items-center gap-3"
+                  >
+                    <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
+                    <span className="text-sm text-gray-600">OCCAMM</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onShowOccammInfo}
+                    className="flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+                    aria-label="Más información sobre OCCAMM"
+                  >
+                    <Info className="h-3 w-3" />
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowOtros((v) => !v)}
+                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-3 ${subRowPadding}`}
+                >
+                  <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
+                  <span className="text-sm text-gray-600">Otros</span>
+                </button>
+              </div>
+            )}
           </div>
-          )}
           <button
             type="button"
             onClick={() => setShowSima((v) => !v)}
