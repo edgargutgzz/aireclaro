@@ -853,17 +853,27 @@ function LayersFilterContent({
                     <Info className="h-3 w-3" />
                   </button>
                 </div>
-                <button
-                  type="button"
-                  role="checkbox"
-                  aria-checked={showOtros}
-                  onClick={() => setShowOtros((v) => !v)}
-                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-[2.375rem] text-left transition-colors hover:bg-gray-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
-                >
-                  <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-                  <span className={`min-w-0 flex-1 truncate text-sm ${showOtros ? 'text-gray-600' : 'text-gray-400'}`}>Otros</span>
-                  <span className="flex-shrink-0 text-xs text-gray-300">{sourceCounts.otros}</span>
-                </button>
+                {/* Same two-part row as OCCAMM above, with an invisible stand-in
+                    for the info button. It used to reserve that space with a
+                    hand-computed pr-[2.375rem], which was 2px short of what the
+                    button actually measures, so the two counts did not line up.
+                    sectionRow already reserves its own info slot this way. */}
+                <div className="flex items-center border-t border-gray-100 transition-colors hover:bg-gray-100/70">
+                  <button
+                    type="button"
+                    role="checkbox"
+                    aria-checked={showOtros}
+                    onClick={() => setShowOtros((v) => !v)}
+                    className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
+                  >
+                    <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
+                    <span className={`min-w-0 flex-1 truncate text-sm ${showOtros ? 'text-gray-600' : 'text-gray-400'}`}>Otros</span>
+                    <span className="flex-shrink-0 text-xs text-gray-300">{sourceCounts.otros}</span>
+                  </button>
+                  <span aria-hidden="true" className="mr-2 flex-shrink-0 p-1.5">
+                    <Info className="invisible h-3 w-3" />
+                  </span>
+                </div>
               </div>
             )}
             <button
@@ -1789,7 +1799,7 @@ export default function MapaSensors({
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
             aria-expanded={showFiltrosContent}
-            className="flex w-full flex-shrink-0 items-center gap-1.5 px-5 pt-4 pb-3 text-left"
+            className="flex w-full flex-shrink-0 items-center gap-1.5 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
           >
             <span className="flex-shrink-0 text-base font-medium text-gray-700">Capas</span>
             {capasSummary && (
