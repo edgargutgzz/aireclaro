@@ -757,8 +757,11 @@ export default function MapaSensors({
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
+      // Starts at metro scale, not country scale: the opening fly-in lands on a
+      // station at zoom 14, and from 8 that is six zoom levels to cover, which
+      // reads as a dive rather than an approach.
       center: [-100.301, 25.685],
-      zoom: 8,
+      zoom: 11,
     });
 
     // Set padding instantly (not as part of flyTo) so it doesn't get
