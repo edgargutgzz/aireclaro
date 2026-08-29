@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -339,6 +339,89 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
         </div>
       )}
     </div>
+  );
+}
+
+// The info popups, as actual dialogs: named for assistive tech, focus moved
+// in and trapped while open and returned to the trigger on close, Escape to
+// dismiss, and a height cap so long content scrolls instead of running off a
+// short window.
+function InfoDialog({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = `dialog-${useId().replace(/:/g, "")}`;
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      previouslyFocused?.focus?.();
+    };
+  }, [onClose]);
+
+  return (
+    <>
+      <div className="dialog-in fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        className="dialog-in fixed left-1/2 top-1/2 z-[71] flex max-h-[85svh] w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 overflow-y-auto rounded-3xl bg-white p-8 shadow-xl focus:outline-none"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <h2 id={titleId} className="text-base font-medium text-gray-800">{title}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Cerrar"
+            className="-mr-2 -mt-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        {children}
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        >
+          Entendido
+        </button>
+      </div>
+    </>
   );
 }
 
@@ -1738,135 +1821,105 @@ export default function MapaSensors({
 
       {/* OCCAMM info popup */}
       {showOccammInfo && (
-        <>
-          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowOccammInfo(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
-            <div className="flex flex-col gap-4">
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Red OCCAMM</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Red de sensores del{" "}
-                  <a
-                    href="https://observatoriodelaire.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-gray-700"
-                  >
-                    Observatorio Ciudadano de la Calidad del Aire
-                  </a>
-                  , una organización de la sociedad civil dedicada a
-                  mejorar la calidad del aire en la Zona Metropolitana de
-                  Monterrey.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowOccammInfo(false)}
-              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+        <InfoDialog title="Red OCCAMM" onClose={() => setShowOccammInfo(false)}>
+          <p className="text-sm leading-relaxed text-gray-500">
+            Red de sensores del{" "}
+            <a
+              href="https://observatoriodelaire.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-gray-700"
             >
-              Entendido
-            </button>
-          </div>
-        </>
+              Observatorio Ciudadano de la Calidad del Aire
+            </a>
+            , una organización de la sociedad civil dedicada a mejorar la
+            calidad del aire en la Zona Metropolitana de Monterrey.
+          </p>
+        </InfoDialog>
       )}
 
       {/* Fuente info popup — covers both sources in one place instead of a separate icon per row */}
       {showFuenteInfo && (
-        <>
-          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowFuenteInfo(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
-            <div className="flex flex-col gap-4">
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Sensores Ciudadanos</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Sensores de bajo costo que forman parte de{" "}
-                  <a
-                    href="https://www.purpleair.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-gray-700"
-                  >
-                    PurpleAir
-                  </a>
-                  , una red global de monitoreo comunitario instalada por
-                  ciudadanos, escuelas y organizaciones independientes.
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Estaciones de Gobierno</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Estaciones de monitoreo que forman parte del{" "}
-                  <a
-                    href="https://aire.nl.gob.mx/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-gray-700"
-                  >
-                    Sistema Integral de Monitoreo Ambiental (SIMA)
-                  </a>
-                  , operado por el Gobierno de Nuevo León.
-                </p>
-              </div>
+        <InfoDialog title="Fuentes de datos" onClose={() => setShowFuenteInfo(false)}>
+          <div className="flex flex-col gap-4">
+            <div>
+              <p className="mb-1 text-sm font-semibold text-gray-700">Sensores Ciudadanos</p>
+              <p className="text-sm leading-relaxed text-gray-500">
+                Sensores de bajo costo que forman parte de{" "}
+                <a
+                  href="https://www.purpleair.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-gray-700"
+                >
+                  PurpleAir
+                </a>
+                , una red global de monitoreo comunitario instalada por
+                ciudadanos, escuelas y organizaciones independientes.
+              </p>
             </div>
-            <button
-              onClick={() => setShowFuenteInfo(false)}
-              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
-            >
-              Entendido
-            </button>
+            <div>
+              <p className="mb-1 text-sm font-semibold text-gray-700">Estaciones de Gobierno</p>
+              <p className="text-sm leading-relaxed text-gray-500">
+                Estaciones de monitoreo que forman parte del{" "}
+                <a
+                  href="https://aire.nl.gob.mx/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-gray-700"
+                >
+                  Sistema Integral de Monitoreo Ambiental (SIMA)
+                </a>
+                , operado por el Gobierno de Nuevo León.
+              </p>
+            </div>
           </div>
-        </>
+        </InfoDialog>
       )}
 
       {/* PM2.5 info popup */}
       {showPM25Info && (
-        <>
-          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => { setShowPM25Info(false); setOpenPollutant("PM2.5"); }} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
-            {/* PM2.5 is what the map shows, so it reads straight away; the two
-                we don't have yet stay one click away. */}
-            <div className="flex flex-col gap-6">
-              <InfoSection
-                title="PM2.5"
-                open={openPollutant === "PM2.5"}
-                onToggle={() => setOpenPollutant((v) => (v === "PM2.5" ? null : "PM2.5"))}
-              >
-                Partículas en suspensión en el aire con un diámetro de
-                2.5 micrómetros o menos, unas 30 veces más delgadas que
-                un cabello humano. Evaden las defensas de la nariz y la
-                garganta, por lo que son las más peligrosas para la
-                salud.
-              </InfoSection>
-              <InfoSection
-                title="PM10"
-                open={openPollutant === "PM10"}
-                onToggle={() => setOpenPollutant((v) => (v === "PM10" ? null : "PM10"))}
-              >
-                Partículas de mayor tamaño, con un diámetro de hasta 10
-                micrómetros. Quedan retenidas principalmente en la nariz
-                y la garganta, por lo que representan un menor riesgo
-                para la salud que las PM2.5.
-              </InfoSection>
-              <InfoSection
-                title="Ozono"
-                open={openPollutant === "Ozono"}
-                onToggle={() => setOpenPollutant((v) => (v === "Ozono" ? null : "Ozono"))}
-              >
-                Gas que no se emite directamente: se forma cuando la luz
-                solar reacciona con los gases del tráfico y la industria.
-                Alcanza sus niveles más altos en las tardes soleadas e
-                irrita las vías respiratorias, sobre todo al hacer
-                ejercicio al aire libre.
-              </InfoSection>
-            </div>
-            <button
-              onClick={() => { setShowPM25Info(false); setOpenPollutant("PM2.5"); }}
-              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+        <InfoDialog
+          title="Contaminantes"
+          onClose={() => { setShowPM25Info(false); setOpenPollutant("PM2.5"); }}
+        >
+          {/* PM2.5 is what the map shows, so it reads straight away; the two
+              we don't have yet stay one click away. */}
+          <div className="flex flex-col gap-6">
+            <InfoSection
+              title="PM2.5"
+              open={openPollutant === "PM2.5"}
+              onToggle={() => setOpenPollutant((v) => (v === "PM2.5" ? null : "PM2.5"))}
             >
-              Entendido
-            </button>
+              Partículas en suspensión en el aire con un diámetro de
+              2.5 micrómetros o menos, unas 30 veces más delgadas que
+              un cabello humano. Evaden las defensas de la nariz y la
+              garganta, por lo que son las más peligrosas para la
+              salud.
+            </InfoSection>
+            <InfoSection
+              title="PM10"
+              open={openPollutant === "PM10"}
+              onToggle={() => setOpenPollutant((v) => (v === "PM10" ? null : "PM10"))}
+            >
+              Partículas de mayor tamaño, con un diámetro de hasta 10
+              micrómetros. Quedan retenidas principalmente en la nariz
+              y la garganta, por lo que representan un menor riesgo
+              para la salud que las PM2.5.
+            </InfoSection>
+            <InfoSection
+              title="Ozono"
+              open={openPollutant === "Ozono"}
+              onToggle={() => setOpenPollutant((v) => (v === "Ozono" ? null : "Ozono"))}
+            >
+              Gas que no se emite directamente: se forma cuando la luz
+              solar reacciona con los gases del tráfico y la industria.
+              Alcanza sus niveles más altos en las tardes soleadas e
+              irrita las vías respiratorias, sobre todo al hacer
+              ejercicio al aire libre.
+            </InfoSection>
           </div>
-        </>
+        </InfoDialog>
       )}
 
     </div>
