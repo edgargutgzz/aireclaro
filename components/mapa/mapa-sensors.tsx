@@ -804,6 +804,7 @@ export default function MapaSensors({
   const [showPM25Info, setShowPM25Info] = useState(false);
   // One pollutant open at a time in its popup; opening another closes it.
   const [openPollutant, setOpenPollutant] = useState<string | null>("PM2.5");
+  const [openFuente, setOpenFuente] = useState<string | null>("Sensores Ciudadanos");
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
   const [showSima, setShowSima] = useState(true);
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>([]);
@@ -1831,39 +1832,44 @@ export default function MapaSensors({
 
       {/* Fuente info popup — covers both sources in one place instead of a separate icon per row */}
       {showFuenteInfo && (
-        <InfoDialog title="Fuente" onClose={() => setShowFuenteInfo(false)}>
-          <div className="flex flex-col gap-4">
-            <div>
-              <p className="mb-1 text-sm font-semibold text-gray-700">Sensores Ciudadanos</p>
-              <p className="text-sm leading-relaxed text-gray-500">
-                Sensores de bajo costo que forman parte de{" "}
-                <a
-                  href="https://www.purpleair.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-gray-700"
-                >
-                  PurpleAir
-                </a>
-                , una red global de monitoreo comunitario instalada por
-                ciudadanos, escuelas y organizaciones independientes.
-              </p>
-            </div>
-            <div>
-              <p className="mb-1 text-sm font-semibold text-gray-700">Estaciones de Gobierno</p>
-              <p className="text-sm leading-relaxed text-gray-500">
-                Estaciones de monitoreo que forman parte del{" "}
-                <a
-                  href="https://aire.nl.gob.mx/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-gray-700"
-                >
-                  Sistema Integral de Monitoreo Ambiental (SIMA)
-                </a>
-                , operado por el Gobierno de Nuevo León.
-              </p>
-            </div>
+        <InfoDialog
+          title="Fuente"
+          onClose={() => { setShowFuenteInfo(false); setOpenFuente("Sensores Ciudadanos"); }}
+        >
+          <div className="overflow-hidden rounded-2xl border border-gray-200">
+            <InfoSection
+              title="Sensores Ciudadanos"
+              open={openFuente === "Sensores Ciudadanos"}
+              onToggle={() => setOpenFuente((v) => (v === "Sensores Ciudadanos" ? null : "Sensores Ciudadanos"))}
+            >
+              Sensores de bajo costo que forman parte de{" "}
+              <a
+                href="https://www.purpleair.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-gray-700"
+              >
+                PurpleAir
+              </a>
+              , una red global de monitoreo comunitario instalada por
+              ciudadanos, escuelas y organizaciones independientes.
+            </InfoSection>
+            <InfoSection
+              title="Estaciones de Gobierno"
+              open={openFuente === "Estaciones de Gobierno"}
+              onToggle={() => setOpenFuente((v) => (v === "Estaciones de Gobierno" ? null : "Estaciones de Gobierno"))}
+            >
+              Estaciones de monitoreo que forman parte del{" "}
+              <a
+                href="https://aire.nl.gob.mx/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-gray-700"
+              >
+                Sistema Integral de Monitoreo Ambiental (SIMA)
+              </a>
+              , operado por el Gobierno de Nuevo León.
+            </InfoSection>
           </div>
         </InfoDialog>
       )}
