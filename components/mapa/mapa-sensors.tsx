@@ -618,22 +618,26 @@ function LayersFilterContent({
             </div>
             {showCitizenGroup && (
               <div role="group" aria-label="Redes de sensores ciudadanos" className="disclosure-in flex flex-col">
-                <div className={`ml-11 flex items-center gap-2 border-t border-gray-100 pr-3`}>
+                {/* Same shape as every other row: the toggle is the row, its
+                    hover is a full-bleed rectangle, and the count sits at the
+                    right edge. The info icon is a separate control beside it,
+                    the way the chevron is on the group rows. */}
+                <div className="flex items-center border-t border-gray-100">
                   <button
                     type="button"
                     role="checkbox"
                     aria-checked={showOccamm}
                     onClick={() => setShowOccamm((v) => !v)}
-                    className={`-ml-2 flex flex-1 items-center gap-3 rounded-lg pl-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
+                    className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
                   >
                     <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-                    <span className={`text-sm ${showOccamm ? 'text-gray-600' : 'text-gray-400'}`}>OCCAMM</span>
-                    <span className="flex-1 text-right text-xs text-gray-300">{sourceCounts.occamm}</span>
+                    <span className={`min-w-0 flex-1 truncate text-sm ${showOccamm ? 'text-gray-600' : 'text-gray-400'}`}>OCCAMM</span>
+                    <span className="flex-shrink-0 text-xs text-gray-300">{sourceCounts.occamm}</span>
                   </button>
                   <button
                     type="button"
                     onClick={onShowOccammInfo}
-                    className="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                    className="mr-1 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                     aria-label="Más información sobre OCCAMM"
                   >
                     <Info className="h-3 w-3" />
@@ -644,7 +648,7 @@ function LayersFilterContent({
                   role="checkbox"
                   aria-checked={showOtros}
                   onClick={() => setShowOtros((v) => !v)}
-                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-3 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
+                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-[2.375rem] text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
                 >
                   <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
                   <span className={`min-w-0 flex-1 truncate text-sm ${showOtros ? 'text-gray-600' : 'text-gray-400'}`}>Otros</span>
