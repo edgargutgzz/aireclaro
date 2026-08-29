@@ -293,16 +293,19 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
         </button>
       </div>
       {open && (
-        <div className="mt-4 flex flex-col gap-4 md:max-h-[260px] md:overflow-y-auto md:pr-1">
-          <div>
-            <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+        /* Same material as the Capas panel's Fuente list: a soft gray track
+           with one white row per audience, so the recommendations read as an
+           ordered set rather than a run of paragraphs. */
+        <div className="mt-4 flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5 md:max-h-[260px] md:overflow-y-auto">
+          <div className="rounded-xl bg-white px-4 py-3.5 shadow-sm">
+            <p className="mb-1 text-sm font-semibold text-gray-800">Población General</p>
             <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
           </div>
           {SENSITIVE_GROUPS.map((g) => (
-            <div key={g.key}>
+            <div key={g.key} className="rounded-xl bg-white px-4 py-3.5 shadow-sm">
               <div className="mb-1 flex items-center gap-2">
                 <g.icon className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                <p className="text-sm font-semibold text-gray-700">{g.label}</p>
+                <p className="text-sm font-semibold text-gray-800">{g.label}</p>
               </div>
               <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
             </div>
