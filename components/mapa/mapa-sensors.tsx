@@ -566,21 +566,26 @@ function LayersFilterContent({
             <Info className="h-3 w-3" />
           </button>
         </div>
-        <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <div className="rounded-xl bg-white px-5 py-2 text-sm font-medium text-gray-800 shadow-sm">
-            PM2.5
+        {/* Same rows as the filters above: white cards on a gray track with a
+            checkbox each. PM2.5 is the only one with data, so the other two
+            answer a tap with "No disponible" instead of switching. */}
+        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
+          <div className={`flex items-center gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}>
+            <LayerCheckbox state="checked" size={boxSize} />
+            <span className="text-sm font-medium text-gray-800">PM2.5</span>
           </div>
           {["PM10", "Ozono"].map((name) => (
             <div key={name} className="relative">
               <button
                 type="button"
                 onClick={() => setUnavailableTooltip(name)}
-                className="rounded-xl px-5 py-2 text-sm font-medium text-gray-400"
+                className={`flex w-full items-center gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}
               >
-                {name}
+                <LayerCheckbox state="unchecked" size={boxSize} />
+                <span className="text-sm font-medium text-gray-400">{name}</span>
               </button>
               {unavailableTooltip === name && (
-                <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm">
+                <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm">
                   No disponible
                 </div>
               )}
