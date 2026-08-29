@@ -519,13 +519,15 @@ function LayersFilterContent({
             const open = openEstados.includes(estado.key);
             return (
               <div key={estado.key} className="overflow-hidden rounded-xl bg-white shadow-sm">
-                <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
+                <div className="flex w-full items-center gap-1">
                   <button
                     type="button"
+                    role="checkbox"
+                    aria-checked={state === 'indeterminate' ? 'mixed' : state === 'checked'}
                     onClick={() => setHiddenMunicipios((prev) => state === 'checked'
                       ? [...prev, ...keys.filter((k) => !prev.includes(k))]
                       : prev.filter((k) => !keys.includes(k)))}
-                    className="flex min-w-0 items-center gap-3"
+                    className={`flex min-w-0 flex-1 items-center gap-3 rounded-xl pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
                   >
                     <LayerCheckbox state={state} size={boxSize} />
                     <span className={`truncate text-sm font-medium ${state === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
@@ -535,7 +537,8 @@ function LayersFilterContent({
                   <button
                     type="button"
                     onClick={() => setOpenEstados((prev) => open ? prev.filter((k) => k !== estado.key) : [...prev, estado.key])}
-                    className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                    className="mr-2 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600"
+                    aria-expanded={open}
                     aria-label={open ? `Ocultar municipios de ${estado.label}` : `Mostrar municipios de ${estado.label}`}
                   >
                     <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
@@ -549,8 +552,10 @@ function LayersFilterContent({
                         <button
                           key={m.key}
                           type="button"
+                          role="checkbox"
+                          aria-checked={on}
                           onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
-                          className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
+                          className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${subRowPadding}`}
                         >
                           <span className="flex min-w-0 items-center gap-3">
                             <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
@@ -583,15 +588,22 @@ function LayersFilterContent({
         {openSection === 'fuente' && (
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
           <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-            <div className={`flex w-full items-center justify-between gap-3 px-3 ${rowPadding}`}>
-              <button type="button" onClick={toggleCitizenGroup} className="flex min-w-0 items-center gap-3">
+            <div className="flex w-full items-center gap-1">
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={citizenState === 'indeterminate' ? 'mixed' : citizenState === 'checked'}
+                onClick={toggleCitizenGroup}
+                className={`flex min-w-0 flex-1 items-center gap-3 rounded-xl pl-3 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
+              >
                 <LayerCheckbox state={citizenState} size={boxSize} />
                 <span className={`text-sm font-medium ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
               </button>
               <button
                 type="button"
                 onClick={() => setShowCitizenGroup((v) => !v)}
-                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                className="mr-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600"
+                aria-expanded={showCitizenGroup}
                 aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
               >
                 <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showCitizenGroup ? 'rotate-90' : ''}`} />
@@ -599,11 +611,13 @@ function LayersFilterContent({
             </div>
             {showCitizenGroup && (
               <div className="flex flex-col">
-                <div className={`ml-11 flex items-center gap-2 border-t border-gray-100 pr-3 ${subRowPadding}`}>
+                <div className={`ml-11 flex items-center gap-2 border-t border-gray-100 pr-3`}>
                   <button
                     type="button"
+                    role="checkbox"
+                    aria-checked={showOccamm}
                     onClick={() => setShowOccamm((v) => !v)}
-                    className="flex items-center gap-3"
+                    className={`-ml-2 flex flex-1 items-center gap-3 rounded-lg pl-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${subRowPadding}`}
                   >
                     <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
                     <span className={`text-sm ${showOccamm ? 'text-gray-600' : 'text-gray-400'}`}>OCCAMM</span>
@@ -619,8 +633,10 @@ function LayersFilterContent({
                 </div>
                 <button
                   type="button"
+                  role="checkbox"
+                  aria-checked={showOtros}
                   onClick={() => setShowOtros((v) => !v)}
-                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-3 ${subRowPadding}`}
+                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-3 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${subRowPadding}`}
                 >
                   <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
                   <span className={`text-sm ${showOtros ? 'text-gray-600' : 'text-gray-400'}`}>Otros</span>
@@ -630,8 +646,10 @@ function LayersFilterContent({
           </div>
           <button
             type="button"
+            role="checkbox"
+            aria-checked={showSima}
             onClick={() => setShowSima((v) => !v)}
-            className={`flex w-full items-center gap-3 rounded-xl bg-white px-3 shadow-sm ${rowPadding}`}
+            className={`flex w-full items-center gap-3 rounded-xl bg-white px-3 text-left shadow-sm transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className={`text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
