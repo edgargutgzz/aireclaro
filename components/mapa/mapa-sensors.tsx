@@ -962,10 +962,11 @@ export default function MapaSensors({
         ? sensors.find(s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon)?.sensor_id
         : undefined;
 
-    // Blue, not the sensor's own quality colour: repeating that hue as a ring
-    // and a halo around a circle already wearing it read as concentric bands.
-    // Blue is outside the IMECA scale, so it can only mean "selected".
-    const activeColor = SPARKLINE_COLOR;
+    // The selected sensor's own air-quality tone. The ink, not the fill: on a
+    // light map pure IMECA yellow and green barely register as a ring, and the
+    // darker tone keeps the ring from merging into the circle it wraps.
+    const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
+    const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
 
     markerElementsRef.current.forEach(({ el }, sensorId) => {
       const isActive = sensorId === activeSensorId;
