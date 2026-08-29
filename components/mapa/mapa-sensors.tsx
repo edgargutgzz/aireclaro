@@ -363,26 +363,6 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
   );
 }
 
-// One pollutant at a time, so the control is a radio: a circle, not a box.
-// Same tone and size as LayerCheckbox so the rows still read as one family.
-function LayerRadio({ selected, size }: { selected: boolean; size: number }) {
-  if (!selected) {
-    return (
-      <div
-        style={{ width: size, height: size, borderRadius: '50%', border: '1.5px solid #6b7280', flexShrink: 0 }}
-      />
-    );
-  }
-  return (
-    <div
-      className="flex items-center justify-center shadow-sm"
-      style={{ width: size, height: size, borderRadius: '50%', backgroundColor: '#6b7280', flexShrink: 0 }}
-    >
-      <div style={{ width: Math.round(size / 3), height: Math.round(size / 3), borderRadius: '50%', backgroundColor: '#fff' }} />
-    </div>
-  );
-}
-
 type CheckState = 'checked' | 'indeterminate' | 'unchecked';
 
 // Styled after shadcn/ui's Checkbox (rounded-sm, border always in the
@@ -611,24 +591,22 @@ function LayersFilterContent({
             <Info className="h-3 w-3" />
           </button>
         </div>
-        {/* One list, one card, a check on the row that's in use — the way a
-            single-select list works in iOS Settings. No box or circle to
-            suggest you could turn several on, and the unavailable ones say so
-            in place instead of only on tap. */}
+        {/* Rows on the same track as the filters above, but with no control:
+            unlike them this is a selector, not a filter, and with PM2.5 as the
+            only live option there is nothing to operate. A checkbox would
+            invite a click that could only empty the map. Make it a radio the
+            day PM10 or Ozono lands and the choice becomes real. */}
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          <div className={`flex items-center gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}>
-            <LayerCheckbox state="checked" size={boxSize} />
+          <div className={`flex items-center justify-between gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}>
             <span className="text-sm font-medium text-gray-800">PM2.5</span>
+            <Check className="h-4 w-4 flex-shrink-0 text-gray-700" strokeWidth={2.5} />
           </div>
           {["PM10", "Ozono"].map((name) => (
             <div
               key={name}
               className={`flex items-center justify-between gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}
             >
-              <span className="flex min-w-0 items-center gap-3">
-                <LayerCheckbox state="unchecked" size={boxSize} />
-                <span className="text-sm font-medium text-gray-400">{name}</span>
-              </span>
+              <span className="text-sm font-medium text-gray-400">{name}</span>
               <span className="flex-shrink-0 text-xs text-gray-300">No disponible</span>
             </div>
           ))}
