@@ -156,12 +156,6 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
 
   return (
     <div>
-      {/* The chart owns its section label so it can share a line with the
-          range summary, which only this component can compute. */}
-      <div className="mb-2 flex items-center justify-between gap-3 text-xs leading-none text-gray-400">
-        <span className="font-medium">Últimas 48 horas</span>
-        <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
-      </div>
       <div className="relative">
         {dayBoundaries.map((b) => (
           <div
@@ -170,6 +164,18 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
             style={{ left: `${b.leftPct}%`, top: 1 }}
           >
             {b.label}
+          </div>
+        ))}
+        {/* Each limit says what it is. Unlabelled dashed lines are just noise:
+            the reader can't tell 15 from 25 by hue alone. Drawn as HTML, not
+            SVG text, because the chart scales non-uniformly. */}
+        {thresholds.map((t) => (
+          <div
+            key={`label-${t.value}`}
+            className="pointer-events-none absolute right-0 -translate-y-1/2 whitespace-nowrap rounded bg-white/80 px-1 text-[10px] font-medium"
+            style={{ top: `${(toY(t.value) / height) * 100}%`, color: t.color }}
+          >
+            {t.label} {t.value}
           </div>
         ))}
         {hovered && hoverPoint && (
@@ -232,6 +238,10 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
             </>
           )}
         </svg>
+      </div>
+      <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] leading-none text-gray-400">
+        <span>Últimas 48 horas</span>
+        <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
     </div>
   );

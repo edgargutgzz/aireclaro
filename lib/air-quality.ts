@@ -18,6 +18,7 @@ export const IMECA_LEVELS = [
 export const IMECA_THRESHOLDS = IMECA_LEVELS.slice(0, -1).map((level, i) => ({
   value: level.limit,
   color: IMECA_LEVELS[i + 1].ink,
+  label: IMECA_LEVELS[i + 1].label,
 }));
 
 export const getLevel = (pm25: number) =>
