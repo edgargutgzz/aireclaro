@@ -419,16 +419,6 @@ function LayersFilterContent({
   const boxSize = compact ? 16 : 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
   const [showMunicipioList, setShowMunicipioList] = useState(false);
-  // Which unavailable pollutant was last tapped, so its "No disponible"
-  // tooltip shows and times out on its own.
-  const [unavailableTooltip, setUnavailableTooltip] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!unavailableTooltip) return;
-    const timeout = setTimeout(() => setUnavailableTooltip(null), 2000);
-    return () => clearTimeout(timeout);
-  }, [unavailableTooltip]);
-
   const municipioState: CheckState =
     hiddenMunicipios.length === 0 ? 'checked' :
     hiddenMunicipios.length >= municipios.length ? 'unchecked' : 'indeterminate';
@@ -586,30 +576,22 @@ function LayersFilterContent({
             <Info className="h-3 w-3" />
           </button>
         </div>
-        {/* Same rows as the filters above, but radios: only one pollutant can be
-            shown at a time, and a checkbox would promise otherwise. PM2.5 is
-            the only one with data, so the other two answer a tap with
-            "No disponible" instead of switching. */}
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          <div className={`flex items-center gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}>
-            <LayerRadio selected size={boxSize} />
+        {/* One list, one card, a check on the row that's in use — the way a
+            single-select list works in iOS Settings. No box or circle to
+            suggest you could turn several on, and the unavailable ones say so
+            in place instead of only on tap. */}
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className={`flex items-center justify-between gap-3 px-4 ${rowPadding}`}>
             <span className="text-sm font-medium text-gray-800">PM2.5</span>
+            <Check className="h-4 w-4 flex-shrink-0 text-gray-700" strokeWidth={2.5} />
           </div>
           {["PM10", "Ozono"].map((name) => (
-            <div key={name} className="relative">
-              <button
-                type="button"
-                onClick={() => setUnavailableTooltip(name)}
-                className={`flex w-full items-center gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}
-              >
-                <LayerRadio selected={false} size={boxSize} />
-                <span className="text-sm font-medium text-gray-400">{name}</span>
-              </button>
-              {unavailableTooltip === name && (
-                <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm">
-                  No disponible
-                </div>
-              )}
+            <div
+              key={name}
+              className={`flex items-center justify-between gap-3 border-t border-gray-100 px-4 ${rowPadding}`}
+            >
+              <span className="text-sm font-medium text-gray-400">{name}</span>
+              <span className="flex-shrink-0 text-xs text-gray-300">No disponible</span>
             </div>
           ))}
         </div>
