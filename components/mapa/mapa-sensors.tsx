@@ -431,6 +431,11 @@ function LayersFilterContent({
   const boxSize = compact ? 16 : 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
   const [openEstados, setOpenEstados] = useState<string[]>([]);
+  // One section open at a time: three expanded sections is how a filter panel
+  // grows past the map it filters.
+  const [openSection, setOpenSection] = useState<'ubicacion' | 'fuente' | 'contaminante' | null>('ubicacion');
+  const toggleSection = (name: 'ubicacion' | 'fuente' | 'contaminante') =>
+    setOpenSection((current) => (current === name ? null : name));
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
     !showOtros && !showOccamm ? 'unchecked' : 'indeterminate';
@@ -441,15 +446,60 @@ function LayersFilterContent({
     setShowOccamm(next);
   };
 
+  // What each collapsed section says about itself, so nobody has to open one
+  // just to find out whether it is filtering anything.
+  const totalMunicipios = estados.reduce((n, e) => n + e.municipios.length, 0);
+  const shownMunicipios = totalMunicipios - hiddenMunicipios.length;
+  const ubicacionSummary = hiddenMunicipios.length === 0
+    ? "Todos"
+    : `${shownMunicipios} de ${totalMunicipios}`;
+  const activeSources = [showOccamm, showOtros, showSima].filter(Boolean).length;
+  const fuenteSummary = activeSources === 3 ? "Todas" : `${activeSources} de 3`;
+
+  const sectionHeader = (
+    name: 'ubicacion' | 'fuente' | 'contaminante',
+    label: string,
+    summary: string,
+    info?: { onClick: () => void; ariaLabel: string },
+  ) => (
+    <div className="mb-2 flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={() => toggleSection(name)}
+        className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+      >
+        <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">{label}</p>
+        <span className="truncate text-xs leading-none text-gray-300">· {summary}</span>
+      </button>
+      {info && (
+        <button
+          type="button"
+          onClick={info.onClick}
+          className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+          aria-label={info.ariaLabel}
+        >
+          <Info className="h-3 w-3" />
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => toggleSection(name)}
+        className="flex-shrink-0 text-gray-400 hover:text-gray-600"
+        aria-label={openSection === name ? `Ocultar ${label}` : `Mostrar ${label}`}
+      >
+        <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
+      </button>
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-6">
       {/* Ubicación — state, then its municipalities, on the same nesting the
           Fuente group uses. Every sensor sits under a row, so hiding
           everything really does empty the map. */}
       <div>
-        <div className="mb-2 flex items-center gap-1.5">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Ubicación</p>
-        </div>
+        {sectionHeader('ubicacion', 'Ubicación', ubicacionSummary)}
+        {openSection === 'ubicacion' && (
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
           {estados.map((estado) => {
             const keys = estado.municipios.map((m) => m.key);
@@ -505,26 +555,21 @@ function LayersFilterContent({
             );
           })}
         </div>
+        )}
       </div>
 
       <div className="-mt-3 border-t border-gray-100 pt-3">
-        <div className="mb-2 flex items-center gap-1.5">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Fuente</p>
-          <button
-            type="button"
-            onClick={onShowFuenteInfo}
-            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-            aria-label="Más información sobre las fuentes de datos"
-          >
-            <Info className="h-3 w-3" />
-          </button>
-        </div>
+        {sectionHeader('fuente', 'Fuente', fuenteSummary, {
+          onClick: onShowFuenteInfo,
+          ariaLabel: "Más información sobre las fuentes de datos",
+        })}
         {/* One card per source group on a soft gray track, the way an inset
             grouped list works: children live inside their parent's card,
             indented by their label, with a separator that starts where the text
             does. Every row keeps its card in both states, on/off is the
             checkbox and the label's tone: dropping the card on "off" left
             nothing to aim at. */}
+        {openSection === 'fuente' && (
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
           <div className="overflow-hidden rounded-xl bg-white shadow-sm">
             <div className={`flex w-full items-center justify-between gap-3 px-3 ${rowPadding}`}>
@@ -581,24 +626,19 @@ function LayersFilterContent({
             <span className={`text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
           </button>
         </div>
+        )}
       </div>
       <div className="-mt-3 border-t border-gray-100 pt-3">
-        <div className="mb-2 flex items-center gap-1.5">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contaminante</p>
-          <button
-            type="button"
-            onClick={onShowPM25Info}
-            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-            aria-label="Por qué medimos PM2.5"
-          >
-            <Info className="h-3 w-3" />
-          </button>
-        </div>
+        {sectionHeader('contaminante', 'Contaminante', 'PM2.5', {
+          onClick: onShowPM25Info,
+          ariaLabel: "Por qué medimos PM2.5",
+        })}
         {/* Rows on the same track as the filters above, but with no control:
             unlike them this is a selector, not a filter, and with PM2.5 as the
             only live option there is nothing to operate. A checkbox would
             invite a click that could only empty the map. Make it a radio the
             day PM10 or Ozono lands and the choice becomes real. */}
+        {openSection === 'contaminante' && (
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
           <div className={`flex items-center justify-between gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}>
             <span className="text-sm font-medium text-gray-800">PM2.5</span>
@@ -614,6 +654,7 @@ function LayersFilterContent({
             </div>
           ))}
         </div>
+        )}
       </div>
     </div>
   );
