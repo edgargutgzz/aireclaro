@@ -11,11 +11,14 @@ import { Map, BarChart3, Info } from "lucide-react";
 // inside a <nav>.
 const links = [
   { name: "Mapa", href: "/", icon: Map, pending: false },
-  // Datos and Acerca are built but not ready to show, so they are listed
-  // without being offered. They used to render as live-looking pills that
-  // swallowed the click and flashed a tooltip for two seconds: that told
-  // screen readers nothing at all, and a message on a timer fails SC 1.4.13
-  // on persistence.
+  // Datos and Acerca are built but not ready to show. On desktop they are not
+  // rendered at all: a "Próx." pill next to the only live link read as chrome
+  // for a product that is not there. Mobile still lists them, because the
+  // bottom bar is the whole map of the app on a phone and a gap there reads as
+  // something missing. They are listed without being offered: they used to
+  // render as live-looking pills that swallowed the click and flashed a
+  // tooltip for two seconds, which told screen readers nothing at all, and a
+  // message on a timer fails SC 1.4.13 on persistence.
   { name: "Datos", href: "/datos", icon: BarChart3, pending: true },
   { name: "Acerca", href: "/acerca", icon: Info, pending: true },
 ];
@@ -36,17 +39,7 @@ export default function Navlinks() {
 
         if (link.pending) {
           return (
-            <li key={link.name} className="relative">
-              {/* Desktop: nothing to click. The state is written on the label
-                  instead of hidden behind a tap that then takes it away. */}
-              <span className={clsx(pill, "hidden text-gray-500 md:flex")}>
-                <Icon className="h-5 w-5" aria-hidden="true" />
-                <span className="text-sm font-medium">{link.name}</span>
-                <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-600">
-                  Próx.
-                </span>
-              </span>
-
+            <li key={link.name} className="relative md:hidden">
               {/* Mobile: three labels and a standing badge do not fit across a
                   360px bottom bar, so the explanation stays behind a tap. It
                   now waits to be dismissed, and role="status" means it is
@@ -55,7 +48,7 @@ export default function Navlinks() {
                 type="button"
                 aria-disabled="true"
                 onClick={() => setExplaining((v) => (v === link.name ? null : link.name))}
-                className={clsx(pill, "text-gray-500 md:hidden")}
+                className={clsx(pill, "text-gray-500")}
               >
                 <Icon className="h-5 w-5" aria-hidden="true" />
                 <span className="text-sm font-medium">{link.name}</span>
@@ -63,7 +56,7 @@ export default function Navlinks() {
               {explaining === link.name && (
                 <span
                   role="status"
-                  className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm md:hidden"
+                  className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm"
                 >
                   Próximamente
                 </span>
