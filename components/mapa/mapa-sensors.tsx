@@ -64,6 +64,13 @@ function getSourceLabel(isSima: boolean, red?: string | null) {
   return red ? `Sensor Ciudadano · ${red}` : "Sensor Ciudadano";
 }
 
+// Government stations publish every half hour, so their latest reading can sit
+// an hour behind the citizen sensors. Saying the cadence on the source line
+// keeps a lagging station from reading as a broken one, without adding a row.
+function getSourceCadence(isSima: boolean) {
+  return isSima ? "actualiza cada 30 min" : null;
+}
+
 // A government building or people, matching the two groups the Capas panel
 // splits the map into.
 function getSourceIcon(isSima: boolean) {
@@ -387,7 +394,7 @@ function LayersFilterContent({
   };
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-6">
       <div>
         <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contaminante</p>
@@ -422,7 +429,7 @@ function LayersFilterContent({
           ))}
         </div>
       </div>
-      <div className="-mt-3.5 border-t border-gray-100 pt-3.5">
+      <div className="-mt-3 border-t border-gray-100 pt-3">
         <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Fuente</p>
           <button
@@ -980,7 +987,10 @@ export default function MapaSensors({
                     <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
                       <span className="flex min-w-0 items-center gap-1.5 text-[13px] leading-none text-gray-400">
                         {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon className="h-3.5 w-3.5 flex-shrink-0" />; })()}
-                        <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
+                        <span className="truncate">
+                          {getSourceLabel(isSima, sensor.red)}
+                          {getSourceCadence(isSima) && ` · ${getSourceCadence(isSima)}`}
+                        </span>
                       </span>
                       <button
                         onClick={() => {
@@ -1048,7 +1058,7 @@ export default function MapaSensors({
                       {nearestName && (() => { const SourceIcon = getSourceIcon(Boolean(nearestIsSima)); return <SourceIcon className="h-3.5 w-3.5 flex-shrink-0" />; })()}
                       <span className="truncate">
                         {nearestName
-                          ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
+                          ? `${getSourceLabel(Boolean(nearestIsSima), nearestRed)}${nearestIsSima ? ` · ${getSourceCadence(true)}` : ''}`
                           : "Promedio del área metropolitana"}
                       </span>
                     </span>
@@ -1194,7 +1204,10 @@ export default function MapaSensors({
                       {(isSima || sensor.red) && (
                         <div className="flex items-center gap-2.5">
                           {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon className="h-3 w-3 flex-shrink-0 text-gray-400" />; })()}
-                          <span className="text-sm text-gray-400">{getSourceLabel(isSima, sensor.red)}</span>
+                          <span className="text-sm text-gray-400">
+                            {getSourceLabel(isSima, sensor.red)}
+                            {getSourceCadence(isSima) && ` · ${getSourceCadence(isSima)}`}
+                          </span>
                         </div>
                       )}
                       <button
