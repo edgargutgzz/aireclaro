@@ -23,6 +23,7 @@ interface Sensor {
   source: string; // purpleAir o sima
   red?: string | null;
   municipio?: string | null;
+  estado?: string | null;
 }
 
 // Air Quality Data interface
@@ -68,32 +69,7 @@ const MUNICIPIO_ALIASES: Record<string, string> = {
   "general escobedo": "escobedo",
 };
 
-// The municipio filter lists the Zona Metropolitana de Monterrey only. Sensors
-// outside it (Saltillo, Arteaga, Allende) still appear on the map, they just
-// don't get a row of their own. Keys are the form municipioKey() produces.
-const ZMM_MUNICIPIOS = new Set([
-  "abasolo",
-  "apodaca",
-  "cadereyta jimenez",
-  "carmen",
-  "cienega de flores",
-  "escobedo",
-  "garcia",
-  "general zuazua",
-  "guadalupe",
-  "hidalgo",
-  "higueras",
-  "juarez",
-  "monterrey",
-  "pesqueria",
-  "salinas victoria",
-  "san nicolas de los garza",
-  "san pedro garza garcia",
-  "santa catarina",
-  "santiago",
-]);
-
-function municipioKey(name?: string | null) {
+function normalizeName(name?: string | null) {
   if (!name) return null;
   const plain = name
     .normalize("NFD")
@@ -102,6 +78,9 @@ function municipioKey(name?: string | null) {
     .trim();
   return MUNICIPIO_ALIASES[plain] ?? plain;
 }
+
+const municipioKey = normalizeName;
+const estadoKey = normalizeName;
 
 function getSourceLabel(isSima: boolean, red?: string | null) {
   if (isSima) return "Estación de Gobierno";
@@ -426,7 +405,7 @@ function LayersFilterContent({
   setShowOccamm,
   showSima,
   setShowSima,
-  municipios,
+  estados,
   hiddenMunicipios,
   setHiddenMunicipios,
   onShowOccammInfo,
@@ -441,7 +420,7 @@ function LayersFilterContent({
   setShowOccamm: Dispatch<SetStateAction<boolean>>;
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
-  municipios: { key: string; label: string; count: number }[];
+  estados: { key: string; label: string; count: number; municipios: { key: string; label: string; count: number }[] }[];
   hiddenMunicipios: string[];
   setHiddenMunicipios: Dispatch<SetStateAction<string[]>>;
   onShowOccammInfo: () => void;
@@ -453,15 +432,7 @@ function LayersFilterContent({
   const subRowPadding = compact ? "py-2.5" : "py-3";
   const boxSize = compact ? 16 : 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
-  const [showMunicipioList, setShowMunicipioList] = useState(false);
-  const municipioState: CheckState =
-    hiddenMunicipios.length === 0 ? 'checked' :
-    hiddenMunicipios.length >= municipios.length ? 'unchecked' : 'indeterminate';
-
-  const toggleAllMunicipios = () => {
-    setHiddenMunicipios(municipioState === 'checked' ? municipios.map((m) => m.key) : []);
-  };
-
+  const [openEstados, setOpenEstados] = useState<string[]>([]);
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
     !showOtros && !showOccamm ? 'unchecked' : 'indeterminate';
@@ -474,12 +445,12 @@ function LayersFilterContent({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Municipio — built like the Fuente group above it: a parent row whose
-          checkbox covers the whole set, children that toggle independently,
-          and a chevron that keeps them visible while you pick. */}
+      {/* Ubicación — state, then its municipalities, on the same nesting the
+          Fuente group uses. Every sensor sits under a row, so hiding
+          everything really does empty the map. */}
       <div>
         <div className="mb-2 flex items-center gap-1.5">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Municipio</p>
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Ubicación</p>
           <button
             type="button"
             onClick={onShowMunicipioInfo}
@@ -490,45 +461,59 @@ function LayersFilterContent({
           </button>
         </div>
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-            <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
-              <button type="button" onClick={toggleAllMunicipios} className="flex min-w-0 items-center gap-3">
-                <LayerCheckbox state={municipioState} size={boxSize} />
-                <span className={`text-sm font-medium ${municipioState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
-                  Todos los municipios
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowMunicipioList((v) => !v)}
-                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-                aria-label={showMunicipioList ? "Ocultar municipios" : "Mostrar municipios"}
-              >
-                <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showMunicipioList ? 'rotate-90' : ''}`} />
-              </button>
-            </div>
-            {showMunicipioList && (
-              <div className="flex max-h-[220px] flex-col overflow-y-auto">
-                {municipios.map((m) => {
-                  const on = !hiddenMunicipios.includes(m.key);
-                  return (
-                    <button
-                      key={m.key}
-                      type="button"
-                      onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
-                      className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
-                    >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
-                        <span className={`truncate text-sm ${on ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
-                      </span>
-                      <span className="flex-shrink-0 text-xs text-gray-300">{m.count}</span>
-                    </button>
-                  );
-                })}
+          {estados.map((estado) => {
+            const keys = estado.municipios.map((m) => m.key);
+            const hidden = keys.filter((k) => hiddenMunicipios.includes(k)).length;
+            const state: CheckState = hidden === 0 ? 'checked' : hidden === keys.length ? 'unchecked' : 'indeterminate';
+            const open = openEstados.includes(estado.key);
+            return (
+              <div key={estado.key} className="overflow-hidden rounded-xl bg-white shadow-sm">
+                <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
+                  <button
+                    type="button"
+                    onClick={() => setHiddenMunicipios((prev) => state === 'checked'
+                      ? [...prev, ...keys.filter((k) => !prev.includes(k))]
+                      : prev.filter((k) => !keys.includes(k)))}
+                    className="flex min-w-0 items-center gap-3"
+                  >
+                    <LayerCheckbox state={state} size={boxSize} />
+                    <span className={`truncate text-sm font-medium ${state === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
+                      {estado.label}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOpenEstados((prev) => open ? prev.filter((k) => k !== estado.key) : [...prev, estado.key])}
+                    className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                    aria-label={open ? `Ocultar municipios de ${estado.label}` : `Mostrar municipios de ${estado.label}`}
+                  >
+                    <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
+                  </button>
+                </div>
+                {open && (
+                  <div className="flex max-h-[220px] flex-col overflow-y-auto">
+                    {estado.municipios.map((m) => {
+                      const on = !hiddenMunicipios.includes(m.key);
+                      return (
+                        <button
+                          key={m.key}
+                          type="button"
+                          onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
+                          className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
+                        >
+                          <span className="flex min-w-0 items-center gap-3">
+                            <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
+                            <span className={`truncate text-sm ${on ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
+                          </span>
+                          <span className="flex-shrink-0 text-xs text-gray-300">{m.count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            );
+          })}
         </div>
       </div>
 
@@ -695,33 +680,49 @@ export default function MapaSensors({
 
   // One entry per municipality that actually has sensors, labelled with its
   // best spelling and counted so the list says how much each filter holds.
-  // Only the metro area gets filter rows.
-  const zmmSensors = useMemo(
-    () => sensors.filter((sensor) => ZMM_MUNICIPIOS.has(municipioKey(sensor.municipio) ?? "")),
-    [sensors],
-  );
+  // Two levels, state then municipality, so every sensor sits under a row:
+  // the map reaches into Coahuila (Saltillo, Arteaga) even though this
+  // observatory follows the Monterrey metro area.
+  const estados = useMemo(() => {
+    const byState = new globalThis.Map<string, {
+      key: string;
+      label: string;
+      count: number;
+      municipios: globalThis.Map<string, { key: string; label: string; count: number }>;
+    }>();
 
-  const municipios = useMemo(() => {
-    const byKey = new globalThis.Map<string, { key: string; label: string; count: number }>();
-    zmmSensors.forEach((sensor) => {
-      const key = municipioKey(sensor.municipio);
-      if (!key) return;
+    sensors.forEach((sensor) => {
+      const sKey = estadoKey(sensor.estado);
+      const mKey = municipioKey(sensor.municipio);
+      if (!sKey || !mKey) return;
+
+      let state = byState.get(sKey);
+      if (!state) {
+        state = { key: sKey, label: sensor.estado!.trim(), count: 0, municipios: new globalThis.Map() };
+        byState.set(sKey, state);
+      }
+      state.count += 1;
+      // Prefer the accented spelling wherever the data disagrees with itself
+      if (/[^\x00-\x7F]/.test(sensor.estado!) && !/[^\x00-\x7F]/.test(state.label)) state.label = sensor.estado!.trim();
+
       const label = sensor.municipio!.trim();
-      const entry = byKey.get(key);
-      if (!entry) {
-        byKey.set(key, { key, label, count: 1 });
+      const municipio = state.municipios.get(mKey);
+      if (!municipio) {
+        state.municipios.set(mKey, { key: mKey, label, count: 1 });
         return;
       }
-      entry.count += 1;
-      // Prefer the accented spelling as the label
-      if (/[^\x00-\x7F]/.test(label) && !/[^\x00-\x7F]/.test(entry.label)) entry.label = label;
+      municipio.count += 1;
+      if (/[^\x00-\x7F]/.test(label) && !/[^\x00-\x7F]/.test(municipio.label)) municipio.label = label;
     });
-    return Array.from(byKey.values()).sort((a, b) => a.label.localeCompare(b.label, "es"));
-  }, [zmmSensors]);
 
-  // Everything the map is currently drawing. The card reads from this too, so
-  // it can never describe sensors the filters have hidden — and when the
-  // filters hide everything, there is nothing left for it to say.
+    return Array.from(byState.values())
+      .map((state) => ({
+        ...state,
+        municipios: Array.from(state.municipios.values()).sort((a, b) => a.label.localeCompare(b.label, "es")),
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [sensors]);
+
   const visibleSensors = useMemo(
     () => sensors.filter((sensor) => {
       if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return false;
@@ -1154,7 +1155,7 @@ export default function MapaSensors({
             setShowOccamm={setShowOccamm}
             showSima={showSima}
             setShowSima={setShowSima}
-            municipios={municipios}
+            estados={estados}
             hiddenMunicipios={hiddenMunicipios}
             setHiddenMunicipios={setHiddenMunicipios}
             onShowOccammInfo={() => setShowOccammInfo(true)}
@@ -1369,7 +1370,7 @@ export default function MapaSensors({
                 setShowOccamm={setShowOccamm}
                 showSima={showSima}
                 setShowSima={setShowSima}
-                municipios={municipios}
+                estados={estados}
                 hiddenMunicipios={hiddenMunicipios}
                 setHiddenMunicipios={setHiddenMunicipios}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
@@ -1681,10 +1682,10 @@ export default function MapaSensors({
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">Zona Metropolitana de Monterrey</p>
                 <p className="text-sm leading-relaxed text-gray-500">
-                  El filtro cubre los municipios de la Zona Metropolitana de
-                  Monterrey, el área que este observatorio sigue. En el mapa
-                  también verás sensores de zonas cercanas, como Saltillo, que
-                  no aparecen en esta lista.
+                  Este observatorio sigue la Zona Metropolitana de Monterrey.
+                  El mapa también incluye sensores de zonas cercanas, como
+                  Saltillo y Arteaga, en Coahuila, agrupados por estado en
+                  este filtro.
                 </p>
               </div>
             </div>
