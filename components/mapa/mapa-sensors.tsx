@@ -440,15 +440,19 @@ function InfoSection({
 }) {
   return (
     <div>
+      {/* Same affordances as the filter rows: hover and press feedback, a
+          focus ring, and padding that bleeds outward with -mx so the title
+          stays aligned with the body text below it. */}
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between gap-3 text-left"
+        aria-expanded={open}
+        className="-mx-2 flex w-[calc(100%+1rem)] items-center justify-between gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-gray-500/5 active:bg-gray-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
         <p className="text-sm font-semibold text-gray-700">{title}</p>
         <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
       </button>
-      {open && <div className="mt-1 text-sm leading-relaxed text-gray-500">{children}</div>}
+      {open && <div className="disclosure-in mt-1 text-sm leading-relaxed text-gray-500">{children}</div>}
     </div>
   );
 }
