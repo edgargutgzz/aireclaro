@@ -49,6 +49,10 @@ interface HistoryPoint {
 // where it crosses a dashed threshold line.
 const SPARKLINE_COLOR = "#3b82f6";
 
+// Shown as the default "Calidad del aire" station when the visitor hasn't
+// shared their location (San Nicolás: UANL).
+const DEFAULT_SENSOR_ID = "Norte2";
+
 // Plain marker shadow — the pulse animation's base state, no static ring.
 const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 
@@ -575,11 +579,11 @@ export default function MapaSensors({
       return null;
     }
 
-    // No location shared — no station. Naming one station as "the" reading
-    // tells a visitor in Saltillo that San Nicolás is their air, which is a
-    // precision we haven't earned. The card falls back to the metro-wide
-    // median, which answers the question without claiming a place.
-    return null;
+    // No location shared — default to a fixed representative station
+    // (San Nicolás: UANL), so the card opens with a real reading and its
+    // 48h trend instead of a nameless area median.
+    const defaultSensor = sensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
+    return defaultSensor ? buildFromSensor(defaultSensor) : null;
   }, [userLocation, sensors, data]);
 
   const areaMedianPm25 = useMemo(() => {
