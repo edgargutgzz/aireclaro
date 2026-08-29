@@ -874,6 +874,7 @@ export default function MapaSensors({
     markerElementsRef.current.forEach(({ el }, sensorId) => {
       const isActive = sensorId === activeSensorId;
       el.style.animation = '';
+      el.classList.toggle('sensor-marker--selected', isActive);
       // Full opacity on the selected one, the rest stay slightly back.
       el.style.opacity = isActive ? '1' : '0.9';
       el.style.boxShadow = isActive
