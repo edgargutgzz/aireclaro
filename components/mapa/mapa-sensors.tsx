@@ -363,6 +363,34 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
   );
 }
 
+// A titled block inside an info popup that can fold away, so a long popup
+// opens on the part that matters and keeps the rest one click away.
+function InfoSection({
+  title,
+  defaultOpen = false,
+  children,
+}: {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-3 text-left"
+      >
+        <p className="text-sm font-semibold text-gray-700">{title}</p>
+        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
+      </button>
+      {open && <div className="mt-1 text-sm leading-relaxed text-gray-500">{children}</div>}
+    </div>
+  );
+}
+
 type CheckState = 'checked' | 'indeterminate' | 'unchecked';
 
 // Styled after shadcn/ui's Checkbox (rounded-sm, border always in the
@@ -1721,36 +1749,29 @@ export default function MapaSensors({
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowPM25Info(false)} />
           <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
+            {/* PM2.5 is what the map shows, so it reads straight away; the two
+                we don't have yet stay one click away. */}
             <div className="flex flex-col gap-4">
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">PM2.5</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Partículas en suspensión en el aire con un diámetro de
-                  2.5 micrómetros o menos, unas 30 veces más delgadas que
-                  un cabello humano. Evaden las defensas de la nariz y la
-                  garganta, por lo que son las más peligrosas para la
-                  salud.
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">PM10</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Partículas de mayor tamaño, con un diámetro de hasta 10
-                  micrómetros. Quedan retenidas principalmente en la nariz
-                  y la garganta, por lo que representan un menor riesgo
-                  para la salud que las PM2.5.
-                </p>
-              </div>
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Ozono</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Gas que no se emite directamente: se forma cuando la luz
-                  solar reacciona con los gases del tráfico y la industria.
-                  Alcanza sus niveles más altos en las tardes soleadas e
-                  irrita las vías respiratorias, sobre todo al hacer
-                  ejercicio al aire libre.
-                </p>
-              </div>
+              <InfoSection title="PM2.5" defaultOpen>
+                Partículas en suspensión en el aire con un diámetro de
+                2.5 micrómetros o menos, unas 30 veces más delgadas que
+                un cabello humano. Evaden las defensas de la nariz y la
+                garganta, por lo que son las más peligrosas para la
+                salud.
+              </InfoSection>
+              <InfoSection title="PM10">
+                Partículas de mayor tamaño, con un diámetro de hasta 10
+                micrómetros. Quedan retenidas principalmente en la nariz
+                y la garganta, por lo que representan un menor riesgo
+                para la salud que las PM2.5.
+              </InfoSection>
+              <InfoSection title="Ozono">
+                Gas que no se emite directamente: se forma cuando la luz
+                solar reacciona con los gases del tráfico y la industria.
+                Alcanza sus niveles más altos en las tardes soleadas e
+                irrita las vías respiratorias, sobre todo al hacer
+                ejercicio al aire libre.
+              </InfoSection>
             </div>
             <button
               onClick={() => setShowPM25Info(false)}
