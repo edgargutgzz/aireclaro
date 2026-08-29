@@ -9,25 +9,32 @@ export default function Navbar() {
   return (
     <>
       {/* Mobile top bar — logo only, in normal document flow; nav links stay in the bottom bar */}
-      <div className="flex h-14 flex-shrink-0 items-center bg-stone-50 px-4 md:hidden">
-        <Link href="/">
+      <header className="flex h-header flex-shrink-0 items-center bg-stone-50 px-4 md:hidden">
+        <Link
+          href="/"
+          className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        >
           <Image
             src="/occamm-logo.png"
-            alt="OCCAMM Logo"
+            alt="OCCAMM, Observatorio del Aire"
             width={130}
             height={24}
+            priority
             className="h-[24px] w-[130px]"
           />
         </Link>
-      </div>
+      </header>
 
       {/* Mobile navbar at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/60 bg-white/80 backdrop-blur-md shadow-sm md:hidden">
-        <div className="flex w-full items-center justify-around px-4 pt-3 pb-3">
+      <nav
+        aria-label="Principal"
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/60 bg-white/80 backdrop-blur-md shadow-sm md:hidden"
+      >
+        <ul className="flex w-full items-center justify-around px-4 pt-3 pb-3">
           <Navlinks />
-        </div>
+        </ul>
         <div className="h-[env(safe-area-inset-bottom)]" />
-      </div>
+      </nav>
 
       {/* Desktop navbar — full-width top bar, in normal document flow, shown on every page */}
       <SiteHeader />

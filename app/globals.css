@@ -119,6 +119,31 @@
   .location-dot__pulse { animation: none; opacity: 0.25; }
 }
 
+/* The header's height, in one place. It used to be written as 56px and 72px
+   across three files: the bar itself in two components, and the map's
+   h-[calc(100svh-56px)] md:h-[calc(100svh-72px)] restating both so it could
+   fill what was left. The media query lives here so callers need no md:
+   variant at all. */
+:root {
+  --header-h: 56px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-h: 72px;
+  }
+}
+
+@layer utilities {
+  .h-header {
+    height: var(--header-h);
+  }
+
+  .h-below-header {
+    height: calc(100svh - var(--header-h));
+  }
+}
+
 /* Disclosure bodies ease in rather than appearing all at once. Open only: an
    exit animation would need the element to stay mounted, which keeps its
    controls in the tab order after they are visually gone. */

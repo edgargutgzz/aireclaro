@@ -7,16 +7,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "hourly",
       priority: 1,
     },
-    {
-      url: "https://aireclaro.com/recomendaciones",
-      changeFrequency: "hourly",
-      priority: 0.9,
-    },
-    {
-      url: "https://aireclaro.com/acerca",
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
+    // /recomendaciones was listed here with no route behind it, so the
+    // sitemap was submitting a 404. /acerca and /datos are built but not
+    // ready to show, and the nav does not offer them, so the sitemap should
+    // not be advertising them either.
     {
       url: "https://aireclaro.com/aviso-privacidad",
       changeFrequency: "yearly",
