@@ -118,3 +118,19 @@
 @media (prefers-reduced-motion: reduce) {
   .location-dot__pulse { animation: none; opacity: 0.25; }
 }
+
+/* Disclosure bodies ease in rather than appearing all at once. Open only: an
+   exit animation would need the element to stay mounted, which keeps its
+   controls in the tab order after they are visually gone. */
+@keyframes disclosure-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.disclosure-in {
+  animation: disclosure-in 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disclosure-in { animation: none; }
+}

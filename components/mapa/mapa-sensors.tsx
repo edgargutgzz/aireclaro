@@ -398,7 +398,6 @@ function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
 }
 
 function LayersFilterContent({
-  compact,
   showOtros,
   setShowOtros,
   showOccamm,
@@ -412,7 +411,6 @@ function LayersFilterContent({
   onShowPM25Info,
   onShowFuenteInfo,
 }: {
-  compact: boolean;
   showOtros: boolean;
   setShowOtros: Dispatch<SetStateAction<boolean>>;
   showOccamm: boolean;
@@ -426,9 +424,11 @@ function LayersFilterContent({
   onShowPM25Info: () => void;
   onShowFuenteInfo: () => void;
 }) {
-  const rowPadding = compact ? "py-3" : "py-3.5";
-  const subRowPadding = compact ? "py-2.5" : "py-3";
-  const boxSize = compact ? 16 : 18;
+  // Fixed sizes: `compact` was passed false at both call sites, and shrinking
+  // rows on mobile is the wrong direction for touch targets anyway.
+  const rowPadding = "py-3.5";
+  const subRowPadding = "py-3";
+  const boxSize = 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
   const [openEstados, setOpenEstados] = useState<string[]>([]);
   // One section open at a time: three expanded sections is how a filter panel
@@ -452,7 +452,7 @@ function LayersFilterContent({
   const shownMunicipios = totalMunicipios - hiddenMunicipios.length;
   const ubicacionSummary = hiddenMunicipios.length === 0
     ? "Todos"
-    : `${shownMunicipios} de ${totalMunicipios}`;
+    : `${shownMunicipios} de ${totalMunicipios} municipios`;
   // Named, not counted: the panel shows two rows while there are three
   // toggles underneath, so "1 de 3" reads as wrong against two checkboxes.
   const fuenteSummary = (() => {
@@ -467,39 +467,37 @@ function LayersFilterContent({
     return on.length ? on.join(" · ") : "Ninguna";
   })();
 
+  // One control opens the section: label, summary and chevron are a single
+  // button, so there is one tab stop and one thing to announce. The info icon
+  // is the only other control, and carries its own padding — an unpadded 12px
+  // icon is half the practical minimum hit area.
   const sectionHeader = (
     name: 'ubicacion' | 'fuente' | 'contaminante',
     label: string,
     summary: string,
     info?: { onClick: () => void; ariaLabel: string },
   ) => (
-    <div className="mb-2 flex items-center gap-1.5">
+    <div className="mb-2 flex items-center">
       <button
         type="button"
         onClick={() => toggleSection(name)}
-        className="flex min-w-0 flex-1 items-center gap-1.5 text-left"
+        aria-expanded={openSection === name}
+        className="-ml-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg px-1 py-1 text-left transition-colors hover:bg-gray-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
         <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">{label}</p>
-        <span className="truncate text-xs leading-none text-gray-300">· {summary}</span>
+        <span className="min-w-0 flex-1 truncate text-xs leading-none text-gray-300">· {summary}</span>
+        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
       </button>
       {info && (
         <button
           type="button"
           onClick={info.onClick}
-          className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+          className="-mr-1.5 ml-0.5 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-500/5 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           aria-label={info.ariaLabel}
         >
           <Info className="h-3 w-3" />
         </button>
       )}
-      <button
-        type="button"
-        onClick={() => toggleSection(name)}
-        className="flex-shrink-0 text-gray-400 hover:text-gray-600"
-        aria-label={openSection === name ? `Ocultar ${label}` : `Mostrar ${label}`}
-      >
-        <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
-      </button>
     </div>
   );
 
@@ -516,7 +514,7 @@ function LayersFilterContent({
             on a row that isn't a control (see Contaminante) promises
             something to press. */}
         {openSection === 'ubicacion' && (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+        <div className="disclosure-in overflow-hidden rounded-2xl border border-gray-200 bg-white">
           {estados.map((estado, i) => {
             const keys = estado.municipios.map((m) => m.key);
             const hidden = keys.filter((k) => hiddenMunicipios.includes(k)).length;
@@ -532,17 +530,18 @@ function LayersFilterContent({
                     onClick={() => setHiddenMunicipios((prev) => state === 'checked'
                       ? [...prev, ...keys.filter((k) => !prev.includes(k))]
                       : prev.filter((k) => !keys.includes(k)))}
-                    className={`flex min-w-0 flex-1 items-center gap-3 pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
+                    className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
                   >
                     <LayerCheckbox state={state} size={boxSize} />
                     <span className={`truncate text-sm font-medium ${state === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
                       {estado.label}
                     </span>
+                    <span className="flex-shrink-0 text-xs text-gray-300">{estado.count}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setOpenEstados((prev) => open ? prev.filter((k) => k !== estado.key) : [...prev, estado.key])}
-                    className="mr-2 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600"
+                    className="mr-2 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                     aria-expanded={open}
                     aria-label={open ? `Ocultar municipios de ${estado.label}` : `Mostrar municipios de ${estado.label}`}
                   >
@@ -550,7 +549,7 @@ function LayersFilterContent({
                   </button>
                 </div>
                 {open && (
-                  <div className="flex flex-col">
+                  <div role="group" aria-label={`Municipios de ${estado.label}`} className="disclosure-in flex flex-col">
                     {estado.municipios.map((m) => {
                       const on = !hiddenMunicipios.includes(m.key);
                       return (
@@ -560,7 +559,7 @@ function LayersFilterContent({
                           role="checkbox"
                           aria-checked={on}
                           onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
-                          className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${subRowPadding}`}
+                          className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
                         >
                           <span className="flex min-w-0 items-center gap-3">
                             <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
@@ -591,7 +590,7 @@ function LayersFilterContent({
             checkbox and the label's tone: dropping the card on "off" left
             nothing to aim at. */}
         {openSection === 'fuente' && (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+        <div className="disclosure-in overflow-hidden rounded-2xl border border-gray-200 bg-white">
           <div>
             <div className="flex w-full items-center gap-1">
               <button
@@ -599,7 +598,7 @@ function LayersFilterContent({
                 role="checkbox"
                 aria-checked={citizenState === 'indeterminate' ? 'mixed' : citizenState === 'checked'}
                 onClick={toggleCitizenGroup}
-                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
+                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
               >
                 <LayerCheckbox state={citizenState} size={boxSize} />
                 <span className={`text-sm font-medium ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
@@ -607,7 +606,7 @@ function LayersFilterContent({
               <button
                 type="button"
                 onClick={() => setShowCitizenGroup((v) => !v)}
-                className="mr-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600"
+                className="mr-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 aria-expanded={showCitizenGroup}
                 aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
               >
@@ -615,14 +614,14 @@ function LayersFilterContent({
               </button>
             </div>
             {showCitizenGroup && (
-              <div className="flex flex-col">
+              <div role="group" aria-label="Redes de sensores ciudadanos" className="disclosure-in flex flex-col">
                 <div className={`ml-11 flex items-center gap-2 border-t border-gray-100 pr-3`}>
                   <button
                     type="button"
                     role="checkbox"
                     aria-checked={showOccamm}
                     onClick={() => setShowOccamm((v) => !v)}
-                    className={`-ml-2 flex flex-1 items-center gap-3 rounded-lg pl-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${subRowPadding}`}
+                    className={`-ml-2 flex flex-1 items-center gap-3 rounded-lg pl-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
                   >
                     <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
                     <span className={`text-sm ${showOccamm ? 'text-gray-600' : 'text-gray-400'}`}>OCCAMM</span>
@@ -630,7 +629,7 @@ function LayersFilterContent({
                   <button
                     type="button"
                     onClick={onShowOccammInfo}
-                    className="flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+                    className="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                     aria-label="Más información sobre OCCAMM"
                   >
                     <Info className="h-3 w-3" />
@@ -641,7 +640,7 @@ function LayersFilterContent({
                   role="checkbox"
                   aria-checked={showOtros}
                   onClick={() => setShowOtros((v) => !v)}
-                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-3 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${subRowPadding}`}
+                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-3 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
                 >
                   <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
                   <span className={`text-sm ${showOtros ? 'text-gray-600' : 'text-gray-400'}`}>Otros</span>
@@ -654,7 +653,7 @@ function LayersFilterContent({
             role="checkbox"
             aria-checked={showSima}
             onClick={() => setShowSima((v) => !v)}
-            className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 ${rowPadding}`}
+            className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className={`text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
@@ -673,7 +672,7 @@ function LayersFilterContent({
             invite a click that could only empty the map. Make it a radio the
             day PM10 or Ozono lands and the choice becomes real. */}
         {openSection === 'contaminante' && (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+        <div className="disclosure-in overflow-hidden rounded-2xl border border-gray-200 bg-white">
           <div className={`flex items-center justify-between gap-3 px-4 ${rowPadding}`}>
             <span className="text-sm font-medium text-gray-800">PM2.5</span>
             <Check className="h-4 w-4 flex-shrink-0 text-gray-700" strokeWidth={2.5} />
@@ -1211,7 +1210,6 @@ export default function MapaSensors({
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <LayersFilterContent
-            compact={false}
             showOtros={showOtros}
             setShowOtros={setShowOtros}
             showOccamm={showOccamm}
@@ -1440,7 +1438,6 @@ export default function MapaSensors({
                + 52px card header + 88px for the badge and its gap. */
             <div className="max-h-[calc(100svh-236px)] overflow-y-auto overscroll-contain px-5 pb-6 pt-3">
               <LayersFilterContent
-                compact={false}
                 showOtros={showOtros}
                 setShowOtros={setShowOtros}
                 showOccamm={showOccamm}
