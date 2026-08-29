@@ -833,6 +833,10 @@ export default function MapaSensors({
       el.style.boxShadow = isActive
         ? '0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px rgba(107,114,128,0.9)'
         : PLAIN_MARKER_SHADOW;
+      // Markers stack in DOM order, so in a dense cluster the selected one can
+      // sit under its neighbours and lose its ring. Lift it above them.
+      const parent = el.parentElement;
+      if (parent) parent.style.zIndex = isActive ? '1' : '';
     });
   }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm, selectedSensor]);
 
@@ -841,57 +845,6 @@ export default function MapaSensors({
   useEffect(() => {
     setHoveredHistory(null);
   }, [sensorHistory, selectedSensor]);
-
-  // Declutter and stack the markers.
-  //
-  // In San Pedro and central Monterrey the 40px circles pile on top of each
-  // other, and DOM order decides what wins, so a clean reading can hide a bad
-  // one. Two passes on every map move:
-  //   - stacking: the worse the reading, the higher it sits (selection wins).
-  //   - thinning: bucket markers into screen-space cells and draw only the
-  //     worst in each. Zooming in shrinks the cells in ground terms, so the
-  //     rest come back as there is room for them.
-  useEffect(() => {
-    if (!mapLoaded || !map.current) return;
-    const mapInstance = map.current;
-    const CELL = 44; // marker is 40px, so this leaves a hair of breathing room
-
-    const pm25ById = new globalThis.Map<number, number>();
-    data.forEach((d) => {
-      if (d.pm25 !== null && !pm25ById.has(d.sensor_id)) pm25ById.set(d.sensor_id, d.pm25);
-    });
-    const coordsById = new globalThis.Map<number, { lat: number; lon: number }>();
-    sensors.forEach((sensor) => coordsById.set(sensor.sensor_id, { lat: sensor.lat, lon: sensor.lon }));
-
-    const activeId = selectedSensor?.sensor.sensor_id;
-
-    const declutter = () => {
-      const winners = new globalThis.Map<string, { id: number; pm25: number }>();
-      markerElementsRef.current.forEach((_, sensorId) => {
-        const coords = coordsById.get(sensorId);
-        if (!coords) return;
-        const point = (mapInstance as any).project([coords.lon, coords.lat]) as { x: number; y: number };
-        const key = `${Math.floor(point.x / CELL)}:${Math.floor(point.y / CELL)}`;
-        const pm25 = pm25ById.get(sensorId) ?? 0;
-        const current = winners.get(key);
-        if (!current || pm25 > current.pm25) winners.set(key, { id: sensorId, pm25 });
-      });
-      const visible = new Set(Array.from(winners.values(), (w) => w.id));
-
-      markerElementsRef.current.forEach(({ el }, sensorId) => {
-        const isActive = sensorId === activeId;
-        el.style.display = isActive || visible.has(sensorId) ? '' : 'none';
-        const parent = el.parentElement;
-        if (parent) {
-          parent.style.zIndex = isActive ? '1000' : String(Math.round(pm25ById.get(sensorId) ?? 0));
-        }
-      });
-    };
-
-    declutter();
-    (mapInstance as any).on('move', declutter);
-    return () => { (mapInstance as any).off('move', declutter); };
-  }, [mapLoaded, sensors, data, selectedSensor, showSima, showOtros, showOccamm]);
 
   // Close selected sensor on map click
   useEffect(() => {
