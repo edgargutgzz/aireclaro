@@ -989,7 +989,7 @@ export default function MapaSensors({
 
                   {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                   {sensorQuality && (
-                    <div className="relative z-[1] px-5 pb-8 pt-3">
+                    <div className="relative z-[1] px-5 pb-5 pt-3">
                       {/* Label and its info icon, the way Contaminante and Fuente carry
                           theirs in Capas. Población General reads straight away; only the
                           sensitive groups sit behind a chevron. */}
@@ -1074,7 +1074,7 @@ export default function MapaSensors({
                 </div>
 
                 {/* Recommendations — collapsed by default, not needed for a data-first platform */}
-                <div className="relative z-[1] px-5 pb-8 pt-3">
+                <div className="relative z-[1] px-5 pb-5 pt-3">
                   {/* Label and its info icon, the way Contaminante and Fuente carry
                       theirs in Capas. Población General reads straight away; only the
                       sensitive groups sit behind a chevron. */}
