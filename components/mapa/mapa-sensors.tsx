@@ -293,7 +293,7 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
         </button>
       </div>
       {open && (
-        <div className="mt-4 flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4 md:max-h-[260px] md:overflow-y-auto md:pr-1">
           <div>
             <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
             <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
@@ -964,11 +964,8 @@ export default function MapaSensors({
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
-          // Capped so a long card (recommendations open, grupos sensibles
-          // expanded) scrolls instead of running past the viewport and over
-          // the location button.
           return (
-            <div className="pointer-events-auto max-h-[calc(100vh-14rem)] overflow-y-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+            <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
               {/* Always-visible header */}
               <button
                 onClick={() => setShowCalidadContent(v => !v)}
@@ -1035,7 +1032,7 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className="pointer-events-auto max-h-[calc(100vh-14rem)] overflow-y-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+          <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
             {/* Always-visible header */}
             <button
               onClick={() => setShowCalidadContent(v => !v)}
