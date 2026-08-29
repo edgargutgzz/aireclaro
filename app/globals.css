@@ -18,6 +18,9 @@
    transform, not the marker element's, and the selection effect rewrites
    box-shadow on every render. */
 .sensor-marker {
+  /* Anchors the ::after halo. Without it the pseudo escapes the marker's
+     stacking context and repaints against the map on every frame. */
+  position: relative;
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
 }
 
@@ -48,6 +51,9 @@
   border-radius: 50%;
   background: var(--pulse-color, #3b82f6);
   pointer-events: none;
+  /* Own layer, so the loop composites instead of repainting the marker while
+     the map is being panned or zoomed. */
+  will-change: transform, opacity;
   animation: marker-pulse 2.4s ease-out infinite;
 }
 
