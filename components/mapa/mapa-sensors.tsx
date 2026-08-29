@@ -901,15 +901,12 @@ export default function MapaSensors({
 
     flyToUser();
 
+    // Same two-span build as the sensor markers: the halo is a sibling drawn
+    // before the dot, so it expands behind it the way Google's does.
     const userMarkerElement = document.createElement("div");
-    userMarkerElement.style.cssText = `
-      width: 16px;
-      height: 16px;
-      background: #3b82f6;
-      border: 2px solid white;
-      border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
-    `;
+    userMarkerElement.className = "location-dot location-dot--map";
+    userMarkerElement.innerHTML =
+      '<span class="location-dot__pulse"></span><span class="location-dot__core"></span>';
 
     new Marker({ element: userMarkerElement })
       .setLngLat([userLocation.longitude, userLocation.latitude])
@@ -1187,10 +1184,18 @@ export default function MapaSensors({
           className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
           aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
         >
-          {/* Dimmed until location is granted, so "off" is visible at a
-              glance. Weight stays the same in both states. */}
-          <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          <span className={`text-[13px] font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
+          {/* Once location is on the button carries the same blue dot as the
+              map, the way the badge carries its green one. Until then it stays
+              an arrow, dimmed so "off" is visible at a glance. */}
+          {userLocation ? (
+            <span className="location-dot h-4 w-4 flex-shrink-0">
+              <span className="location-dot__pulse" />
+              <span className="location-dot__core" />
+            </span>
+          ) : (
+            <Navigation className="h-4 w-4 text-gray-400" />
+          )}
+          <span className={`text-[13px] font-medium ${userLocation ? 'text-gray-500' : 'text-gray-400'}`}>
             {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
           </span>
         </button>
