@@ -30,10 +30,11 @@
   outline-offset: 3px;
 }
 
-/* Selected marker: the Google Maps treatment — a filled halo of the same blue
-   as the trend line, expanding out from behind the circle and fading. Drawn on
-   ::after so it never fights the inline box-shadow the selection effect sets,
-   and behind the marker so only the halo shows around it. */
+/* Selected marker: the Google Maps treatment — a filled halo expanding out
+   from behind the circle and fading. Its colour comes from --pulse-color, set
+   per selection to that sensor's air-quality tone. Drawn on ::after so it never
+   fights the inline box-shadow the selection effect sets, and behind the marker
+   so only the halo shows around it. */
 .sensor-marker {
   position: relative;
 }
@@ -44,13 +45,13 @@
   inset: -6px;
   z-index: -1;
   border-radius: 50%;
-  background: rgba(59, 130, 246, 0.45);
+  background: var(--pulse-color, #3b82f6);
   pointer-events: none;
   animation: marker-pulse 2s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
 }
 
 @keyframes marker-pulse {
-  0% { transform: scale(0.85); opacity: 0.65; }
+  0% { transform: scale(0.85); opacity: 0.5; }
   70% { transform: scale(1.9); opacity: 0; }
   100% { transform: scale(1.9); opacity: 0; }
 }

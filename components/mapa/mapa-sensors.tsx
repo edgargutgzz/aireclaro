@@ -840,12 +840,11 @@ export default function MapaSensors({
     };
   }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
 
-  // Highlight the active marker — the explicitly selected sensor if there
-  // is one, otherwise the nearest/default sensor — with a plain static
-  // border. No pulse, no resize, no dimming of other markers: those all
-  // read as broken/too much in one way or another (pulse got lost in
-  // dense same-color clusters, resize looked strange, dimming washed out
-  // the whole map since there's always a default "active" sensor).
+  // Highlight the active marker — the explicitly selected sensor if there is
+  // one, otherwise the nearest/default sensor — with a ring and a pulsing halo
+  // in that sensor's own air-quality tone, the same one the card's headline
+  // wears. No resize, no dimming of the other markers: those read as broken or
+  // as too much, since there is always a default "active" sensor.
   useEffect(() => {
     if (!mapLoaded) return;
 
@@ -855,23 +854,28 @@ export default function MapaSensors({
         ? sensors.find(s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon)?.sensor_id
         : undefined;
 
+    const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
+    // The ink, not the fill: on a light map the pure IMECA yellow and green
+    // barely register as a ring, while these are the exact tones the card's
+    // quality word uses.
+    const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
+
     markerElementsRef.current.forEach(({ el }, sensorId) => {
       const isActive = sensorId === activeSensorId;
       el.style.animation = '';
       el.classList.toggle('sensor-marker--selected', isActive);
+      el.style.setProperty('--pulse-color', activeColor);
       // Full opacity on the selected one, the rest stay slightly back.
       el.style.opacity = isActive ? '1' : '0.9';
-      // Selected ring in the trend line's blue, so the marker, its halo and
-      // the chart all carry the same accent.
       el.style.boxShadow = isActive
-        ? `0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px ${SPARKLINE_COLOR}`
+        ? `0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px ${activeColor}`
         : PLAIN_MARKER_SHADOW;
       // Markers stack in DOM order, so in a dense cluster the selected one can
       // sit under its neighbours and lose its ring. Lift it above them.
       const parent = el.parentElement;
       if (parent) parent.style.zIndex = isActive ? '1' : '';
     });
-  }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm, selectedSensor]);
+  }, [nearestSensorData, mapLoaded, sensors, data, showSima, showOtros, showOccamm, selectedSensor]);
 
   // A chart that unmounts mid-hover (new sensor picked, history reloaded)
   // never fires its mouseleave, so drop the stale point explicitly.
