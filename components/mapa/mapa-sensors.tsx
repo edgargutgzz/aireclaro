@@ -442,16 +442,17 @@ function LayersFilterContent({
           </button>
         </div>
         {/* One card per source group on a soft gray track, the way an inset
-            grouped list works: children live inside their parent's card and are
+            grouped list works: children live inside their parent's card,
             indented by their label, with a separator that starts where the text
-            does. Insetting the child rows themselves made them read as
-            misaligned cards rather than as part of the group. */}
+            does. Every row keeps its card in both states, on/off is the
+            checkbox and the label's tone: dropping the card on "off" left
+            nothing to aim at. */}
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          <div className={`overflow-hidden rounded-xl ${citizenState === 'unchecked' ? '' : 'bg-white shadow-sm'}`}>
+          <div className="overflow-hidden rounded-xl bg-white shadow-sm">
             <div className={`flex w-full items-center justify-between gap-3 px-3 ${rowPadding}`}>
               <button type="button" onClick={toggleCitizenGroup} className="flex min-w-0 items-center gap-3">
                 <LayerCheckbox state={citizenState} size={boxSize} />
-                <span className="text-sm font-semibold text-gray-800">Sensores Ciudadanos</span>
+                <span className={`text-sm font-semibold ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
               </button>
               <button
                 type="button"
@@ -471,7 +472,7 @@ function LayersFilterContent({
                     className="flex items-center gap-3"
                   >
                     <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-                    <span className="text-sm text-gray-600">OCCAMM</span>
+                    <span className={`text-sm ${showOccamm ? 'text-gray-600' : 'text-gray-400'}`}>OCCAMM</span>
                   </button>
                   <button
                     type="button"
@@ -488,7 +489,7 @@ function LayersFilterContent({
                   className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-3 ${subRowPadding}`}
                 >
                   <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-                  <span className="text-sm text-gray-600">Otros</span>
+                  <span className={`text-sm ${showOtros ? 'text-gray-600' : 'text-gray-400'}`}>Otros</span>
                 </button>
               </div>
             )}
@@ -496,10 +497,10 @@ function LayersFilterContent({
           <button
             type="button"
             onClick={() => setShowSima((v) => !v)}
-            className={`flex w-full items-center gap-3 rounded-xl px-3 ${rowPadding} ${showSima ? 'bg-white shadow-sm' : ''}`}
+            className={`flex w-full items-center gap-3 rounded-xl bg-white px-3 shadow-sm ${rowPadding}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-            <span className="text-sm font-semibold text-gray-800">Estaciones de Gobierno</span>
+            <span className={`text-sm font-semibold ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
           </button>
         </div>
       </div>
