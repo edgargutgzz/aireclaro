@@ -274,43 +274,38 @@ const SENSITIVE_GROUPS = [
   { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
 
-// Built like the Capas panel: one white card, a row per topic, and the
-// sensitive groups nested behind a chevron that opens them in place instead
-// of throwing a modal over the map.
+// Plain text on the card's own surface: a heading row with the chevron, the
+// general advice under it, and the sensitive groups appended in order when
+// opened. No nested card, no filled blocks.
 function HealthRecommendations({ info }: { info: QualityInfo }) {
   const [showGruposSensibles, setShowGruposSensibles] = useState(false);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-      <div className="px-4 py-3.5">
-        <div className="mb-1 flex items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-gray-800">Población General</p>
-          {/* The chevron lives on this row: the sensitive groups open under it
-              rather than behind a card of their own. */}
-          <button
-            type="button"
-            onClick={() => setShowGruposSensibles((v) => !v)}
-            className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-600"
-            aria-label={showGruposSensibles ? "Ocultar grupos sensibles" : "Ver grupos sensibles"}
-          >
-            <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showGruposSensibles ? 'rotate-90' : ''}`} />
-          </button>
-        </div>
-        {/* Two lines at rest so the card doesn't dominate the first view; the
-            chevron opens the full text along with the sensitive groups. */}
-        <p className={`text-sm leading-relaxed text-gray-500 ${showGruposSensibles ? '' : 'line-clamp-2'}`}>
-          {info.generalRec}
-        </p>
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <p className="text-sm font-semibold text-gray-700">Población General</p>
+        <button
+          type="button"
+          onClick={() => setShowGruposSensibles((v) => !v)}
+          className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-600"
+          aria-label={showGruposSensibles ? "Ocultar grupos sensibles" : "Ver grupos sensibles"}
+        >
+          <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showGruposSensibles ? 'rotate-90' : ''}`} />
+        </button>
       </div>
+      {/* Two lines at rest so the section doesn't dominate the first view. */}
+      <p className={`text-sm leading-relaxed text-gray-500 ${showGruposSensibles ? '' : 'line-clamp-2'}`}>
+        {info.generalRec}
+      </p>
       {showGruposSensibles && (
-        <div className="flex flex-col">
+        <div className="mt-4 flex flex-col gap-4">
           {SENSITIVE_GROUPS.map((g) => (
-            <div key={g.key} className="border-t border-gray-100 px-4 py-3">
+            <div key={g.key}>
               <div className="mb-1 flex items-center gap-2">
                 <g.icon className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                <p className="text-sm text-gray-600">{g.label}</p>
+                <p className="text-sm font-semibold text-gray-700">{g.label}</p>
               </div>
-              <p className="pl-6 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
+              <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
             </div>
           ))}
         </div>
