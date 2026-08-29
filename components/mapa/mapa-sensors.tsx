@@ -405,6 +405,7 @@ function LayersFilterContent({
   showSima,
   setShowSima,
   estados,
+  sourceCounts,
   hiddenMunicipios,
   setHiddenMunicipios,
   onShowOccammInfo,
@@ -418,6 +419,7 @@ function LayersFilterContent({
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
   estados: { key: string; label: string; count: number; municipios: { key: string; label: string; count: number }[] }[];
+  sourceCounts: { occamm: number; otros: number; ciudadanos: number; gobierno: number };
   hiddenMunicipios: string[];
   setHiddenMunicipios: Dispatch<SetStateAction<string[]>>;
   onShowOccammInfo: () => void;
@@ -601,7 +603,8 @@ function LayersFilterContent({
                 className={`flex min-w-0 flex-1 items-center gap-3 pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
               >
                 <LayerCheckbox state={citizenState} size={boxSize} />
-                <span className={`text-sm font-medium ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
+                <span className={`min-w-0 flex-1 truncate text-sm font-medium ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
+                <span className="flex-shrink-0 pr-1 text-xs text-gray-300">{sourceCounts.ciudadanos}</span>
               </button>
               <button
                 type="button"
@@ -625,6 +628,7 @@ function LayersFilterContent({
                   >
                     <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
                     <span className={`text-sm ${showOccamm ? 'text-gray-600' : 'text-gray-400'}`}>OCCAMM</span>
+                    <span className="flex-1 text-right text-xs text-gray-300">{sourceCounts.occamm}</span>
                   </button>
                   <button
                     type="button"
@@ -643,7 +647,8 @@ function LayersFilterContent({
                   className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-3 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
                 >
                   <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-                  <span className={`text-sm ${showOtros ? 'text-gray-600' : 'text-gray-400'}`}>Otros</span>
+                  <span className={`min-w-0 flex-1 truncate text-sm ${showOtros ? 'text-gray-600' : 'text-gray-400'}`}>Otros</span>
+                  <span className="flex-shrink-0 text-xs text-gray-300">{sourceCounts.otros}</span>
                 </button>
               </div>
             )}
@@ -656,7 +661,8 @@ function LayersFilterContent({
             className={`flex w-full items-center gap-3 border-t border-gray-100 px-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-            <span className={`text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
+            <span className={`min-w-0 flex-1 truncate text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
+            <span className="flex-shrink-0 text-xs text-gray-300">{sourceCounts.gobierno}</span>
           </button>
         </div>
         )}
@@ -786,6 +792,14 @@ export default function MapaSensors({
         municipios: Array.from(state.municipios.values()).sort((a, b) => a.label.localeCompare(b.label, "es")),
       }))
       .sort((a, b) => b.count - a.count);
+  }, [sensors]);
+
+  // How many sensors each source contributes, so the Fuente rows carry the
+  // same information the Ubicación rows do.
+  const sourceCounts = useMemo(() => {
+    const occamm = sensors.filter((sensor) => sensor.source !== "sima" && sensor.red).length;
+    const otros = sensors.filter((sensor) => sensor.source !== "sima" && !sensor.red).length;
+    return { occamm, otros, ciudadanos: occamm + otros, gobierno: sensors.filter((s) => s.source === "sima").length };
   }, [sensors]);
 
   const visibleSensors = useMemo(
@@ -1217,6 +1231,7 @@ export default function MapaSensors({
             showSima={showSima}
             setShowSima={setShowSima}
             estados={estados}
+                sourceCounts={sourceCounts}
             hiddenMunicipios={hiddenMunicipios}
             setHiddenMunicipios={setHiddenMunicipios}
             onShowOccammInfo={() => setShowOccammInfo(true)}
@@ -1445,6 +1460,7 @@ export default function MapaSensors({
                 showSima={showSima}
                 setShowSima={setShowSima}
                 estados={estados}
+                sourceCounts={sourceCounts}
                 hiddenMunicipios={hiddenMunicipios}
                 setHiddenMunicipios={setHiddenMunicipios}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
