@@ -930,36 +930,6 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop: data freshness, bottom-left, on the same line as the
-          location button on the opposite side. */}
-      {badgeHour && (
-        <div className="pointer-events-none absolute bottom-8 left-6 z-10 hidden h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md md:flex">
-          <span className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
-            <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
-            <span className="relative h-2 w-2 rounded-full bg-green-500" />
-          </span>
-          <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">
-            Última actualización: {badgeHour}
-          </span>
-        </div>
-      )}
-
-      {/* Desktop right-side floating controls */}
-      <div className="pointer-events-none absolute bottom-8 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
-        <button
-          onClick={userLocation ? flyToUser : requestLocation}
-          className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-          aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
-        >
-          {/* Dimmed until location is granted, so "off" is visible at a
-              glance. Weight stays the same in both states. */}
-          <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
-          <span className={`text-[13px] font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
-            {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
-          </span>
-        </button>
-      </div>
-
       {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
           selected. Nav lives in the site-wide header now, not floating here. */}
       {/* Sits beside the Capas panel: left-6 + w-panel-md (340px) + a 16px gap.
@@ -1139,6 +1109,34 @@ export default function MapaSensors({
               />
             </div>
           )}
+        </div>
+
+        {/* Desktop: freshness and location live under the Capas card, in the
+            same column, instead of floating in the map's bottom corners. */}
+        <div className="pointer-events-auto hidden w-full flex-col gap-2 md:flex">
+          {badgeHour && (
+            <div className="flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
+              <span className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
+                <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
+                <span className="relative h-2 w-2 rounded-full bg-green-500" />
+              </span>
+              <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">
+                Última actualización: {badgeHour}
+              </span>
+            </div>
+          )}
+          <button
+            onClick={userLocation ? flyToUser : requestLocation}
+            className="flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
+            aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
+          >
+            {/* Dimmed until location is granted, so "off" is visible at a
+                glance. Weight stays the same in both states. */}
+            <Navigation className={`h-4 w-4 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+            <span className={`text-[13px] font-medium ${userLocation ? 'text-gray-700' : 'text-gray-400'}`}>
+              {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
+            </span>
+          </button>
         </div>
 
         {/* Mobile only: on desktop this badge sits above the location button. */}
