@@ -566,12 +566,16 @@ function LayersFilterContent({
     summary: string,
     info?: { onClick: () => void; ariaLabel: string },
   ) => (
-    <div className="mb-2 flex items-center">
+    /* The row carries the hover, so it reads as one target from edge to edge;
+       the info icon sits on top of it with its own, slightly stronger tint. A
+       fill that stops before a trailing control leaves the row's boundary
+       looking arbitrary. */
+    <div className="-mx-2 mb-2 flex items-center rounded-lg px-2 transition-colors hover:bg-gray-500/5">
       <button
         type="button"
         onClick={() => toggleSection(name)}
         aria-expanded={openSection === name}
-        className="-mx-2 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg px-2 py-2 text-left transition-colors hover:bg-gray-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        className="flex min-w-0 flex-1 items-center gap-1.5 rounded-lg py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
         <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">{label}</p>
         <span className="min-w-0 flex-1 truncate text-xs leading-none text-gray-300">· {summary}</span>
@@ -581,7 +585,7 @@ function LayersFilterContent({
         <button
           type="button"
           onClick={info.onClick}
-          className="ml-1 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-500/5 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="ml-1 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-500/10 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           aria-label={info.ariaLabel}
         >
           <Info className="h-3 w-3" />
@@ -615,7 +619,7 @@ function LayersFilterContent({
             const open = openEstados.includes(estado.key);
             return (
               <div key={estado.key} className={i > 0 ? "border-t border-gray-100" : ""}>
-                <div className="flex w-full items-center gap-1">
+                <div className="flex w-full items-center transition-colors hover:bg-gray-50">
                   <button
                     type="button"
                     role="checkbox"
@@ -623,7 +627,7 @@ function LayersFilterContent({
                     onClick={() => setHiddenMunicipios((prev) => state === 'checked'
                       ? [...prev, ...keys.filter((k) => !prev.includes(k))]
                       : prev.filter((k) => !keys.includes(k)))}
-                    className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
+                    className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left transition-colors active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
                   >
                     <LayerCheckbox state={state} size={boxSize} />
                     <span className={`truncate text-sm font-medium ${state === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
@@ -634,7 +638,7 @@ function LayersFilterContent({
                   <button
                     type="button"
                     onClick={() => setOpenEstados((prev) => open ? prev.filter((k) => k !== estado.key) : [...prev, estado.key])}
-                    className="mr-2 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                    className="mr-2 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                     aria-expanded={open}
                     aria-label={open ? `Ocultar municipios de ${estado.label}` : `Mostrar municipios de ${estado.label}`}
                   >
@@ -685,13 +689,13 @@ function LayersFilterContent({
         {openSection === 'fuente' && (
         <div className="disclosure-in overflow-hidden rounded-2xl border border-gray-200 bg-white">
           <div>
-            <div className="flex w-full items-center gap-1">
+            <div className="flex w-full items-center transition-colors hover:bg-gray-50">
               <button
                 type="button"
                 role="checkbox"
                 aria-checked={citizenState === 'indeterminate' ? 'mixed' : citizenState === 'checked'}
                 onClick={toggleCitizenGroup}
-                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
+                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left transition-colors active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
               >
                 <LayerCheckbox state={citizenState} size={boxSize} />
                 <span className={`min-w-0 flex-1 truncate text-sm font-medium ${citizenState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>Sensores Ciudadanos</span>
@@ -700,7 +704,7 @@ function LayersFilterContent({
               <button
                 type="button"
                 onClick={() => setShowCitizenGroup((v) => !v)}
-                className="mr-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                className="mr-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 aria-expanded={showCitizenGroup}
                 aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
               >
@@ -713,13 +717,13 @@ function LayersFilterContent({
                     hover is a full-bleed rectangle, and the count sits at the
                     right edge. The info icon is a separate control beside it,
                     the way the chevron is on the group rows. */}
-                <div className="flex items-center border-t border-gray-100">
+                <div className="flex items-center border-t border-gray-100 transition-colors hover:bg-gray-50">
                   <button
                     type="button"
                     role="checkbox"
                     aria-checked={showOccamm}
                     onClick={() => setShowOccamm((v) => !v)}
-                    className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left transition-colors hover:bg-gray-50 active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
+                    className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left transition-colors active:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
                   >
                     <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
                     <span className={`min-w-0 flex-1 truncate text-sm ${showOccamm ? 'text-gray-600' : 'text-gray-400'}`}>OCCAMM</span>
@@ -728,7 +732,7 @@ function LayersFilterContent({
                   <button
                     type="button"
                     onClick={onShowOccammInfo}
-                    className="mr-1 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                    className="mr-1 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                     aria-label="Más información sobre OCCAMM"
                   >
                     <Info className="h-3 w-3" />
