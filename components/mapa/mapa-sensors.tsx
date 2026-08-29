@@ -510,12 +510,12 @@ function LayersFilterContent({
           everything really does empty the map. */}
       <div>
         {sectionHeader('ubicacion', 'Ubicación', ubicacionSummary)}
-        {openSection === 'ubicacion' && (
         {/* One grouped list per section: a single bordered card with hairline
             separators, the way an inset list works. A card per row meant a
             stack of elevated surfaces for what is a checklist, and elevation
             on a row that isn't a control (see Contaminante) promises
             something to press. */}
+        {openSection === 'ubicacion' && (
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
           {estados.map((estado, i) => {
             const keys = estado.municipios.map((m) => m.key);
