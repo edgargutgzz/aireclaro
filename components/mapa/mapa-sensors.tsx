@@ -1366,7 +1366,7 @@ export default function MapaSensors({
       {cuidarmeQuality && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setCuidarmeQuality(null)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             <div className="flex flex-col gap-4">
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">Recomendaciones de salud</p>
@@ -1398,7 +1398,7 @@ export default function MapaSensors({
       {showOccammInfo && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowOccammInfo(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             <div className="flex flex-col gap-4">
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">Red OCCAMM</p>
@@ -1465,14 +1465,6 @@ export default function MapaSensors({
                   , operado por el Gobierno de Nuevo León.
                 </p>
               </div>
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Ozono</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Los sensores ciudadanos solo miden partículas, no ozono. Por
-                  ahora este mapa no incluye datos de ozono de ninguna de las
-                  dos fuentes.
-                </p>
-              </div>
             </div>
             <button
               onClick={() => setShowFuenteInfo(false)}
@@ -1488,7 +1480,7 @@ export default function MapaSensors({
       {showPM25Info && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowPM25Info(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             <div className="flex flex-col gap-4">
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">PM2.5</p>
@@ -1507,6 +1499,16 @@ export default function MapaSensors({
                   micrómetros. Quedan retenidas principalmente en la nariz
                   y la garganta, por lo que representan un menor riesgo
                   para la salud que las PM2.5.
+                </p>
+              </div>
+              <div>
+                <p className="mb-1 text-sm font-semibold text-gray-700">Ozono</p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Gas que no se emite directamente: se forma cuando la luz
+                  solar reacciona con los gases del tráfico y la industria.
+                  Alcanza sus niveles más altos en las tardes soleadas e
+                  irrita las vías respiratorias, sobre todo al hacer
+                  ejercicio al aire libre.
                 </p>
               </div>
             </div>
