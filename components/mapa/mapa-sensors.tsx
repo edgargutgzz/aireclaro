@@ -88,7 +88,6 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
   const svgRef = useRef<SVGSVGElement>(null);
   // useId() contains colons; strip them so the url(#id) reference is safe.
   const gradientId = `spark-${useId().replace(/:/g, "")}`;
-  const revealId = `${gradientId}-reveal`;
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   if (data.length < 2) {
@@ -207,33 +206,18 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
               <stop offset="0%" stopColor={SPARKLINE_COLOR} stopOpacity={0.28} />
               <stop offset="100%" stopColor={SPARKLINE_COLOR} stopOpacity={0} />
             </linearGradient>
-            {/* Wipes left to right so the series draws itself in. Keyed on the
-                latest reading, so switching sensors replays it. */}
-            <clipPath id={revealId}>
-              <rect
-                key={data[data.length - 1].time_stamp}
-                className="sparkline-reveal"
-                x={0}
-                y={0}
-                width={width}
-                height={height}
-              />
-            </clipPath>
           </defs>
-          {/* Context stays put: only the series is revealed. */}
           {thresholds.map((t) => (
             <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
           ))}
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
           ))}
-          <g clipPath={`url(#${revealId})`}>
-            <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
-            <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
-            <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-            {/* Current hour — the rightmost point, always marked */}
-            <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={latestColor} stroke="white" strokeWidth={2} />
-          </g>
+          <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
+          <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+          <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          {/* Current hour — the rightmost point, always marked */}
+          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={latestColor} stroke="white" strokeWidth={2} />
           {hoverPoint && (
             <>
               <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />

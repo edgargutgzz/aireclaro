@@ -30,22 +30,6 @@
   outline-offset: 3px;
 }
 
-/* Sparkline draw-in. The clip rect scales from the left edge, so the line and
-   its fill sweep in together instead of appearing all at once. */
-@keyframes sparkline-reveal {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
-.sparkline-reveal {
-  transform-origin: left center;
-  animation: sparkline-reveal 1600ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sparkline-reveal { animation: none; }
-}
-
 /* Selected marker: the Google Maps treatment — a filled halo of the same blue
    as the trend line, expanding out from behind the circle and fading. Drawn on
    ::after so it never fights the inline box-shadow the selection effect sets,
