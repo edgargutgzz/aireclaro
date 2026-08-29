@@ -342,10 +342,121 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
   );
 }
 
-// The info popups, as actual dialogs: named for assistive tech, focus moved
-// in and trapped while open and returned to the trigger on close, Escape to
-// dismiss, and a height cap so long content scrolls instead of running off a
-// short window.
+// External links inside a dialog. One place for the underline, the rel
+// hardening, and the note that the link leaves the page, which sighted
+// readers get from the new tab and nobody else does.
+function DialogLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="rounded-sm underline underline-offset-2 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+    >
+      {children}
+      <span className="sr-only"> (abre en una nueva pestaña)</span>
+    </a>
+  );
+}
+
+// Every modal on the map runs on the platform's own <dialog>. The browser puts
+// it in the top layer, so it clears the map chrome without a z-index to pick;
+// makes the rest of the page inert, so focus is trapped and the background is
+// hidden from assistive tech; handles Escape; and returns focus to the trigger
+// on close. All of that used to be hand-rolled, once per popup. What the
+// platform still doesn't give us is click-outside-to-dismiss and holding the
+// page still behind the dialog, so that is what is left here.
+function DialogShell({
+  onClose,
+  labelledBy,
+  className,
+  children,
+}: {
+  onClose: () => void;
+  labelledBy: string;
+  className: string;
+  children: React.ReactNode;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // Kept in a ref so the effect below can depend on nothing. Callers pass a
+  // fresh arrow every render, and a dialog re-renders whenever a section
+  // inside it opens; re-running the effect on that would return focus to the
+  // trigger and then steal it back on every click.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    dialog.showModal();
+    // Focus the dialog rather than letting the browser land on the first
+    // control, so screen readers read the dialog's name before its buttons.
+    dialog.focus();
+
+    // A modal dialog sits above the page but doesn't stop it scrolling. The
+    // padding stands in for the scrollbar that hiding the overflow removes,
+    // so the page doesn't jump sideways underneath the scrim.
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    const previousPaddingRight = body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+
+    return () => {
+      body.style.overflow = previousOverflow;
+      body.style.paddingRight = previousPaddingRight;
+      // Close before React unmounts the node: that is what hands focus back
+      // to whatever opened the dialog.
+      if (dialog.open) dialog.close();
+    };
+  }, []);
+
+  // Click-outside, guarded twice. The target check ignores keyboard-driven
+  // clicks on the controls inside, which report a (0, 0) pointer; the rect
+  // check ignores the dialog's own padding; and requiring the press to have
+  // started outside too means a selection dragged out of the dialog doesn't
+  // dismiss it on release.
+  const pressedOutside = useRef(false);
+  const isOutside = (event: React.MouseEvent<HTMLDialogElement>) => {
+    if (event.target !== event.currentTarget) return false;
+    const rect = event.currentTarget.getBoundingClientRect();
+    return (
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom
+    );
+  };
+
+  return (
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={labelledBy}
+      tabIndex={-1}
+      // Escape fires cancel; routing it through onClose keeps React state the
+      // single source of truth for whether the dialog is open.
+      onCancel={(event) => {
+        event.preventDefault();
+        onCloseRef.current();
+      }}
+      onMouseDown={(event) => {
+        pressedOutside.current = isOutside(event);
+      }}
+      onClick={(event) => {
+        if (pressedOutside.current && isOutside(event)) onCloseRef.current();
+      }}
+      className={`info-dialog fixed inset-0 m-auto text-gray-800 focus:outline-none ${className}`}
+    >
+      {children}
+    </dialog>
+  );
+}
+
+// The info popups: a titled sheet with the same header, body and dismiss in
+// every one of them.
 function InfoDialog({
   title,
   onClose,
@@ -355,81 +466,40 @@ function InfoDialog({
   onClose: () => void;
   children: React.ReactNode;
 }) {
-  const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = `dialog-${useId().replace(/:/g, "")}`;
 
-  useEffect(() => {
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    dialogRef.current?.focus();
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-        return;
-      }
-      if (event.key !== "Tab" || !dialogRef.current) return;
-      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      if (!focusable.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      previouslyFocused?.focus?.();
-    };
-  }, [onClose]);
-
   return (
-    <>
-      {/* The scrim blurs harder than the map panels do, so nothing readable
-          shows through the dialog's own material. */}
-      <div className="dialog-in fixed inset-0 z-[70] bg-black/30 backdrop-blur-md" onClick={onClose} />
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        /* Glass, like the map panels, but at a higher opacity: this surface
-           carries paragraphs rather than chrome, so contrast wins over
-           transparency. */
-        className="dialog-in fixed left-1/2 top-1/2 z-[71] flex max-h-[85svh] w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/90 p-8 shadow-xl backdrop-blur-xl focus:outline-none"
-      >
-        {/* Header and footer stay put, only the body scrolls: a dismiss button
-            that scrolls out of reach is worse than no dismiss button, and long
-            content is exactly when you need it. */}
-        <div className="flex flex-shrink-0 items-start justify-between gap-4 pb-6">
-          <h2 id={titleId} className="text-base font-medium text-gray-800">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar"
-            className="-mr-2 -mt-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-        <div className="-mx-1 min-h-0 flex-1 overflow-y-auto overscroll-contain px-1">{children}</div>
+    <DialogShell
+      onClose={onClose}
+      labelledBy={titleId}
+      /* Glass, like the map panels, but at a higher opacity: this surface
+         carries paragraphs rather than chrome, so contrast wins over
+         transparency. */
+      className="flex max-h-[85svh] w-[85%] max-w-md flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/90 p-8 shadow-xl backdrop-blur-xl"
+    >
+      {/* Header and footer stay put, only the body scrolls: a dismiss button
+          that scrolls out of reach is worse than no dismiss button, and long
+          content is exactly when you need it. */}
+      <div className="flex flex-shrink-0 items-start justify-between gap-4 pb-6">
+        <h2 id={titleId} className="text-base font-medium text-gray-800">{title}</h2>
         <button
           type="button"
           onClick={onClose}
-          className="mt-6 w-full flex-shrink-0 rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          aria-label="Cerrar"
+          className="-mr-2 -mt-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
-          Entendido
+          <X className="h-4 w-4" />
         </button>
       </div>
-    </>
+      <div className="-mx-1 min-h-0 flex-1 overflow-y-auto overscroll-contain px-1">{children}</div>
+      <button
+        type="button"
+        onClick={onClose}
+        className="mt-6 w-full flex-shrink-0 rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+      >
+        Entendido
+      </button>
+    </DialogShell>
   );
 }
 
@@ -446,6 +516,8 @@ function InfoSection({
   onToggle: () => void;
   children: React.ReactNode;
 }) {
+  const panelId = `section-${useId().replace(/:/g, "")}`;
+
   return (
     <div className="[&:not(:first-child)]:border-t [&:not(:first-child)]:border-gray-100">
       {/* A row in the dialog's list, matching the Capas panel: the hover is
@@ -454,16 +526,23 @@ function InfoSection({
         type="button"
         onClick={onToggle}
         aria-expanded={open}
+        aria-controls={panelId}
         className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
       >
         <p className="text-sm font-semibold text-gray-700">{title}</p>
         <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
       </button>
-      {open && (
-        <div className="disclosure-in border-t border-gray-100 bg-gray-50/60 px-4 py-3.5 text-sm leading-relaxed text-gray-500">
-          {children}
-        </div>
-      )}
+      {/* Hidden rather than unmounted, so aria-controls always points at a
+          real element. The hidden attribute takes the body and its links out
+          of the tab order and the accessibility tree just as unmounting did,
+          and going from display:none back still runs the open animation. */}
+      <div
+        id={panelId}
+        hidden={!open}
+        className="disclosure-in border-t border-gray-100 bg-gray-50/60 px-4 py-3.5 text-sm leading-relaxed text-gray-500"
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -1659,31 +1738,35 @@ export default function MapaSensors({
       </div>
 
 
-      {/* Location denied modal — centered, both mobile and desktop */}
+      {/* Location denied modal — centered, both mobile and desktop. Its own
+          layout, an illustrated prompt rather than a titled sheet, but on the
+          same dialog shell as the info popups, so it is named for assistive
+          tech and answers to Escape like the rest. */}
       {showLocationTip && (
-        <>
-          <div
-            className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm"
-            onClick={() => setShowLocationTip(false)}
-          />
-          <div className="fixed left-1/2 top-1/2 z-[71] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-xl">
-            <div className="mb-4 flex justify-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-                <Navigation className="h-6 w-6 text-gray-400" />
-              </div>
+        <DialogShell
+          onClose={() => setShowLocationTip(false)}
+          labelledBy="location-tip-title"
+          className="w-[85%] max-w-sm rounded-3xl bg-white p-6 shadow-xl"
+        >
+          <div className="mb-4 flex justify-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
+              <Navigation className="h-6 w-6 text-gray-400" aria-hidden="true" />
             </div>
-            <p className="mb-1.5 text-center text-base font-semibold text-gray-900">Descubre el aire en tu zona</p>
-            <p className="text-center text-sm leading-relaxed text-gray-500">
-              Habilita el acceso a tu ubicación para ver la calidad del aire más cercana a ti.
-            </p>
-            <button
-              onClick={() => setShowLocationTip(false)}
-              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
-            >
-              Entendido
-            </button>
           </div>
-        </>
+          <h2 id="location-tip-title" className="mb-1.5 text-center text-base font-semibold text-gray-900">
+            Descubre el aire en tu zona
+          </h2>
+          <p className="text-center text-sm leading-relaxed text-gray-500">
+            Habilita el acceso a tu ubicación para ver la calidad del aire más cercana a ti.
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowLocationTip(false)}
+            className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            Entendido
+          </button>
+        </DialogShell>
       )}
 
       {/* Bottom sheet backdrop — mobile only */}
@@ -1787,36 +1870,19 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Recomendaciones de salud popup */}
+      {/* Recomendaciones de salud popup — the same dialog as the rest, rather
+          than a bare div: it was the one popup with no name for assistive
+          tech, no focus handling and no Escape. */}
       {cuidarmeQuality && (
-        <>
-          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setCuidarmeQuality(null)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
-            <div className="flex flex-col gap-4">
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Recomendaciones de salud</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Recomendaciones oficiales según el Índice de Aire y Salud{" "}
-                  <a
-                    href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-gray-700"
-                  >
-                    NOM-172-SEMARNAT-2023
-                  </a>
-                  , para la población general y grupos sensibles.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => setCuidarmeQuality(null)}
-              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
-            >
-              Entendido
-            </button>
-          </div>
-        </>
+        <InfoDialog title="Recomendaciones de salud" onClose={() => setCuidarmeQuality(null)}>
+          <p className="text-sm leading-relaxed text-gray-500">
+            Recomendaciones oficiales según el Índice de Aire y Salud{" "}
+            <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
+              NOM-172-SEMARNAT-2023
+            </DialogLink>
+            , para la población general y grupos sensibles.
+          </p>
+        </InfoDialog>
       )}
 
       {/* OCCAMM info popup */}
@@ -1824,14 +1890,9 @@ export default function MapaSensors({
         <InfoDialog title="Red OCCAMM" onClose={() => setShowOccammInfo(false)}>
           <p className="text-sm leading-relaxed text-gray-500">
             Red de sensores del{" "}
-            <a
-              href="https://observatoriodelaire.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-gray-700"
-            >
+            <DialogLink href="https://observatoriodelaire.com">
               Observatorio Ciudadano de la Calidad del Aire
-            </a>
+            </DialogLink>
             , una organización de la sociedad civil dedicada a mejorar la
             calidad del aire en la Zona Metropolitana de Monterrey.
           </p>
@@ -1851,14 +1912,7 @@ export default function MapaSensors({
               onToggle={() => setOpenFuente((v) => (v === "Sensores Ciudadanos" ? null : "Sensores Ciudadanos"))}
             >
               Sensores de bajo costo que forman parte de{" "}
-              <a
-                href="https://www.purpleair.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-gray-700"
-              >
-                PurpleAir
-              </a>
+              <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
               , una red global de monitoreo comunitario instalada por
               ciudadanos, escuelas y organizaciones independientes.
             </InfoSection>
@@ -1868,14 +1922,9 @@ export default function MapaSensors({
               onToggle={() => setOpenFuente((v) => (v === "Estaciones de Gobierno" ? null : "Estaciones de Gobierno"))}
             >
               Estaciones de monitoreo que forman parte del{" "}
-              <a
-                href="https://aire.nl.gob.mx/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-gray-700"
-              >
+              <DialogLink href="https://aire.nl.gob.mx/">
                 Sistema Integral de Monitoreo Ambiental (SIMA)
-              </a>
+              </DialogLink>
               , operado por el Gobierno de Nuevo León.
             </InfoSection>
           </div>

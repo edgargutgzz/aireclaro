@@ -135,25 +135,33 @@
   .disclosure-in { animation: none; }
 }
 
-/* Dialogs fade and settle in rather than snapping onto the screen. */
+/* Dialogs fade and settle in rather than snapping onto the screen. They are
+   the platform's <dialog> element, so the scrim is ::backdrop rather than a
+   div of our own, and the two fade in together. */
 @keyframes dialog-in {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.97); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: none; }
 }
 
-@keyframes dialog-overlay-in {
+@keyframes dialog-backdrop-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-.dialog-in {
+.info-dialog[open] {
   animation: dialog-in 160ms ease-out;
 }
 
-.dialog-in.fixed.inset-0 {
-  animation: dialog-overlay-in 160ms ease-out;
+/* The scrim blurs harder than the map panels do, so nothing readable shows
+   through the dialog's own glass. */
+.info-dialog::backdrop {
+  background-color: rgb(0 0 0 / 0.3);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  animation: dialog-backdrop-in 160ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dialog-in { animation: none; }
+  .info-dialog[open],
+  .info-dialog::backdrop { animation: none; }
 }
