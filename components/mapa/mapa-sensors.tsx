@@ -498,7 +498,7 @@ function LayersFilterContent({
         className="flex-shrink-0 text-gray-400 hover:text-gray-600"
         aria-label={openSection === name ? `Ocultar ${label}` : `Mostrar ${label}`}
       >
-        <ChevronRight className={`h-3.5 w-3.5 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
+        <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
       </button>
     </div>
   );
