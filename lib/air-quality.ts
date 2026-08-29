@@ -38,26 +38,40 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   const { bg } = colorInfo;
   const textColor = bg === "#ffff00" ? "#9ca3af" : "white";
 
+  // Structure, rather than one styled button: the pulse must paint *behind*
+  // the circle, the way Google's location halo does, and a pseudo-element can
+  // only get there with z-index: -1, which escapes the marker's stacking
+  // context and drops it behind the map. A sibling drawn earlier in the DOM
+  // sits behind with no stacking tricks at all.
   const el = document.createElement("button");
   el.type = "button";
   el.className = "sensor-marker";
   if (label) el.setAttribute("aria-label", label);
   el.style.border = "none";
   el.style.padding = "0";
+  el.style.background = "none";
   el.style.fontFamily = "inherit";
   el.style.width = "40px";
   el.style.height = "40px";
-  el.style.backgroundColor = bg;
-  el.style.borderRadius = "50%";
-  el.style.display = "flex";
-  el.style.alignItems = "center";
-  el.style.justifyContent = "center";
-  el.style.opacity = "0.9";
-  el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
-  el.textContent = Math.round(pm25!).toString();
-  el.style.color = textColor;
-  el.style.fontSize = "12px";
-  el.style.fontWeight = "700";
+
+  const pulse = document.createElement("span");
+  pulse.className = "sensor-marker__pulse";
+  el.appendChild(pulse);
+
+  const dot = document.createElement("span");
+  dot.className = "sensor-marker__dot";
+  dot.style.backgroundColor = bg;
+  dot.style.borderRadius = "50%";
+  dot.style.display = "flex";
+  dot.style.alignItems = "center";
+  dot.style.justifyContent = "center";
+  dot.style.opacity = "0.9";
+  dot.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
+  dot.textContent = Math.round(pm25!).toString();
+  dot.style.color = textColor;
+  dot.style.fontSize = "12px";
+  dot.style.fontWeight = "700";
+  el.appendChild(dot);
 
   return el;
 };

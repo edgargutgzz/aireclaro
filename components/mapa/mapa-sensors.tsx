@@ -603,7 +603,7 @@ export default function MapaSensors({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement }>());
+  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; dot: HTMLElement }>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -909,7 +909,10 @@ export default function MapaSensors({
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
       });
 
-      markerElementsRef.current.set(sensor.sensor_id, { el: markerElement });
+      markerElementsRef.current.set(sensor.sensor_id, {
+        el: markerElement,
+        dot: markerElement.querySelector(".sensor-marker__dot") as HTMLElement,
+      });
 
       const marker = new Marker({ element: markerElement })
         .setLngLat([sensor.lon, sensor.lat])
@@ -980,12 +983,13 @@ export default function MapaSensors({
     const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
     const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
 
-    markerElementsRef.current.forEach(({ el }, sensorId) => {
+    markerElementsRef.current.forEach(({ el, dot }, sensorId) => {
       const isActive = sensorId === activeSensorId;
-      el.style.animation = '';
+      el.classList.toggle('sensor-marker--selected', isActive);
+      el.style.setProperty('--pulse-color', activeColor);
       // Full opacity on the selected one, the rest stay slightly back.
-      el.style.opacity = isActive ? '1' : '0.9';
-      el.style.boxShadow = isActive
+      dot.style.opacity = isActive ? '1' : '0.9';
+      dot.style.boxShadow = isActive
         ? `0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px ${activeColor}`
         : PLAIN_MARKER_SHADOW;
       // Markers stack in DOM order, so in a dense cluster the selected one can

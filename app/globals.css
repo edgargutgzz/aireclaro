@@ -15,11 +15,10 @@
 }
 
 /* Map markers. Hover uses transform because Mapbox owns the parent's
-   transform, not the marker element's, and the selection effect rewrites
-   box-shadow on every render. */
+   transform, not the marker element's. */
 .sensor-marker {
   position: relative;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+  transition: transform 0.15s ease;
 }
 
 .sensor-marker:hover {
@@ -29,4 +28,38 @@
 .sensor-marker:focus-visible {
   outline: 2px solid #111827;
   outline-offset: 3px;
+  border-radius: 50%;
+}
+
+/* The circle itself. Painted after the pulse, so it always covers it. */
+.sensor-marker__dot {
+  position: absolute;
+  inset: 0;
+  transition: box-shadow 0.15s ease, opacity 0.2s ease;
+}
+
+/* The halo, expanding out from behind the circle while a sensor is selected,
+   in that sensor's air-quality tone. */
+.sensor-marker__pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: var(--pulse-color, #3b82f6);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sensor-marker--selected .sensor-marker__pulse {
+  will-change: transform, opacity;
+  animation: marker-pulse 2.4s ease-out infinite;
+}
+
+@keyframes marker-pulse {
+  0% { transform: scale(0.9); opacity: 0.4; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sensor-marker--selected .sensor-marker__pulse { animation: none; opacity: 0.22; }
 }
