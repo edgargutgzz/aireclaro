@@ -106,16 +106,13 @@ type Freshness = {
   status: "fresh" | "delayed" | "stale";
 };
 
-// How current the map is. One component for both breakpoints; this used to be
-// two copies of the same markup, one of them md:hidden.
+// How current the reading on screen is. One component for both breakpoints;
+// this used to be two copies of the same markup, one of them md:hidden.
 //
 // Three states, because a dot that is only ever green cannot tell you
-// anything. The badge used to be wired to the open sensor's own reading while
-// calling itself "Última actualización", so it changed when you clicked a
-// marker, and it floored the time to the hour with no day attached: if
-// ingestion stopped, it went on reporting a cheerful green 11:00 AM the next
-// morning. It now reads the newest reading in the whole data set and says how
-// old that is. Colour is the glanceable layer and never the only one, the
+// anything. The time used to be floored to the hour and carried no day, so if
+// ingestion stopped it went on reporting a cheerful green 11:00 AM the next
+// morning. Colour is the glanceable layer and never the only one, the
 // timestamp itself is what carries the state.
 function FreshnessBadge({ freshness }: { freshness: Freshness }) {
   const dot =
@@ -946,7 +943,8 @@ export default function MapaSensors({
     pm25: number | null;
     color: string;
     textColor: string;
-    timestamp: string | null;
+    // Raw, not pre-formatted: the badge needs to work out how old this is.
+    readingAt: string | null;
   } | null>(null);
   const [sensorHistory, setSensorHistory] = useState<HistoryPoint[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -1026,16 +1024,30 @@ export default function MapaSensors({
     [sensors, hiddenMunicipios, showSima, showOccamm, showOtros],
   );
 
+  // What the panel says about itself in its own header, so the collapsed card
+  // answers "is the map filtered?" rather than holding 380px of empty glass
+  // around one word. Counted over sensors that actually have a reading, since
+  // those are the only ones drawn: a total that included silent sensors would
+  // never match the dots you can see.
+  const capasSummary = useMemo(() => {
+    const reporting = new Set(
+      data.filter((d) => d.pm25 !== null && d.pm25 > 0.4).map((d) => d.sensor_id),
+    );
+    const mapped = sensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
+    if (!mapped) return null;
+    const shown = visibleSensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
+    return shown === mapped ? "Todos los sensores" : `${shown} de ${mapped} sensores`;
+  }, [sensors, visibleSensors, data]);
+
   const nearestSensorData = useMemo(() => {
     if (!visibleSensors.length || !data.length) return null;
 
     const buildFromSensor = (sensor: Sensor) => {
       const d = data.find((item) => item.sensor_id === sensor.sensor_id);
       if (!d || d.pm25 === null || d.pm25 <= 0.4) return null;
-      const timestamp = format(new Date(d.time_stamp), "h") + ":00 " + format(new Date(d.time_stamp), "a");
       const isSima = sensor.source === "sima";
       const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-      return { pm25: d.pm25, timestamp, name, isSima, red: sensor.red ?? null, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
+      return { pm25: d.pm25, readingAt: d.time_stamp, name, isSima, red: sensor.red ?? null, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
     };
 
     if (userLocation) {
@@ -1075,9 +1087,8 @@ export default function MapaSensors({
     return sorted[Math.floor(sorted.length / 2)];
   }, [data, visibleSensors]);
 
-  // Hour of the most recent reading anywhere in the dataset — the badge's
-  // fallback when no station is on screen to speak for itself.
-  // Kept as a Date rather than a formatted string: the badge needs to know how
+  // The newest reading anywhere in the data set, which is what the freshness
+  // badge reports. Kept as a Date rather than a formatted string: the badge needs to know how
   // old this is, and formatting the age away here is what let it insist the
   // map was live however long the pipeline had been down.
   const latestReading = useMemo(() => {
@@ -1103,21 +1114,32 @@ export default function MapaSensors({
 
   const hoveredQuality = hoveredHistory ? getQualityInfo(hoveredHistory.pm25) : null;
 
-  // Readings land hourly, so 90 minutes is one missed cycle plus slack, and six
-  // hours is a pipeline that has stopped rather than a run that is late. Past
-  // today the label picks up the day, so "11:00 AM" can never be yesterday's
-  // 11:00 AM wearing a green dot.
+  // The badge reports the reading that is actually on screen: the open
+  // sensor's, else the one the card opened on. Sensors publish on their own
+  // schedules, so a single dataset-wide "newest anywhere" would sit ahead of
+  // the station being shown and make a perfectly current reading look late.
+  // The newest reading anywhere is only the fallback, for when no sensor is
+  // speaking for itself.
+  //
+  // Readings land hourly, so 90 minutes is one missed cycle plus slack, and
+  // six hours is a pipeline that has stopped rather than a run that is late.
+  // Past today the label picks up the day, so "11:00 AM" can never be
+  // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
-    if (!latestReading || now === null) return null;
-    const age = now - latestReading.getTime();
-    const hour = `${format(latestReading, "h")}:00 ${format(latestReading, "a")}`;
-    const day = getRelativeDayLabel(latestReading);
+    if (now === null) return null;
+    const onScreen = selectedSensor?.readingAt ?? nearestSensorData?.readingAt ?? null;
+    const reading = onScreen ? new Date(onScreen) : latestReading;
+    if (!reading || Number.isNaN(reading.getTime())) return null;
+
+    const age = now - reading.getTime();
+    const hour = `${format(reading, "h")}:00 ${format(reading, "a")}`;
+    const day = getRelativeDayLabel(reading);
     return {
-      dateTime: latestReading.toISOString(),
+      dateTime: reading.toISOString(),
       when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
       status: age < 90 * 60 * 1000 ? "fresh" : age < 6 * 60 * 60 * 1000 ? "delayed" : "stale",
     };
-  }, [latestReading, now]);
+  }, [selectedSensor, nearestSensorData, latestReading, now]);
 
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestName = nearestSensorData?.name ?? null;
@@ -1269,9 +1291,6 @@ export default function MapaSensors({
       const colorInfo = getPM25Color(latestData?.pm25 ?? null);
       const color = colorInfo?.bg ?? "#ffffff";
       const textColor = colorInfo?.text ?? "#ffffff";
-      const timestamp = latestData
-        ? format(new Date(latestData.time_stamp), "h") + ":00 " + format(new Date(latestData.time_stamp), "a")
-        : null;
 
       markerElement.style.cursor = "pointer";
       markerElement.addEventListener("click", (e) => {
@@ -1281,7 +1300,7 @@ export default function MapaSensors({
           setSelectedSensor(null);
           return;
         }
-        setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, timestamp });
+        setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, readingAt: latestData?.time_stamp ?? null });
       });
 
       markerElementsRef.current.set(sensor.sensor_id, {
@@ -1674,12 +1693,21 @@ export default function MapaSensors({
           of this file. */}
       <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-12 md:left-6 md:top-6 md:w-panel-filters">
         <div className="pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md md:flex">
+          {/* The header carries the filter state, in the same "label · summary"
+              idiom the rows inside the panel already use. gray-500 rather than
+              the rows' gray-300: at 13px on this material that is the first
+              value that clears 4.5:1, and it still reads as subordinate to
+              the label beside it. */}
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
-            className="flex w-full flex-shrink-0 items-center justify-between px-5 pt-4 pb-3"
+            aria-expanded={showFiltrosContent}
+            className="flex w-full flex-shrink-0 items-center gap-1.5 px-5 pt-4 pb-3 text-left"
           >
-            <span className="text-base font-medium text-gray-700">Capas</span>
-            <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
+            <span className="flex-shrink-0 text-base font-medium text-gray-700">Capas</span>
+            {capasSummary && (
+              <span className="min-w-0 flex-1 truncate text-[13px] text-gray-500">· {capasSummary}</span>
+            )}
+            <ChevronRight className={`ml-auto h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
           </button>
           {showFiltrosContent && (
             /* Only the body scrolls, so the "Capas" header stays in place, and
