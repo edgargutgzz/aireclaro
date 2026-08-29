@@ -1851,7 +1851,7 @@ export default function MapaSensors({
 
       {/* Fuente info popup — covers both sources in one place instead of a separate icon per row */}
       {showFuenteInfo && (
-        <InfoDialog title="Fuentes de datos" onClose={() => setShowFuenteInfo(false)}>
+        <InfoDialog title="Fuente" onClose={() => setShowFuenteInfo(false)}>
           <div className="flex flex-col gap-4">
             <div>
               <p className="mb-1 text-sm font-semibold text-gray-700">Sensores Ciudadanos</p>
@@ -1891,7 +1891,7 @@ export default function MapaSensors({
       {/* PM2.5 info popup */}
       {showPM25Info && (
         <InfoDialog
-          title="Contaminantes"
+          title="Contaminante"
           onClose={() => { setShowPM25Info(false); setOpenPollutant("PM2.5"); }}
         >
           {/* PM2.5 is what the map shows, so it reads straight away; the two
