@@ -195,7 +195,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           height={height}
           viewBox={`0 0 ${width} ${height}`}
           preserveAspectRatio="none"
-          className="cursor-crosshair"
+          className="h-[190px] cursor-crosshair md:h-[240px]"
           onMouseMove={(e) => updateHover(e.clientX)}
           onMouseLeave={() => setHover(null)}
           onTouchMove={(e) => updateHover(e.touches[0].clientX)}
@@ -246,7 +246,7 @@ function SparklineSkeleton() {
       <div className="mb-2 flex items-center text-xs font-medium leading-none text-gray-400">
         Últimas 48 horas
       </div>
-      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="animate-pulse">
+      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="h-[190px] animate-pulse md:h-[240px]">
         <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
         <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
