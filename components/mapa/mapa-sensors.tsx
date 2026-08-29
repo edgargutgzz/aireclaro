@@ -296,7 +296,11 @@ function HealthRecommendations({ info }: { info: QualityInfo }) {
             <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showGruposSensibles ? 'rotate-90' : ''}`} />
           </button>
         </div>
-        <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
+        {/* Two lines at rest so the card doesn't dominate the first view; the
+            chevron opens the full text along with the sensitive groups. */}
+        <p className={`text-sm leading-relaxed text-gray-500 ${showGruposSensibles ? '' : 'line-clamp-2'}`}>
+          {info.generalRec}
+        </p>
       </div>
       {showGruposSensibles && (
         <div className="flex flex-col">
