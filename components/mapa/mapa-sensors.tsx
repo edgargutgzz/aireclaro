@@ -1381,18 +1381,23 @@ export default function MapaSensors({
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setCuidarmeQuality(null)} />
           <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
-            <p className="text-center text-sm leading-relaxed text-gray-500">
-              Recomendaciones oficiales según el Índice de Aire y Salud{' '}
-              <a
-                href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-2 text-gray-600 hover:text-gray-800"
-              >
-                NOM-172-SEMARNAT-2023
-              </a>
-              , para la población general y grupos sensibles.
-            </p>
+            <div className="flex flex-col gap-4">
+              <div>
+                <p className="mb-1 text-sm font-semibold text-gray-700">Recomendaciones de salud</p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Recomendaciones oficiales según el Índice de Aire y Salud{" "}
+                  <a
+                    href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-gray-700"
+                  >
+                    NOM-172-SEMARNAT-2023
+                  </a>
+                  , para la población general y grupos sensibles.
+                </p>
+              </div>
+            </div>
             <button
               onClick={() => setCuidarmeQuality(null)}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
