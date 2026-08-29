@@ -959,7 +959,17 @@ export default function MapaSensors({
   // reports that hour instead of the latest reading, so the chart and the big
   // number never disagree.
   const [hoveredHistory, setHoveredHistory] = useState<HistoryPoint | null>(null);
-  const [locationDenied, setLocationDenied] = useState(false);
+  // idle -> locating -> active | denied | unavailable. This used to be a lone
+  // boolean that only recorded PERMISSION_DENIED, so a timeout or a failed fix
+  // left the button sitting in its resting state with nothing to show for the
+  // click, forever.
+  const [locationStatus, setLocationStatus] =
+    useState<'idle' | 'locating' | 'active' | 'denied' | 'unavailable'>('idle');
+  // Whether the permission check has finished. The opening camera waits on it,
+  // so a visitor who already granted access gets one flight, to themselves,
+  // instead of one to the default station and another back.
+  const [permissionChecked, setPermissionChecked] = useState(false);
+  const userMarkerRef = useRef<Marker | null>(null);
   const [showLocationTip, setShowLocationTip] = useState(false);
 
   // One entry per municipality that actually has sensors, labelled with its
@@ -1141,6 +1151,26 @@ export default function MapaSensors({
     };
   }, [selectedSensor, nearestSensorData, latestReading, now]);
 
+  // What the location control says and shows. The arrow stays in every state:
+  // swapping it for a dot when located made the button an exact copy of the
+  // freshness badge in the opposite corner, which is not a control at all, and
+  // took away the one glyph that says "this recentres the map".
+  const locationBlocked = locationStatus === 'denied' || locationStatus === 'unavailable';
+  const locationLabel =
+    locationStatus === 'locating' ? 'Buscando…' : userLocation ? 'Mi ubicación' : 'Activar ubicación';
+  // gray-500, not gray-400: the resting state is the one asking to be clicked,
+  // and at 2.5:1 it was dimmer than the state it leads to.
+  const locationIconTone = userLocation
+    ? 'text-blue-500'
+    : locationStatus === 'locating'
+      ? 'text-gray-400 animate-pulse motion-reduce:animate-none'
+      : 'text-gray-500';
+  const onLocationClick = () => {
+    if (userLocation) flyToUser();
+    else if (locationBlocked) setShowLocationTip(true);
+    else locate();
+  };
+
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestName = nearestSensorData?.name ?? null;
   const nearestIsSima = nearestSensorData?.isSima ?? null;
@@ -1184,6 +1214,10 @@ export default function MapaSensors({
   const didOpeningFlyRef = useRef(false);
   useEffect(() => {
     if (!mapLoaded || !map.current || didOpeningFlyRef.current || userLocation) return;
+    // Hold while a granted permission is still resolving. Flying to the
+    // default station and then to the visitor a second later is two camera
+    // moves where the visitor only ever wanted one.
+    if (!permissionChecked || locationStatus === 'locating') return;
 
     const target = nearestSensorData
       ? [nearestSensorData.lon, nearestSensorData.lat]
@@ -1200,28 +1234,79 @@ export default function MapaSensors({
       duration: 3000,
       essential: true,
     });
-  }, [mapLoaded, userLocation, nearestSensorData]);
+  }, [mapLoaded, userLocation, nearestSensorData, permissionChecked, locationStatus]);
 
-  const requestLocation = useCallback(() => {
-    if (!navigator.geolocation) return;
-    if (locationDenied) {
-      setShowLocationTip(true);
+  // `silent` is the already-granted path on load: no one clicked, so a failure
+  // there should not throw a dialog at someone who never asked for one.
+  const locate = useCallback((silent = false) => {
+    if (!navigator.geolocation) {
+      setLocationStatus('unavailable');
       return;
     }
+    setLocationStatus('locating');
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setUserLocation({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
+        setLocationStatus('active');
       },
       (error) => {
-        if (error.code === 1) setLocationDenied(true);
+        // 1 PERMISSION_DENIED, 2 POSITION_UNAVAILABLE, 3 TIMEOUT. Only the
+        // first was ever recorded; the other two fell on the floor, which is
+        // how a click could lead to nothing at all and stay there.
+        setLocationStatus(error.code === 1 ? 'denied' : 'unavailable');
+        if (!silent) setShowLocationTip(true);
       },
+      // Without a timeout a hung request never resolves and never reports.
+      // A five minute cache makes the already-granted path near instant.
+      { timeout: 10000, maximumAge: 5 * 60 * 1000 },
     );
-  }, [locationDenied]);
+  }, []);
 
-  const flyToUser = () => {
+  // Read the permission on load. Granted means the visitor already said yes, so
+  // resolving it costs them no prompt and the map can open where they are.
+  // "prompt" is deliberately left alone: asking for location before anyone has
+  // asked for anything is how you collect a permanent denial.
+  useEffect(() => {
+    const permissions = navigator.permissions;
+    if (!navigator.geolocation || !permissions?.query) {
+      setPermissionChecked(true);
+      return;
+    }
+    let cancelled = false;
+    let permission: PermissionStatus | null = null;
+
+    const apply = (state: PermissionState) => {
+      if (cancelled) return;
+      if (state === 'granted') locate(true);
+      else if (state === 'denied') setLocationStatus('denied');
+      else setLocationStatus('idle');
+    };
+
+    permissions
+      .query({ name: 'geolocation' as PermissionName })
+      .then((status) => {
+        if (cancelled) return;
+        permission = status;
+        apply(status.state);
+        // Picks up a change made in the browser's own site settings, so the
+        // denied dead end can be undone without a reload.
+        status.onchange = () => apply(status.state);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setPermissionChecked(true);
+      });
+
+    return () => {
+      cancelled = true;
+      if (permission) permission.onchange = null;
+    };
+  }, [locate]);
+
+  const flyToUser = useCallback(() => {
     if (!userLocation || !map.current) return;
     const isMobile = window.innerWidth < 768;
     (map.current as any).setPadding(
@@ -1233,7 +1318,7 @@ export default function MapaSensors({
       duration: 3000,
       essential: true,
     });
-  };
+  }, [userLocation]);
 
   // Add user location marker when available
   useEffect(() => {
@@ -1248,10 +1333,13 @@ export default function MapaSensors({
     userMarkerElement.innerHTML =
       '<span class="location-dot__pulse"></span><span class="location-dot__core"></span>';
 
-    new Marker({ element: userMarkerElement })
+    // Replace rather than add: a permission granted mid-session runs this a
+    // second time, and the old marker used to stay behind on the map.
+    (userMarkerRef.current as any)?.remove();
+    userMarkerRef.current = new Marker({ element: userMarkerElement })
       .setLngLat([userLocation.longitude, userLocation.latitude])
       .addTo(map.current);
-  }, [userLocation, mapLoaded]);
+  }, [userLocation, mapLoaded, flyToUser]);
 
   // Add sensors when both map and data are ready
   useEffect(() => {
@@ -1438,11 +1526,14 @@ export default function MapaSensors({
       {sheetState === 'peek' && (
         <div className="fixed right-6 z-[45] flex flex-col gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}>
           <button
-            onClick={userLocation ? flyToUser : requestLocation}
-            className="rounded-xl border border-white/60 bg-white/80 p-3 backdrop-blur-md transition-colors duration-200 shadow-sm"
-            aria-label="Mi ubicación"
+            type="button"
+            onClick={onLocationClick}
+            disabled={locationStatus === 'locating'}
+            aria-busy={locationStatus === 'locating'}
+            className="rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            aria-label={locationLabel}
           >
-            <Navigation className={`h-5 w-5 ${userLocation ? 'text-gray-700' : 'text-gray-400'}`} />
+            <Navigation className={`h-5 w-5 transition-colors ${locationIconTone}`} aria-hidden="true" />
           </button>
           <button
             onClick={() => setShowFilters((v) => !v)}
@@ -1502,29 +1593,26 @@ export default function MapaSensors({
       {/* Desktop right-side floating controls. bottom-12 rather than bottom-8
           on both sides: at 32px this row sat flush against Mapbox's logo and
           attribution, which have to stay legible. */}
-      <div className="pointer-events-none absolute bottom-12 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
+      <div className="pointer-events-none absolute bottom-12 right-6 z-10 hidden md:block">
         <button
-          onClick={userLocation ? flyToUser : requestLocation}
-          className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
-          aria-label={userLocation ? 'Mi ubicación' : 'Activar ubicación'}
+          type="button"
+          onClick={onLocationClick}
+          disabled={locationStatus === 'locating'}
+          aria-busy={locationStatus === 'locating'}
+          className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:cursor-default"
         >
-          {/* Once location is on the button carries the same blue dot as the
-              map, the way the badge carries its green one. Until then it stays
-              an arrow, dimmed so "off" is visible at a glance. */}
-          {userLocation ? (
-            /* Exactly the badge's dot, in blue: same 16px box, same 8px core,
-               same ping. */
-            <span className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
-              <span className="absolute h-2 w-2 animate-ping rounded-full bg-blue-400 opacity-75 motion-reduce:animate-none" />
-              <span className="relative h-2 w-2 rounded-full bg-blue-500" />
-            </span>
-          ) : (
-            <Navigation className="h-4 w-4 text-gray-400" />
-          )}
-          <span className={`text-[13px] font-medium ${userLocation ? 'text-gray-500' : 'text-gray-400'}`}>
-            {userLocation ? 'Mi ubicación' : 'Activar ubicación'}
-          </span>
+          <Navigation className={`h-4 w-4 flex-shrink-0 transition-colors ${locationIconTone}`} aria-hidden="true" />
+          <span className="whitespace-nowrap text-[13px] font-medium text-gray-600">{locationLabel}</span>
         </button>
+        {/* Announced separately rather than off the label: a disabled button's
+            own text is not reliably read out when it changes. */}
+        <span role="status" className="sr-only">
+          {locationStatus === 'locating'
+            ? 'Buscando tu ubicación'
+            : userLocation
+              ? 'Ubicación encontrada'
+              : ''}
+        </span>
       </div>
 
       {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
@@ -1830,10 +1918,17 @@ export default function MapaSensors({
       </div>
 
 
-      {/* Location denied modal — centered, both mobile and desktop. Its own
-          layout, an illustrated prompt rather than a titled sheet, but on the
-          same dialog shell as the info popups, so it is named for assistive
-          tech and answers to Escape like the rest. */}
+      {/* Location modal — centered, both mobile and desktop. Its own layout, an
+          illustrated prompt rather than a titled sheet, but on the same dialog
+          shell as the info popups, so it is named for assistive tech and
+          answers to Escape like the rest.
+
+          The copy follows what actually happened. It used to open with
+          "Habilita el acceso a tu ubicación" in every case, which is priming
+          copy: fine before anyone has decided, wrong after a denial, when the
+          browser will not ask again and the visitor needs to be told where the
+          setting lives, and wrong again after a timeout, which is nobody's
+          decision and is worth retrying. */}
       {showLocationTip && (
         <DialogShell
           onClose={() => setShowLocationTip(false)}
@@ -1842,22 +1937,39 @@ export default function MapaSensors({
         >
           <div className="mb-4 flex justify-center">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100">
-              <Navigation className="h-6 w-6 text-gray-400" aria-hidden="true" />
+              <Navigation className="h-6 w-6 text-gray-500" aria-hidden="true" />
             </div>
           </div>
           <h2 id="location-tip-title" className="mb-1.5 text-center text-base font-semibold text-gray-900">
-            Descubre el aire en tu zona
+            {locationStatus === 'denied' ? 'Ubicación bloqueada' : 'No pudimos ubicarte'}
           </h2>
           <p className="text-center text-sm leading-relaxed text-gray-500">
-            Habilita el acceso a tu ubicación para ver la calidad del aire más cercana a ti.
+            {locationStatus === 'denied'
+              ? 'Tu navegador tiene bloqueada la ubicación para este sitio, así que no podemos volver a pedirla desde aquí. Para activarla, abre la configuración del sitio junto a la barra de direcciones y permite el acceso a la ubicación.'
+              : 'No fue posible obtener tu ubicación en este momento. Revisa que la ubicación esté activada en tu dispositivo e inténtalo de nuevo.'}
           </p>
-          <button
-            type="button"
-            onClick={() => setShowLocationTip(false)}
-            className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          >
-            Entendido
-          </button>
+          {locationStatus === 'denied' ? (
+            <button
+              type="button"
+              onClick={() => setShowLocationTip(false)}
+              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            >
+              Entendido
+            </button>
+          ) : (
+            /* A timeout or a failed fix is worth another go, so the dialog
+               offers one instead of just acknowledging itself. */
+            <button
+              type="button"
+              onClick={() => {
+                setShowLocationTip(false);
+                locate();
+              }}
+              className="mt-5 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            >
+              Reintentar
+            </button>
+          )}
         </DialogShell>
       )}
 
