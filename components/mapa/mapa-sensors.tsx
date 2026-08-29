@@ -262,31 +262,43 @@ const SENSITIVE_GROUPS = [
   { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
 
-// Plain text on the card's own surface: a heading row with the chevron, the
-// general advice under it, and the sensitive groups appended in order when
-// opened. No nested card, no filled blocks.
-function HealthRecommendations({ info }: { info: QualityInfo }) {
-  const [showGruposSensibles, setShowGruposSensibles] = useState(false);
+// The whole block is a disclosure: the header row carries the label, its info
+// icon and the chevron, and nothing below it renders until it is opened. Plain
+// text on the card's own surface, no nested card or filled blocks.
+function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShowInfo: () => void }) {
+  const [open, setOpen] = useState(false);
 
   return (
     <div>
-      <div className="mb-1 flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-gray-700">Población General</p>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <p className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+            Recomendaciones de salud
+          </p>
+          <button
+            type="button"
+            onClick={onShowInfo}
+            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 transition-colors hover:text-gray-600"
+            aria-label="Más información sobre recomendaciones de salud"
+          >
+            <Info className="h-3 w-3" />
+          </button>
+        </div>
         <button
           type="button"
-          onClick={() => setShowGruposSensibles((v) => !v)}
+          onClick={() => setOpen((v) => !v)}
           className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-600"
-          aria-label={showGruposSensibles ? "Ocultar grupos sensibles" : "Ver grupos sensibles"}
+          aria-label={open ? "Ocultar recomendaciones de salud" : "Ver recomendaciones de salud"}
         >
-          <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showGruposSensibles ? 'rotate-90' : ''}`} />
+          <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
         </button>
       </div>
-      {/* Two lines at rest so the section doesn't dominate the first view. */}
-      <p className={`text-sm leading-relaxed text-gray-500 ${showGruposSensibles ? '' : 'line-clamp-2'}`}>
-        {info.generalRec}
-      </p>
-      {showGruposSensibles && (
+      {open && (
         <div className="mt-4 flex flex-col gap-4">
+          <div>
+            <p className="mb-1 text-sm font-semibold text-gray-700">Población General</p>
+            <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
+          </div>
           {SENSITIVE_GROUPS.map((g) => (
             <div key={g.key}>
               <div className="mb-1 flex items-center gap-2">
@@ -987,23 +999,7 @@ export default function MapaSensors({
                   {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                   {sensorQuality && (
                     <div className="relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-4">
-                      {/* Label and its info icon, the way Contaminante and Fuente carry
-                          theirs in Capas. Población General reads straight away; only the
-                          sensitive groups sit behind a chevron. */}
-                      <div className="mb-4 flex items-center gap-1.5">
-                        <p className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                          Recomendaciones de salud
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => setCuidarmeQuality(sensorQuality)}
-                          className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 transition-colors hover:text-gray-600"
-                          aria-label="Más información sobre recomendaciones de salud"
-                        >
-                          <Info className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <HealthRecommendations info={sensorQuality} />
+                      <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
                     </div>
                   )}
                 </>
@@ -1072,23 +1068,7 @@ export default function MapaSensors({
 
                 {/* Recommendations — collapsed by default, not needed for a data-first platform */}
                 <div className="relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-4">
-                  {/* Label and its info icon, the way Contaminante and Fuente carry
-                      theirs in Capas. Población General reads straight away; only the
-                      sensitive groups sit behind a chevron. */}
-                  <div className="mb-4 flex items-center gap-1.5">
-                    <p className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                      Recomendaciones de salud
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setCuidarmeQuality(qualityInfo)}
-                      className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 transition-colors hover:text-gray-600"
-                      aria-label="Más información sobre recomendaciones de salud"
-                    >
-                      <Info className="h-3 w-3" />
-                    </button>
-                  </div>
-                  <HealthRecommendations info={qualityInfo} />
+                  <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} />
                 </div>
               </>
             )}
@@ -1213,18 +1193,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                    <span>Recomendaciones de salud</span>
-                    <button
-                      type="button"
-                      onClick={() => setCuidarmeQuality(sensorQuality)}
-                      className="-translate-y-px flex-shrink-0 rounded-full transition-colors hover:text-gray-600"
-                      aria-label="Más información sobre recomendaciones de salud"
-                    >
-                      <Info className="h-3 w-3" />
-                    </button>
-                  </div>
-                  <HealthRecommendations info={sensorQuality} />
+                  <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
                 </>
               )}
             </div>
@@ -1355,18 +1324,7 @@ export default function MapaSensors({
               </div>
 
               {/* Recommendations */}
-              <div className="mb-4 flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-                <span>Recomendaciones de salud</span>
-                <button
-                  type="button"
-                  onClick={() => setCuidarmeQuality(qualityInfo)}
-                  className="-translate-y-px flex-shrink-0 rounded-full transition-colors hover:text-gray-600"
-                  aria-label="Más información sobre recomendaciones de salud"
-                >
-                  <Info className="h-3 w-3" />
-                </button>
-              </div>
-              <HealthRecommendations info={qualityInfo} />
+              <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} />
 
             </>
           )}
