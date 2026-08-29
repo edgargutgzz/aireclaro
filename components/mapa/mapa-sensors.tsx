@@ -429,7 +429,57 @@ function LayersFilterContent({
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Municipio — built like the Fuente group above it: a parent row whose
+          checkbox covers the whole set, children that toggle independently,
+          and a chevron that keeps them visible while you pick. */}
       <div>
+        <div className="mb-2 flex items-center gap-1.5">
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Municipio</p>
+        </div>
+        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
+          <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+            <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
+              <button type="button" onClick={toggleAllMunicipios} className="flex min-w-0 items-center gap-3">
+                <LayerCheckbox state={municipioState} size={boxSize} />
+                <span className={`text-sm font-medium ${municipioState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
+                  Todos los municipios
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowMunicipioList((v) => !v)}
+                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                aria-label={showMunicipioList ? "Ocultar municipios" : "Mostrar municipios"}
+              >
+                <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showMunicipioList ? 'rotate-90' : ''}`} />
+              </button>
+            </div>
+            {showMunicipioList && (
+              <div className="flex max-h-[220px] flex-col overflow-y-auto">
+                {municipios.map((m) => {
+                  const on = !hiddenMunicipios.includes(m.key);
+                  return (
+                    <button
+                      key={m.key}
+                      type="button"
+                      onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
+                      className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
+                        <span className={`truncate text-sm ${on ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
+                      </span>
+                      <span className="flex-shrink-0 text-xs text-gray-300">{m.count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="-mt-3 border-t border-gray-100 pt-3">
         <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Fuente</p>
           <button
@@ -504,56 +554,6 @@ function LayersFilterContent({
           </button>
         </div>
       </div>
-      {/* Municipio — built like the Fuente group above it: a parent row whose
-          checkbox covers the whole set, children that toggle independently,
-          and a chevron that keeps them visible while you pick. */}
-      <div className="-mt-3 border-t border-gray-100 pt-3">
-        <div className="mb-2 flex items-center gap-1.5">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Municipio</p>
-        </div>
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
-          <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-            <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
-              <button type="button" onClick={toggleAllMunicipios} className="flex min-w-0 items-center gap-3">
-                <LayerCheckbox state={municipioState} size={boxSize} />
-                <span className={`text-sm font-medium ${municipioState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
-                  Todos los municipios
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowMunicipioList((v) => !v)}
-                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
-                aria-label={showMunicipioList ? "Ocultar municipios" : "Mostrar municipios"}
-              >
-                <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showMunicipioList ? 'rotate-90' : ''}`} />
-              </button>
-            </div>
-            {showMunicipioList && (
-              <div className="flex max-h-[220px] flex-col overflow-y-auto">
-                {municipios.map((m) => {
-                  const on = !hiddenMunicipios.includes(m.key);
-                  return (
-                    <button
-                      key={m.key}
-                      type="button"
-                      onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
-                      className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
-                    >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
-                        <span className={`truncate text-sm ${on ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
-                      </span>
-                      <span className="flex-shrink-0 text-xs text-gray-300">{m.count}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
       <div className="-mt-3 border-t border-gray-100 pt-3">
         <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contaminante</p>
