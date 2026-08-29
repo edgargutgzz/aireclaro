@@ -366,13 +366,15 @@ function LayersFilterContent({
   const subRowPadding = compact ? "py-2.5" : "py-3";
   const boxSize = compact ? 16 : 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
-  const [showPM10Tooltip, setShowPM10Tooltip] = useState(false);
+  // Which unavailable pollutant was last tapped, so its "No disponible"
+  // tooltip shows and times out on its own.
+  const [unavailableTooltip, setUnavailableTooltip] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!showPM10Tooltip) return;
-    const timeout = setTimeout(() => setShowPM10Tooltip(false), 2000);
+    if (!unavailableTooltip) return;
+    const timeout = setTimeout(() => setUnavailableTooltip(null), 2000);
     return () => clearTimeout(timeout);
-  }, [showPM10Tooltip]);
+  }, [unavailableTooltip]);
 
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
@@ -402,20 +404,22 @@ function LayersFilterContent({
           <div className="rounded-xl bg-white px-5 py-2 text-sm font-semibold text-gray-800 shadow-sm">
             PM2.5
           </div>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setShowPM10Tooltip(true)}
-              className="rounded-xl px-5 py-2 text-sm font-semibold text-gray-400"
-            >
-              PM10
-            </button>
-            {showPM10Tooltip && (
-              <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm">
-                No disponible
-              </div>
-            )}
-          </div>
+          {["PM10", "Ozono"].map((name) => (
+            <div key={name} className="relative">
+              <button
+                type="button"
+                onClick={() => setUnavailableTooltip(name)}
+                className="rounded-xl px-5 py-2 text-sm font-semibold text-gray-400"
+              >
+                {name}
+              </button>
+              {unavailableTooltip === name && (
+                <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm">
+                  No disponible
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
       <div className="-mt-3.5 border-t border-gray-100 pt-3.5">
