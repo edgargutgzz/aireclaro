@@ -30,34 +30,32 @@
   outline-offset: 3px;
 }
 
-/* Selected marker: the circle grows a tail and lifts off the map, so selection
-   reads as a different silhouette rather than another ring of colour. It keeps
-   its air-quality fill (carried to the tail by --pin-color) and is translated
-   up by the tail's height, so the tip still points at the sensor's coordinate. */
+/* Selected marker: the Google Maps treatment — a filled halo expanding out
+   from behind the circle and fading. Its colour comes from --pulse-color, set
+   per selection to that sensor's air-quality tone. Drawn on ::after so it never
+   fights the inline box-shadow the selection effect sets, and behind the marker
+   so only the halo shows around it. */
 .sensor-marker {
   position: relative;
-}
-
-.sensor-marker--selected {
-  transform: translateY(-11px);
-  filter: drop-shadow(0 7px 6px rgba(0, 0, 0, 0.3));
-}
-
-.sensor-marker--selected:hover {
-  transform: translateY(-11px) scale(1.08);
 }
 
 .sensor-marker--selected::after {
   content: "";
   position: absolute;
-  bottom: -10px;
-  left: 50%;
+  inset: -6px;
   z-index: -1;
-  transform: translateX(-50%);
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 12px 7px 0 7px;
-  border-color: var(--pin-color, #6b7280) transparent transparent transparent;
+  border-radius: 50%;
+  background: var(--pulse-color, #3b82f6);
   pointer-events: none;
+  animation: marker-pulse 2s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+}
+
+@keyframes marker-pulse {
+  0% { transform: scale(0.85); opacity: 0.5; }
+  70% { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sensor-marker--selected::after { animation: none; transform: scale(1.15); opacity: 0.35; }
 }

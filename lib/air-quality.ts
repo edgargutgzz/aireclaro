@@ -48,8 +48,6 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   el.style.width = "40px";
   el.style.height = "40px";
   el.style.backgroundColor = bg;
-  // The pin's tail is drawn in CSS and needs this fill.
-  el.style.setProperty("--pin-color", bg);
   el.style.borderRadius = "50%";
   el.style.display = "flex";
   el.style.alignItems = "center";
