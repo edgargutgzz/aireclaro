@@ -482,7 +482,7 @@ function LayersFilterContent({
         type="button"
         onClick={() => toggleSection(name)}
         aria-expanded={openSection === name}
-        className="-ml-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg px-1 py-1 text-left transition-colors hover:bg-gray-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        className="-mx-2 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg px-2 py-2 text-left transition-colors hover:bg-gray-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
         <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">{label}</p>
         <span className="min-w-0 flex-1 truncate text-xs leading-none text-gray-300">· {summary}</span>
@@ -492,7 +492,7 @@ function LayersFilterContent({
         <button
           type="button"
           onClick={info.onClick}
-          className="-mr-1.5 ml-0.5 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-500/5 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="ml-1 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-500/5 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           aria-label={info.ariaLabel}
         >
           <Info className="h-3 w-3" />
