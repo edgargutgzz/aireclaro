@@ -31,8 +31,8 @@
 }
 
 /* Selected marker: the Google Maps treatment — a filled halo expanding out
-   from behind the circle and fading. Its colour comes from --pulse-color, set
-   per selection to that sensor's air-quality tone. Drawn on ::after so it never
+   from behind the circle and fading, in the same blue as the trend line. Drawn
+   on ::after so it never
    fights the inline box-shadow the selection effect sets, and behind the marker
    so only the halo shows around it. */
 .sensor-marker {

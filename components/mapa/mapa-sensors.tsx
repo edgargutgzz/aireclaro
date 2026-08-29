@@ -397,40 +397,6 @@ function LayersFilterContent({
     <div className="flex flex-col gap-6">
       <div>
         <div className="mb-2 flex items-center gap-1.5">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contaminante</p>
-          <button
-            type="button"
-            onClick={onShowPM25Info}
-            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-            aria-label="Por qué medimos PM2.5"
-          >
-            <Info className="h-3 w-3" />
-          </button>
-        </div>
-        <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
-          <div className="rounded-xl bg-white px-5 py-2 text-sm font-medium text-gray-800 shadow-sm">
-            PM2.5
-          </div>
-          {["PM10", "Ozono"].map((name) => (
-            <div key={name} className="relative">
-              <button
-                type="button"
-                onClick={() => setUnavailableTooltip(name)}
-                className="rounded-xl px-5 py-2 text-sm font-medium text-gray-400"
-              >
-                {name}
-              </button>
-              {unavailableTooltip === name && (
-                <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm">
-                  No disponible
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="-mt-3 border-t border-gray-100 pt-3">
-        <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Fuente</p>
           <button
             type="button"
@@ -502,6 +468,40 @@ function LayersFilterContent({
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className={`text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
           </button>
+        </div>
+      </div>
+      <div className="-mt-3 border-t border-gray-100 pt-3">
+        <div className="mb-2 flex items-center gap-1.5">
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contaminante</p>
+          <button
+            type="button"
+            onClick={onShowPM25Info}
+            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+            aria-label="Por qué medimos PM2.5"
+          >
+            <Info className="h-3 w-3" />
+          </button>
+        </div>
+        <div className="inline-flex items-center gap-1 rounded-2xl bg-gray-100 p-1">
+          <div className="rounded-xl bg-white px-5 py-2 text-sm font-medium text-gray-800 shadow-sm">
+            PM2.5
+          </div>
+          {["PM10", "Ozono"].map((name) => (
+            <div key={name} className="relative">
+              <button
+                type="button"
+                onClick={() => setUnavailableTooltip(name)}
+                className="rounded-xl px-5 py-2 text-sm font-medium text-gray-400"
+              >
+                {name}
+              </button>
+              {unavailableTooltip === name && (
+                <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm">
+                  No disponible
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -854,11 +854,10 @@ export default function MapaSensors({
         ? sensors.find(s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon)?.sensor_id
         : undefined;
 
-    const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
-    // The ink, not the fill: on a light map the pure IMECA yellow and green
-    // barely register as a ring, while these are the exact tones the card's
-    // quality word uses.
-    const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
+    // Blue, not the sensor's own quality colour: repeating that hue as a ring
+    // and a halo around a circle already wearing it read as concentric bands.
+    // Blue is outside the IMECA scale, so it can only mean "selected".
+    const activeColor = SPARKLINE_COLOR;
 
     markerElementsRef.current.forEach(({ el }, sensorId) => {
       const isActive = sensorId === activeSensorId;
