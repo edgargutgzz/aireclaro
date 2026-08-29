@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronRight, Landmark, Users, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
+import { Navigation, Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -298,7 +298,10 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
            ordered set rather than a run of paragraphs. */
         <div className="mt-4 flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5 md:max-h-[150px] md:overflow-y-auto">
           <div className="rounded-xl bg-white px-4 py-3.5 shadow-sm">
-            <p className="mb-1 text-sm font-semibold text-gray-800">Población General</p>
+            <div className="mb-1 flex items-center gap-2">
+              <UsersRound className="h-4 w-4 flex-shrink-0 text-gray-400" />
+              <p className="text-sm font-semibold text-gray-800">Población General</p>
+            </div>
             <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
           </div>
           {SENSITIVE_GROUPS.map((g) => (
