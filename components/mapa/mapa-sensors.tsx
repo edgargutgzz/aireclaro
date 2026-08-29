@@ -278,17 +278,21 @@ function HealthRecommendations({ info }: { info: QualityInfo }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
       <div className="px-4 py-3.5">
-        <p className="mb-1 text-sm font-semibold text-gray-800">Población General</p>
+        <div className="mb-1 flex items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-gray-800">Población General</p>
+          {/* The chevron lives on this row: the sensitive groups open under it
+              rather than behind a card of their own. */}
+          <button
+            type="button"
+            onClick={() => setShowGruposSensibles((v) => !v)}
+            className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-600"
+            aria-label={showGruposSensibles ? "Ocultar grupos sensibles" : "Ver grupos sensibles"}
+          >
+            <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showGruposSensibles ? 'rotate-90' : ''}`} />
+          </button>
+        </div>
         <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
       </div>
-      <button
-        type="button"
-        onClick={() => setShowGruposSensibles((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 border-t border-gray-100 px-4 py-3.5"
-      >
-        <span className="text-sm font-semibold text-gray-800">Grupos sensibles</span>
-        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showGruposSensibles ? 'rotate-90' : ''}`} />
-      </button>
       {showGruposSensibles && (
         <div className="flex flex-col">
           {SENSITIVE_GROUPS.map((g) => (
