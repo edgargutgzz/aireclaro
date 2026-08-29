@@ -491,7 +491,7 @@ function LayersFilterContent({
                   </button>
                 </div>
                 {open && (
-                  <div className="flex max-h-[220px] flex-col overflow-y-auto">
+                  <div className="flex flex-col">
                     {estado.municipios.map((m) => {
                       const on = !hiddenMunicipios.includes(m.key);
                       return (
@@ -1141,7 +1141,7 @@ export default function MapaSensors({
           <p className="text-base font-medium text-gray-700">Capas</p>
         </div>
         <div
-          className="flex flex-col gap-3 px-5"
+          className="flex max-h-[70svh] flex-col gap-3 overflow-y-auto overscroll-contain px-5"
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <LayersFilterContent
@@ -1368,7 +1368,11 @@ export default function MapaSensors({
             <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
           </button>
           {showFiltrosContent && (
-            <div className="px-5 pb-6 pt-3">
+            /* Only the body scrolls, so the "Capas" header stays in place. The
+               cap is viewport-relative (svh, not vh, for mobile browser
+               chrome) and overscroll-contain stops a scroll that reaches the
+               end from panning the map underneath. */
+            <div className="max-h-[calc(100svh-13rem)] overflow-y-auto overscroll-contain px-5 pb-6 pt-3">
               <LayersFilterContent
                 compact={false}
                 showOtros={showOtros}
