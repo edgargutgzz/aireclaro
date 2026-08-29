@@ -29,14 +29,22 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
   return { bg: level.color, text: level.ink };
 };
 
-export const createMarker = (pm25: number | null): HTMLElement | null => {
+// `label` becomes the marker's accessible name — without it the markers are
+// unreachable by keyboard and announce as nothing to a screen reader.
+export const createMarker = (pm25: number | null, label?: string): HTMLElement | null => {
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
 
   const { bg } = colorInfo;
   const textColor = bg === "#ffff00" ? "#9ca3af" : "white";
 
-  const el = document.createElement("div");
+  const el = document.createElement("button");
+  el.type = "button";
+  el.className = "sensor-marker";
+  if (label) el.setAttribute("aria-label", label);
+  el.style.border = "none";
+  el.style.padding = "0";
+  el.style.fontFamily = "inherit";
   el.style.width = "40px";
   el.style.height = "40px";
   el.style.backgroundColor = bg;

@@ -736,7 +736,14 @@ export default function MapaSensors({
         (dataItem) => dataItem.sensor_id === sensor.sensor_id,
       );
 
-      const markerElement = createMarker(latestData ? latestData.pm25 : null);
+      const sensorLabel = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+      const markerQuality = getQualityInfo(latestData?.pm25 ?? null);
+      const markerElement = createMarker(
+        latestData ? latestData.pm25 : null,
+        [sensorLabel, latestData?.pm25 != null ? `${roundPM25(latestData.pm25)} μg/m³ PM2.5` : null, markerQuality?.label]
+          .filter(Boolean)
+          .join(", "),
+      );
 
       if (!markerElement) return;
 
@@ -748,7 +755,6 @@ export default function MapaSensors({
         : null;
 
       markerElement.style.cursor = "pointer";
-      markerElement.style.transition = "box-shadow 0.15s ease, opacity 0.2s ease";
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
         const isDesktop = window.innerWidth >= 768;
