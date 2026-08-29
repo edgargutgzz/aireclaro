@@ -576,14 +576,21 @@ export default function MapaSensors({
         const result = buildFromSensor(sensor);
         if (result) return result;
       }
-      return null;
     }
 
-    // No location shared — default to a fixed representative station
-    // (San Nicolás: UANL), so the card opens with a real reading and its
-    // 48h trend instead of a nameless area median.
+    // No location shared (or nothing near it reporting) — open on a fixed
+    // representative station (San Nicolás: UANL), then fall through to any
+    // sensor that has a reading: the card always speaks for a real sensor,
+    // never for an area average.
     const defaultSensor = sensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
-    return defaultSensor ? buildFromSensor(defaultSensor) : null;
+    const fromDefault = defaultSensor ? buildFromSensor(defaultSensor) : null;
+    if (fromDefault) return fromDefault;
+
+    for (const sensor of sensors) {
+      const result = buildFromSensor(sensor);
+      if (result) return result;
+    }
+    return null;
   }, [userLocation, sensors, data]);
 
   const areaMedianPm25 = useMemo(() => {
