@@ -1524,7 +1524,10 @@ export default function MapaSensors({
 
       {/* Left column: layers panel (desktop) with the data-freshness badge under it.
           On mobile the panel is a bottom sheet, so only the badge shows here. */}
-      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:left-6 md:top-6">
+      {/* Wider on desktop so the indented municipality rows have room; the
+          mobile width stays as it was, since 380px would overhang a small
+          phone from left-4. */}
+      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:left-6 md:top-6 md:w-panel-filters">
         <div className="pointer-events-auto hidden w-full overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md md:block">
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
