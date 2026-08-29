@@ -374,8 +374,8 @@ function LayersFilterContent({
   showSima,
   setShowSima,
   municipios,
-  municipio,
-  setMunicipio,
+  hiddenMunicipios,
+  setHiddenMunicipios,
   onShowOccammInfo,
   onShowPM25Info,
   onShowFuenteInfo,
@@ -388,8 +388,8 @@ function LayersFilterContent({
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
   municipios: { key: string; label: string; count: number }[];
-  municipio: string | null;
-  setMunicipio: Dispatch<SetStateAction<string | null>>;
+  hiddenMunicipios: string[];
+  setHiddenMunicipios: Dispatch<SetStateAction<string[]>>;
   onShowOccammInfo: () => void;
   onShowPM25Info: () => void;
   onShowFuenteInfo: () => void;
@@ -408,6 +408,14 @@ function LayersFilterContent({
     const timeout = setTimeout(() => setUnavailableTooltip(null), 2000);
     return () => clearTimeout(timeout);
   }, [unavailableTooltip]);
+
+  const municipioState: CheckState =
+    hiddenMunicipios.length === 0 ? 'checked' :
+    hiddenMunicipios.length >= municipios.length ? 'unchecked' : 'indeterminate';
+
+  const toggleAllMunicipios = () => {
+    setHiddenMunicipios(municipioState === 'checked' ? municipios.map((m) => m.key) : []);
+  };
 
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
@@ -496,48 +504,50 @@ function LayersFilterContent({
           </button>
         </div>
       </div>
-      {/* Municipio — one at a time, since the useful question is "how is the
-          air in my municipality", not "in these four". */}
+      {/* Municipio — built like the Fuente group above it: a parent row whose
+          checkbox covers the whole set, children that toggle independently,
+          and a chevron that keeps them visible while you pick. */}
       <div className="-mt-3 border-t border-gray-100 pt-3">
         <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Municipio</p>
         </div>
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
           <div className="overflow-hidden rounded-xl bg-white shadow-sm">
-            <button
-              type="button"
-              onClick={() => setShowMunicipioList((v) => !v)}
-              className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}
-            >
-              <span className={`truncate text-sm font-medium ${municipio ? 'text-gray-800' : 'text-gray-400'}`}>
-                {municipios.find((m) => m.key === municipio)?.label ?? "Todos los municipios"}
-              </span>
-              <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showMunicipioList ? 'rotate-90' : ''}`} />
-            </button>
+            <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
+              <button type="button" onClick={toggleAllMunicipios} className="flex min-w-0 items-center gap-3">
+                <LayerCheckbox state={municipioState} size={boxSize} />
+                <span className={`text-sm font-medium ${municipioState === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
+                  Todos los municipios
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowMunicipioList((v) => !v)}
+                className="flex-shrink-0 rounded-full p-0.5 text-gray-400 hover:text-gray-600"
+                aria-label={showMunicipioList ? "Ocultar municipios" : "Mostrar municipios"}
+              >
+                <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${showMunicipioList ? 'rotate-90' : ''}`} />
+              </button>
+            </div>
             {showMunicipioList && (
               <div className="flex max-h-[220px] flex-col overflow-y-auto">
-                <button
-                  type="button"
-                  onClick={() => { setMunicipio(null); setShowMunicipioList(false); }}
-                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
-                >
-                  <LayerCheckbox state={municipio === null ? 'checked' : 'unchecked'} size={boxSize} />
-                  <span className={`text-sm ${municipio === null ? 'text-gray-600' : 'text-gray-400'}`}>Todos</span>
-                </button>
-                {municipios.map((m) => (
-                  <button
-                    key={m.key}
-                    type="button"
-                    onClick={() => { setMunicipio(m.key); setShowMunicipioList(false); }}
-                    className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
-                  >
-                    <span className="flex min-w-0 items-center gap-3">
-                      <LayerCheckbox state={municipio === m.key ? 'checked' : 'unchecked'} size={boxSize} />
-                      <span className={`truncate text-sm ${municipio === m.key ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
-                    </span>
-                    <span className="flex-shrink-0 text-xs text-gray-300">{m.count}</span>
-                  </button>
-                ))}
+                {municipios.map((m) => {
+                  const on = !hiddenMunicipios.includes(m.key);
+                  return (
+                    <button
+                      key={m.key}
+                      type="button"
+                      onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
+                      className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
+                        <span className={`truncate text-sm ${on ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
+                      </span>
+                      <span className="flex-shrink-0 text-xs text-gray-300">{m.count}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -605,7 +615,7 @@ export default function MapaSensors({
   const [showPM25Info, setShowPM25Info] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
   const [showSima, setShowSima] = useState(true);
-  const [municipio, setMunicipio] = useState<string | null>(null); // null = todos
+  const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>([]);
   const [showOccamm, setShowOccamm] = useState(true);
   const [selectedSensor, setSelectedSensor] = useState<{
     sensor: Sensor;
@@ -651,8 +661,10 @@ export default function MapaSensors({
   }, [sensors]);
 
   const sensorsInMunicipio = useMemo(
-    () => (municipio ? sensors.filter((s) => municipioKey(s.municipio) === municipio) : sensors),
-    [sensors, municipio],
+    () => (hiddenMunicipios.length
+      ? sensors.filter((s) => !hiddenMunicipios.includes(municipioKey(s.municipio) ?? ""))
+      : sensors),
+    [sensors, hiddenMunicipios],
   );
 
   const nearestSensorData = useMemo(() => {
@@ -850,7 +862,7 @@ export default function MapaSensors({
     sensors.forEach((sensor) => {
       const isSima = sensor.source === "sima";
 
-      if (municipio && municipioKey(sensor.municipio) !== municipio) return;
+      if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return;
       if (isSima && !showSima) return;
       if (!isSima) {
         const inOccamm = !!sensor.red;
@@ -905,7 +917,7 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, sensors, data, showOtros, showOccamm, showSima, municipio]);
+  }, [mapLoaded, sensors, data, showOtros, showOccamm, showSima, hiddenMunicipios]);
 
   // Cleanup markers when component unmounts
   useEffect(() => {
@@ -1073,8 +1085,8 @@ export default function MapaSensors({
             showSima={showSima}
             setShowSima={setShowSima}
             municipios={municipios}
-            municipio={municipio}
-            setMunicipio={setMunicipio}
+            hiddenMunicipios={hiddenMunicipios}
+            setHiddenMunicipios={setHiddenMunicipios}
             onShowOccammInfo={() => setShowOccammInfo(true)}
             onShowPM25Info={() => setShowPM25Info(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
@@ -1287,8 +1299,8 @@ export default function MapaSensors({
                 showSima={showSima}
                 setShowSima={setShowSima}
                 municipios={municipios}
-                municipio={municipio}
-                setMunicipio={setMunicipio}
+                hiddenMunicipios={hiddenMunicipios}
+                setHiddenMunicipios={setHiddenMunicipios}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
                 onShowPM25Info={() => setShowPM25Info(true)}
                 onShowFuenteInfo={() => setShowFuenteInfo(true)}
