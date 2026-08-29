@@ -49,10 +49,6 @@ interface HistoryPoint {
 // where it crosses a dashed threshold line.
 const SPARKLINE_COLOR = "#3b82f6";
 
-// Shown as the default "Calidad del aire" station (San Nicolás: UANL) when
-// the visitor hasn't shared their location, instead of a nameless area median.
-const DEFAULT_SENSOR_ID = "Norte2";
-
 // Plain marker shadow — the pulse animation's base state, no static ring.
 const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 
@@ -195,7 +191,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           height={height}
           viewBox={`0 0 ${width} ${height}`}
           preserveAspectRatio="none"
-          className="h-[190px] cursor-crosshair md:h-[240px]"
+          className="h-[190px] cursor-crosshair md:h-[210px]"
           onMouseMove={(e) => updateHover(e.clientX)}
           onMouseLeave={() => setHover(null)}
           onTouchMove={(e) => updateHover(e.touches[0].clientX)}
@@ -246,7 +242,7 @@ function SparklineSkeleton() {
       <div className="mb-2 flex items-center text-xs font-medium leading-none text-gray-400">
         Últimas 48 horas
       </div>
-      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="h-[190px] animate-pulse md:h-[240px]">
+      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="h-[190px] animate-pulse md:h-[210px]">
         <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
         <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -579,10 +575,11 @@ export default function MapaSensors({
       return null;
     }
 
-    // No location shared — default to a fixed representative station
-    // (San Nicolás: UANL) instead of just an area median with no identity.
-    const defaultSensor = sensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
-    return defaultSensor ? buildFromSensor(defaultSensor) : null;
+    // No location shared — no station. Naming one station as "the" reading
+    // tells a visitor in Saltillo that San Nicolás is their air, which is a
+    // precision we haven't earned. The card falls back to the metro-wide
+    // median, which answers the question without claiming a place.
+    return null;
   }, [userLocation, sensors, data]);
 
   const areaMedianPm25 = useMemo(() => {
@@ -1052,7 +1049,7 @@ export default function MapaSensors({
               className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
             >
               <span className="truncate text-base font-medium text-gray-700">
-                {nearestName ?? "Calidad del Aire"}
+                {nearestName ?? "Área metropolitana"}
               </span>
               <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
             </button>
@@ -1097,10 +1094,14 @@ export default function MapaSensors({
                         )}
                       </div>
                     </div>
-                    {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                    <div>
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
-                    </div>
+                    {/* Trend sparkline — only with a station behind it: the
+                        metro-wide reading is a median across sensors and has
+                        no single 48h series to plot. */}
+                    {nearestName && (
+                      <div>
+                        {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
+                      </div>
+                    )}
                   </div>
                 </div>
 
