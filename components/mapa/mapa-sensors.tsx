@@ -962,10 +962,7 @@ export default function MapaSensors({
 
       {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
           selected. Nav lives in the site-wide header now, not floating here. */}
-      {/* Sits beside the Capas panel: left-6 + w-panel-md (340px) + a 16px gap.
-          Only from lg, since below ~840px the pair would run off the right
-          edge; on md it stays in the right corner. */}
-      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden flex-col items-start md:flex lg:left-[380px] lg:right-auto">
+      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden flex-col items-start md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="w-panel-lg">
