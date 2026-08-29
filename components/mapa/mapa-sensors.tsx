@@ -50,8 +50,8 @@ interface HistoryPoint {
 const SPARKLINE_COLOR = "#3b82f6";
 
 // Shown as the default "Calidad del aire" station when the visitor hasn't
-// shared their location (San Nicolás: UANL).
-const DEFAULT_SENSOR_ID = "Norte2";
+// shared their location (Monterrey: Obispado).
+const DEFAULT_SENSOR_ID = "CE";
 
 // Plain marker shadow — the pulse animation's base state, no static ring.
 const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
@@ -654,7 +654,7 @@ export default function MapaSensors({
       setMapLoaded(true);
       (map.current as any).flyTo({
         center: [-100.301, 25.685],
-        zoom: 11,
+        zoom: 10.5,
         duration: 2000,
         essential: true,
       });
