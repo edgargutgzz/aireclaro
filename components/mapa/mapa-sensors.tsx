@@ -877,8 +877,10 @@ export default function MapaSensors({
       el.classList.toggle('sensor-marker--selected', isActive);
       // Full opacity on the selected one, the rest stay slightly back.
       el.style.opacity = isActive ? '1' : '0.9';
+      // Selected ring in the trend line's blue, so the marker, its halo and
+      // the chart all carry the same accent.
       el.style.boxShadow = isActive
-        ? '0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px rgba(107,114,128,0.9)'
+        ? `0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px ${SPARKLINE_COLOR}`
         : PLAIN_MARKER_SHADOW;
       // Markers stack in DOM order, so in a dense cluster the selected one can
       // sit under its neighbours and lose its ring. Lift it above them.
