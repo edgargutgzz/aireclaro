@@ -892,10 +892,14 @@ export default function MapaSensors({
     setHoveredHistory(null);
   }, [sensorHistory, selectedSensor]);
 
-  // Close selected sensor on map click
+  // Tapping the map dismisses the sensor sheet on mobile, where that gesture
+  // is how you get back to the map. On desktop the card stays on whatever was
+  // last picked: clicking empty map is panning, not "forget my selection".
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
-    const handler = () => setSelectedSensor(null);
+    const handler = () => {
+      if (window.innerWidth < 768) setSelectedSensor(null);
+    };
     map.current.on("click", handler);
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
