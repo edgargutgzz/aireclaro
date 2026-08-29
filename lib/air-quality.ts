@@ -7,11 +7,11 @@
 // #ffff00 disappears at 1px on a white chart. `legendInk` goes a step further
 // for small labels sitting on a tinted chip.
 export const IMECA_LEVELS = [
-  { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200", markerInk: "#111827" },
-  { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000", markerInk: "#111827" },
-  { limit: 79, label: "Mala", range: "25 – 79 μg/m³", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00", markerInk: "#111827" },
-  { limit: 130, label: "Muy mala", range: "79 – 130 μg/m³", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000", markerInk: "#111827" },
-  { limit: Infinity, label: "Extremadamente mala", range: "> 130 μg/m³", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72", markerInk: "#ffffff" },
+  { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200" },
+  { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000" },
+  { limit: 79, label: "Mala", range: "25 – 79 μg/m³", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00" },
+  { limit: 130, label: "Muy mala", range: "79 – 130 μg/m³", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000" },
+  { limit: Infinity, label: "Extremadamente mala", range: "> 130 μg/m³", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72" },
 ] as const;
 
 // The boundaries between levels, each carrying the color of the level it opens.
@@ -34,11 +34,7 @@ export const createMarker = (pm25: number | null): HTMLElement | null => {
   if (!colorInfo) return null;
 
   const { bg } = colorInfo;
-  // Ink chosen per level for contrast against its own fill: white sat at
-  // 1.7:1 on green and 2.6:1 on orange, so the reading was barely legible on
-  // most of the map. Dark ink clears 4.4:1 on every fill but purple, which
-  // keeps white at 6.3:1.
-  const textColor = getLevel(pm25!).markerInk;
+  const textColor = bg === "#ffff00" ? "#9ca3af" : "white";
 
   const el = document.createElement("div");
   el.style.width = "40px";
