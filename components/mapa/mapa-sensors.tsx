@@ -1429,7 +1429,7 @@ export default function MapaSensors({
       {showFuenteInfo && (
         <>
           <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowFuenteInfo(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
             <div className="flex flex-col gap-4">
               <div>
                 <p className="mb-1 text-sm font-semibold text-gray-700">Sensores Ciudadanos</p>
@@ -1460,6 +1460,14 @@ export default function MapaSensors({
                     Sistema Integral de Monitoreo Ambiental (SIMA)
                   </a>
                   , operado por el Gobierno de Nuevo León.
+                </p>
+              </div>
+              <div>
+                <p className="mb-1 text-sm font-semibold text-gray-700">Ozono</p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Los sensores ciudadanos solo miden partículas, no ozono. Por
+                  ahora este mapa no incluye datos de ozono de ninguna de las
+                  dos fuentes.
                 </p>
               </div>
             </div>
