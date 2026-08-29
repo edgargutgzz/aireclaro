@@ -362,8 +362,8 @@ function LayersFilterContent({
   onShowPM25Info: () => void;
   onShowFuenteInfo: () => void;
 }) {
-  const rowPadding = compact ? "py-3" : "py-3.5";
-  const subRowPadding = compact ? "py-2.5" : "py-3";
+  const rowPadding = compact ? "py-3.5" : "py-4";
+  const subRowPadding = compact ? "py-3" : "py-3.5";
   const boxSize = compact ? 16 : 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
   const [showPM10Tooltip, setShowPM10Tooltip] = useState(false);
@@ -435,7 +435,7 @@ function LayersFilterContent({
             as a muddy box, and a bordered white card inside a white card was
             one frame too many. */}
         <div className="flex flex-col gap-1 rounded-2xl bg-gray-100/80 p-1">
-          <div className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 ${rowPadding} ${citizenState === 'unchecked' ? '' : 'bg-white shadow-sm'}`}>
+          <div className={`flex w-full items-center justify-between gap-3 rounded-xl px-4 ${rowPadding} ${citizenState === 'unchecked' ? '' : 'bg-white shadow-sm'}`}>
             <button type="button" onClick={toggleCitizenGroup} className="flex min-w-0 items-center gap-3">
               <LayerCheckbox state={citizenState} size={boxSize} />
               <span className="text-sm font-semibold text-gray-800">Sensores Ciudadanos</span>
@@ -451,7 +451,7 @@ function LayersFilterContent({
           </div>
           {showCitizenGroup && (
           <div className="flex flex-col gap-1">
-            <div className={`ml-6 flex items-center gap-2 rounded-xl px-3 ${subRowPadding} ${showOccamm ? 'bg-white shadow-sm' : ''}`}>
+            <div className={`ml-6 flex items-center gap-2 rounded-xl px-4 ${subRowPadding} ${showOccamm ? 'bg-white shadow-sm' : ''}`}>
               <button
                 type="button"
                 onClick={() => setShowOccamm((v) => !v)}
@@ -472,7 +472,7 @@ function LayersFilterContent({
             <button
               type="button"
               onClick={() => setShowOtros((v) => !v)}
-              className={`ml-6 flex items-center gap-3 rounded-xl px-3 ${subRowPadding} ${showOtros ? 'bg-white shadow-sm' : ''}`}
+              className={`ml-6 flex items-center gap-3 rounded-xl px-4 ${subRowPadding} ${showOtros ? 'bg-white shadow-sm' : ''}`}
             >
               <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
               <span className="text-sm text-gray-600">Otros</span>
@@ -482,7 +482,7 @@ function LayersFilterContent({
           <button
             type="button"
             onClick={() => setShowSima((v) => !v)}
-            className={`flex w-full items-center gap-3 rounded-xl px-3 ${rowPadding} ${showSima ? 'bg-white shadow-sm' : ''}`}
+            className={`flex w-full items-center gap-3 rounded-xl px-4 ${rowPadding} ${showSima ? 'bg-white shadow-sm' : ''}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className="text-sm font-semibold text-gray-800">Estaciones de Gobierno</span>
