@@ -453,8 +453,19 @@ function LayersFilterContent({
   const ubicacionSummary = hiddenMunicipios.length === 0
     ? "Todos"
     : `${shownMunicipios} de ${totalMunicipios}`;
-  const activeSources = [showOccamm, showOtros, showSima].filter(Boolean).length;
-  const fuenteSummary = activeSources === 3 ? "Todas" : `${activeSources} de 3`;
+  // Named, not counted: the panel shows two rows while there are three
+  // toggles underneath, so "1 de 3" reads as wrong against two checkboxes.
+  const fuenteSummary = (() => {
+    if (showOccamm && showOtros && showSima) return "Todas";
+    const on: string[] = [];
+    if (showOccamm && showOtros) on.push("Ciudadanos");
+    else {
+      if (showOccamm) on.push("OCCAMM");
+      if (showOtros) on.push("Otros");
+    }
+    if (showSima) on.push("Gobierno");
+    return on.length ? on.join(" · ") : "Ninguna";
+  })();
 
   const sectionHeader = (
     name: 'ubicacion' | 'fuente' | 'contaminante',
