@@ -411,7 +411,6 @@ function LayersFilterContent({
   onShowOccammInfo,
   onShowPM25Info,
   onShowFuenteInfo,
-  onShowMunicipioInfo,
 }: {
   compact: boolean;
   showOtros: boolean;
@@ -426,7 +425,6 @@ function LayersFilterContent({
   onShowOccammInfo: () => void;
   onShowPM25Info: () => void;
   onShowFuenteInfo: () => void;
-  onShowMunicipioInfo: () => void;
 }) {
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
@@ -451,14 +449,6 @@ function LayersFilterContent({
       <div>
         <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Ubicación</p>
-          <button
-            type="button"
-            onClick={onShowMunicipioInfo}
-            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
-            aria-label="Qué zona cubre el mapa"
-          >
-            <Info className="h-3 w-3" />
-          </button>
         </div>
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
           {estados.map((estado) => {
@@ -651,7 +641,6 @@ export default function MapaSensors({
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showPM25Info, setShowPM25Info] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
-  const [showMunicipioInfo, setShowMunicipioInfo] = useState(false);
   const [showSima, setShowSima] = useState(true);
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>([]);
   const [showOccamm, setShowOccamm] = useState(true);
@@ -1158,7 +1147,6 @@ export default function MapaSensors({
             onShowOccammInfo={() => setShowOccammInfo(true)}
             onShowPM25Info={() => setShowPM25Info(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
-            onShowMunicipioInfo={() => setShowMunicipioInfo(true)}
           />
         </div>
       </div>
@@ -1387,7 +1375,6 @@ export default function MapaSensors({
                 onShowOccammInfo={() => setShowOccammInfo(true)}
                 onShowPM25Info={() => setShowPM25Info(true)}
                 onShowFuenteInfo={() => setShowFuenteInfo(true)}
-                onShowMunicipioInfo={() => setShowMunicipioInfo(true)}
               />
             </div>
           )}
@@ -1676,32 +1663,6 @@ export default function MapaSensors({
             </div>
             <button
               onClick={() => setShowOccammInfo(false)}
-              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
-            >
-              Entendido
-            </button>
-          </div>
-        </>
-      )}
-
-      {/* Coverage popup — why Saltillo and other nearby towns aren't here */}
-      {showMunicipioInfo && (
-        <>
-          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowMunicipioInfo(false)} />
-          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
-            <div className="flex flex-col gap-4">
-              <div>
-                <p className="mb-1 text-sm font-semibold text-gray-700">Zona Metropolitana de Monterrey</p>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  Este observatorio sigue la Zona Metropolitana de Monterrey.
-                  El mapa también incluye sensores de zonas cercanas, como
-                  Saltillo y Arteaga, en Coahuila, agrupados por estado en
-                  este filtro.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowMunicipioInfo(false)}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
             >
               Entendido
