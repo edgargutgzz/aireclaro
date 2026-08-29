@@ -100,6 +100,51 @@ function getRelativeDayLabel(date: Date) {
   return dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM", { locale: es });
 }
 
+type Freshness = {
+  dateTime: string;
+  when: string;
+  status: "fresh" | "delayed" | "stale";
+};
+
+// How current the map is. One component for both breakpoints; this used to be
+// two copies of the same markup, one of them md:hidden.
+//
+// Three states, because a dot that is only ever green cannot tell you
+// anything. The badge used to be wired to the open sensor's own reading while
+// calling itself "Última actualización", so it changed when you clicked a
+// marker, and it floored the time to the hour with no day attached: if
+// ingestion stopped, it went on reporting a cheerful green 11:00 AM the next
+// morning. It now reads the newest reading in the whole data set and says how
+// old that is. Colour is the glanceable layer and never the only one, the
+// timestamp itself is what carries the state.
+function FreshnessBadge({ freshness }: { freshness: Freshness }) {
+  const dot =
+    freshness.status === "fresh" ? "bg-green-500" :
+    freshness.status === "delayed" ? "bg-amber-500" :
+    "bg-gray-400";
+
+  return (
+    <div className="flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
+      <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
+        {/* Only fresh data pulses. A dot that keeps ticking in amber or grey
+            reads as "working on it" when the truth is "this is old". */}
+        {freshness.status === "fresh" && (
+          <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
+        )}
+        <span className={`relative h-2 w-2 rounded-full ${dot}`} />
+      </span>
+      {/* The label is the quiet half and the time is the information, so they
+          no longer share one weight and one colour. */}
+      <span className="whitespace-nowrap text-[13px] text-gray-500">
+        Actualizado{" "}
+        <time dateTime={freshness.dateTime} className="font-medium text-gray-700">
+          {freshness.when}
+        </time>
+      </span>
+    </div>
+  );
+}
+
 function formatHistoryTime(dateStr: string) {
   const date = new Date(dateStr);
   // Readings land ~30 min past the hour but represent that hour's data —
@@ -1032,23 +1077,47 @@ export default function MapaSensors({
 
   // Hour of the most recent reading anywhere in the dataset — the badge's
   // fallback when no station is on screen to speak for itself.
-  const latestDataHour = useMemo(() => {
-    if (!data.length) return null;
-    const latest = data.reduce((acc, d) => {
+  // Kept as a Date rather than a formatted string: the badge needs to know how
+  // old this is, and formatting the age away here is what let it insist the
+  // map was live however long the pipeline had been down.
+  const latestReading = useMemo(() => {
+    let newest = 0;
+    for (const d of data) {
       const t = new Date(d.time_stamp).getTime();
-      return Number.isNaN(t) ? acc : Math.max(acc, t);
-    }, 0);
-    if (!latest) return null;
-    return format(new Date(latest), "h") + ":00 " + format(new Date(latest), "a");
+      if (!Number.isNaN(t) && t > newest) newest = t;
+    }
+    return newest ? new Date(newest) : null;
   }, [data]);
+
+  // Null until mounted, so the server and the first client render agree on a
+  // value that is by definition different on each; then re-read on a timer,
+  // because a tab left open all afternoon should watch the badge go amber
+  // rather than sit on the state it had at page load.
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    const tick = () => setNow(Date.now());
+    tick();
+    const id = window.setInterval(tick, 60_000);
+    return () => window.clearInterval(id);
+  }, []);
 
   const hoveredQuality = hoveredHistory ? getQualityInfo(hoveredHistory.pm25) : null;
 
-  // The badge reports whatever the card is showing: the open sensor's own last
-  // reading, else the default station's. Government stations publish every half
-  // hour, so a global "newest reading anywhere" would sit ahead of the station
-  // on screen and make it look stale.
-  const badgeHour = selectedSensor?.timestamp ?? nearestSensorData?.timestamp ?? latestDataHour;
+  // Readings land hourly, so 90 minutes is one missed cycle plus slack, and six
+  // hours is a pipeline that has stopped rather than a run that is late. Past
+  // today the label picks up the day, so "11:00 AM" can never be yesterday's
+  // 11:00 AM wearing a green dot.
+  const freshness = useMemo<Freshness | null>(() => {
+    if (!latestReading || now === null) return null;
+    const age = now - latestReading.getTime();
+    const hour = `${format(latestReading, "h")}:00 ${format(latestReading, "a")}`;
+    const day = getRelativeDayLabel(latestReading);
+    return {
+      dateTime: latestReading.toISOString(),
+      when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
+      status: age < 90 * 60 * 1000 ? "fresh" : age < 6 * 60 * 60 * 1000 ? "delayed" : "stale",
+    };
+  }, [latestReading, now]);
 
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestName = nearestSensorData?.name ?? null;
@@ -1411,22 +1480,10 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop: data freshness, bottom-left, on the same line as the
-          location button on the opposite side. */}
-      {badgeHour && (
-        <div className="pointer-events-none absolute bottom-8 left-6 z-10 hidden h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md md:flex">
-          <span className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
-            <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
-            <span className="relative h-2 w-2 rounded-full bg-green-500" />
-          </span>
-          <span className="whitespace-nowrap text-[13px] font-medium text-gray-500">
-            Última actualización: {badgeHour}
-          </span>
-        </div>
-      )}
-
-      {/* Desktop right-side floating controls */}
-      <div className="pointer-events-none absolute bottom-8 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
+      {/* Desktop right-side floating controls. bottom-12 rather than bottom-8
+          on both sides: at 32px this row sat flush against Mapbox's logo and
+          attribution, which have to stay legible. */}
+      <div className="pointer-events-none absolute bottom-12 right-6 z-10 hidden flex-col items-end gap-2 md:flex">
         <button
           onClick={userLocation ? flyToUser : requestLocation}
           className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90"
@@ -1608,12 +1665,18 @@ export default function MapaSensors({
           On mobile the panel is a bottom sheet, so only the badge shows here. */}
       {/* Wider on desktop so the indented municipality rows have room; the
           mobile width stays as it was, since 380px would overhang a small
-          phone from left-4. */}
-      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:left-6 md:top-6 md:w-panel-filters">
-        <div className="pointer-events-auto hidden w-full overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md md:block">
+          phone from left-4.
+
+          On desktop the column runs the whole height and the badge is pinned
+          to the bottom of it, so the panel simply grows into whatever is left
+          over. It used to be held off the badge by a hand-counted max-height
+          on the panel body, with the badge itself living in a different corner
+          of this file. */}
+      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-12 md:left-6 md:top-6 md:w-panel-filters">
+        <div className="pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md md:flex">
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
-            className="flex w-full items-center justify-between px-5 pt-4 pb-3"
+            className="flex w-full flex-shrink-0 items-center justify-between px-5 pt-4 pb-3"
           >
             <span className="text-base font-medium text-gray-700">Capas</span>
             <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
@@ -1621,10 +1684,10 @@ export default function MapaSensors({
           {showFiltrosContent && (
             /* Only the body scrolls, so the "Capas" header stays in place, and
                overscroll-contain stops a scroll that reaches the end from
-               panning the map underneath. The cap stops the panel short of the
-               "Última actualización" badge: 72px site header + 24px top offset
-               + 52px card header + 88px for the badge and its gap. */
-            <div className="max-h-[calc(100svh-236px)] overflow-y-auto overscroll-contain px-5 pb-6 pt-3">
+               panning the map underneath. flex-1 min-h-0 takes whatever the
+               column has left after the badge, which is the same job the old
+               calc(100svh - 236px) was doing by hand. */
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6 pt-3">
               <LayersFilterContent
                 showOtros={showOtros}
                 setShowOtros={setShowOtros}
@@ -1644,16 +1707,14 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* Mobile only: on desktop this badge sits above the location button. */}
-        {badgeHour && (
-          <div className="flex h-11 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3 shadow-sm backdrop-blur-md md:hidden">
-            <span className="relative flex h-2 w-2 flex-shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
-            </span>
-            <span className="whitespace-nowrap text-[13px] font-medium text-gray-500">
-              Última actualización: {badgeHour}
-            </span>
+        {/* mt-auto pins it to the bottom of the column on desktop, so it holds
+            the same corner whether the panel above it is open or shut. On
+            mobile the column is only as tall as its contents and the panel is
+            a bottom sheet, so the badge stays directly under the top-left
+            corner as before. */}
+        {freshness && (
+          <div className="flex-shrink-0 md:mt-auto">
+            <FreshnessBadge freshness={freshness} />
           </div>
         )}
       </div>
