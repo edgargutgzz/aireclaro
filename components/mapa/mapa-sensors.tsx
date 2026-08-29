@@ -1188,9 +1188,11 @@ export default function MapaSensors({
               map, the way the badge carries its green one. Until then it stays
               an arrow, dimmed so "off" is visible at a glance. */}
           {userLocation ? (
-            <span className="location-dot h-4 w-4 flex-shrink-0">
-              <span className="location-dot__pulse" />
-              <span className="location-dot__core" />
+            /* Exactly the badge's dot, in blue: same 16px box, same 8px core,
+               same ping. */
+            <span className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
+              <span className="absolute h-2 w-2 animate-ping rounded-full bg-blue-400 opacity-75 motion-reduce:animate-none" />
+              <span className="relative h-2 w-2 rounded-full bg-blue-500" />
             </span>
           ) : (
             <Navigation className="h-4 w-4 text-gray-400" />
