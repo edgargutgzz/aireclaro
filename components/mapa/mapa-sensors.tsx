@@ -901,13 +901,6 @@ export default function MapaSensors({
       markerElement.style.cursor = "pointer";
       markerElement.addEventListener("click", (e) => {
         e.stopPropagation();
-        // One-shot ripple, fired by the click itself. The idle pulse is
-        // ambient and can be caught mid-fade, so it never reads as "that
-        // landed"; this does. Removing the class and forcing a reflow
-        // restarts the animation on a repeat click.
-        markerElement.classList.remove("sensor-marker--tapped");
-        void markerElement.offsetWidth;
-        markerElement.classList.add("sensor-marker--tapped");
         const isDesktop = window.innerWidth >= 768;
         if (isDesktop && selectedSensor?.sensor.sensor_id === sensor.sensor_id) {
           setSelectedSensor(null);
@@ -990,8 +983,6 @@ export default function MapaSensors({
     markerElementsRef.current.forEach(({ el }, sensorId) => {
       const isActive = sensorId === activeSensorId;
       el.style.animation = '';
-      el.classList.toggle('sensor-marker--selected', isActive);
-      el.style.setProperty('--pulse-color', activeColor);
       // Full opacity on the selected one, the rest stay slightly back.
       el.style.opacity = isActive ? '1' : '0.9';
       el.style.boxShadow = isActive
