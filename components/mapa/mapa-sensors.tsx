@@ -1049,7 +1049,7 @@ export default function MapaSensors({
               className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
             >
               <span className="truncate text-base font-medium text-gray-700">
-                {nearestName ?? "Área metropolitana"}
+                {nearestName ?? "Zona Metropolitana de Monterrey"}
               </span>
               <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
             </button>
@@ -1063,7 +1063,7 @@ export default function MapaSensors({
                       <span className="truncate">
                         {nearestName
                           ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
-                          : "Promedio del área metropolitana"}
+                          : "Promedio de la Zona Metropolitana de Monterrey"}
                       </span>
                     </span>
                     {nearestLat !== null && nearestLon !== null && (
@@ -1331,7 +1331,7 @@ export default function MapaSensors({
                   <span className="truncate">
                     {nearestName
                       ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
-                      : "Promedio del área metropolitana"}
+                      : "Promedio de la Zona Metropolitana de Monterrey"}
                   </span>
                   <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-90' : ''}`} />
                 </button>
