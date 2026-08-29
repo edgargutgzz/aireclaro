@@ -296,7 +296,7 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
         /* Same material as the Capas panel's Fuente list: a soft gray track
            with one white row per audience, so the recommendations read as an
            ordered set rather than a run of paragraphs. */
-        <div className="mt-4 flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5 md:max-h-[260px] md:overflow-y-auto">
+        <div className="mt-4 flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5 md:max-h-[150px] md:overflow-y-auto">
           <div className="rounded-xl bg-white px-4 py-3.5 shadow-sm">
             <p className="mb-1 text-sm font-semibold text-gray-800">Población General</p>
             <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
