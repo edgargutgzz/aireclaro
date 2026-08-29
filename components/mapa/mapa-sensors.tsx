@@ -68,6 +68,31 @@ const MUNICIPIO_ALIASES: Record<string, string> = {
   "general escobedo": "escobedo",
 };
 
+// The map covers the Zona Metropolitana de Monterrey and nothing else, so
+// sensors in Saltillo, Arteaga or Allende never reach the map or the filter.
+// Keys are the normalised form produced by municipioKey().
+const ZMM_MUNICIPIOS = new Set([
+  "abasolo",
+  "apodaca",
+  "cadereyta jimenez",
+  "carmen",
+  "cienega de flores",
+  "escobedo",
+  "garcia",
+  "general zuazua",
+  "guadalupe",
+  "hidalgo",
+  "higueras",
+  "juarez",
+  "monterrey",
+  "pesqueria",
+  "salinas victoria",
+  "san nicolas de los garza",
+  "san pedro garza garcia",
+  "santa catarina",
+  "santiago",
+]);
+
 function municipioKey(name?: string | null) {
   if (!name) return null;
   const plain = name
@@ -399,6 +424,7 @@ function LayersFilterContent({
   onShowOccammInfo,
   onShowPM25Info,
   onShowFuenteInfo,
+  onShowMunicipioInfo,
 }: {
   compact: boolean;
   showOtros: boolean;
@@ -413,6 +439,7 @@ function LayersFilterContent({
   onShowOccammInfo: () => void;
   onShowPM25Info: () => void;
   onShowFuenteInfo: () => void;
+  onShowMunicipioInfo: () => void;
 }) {
   const rowPadding = compact ? "py-3" : "py-3.5";
   const subRowPadding = compact ? "py-2.5" : "py-3";
@@ -445,6 +472,14 @@ function LayersFilterContent({
       <div>
         <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Municipio</p>
+          <button
+            type="button"
+            onClick={onShowMunicipioInfo}
+            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 hover:text-gray-600"
+            aria-label="Qué zona cubre el mapa"
+          >
+            <Info className="h-3 w-3" />
+          </button>
         </div>
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
           <div className="overflow-hidden rounded-xl bg-white shadow-sm">
@@ -581,16 +616,19 @@ function LayersFilterContent({
             suggest you could turn several on, and the unavailable ones say so
             in place instead of only on tap. */}
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className={`flex items-center justify-between gap-3 px-4 ${rowPadding}`}>
+          <div className={`flex items-center gap-3 px-4 ${rowPadding}`}>
+            <LayerCheckbox state="checked" size={boxSize} />
             <span className="text-sm font-medium text-gray-800">PM2.5</span>
-            <Check className="h-4 w-4 flex-shrink-0 text-gray-700" strokeWidth={2.5} />
           </div>
           {["PM10", "Ozono"].map((name) => (
             <div
               key={name}
               className={`flex items-center justify-between gap-3 border-t border-gray-100 px-4 ${rowPadding}`}
             >
-              <span className="text-sm font-medium text-gray-400">{name}</span>
+              <span className="flex min-w-0 items-center gap-3">
+                <LayerCheckbox state="unchecked" size={boxSize} />
+                <span className="text-sm font-medium text-gray-400">{name}</span>
+              </span>
               <span className="flex-shrink-0 text-xs text-gray-300">No disponible</span>
             </div>
           ))}
@@ -622,6 +660,7 @@ export default function MapaSensors({
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showPM25Info, setShowPM25Info] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
+  const [showMunicipioInfo, setShowMunicipioInfo] = useState(false);
   const [showSima, setShowSima] = useState(true);
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>([]);
   const [showOccamm, setShowOccamm] = useState(true);
@@ -650,9 +689,14 @@ export default function MapaSensors({
 
   // One entry per municipality that actually has sensors, labelled with its
   // best spelling and counted so the list says how much each filter holds.
+  const zmmSensors = useMemo(
+    () => sensors.filter((sensor) => ZMM_MUNICIPIOS.has(municipioKey(sensor.municipio) ?? "")),
+    [sensors],
+  );
+
   const municipios = useMemo(() => {
     const byKey = new globalThis.Map<string, { key: string; label: string; count: number }>();
-    sensors.forEach((sensor) => {
+    zmmSensors.forEach((sensor) => {
       const key = municipioKey(sensor.municipio);
       if (!key) return;
       const label = sensor.municipio!.trim();
@@ -666,18 +710,18 @@ export default function MapaSensors({
       if (/[^\x00-\x7F]/.test(label) && !/[^\x00-\x7F]/.test(entry.label)) entry.label = label;
     });
     return Array.from(byKey.values()).sort((a, b) => a.label.localeCompare(b.label, "es"));
-  }, [sensors]);
+  }, [zmmSensors]);
 
   // Everything the map is currently drawing. The card reads from this too, so
   // it can never describe sensors the filters have hidden — and when the
   // filters hide everything, there is nothing left for it to say.
   const visibleSensors = useMemo(
-    () => sensors.filter((sensor) => {
+    () => zmmSensors.filter((sensor) => {
       if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return false;
       if (sensor.source === "sima") return showSima;
       return sensor.red ? showOccamm : showOtros;
     }),
-    [sensors, hiddenMunicipios, showSima, showOccamm, showOtros],
+    [zmmSensors, hiddenMunicipios, showSima, showOccamm, showOtros],
   );
 
   const nearestSensorData = useMemo(() => {
@@ -874,7 +918,7 @@ export default function MapaSensors({
     markersRef.current = [];
     markerElementsRef.current.clear();
 
-    sensors.forEach((sensor) => {
+    zmmSensors.forEach((sensor) => {
       const isSima = sensor.source === "sima";
 
       if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return;
@@ -928,7 +972,7 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, sensors, data, showOtros, showOccamm, showSima, hiddenMunicipios]);
+  }, [mapLoaded, zmmSensors, data, showOtros, showOccamm, showSima, hiddenMunicipios]);
 
   // Cleanup markers when component unmounts
   useEffect(() => {
@@ -1109,6 +1153,7 @@ export default function MapaSensors({
             onShowOccammInfo={() => setShowOccammInfo(true)}
             onShowPM25Info={() => setShowPM25Info(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
+            onShowMunicipioInfo={() => setShowMunicipioInfo(true)}
           />
         </div>
       </div>
@@ -1323,6 +1368,7 @@ export default function MapaSensors({
                 onShowOccammInfo={() => setShowOccammInfo(true)}
                 onShowPM25Info={() => setShowPM25Info(true)}
                 onShowFuenteInfo={() => setShowFuenteInfo(true)}
+                onShowMunicipioInfo={() => setShowMunicipioInfo(true)}
               />
             </div>
           )}
@@ -1611,6 +1657,31 @@ export default function MapaSensors({
             </div>
             <button
               onClick={() => setShowOccammInfo(false)}
+              className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              Entendido
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Coverage popup — why Saltillo and other nearby towns aren't here */}
+      {showMunicipioInfo && (
+        <>
+          <div className="fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={() => setShowMunicipioInfo(false)} />
+          <div className="fixed left-1/2 top-1/2 z-[71] flex w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-6 rounded-3xl bg-white p-8 shadow-xl">
+            <div className="flex flex-col gap-4">
+              <div>
+                <p className="mb-1 text-sm font-semibold text-gray-700">Zona Metropolitana de Monterrey</p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  El mapa cubre únicamente los municipios de la Zona
+                  Metropolitana de Monterrey. Los sensores de otras zonas, como
+                  Saltillo o Arteaga, no se muestran aunque envíen datos.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowMunicipioInfo(false)}
               className="w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-200"
             >
               Entendido
