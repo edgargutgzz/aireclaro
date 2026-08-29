@@ -650,15 +650,7 @@ export default function MapaSensors({
       initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
     );
 
-    map.current.on("load", () => {
-      setMapLoaded(true);
-      (map.current as any).flyTo({
-        center: [-100.301, 25.685],
-        zoom: 10.5,
-        duration: 2000,
-        essential: true,
-      });
-    });
+    map.current.on("load", () => setMapLoaded(true));
 
     return () => {
       (map.current as any)?.remove();
@@ -666,6 +658,30 @@ export default function MapaSensors({
       setMapLoaded(false);
     };
   }, []);
+
+  // Opening camera. Without a shared location we fly to the default station
+  // at the same zoom flyToUser uses, so the map opens the way it would if the
+  // visitor happened to be standing next to it. Runs once.
+  const didOpeningFlyRef = useRef(false);
+  useEffect(() => {
+    if (!mapLoaded || !map.current || didOpeningFlyRef.current || userLocation) return;
+
+    const target = nearestSensorData
+      ? [nearestSensorData.lon, nearestSensorData.lat]
+      : [-100.301, 25.685];
+    didOpeningFlyRef.current = true;
+
+    const isMobile = window.innerWidth < 768;
+    (map.current as any).setPadding(
+      isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
+    );
+    (map.current as any).flyTo({
+      center: target,
+      zoom: nearestSensorData ? 14 : 10.5,
+      duration: 2000,
+      essential: true,
+    });
+  }, [mapLoaded, userLocation, nearestSensorData]);
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) return;
