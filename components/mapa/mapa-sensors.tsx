@@ -22,6 +22,7 @@ interface Sensor {
   lon: number;
   source: string; // purpleAir o sima
   red?: string | null;
+  municipio?: string | null;
 }
 
 // Air Quality Data interface
@@ -59,6 +60,24 @@ const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 // What kind of source this is first, in the same words the Capas panel uses,
 // then the network it belongs to when it has one (`red`, e.g. OCCAMM). Sensors
 // with no network just say what they are.
+// The two tables spell municipalities inconsistently — "Garcia"/"García",
+// "San Nicolas"/"San Nicolás", and "General Escobedo" for what the rest of the
+// rows call "Escobedo". Everything is grouped by this key, and the label shown
+// is whichever spelling carries its accents.
+const MUNICIPIO_ALIASES: Record<string, string> = {
+  "general escobedo": "escobedo",
+};
+
+function municipioKey(name?: string | null) {
+  if (!name) return null;
+  const plain = name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+  return MUNICIPIO_ALIASES[plain] ?? plain;
+}
+
 function getSourceLabel(isSima: boolean, red?: string | null) {
   if (isSima) return "Estación de Gobierno";
   return red ? `Sensor Ciudadano · ${red}` : "Sensor Ciudadano";
@@ -354,6 +373,9 @@ function LayersFilterContent({
   setShowOccamm,
   showSima,
   setShowSima,
+  municipios,
+  municipio,
+  setMunicipio,
   onShowOccammInfo,
   onShowPM25Info,
   onShowFuenteInfo,
@@ -365,6 +387,9 @@ function LayersFilterContent({
   setShowOccamm: Dispatch<SetStateAction<boolean>>;
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
+  municipios: { key: string; label: string; count: number }[];
+  municipio: string | null;
+  setMunicipio: Dispatch<SetStateAction<string | null>>;
   onShowOccammInfo: () => void;
   onShowPM25Info: () => void;
   onShowFuenteInfo: () => void;
@@ -373,6 +398,7 @@ function LayersFilterContent({
   const subRowPadding = compact ? "py-2.5" : "py-3";
   const boxSize = compact ? 16 : 18;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
+  const [showMunicipioList, setShowMunicipioList] = useState(false);
   // Which unavailable pollutant was last tapped, so its "No disponible"
   // tooltip shows and times out on its own.
   const [unavailableTooltip, setUnavailableTooltip] = useState<string | null>(null);
@@ -470,6 +496,54 @@ function LayersFilterContent({
           </button>
         </div>
       </div>
+      {/* Municipio — one at a time, since the useful question is "how is the
+          air in my municipality", not "in these four". */}
+      <div className="-mt-3 border-t border-gray-100 pt-3">
+        <div className="mb-2 flex items-center gap-1.5">
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Municipio</p>
+        </div>
+        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
+          <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+            <button
+              type="button"
+              onClick={() => setShowMunicipioList((v) => !v)}
+              className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}
+            >
+              <span className={`truncate text-sm font-medium ${municipio ? 'text-gray-800' : 'text-gray-400'}`}>
+                {municipios.find((m) => m.key === municipio)?.label ?? "Todos los municipios"}
+              </span>
+              <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showMunicipioList ? 'rotate-90' : ''}`} />
+            </button>
+            {showMunicipioList && (
+              <div className="flex max-h-[220px] flex-col overflow-y-auto">
+                <button
+                  type="button"
+                  onClick={() => { setMunicipio(null); setShowMunicipioList(false); }}
+                  className={`ml-11 flex items-center gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
+                >
+                  <LayerCheckbox state={municipio === null ? 'checked' : 'unchecked'} size={boxSize} />
+                  <span className={`text-sm ${municipio === null ? 'text-gray-600' : 'text-gray-400'}`}>Todos</span>
+                </button>
+                {municipios.map((m) => (
+                  <button
+                    key={m.key}
+                    type="button"
+                    onClick={() => { setMunicipio(m.key); setShowMunicipioList(false); }}
+                    className={`ml-11 flex items-center justify-between gap-3 border-t border-gray-100 pr-4 ${subRowPadding}`}
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <LayerCheckbox state={municipio === m.key ? 'checked' : 'unchecked'} size={boxSize} />
+                      <span className={`truncate text-sm ${municipio === m.key ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
+                    </span>
+                    <span className="flex-shrink-0 text-xs text-gray-300">{m.count}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="-mt-3 border-t border-gray-100 pt-3">
         <div className="mb-2 flex items-center gap-1.5">
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contaminante</p>
@@ -531,6 +605,7 @@ export default function MapaSensors({
   const [showPM25Info, setShowPM25Info] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
   const [showSima, setShowSima] = useState(true);
+  const [municipio, setMunicipio] = useState<string | null>(null); // null = todos
   const [showOccamm, setShowOccamm] = useState(true);
   const [selectedSensor, setSelectedSensor] = useState<{
     sensor: Sensor;
@@ -555,8 +630,33 @@ export default function MapaSensors({
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
 
+  // One entry per municipality that actually has sensors, labelled with its
+  // best spelling and counted so the list says how much each filter holds.
+  const municipios = useMemo(() => {
+    const byKey = new globalThis.Map<string, { key: string; label: string; count: number }>();
+    sensors.forEach((sensor) => {
+      const key = municipioKey(sensor.municipio);
+      if (!key) return;
+      const label = sensor.municipio!.trim();
+      const entry = byKey.get(key);
+      if (!entry) {
+        byKey.set(key, { key, label, count: 1 });
+        return;
+      }
+      entry.count += 1;
+      // Prefer the accented spelling as the label
+      if (/[^\x00-\x7F]/.test(label) && !/[^\x00-\x7F]/.test(entry.label)) entry.label = label;
+    });
+    return Array.from(byKey.values()).sort((a, b) => a.label.localeCompare(b.label, "es"));
+  }, [sensors]);
+
+  const sensorsInMunicipio = useMemo(
+    () => (municipio ? sensors.filter((s) => municipioKey(s.municipio) === municipio) : sensors),
+    [sensors, municipio],
+  );
+
   const nearestSensorData = useMemo(() => {
-    if (!sensors.length || !data.length) return null;
+    if (!sensorsInMunicipio.length || !data.length) return null;
 
     const buildFromSensor = (sensor: Sensor) => {
       const d = data.find((item) => item.sensor_id === sensor.sensor_id);
@@ -568,7 +668,7 @@ export default function MapaSensors({
     };
 
     if (userLocation) {
-      const sorted = [...sensors].sort((a, b) =>
+      const sorted = [...sensorsInMunicipio].sort((a, b) =>
         getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
         getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lon)
       );
@@ -582,16 +682,16 @@ export default function MapaSensors({
     // representative station (San Nicolás: UANL), then fall through to any
     // sensor that has a reading: the card always speaks for a real sensor,
     // never for an area average.
-    const defaultSensor = sensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
+    const defaultSensor = sensorsInMunicipio.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
     const fromDefault = defaultSensor ? buildFromSensor(defaultSensor) : null;
     if (fromDefault) return fromDefault;
 
-    for (const sensor of sensors) {
+    for (const sensor of sensorsInMunicipio) {
       const result = buildFromSensor(sensor);
       if (result) return result;
     }
     return null;
-  }, [userLocation, sensors, data]);
+  }, [userLocation, sensorsInMunicipio, data]);
 
   const areaMedianPm25 = useMemo(() => {
     const values = data
@@ -750,6 +850,7 @@ export default function MapaSensors({
     sensors.forEach((sensor) => {
       const isSima = sensor.source === "sima";
 
+      if (municipio && municipioKey(sensor.municipio) !== municipio) return;
       if (isSima && !showSima) return;
       if (!isSima) {
         const inOccamm = !!sensor.red;
@@ -804,7 +905,7 @@ export default function MapaSensors({
 
       markersRef.current.push(marker);
     });
-  }, [mapLoaded, sensors, data, showOtros, showOccamm, showSima]);
+  }, [mapLoaded, sensors, data, showOtros, showOccamm, showSima, municipio]);
 
   // Cleanup markers when component unmounts
   useEffect(() => {
@@ -970,6 +1071,9 @@ export default function MapaSensors({
             setShowOccamm={setShowOccamm}
             showSima={showSima}
             setShowSima={setShowSima}
+            municipios={municipios}
+            municipio={municipio}
+            setMunicipio={setMunicipio}
             onShowOccammInfo={() => setShowOccammInfo(true)}
             onShowPM25Info={() => setShowPM25Info(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
@@ -1181,6 +1285,9 @@ export default function MapaSensors({
                 setShowOccamm={setShowOccamm}
                 showSima={showSima}
                 setShowSima={setShowSima}
+                municipios={municipios}
+                municipio={municipio}
+                setMunicipio={setMunicipio}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
                 onShowPM25Info={() => setShowPM25Info(true)}
                 onShowFuenteInfo={() => setShowFuenteInfo(true)}
