@@ -430,8 +430,12 @@ function LayersFilterContent({
             <Info className="h-3 w-3" />
           </button>
         </div>
-        <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/50 shadow-sm backdrop-blur-md">
-          <div className={`flex w-full items-center justify-between gap-3 px-4 ${rowPadding}`}>
+        {/* Same material as the Contaminante control above: a soft gray track
+            with each active layer raised on a white pill. The glass panel read
+            as a muddy box, and a bordered white card inside a white card was
+            one frame too many. */}
+        <div className="flex flex-col gap-1 rounded-2xl bg-gray-100/80 p-1">
+          <div className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 ${rowPadding} ${citizenState === 'unchecked' ? '' : 'bg-white shadow-sm'}`}>
             <button type="button" onClick={toggleCitizenGroup} className="flex min-w-0 items-center gap-3">
               <LayerCheckbox state={citizenState} size={boxSize} />
               <span className="text-sm font-semibold text-gray-800">Sensores Ciudadanos</span>
@@ -446,8 +450,8 @@ function LayersFilterContent({
             </button>
           </div>
           {showCitizenGroup && (
-          <div className="flex flex-col border-t border-white/70">
-            <div className={`flex w-full items-center gap-2 pl-11 pr-4 ${subRowPadding}`}>
+          <div className="flex flex-col gap-1">
+            <div className={`ml-6 flex items-center gap-2 rounded-xl px-3 ${subRowPadding} ${showOccamm ? 'bg-white shadow-sm' : ''}`}>
               <button
                 type="button"
                 onClick={() => setShowOccamm((v) => !v)}
@@ -468,7 +472,7 @@ function LayersFilterContent({
             <button
               type="button"
               onClick={() => setShowOtros((v) => !v)}
-              className={`flex w-full items-center gap-3 pl-11 pr-4 ${subRowPadding}`}
+              className={`ml-6 flex items-center gap-3 rounded-xl px-3 ${subRowPadding} ${showOtros ? 'bg-white shadow-sm' : ''}`}
             >
               <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
               <span className="text-sm text-gray-600">Otros</span>
@@ -478,7 +482,7 @@ function LayersFilterContent({
           <button
             type="button"
             onClick={() => setShowSima((v) => !v)}
-            className={`flex w-full items-center gap-3 border-t border-white/70 px-4 ${rowPadding}`}
+            className={`flex w-full items-center gap-3 rounded-xl px-3 ${rowPadding} ${showSima ? 'bg-white shadow-sm' : ''}`}
           >
             <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
             <span className="text-sm font-semibold text-gray-800">Estaciones de Gobierno</span>
