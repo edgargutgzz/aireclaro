@@ -233,11 +233,6 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           )}
         </svg>
       </div>
-      {/* Only the latest reading's time: the window's start is already implied
-          by the "Últimas 48 horas" label and the Ayer/Hoy markers. */}
-      <div className="mt-1 flex items-center justify-end text-[10px] text-gray-400">
-        <span>{formatHistoryTime(data[data.length - 1].time_stamp)}</span>
-      </div>
     </div>
   );
 }
