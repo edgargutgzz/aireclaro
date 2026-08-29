@@ -83,7 +83,7 @@ function formatHistoryTime(dateStr: string) {
   return `${getRelativeDayLabel(date)} ${format(date, "h")}:00 ${format(date, "a")}`;
 }
 
-function Sparkline({ data }: { data: HistoryPoint[] }) {
+function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChange?: (point: HistoryPoint | null) => void }) {
   const svgRef = useRef<SVGSVGElement>(null);
   // useId() contains colons; strip them so the url(#id) reference is safe.
   const gradientId = `spark-${useId().replace(/:/g, "")}`;
@@ -136,12 +136,21 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
     return [{ x: points[i].x, leftPct: (points[i].x / width) * 100, label: getRelativeDayLabel(curr) }];
   });
 
+  const notifyHover = onHoverChange
+    ? (point: HistoryPoint | null) => onHoverChange(point)
+    : undefined;
+
+  const setHover = (index: number | null) => {
+    setHoverIndex(index);
+    notifyHover?.(index === null ? null : data[index]);
+  };
+
   const updateHover = (clientX: number) => {
     const svg = svgRef.current;
     if (!svg) return;
     const rect = svg.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    setHoverIndex(Math.round(ratio * (data.length - 1)));
+    setHover(Math.round(ratio * (data.length - 1)));
   };
 
   // The latest point wears its own air-quality color; the IMECA text tones
@@ -150,7 +159,6 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
   const latestColor = latestQuality?.textColor ?? SPARKLINE_COLOR;
 
   const hovered = hoverIndex !== null ? data[hoverIndex] : null;
-  const hoveredQuality = hovered ? getQualityInfo(hovered.pm25) : null;
   const hoverPoint = hoverIndex !== null ? points[hoverIndex] : null;
   const tooltipLeftPct = hoverPoint ? (hoverPoint.x / width) * 100 : 0;
 
@@ -175,19 +183,9 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
               transform: `translate(-50%, -100%)`,
             }}
           >
-            <span>
-              <span className="font-semibold">{Math.round(hovered.pm25)} μg/m³</span>
-              <span className="ml-1.5 text-gray-300">{formatHistoryTime(hovered.time_stamp)}</span>
-            </span>
-            {hoveredQuality && (
-              /* The color rides a swatch, not the word: the IMECA text colors
-                 are tuned for white and several fall under contrast on this
-                 dark pill. */
-              <span className="mt-0.5 flex items-center gap-1.5 text-[11px] text-gray-100">
-                <span className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: hoveredQuality.color }} />
-                {hoveredQuality.label}
-              </span>
-            )}
+            {/* Only the hour: the card's headline above shows that hour's
+                value and quality while the cursor is on the chart. */}
+            <span className="font-medium">{formatHistoryTime(hovered.time_stamp)}</span>
           </div>
         )}
         <svg
@@ -198,9 +196,9 @@ function Sparkline({ data }: { data: HistoryPoint[] }) {
           preserveAspectRatio="none"
           className="cursor-crosshair"
           onMouseMove={(e) => updateHover(e.clientX)}
-          onMouseLeave={() => setHoverIndex(null)}
+          onMouseLeave={() => setHover(null)}
           onTouchMove={(e) => updateHover(e.touches[0].clientX)}
-          onTouchEnd={() => setHoverIndex(null)}
+          onTouchEnd={() => setHover(null)}
         >
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
@@ -531,6 +529,10 @@ export default function MapaSensors({
   const [showQualitySource, setShowQualitySource] = useState(false);
   const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
+  // Point the cursor is on in the 48h chart. While set, the card's headline
+  // reports that hour instead of the latest reading, so the chart and the big
+  // number never disagree.
+  const [hoveredHistory, setHoveredHistory] = useState<HistoryPoint | null>(null);
   const [locationDenied, setLocationDenied] = useState(false);
   const [showLocationTip, setShowLocationTip] = useState(false);
 
@@ -584,6 +586,8 @@ export default function MapaSensors({
     if (!latest) return null;
     return format(new Date(latest), "h") + ":00 " + format(new Date(latest), "a");
   }, [data]);
+
+  const hoveredQuality = hoveredHistory ? getQualityInfo(hoveredHistory.pm25) : null;
 
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestName = nearestSensorData?.name ?? null;
@@ -811,6 +815,12 @@ export default function MapaSensors({
     });
   }, [nearestSensorData, mapLoaded, sensors, showSima, showOtros, showOccamm, selectedSensor]);
 
+  // A chart that unmounts mid-hover (new sensor picked, history reloaded)
+  // never fires its mouseleave, so drop the stale point explicitly.
+  useEffect(() => {
+    setHoveredHistory(null);
+  }, [sensorHistory, selectedSensor]);
+
   // Close selected sensor on map click
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
@@ -981,17 +991,17 @@ export default function MapaSensors({
                       <div>
                         <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                         <div className="flex items-center justify-between">
-                          <span className="text-2xl font-bold" style={{ color: textColor }}>
-                            {sensorQuality ? sensorQuality.label : "—"}
+                          <span className="text-2xl font-bold" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
+                            {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
                           </span>
-                          {pm25 !== null && (
-                            <span className="text-sm text-gray-400">{roundPM25(pm25)} μg/m³ PM2.5</span>
+                          {(hoveredHistory?.pm25 ?? pm25) !== null && (
+                            <span className="text-sm text-gray-400">{roundPM25(hoveredHistory?.pm25 ?? pm25)} μg/m³ PM2.5</span>
                           )}
                         </div>
                       </div>
                       {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
                       <div>
-                        {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                        {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
                       </div>
                     </div>
                   </div>
@@ -1051,17 +1061,17 @@ export default function MapaSensors({
                     <div>
                       <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
-                          {qualityInfo.label}
+                        <span className="text-2xl font-bold" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
+                          {(hoveredQuality ?? qualityInfo).label}
                         </span>
-                        {displayPm25 !== null && (
-                          <span className="text-sm text-gray-400">{roundPM25(displayPm25)} μg/m³ PM2.5</span>
+                        {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
+                          <span className="text-sm text-gray-400">{roundPM25(hoveredHistory?.pm25 ?? displayPm25)} μg/m³ PM2.5</span>
                         )}
                       </div>
                     </div>
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
                     <div>
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} />}
+                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
                     </div>
                   </div>
                 </div>
@@ -1151,12 +1161,12 @@ export default function MapaSensors({
               >
               <div className="mb-5">
                 <div className="mb-2 flex items-center justify-between">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>
-                    {sensorQuality ? sensorQuality.label : "—"}
+                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
+                    {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
                   </div>
-                  {pm25 !== null && (
+                  {(hoveredHistory?.pm25 ?? pm25) !== null && (
                     <span className="text-sm text-gray-400">
-                      {roundPM25(pm25)} μg/m³ PM2.5
+                      {roundPM25(hoveredHistory?.pm25 ?? pm25)} μg/m³ PM2.5
                     </span>
                   )}
                 </div>
@@ -1276,12 +1286,12 @@ export default function MapaSensors({
             <>
               <div className="mb-5">
                 <div className="mb-2 flex items-center justify-between">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: qualityInfo.textColor }}>
-                    {qualityInfo.label}
+                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
+                    {(hoveredQuality ?? qualityInfo).label}
                   </div>
-                  {displayPm25 !== null && (
+                  {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
                     <span className="text-sm text-gray-400">
-                      {roundPM25(displayPm25)} μg/m³ PM2.5
+                      {roundPM25(hoveredHistory?.pm25 ?? displayPm25)} μg/m³ PM2.5
                     </span>
                   )}
                 </div>
