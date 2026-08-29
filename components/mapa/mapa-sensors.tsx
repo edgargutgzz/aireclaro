@@ -338,6 +338,26 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
   );
 }
 
+// One pollutant at a time, so the control is a radio: a circle, not a box.
+// Same tone and size as LayerCheckbox so the rows still read as one family.
+function LayerRadio({ selected, size }: { selected: boolean; size: number }) {
+  if (!selected) {
+    return (
+      <div
+        style={{ width: size, height: size, borderRadius: '50%', border: '1.5px solid #6b7280', flexShrink: 0 }}
+      />
+    );
+  }
+  return (
+    <div
+      className="flex items-center justify-center shadow-sm"
+      style={{ width: size, height: size, borderRadius: '50%', backgroundColor: '#6b7280', flexShrink: 0 }}
+    >
+      <div style={{ width: Math.round(size / 3), height: Math.round(size / 3), borderRadius: '50%', backgroundColor: '#fff' }} />
+    </div>
+  );
+}
+
 type CheckState = 'checked' | 'indeterminate' | 'unchecked';
 
 // Styled after shadcn/ui's Checkbox (rounded-sm, border always in the
@@ -566,12 +586,13 @@ function LayersFilterContent({
             <Info className="h-3 w-3" />
           </button>
         </div>
-        {/* Same rows as the filters above: white cards on a gray track with a
-            checkbox each. PM2.5 is the only one with data, so the other two
-            answer a tap with "No disponible" instead of switching. */}
+        {/* Same rows as the filters above, but radios: only one pollutant can be
+            shown at a time, and a checkbox would promise otherwise. PM2.5 is
+            the only one with data, so the other two answer a tap with
+            "No disponible" instead of switching. */}
         <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5">
           <div className={`flex items-center gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}>
-            <LayerCheckbox state="checked" size={boxSize} />
+            <LayerRadio selected size={boxSize} />
             <span className="text-sm font-medium text-gray-800">PM2.5</span>
           </div>
           {["PM10", "Ozono"].map((name) => (
@@ -581,7 +602,7 @@ function LayersFilterContent({
                 onClick={() => setUnavailableTooltip(name)}
                 className={`flex w-full items-center gap-3 rounded-xl bg-white px-4 shadow-sm ${rowPadding}`}
               >
-                <LayerCheckbox state="unchecked" size={boxSize} />
+                <LayerRadio selected={false} size={boxSize} />
                 <span className="text-sm font-medium text-gray-400">{name}</span>
               </button>
               {unavailableTooltip === name && (
