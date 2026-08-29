@@ -392,14 +392,19 @@ function InfoDialog({
 
   return (
     <>
-      <div className="dialog-in fixed inset-0 z-[70] bg-black/30 backdrop-blur-sm" onClick={onClose} />
+      {/* The scrim blurs harder than the map panels do, so nothing readable
+          shows through the dialog's own material. */}
+      <div className="dialog-in fixed inset-0 z-[70] bg-black/30 backdrop-blur-md" onClick={onClose} />
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="dialog-in fixed left-1/2 top-1/2 z-[71] flex max-h-[85svh] w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl bg-white p-8 shadow-xl focus:outline-none"
+        /* Glass, like the map panels, but at a higher opacity: this surface
+           carries paragraphs rather than chrome, so contrast wins over
+           transparency. */
+        className="dialog-in fixed left-1/2 top-1/2 z-[71] flex max-h-[85svh] w-[85%] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/90 p-8 shadow-xl backdrop-blur-xl focus:outline-none"
       >
         {/* Header and footer stay put, only the body scrolls: a dismiss button
             that scrolls out of reach is worse than no dismiss button, and long
