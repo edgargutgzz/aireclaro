@@ -455,8 +455,9 @@ function DialogShell({
   );
 }
 
-// The info popups: a titled sheet with the same header, body and dismiss in
-// every one of them.
+// The info popups: a titled sheet with the same header and scrolling body in
+// every one of them. Passive dialogs, in the Carbon sense, they present
+// information and ask for nothing, so there is no footer action.
 function InfoDialog({
   title,
   onClose,
@@ -477,28 +478,30 @@ function InfoDialog({
          transparency. */
       className="flex max-h-[85svh] w-[85%] max-w-md flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/90 p-8 shadow-xl backdrop-blur-xl"
     >
-      {/* Header and footer stay put, only the body scrolls: a dismiss button
-          that scrolls out of reach is worse than no dismiss button, and long
-          content is exactly when you need it. */}
+      {/* The header stays put and only the body scrolls: the X is now the
+          only dismiss control on screen, and a dismiss control that scrolls
+          out of reach is worse than none. Long content is exactly when you
+          need it. */}
       <div className="flex flex-shrink-0 items-start justify-between gap-4 pb-6">
         <h2 id={titleId} className="text-base font-medium text-gray-800">{title}</h2>
         <button
           type="button"
           onClick={onClose}
           aria-label="Cerrar"
-          className="-mr-2 -mt-1 flex-shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          /* gray-500, not gray-400: with no footer button left, this icon is
+             the only visible way out, and gray-400 on white is 2.54:1 against
+             the 3:1 WCAG asks of anything identifying a control. */
+          className="-mr-2 -mt-1 flex-shrink-0 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
+      {/* No footer action. These dialogs present information and ask for
+          nothing, so a full-width primary button that only closes would
+          invent a decision that isn't there, and read as a consent on a
+          definition. The header X, Escape and clicking outside are the
+          three ways out. */}
       <div className="-mx-1 min-h-0 flex-1 overflow-y-auto overscroll-contain px-1">{children}</div>
-      <button
-        type="button"
-        onClick={onClose}
-        className="mt-6 w-full flex-shrink-0 rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-      >
-        Entendido
-      </button>
     </DialogShell>
   );
 }
