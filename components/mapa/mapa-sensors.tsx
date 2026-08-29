@@ -584,8 +584,8 @@ export default function MapaSensors({
     return sorted[Math.floor(sorted.length / 2)];
   }, [data]);
 
-  // Hour of the most recent reading in the dataset — the badge shows the data's
-  // own timestamp instead of a vague "live" claim.
+  // Hour of the most recent reading anywhere in the dataset — the badge's
+  // fallback when no station is on screen to speak for itself.
   const latestDataHour = useMemo(() => {
     if (!data.length) return null;
     const latest = data.reduce((acc, d) => {
@@ -597,6 +597,12 @@ export default function MapaSensors({
   }, [data]);
 
   const hoveredQuality = hoveredHistory ? getQualityInfo(hoveredHistory.pm25) : null;
+
+  // The badge reports whatever the card is showing: the open sensor's own last
+  // reading, else the default station's. Government stations publish every half
+  // hour, so a global "newest reading anywhere" would sit ahead of the station
+  // on screen and make it look stale.
+  const badgeHour = selectedSensor?.timestamp ?? nearestSensorData?.timestamp ?? latestDataHour;
 
   const nearestPm25 = nearestSensorData?.pm25 ?? null;
   const nearestName = nearestSensorData?.name ?? null;
@@ -916,14 +922,14 @@ export default function MapaSensors({
 
       {/* Desktop: data freshness, bottom-left, on the same line as the
           location button on the opposite side. */}
-      {latestDataHour && (
+      {badgeHour && (
         <div className="pointer-events-none absolute bottom-8 left-6 z-10 hidden h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md md:flex">
           <span className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
             <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
             <span className="relative h-2 w-2 rounded-full bg-green-500" />
           </span>
           <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">
-            Última actualización: {latestDataHour}
+            Última actualización: {badgeHour}
           </span>
         </div>
       )}
@@ -1129,14 +1135,14 @@ export default function MapaSensors({
         </div>
 
         {/* Mobile only: on desktop this badge sits above the location button. */}
-        {latestDataHour && (
+        {badgeHour && (
           <div className="flex h-11 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3 shadow-sm backdrop-blur-md md:hidden">
             <span className="relative flex h-2 w-2 flex-shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
             <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">
-              Última actualización: {latestDataHour}
+              Última actualización: {badgeHour}
             </span>
           </div>
         )}
