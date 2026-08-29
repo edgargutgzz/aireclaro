@@ -841,10 +841,9 @@ export default function MapaSensors({
   }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
 
   // Highlight the active marker — the explicitly selected sensor if there is
-  // one, otherwise the nearest/default sensor — with a ring and a pulsing halo
-  // in that sensor's own air-quality tone, the same one the card's headline
-  // wears. No resize, no dimming of the other markers: those read as broken or
-  // as too much, since there is always a default "active" sensor.
+  // one, otherwise the nearest/default sensor — by turning it into a pin,
+  // lifted off the map with a shadow. No dimming of the other markers: it
+  // washes the map out, since there is always a default "active" sensor.
   useEffect(() => {
     if (!mapLoaded) return;
 
@@ -854,22 +853,16 @@ export default function MapaSensors({
         ? sensors.find(s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon)?.sensor_id
         : undefined;
 
-    const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
-    // The ink, not the fill: on a light map the pure IMECA yellow and green
-    // barely register as a ring, while these are the exact tones the card's
-    // quality word uses.
-    const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
-
     markerElementsRef.current.forEach(({ el }, sensorId) => {
       const isActive = sensorId === activeSensorId;
       el.style.animation = '';
+      // Selection is a shape change, not a colour change: the circle becomes a
+      // pin (see globals.css). Colour already means air quality here, so asking
+      // it to also mean "selected" produced concentric bands of the same hue.
       el.classList.toggle('sensor-marker--selected', isActive);
-      el.style.setProperty('--pulse-color', activeColor);
       // Full opacity on the selected one, the rest stay slightly back.
       el.style.opacity = isActive ? '1' : '0.9';
-      el.style.boxShadow = isActive
-        ? `0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px ${activeColor}`
-        : PLAIN_MARKER_SHADOW;
+      el.style.boxShadow = PLAIN_MARKER_SHADOW;
       // Markers stack in DOM order, so in a dense cluster the selected one can
       // sit under its neighbours and lose its ring. Lift it above them.
       const parent = el.parentElement;
