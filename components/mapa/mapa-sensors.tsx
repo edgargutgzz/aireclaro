@@ -380,24 +380,34 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
           rows out of the tab order, so there is still nothing focusable behind
           a closed disclosure. */}
       <div id={bodyId} hidden={!open}>
-        {/* Same material as the Capas panel's Fuente list: a soft gray track
-            with one white row per audience, so the recommendations read as an
-            ordered set rather than a run of paragraphs. */}
-        <div className="disclosure-in mt-4 flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5 md:max-h-[150px] md:overflow-y-auto md:overscroll-contain">
-          <div className="rounded-xl bg-white px-4 py-3.5 shadow-sm">
-            <div className="mb-1 flex items-center gap-2">
+        {/* The Capas panel's grouped-list material: one bordered card, rows
+            divided by hairlines. It used to be a gray track holding floating
+            white pills, on a comment claiming it matched the Fuente list,
+            which had long since stopped being true.
+
+            The material matches; the affordances deliberately do not. Capas
+            rows are controls and carry hover, a focus ring and a chevron.
+            These are content, so they carry none of that: a row that looks
+            pressable but is not is worse than one that looks like text.
+
+            The paragraph is indented to the label's own left edge (ml-7:
+            a 16px icon plus gap-3), the same reasoning behind the ml-11 on
+            Capas' municipality rows, so the icons read as a column. */}
+        <div className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white">
+          <div className="px-4 py-3.5">
+            <div className="mb-1 flex items-center gap-3">
               <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
               <p className="text-sm font-semibold text-gray-800">Población General</p>
             </div>
-            <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
+            <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
           </div>
           {SENSITIVE_GROUPS.map((g) => (
-            <div key={g.key} className="rounded-xl bg-white px-4 py-3.5 shadow-sm">
-              <div className="mb-1 flex items-center gap-2">
+            <div key={g.key} className="border-t border-gray-100 px-4 py-3.5">
+              <div className="mb-1 flex items-center gap-3">
                 <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
                 <p className="text-sm font-semibold text-gray-800">{g.label}</p>
               </div>
-              <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
+              <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
             </div>
           ))}
         </div>
@@ -1657,31 +1667,37 @@ export default function MapaSensors({
 
       {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
           selected. Nav lives in the site-wide header now, not floating here. */}
-      <div className="pointer-events-none absolute right-6 top-6 z-10 hidden flex-col items-start md:flex">
+      {/* bottom-12 like the Capas column opposite it: the card is a fixed ~670px
+          of content, so on a short window it used to run off the bottom edge and
+          through Mapbox's logo and attribution. Bounded here, it keeps its
+          content height until there is not room, then its body scrolls. That is
+          also what lets the recommendations drop their own 150px scroller:
+          one scroll region per panel, not one per block. */}
+      <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-start md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
-        <div className="w-panel-lg">
+        <div className="flex min-h-0 w-panel-lg flex-col">
         {selectedSensor ? (() => {
           const { sensor, pm25, color, textColor } = selectedSensor;
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+            <div className="pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
               {/* Always-visible header */}
               <button
                 type="button"
                 onClick={() => setShowCalidadContent(v => !v)}
                 aria-expanded={showCalidadContent}
                 aria-controls="calidad-card-body"
-                className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
+                className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
               >
                 <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">{sensorName}</span>
                 <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
               </button>
               {/* Kept mounted so aria-controls always resolves; `hidden` keeps
                   the controls inside out of the tab order while it is shut. */}
-              <div id="calidad-card-body" hidden={!showCalidadContent}>
+              <div id="calidad-card-body" hidden={!showCalidadContent} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <div className={`disclosure-in flex flex-col gap-5 px-5 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
                   {/* What kind of source this is, in the Capas panel's own
                       words. A rule underneath closes the group off from the
@@ -1743,14 +1759,14 @@ export default function MapaSensors({
             </div>
           );
         })() : qualityInfo && (
-          <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+          <div className="pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
             {/* Always-visible header */}
             <button
               type="button"
               onClick={() => setShowCalidadContent(v => !v)}
               aria-expanded={showCalidadContent}
               aria-controls="calidad-card-body"
-              className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
+              className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
             >
               <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
                 {nearestName ?? "Zona Metropolitana de Monterrey"}
@@ -1759,7 +1775,7 @@ export default function MapaSensors({
             </button>
             {/* Kept mounted so aria-controls always resolves; `hidden` keeps
                 the controls inside out of the tab order while it is shut. */}
-            <div id="calidad-card-body" hidden={!showCalidadContent}>
+            <div id="calidad-card-body" hidden={!showCalidadContent} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               <div className="disclosure-in flex flex-col gap-5 px-5 pb-0 pt-3">
                 {/* Quality label + PM2.5 — always shown */}
                 <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
