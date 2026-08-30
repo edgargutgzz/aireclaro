@@ -38,16 +38,18 @@
   line-height: 1;
 }
 
-/* The reading prints from detail zoom in, and on whichever single marker is
-   being asked about. Below that the whole basin reads as one value, so eighty
-   printed numbers say nothing the color has not, and the discs overlap too
-   much to tell them apart. It is never lost: every marker carries its reading
-   in its aria-label at every zoom. */
+/* The reading prints from detail zoom in, and on the selected marker at any
+   zoom. Below that the whole basin reads as one value, so eighty printed
+   numbers say nothing the color has not, and the discs overlap too much to
+   tell them apart. Hover deliberately does not print it: passing the cursor
+   over a dense field would flicker numbers on and off under the pointer, and
+   the number belongs to the marker whose reading the card is showing. It is
+   never lost either way: every marker carries its reading in its aria-label at
+   every zoom. */
 .mapa--overview .sensor-marker__dot {
   color: transparent;
 }
 
-.mapa--overview .sensor-marker:hover .sensor-marker__dot,
 .mapa--overview .sensor-marker--selected .sensor-marker__dot {
   color: var(--marker-ink);
 }
