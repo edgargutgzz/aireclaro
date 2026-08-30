@@ -1640,40 +1640,23 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right-side floating controls. bottom-12 rather than bottom-8
-          on both sides: at 32px this row sat flush against Mapbox's logo and
-          attribution, which have to stay legible. */}
-      <div className="pointer-events-none absolute bottom-12 right-6 z-10 hidden md:block">
-        <button
-          type="button"
-          onClick={onLocationClick}
-          disabled={locationStatus === 'locating'}
-          aria-busy={locationStatus === 'locating'}
-          className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:cursor-default"
-        >
-          <Navigation className={`h-4 w-4 flex-shrink-0 transition-colors ${locationIconTone}`} aria-hidden="true" />
-          <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">{locationLabel}</span>
-        </button>
-        {/* Announced separately rather than off the label: a disabled button's
-            own text is not reliably read out when it changes. */}
-        <span role="status" className="sr-only">
-          {locationStatus === 'locating'
-            ? 'Buscando tu ubicación'
-            : userLocation
-              ? 'Ubicación encontrada'
-              : ''}
-        </span>
-      </div>
-
       {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
-          selected. Nav lives in the site-wide header now, not floating here. */}
-      {/* bottom-12 like the Capas column opposite it: the card is a fixed ~670px
-          of content, so on a short window it used to run off the bottom edge and
-          through Mapbox's logo and attribution. Bounded here, it keeps its
-          content height until there is not room, then its body scrolls. That is
-          also what lets the recommendations drop their own 150px scroller:
-          one scroll region per panel, not one per block. */}
-      <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-start md:flex">
+          selected. Nav lives in the site-wide header now, not floating here.
+
+          The exact mirror of the Capas column: top-6 to bottom-12, the panel
+          on top taking whatever height is left, and this side's control, the
+          Ubicación chip, pinned to the bottom of the column with mt-auto.
+
+          Both halves of that matter. The chip used to be its own absolutely
+          positioned box at bottom-12 right-6, which is where the card's
+          bottom edge landed once the card was bounded: same z-10, later in
+          the DOM, so the card painted straight over the control. And because
+          the left column reserves h-10 + gap-2 for its freshness badge while
+          this one reserved nothing, the card also ran 48px lower than the
+          Capas panel beside it. One column with a pinned control fixes both:
+          the two panels now end on the same line because they reserve the
+          same slot, and neither control can be covered by a sibling. */}
+      <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
         {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="flex min-h-0 w-panel-lg flex-col">
@@ -1840,6 +1823,31 @@ export default function MapaSensors({
           </div>
         )}
         </div>{/* end card width wrapper */}
+
+        {/* mt-auto pins it to the bottom of the column, so it holds the same
+            corner whether the card above it is open, shut or absent, exactly
+            as the freshness badge does on the left. */}
+        <div className="flex-shrink-0 md:mt-auto">
+          <button
+            type="button"
+            onClick={onLocationClick}
+            disabled={locationStatus === 'locating'}
+            aria-busy={locationStatus === 'locating'}
+            className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:cursor-default"
+          >
+            <Navigation className={`h-4 w-4 flex-shrink-0 transition-colors ${locationIconTone}`} aria-hidden="true" />
+            <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">{locationLabel}</span>
+          </button>
+          {/* Announced separately rather than off the label: a disabled button's
+              own text is not reliably read out when it changes. */}
+          <span role="status" className="sr-only">
+            {locationStatus === 'locating'
+              ? 'Buscando tu ubicación'
+              : userLocation
+                ? 'Ubicación encontrada'
+                : ''}
+          </span>
+        </div>
       </div>
 
       {/* Left column: layers panel (desktop) with the data-freshness badge under it.
