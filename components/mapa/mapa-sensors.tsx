@@ -346,34 +346,40 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-1.5">
-          <p className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-            Recomendaciones de salud
-          </p>
-          {/* p-1 with a matching negative margin: the glyph keeps the position
-              it had beside the label, but the control gets a real hit area
-              instead of a bare 12px icon. */}
-          <button
-            type="button"
-            onClick={onShowInfo}
-            className="-m-1 -translate-y-px flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-            aria-label="Más información sobre recomendaciones de salud"
-          >
-            <Info aria-hidden="true" className="h-3 w-3" />
-          </button>
-        </div>
-        {/* -mr-1 rather than -m-1: the chevron has to stay on the card's 44px
-            text rail, under the one in the card header. */}
+      {/* The whole row toggles, in the Capas panel's section-row shape: the
+          toggle takes the label and the chevron as one flex-1 control, and
+          the info button trails it on the card's text rail. It used to be a
+          bare 24px chevron beside dead label text, which read as a
+          disclosure header but only answered to the glyph.
+
+          The hover stays a glyph darkening rather than a tint. This header
+          sits on the card's own glass under the body's px-5, like the two
+          headers above it, and neither of those tints; a band here would
+          have to bleed past the padding to read as a row at all. What
+          changes is what triggers it: the whole row, not the icon. */}
+      <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={bodyId}
-          className="-my-1 -mr-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          aria-label={open ? "Ocultar recomendaciones de salud" : "Ver recomendaciones de salud"}
+          className="group -my-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
-          <ChevronRight aria-hidden="true" className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
+          <span className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+            Recomendaciones de salud
+          </span>
+          <ChevronRight aria-hidden="true" className={`ml-auto h-4 w-4 flex-shrink-0 text-gray-400 transition-[color,transform] duration-200 group-hover:text-gray-600 ${open ? 'rotate-90' : ''}`} />
+        </button>
+        {/* p-1 with a matching negative margin: the glyph keeps its optical
+            position, but the control gets a real hit area instead of a bare
+            12px icon. */}
+        <button
+          type="button"
+          onClick={onShowInfo}
+          className="-my-1 -mr-1 -translate-y-px flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          aria-label="Más información sobre recomendaciones de salud"
+        >
+          <Info aria-hidden="true" className="h-3 w-3" />
         </button>
       </div>
       {/* Kept mounted so aria-controls always resolves. `hidden` also takes the
@@ -1958,8 +1964,10 @@ export default function MapaSensors({
                   )}
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowSensorDetail(v => !v)}
-                  className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
+                  aria-expanded={showSensorDetail}
+                  className="flex min-w-0 w-full items-center gap-1.5 rounded-lg text-sm text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 >
                   <span className="truncate">{isSima ? "Estación" : "Sensor"}: {sensorName}</span>
                   <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-90' : ''}`} />
@@ -2098,8 +2106,10 @@ export default function MapaSensors({
                   )}
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowNearestDetail(v => !v)}
-                  className="flex min-w-0 w-full items-center gap-1.5 text-sm text-gray-400"
+                  aria-expanded={showNearestDetail}
+                  className="flex min-w-0 w-full items-center gap-1.5 rounded-lg text-sm text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 >
                   <span className="truncate">
                     {nearestName
