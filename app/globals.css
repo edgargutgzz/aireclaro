@@ -18,11 +18,26 @@
    transform, not the marker element's. */
 .sensor-marker {
   position: relative;
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
+  font-weight: 700;
+  /* One transform for the whole marker, so the dot, its rings and the number
+     scale together and stay in proportion. --marker-scale is set by zoom on
+     the map root; hover multiplies it rather than replacing it. */
+  transform: scale(var(--marker-scale, 1));
   transition: transform 0.15s ease;
 }
 
 .sensor-marker:hover {
-  transform: scale(1.12);
+  transform: scale(calc(var(--marker-scale, 1) * 1.12));
+}
+
+/* Metro-wide zooms: 32px instead of 40px, which is the difference between a
+   legible field and a solid mass in the Monterrey core. Full size returns
+   before the number is close enough to read. */
+.mapa--dense {
+  --marker-scale: 0.8;
 }
 
 /* The one deliberate departure from the house ring. ring-gray-900/15 is tuned

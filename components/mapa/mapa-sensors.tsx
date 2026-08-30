@@ -6,7 +6,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, markerShadow, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, markerShadow, markerZIndex, ACTIVE_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -54,6 +54,11 @@ const SPARKLINE_COLOR = "#3b82f6";
 // Shown as the default "Calidad del aire" station when the visitor hasn't
 // shared their location (Monterrey: Obispado).
 const DEFAULT_SENSOR_ID = "CE";
+
+// Below this zoom the markers take their compact scale. 10.5 is where the map
+// opens without a shared location and 14 where it lands on a sensor, so the
+// threshold sits between the overview and the neighbourhood view.
+const MARKER_DENSE_MAX_ZOOM = 12;
 
 
 // What kind of source this is first, in the same words the Capas panel uses,
@@ -975,7 +980,7 @@ export default function MapaSensors({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; dot: HTMLElement; ink: string }>());
+  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; dot: HTMLElement; ink: string; z: number }>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -1395,6 +1400,26 @@ export default function MapaSensors({
       .addTo(map.current);
   }, [userLocation, mapLoaded, flyToUser]);
 
+  // Marker size follows zoom. At metro-wide zooms the sensor field is dense
+  // enough that full-size circles overlap into one unreadable mass, and the
+  // marker is doing a locator's job; from neighbourhood zoom in there is room
+  // and the number is what is actually being read. Two buckets rather than a
+  // continuous ramp, so markers are not resizing on every frame of a flyTo.
+  useEffect(() => {
+    const mapInstance = map.current;
+    const root = mapContainer.current;
+    if (!mapLoaded || !mapInstance || !root) return;
+
+    const applyDensity = () =>
+      root.classList.toggle("mapa--dense", (mapInstance as any).getZoom() < MARKER_DENSE_MAX_ZOOM);
+
+    applyDensity();
+    mapInstance.on("zoom", applyDensity);
+    return () => {
+      (mapInstance as any).off("zoom", applyDensity);
+    };
+  }, [mapLoaded]);
+
   // Add sensors when both map and data are ready
   useEffect(() => {
     if (!mapLoaded || !map.current || !sensors.length || !data.length) {
@@ -1449,6 +1474,7 @@ export default function MapaSensors({
         el: markerElement,
         dot: markerElement.querySelector(".sensor-marker__dot") as HTMLElement,
         ink: textColor,
+        z: markerZIndex(latestData?.pm25 ?? null),
       });
 
       const marker = new Marker({ element: markerElement })
@@ -1520,15 +1546,16 @@ export default function MapaSensors({
     const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
     const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
 
-    markerElementsRef.current.forEach(({ el, dot, ink }, sensorId) => {
+    markerElementsRef.current.forEach(({ el, dot, ink, z }, sensorId) => {
       const isActive = sensorId === activeSensorId;
       el.classList.toggle('sensor-marker--selected', isActive);
       el.style.setProperty('--pulse-color', activeColor);
       dot.style.boxShadow = isActive ? markerShadow(ink, activeColor) : markerShadow(ink);
-      // Markers stack in DOM order, so in a dense cluster the selected one can
-      // sit under its neighbours and lose its ring. Lift it above them.
-      const parent = el.parentElement;
-      if (parent) parent.style.zIndex = isActive ? '1' : '';
+      // Above every level while selected, back onto its own severity when not.
+      // This used to write to el.parentElement, which mapbox shares between all
+      // markers, so it set and unset one node once per marker and the active
+      // one was only ever lifted if it happened to be iterated last.
+      el.style.zIndex = (isActive ? ACTIVE_MARKER_Z : z).toString();
     });
   }, [nearestSensorData, mapLoaded, sensors, data, showSima, showOtros, showOccamm, selectedSensor]);
 

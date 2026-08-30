@@ -33,6 +33,21 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
   return { bg: level.color, text: level.ink };
 };
 
+// Markers are siblings in one container (mapbox appends every custom element
+// straight into the canvas container) and so paint in DOM order, which means a
+// Buena reading added late can cover a Muy mala one. Stack by level instead:
+// the worse the air, the higher it sits, so the reading that matters is the one
+// left visible and the one a tap in a crowded cluster lands on. Deliberately
+// tiny numbers — 1 to 5, and 6 for the active marker — so marker stacking can
+// never climb over the map's floating panels at z-10.
+export const ACTIVE_MARKER_Z = 6;
+
+export const markerZIndex = (pm25: number | null): number => {
+  if (pm25 === null || pm25 <= 0.4) return 0;
+  const i = IMECA_LEVELS.findIndex((level) => pm25 <= level.limit);
+  return (i === -1 ? IMECA_LEVELS.length - 1 : i) + 1;
+};
+
 // The marker's rim, in one place so the resting and selected states cannot
 // drift apart. Innermost is a hairline in the level's own ink: Buena and
 // Aceptable are lighter than most of the basemap and dissolve into pale
@@ -66,8 +81,7 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   el.style.padding = "0";
   el.style.background = "none";
   el.style.fontFamily = "inherit";
-  el.style.width = "40px";
-  el.style.height = "40px";
+  el.style.zIndex = markerZIndex(pm25).toString();
 
   const pulse = document.createElement("span");
   pulse.className = "sensor-marker__pulse";
@@ -83,8 +97,6 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   dot.style.boxShadow = markerShadow(level.ink);
   dot.textContent = Math.round(pm25!).toString();
   dot.style.color = level.markerInk;
-  dot.style.fontSize = "12px";
-  dot.style.fontWeight = "700";
   el.appendChild(dot);
 
   return el;
