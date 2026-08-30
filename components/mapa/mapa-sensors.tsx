@@ -156,7 +156,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   if (data.length < 2) {
-    return <p className="text-xs text-gray-400">Sin datos suficientes para mostrar la tendencia</p>;
+    return <p className="text-sm leading-relaxed text-gray-500">Sin datos suficientes para mostrar la tendencia</p>;
   }
 
   const width = 320;
@@ -234,7 +234,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
         {dayBoundaries.map((b) => (
           <div
             key={b.x}
-            className="pointer-events-none absolute -translate-x-1/2 whitespace-nowrap rounded bg-white/80 px-1 text-[10px] font-medium text-gray-400"
+            className="pointer-events-none absolute -translate-x-1/2 whitespace-nowrap rounded bg-white/80 px-1 text-[10px] font-medium leading-none text-gray-500"
             style={{ left: `${b.leftPct}%`, top: 1 }}
           >
             {b.label}
@@ -242,7 +242,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
         ))}
         {hovered && hoverPoint && (
           <div
-            className="pointer-events-none absolute z-10 flex flex-col whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-xs text-white shadow-sm"
+            className="pointer-events-none absolute z-20 flex flex-col whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm"
             style={{
               left: `clamp(70px, ${tooltipLeftPct}%, calc(100% - 70px))`,
               top: -6,
@@ -291,7 +291,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           )}
         </svg>
       </div>
-      <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] leading-none text-gray-400">
+      <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] leading-none text-gray-500">
         <span>Últimas 48 horas</span>
         <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
@@ -299,7 +299,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
   );
 }
 
-// Matches Sparkline's layout (header row, chart area, footer row) so there's
+// Matches Sparkline's layout (chart area, then the footer row) so there's
 // no layout shift once the real data replaces it.
 // A generic wavy line + fill, drawn in gray, so the loading state actually
 // reads as "a chart" instead of a plain flat rectangle.
@@ -308,13 +308,13 @@ const SKELETON_PATH = "M0,150 L20,130 L40,142 L60,95 L80,108 L100,72 L120,90 L14
 function SparklineSkeleton() {
   return (
     <div>
-      <div className="mb-2 flex items-center text-xs font-medium leading-none text-gray-400">
-        Últimas 48 horas
-      </div>
-      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="h-[190px] animate-pulse md:h-[210px]">
+      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="h-[190px] animate-pulse motion-reduce:animate-none md:h-[210px]" aria-hidden="true">
         <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
         <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
       </svg>
+      <div className="mt-1.5 flex items-center text-[11px] leading-none text-gray-500">
+        Últimas 48 horas
+      </div>
     </div>
   );
 }
@@ -331,6 +331,8 @@ const SENSITIVE_GROUPS = [
 // text on the card's own surface, no nested card or filled blocks.
 function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShowInfo: () => void }) {
   const [open, setOpen] = useState(false);
+  // useId() contains colons, which are not valid in an id fragment reference.
+  const bodyId = `health-recs-${useId().replace(/:/g, "")}`;
 
   return (
     <div>
@@ -339,32 +341,42 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
           <p className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
             Recomendaciones de salud
           </p>
+          {/* p-1 with a matching negative margin: the glyph keeps the position
+              it had beside the label, but the control gets a real hit area
+              instead of a bare 12px icon. */}
           <button
             type="button"
             onClick={onShowInfo}
-            className="-translate-y-px flex-shrink-0 rounded-full text-gray-400 transition-colors hover:text-gray-600"
+            className="-m-1 -translate-y-px flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
             aria-label="Más información sobre recomendaciones de salud"
           >
-            <Info className="h-3 w-3" />
+            <Info aria-hidden="true" className="h-3 w-3" />
           </button>
         </div>
+        {/* -mr-1 rather than -m-1: the chevron has to stay on the card's 44px
+            text rail, under the one in the card header. */}
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex-shrink-0 text-gray-400 transition-colors hover:text-gray-600"
+          aria-expanded={open}
+          aria-controls={bodyId}
+          className="-my-1 -mr-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           aria-label={open ? "Ocultar recomendaciones de salud" : "Ver recomendaciones de salud"}
         >
-          <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
+          <ChevronRight aria-hidden="true" className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
         </button>
       </div>
-      {open && (
-        /* Same material as the Capas panel's Fuente list: a soft gray track
-           with one white row per audience, so the recommendations read as an
-           ordered set rather than a run of paragraphs. */
-        <div className="mt-4 flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5 md:max-h-[150px] md:overflow-y-auto">
+      {/* Kept mounted so aria-controls always resolves. `hidden` also takes the
+          rows out of the tab order, so there is still nothing focusable behind
+          a closed disclosure. */}
+      <div id={bodyId} hidden={!open}>
+        {/* Same material as the Capas panel's Fuente list: a soft gray track
+            with one white row per audience, so the recommendations read as an
+            ordered set rather than a run of paragraphs. */}
+        <div className="disclosure-in mt-4 flex flex-col gap-1.5 rounded-2xl bg-gray-100/80 p-1.5 md:max-h-[150px] md:overflow-y-auto md:overscroll-contain">
           <div className="rounded-xl bg-white px-4 py-3.5 shadow-sm">
             <div className="mb-1 flex items-center gap-2">
-              <UsersRound className="h-4 w-4 flex-shrink-0 text-gray-400" />
+              <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
               <p className="text-sm font-semibold text-gray-800">Población General</p>
             </div>
             <p className="text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
@@ -372,14 +384,14 @@ function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShow
           {SENSITIVE_GROUPS.map((g) => (
             <div key={g.key} className="rounded-xl bg-white px-4 py-3.5 shadow-sm">
               <div className="mb-1 flex items-center gap-2">
-                <g.icon className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
                 <p className="text-sm font-semibold text-gray-800">{g.label}</p>
               </div>
               <p className="text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
             </div>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -1648,139 +1660,157 @@ export default function MapaSensors({
             <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
               {/* Always-visible header */}
               <button
+                type="button"
                 onClick={() => setShowCalidadContent(v => !v)}
-                className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
+                aria-expanded={showCalidadContent}
+                aria-controls="calidad-card-body"
+                className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
               >
-                <span className="truncate text-base font-medium text-gray-700">{sensorName}</span>
-                <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
+                <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">{sensorName}</span>
+                <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
               </button>
-              {showCalidadContent && (
-                <>
-                  <div className="flex flex-col gap-5 px-5 pb-0 pt-3">
-                    {/* What kind of source this is, in the Capas panel's own
-                        words. A rule underneath closes the group off from the
-                        reading below: a card or a filled row is too much
-                        furniture for a single line. */}
-                    <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
-                      <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-400">
-                        {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon className="h-3.5 w-3.5 flex-shrink-0" />; })()}
-                        <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
-                      </span>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex flex-shrink-0 items-center gap-1 text-sm leading-none text-gray-400 transition-colors hover:text-gray-600"
-                        aria-label="Copiar coordenadas"
-                      >
-                        {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                        <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                      </button>
-                    </div>
-
-                    {/* Reading now and the last 48h are one story: the big
-                        number is just the newest point on the chart below it. */}
-                    <div className="flex flex-col gap-3">
-                      <div>
-                        <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-2xl font-bold" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
-                            {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
-                          </span>
-                          {(hoveredHistory?.pm25 ?? pm25) !== null && (
-                            <span className="text-sm text-gray-400">{roundPM25(hoveredHistory?.pm25 ?? pm25)} μg/m³ PM2.5</span>
-                          )}
-                        </div>
-                      </div>
-                      {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
-                      <div>
-                        {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
-                      </div>
-                    </div>
+              {/* Kept mounted so aria-controls always resolves; `hidden` keeps
+                  the controls inside out of the tab order while it is shut. */}
+              <div id="calidad-card-body" hidden={!showCalidadContent}>
+                <div className={`disclosure-in flex flex-col gap-5 px-5 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
+                  {/* What kind of source this is, in the Capas panel's own
+                      words. A rule underneath closes the group off from the
+                      reading below: a card or a filled row is too much
+                      furniture for a single line. */}
+                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
+                    <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
+                      {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
+                      <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                      aria-label="Copiar coordenadas"
+                    >
+                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                    </button>
                   </div>
 
-                  {/* Recommendations — collapsed by default, not needed for a data-first platform */}
-                  {sensorQuality && (
-                    <div className="relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
-                      <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
+                  {/* Reading now and the last 48h are one story: the big
+                      number is just the newest point on the chart below it. */}
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
+                          {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
+                        </span>
+                        {/* The chips' idiom: the number is the value and
+                            carries gray-700, the unit is the quiet half. */}
+                        {(hoveredHistory?.pm25 ?? pm25) !== null && (
+                          <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
+                            <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? pm25)}</span> μg/m³ PM2.5
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </>
-              )}
+                    {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
+                    <div>
+                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recommendations — collapsed by default, not needed for a data-first platform */}
+                {sensorQuality && (
+                  <div className="disclosure-in relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
+                    <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
+                  </div>
+                )}
+              </div>
+              <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
             </div>
           );
         })() : qualityInfo && (
           <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
             {/* Always-visible header */}
             <button
+              type="button"
               onClick={() => setShowCalidadContent(v => !v)}
-              className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3"
+              aria-expanded={showCalidadContent}
+              aria-controls="calidad-card-body"
+              className="flex w-full items-center justify-between gap-3 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
             >
-              <span className="truncate text-base font-medium text-gray-700">
+              <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
                 {nearestName ?? "Zona Metropolitana de Monterrey"}
               </span>
-              <ChevronRight className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
+              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
             </button>
-            {showCalidadContent && (
-              <>
-                <div className="flex flex-col gap-5 px-5 pb-0 pt-3">
-                  {/* Quality label + PM2.5 — always shown */}
-                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
-                    <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-400">
-                      {nearestName && (() => { const SourceIcon = getSourceIcon(Boolean(nearestIsSima)); return <SourceIcon className="h-3.5 w-3.5 flex-shrink-0" />; })()}
-                      <span className="truncate">
-                        {nearestName
-                          ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
-                          : "Promedio de la Zona Metropolitana de Monterrey"}
-                      </span>
+            {/* Kept mounted so aria-controls always resolves; `hidden` keeps
+                the controls inside out of the tab order while it is shut. */}
+            <div id="calidad-card-body" hidden={!showCalidadContent}>
+              <div className="disclosure-in flex flex-col gap-5 px-5 pb-0 pt-3">
+                {/* Quality label + PM2.5 — always shown */}
+                <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
+                  <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
+                    {nearestName && (() => { const SourceIcon = getSourceIcon(Boolean(nearestIsSima)); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
+                    <span className="truncate">
+                      {nearestName
+                        ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
+                        : "Promedio de la Zona Metropolitana de Monterrey"}
                     </span>
-                    {nearestLat !== null && nearestLon !== null && (
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex flex-shrink-0 items-center gap-1 text-sm leading-none text-gray-400 transition-colors hover:text-gray-600"
-                        aria-label="Copiar coordenadas"
-                      >
-                        {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                        <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                      </button>
-                    )}
-                  </div>
+                  </span>
+                  {nearestLat !== null && nearestLon !== null && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                      aria-label="Copiar coordenadas"
+                    >
+                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                    </button>
+                  )}
+                </div>
 
-                  <div className="flex flex-col gap-3">
-                    <div>
-                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
-                          {(hoveredQuality ?? qualityInfo).label}
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
+                        {(hoveredQuality ?? qualityInfo).label}
+                      </span>
+                      {/* The chips' idiom: the number is the value and
+                          carries gray-700, the unit is the quiet half. */}
+                      {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
+                        <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
+                          <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? displayPm25)}</span> μg/m³ PM2.5
                         </span>
-                        {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
-                          <span className="text-sm text-gray-400">{roundPM25(hoveredHistory?.pm25 ?? displayPm25)} μg/m³ PM2.5</span>
-                        )}
-                      </div>
+                      )}
                     </div>
-                    {/* Trend sparkline — only with a station behind it: the
-                        metro-wide reading is a median across sensors and has
-                        no single 48h series to plot. */}
-                    {nearestName && (
-                      <div>
-                        {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
-                      </div>
-                    )}
                   </div>
+                  {/* Trend sparkline — only with a station behind it: the
+                      metro-wide reading is a median across sensors and has
+                      no single 48h series to plot. */}
+                  {nearestName && (
+                    <div>
+                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
+                    </div>
+                  )}
                 </div>
+              </div>
 
-                {/* Recommendations — collapsed by default, not needed for a data-first platform */}
-                <div className="relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
-                  <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} />
-                </div>
-              </>
-            )}
+              {/* Recommendations — collapsed by default, not needed for a data-first platform */}
+              <div className="disclosure-in relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
+                <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} />
+              </div>
+            </div>
+            <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
           </div>
         )}
         </div>{/* end card width wrapper */}
