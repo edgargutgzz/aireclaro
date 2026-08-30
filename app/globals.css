@@ -14,68 +14,41 @@
   animation: colorCycle 6s ease-in-out infinite;
 }
 
-/* Map markers.
+/* Map markers. One size at every zoom, 40px.
 
    Sizing is width/height, never transform: mapbox rewrites
    element.style.transform on every map move to position the marker, and an
    inline style beats this stylesheet, so anything transform-based here is
    silently dead. That is why the hover grow lives on the dot, which mapbox
    does not touch. The anchor half of mapbox's transform is translate(-50%,
-   -50%), a percentage of the element's own box, so changing width/height
-   re-centres on its own. */
+   -50%), a percentage of the element's own box, so the marker centres itself.
+
+   Sizing by zoom was tried and taken back out: shrinking the disc at metro
+   zoom quietened the field, but it cost the marker its identity, reading as
+   basemap furniture rather than as a sensor. The loudness it was aimed at is
+   a basemap problem, and the basemap is where to spend it. */
 .sensor-marker {
   position: relative;
-  /* The hit target, which is deliberately not the same thing as the disc. The
-     disc is sized by tier below; this only ever grows to meet it, and never
-     falls under the 24px minimum target size, so shrinking the marker at
-     overview zoom cannot shrink what a finger has to land on. */
-  width: max(var(--marker-size, 40px), 24px);
-  height: max(var(--marker-size, 40px), 24px);
+  width: 40px;
+  height: 40px;
   /* Micro numbers, per the type scale. This was 12px/700, which is hero-metric
      weight on a 40px disc. */
   font-size: 11px;
   font-weight: 500;
   line-height: 1;
-  transition: width 0.15s ease, height 0.15s ease;
 }
 
-/* Three tiers, because a marker is doing a different job at each. Metro-wide
-   it is one sample in a field, and eighty saturated discs at reading size bury
-   the city they are describing; the official colors are legend swatches, sized
-   for a chip, and the honest way to keep them at full fidelity is to spend
-   less area on them rather than to dilute the hue. Mid-zoom it is a place.
-   Only at detail zoom is it a readout, and only there does it earn 40px, the
-   number, and a drop shadow. Eighty drop shadows overlapping is most of the
-   grey haze over the basin, so the overview tier drops it entirely.
-
-   The overview disc is 22px, not the 14px first tried: at 14 it stopped
-   reading as a sensor and became map furniture, indistinguishable from the
-   basemap's own dots, and the white ring had no room to separate it from the
-   terrain. 22px keeps the field quiet without giving up what it is. */
-.mapa--overview {
-  --marker-size: 22px;
-  --marker-ring: 2px;
-  --marker-drop: 0 0 0 rgba(0, 0, 0, 0);
-}
-
-.mapa--mid {
-  --marker-size: 30px;
-  --marker-ring: 2.5px;
-  --marker-drop: 0 1px 4px rgba(0, 0, 0, 0.18);
-}
-
-/* The reading prints only at detail zoom, and on whichever single marker is
-   being asked about. It is never lost: every marker carries it in its
-   aria-label at every zoom. */
-.mapa--overview .sensor-marker__dot,
-.mapa--mid .sensor-marker__dot {
+/* The reading prints from detail zoom in, and on whichever single marker is
+   being asked about. Below that the whole basin reads as one value, so eighty
+   printed numbers say nothing the color has not, and the discs overlap too
+   much to tell them apart. It is never lost: every marker carries its reading
+   in its aria-label at every zoom. */
+.mapa--overview .sensor-marker__dot {
   color: transparent;
 }
 
 .mapa--overview .sensor-marker:hover .sensor-marker__dot,
-.mapa--mid .sensor-marker:hover .sensor-marker__dot,
-.mapa--overview .sensor-marker--selected .sensor-marker__dot,
-.mapa--mid .sensor-marker--selected .sensor-marker__dot {
+.mapa--overview .sensor-marker--selected .sensor-marker__dot {
   color: var(--marker-ink);
 }
 
@@ -89,25 +62,20 @@
   border-radius: 50%;
 }
 
-/* The circle itself. Painted after the pulse, so it always covers it. It is
-   sized and centred independently of the button, so the disc can shrink at
-   overview zoom while the target around it holds. The rim grows outward from
-   the border box, so --marker-size is the colored area and the rings sit
-   outside it. */
+/* The circle itself. Painted after the pulse, so it always covers it. The rim
+   grows outward from the border box: a hairline in the level's own ink, since
+   Buena and Aceptable are lighter than most of the basemap and dissolve into
+   pale terrain without it, then the white ring, then the drop shadow. */
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
-  margin: auto;
-  width: var(--marker-size, 40px);
-  height: var(--marker-size, 40px);
   color: var(--marker-ink);
   box-shadow:
     0 0 0 1px var(--marker-edge),
-    0 0 0 var(--marker-ring, 3px) #fff,
-    var(--marker-drop, 0 2px 8px rgba(0, 0, 0, 0.25));
+    0 0 0 3px #fff,
+    0 2px 8px rgba(0, 0, 0, 0.25);
   transform: scale(var(--dot-scale, 1));
-  transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease,
-    width 0.15s ease, height 0.15s ease;
+  transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .sensor-marker:hover .sensor-marker__dot {
@@ -117,8 +85,8 @@
 .sensor-marker--selected .sensor-marker__dot {
   box-shadow:
     0 0 0 1px var(--marker-edge),
-    0 0 0 calc(var(--marker-ring, 3px) + 1px) #fff,
-    0 0 0 calc(var(--marker-ring, 3px) + 3px) var(--pulse-color),
+    0 0 0 4px #fff,
+    0 0 0 6px var(--pulse-color),
     0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
@@ -126,10 +94,7 @@
    in that sensor's air-quality tone. */
 .sensor-marker__pulse {
   position: absolute;
-  inset: 0;
-  margin: auto;
-  width: calc(var(--marker-size, 40px) * 1.3);
-  height: calc(var(--marker-size, 40px) * 1.3);
+  inset: -6px;
   border-radius: 50%;
   background: var(--pulse-color, #3b82f6);
   opacity: 0;

@@ -56,15 +56,11 @@ const SPARKLINE_COLOR = "#3b82f6";
 const DEFAULT_SENSOR_ID = "CE";
 
 // Where the markers stop being locators and start being readouts: below this
-// they are plain dots, at or above it they print their reading. 14 is the zoom
-// flyTo already uses when it lands on a sensor, so the number appears exactly
-// when the map has taken you to one.
+// they are bare colored discs, at or above it they print their reading. 14 is
+// the zoom flyTo already uses when it lands on a sensor, so the number appears
+// exactly when the map has taken you to one.
 const MARKER_DETAIL_MIN_ZOOM = 14;
 
-// And where it stops being one sample in a field and becomes a place. Below
-// this the markers are a point cloud; the basemap has to stay legible under
-// them or the map has lost the reason it is a map.
-const MARKER_MID_MIN_ZOOM = 12;
 
 
 // What kind of source this is first, in the same words the Capas panel uses,
@@ -1409,23 +1405,18 @@ export default function MapaSensors({
       .addTo(map.current);
   }, [userLocation, mapLoaded, flyToUser]);
 
-  // Marker size and the printed reading both follow zoom, together, because
-  // they are the same decision: the disc is only sized to carry a number while
-  // it is carrying one. Two buckets rather than a continuous ramp, so markers
-  // are not resizing on every frame of a flyTo.
+  // The printed reading follows zoom. One class rather than a per-marker style,
+  // so a zoom event touches one node instead of eighty.
   useEffect(() => {
     const mapInstance = map.current;
     const root = mapContainer.current;
     if (!mapLoaded || !mapInstance || !root) return;
 
-    const applyDensity = () => {
-      const zoom = (mapInstance as any).getZoom();
-      root.classList.toggle("mapa--overview", zoom < MARKER_MID_MIN_ZOOM);
+    const applyDensity = () =>
       root.classList.toggle(
-        "mapa--mid",
-        zoom >= MARKER_MID_MIN_ZOOM && zoom < MARKER_DETAIL_MIN_ZOOM,
+        "mapa--overview",
+        (mapInstance as any).getZoom() < MARKER_DETAIL_MIN_ZOOM,
       );
-    };
 
     applyDensity();
     mapInstance.on("zoom", applyDensity);
