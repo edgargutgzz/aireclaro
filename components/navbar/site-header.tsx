@@ -22,19 +22,28 @@ export default function SiteHeader() {
           padding of its own, so at px-6 it sat alone on the 24px rail, 20px
           left of every piece of text on the page and visibly outdented against
           "Capas" directly below it. pl-11 puts it on the text rail, which also
-          makes the bar's two optical insets match at 44px. */}
+          makes the bar's two optical insets match at 44px.
+
+          The logo then takes a 2px overshoot on top of that rail. Measured, the
+          two sides already agree: the logo's ink starts at 43.8px and "Mapa"
+          ends at 45.4px, the same inset "Capas" reads at. But the logo leads
+          with a round mark ~26px across, and a circle sitting exactly on a rail
+          reads as pulled inward, the way a round glyph does against a flat
+          stem. -ml-0.5 lands the badge's tangent at 42px so its optical centre
+          reads at 44. Artwork on a rail gets the overshoot; text sits on the
+          rail exactly. */}
       <div className="flex w-full items-center justify-between pl-11 pr-6">
         <Link
           href="/"
-          className="rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="-ml-0.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           <Image
             src="/occamm-logo.png"
             alt="OCCAMM, Observatorio del Aire"
-            width={150}
-            height={28}
+            width={140}
+            height={26}
             priority
-            className="h-[27.5px] w-[150px]"
+            className="h-[26px] w-[140px]"
           />
         </Link>
         <nav aria-label="Principal">
