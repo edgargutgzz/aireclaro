@@ -592,7 +592,17 @@ function InfoDialog({
           invent a decision that isn't there, and read as a consent on a
           definition. The header X, Escape and clicking outside are the
           three ways out. */}
-      <div className="-mx-1 min-h-0 flex-1 overflow-y-auto overscroll-contain px-1">{children}</div>
+      {/* `grow basis-auto`, not `flex-1`. The UA stylesheet gives <dialog>
+          `height: fit-content` and we only ever set a max-height, so this
+          column's height is intrinsic, sized from its items' hypothetical
+          heights. `flex-1` is `flex: 1 1 0%`, whose hypothetical height is
+          zero, so the body contributes nothing to the dialog and can end up
+          laid out at 0px, with the dialog's own overflow-hidden clipping the
+          copy away: header visible, body blank, which is what iOS Safari did
+          to the Recomendaciones popup. With `basis-auto` the base size is the
+          content, so it cannot collapse; `min-h-0` and the default shrink
+          still let it give way and scroll once the content passes 85svh. */}
+      <div className="-mx-1 min-h-0 grow basis-auto overflow-y-auto overscroll-contain px-1">{children}</div>
     </DialogShell>
   );
 }
