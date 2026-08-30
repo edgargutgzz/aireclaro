@@ -20,8 +20,12 @@
   position: relative;
   width: 40px;
   height: 40px;
-  font-size: 12px;
-  font-weight: 700;
+  /* Micro numbers, per the type scale. This was 12px/700, which is hero-metric
+     weight on a 40px disc: sixty of them turned the basin into the loudest
+     thing on the map, louder than the road labels under it. */
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
   /* One transform for the whole marker, so the dot, its rings and the number
      scale together and stay in proportion. --marker-scale is set by zoom on
      the map root; hover multiplies it rather than replacing it. */
@@ -33,11 +37,23 @@
   transform: scale(calc(var(--marker-scale, 1) * 1.12));
 }
 
-/* Metro-wide zooms: 32px instead of 40px, which is the difference between a
-   legible field and a solid mass in the Monterrey core. Full size returns
-   before the number is close enough to read. */
-.mapa--dense {
-  --marker-scale: 0.8;
+/* Below the detail zoom the whole basin reads as one value, so sixty printed
+   numbers say nothing the color has not already said, and they cannot be told
+   apart anyway once the discs overlap. The marker drops to a 28px dot: it only
+   needs to be big enough to hold a number when it is showing one. The reading
+   itself is never lost — it stays in each marker's aria-label at every zoom,
+   and hover or selection brings it back on the one marker being asked about. */
+.mapa--overview {
+  --marker-scale: 0.7;
+}
+
+.mapa--overview .sensor-marker__dot {
+  color: transparent;
+}
+
+.mapa--overview .sensor-marker:hover .sensor-marker__dot,
+.mapa--overview .sensor-marker--selected .sensor-marker__dot {
+  color: var(--marker-ink);
 }
 
 /* The one deliberate departure from the house ring. ring-gray-900/15 is tuned
@@ -54,7 +70,8 @@
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
-  transition: box-shadow 0.15s ease;
+  color: var(--marker-ink);
+  transition: box-shadow 0.15s ease, color 0.15s ease;
 }
 
 /* The halo, expanding out from behind the circle while a sensor is selected,

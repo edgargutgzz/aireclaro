@@ -9,7 +9,9 @@
 // marker's own PM2.5 number wears *on* that level's fill: near-black on the
 // four light levels, white only on purple. It is the one pairing that clears
 // 4.5:1 on every fill, and the number is the marker's second channel, so it
-// has to survive without color.
+// has to survive without color. It is set as a custom property rather than an
+// inline color so the stylesheet can retract the number at overview zooms
+// without an !important fight.
 export const IMECA_LEVELS = [
   { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200", markerInk: "#030712" },
   { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000", markerInk: "#030712" },
@@ -96,7 +98,7 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   dot.style.justifyContent = "center";
   dot.style.boxShadow = markerShadow(level.ink);
   dot.textContent = Math.round(pm25!).toString();
-  dot.style.color = level.markerInk;
+  dot.style.setProperty("--marker-ink", level.markerInk);
   el.appendChild(dot);
 
   return el;

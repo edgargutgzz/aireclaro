@@ -55,10 +55,11 @@ const SPARKLINE_COLOR = "#3b82f6";
 // shared their location (Monterrey: Obispado).
 const DEFAULT_SENSOR_ID = "CE";
 
-// Below this zoom the markers take their compact scale. 10.5 is where the map
-// opens without a shared location and 14 where it lands on a sensor, so the
-// threshold sits between the overview and the neighbourhood view.
-const MARKER_DENSE_MAX_ZOOM = 12;
+// Where the markers stop being locators and start being readouts: below this
+// they are plain dots, at or above it they print their reading. 14 is the zoom
+// flyTo already uses when it lands on a sensor, so the number appears exactly
+// when the map has taken you to one.
+const MARKER_DETAIL_MIN_ZOOM = 14;
 
 
 // What kind of source this is first, in the same words the Capas panel uses,
@@ -1400,18 +1401,17 @@ export default function MapaSensors({
       .addTo(map.current);
   }, [userLocation, mapLoaded, flyToUser]);
 
-  // Marker size follows zoom. At metro-wide zooms the sensor field is dense
-  // enough that full-size circles overlap into one unreadable mass, and the
-  // marker is doing a locator's job; from neighbourhood zoom in there is room
-  // and the number is what is actually being read. Two buckets rather than a
-  // continuous ramp, so markers are not resizing on every frame of a flyTo.
+  // Marker size and the printed reading both follow zoom, together, because
+  // they are the same decision: the disc is only sized to carry a number while
+  // it is carrying one. Two buckets rather than a continuous ramp, so markers
+  // are not resizing on every frame of a flyTo.
   useEffect(() => {
     const mapInstance = map.current;
     const root = mapContainer.current;
     if (!mapLoaded || !mapInstance || !root) return;
 
     const applyDensity = () =>
-      root.classList.toggle("mapa--dense", (mapInstance as any).getZoom() < MARKER_DENSE_MAX_ZOOM);
+      root.classList.toggle("mapa--overview", (mapInstance as any).getZoom() < MARKER_DETAIL_MIN_ZOOM);
 
     applyDensity();
     mapInstance.on("zoom", applyDensity);
