@@ -18,7 +18,8 @@ export default function SiteHeader() {
           *surface* at 24px (left-6 / right-6) and their *text* 20px further in,
           at 44px: "Capas", "Monterrey: Obispado". On the right the nav already
           lands on the text rail, since the last pill's own px-5 insets its
-          label to 24 + 20. The logo is bare artwork with no surface and no
+          content to 24 + 20, whether that content is Acerca's "Próx." badge or
+          a label. The logo is bare artwork with no surface and no
           padding of its own, so at px-6 it sat alone on the 24px rail, 20px
           left of every piece of text on the page and visibly outdented against
           "Capas" directly below it. pl-11 puts it on the text rail, which also

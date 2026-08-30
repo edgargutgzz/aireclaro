@@ -11,14 +11,13 @@ import { Map, BarChart3, Info } from "lucide-react";
 // inside a <nav>.
 const links = [
   { name: "Mapa", href: "/", icon: Map, pending: false },
-  // Datos and Acerca are built but not ready to show. On desktop they are not
-  // rendered at all: a "Próx." pill next to the only live link read as chrome
-  // for a product that is not there. Mobile still lists them, because the
-  // bottom bar is the whole map of the app on a phone and a gap there reads as
-  // something missing. They are listed without being offered: they used to
-  // render as live-looking pills that swallowed the click and flashed a
-  // tooltip for two seconds, which told screen readers nothing at all, and a
-  // message on a timer fails SC 1.4.13 on persistence.
+  // Datos and Acerca are built but not ready to show, so both bars list them
+  // without offering them. They used to render as live-looking pills that
+  // swallowed the click and flashed a tooltip for two seconds, which told
+  // screen readers nothing at all, and a message on a timer fails SC 1.4.13 on
+  // persistence. Now the state is written on the pill itself on desktop, where
+  // there is room for a standing badge, and stays behind a tap on mobile,
+  // where there is not.
   { name: "Datos", href: "/datos", icon: BarChart3, pending: true },
   { name: "Acerca", href: "/acerca", icon: Info, pending: true },
 ];
@@ -26,14 +25,17 @@ const links = [
 const pill =
   "flex items-center gap-2 rounded-full border border-transparent px-5 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// A filled current-page pill marks a choice. With Datos and Acerca held back
-// there is exactly one desktop link, so the white fill marks a choice that does
-// not exist, and it costs alignment: a filled pill is a *surface*, so its edge
-// lands on the 24px surface rail, 20px outside the bare logo on the 44px text
-// rail. Unfilled, the label lands on the text rail and the header's two optical
-// insets match again at 44px. Weight and ink still say "current", aria-current
-// still says it to assistive tech, and the fill comes back on its own the day a
-// second link ships. Mobile is unaffected: its bar has three entries.
+// A filled current-page pill marks a choice. Datos and Acerca are on screen
+// again but still cannot be entered, so Mapa is the only place the nav can
+// take you and the white fill would mark a choice that is not on offer. Weight
+// and ink still say "current", the two pending pills say it from the other
+// side by being grayed and badged, and aria-current says it to assistive tech.
+// The fill comes back on its own the day a second link goes live.
+//
+// This used to carry a second argument, that a filled pill is a *surface* and
+// its edge would land on the 24px rail while the bare logo sits on the 44px
+// text rail. That one is moot now: Mapa is no longer the last thing in the bar,
+// so it is Acerca's padding that sets the header's right inset.
 const soloOnDesktop = links.filter((link) => !link.pending).length === 1;
 
 export default function Navlinks() {
@@ -49,7 +51,25 @@ export default function Navlinks() {
 
         if (link.pending) {
           return (
-            <li key={link.name} className="relative md:hidden">
+            <li key={link.name} className="relative">
+              {/* Desktop: nothing to click, and nothing that looks clickable.
+                  A <span>, so it is not in the tab order and there is no
+                  disabled control to explain: the badge is the explanation and
+                  it is simply on screen. "Próx." is an abbreviation, so it is
+                  hidden from assistive tech and the whole word given instead,
+                  the same trade the dialog links make. */}
+              <span className={clsx(pill, "hidden text-gray-500 md:flex")}>
+                <Icon className="h-5 w-5" aria-hidden="true" />
+                <span className="text-sm font-medium">{link.name}</span>
+                <span
+                  aria-hidden="true"
+                  className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-600"
+                >
+                  Próx.
+                </span>
+                <span className="sr-only">Próximamente</span>
+              </span>
+
               {/* Mobile: three labels and a standing badge do not fit across a
                   360px bottom bar, so the explanation stays behind a tap. It
                   now waits to be dismissed, and role="status" means it is
@@ -58,7 +78,7 @@ export default function Navlinks() {
                 type="button"
                 aria-disabled="true"
                 onClick={() => setExplaining((v) => (v === link.name ? null : link.name))}
-                className={clsx(pill, "text-gray-500")}
+                className={clsx(pill, "text-gray-500 md:hidden")}
               >
                 <Icon className="h-5 w-5" aria-hidden="true" />
                 <span className="text-sm font-medium">{link.name}</span>
@@ -66,7 +86,7 @@ export default function Navlinks() {
               {explaining === link.name && (
                 <span
                   role="status"
-                  className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm"
+                  className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm md:hidden"
                 >
                   Próximamente
                 </span>
