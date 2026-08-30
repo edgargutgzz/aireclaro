@@ -25,6 +25,10 @@
   transform: scale(1.12);
 }
 
+/* The one deliberate departure from the house ring. ring-gray-900/15 is tuned
+   for a known light surface; over arbitrary map imagery it disappears. A solid
+   gray-900 outline is the only thing that holds at 3:1 over satellite, park
+   green and highway gray alike. Do not "correct" this to the house token. */
 .sensor-marker:focus-visible {
   outline: 2px solid #111827;
   outline-offset: 3px;
@@ -35,7 +39,7 @@
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
-  transition: box-shadow 0.15s ease, opacity 0.2s ease;
+  transition: box-shadow 0.15s ease;
 }
 
 /* The halo, expanding out from behind the circle while a sensor is selected,

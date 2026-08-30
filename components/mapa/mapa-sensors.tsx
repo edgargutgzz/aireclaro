@@ -6,7 +6,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, markerShadow, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -55,8 +55,6 @@ const SPARKLINE_COLOR = "#3b82f6";
 // shared their location (Monterrey: Obispado).
 const DEFAULT_SENSOR_ID = "CE";
 
-// Plain marker shadow — the pulse animation's base state, no static ring.
-const PLAIN_MARKER_SHADOW = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
 
 // What kind of source this is first, in the same words the Capas panel uses,
 // then the network it belongs to when it has one (`red`, e.g. OCCAMM). Sensors
@@ -977,7 +975,7 @@ export default function MapaSensors({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; dot: HTMLElement }>());
+  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; dot: HTMLElement; ink: string }>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -1450,6 +1448,7 @@ export default function MapaSensors({
       markerElementsRef.current.set(sensor.sensor_id, {
         el: markerElement,
         dot: markerElement.querySelector(".sensor-marker__dot") as HTMLElement,
+        ink: textColor,
       });
 
       const marker = new Marker({ element: markerElement })
@@ -1521,15 +1520,11 @@ export default function MapaSensors({
     const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
     const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
 
-    markerElementsRef.current.forEach(({ el, dot }, sensorId) => {
+    markerElementsRef.current.forEach(({ el, dot, ink }, sensorId) => {
       const isActive = sensorId === activeSensorId;
       el.classList.toggle('sensor-marker--selected', isActive);
       el.style.setProperty('--pulse-color', activeColor);
-      // Full opacity on the selected one, the rest stay slightly back.
-      dot.style.opacity = isActive ? '1' : '0.9';
-      dot.style.boxShadow = isActive
-        ? `0 4px 10px rgba(0,0,0,0.25), 0 0 0 3px white, 0 0 0 5px ${activeColor}`
-        : PLAIN_MARKER_SHADOW;
+      dot.style.boxShadow = isActive ? markerShadow(ink, activeColor) : markerShadow(ink);
       // Markers stack in DOM order, so in a dense cluster the selected one can
       // sit under its neighbours and lose its ring. Lift it above them.
       const parent = el.parentElement;

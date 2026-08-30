@@ -5,13 +5,17 @@
 // legend swatches and tints. `ink` is the same level darkened only as far as
 // it must be to read on white — use it for text and hairlines, since pure
 // #ffff00 disappears at 1px on a white chart. `legendInk` goes a step further
-// for small labels sitting on a tinted chip.
+// for small labels sitting on a tinted chip. `markerInk` is the text color the
+// marker's own PM2.5 number wears *on* that level's fill: near-black on the
+// four light levels, white only on purple. It is the one pairing that clears
+// 4.5:1 on every fill, and the number is the marker's second channel, so it
+// has to survive without color.
 export const IMECA_LEVELS = [
-  { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200" },
-  { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000" },
-  { limit: 79, label: "Mala", range: "25 – 79 μg/m³", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00" },
-  { limit: 130, label: "Muy mala", range: "79 – 130 μg/m³", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000" },
-  { limit: Infinity, label: "Extremadamente mala", range: "> 130 μg/m³", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72" },
+  { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200", markerInk: "#030712" },
+  { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000", markerInk: "#030712" },
+  { limit: 79, label: "Mala", range: "25 – 79 μg/m³", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00", markerInk: "#030712" },
+  { limit: 130, label: "Muy mala", range: "79 – 130 μg/m³", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000", markerInk: "#030712" },
+  { limit: Infinity, label: "Extremadamente mala", range: "> 130 μg/m³", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72", markerInk: "#ffffff" },
 ] as const;
 
 // The boundaries between levels, each carrying the color of the level it opens.
@@ -29,6 +33,17 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
   return { bg: level.color, text: level.ink };
 };
 
+// The marker's rim, in one place so the resting and selected states cannot
+// drift apart. Innermost is a hairline in the level's own ink: Buena and
+// Aceptable are lighter than most of the basemap and dissolve into pale
+// terrain without it. Outside that, the white ring that lifts the marker off
+// the map, then the drop shadow. Passing `ringColor` returns the selected
+// variant, which widens the white ring and wraps it in the active tone.
+export const markerShadow = (ink: string, ringColor?: string) =>
+  ringColor
+    ? `0 0 0 1px ${ink}, 0 0 0 4px white, 0 0 0 6px ${ringColor}, 0 4px 10px rgba(0,0,0,0.25)`
+    : `0 0 0 1px ${ink}, 0 0 0 3px white, 0 2px 8px rgba(0,0,0,0.25)`;
+
 // `label` becomes the marker's accessible name — without it the markers are
 // unreachable by keyboard and announce as nothing to a screen reader.
 export const createMarker = (pm25: number | null, label?: string): HTMLElement | null => {
@@ -36,7 +51,7 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   if (!colorInfo) return null;
 
   const { bg } = colorInfo;
-  const textColor = bg === "#ffff00" ? "#9ca3af" : "white";
+  const level = getLevel(pm25!);
 
   // Structure, rather than one styled button: the pulse must paint *behind*
   // the circle, the way Google's location halo does, and a pseudo-element can
@@ -65,10 +80,9 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   dot.style.display = "flex";
   dot.style.alignItems = "center";
   dot.style.justifyContent = "center";
-  dot.style.opacity = "0.9";
-  dot.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25), 0 0 0 2.5px white";
+  dot.style.boxShadow = markerShadow(level.ink);
   dot.textContent = Math.round(pm25!).toString();
-  dot.style.color = textColor;
+  dot.style.color = level.markerInk;
   dot.style.fontSize = "12px";
   dot.style.fontWeight = "700";
   el.appendChild(dot);
