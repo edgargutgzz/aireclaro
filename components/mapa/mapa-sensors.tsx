@@ -6,7 +6,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, markerShadow, markerZIndex, ACTIVE_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, markerShadow, ACTIVE_MARKER_Z, USER_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -981,7 +981,7 @@ export default function MapaSensors({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; dot: HTMLElement; ink: string; z: number }>());
+  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; dot: HTMLElement; ink: string }>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -1392,6 +1392,9 @@ export default function MapaSensors({
     userMarkerElement.className = "location-dot location-dot--map";
     userMarkerElement.innerHTML =
       '<span class="location-dot__pulse"></span><span class="location-dot__core"></span>';
+    // Above the sensor field, including a selected sensor: it answers "where am
+    // I", which stays true whatever the markers around it are doing.
+    userMarkerElement.style.zIndex = USER_MARKER_Z.toString();
 
     // Replace rather than add: a permission granted mid-session runs this a
     // second time, and the old marker used to stay behind on the map.
@@ -1430,7 +1433,12 @@ export default function MapaSensors({
     markersRef.current = [];
     markerElementsRef.current.clear();
 
-    sensors.forEach((sensor) => {
+    // North to south, so the southern marker of an overlapping pair is appended
+    // last and paints in front. Mapbox's own symbol convention (viewport-y),
+    // and the point is that latitude has nothing to do with the reading: any
+    // order that tracked PM2.5 would decide overlaps in favour of one end of
+    // the scale and quietly bias every cluster on the map.
+    [...sensors].sort((a, b) => b.lat - a.lat).forEach((sensor) => {
       const isSima = sensor.source === "sima";
 
       if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return;
@@ -1474,7 +1482,6 @@ export default function MapaSensors({
         el: markerElement,
         dot: markerElement.querySelector(".sensor-marker__dot") as HTMLElement,
         ink: textColor,
-        z: markerZIndex(latestData?.pm25 ?? null),
       });
 
       const marker = new Marker({ element: markerElement })
@@ -1546,16 +1553,18 @@ export default function MapaSensors({
     const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
     const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
 
-    markerElementsRef.current.forEach(({ el, dot, ink, z }, sensorId) => {
+    markerElementsRef.current.forEach(({ el, dot, ink }, sensorId) => {
       const isActive = sensorId === activeSensorId;
       el.classList.toggle('sensor-marker--selected', isActive);
       el.style.setProperty('--pulse-color', activeColor);
       dot.style.boxShadow = isActive ? markerShadow(ink, activeColor) : markerShadow(ink);
-      // Above every level while selected, back onto its own severity when not.
-      // This used to write to el.parentElement, which mapbox shares between all
+      // Lifted only while selected, and then straight back into latitude order.
+      // This is a response to what the visitor just asked for, not a standing
+      // opinion about which readings matter, so it does not bias the field.
+      // It used to write to el.parentElement, which mapbox shares between all
       // markers, so it set and unset one node once per marker and the active
       // one was only ever lifted if it happened to be iterated last.
-      el.style.zIndex = (isActive ? ACTIVE_MARKER_Z : z).toString();
+      el.style.zIndex = isActive ? ACTIVE_MARKER_Z.toString() : "";
     });
   }, [nearestSensorData, mapLoaded, sensors, data, showSima, showOtros, showOccamm, selectedSensor]);
 
