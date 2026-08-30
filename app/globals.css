@@ -14,45 +14,59 @@
   animation: colorCycle 6s ease-in-out infinite;
 }
 
-/* Map markers. Hover uses transform because Mapbox owns the parent's
-   transform, not the marker element's. */
+/* Map markers.
+
+   Sizing is width/height, never transform: mapbox rewrites
+   element.style.transform on every map move to position the marker, and an
+   inline style beats this stylesheet, so anything transform-based here is
+   silently dead. That is why the hover grow lives on the dot, which mapbox
+   does not touch. The anchor half of mapbox's transform is translate(-50%,
+   -50%), a percentage of the element's own box, so changing width/height
+   re-centres on its own. */
 .sensor-marker {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: var(--marker-size, 40px);
+  height: var(--marker-size, 40px);
   /* Micro numbers, per the type scale. This was 12px/700, which is hero-metric
-     weight on a 40px disc: sixty of them turned the basin into the loudest
-     thing on the map, louder than the road labels under it. */
+     weight on a 40px disc. */
   font-size: 11px;
   font-weight: 500;
   line-height: 1;
-  /* One transform for the whole marker, so the dot, its rings and the number
-     scale together and stay in proportion. --marker-scale is set by zoom on
-     the map root; hover multiplies it rather than replacing it. */
-  transform: scale(var(--marker-scale, 1));
-  transition: transform 0.15s ease;
+  transition: width 0.15s ease, height 0.15s ease;
 }
 
-.sensor-marker:hover {
-  transform: scale(calc(var(--marker-scale, 1) * 1.12));
-}
-
-/* Below the detail zoom the whole basin reads as one value, so sixty printed
-   numbers say nothing the color has not already said, and they cannot be told
-   apart anyway once the discs overlap. The marker drops to a 28px dot: it only
-   needs to be big enough to hold a number when it is showing one. The reading
-   itself is never lost — it stays in each marker's aria-label at every zoom,
-   and hover or selection brings it back on the one marker being asked about. */
+/* Three tiers, because a marker is doing a different job at each. Metro-wide
+   it is one sample in a field, and eighty saturated discs at reading size bury
+   the city they are describing; the official colors are legend swatches, sized
+   for a chip, and the honest way to keep them at full fidelity is to spend
+   less area on them rather than to dilute the hue. Mid-zoom it is a place.
+   Only at detail zoom is it a readout, and only there does it earn 40px, the
+   number, and a drop shadow. Eighty drop shadows overlapping is most of the
+   grey haze over the basin, so the overview tier drops it entirely. */
 .mapa--overview {
-  --marker-scale: 0.7;
+  --marker-size: 14px;
+  --marker-ring: 1.5px;
+  --marker-drop: 0 0 0 rgba(0, 0, 0, 0);
 }
 
-.mapa--overview .sensor-marker__dot {
+.mapa--mid {
+  --marker-size: 24px;
+  --marker-ring: 2px;
+  --marker-drop: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+/* The reading prints only at detail zoom, and on whichever single marker is
+   being asked about. It is never lost: every marker carries it in its
+   aria-label at every zoom. */
+.mapa--overview .sensor-marker__dot,
+.mapa--mid .sensor-marker__dot {
   color: transparent;
 }
 
 .mapa--overview .sensor-marker:hover .sensor-marker__dot,
-.mapa--overview .sensor-marker--selected .sensor-marker__dot {
+.mapa--mid .sensor-marker:hover .sensor-marker__dot,
+.mapa--overview .sensor-marker--selected .sensor-marker__dot,
+.mapa--mid .sensor-marker--selected .sensor-marker__dot {
   color: var(--marker-ink);
 }
 
@@ -66,19 +80,38 @@
   border-radius: 50%;
 }
 
-/* The circle itself. Painted after the pulse, so it always covers it. */
+/* The circle itself. Painted after the pulse, so it always covers it. The rim
+   grows outward from the border box, so --marker-size is the colored area and
+   the rings sit outside it. */
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
   color: var(--marker-ink);
-  transition: box-shadow 0.15s ease, color 0.15s ease;
+  box-shadow:
+    0 0 0 1px var(--marker-edge),
+    0 0 0 var(--marker-ring, 3px) #fff,
+    var(--marker-drop, 0 2px 8px rgba(0, 0, 0, 0.25));
+  transform: scale(var(--dot-scale, 1));
+  transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.sensor-marker:hover .sensor-marker__dot {
+  --dot-scale: 1.12;
+}
+
+.sensor-marker--selected .sensor-marker__dot {
+  box-shadow:
+    0 0 0 1px var(--marker-edge),
+    0 0 0 calc(var(--marker-ring, 3px) + 1px) #fff,
+    0 0 0 calc(var(--marker-ring, 3px) + 3px) var(--pulse-color),
+    0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
 /* The halo, expanding out from behind the circle while a sensor is selected,
    in that sensor's air-quality tone. */
 .sensor-marker__pulse {
   position: absolute;
-  inset: -6px;
+  inset: -15%;
   border-radius: 50%;
   background: var(--pulse-color, #3b82f6);
   opacity: 0;

@@ -51,17 +51,6 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
 export const ACTIVE_MARKER_Z = 6;
 export const USER_MARKER_Z = 7;
 
-// The marker's rim, in one place so the resting and selected states cannot
-// drift apart. Innermost is a hairline in the level's own ink: Buena and
-// Aceptable are lighter than most of the basemap and dissolve into pale
-// terrain without it. Outside that, the white ring that lifts the marker off
-// the map, then the drop shadow. Passing `ringColor` returns the selected
-// variant, which widens the white ring and wraps it in the active tone.
-export const markerShadow = (ink: string, ringColor?: string) =>
-  ringColor
-    ? `0 0 0 1px ${ink}, 0 0 0 4px white, 0 0 0 6px ${ringColor}, 0 4px 10px rgba(0,0,0,0.25)`
-    : `0 0 0 1px ${ink}, 0 0 0 3px white, 0 2px 8px rgba(0,0,0,0.25)`;
-
 // `label` becomes the marker's accessible name — without it the markers are
 // unreachable by keyboard and announce as nothing to a screen reader.
 export const createMarker = (pm25: number | null, label?: string): HTMLElement | null => {
@@ -96,9 +85,13 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   dot.style.display = "flex";
   dot.style.alignItems = "center";
   dot.style.justifyContent = "center";
-  dot.style.boxShadow = markerShadow(level.ink);
   dot.textContent = Math.round(pm25!).toString();
+  // Two tones, handed to CSS so the stylesheet can size the rim per zoom tier
+  // without rebuilding a shadow string here: --marker-ink is the number's
+  // color on this fill, --marker-edge the hairline that keeps a pale fill from
+  // dissolving into pale terrain.
   dot.style.setProperty("--marker-ink", level.markerInk);
+  dot.style.setProperty("--marker-edge", level.ink);
   el.appendChild(dot);
 
   return el;

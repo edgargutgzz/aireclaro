@@ -6,7 +6,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, markerShadow, ACTIVE_MARKER_Z, USER_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, ACTIVE_MARKER_Z, USER_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -60,6 +60,11 @@ const DEFAULT_SENSOR_ID = "CE";
 // flyTo already uses when it lands on a sensor, so the number appears exactly
 // when the map has taken you to one.
 const MARKER_DETAIL_MIN_ZOOM = 14;
+
+// And where it stops being one sample in a field and becomes a place. Below
+// this the markers are a point cloud; the basemap has to stay legible under
+// them or the map has lost the reason it is a map.
+const MARKER_MID_MIN_ZOOM = 12;
 
 
 // What kind of source this is first, in the same words the Capas panel uses,
@@ -981,7 +986,7 @@ export default function MapaSensors({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
   const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, { el: HTMLElement; dot: HTMLElement; ink: string }>());
+  const markerElementsRef = useRef(new globalThis.Map<number, HTMLElement>());
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -1413,8 +1418,14 @@ export default function MapaSensors({
     const root = mapContainer.current;
     if (!mapLoaded || !mapInstance || !root) return;
 
-    const applyDensity = () =>
-      root.classList.toggle("mapa--overview", (mapInstance as any).getZoom() < MARKER_DETAIL_MIN_ZOOM);
+    const applyDensity = () => {
+      const zoom = (mapInstance as any).getZoom();
+      root.classList.toggle("mapa--overview", zoom < MARKER_MID_MIN_ZOOM);
+      root.classList.toggle(
+        "mapa--mid",
+        zoom >= MARKER_MID_MIN_ZOOM && zoom < MARKER_DETAIL_MIN_ZOOM,
+      );
+    };
 
     applyDensity();
     mapInstance.on("zoom", applyDensity);
@@ -1478,11 +1489,7 @@ export default function MapaSensors({
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, readingAt: latestData?.time_stamp ?? null });
       });
 
-      markerElementsRef.current.set(sensor.sensor_id, {
-        el: markerElement,
-        dot: markerElement.querySelector(".sensor-marker__dot") as HTMLElement,
-        ink: textColor,
-      });
+      markerElementsRef.current.set(sensor.sensor_id, markerElement);
 
       const marker = new Marker({ element: markerElement })
         .setLngLat([sensor.lon, sensor.lat])
@@ -1553,11 +1560,10 @@ export default function MapaSensors({
     const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
     const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
 
-    markerElementsRef.current.forEach(({ el, dot, ink }, sensorId) => {
+    markerElementsRef.current.forEach((el, sensorId) => {
       const isActive = sensorId === activeSensorId;
       el.classList.toggle('sensor-marker--selected', isActive);
       el.style.setProperty('--pulse-color', activeColor);
-      dot.style.boxShadow = isActive ? markerShadow(ink, activeColor) : markerShadow(ink);
       // Lifted only while selected, and then straight back into latitude order.
       // This is a response to what the visitor just asked for, not a standing
       // opinion about which readings matter, so it does not bias the field.
