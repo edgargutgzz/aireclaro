@@ -344,8 +344,14 @@ const SENSITIVE_GROUPS = [
 // The whole block is a disclosure: the header row carries the label, its info
 // icon and the chevron, and nothing below it renders until it is opened. Plain
 // text on the card's own surface, no nested card or filled blocks.
-function HealthRecommendations({ info, onShowInfo }: { info: QualityInfo; onShowInfo: () => void }) {
-  const [open, setOpen] = useState(false);
+//
+// `defaultOpen` is what the mobile sheets pass. On desktop the card is already
+// on screen and the recommendations are one click below a reading the user
+// came for, so they stay collapsed; on mobile the sheet is opened deliberately,
+// scrolls anyway, and asking for a second tap to reach the advice is a tap the
+// small screen cannot afford. The chevron still collapses it either way.
+function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info: QualityInfo; onShowInfo: () => void; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   // useId() contains colons, which are not valid in an id fragment reference.
   const bodyId = `health-recs-${useId().replace(/:/g, "")}`;
 
@@ -2026,7 +2032,7 @@ export default function MapaSensors({
               </div>
               {sensorQuality && (
                 <>
-                  <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
+                  <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} defaultOpen />
                 </>
               )}
             </div>
@@ -2173,8 +2179,8 @@ export default function MapaSensors({
                 )}
               </div>
 
-              {/* Recommendations */}
-              <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} />
+              {/* Recommendations — open by default here, see HealthRecommendations */}
+              <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} defaultOpen />
 
             </>
           )}
