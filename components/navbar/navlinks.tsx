@@ -26,6 +26,16 @@ const links = [
 const pill =
   "flex items-center gap-2 rounded-full border border-transparent px-5 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
+// A filled current-page pill marks a choice. With Datos and Acerca held back
+// there is exactly one desktop link, so the white fill marks a choice that does
+// not exist, and it costs alignment: a filled pill is a *surface*, so its edge
+// lands on the 24px surface rail, 20px outside the bare logo on the 44px text
+// rail. Unfilled, the label lands on the text rail and the header's two optical
+// insets match again at 44px. Weight and ink still say "current", aria-current
+// still says it to assistive tech, and the fill comes back on its own the day a
+// second link ships. Mobile is unaffected: its bar has three entries.
+const soloOnDesktop = links.filter((link) => !link.pending).length === 1;
+
 export default function Navlinks() {
   const pathname = usePathname();
   // Mobile only, see below. Sticks until it is dismissed rather than running
@@ -80,10 +90,13 @@ export default function Navlinks() {
               className={clsx(pill, {
                 // Mobile keeps the blue fill: its bottom bar is already
                 // translucent, so glass on glass would not read as selected.
-                // Desktop drops the backdrop-blur the map's cards use, since
-                // the header behind this pill is opaque stone-50 and there is
-                // nothing there to blur.
-                "border-blue-200 bg-blue-50 text-blue-600 md:border-white/60 md:bg-white md:text-gray-700 md:shadow-sm": isCurrent,
+                "border-blue-200 bg-blue-50 text-blue-600 md:text-gray-700": isCurrent,
+                // Desktop's surface, dropped while this is the only link, see
+                // soloOnDesktop above. It drops the backdrop-blur the map's
+                // cards use, since the header behind the pill is opaque
+                // stone-50 and there is nothing there to blur.
+                "md:border-white/60 md:bg-white md:shadow-sm": isCurrent && !soloOnDesktop,
+                "md:border-transparent md:bg-transparent md:hover:bg-black/[0.04]": isCurrent && soloOnDesktop,
                 // gray-600, not gray-400: an unselected label sat at 2.5:1 on
                 // this background, against the 4.5:1 text asks for.
                 "text-gray-600 hover:bg-black/[0.04]": !isCurrent,
