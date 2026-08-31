@@ -253,7 +253,10 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
         <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
           Calidad del aire
         </span>
-        <ScaleBar labels="ends" className="min-w-0 flex-1" />
+        {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
+            now framed by the "PM2.5 · μg/m³" line the disclosure reveals right
+            below, so the bar reads as the axis for the list's bounds. */}
+        <ScaleBar labels={open ? "thresholds" : "ends"} className="min-w-0 flex-1" />
         <ChevronRight
           aria-hidden="true"
           className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
