@@ -117,12 +117,15 @@ export default function DiasInsalubresChart({ meses }: { meses: MesDiasInsalubre
               el.style.pointerEvents = "none";
               el.style.zIndex = "50";
               el.style.transition = "opacity 0.2s ease";
-              el.style.backdropFilter = "blur(16px)";
-              (el.style as unknown as { webkitBackdropFilter: string }).webkitBackdropFilter = "blur(16px)";
-              el.style.background = "rgba(255,255,255,0.72)";
-              el.style.border = "1px solid rgba(255,255,255,0.6)";
+              // A data readout, not a glass panel: the numbers have to stay
+              // crisp, so this is near-solid white with a light hairline doing
+              // the separating, and only a trace of blur left behind it.
+              el.style.backdropFilter = "blur(6px)";
+              (el.style as unknown as { webkitBackdropFilter: string }).webkitBackdropFilter = "blur(6px)";
+              el.style.background = "rgba(255,255,255,0.95)";
+              el.style.border = "1px solid rgba(0,0,0,0.08)";
               el.style.borderRadius = "12px";
-              el.style.boxShadow = "0 8px 32px rgba(0,0,0,0.10)";
+              el.style.boxShadow = "0 6px 24px rgba(0,0,0,0.10)";
               el.style.padding = "16px 22px";
               el.style.fontFamily = "ui-sans-serif, system-ui, sans-serif";
               document.body.appendChild(el);
