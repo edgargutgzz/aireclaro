@@ -2080,7 +2080,7 @@ export default function MapaSensors({
             one edge, and md:mt-auto pins it to the bottom whether the panel
             above is open or shut. Desktop only: on mobile the legend rides
             inside the Capas sheet instead. */}
-        <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
+        <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
           <AirQualityLegend collapsible />
         </div>
 
