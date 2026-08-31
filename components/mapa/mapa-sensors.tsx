@@ -52,9 +52,9 @@ interface HistoryPoint {
 const SPARKLINE_COLOR = "#3b82f6";
 
 // Shown as the default "Calidad del aire" sensor when the visitor hasn't
-// shared their location: NuevaMaderoDave (PurpleAir 305164), near the centre
+// shared their location: TEC-AMM-RB-006 (PurpleAir 293003), near the centre
 // of the Monterrey metro.
-const DEFAULT_SENSOR_ID = "305164";
+const DEFAULT_SENSOR_ID = "293003";
 
 
 
@@ -1280,7 +1280,7 @@ export default function MapaSensors({
     }
 
     // No location shared (or nothing near it reporting) — open on a fixed
-    // representative sensor (NuevaMaderoDave), then fall through to any
+    // representative sensor (TEC-AMM-RB-006), then fall through to any
     // sensor that has a reading: the card always speaks for a real sensor,
     // never for an area average.
     const defaultSensor = visibleSensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
