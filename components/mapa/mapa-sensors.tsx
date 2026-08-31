@@ -151,7 +151,7 @@ function FreshnessBadge({ freshness }: { freshness: Freshness }) {
 // The break numbers under the joins carry the real spacing.
 // All spans, so the bar is valid phrasing content inside the disclosure
 // <button>. Decorative: the level list is the readable key.
-function ScaleBar({ className = "" }: { className?: string }) {
+function ScaleBar({ className = "", labels = "thresholds" }: { className?: string; labels?: "thresholds" | "ends" }) {
   const count = IMECA_LEVELS.length;
   return (
     <span aria-hidden="true" className={`block ${className}`}>
@@ -160,17 +160,27 @@ function ScaleBar({ className = "" }: { className?: string }) {
           <span key={level.label} className="flex-1" style={{ backgroundColor: level.color }} />
         ))}
       </span>
-      <span className="relative mt-1 block h-3">
-        {IMECA_LEVELS.slice(0, -1).map((level, i) => (
-          <span
-            key={level.limit}
-            className="absolute -translate-x-1/2 text-[10px] font-medium leading-none text-gray-500"
-            style={{ left: `${((i + 1) / count) * 100}%` }}
-          >
-            {level.limit}
-          </span>
-        ))}
-      </span>
+      {labels === "ends" ? (
+        // Collapsed state: the two ends carry the direction and the worst case,
+        // which need no unit to read. The exact breaks, the μg/m³ and the NOM
+        // citation all wait for the expanded list.
+        <span className="mt-1 flex justify-between text-[10px] font-medium leading-none text-gray-500">
+          <span className="whitespace-nowrap">{IMECA_LEVELS[0].label}</span>
+          <span className="whitespace-nowrap">{IMECA_LEVELS[count - 1].label}</span>
+        </span>
+      ) : (
+        <span className="relative mt-1 block h-3">
+          {IMECA_LEVELS.slice(0, -1).map((level, i) => (
+            <span
+              key={level.limit}
+              className="absolute -translate-x-1/2 text-[10px] font-medium leading-none text-gray-500"
+              style={{ left: `${((i + 1) / count) * 100}%` }}
+            >
+              {level.limit}
+            </span>
+          ))}
+        </span>
+      )}
     </span>
   );
 }
@@ -243,7 +253,7 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
         <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
           Calidad del aire
         </span>
-        <ScaleBar className="min-w-0 flex-1" />
+        <ScaleBar labels="ends" className="min-w-0 flex-1" />
         <ChevronRight
           aria-hidden="true"
           className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
