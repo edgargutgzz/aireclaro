@@ -143,6 +143,33 @@ function FreshnessBadge({ freshness }: { freshness: Freshness }) {
   );
 }
 
+// The IMECA colour key. The map draws its markers in a muted derivative of
+// these colours (MARKER_FILLS in air-quality.ts); this is where the real,
+// full-strength index colours live, so a viewer can always read a disc back
+// to its level. Swatch in the true `color` with an `ink` hairline, the same
+// pairing the marker's own rim uses.
+function AirQualityLegend({ className = "" }: { className?: string }) {
+  return (
+    <div className={className}>
+      <p className="mb-2.5 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+        Calidad del aire
+      </p>
+      <ul className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {IMECA_LEVELS.map((level) => (
+          <li key={level.label} className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="h-3 w-3 flex-shrink-0 rounded-full"
+              style={{ backgroundColor: level.color, boxShadow: `inset 0 0 0 1px ${level.ink}` }}
+            />
+            <span className="whitespace-nowrap text-[13px] text-gray-600">{level.label}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function formatHistoryTime(dateStr: string) {
   const date = new Date(dateStr);
   // Readings land ~30 min past the hour but represent that hour's data —
@@ -1026,7 +1053,6 @@ export default function MapaSensors({
   const [showNearestDetail, setShowNearestDetail] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [showQualitySource, setShowQualitySource] = useState(false);
-  const [isDesktopLegendExpanded, setIsDesktopLegendExpanded] = useState(false);
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
   // Point the cursor is on in the 48h chart. While set, the card's headline
   // reports that hour instead of the latest reading, so the chart and the big
@@ -1663,6 +1689,7 @@ export default function MapaSensors({
             onShowPM25Info={() => setShowPM25Info(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
           />
+          <AirQualityLegend className="border-t border-gray-100 pt-4" />
         </div>
       </div>
 
@@ -1943,8 +1970,15 @@ export default function MapaSensors({
         )}
       </div>
 
-
-
+      {/* Colour key. The markers are drawn muted (MARKER_FILLS); this shows the
+          real index colours so a disc can always be read back to its level.
+          Desktop only, bottom centre, clear of the Capas column and the card.
+          On mobile it rides inside the Capas sheet instead. */}
+      <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 hidden -translate-x-1/2 md:block">
+        <div className="rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md">
+          <AirQualityLegend />
+        </div>
+      </div>
 
       {/* Mobile: sensor info panel — slides up from bottom */}
       <div

@@ -1,14 +1,21 @@
 // Official Mexican Air and Health Index (NOM-172-SEMARNAT-2023) levels for
 // PM2.5, and the single source of truth for the scale's colors.
 //
-// `color` is the index's own color — use it for anything filled: map markers,
-// legend swatches and tints. `ink` is the same level darkened only as far as
-// it must be to read on white — use it for text and hairlines, since pure
-// #ffff00 disappears at 1px on a white chart, and for the marker's fill ring
-// hairline. `legendInk` goes a step further for small labels sitting on a
-// tinted chip. The marker's PM2.5 number is not one of these: it always sits
-// on a white core in a single dark ink (see globals.css), so it needs no
-// per-level pairing.
+// `color` is the index's own color — use it for the legend, chart limits and
+// anything a viewer reads as "the official color". `ink` is the same level
+// darkened only as far as it must be to read on white — text, hairlines, and
+// the marker's edge — since pure #ffff00 disappears at 1px on a white chart.
+// `legendInk` goes a step further for small labels sitting on a tinted chip.
+// The marker's PM2.5 number is none of these: it sits on a white core in a
+// single dark ink (see globals.css).
+//
+// The map does NOT fill markers with `color`. A basin holds a hundred-plus
+// markers, and pure #ffff00 / #ff0000 across that many discs reads as hazard
+// tape rather than a data layer. Marker fills are `MARKER_FILLS` below: each
+// level's color blended toward one warm neutral by one fixed amount, the same
+// for all five, so the whole scale softens evenly and the map never leans
+// toward one end of it. The legend still shows the real colors, and the
+// selected marker fills with its true `color` as part of its emphasis.
 export const IMECA_LEVELS = [
   { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200" },
   { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000" },
@@ -16,6 +23,33 @@ export const IMECA_LEVELS = [
   { limit: 130, label: "Muy mala", range: "79 – 130 μg/m³", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000" },
   { limit: Infinity, label: "Extremadamente mala", range: "> 130 μg/m³", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72" },
 ] as const;
+
+// Marker fills: the index color pulled toward a warm neutral, uniformly. Tune
+// the look with the two constants — same neutral and same amount for every
+// level is what keeps this from being a thumb on the scale.
+const MARKER_FILL_NEUTRAL = [120, 113, 108]; // warm gray, tailwind stone-500
+const MARKER_FILL_MUTE = 0.4; // 0 = full index color, 1 = flat neutral
+
+const mutePM25Color = (hex: string): string => {
+  const n = parseInt(hex.slice(1), 16);
+  const channels = [n >> 16, (n >> 8) & 255, n & 255];
+  return (
+    "#" +
+    channels
+      .map((v, i) =>
+        Math.round(
+          v * (1 - MARKER_FILL_MUTE) + MARKER_FILL_NEUTRAL[i] * MARKER_FILL_MUTE,
+        )
+          .toString(16)
+          .padStart(2, "0"),
+      )
+      .join("")
+  );
+};
+
+export const MARKER_FILLS: Record<string, string> = Object.fromEntries(
+  IMECA_LEVELS.map((level) => [level.label, mutePM25Color(level.color)]),
+);
 
 // The boundaries between levels, each carrying the color of the level it opens.
 export const IMECA_THRESHOLDS = IMECA_LEVELS.slice(0, -1).map((level, i) => ({
@@ -54,7 +88,6 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
 
-  const { bg } = colorInfo;
   const level = getLevel(pm25!);
 
   // Structure, rather than one styled button: the pulse must paint *behind*
@@ -77,16 +110,19 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
 
   const dot = document.createElement("span");
   dot.className = "sensor-marker__dot";
-  dot.style.backgroundColor = bg;
   dot.style.borderRadius = "50%";
   dot.style.display = "flex";
   dot.style.alignItems = "center";
   dot.style.justifyContent = "center";
   dot.textContent = Math.round(pm25!).toString();
-  // Handed to CSS so the stylesheet owns the rim: --marker-edge is the ink
-  // hairline that keeps a pale fill from dissolving into pale terrain. The
-  // number's color is a fixed dark ink set in globals.css, not a per-level
-  // value, since it now sits on a white core rather than on the fill.
+  // Fills and rim handed to CSS so the stylesheet owns the marker's two forms.
+  // --marker-fill is the muted resting fill; --marker-fill-true is the level's
+  // real color, which the stylesheet swaps in on the selected marker. Two
+  // custom properties rather than one, so selection is a class toggle with no
+  // JS reaching back into the element. --marker-edge is the ink hairline that
+  // keeps a pale fill from dissolving into pale terrain.
+  dot.style.setProperty("--marker-fill", MARKER_FILLS[level.label]);
+  dot.style.setProperty("--marker-fill-true", level.color);
   dot.style.setProperty("--marker-edge", level.ink);
   el.appendChild(dot);
 
