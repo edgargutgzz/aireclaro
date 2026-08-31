@@ -195,20 +195,10 @@ function LevelList() {
   );
 }
 
-function LegendEyebrow() {
-  return (
-    <>
-      <span className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-        Calidad del aire
-      </span>
-      <span className="text-[11px] leading-none text-gray-400">PM2.5 · μg/m³</span>
-    </>
-  );
-}
-
 function LegendDetail({ className = "" }: { className?: string }) {
   return (
     <div className={className}>
+      <p className="mb-2 text-[11px] leading-none text-gray-400">PM2.5 · μg/m³</p>
       <LevelList />
       <p className="mt-3 text-[11px] leading-relaxed text-gray-400">
         Índice de Aire y Salud mexicano (NOM-172-SEMARNAT-2023).
@@ -227,9 +217,9 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
   if (!collapsible) {
     return (
       <div className={className}>
-        <div className="flex items-baseline justify-between gap-3">
-          <LegendEyebrow />
-        </div>
+        <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+          Calidad del aire
+        </p>
         <ScaleBar className="mt-3" />
         <LegendDetail className="mt-3 border-t border-gray-100 pt-3" />
       </div>
@@ -246,11 +236,8 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
         aria-controls="aq-legend-detail"
         className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
       >
-        <span className="flex flex-shrink-0 flex-col gap-1">
-          <span className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-            Calidad del aire
-          </span>
-          <span className="text-[11px] leading-none text-gray-400">PM2.5 · μg/m³</span>
+        <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+          Calidad del aire
         </span>
         <ScaleBar className="min-w-0 flex-1" />
         <ChevronRight
