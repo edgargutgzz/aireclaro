@@ -164,7 +164,7 @@ function ScaleBar({ className = "", labels = "thresholds" }: { className?: strin
         // Collapsed state: the two ends carry the direction and the worst case,
         // which need no unit to read. The exact breaks, the μg/m³ and the NOM
         // citation all wait for the expanded list.
-        <span className="mt-1 flex justify-between text-[10px] font-medium leading-none text-gray-500">
+        <span className="mt-1 flex justify-between text-[11px] font-medium leading-none text-gray-500">
           <span className="whitespace-nowrap">{IMECA_LEVELS[0].label}</span>
           <span className="whitespace-nowrap">{IMECA_LEVELS[count - 1].label}</span>
         </span>
