@@ -8,13 +8,14 @@
 // hairline. `legendInk` goes a step further for small labels sitting on a
 // tinted chip. The marker's PM2.5 number is not one of these: it always sits
 // on a white core in a single dark ink (see globals.css), so it needs no
-// per-level pairing.
+// per-level pairing. `bounds` is the level's PM2.5 span with no unit: the
+// legend prints μg/m³ once in its header, not on every row.
 export const IMECA_LEVELS = [
-  { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200" },
-  { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000" },
-  { limit: 79, label: "Mala", range: "25 – 79 μg/m³", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00" },
-  { limit: 130, label: "Muy mala", range: "79 – 130 μg/m³", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000" },
-  { limit: Infinity, label: "Extremadamente mala", range: "> 130 μg/m³", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72" },
+  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#00b300", legendInk: "#007200" },
+  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#b2b200", legendInk: "#808000" },
+  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00" },
+  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000" },
+  { limit: Infinity, label: "Extremadamente mala", bounds: "> 130", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72" },
 ] as const;
 
 
