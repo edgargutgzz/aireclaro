@@ -2042,26 +2042,21 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* mt-auto pins it to the bottom of the column on desktop, so it holds
-            the same corner whether the panel above it is open or shut. On
-            mobile the column is only as tall as its contents and the panel is
-            a bottom sheet, so the badge stays directly under the top-left
-            corner as before. */}
+        {/* The air-quality scale sits at the foot of this rail, above the
+            Actualizado badge. Same w-panel-filters width as the Capas panel,
+            so the rail keeps one edge. md:mt-auto here (not on the badge)
+            collapses the free space above the legend, so legend + badge ride
+            the bottom as one group whether the panel is open or shut. Desktop
+            only: on mobile the legend rides inside the Capas sheet instead. */}
+        <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
+          <AirQualityLegend collapsible />
+        </div>
+
         {freshness && (
-          <div className="flex-shrink-0 md:mt-auto">
+          <div className="flex-shrink-0">
             <FreshnessBadge freshness={freshness} />
           </div>
         )}
-      </div>
-
-      {/* The air-quality scale. Desktop only, bottom centre, clear of the Capas
-          column and the card. A disclosure: bar and thresholds at rest, the
-          labelled list on expand. On mobile it rides inside the Capas sheet
-          instead. */}
-      <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 hidden -translate-x-1/2 md:block">
-        <div className="pointer-events-auto w-panel-filters rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
-          <AirQualityLegend collapsible />
-        </div>
       </div>
 
       {/* Mobile: sensor info panel — slides up from bottom */}
