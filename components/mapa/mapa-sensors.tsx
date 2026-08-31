@@ -115,14 +115,17 @@ type Freshness = {
 // ingestion stopped it went on reporting a cheerful green 11:00 AM the next
 // morning. Colour is the glanceable layer and never the only one, the
 // timestamp itself is what carries the state.
-function FreshnessBadge({ freshness }: { freshness: Freshness }) {
+// `flat` drops the shadow: used where the badge sits next to the location
+// button, so the button is visibly the interactive one of the pair. On its
+// own (mobile, top-left) it keeps the shadow to lift off the map.
+function FreshnessBadge({ freshness, flat = false }: { freshness: Freshness; flat?: boolean }) {
   const dot =
     freshness.status === "fresh" ? "bg-green-500" :
     freshness.status === "delayed" ? "bg-amber-500" :
     "bg-gray-400";
 
   return (
-    <div className="flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
+    <div className={`flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 backdrop-blur-md ${flat ? "" : "shadow-sm"}`}>
       <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
         {/* Only fresh data pulses. A dot that keeps ticking in amber or grey
             reads as "working on it" when the truth is "this is old". */}
@@ -1989,7 +1992,7 @@ export default function MapaSensors({
             control. The freshness badge shows here on desktop; on mobile it
             sits at the top-left instead (see the left column). */}
         <div className="flex flex-shrink-0 items-center gap-2 md:mt-auto">
-          {freshness && <FreshnessBadge freshness={freshness} />}
+          {freshness && <FreshnessBadge freshness={freshness} flat />}
           <div>
             <button
               type="button"
