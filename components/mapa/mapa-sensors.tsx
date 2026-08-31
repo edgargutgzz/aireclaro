@@ -143,11 +143,9 @@ function FreshnessBadge({ freshness }: { freshness: Freshness }) {
   );
 }
 
-// The IMECA colour key. The map draws its markers in a muted derivative of
-// these colours (MARKER_FILLS in air-quality.ts); this is where the real,
-// full-strength index colours live, so a viewer can always read a disc back
-// to its level. Swatch in the true `color` with an `ink` hairline, the same
-// pairing the marker's own rim uses.
+// The IMECA colour key: swatch, label, one row per level. Swatch in the
+// level's `color` with an `ink` hairline, the same pairing the marker's own
+// rim uses, so a disc on the map reads straight back to a row here.
 function AirQualityLegend({ className = "" }: { className?: string }) {
   return (
     <div className={className}>
@@ -1970,10 +1968,9 @@ export default function MapaSensors({
         )}
       </div>
 
-      {/* Colour key. The markers are drawn muted (MARKER_FILLS); this shows the
-          real index colours so a disc can always be read back to its level.
-          Desktop only, bottom centre, clear of the Capas column and the card.
-          On mobile it rides inside the Capas sheet instead. */}
+      {/* The air-quality colour key. Desktop only, bottom centre, clear of the
+          Capas column and the card. On mobile it rides inside the Capas sheet
+          instead. */}
       <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 hidden -translate-x-1/2 md:block">
         <div className="rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md">
           <AirQualityLegend />

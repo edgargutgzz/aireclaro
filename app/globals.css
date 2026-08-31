@@ -74,9 +74,6 @@
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
-  /* Resting fill is the muted derivative (see air-quality.ts); the selected
-     marker swaps in the level's true colour below. */
-  background-color: var(--marker-fill);
   color: transparent;
   font-variant-numeric: tabular-nums;
   /* Rim then lift. The rim is two hairlines against the border box: the
@@ -92,8 +89,7 @@
     0 1px 2px rgba(0, 0, 0, 0.24),
     0 3px 8px rgba(0, 0, 0, 0.12);
   transform: scale(var(--dot-scale, 1));
-  transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease,
-    background-color 0.15s ease;
+  transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 /* The white core the number sits on, so the ink never touches the fill. Held
@@ -125,7 +121,6 @@
    and turned the marker into a bullseye. */
 .sensor-marker--selected .sensor-marker__dot {
   color: #1f2937;
-  background-color: var(--marker-fill-true);
   box-shadow:
     0 0 0 1px var(--marker-edge),
     0 0 0 3px #fff,
