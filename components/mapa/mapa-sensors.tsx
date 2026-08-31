@@ -1361,9 +1361,11 @@ export default function MapaSensors({
   const locationLabel =
     locationStatus === 'locating' ? 'Buscando…' : userLocation ? 'Mi ubicación' : 'Activar ubicación';
   // gray-500, not gray-400: the resting state is the one asking to be clicked,
-  // and at 2.5:1 it was dimmer than the state it leads to.
+  // and at 2.5:1 it was dimmer than the state it leads to. Active also fills
+  // the arrow (fill-current), the outline-to-solid flip Apple and Google Maps
+  // use for "now tracking", so on/off is not carried by colour alone.
   const locationIconTone = userLocation
-    ? 'text-blue-500'
+    ? 'text-blue-500 fill-current'
     : locationStatus === 'locating'
       ? 'text-gray-400 animate-pulse motion-reduce:animate-none'
       : 'text-gray-500';
