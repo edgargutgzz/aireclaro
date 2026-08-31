@@ -51,9 +51,10 @@ interface HistoryPoint {
 // where it crosses a dashed threshold line.
 const SPARKLINE_COLOR = "#3b82f6";
 
-// Shown as the default "Calidad del aire" station when the visitor hasn't
-// shared their location (Monterrey: Obispado).
-const DEFAULT_SENSOR_ID = "CE";
+// Shown as the default "Calidad del aire" sensor when the visitor hasn't
+// shared their location: NuevaMaderoDave (PurpleAir 305164), near the centre
+// of the Monterrey metro.
+const DEFAULT_SENSOR_ID = "305164";
 
 // Where the markers stop being locators and start being readouts: below this
 // they are bare colored discs, at or above it they print their reading. 14 is
@@ -1149,7 +1150,7 @@ export default function MapaSensors({
     }
 
     // No location shared (or nothing near it reporting) — open on a fixed
-    // representative station (San Nicolás: UANL), then fall through to any
+    // representative sensor (NuevaMaderoDave), then fall through to any
     // sensor that has a reading: the card always speaks for a real sensor,
     // never for an area average.
     const defaultSensor = visibleSensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
