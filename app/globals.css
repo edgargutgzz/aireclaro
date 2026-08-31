@@ -254,6 +254,22 @@
   .disclosure-in { animation: none; }
 }
 
+/* The mirror, for a disclosure that opens upward: the legend card is pinned to
+   the foot of its column, so its detail settles up into place from just below
+   rather than down from above. Same duration and easing as the downward one. */
+@keyframes disclosure-in-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.disclosure-in-up {
+  animation: disclosure-in-up 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disclosure-in-up { animation: none; }
+}
+
 /* Dialogs fade and settle in rather than snapping onto the screen. They are
    the platform's <dialog> element, so the scrim is ::backdrop rather than a
    div of our own, and the two fade in together. */

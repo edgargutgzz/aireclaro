@@ -246,8 +246,14 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
   }
 
   // Wide enough that the label, the bar and the chevron sit on one row.
+  //
+  // This legend is pinned to the foot of its column, so it opens upward: the
+  // button row holds its place on the bottom edge and the detail unfolds into
+  // the gap above it, instead of shoving the row you just clicked ~150px up.
+  // flex-col-reverse paints the button last while keeping it first in the DOM,
+  // so tab and screen-reader order stay trigger-then-detail.
   return (
-    <div className={className}>
+    <div className={`flex flex-col-reverse ${className}`}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -259,18 +265,20 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
           Calidad del aire
         </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
-            now framed by the "PM2.5 · μg/m³" line the disclosure reveals right
-            below, so the bar reads as the axis for the list's bounds. */}
+            now framed by the "PM2.5 · μg/m³" line the disclosure reveals just
+            above, so the bar reads as the axis for the list's bounds. */}
         <ScaleBar labels={open ? "thresholds" : "ends"} className="min-w-0 flex-1" />
+        {/* Rotates up when open, toward the detail it reveals: every downward
+            panel points its chevron down, so this one points the other way. */}
         <ChevronRight
           aria-hidden="true"
-          className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
+          className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? "-rotate-90" : ""}`}
         />
       </button>
       {/* Kept mounted so aria-controls always resolves; `hidden` keeps the shut
           content out of the tab order. */}
       <div id="aq-legend-detail" hidden={!open}>
-        <LegendDetail className="disclosure-in mt-3 border-t border-gray-100 pt-3" />
+        <LegendDetail className="disclosure-in-up mb-3 border-b border-gray-100 pb-3" />
       </div>
     </div>
   );
