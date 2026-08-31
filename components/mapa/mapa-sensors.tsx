@@ -384,7 +384,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
         ))}
         {hovered && hoverPoint && (
           <div
-            className="pointer-events-none absolute z-20 flex flex-col whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm"
+            className="pointer-events-none absolute z-20 flex flex-col whitespace-nowrap rounded-lg border border-black/[0.08] bg-white/95 px-3 py-1.5 text-xs font-medium text-gray-700 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
             style={{
               left: `clamp(70px, ${tooltipLeftPct}%, calc(100% - 70px))`,
               top: `${tooltipTopPct}%`,
