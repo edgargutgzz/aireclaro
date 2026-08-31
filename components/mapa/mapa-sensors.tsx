@@ -1735,7 +1735,7 @@ export default function MapaSensors({
             onClick={onLocationClick}
             disabled={locationStatus === 'locating'}
             aria-busy={locationStatus === 'locating'}
-            className="rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className={`rounded-xl border p-3 shadow-sm backdrop-blur-md transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${userLocation ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
             aria-label={locationLabel}
           >
             <Navigation className={`h-5 w-5 transition-colors ${locationIconTone}`} aria-hidden="true" />
@@ -1994,7 +1994,7 @@ export default function MapaSensors({
               onClick={onLocationClick}
               disabled={locationStatus === 'locating'}
               aria-busy={locationStatus === 'locating'}
-              className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:cursor-default"
+              className={`pointer-events-auto flex h-10 items-center gap-2 rounded-xl border px-3.5 shadow-sm backdrop-blur-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:cursor-default ${userLocation ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80 hover:bg-white/90'}`}
             >
               <Navigation className={`h-4 w-4 flex-shrink-0 transition-colors ${locationIconTone}`} aria-hidden="true" />
               <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">{locationLabel}</span>
