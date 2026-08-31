@@ -360,15 +360,16 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
 
   const hovered = hoverIndex !== null ? data[hoverIndex] : null;
   const hoverPoint = hoverIndex !== null ? points[hoverIndex] : null;
-  // The tooltip rides the hovered point and stays inside the chart. Anchoring
-  // it above the chart's top edge put it over the headline, hiding the very
-  // reading the hover is meant to explain. Percentages, not pixels: the SVG
-  // draws with preserveAspectRatio="none", so 190 viewBox units are 210px at
-  // md and a pixel offset would drift.
+  // The tooltip is pinned just inside the chart's top edge and only tracks the
+  // cursor horizontally, so it holds still while you scrub instead of bobbing
+  // up and down the line. It stays *inside* the plot area, never above it: the
+  // card's PM2.5 headline sits directly overhead, and a tooltip crossing the
+  // top edge would cover the very reading the hover is meant to explain. The
+  // value domain is padded 15% (domainPadding) so the line's own peak never
+  // reaches this band. Percentage for the x offset, not pixels: the SVG draws
+  // with preserveAspectRatio="none", so a pixel offset would drift between the
+  // base and md heights.
   const tooltipLeftPct = hoverPoint ? (hoverPoint.x / width) * 100 : 0;
-  const tooltipTopPct = hoverPoint ? (hoverPoint.y / height) * 100 : 0;
-  // Near the top there is no room above the point, so it flips underneath.
-  const tooltipBelow = hoverPoint ? hoverPoint.y / height < 0.25 : false;
 
   return (
     <div>
@@ -387,10 +388,8 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
             className="pointer-events-none absolute z-20 flex flex-col whitespace-nowrap rounded-lg border border-black/[0.08] bg-white/95 px-3 py-1.5 text-xs font-medium text-gray-700 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
             style={{
               left: `clamp(70px, ${tooltipLeftPct}%, calc(100% - 70px))`,
-              top: `${tooltipTopPct}%`,
-              transform: tooltipBelow
-                ? "translate(-50%, 12px)"
-                : "translate(-50%, calc(-100% - 12px))",
+              top: 0,
+              transform: "translate(-50%, 6px)",
             }}
           >
             {/* Only the hour: the card's headline above shows that hour's
