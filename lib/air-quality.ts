@@ -4,20 +4,17 @@
 // `color` is the index's own color — use it for anything filled: map markers,
 // legend swatches and tints. `ink` is the same level darkened only as far as
 // it must be to read on white — use it for text and hairlines, since pure
-// #ffff00 disappears at 1px on a white chart. `legendInk` goes a step further
-// for small labels sitting on a tinted chip. `markerInk` is the text color the
-// marker's own PM2.5 number wears *on* that level's fill: near-black on the
-// four light levels, white only on purple. It is the one pairing that clears
-// 4.5:1 on every fill, and the number is the marker's second channel, so it
-// has to survive without color. It is set as a custom property rather than an
-// inline color so the stylesheet can retract the number at overview zooms
-// without an !important fight.
+// #ffff00 disappears at 1px on a white chart, and for the marker's fill ring
+// hairline. `legendInk` goes a step further for small labels sitting on a
+// tinted chip. The marker's PM2.5 number is not one of these: it always sits
+// on a white core in a single dark ink (see globals.css), so it needs no
+// per-level pairing.
 export const IMECA_LEVELS = [
-  { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200", markerInk: "#030712" },
-  { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000", markerInk: "#030712" },
-  { limit: 79, label: "Mala", range: "25 – 79 μg/m³", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00", markerInk: "#030712" },
-  { limit: 130, label: "Muy mala", range: "79 – 130 μg/m³", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000", markerInk: "#030712" },
-  { limit: Infinity, label: "Extremadamente mala", range: "> 130 μg/m³", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72", markerInk: "#ffffff" },
+  { limit: 15, label: "Buena", range: "0 – 15 μg/m³", color: "#00e400", ink: "#00b300", legendInk: "#007200" },
+  { limit: 25, label: "Aceptable", range: "15 – 25 μg/m³", color: "#ffff00", ink: "#b2b200", legendInk: "#808000" },
+  { limit: 79, label: "Mala", range: "25 – 79 μg/m³", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00" },
+  { limit: 130, label: "Muy mala", range: "79 – 130 μg/m³", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000" },
+  { limit: Infinity, label: "Extremadamente mala", range: "> 130 μg/m³", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72" },
 ] as const;
 
 // The boundaries between levels, each carrying the color of the level it opens.
@@ -86,11 +83,10 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   dot.style.alignItems = "center";
   dot.style.justifyContent = "center";
   dot.textContent = Math.round(pm25!).toString();
-  // Two tones, handed to CSS so the stylesheet can size the rim per zoom tier
-  // without rebuilding a shadow string here: --marker-ink is the number's
-  // color on this fill, --marker-edge the hairline that keeps a pale fill from
-  // dissolving into pale terrain.
-  dot.style.setProperty("--marker-ink", level.markerInk);
+  // Handed to CSS so the stylesheet owns the rim: --marker-edge is the ink
+  // hairline that keeps a pale fill from dissolving into pale terrain. The
+  // number's color is a fixed dark ink set in globals.css, not a per-level
+  // value, since it now sits on a white core rather than on the fill.
   dot.style.setProperty("--marker-edge", level.ink);
   el.appendChild(dot);
 

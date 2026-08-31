@@ -45,13 +45,29 @@
    over a dense field would flicker numbers on and off under the pointer, and
    the number belongs to the marker whose reading the card is showing. It is
    never lost either way: every marker carries its reading in its aria-label at
-   every zoom. */
+   every zoom.
+
+   Two forms of the same marker. Where the number is hidden it is a solid disc
+   in the level's fill: at overview zoom the field reads as colour alone. Where
+   the number shows (detail zoom, or the selected marker at any zoom) the fill
+   pulls back to a ring and the number sits on a white core, always in one dark
+   ink. Printing a dark numeral straight onto saturated orange or red made the
+   glyph vibrate, and it forced a second ink (white) on purple, so the scale
+   had a seam. Colour on the ring, number on white, is one treatment for all
+   five levels and the AQI-map convention (IQAir, Google, AirNow) for the same
+   reason. */
 .mapa--overview .sensor-marker__dot {
   color: transparent;
 }
+.mapa--overview .sensor-marker__dot::before {
+  display: none;
+}
 
 .mapa--overview .sensor-marker--selected .sensor-marker__dot {
-  color: var(--marker-ink);
+  color: #1f2937;
+}
+.mapa--overview .sensor-marker--selected .sensor-marker__dot::before {
+  display: block;
 }
 
 /* The one deliberate departure from the house ring. ring-gray-900/15 is tuned
@@ -71,13 +87,28 @@
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
-  color: var(--marker-ink);
+  color: #1f2937;
+  font-variant-numeric: tabular-nums;
   box-shadow:
     0 0 0 1px var(--marker-edge),
     0 0 0 3px #fff,
     0 2px 8px rgba(0, 0, 0, 0.25);
   transform: scale(var(--dot-scale, 1));
   transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+/* The white core the number sits on, so the ink never touches the fill. Held
+   behind the numeral with z-index (the dot's own transform is the stacking
+   context, so -1 stays inside the marker) and inside the fill ring, which
+   keeps a pale core from dissolving into pale terrain the way a bare disc
+   would. 26px on the 40px box leaves a ~7px ring. */
+.sensor-marker__dot::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  z-index: -1;
+  border-radius: 50%;
+  background: #fff;
 }
 
 .sensor-marker:hover .sensor-marker__dot {
