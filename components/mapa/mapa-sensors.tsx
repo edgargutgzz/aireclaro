@@ -149,17 +149,18 @@ function FreshnessBadge({ freshness }: { freshness: Freshness }) {
 // The bar's segments are equal width, NOT scaled to each level's μg/m³ span:
 // the top level is unbounded and true widths would crush "Buena" to a sliver.
 // The break numbers under the joins carry the real spacing.
+// All spans, so the bar is valid phrasing content inside the disclosure
+// <button>. Decorative: the level list is the readable key.
 function ScaleBar({ className = "" }: { className?: string }) {
   const count = IMECA_LEVELS.length;
   return (
-    // Decorative: the level list below is the readable key.
-    <div aria-hidden="true" className={className}>
-      <div className="flex h-2 overflow-hidden rounded-full ring-1 ring-inset ring-black/[0.08]">
+    <span aria-hidden="true" className={`block ${className}`}>
+      <span className="flex h-2 overflow-hidden rounded-full ring-1 ring-inset ring-black/[0.08]">
         {IMECA_LEVELS.map((level) => (
           <span key={level.label} className="flex-1" style={{ backgroundColor: level.color }} />
         ))}
-      </div>
-      <div className="relative mt-1 h-3">
+      </span>
+      <span className="relative mt-1 block h-3">
         {IMECA_LEVELS.slice(0, -1).map((level, i) => (
           <span
             key={level.limit}
@@ -169,8 +170,8 @@ function ScaleBar({ className = "" }: { className?: string }) {
             {level.limit}
           </span>
         ))}
-      </div>
-    </div>
+      </span>
+    </span>
   );
 }
 
@@ -235,6 +236,7 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
     );
   }
 
+  // Wide enough that the label, the bar and the chevron sit on one row.
   return (
     <div className={className}>
       <button
@@ -242,20 +244,20 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="aq-legend-detail"
-        className="flex w-full items-center justify-between gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
+        className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
       >
-        <span className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-          Calidad del aire
-        </span>
-        <span className="flex items-center gap-2">
+        <span className="flex flex-shrink-0 flex-col gap-1">
+          <span className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+            Calidad del aire
+          </span>
           <span className="text-[11px] leading-none text-gray-400">PM2.5 · μg/m³</span>
-          <ChevronRight
-            aria-hidden="true"
-            className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
-          />
         </span>
+        <ScaleBar className="min-w-0 flex-1" />
+        <ChevronRight
+          aria-hidden="true"
+          className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? "rotate-90" : ""}`}
+        />
       </button>
-      <ScaleBar className="mt-3" />
       {/* Kept mounted so aria-controls always resolves; `hidden` keeps the shut
           content out of the tab order. */}
       <div id="aq-legend-detail" hidden={!open}>
@@ -2070,7 +2072,7 @@ export default function MapaSensors({
           labelled list on expand. On mobile it rides inside the Capas sheet
           instead. */}
       <div className="pointer-events-none absolute bottom-12 left-1/2 z-10 hidden -translate-x-1/2 md:block">
-        <div className="pointer-events-auto w-72 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
+        <div className="pointer-events-auto w-panel-filters rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md">
           <AirQualityLegend collapsible />
         </div>
       </div>
