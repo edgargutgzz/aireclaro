@@ -426,10 +426,14 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           {/* Current hour — the rightmost point, always marked */}
           <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={latestColor} stroke="white" strokeWidth={2} />
-          {hoverPoint && (
+          {hoverPoint && hovered && (
             <>
+              {/* Crosshair stays neutral (where you are); the dot carries the
+                  air-quality tone for that hour (what band it landed in), the
+                  same logic as the always-on latest-hour dot. Ink tones, not
+                  the marker fills, so pale zones still read on white. */}
               <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
-              <circle cx={hoverPoint.x} cy={hoverPoint.y} r={4} fill="white" stroke={SPARKLINE_COLOR} strokeWidth={2} />
+              <circle cx={hoverPoint.x} cy={hoverPoint.y} r={4} fill={getQualityInfo(hovered.pm25)?.textColor ?? SPARKLINE_COLOR} stroke="white" strokeWidth={2} />
             </>
           )}
         </svg>
