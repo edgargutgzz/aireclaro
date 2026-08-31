@@ -166,7 +166,9 @@ function ScaleBar({ className = "", labels = "thresholds" }: { className?: strin
         // citation all wait for the expanded list.
         <span className="mt-1 flex justify-between text-[11px] font-medium leading-none text-gray-500">
           <span className="whitespace-nowrap">{IMECA_LEVELS[0].label}</span>
-          <span className="whitespace-nowrap">{IMECA_LEVELS[count - 1].label}</span>
+          {/* Abbreviated here only: the full "Extremadamente mala" is the axis
+              end, not a value, and the expanded list spells it out. */}
+          <span className="whitespace-nowrap">Extrem. mala</span>
         </span>
       ) : (
         <span className="relative mt-1 block h-3">
