@@ -56,11 +56,6 @@ const SPARKLINE_COLOR = "#3b82f6";
 // of the Monterrey metro.
 const DEFAULT_SENSOR_ID = "305164";
 
-// Where the markers stop being locators and start being readouts: below this
-// they are bare colored discs, at or above it they print their reading. 14 is
-// the zoom flyTo already uses when it lands on a sensor, so the number appears
-// exactly when the map has taken you to one.
-const MARKER_DETAIL_MIN_ZOOM = 14;
 
 
 
@@ -1421,26 +1416,6 @@ export default function MapaSensors({
       .setLngLat([userLocation.longitude, userLocation.latitude])
       .addTo(map.current);
   }, [userLocation, mapLoaded, flyToUser]);
-
-  // The printed reading follows zoom. One class rather than a per-marker style,
-  // so a zoom event touches one node instead of eighty.
-  useEffect(() => {
-    const mapInstance = map.current;
-    const root = mapContainer.current;
-    if (!mapLoaded || !mapInstance || !root) return;
-
-    const applyDensity = () =>
-      root.classList.toggle(
-        "mapa--overview",
-        (mapInstance as any).getZoom() < MARKER_DETAIL_MIN_ZOOM,
-      );
-
-    applyDensity();
-    mapInstance.on("zoom", applyDensity);
-    return () => {
-      (mapInstance as any).off("zoom", applyDensity);
-    };
-  }, [mapLoaded]);
 
   // Add sensors when both map and data are ready
   useEffect(() => {

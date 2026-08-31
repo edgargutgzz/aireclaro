@@ -38,37 +38,24 @@
   line-height: 1;
 }
 
-/* The reading prints from detail zoom in, and on the selected marker at any
-   zoom. Below that the whole basin reads as one value, so eighty printed
-   numbers say nothing the color has not, and the discs overlap too much to
-   tell them apart. Hover deliberately does not print it: passing the cursor
-   over a dense field would flicker numbers on and off under the pointer, and
-   the number belongs to the marker whose reading the card is showing. It is
-   never lost either way: every marker carries its reading in its aria-label at
-   every zoom.
+/* The number, and the white core it sits on, appear on one marker only: the
+   active one, meaning the sensor the card is speaking for (explicitly tapped,
+   or the default the map opens on). Every other marker is a solid disc in its
+   level's fill, at every zoom.
 
-   Two forms of the same marker. Where the number is hidden it is a solid disc
-   in the level's fill: at overview zoom the field reads as colour alone. Where
-   the number shows (detail zoom, or the selected marker at any zoom) the fill
-   pulls back to a ring and the number sits on a white core, always in one dark
-   ink. Printing a dark numeral straight onto saturated orange or red made the
-   glyph vibrate, and it forced a second ink (white) on purple, so the scale
-   had a seam. Colour on the ring, number on white, is one treatment for all
-   five levels and the AQI-map convention (IQAir, Google, AirNow) for the same
-   reason. */
-.mapa--overview .sensor-marker__dot {
-  color: transparent;
-}
-.mapa--overview .sensor-marker__dot::before {
-  display: none;
-}
+   Colour is the ambient signal across the whole field; the exact reading
+   belongs to the sensor being inspected. In a basin this dense, printing the
+   other fifteen numbers just crowds the map with figures the colour already
+   sorts into the five levels that matter. Nothing is lost: every marker
+   carries its full reading in its aria-label at every zoom, and a tap opens
+   the card. Hover deliberately does not print it either: it would flicker
+   numbers on and off under the pointer, and the number is the card's job.
 
-.mapa--overview .sensor-marker--selected .sensor-marker__dot {
-  color: #1f2937;
-}
-.mapa--overview .sensor-marker--selected .sensor-marker__dot::before {
-  display: block;
-}
+   Where it does show, the fill pulls back to a ring and the number sits on a
+   white core in one dark ink. A dark numeral straight on saturated orange or
+   red vibrated, and it forced white ink on purple, giving the scale a seam.
+   Colour on the ring, number on white, is one treatment for all five levels
+   and the AQI-map convention (IQAir, Google, AirNow) for the same reason. */
 
 /* The one deliberate departure from the house ring. ring-gray-900/15 is tuned
    for a known light surface; over arbitrary map imagery it disappears. A solid
@@ -87,7 +74,7 @@
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
-  color: #1f2937;
+  color: transparent;
   font-variant-numeric: tabular-nums;
   /* Rim then lift. The rim is two hairlines against the border box: the
      level's ink so a pale fill holds its edge on pale terrain, then white so
@@ -114,6 +101,7 @@
    a hair of depth so it layers over the fill instead of cutting through it. */
 .sensor-marker__dot::before {
   content: "";
+  display: none;
   position: absolute;
   inset: 8px;
   z-index: -1;
@@ -132,12 +120,16 @@
    solid ring in that tone, sitting just inside the halo, doubled the signal
    and turned the marker into a bullseye. */
 .sensor-marker--selected .sensor-marker__dot {
+  color: #1f2937;
   box-shadow:
     0 0 0 1px var(--marker-edge),
     0 0 0 3px #fff,
     0 0 0 4px var(--pulse-color),
     0 2px 4px rgba(0, 0, 0, 0.24),
     0 6px 16px rgba(0, 0, 0, 0.16);
+}
+.sensor-marker--selected .sensor-marker__dot::before {
+  display: block;
 }
 
 /* The halo, expanding out from behind the circle while a sensor is selected,
