@@ -1961,11 +1961,13 @@ export default function MapaSensors({
         )}
         </div>{/* end card width wrapper */}
 
-        {/* Both status chips ride the bottom of this column, pinned with
+        {/* Both chips ride the bottom of this column on one row, pinned with
             mt-auto so they hold the same corner whether the card above is
-            open, shut or absent. The freshness badge shows here on desktop;
-            on mobile it sits at the top-left instead (see the left column). */}
-        <div className="flex flex-shrink-0 flex-col items-end gap-2 md:mt-auto">
+            open, shut or absent. Kept as two surfaces, not one: the badge is
+            a passive readout and must not read as clickable, Activar is the
+            control. The freshness badge shows here on desktop; on mobile it
+            sits at the top-left instead (see the left column). */}
+        <div className="flex flex-shrink-0 items-center gap-2 md:mt-auto">
           {freshness && <FreshnessBadge freshness={freshness} />}
           <div>
             <button
