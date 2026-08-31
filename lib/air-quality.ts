@@ -44,11 +44,18 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
 // mapbox's own convention for symbols (symbol-z-order: viewport-y) precisely
 // because it is independent of the data.
 //
-// Only these two lifts are value-independent and so allowed to override it.
+// Only these lifts are value-independent and so allowed to override it: the
+// selected marker, the one under the pointer, and the visitor's own location.
+// The hover lift is what makes a click land on the disc you are actually
+// pointing at: every marker's hit box is a 40px square, so in a dense cluster
+// the squares overlap and, with all of them at the same z, the one that wins
+// the click is just whichever mapbox drew last, not the one under the cursor.
+// Raising the hovered marker above the field resolves that to the visible dot.
 // Kept tiny, because the map container opens no stacking context and these
 // compete directly with the floating panels at z-10.
 export const ACTIVE_MARKER_Z = 6;
-export const USER_MARKER_Z = 7;
+export const HOVER_MARKER_Z = 7;
+export const USER_MARKER_Z = 8;
 
 // `label` becomes the marker's accessible name — without it the markers are
 // unreachable by keyboard and announce as nothing to a screen reader.

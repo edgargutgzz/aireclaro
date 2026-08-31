@@ -6,7 +6,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, ACTIVE_MARKER_Z, USER_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, USER_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -1607,6 +1607,21 @@ export default function MapaSensors({
           return;
         }
         setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, readingAt: latestData?.time_stamp ?? null });
+      });
+
+      // Lift the hovered marker above its neighbours so the click resolves to
+      // the disc under the cursor, not to whichever overlapping 40px hit box
+      // mapbox happened to paint last. The selected marker keeps its own
+      // higher lift; don't stomp it.
+      markerElement.addEventListener("mouseenter", () => {
+        if (!markerElement.classList.contains("sensor-marker--selected")) {
+          markerElement.style.zIndex = HOVER_MARKER_Z.toString();
+        }
+      });
+      markerElement.addEventListener("mouseleave", () => {
+        if (!markerElement.classList.contains("sensor-marker--selected")) {
+          markerElement.style.zIndex = "";
+        }
       });
 
       markerElementsRef.current.set(sensor.sensor_id, markerElement);
