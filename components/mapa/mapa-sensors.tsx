@@ -1961,29 +1961,33 @@ export default function MapaSensors({
         )}
         </div>{/* end card width wrapper */}
 
-        {/* mt-auto pins it to the bottom of the column, so it holds the same
-            corner whether the card above it is open, shut or absent, exactly
-            as the freshness badge does on the left. */}
-        <div className="flex-shrink-0 md:mt-auto">
-          <button
-            type="button"
-            onClick={onLocationClick}
-            disabled={locationStatus === 'locating'}
-            aria-busy={locationStatus === 'locating'}
-            className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:cursor-default"
-          >
-            <Navigation className={`h-4 w-4 flex-shrink-0 transition-colors ${locationIconTone}`} aria-hidden="true" />
-            <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">{locationLabel}</span>
-          </button>
-          {/* Announced separately rather than off the label: a disabled button's
-              own text is not reliably read out when it changes. */}
-          <span role="status" className="sr-only">
-            {locationStatus === 'locating'
-              ? 'Buscando tu ubicación'
-              : userLocation
-                ? 'Ubicación encontrada'
-                : ''}
-          </span>
+        {/* Both status chips ride the bottom of this column, pinned with
+            mt-auto so they hold the same corner whether the card above is
+            open, shut or absent. The freshness badge shows here on desktop;
+            on mobile it sits at the top-left instead (see the left column). */}
+        <div className="flex flex-shrink-0 flex-col items-end gap-2 md:mt-auto">
+          {freshness && <FreshnessBadge freshness={freshness} />}
+          <div>
+            <button
+              type="button"
+              onClick={onLocationClick}
+              disabled={locationStatus === 'locating'}
+              aria-busy={locationStatus === 'locating'}
+              className="pointer-events-auto flex h-10 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:cursor-default"
+            >
+              <Navigation className={`h-4 w-4 flex-shrink-0 transition-colors ${locationIconTone}`} aria-hidden="true" />
+              <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">{locationLabel}</span>
+            </button>
+            {/* Announced separately rather than off the label: a disabled
+                button's own text is not reliably read out when it changes. */}
+            <span role="status" className="sr-only">
+              {locationStatus === 'locating'
+                ? 'Buscando tu ubicación'
+                : userLocation
+                  ? 'Ubicación encontrada'
+                  : ''}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -2042,18 +2046,19 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* The air-quality scale sits at the foot of this rail, above the
-            Actualizado badge. Same w-panel-filters width as the Capas panel,
-            so the rail keeps one edge. md:mt-auto here (not on the badge)
-            collapses the free space above the legend, so legend + badge ride
-            the bottom as one group whether the panel is open or shut. Desktop
-            only: on mobile the legend rides inside the Capas sheet instead. */}
+        {/* The air-quality scale sits at the foot of this rail on desktop.
+            Same w-panel-filters width as the Capas panel, so the rail keeps
+            one edge, and md:mt-auto pins it to the bottom whether the panel
+            above is open or shut. Desktop only: on mobile the legend rides
+            inside the Capas sheet instead. */}
         <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
           <AirQualityLegend collapsible />
         </div>
 
+        {/* Mobile only: on desktop the freshness badge moves to the foot of
+            the right column, next to the Ubicación chip. */}
         {freshness && (
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 md:hidden">
             <FreshnessBadge freshness={freshness} />
           </div>
         )}
