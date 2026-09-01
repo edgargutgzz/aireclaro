@@ -516,9 +516,19 @@ function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info
              "Calidad del Aire" headline above the disclosure is set in. That
              colour rhyme, revealed only once the recs are open, is what says
              the advice tracks the current reading. A 3px rule is a graphical
-             object, so `ink` not `color` (§3). */
+             object, so `ink` not `color` (§3).
+
+             The rule keeps its full `ink` for contrast; what softens is the
+             card behind it: a short `color` wash (the official NOM-172 fill
+             at 8% alpha) fading to nothing across the first ~44px, so the
+             edge reads as tinted glass rather than a hard stripe without the
+             pale levels ever losing the rule. */
           className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white"
-          style={{ borderLeftColor: info.textColor, borderLeftWidth: 3 }}
+          style={{
+            borderLeftColor: info.textColor,
+            borderLeftWidth: 3,
+            backgroundImage: `linear-gradient(to right, color-mix(in srgb, ${info.color} 8%, transparent), transparent 44px)`,
+          }}
         >
           <div className="px-4 py-3.5">
             <div className="mb-1 flex items-center gap-3">
