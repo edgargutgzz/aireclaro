@@ -91,18 +91,19 @@ export default function Navlinks() {
               href={link.href}
               aria-current={isCurrent ? "page" : undefined}
               className={clsx(pill, {
-                // Mobile marks the current tab by tint alone, no fill: a
-                // rounded-full block behind one of three flush tabs on a
-                // translucent bar read as heavy chrome, and iOS / Material
-                // bottom tabs both lead with the tint colour. font-semibold
-                // (below) and aria-current carry the rest.
-                "text-blue-600 md:text-gray-700": isCurrent,
-                // Desktop's surface, dropped while this is the only link, see
-                // soloOnDesktop above. It drops the backdrop-blur the map's
-                // cards use, since the header behind the pill is opaque
-                // stone-50 and there is nothing there to blur.
-                "md:border-white/60 md:bg-white md:shadow-sm": isCurrent && !soloOnDesktop,
-                "md:border-transparent md:bg-transparent md:hover:bg-black/[0.04]": isCurrent && soloOnDesktop,
+                // While Mapa is the only live link, "current" is the same on
+                // both bars: darker ink, font-semibold (below) and
+                // aria-current, no fill. A selected fill marks a choice that
+                // is not on offer, and on desktop it also breaks the header's
+                // rail alignment. See soloOnDesktop above.
+                "text-gray-700 md:hover:bg-black/[0.04]": isCurrent && soloOnDesktop,
+                // The fill returns on both the day a second link ships.
+                // Desktop takes the white glass pill (no backdrop-blur: the
+                // stone-50 header behind it is opaque, nothing to blur).
+                // The mobile bottom bar is itself glass, so white would
+                // vanish on it and it takes a blue wash instead.
+                "border-blue-200 bg-blue-50 text-blue-600 md:border-white/60 md:bg-white md:text-gray-700 md:shadow-sm":
+                  isCurrent && !soloOnDesktop,
                 // gray-600, not gray-400: an unselected label sat at 2.5:1 on
                 // this background, against the 4.5:1 text asks for.
                 "text-gray-600 hover:bg-black/[0.04]": !isCurrent,
