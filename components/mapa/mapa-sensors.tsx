@@ -515,8 +515,18 @@ function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={bodyId}
-          className="group -my-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="group -my-1 flex min-w-0 flex-1 items-center gap-2 rounded-lg py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
+          {/* The band swatch (legend idiom: official `color` body, `ink`
+              hairline) keyed to the current reading, so the tie between this
+              advice and the number above it is visible before the row is even
+              opened. Decorative: the band is named in words the moment it
+              expands, and again in the card headline above. */}
+          <span
+            aria-hidden="true"
+            className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+            style={{ backgroundColor: info.color, boxShadow: `inset 0 0 0 1px ${info.textColor}` }}
+          />
           <span className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
             Recomendaciones de salud
           </span>
@@ -551,23 +561,33 @@ function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info
             The paragraph is indented to the label's own left edge (ml-7:
             a 16px icon plus gap-3), the same reasoning behind the ml-11 on
             Capas' municipality rows, so the icons read as a column. */}
-        <div className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white">
-          <div className="px-4 py-3.5">
-            <div className="mb-1 flex items-center gap-3">
-              <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
-              <p className="text-sm font-semibold text-gray-800">Población General</p>
-            </div>
-            <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
-          </div>
-          {SENSITIVE_GROUPS.map((g) => (
-            <div key={g.key} className="border-t border-gray-100 px-4 py-3.5">
+        <div className="disclosure-in mt-4">
+          {/* Names the dependency in plain language, so the advice reads as
+              a response to the current reading rather than static boilerplate.
+              Band word in its `ink` (the same colour the card headline above
+              carries), everything else in quiet body grey. */}
+          <p className="mb-3 text-xs leading-relaxed text-gray-500">
+            Según la calidad del aire actual,{" "}
+            <span className="font-semibold" style={{ color: info.textColor }}>{info.label}</span>.
+          </p>
+          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+            <div className="px-4 py-3.5">
               <div className="mb-1 flex items-center gap-3">
-                <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                <p className="text-sm font-semibold text-gray-800">{g.label}</p>
+                <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                <p className="text-sm font-semibold text-gray-800">Población General</p>
               </div>
-              <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
+              <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
             </div>
-          ))}
+            {SENSITIVE_GROUPS.map((g) => (
+              <div key={g.key} className="border-t border-gray-100 px-4 py-3.5">
+                <div className="mb-1 flex items-center gap-3">
+                  <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                  <p className="text-sm font-semibold text-gray-800">{g.label}</p>
+                </div>
+                <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
