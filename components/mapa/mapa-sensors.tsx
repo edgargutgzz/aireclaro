@@ -2010,9 +2010,14 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Mobile: sensor info panel — slides up from bottom */}
+      {/* Mobile: sensor info panel — slides up from bottom. It sits above the
+          bottom nav (bottom: 3.5rem), so translateY(100%) parks it with its top
+          edge still ~3.5rem above the viewport floor rather than fully off
+          screen. Without pointer-events-none that invisible strip sat at z-48,
+          over the Capas sheet, and swallowed the swipe that should scroll the
+          municipios list. */}
       <div
-        className="fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        className={`fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden ${selectedSensor ? '' : 'pointer-events-none'}`}
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
