@@ -38,7 +38,7 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
 // darker `ink`. Enough to take the electric edge off IMECA yellow and green on
 // a pale basemap without shifting hue or breaking the read-back to the legend
 // swatch. Mala, Muy mala and Extrem. already have ink === color, so they are
-// untouched. The legend bar and the heatmap ramp keep the pure `color`.
+// untouched. The legend bar keeps the pure `color`.
 export const MARKER_INK_MIX = 0.22;
 export const getMarkerFill = (pm25: number | null): string | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
@@ -55,8 +55,8 @@ export const getMarkerFill = (pm25: number | null): string | null => {
 // hidden. Order comes from latitude instead — see the marker build effect in
 // mapa-sensors.tsx — which is mapbox's own convention for symbols
 // (symbol-z-order: viewport-y) precisely because it is independent of the data.
-// At overview zoom the markers are faint dots under the heatmap wash and most
-// overlaps do not read at all; the tie-break matters once you are zoomed in.
+// Markers are one size at every zoom, so the tie-break is live wherever discs
+// overlap.
 //
 // Only these lifts are value-independent and so allowed to override it: the
 // selected marker and the one under the pointer. The hover lift is what makes a
@@ -117,18 +117,6 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
 
 export const roundPM25 = (value: number | null): string | null => {
   return value !== null ? Math.round(value).toString() : null;
-};
-
-export const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 };
 
 export interface QualityInfo {

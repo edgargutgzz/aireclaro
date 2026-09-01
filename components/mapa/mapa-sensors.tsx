@@ -110,17 +110,14 @@ type Freshness = {
 // ingestion stopped it went on reporting a cheerful green 11:00 AM the next
 // morning. Colour is the glanceable layer and never the only one, the
 // timestamp itself is what carries the state.
-// `flat` drops the shadow: used where the badge sits next to the location
-// button, so the button is visibly the interactive one of the pair. On its
-// own (mobile, top-left) it keeps the shadow to lift off the map.
-function FreshnessBadge({ freshness, flat = false }: { freshness: Freshness; flat?: boolean }) {
+function FreshnessBadge({ freshness }: { freshness: Freshness }) {
   const dot =
     freshness.status === "fresh" ? "bg-green-500" :
     freshness.status === "delayed" ? "bg-amber-500" :
     "bg-gray-400";
 
   return (
-    <div className={`flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 backdrop-blur-md ${flat ? "" : "shadow-sm"}`}>
+    <div className="flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
       <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
         {/* Only fresh data pulses. A dot that keeps ticking in amber or grey
             reads as "working on it" when the truth is "this is old". */}
@@ -1187,9 +1184,8 @@ export default function MapaSensors({
   const [historyLoading, setHistoryLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showSensorDetail, setShowSensorDetail] = useState(false);
-  const [showNearestDetail, setShowNearestDetail] = useState(false);
+  const [showDefaultDetail, setShowDefaultDetail] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
-  const [showQualitySource, setShowQualitySource] = useState(false);
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
   // Point the cursor is on in the 48h chart. While set, the card's headline
   // reports that hour instead of the latest reading, so the chart and the big
@@ -1298,17 +1294,6 @@ export default function MapaSensors({
     return null;
   }, [visibleSensors, data]);
 
-  const areaMedianPm25 = useMemo(() => {
-    const visibleIds = new Set(visibleSensors.map((sensor) => sensor.sensor_id));
-    const values = data
-      .filter((d) => visibleIds.has(d.sensor_id))
-      .map((d) => d.pm25)
-      .filter((v): v is number => v !== null && v > 0.4);
-    if (!values.length) return null;
-    const sorted = [...values].sort((a, b) => a - b);
-    return sorted[Math.floor(sorted.length / 2)];
-  }, [data, visibleSensors]);
-
   // The newest reading anywhere in the data set, which is what the freshness
   // badge reports. Kept as a Date rather than a formatted string: the badge needs to know how
   // old this is, and formatting the age away here is what let it insist the
@@ -1369,7 +1354,7 @@ export default function MapaSensors({
   const defaultRed = defaultSensorData?.red ?? null;
   const defaultLat = defaultSensorData?.lat ?? null;
   const defaultLon = defaultSensorData?.lon ?? null;
-  const displayPm25 = defaultPm25 ?? areaMedianPm25;
+  const displayPm25 = defaultPm25;
   const qualityInfo = getQualityInfo(displayPm25);
 
   // The one marker that wears the pulse: the explicitly selected sensor, else
@@ -1377,9 +1362,7 @@ export default function MapaSensors({
   // handlers read the current value without being rebuilt on each pick.
   const activeSensorId = selectedSensor
     ? selectedSensor.sensor.sensor_id
-    : defaultSensorData
-      ? sensors.find((s) => s.lat === defaultSensorData.lat && s.lon === defaultSensorData.lon)?.sensor_id ?? null
-      : null;
+    : defaultSensorData?.sensorId ?? null;
   activeSensorIdRef.current = activeSensorId;
   activeColorRef.current =
     getQualityInfo((activeSensorId != null ? data.find((d) => d.sensor_id === activeSensorId)?.pm25 : null) ?? null)
@@ -1664,25 +1647,14 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
-          selected. Nav lives in the site-wide header now, not floating here.
-
-          The exact mirror of the Capas column: top-6 to bottom-12, the panel
-          on top taking whatever height is left, and this side's control, the
-          Ubicación chip, pinned to the bottom of the column with mt-auto.
-
-          Both halves of that matter. The chip used to be its own absolutely
-          positioned box at bottom-12 right-6, which is where the card's
-          bottom edge landed once the card was bounded: same z-10, later in
-          the DOM, so the card painted straight over the control. And because
-          the left column reserves h-10 + gap-2 for its freshness badge while
-          this one reserved nothing, the card also ran 48px lower than the
-          Capas panel beside it. One column with a pinned control fixes both:
-          the two panels now end on the same line because they reserve the
-          same slot, and neither control can be covered by a sibling. */}
+      {/* Desktop right column, the mirror of the Capas column: top-6 to
+          bottom-12, the card on top taking whatever height is left, the
+          freshness badge pinned to the foot with mt-auto so the two columns end
+          on the same line (both reserve the same bottom slot). The card shows
+          the default sensor at rest and the selected one once a marker is
+          picked. */}
       <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
-        {/* Quality card, replaced by the selected sensor's card when one is selected */}
         <div className="flex min-h-0 w-panel-lg flex-col">
         {selectedSensor ? (() => {
           const { sensor, pm25, color, textColor } = selectedSensor;
@@ -1923,8 +1895,8 @@ export default function MapaSensors({
           <AirQualityLegend collapsible />
         </div>
 
-        {/* Mobile only: on desktop the freshness badge moves to the foot of
-            the right column, next to the Ubicación chip. */}
+        {/* Mobile only: on desktop the freshness badge sits at the foot of the
+            right column instead. */}
         {freshness && (
           <div className="flex-shrink-0 md:hidden">
             <FreshnessBadge freshness={freshness} />
@@ -2070,8 +2042,8 @@ export default function MapaSensors({
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowNearestDetail(v => !v)}
-                  aria-expanded={showNearestDetail}
+                  onClick={() => setShowDefaultDetail(v => !v)}
+                  aria-expanded={showDefaultDetail}
                   className="flex min-w-0 w-full items-center gap-1.5 rounded-lg text-sm text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 >
                   <span className="truncate">
@@ -2079,9 +2051,9 @@ export default function MapaSensors({
                       ? `${defaultIsSima ? "Estación" : "Sensor"}: ${defaultName}`
                       : "Promedio de la Zona Metropolitana de Monterrey"}
                   </span>
-                  <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-90' : ''}`} />
+                  <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showDefaultDetail ? 'rotate-90' : ''}`} />
                 </button>
-                {showNearestDetail && (
+                {showDefaultDetail && (
                   <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
                     <div className="flex flex-col gap-3 px-4 py-3">
                       {defaultLat !== null && defaultLon !== null && (
