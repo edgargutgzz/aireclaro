@@ -16,8 +16,8 @@
 //     floor, so Aceptable's ink is nudged to gold; Muy mala and Extrem.
 //     already clear 3:1 at their official `color`, so ink === color for both.
 //
-// The marker's PM2.5 number is neither of these: it is a white glyph with a
-// single fixed dark stroke (globals.css), so it needs no per-level pairing.
+// Markers print no number, so there is no third digit-ink token: the reading
+// lives on the estación card and in each marker's aria-label (see createMarker).
 // `bounds` is the level's PM2.5 span with no unit: the legend prints μg/m³
 // once in its header, not on every row.
 export const IMECA_LEVELS = [
@@ -109,7 +109,6 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   el.style.border = "none";
   el.style.padding = "0";
   el.style.background = "none";
-  el.style.fontFamily = "inherit";
 
   const pulse = document.createElement("span");
   pulse.className = "sensor-marker__pulse";
@@ -118,29 +117,16 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   const dot = document.createElement("span");
   dot.className = "sensor-marker__dot";
   dot.style.borderRadius = "50%";
-  dot.style.display = "flex";
-  dot.style.alignItems = "center";
-  dot.style.justifyContent = "center";
-  dot.textContent = Math.round(pm25!).toString();
-  // Handed to CSS so the stylesheet owns the rim, the fill alpha and the
-  // selected disc's number:
+  // No visible number: the exact reading lives on the estación card (always on
+  // screen, with its word label) and in this button's aria-label. The marker
+  // is a locator plus a severity colour, the IQAir / Google AQI model.
+  // Handed to CSS so the stylesheet owns the rim and the fill alpha:
   //   --marker-fill   the mixed colour, painted by globals.css at 75% at rest
   //                   and solid on the selected disc
   //   --marker-edge   the ink hairline that keeps a pale fill from dissolving
   //                   into pale terrain
-  //   --marker-number / --marker-number-shadow   the selected disc's PM2.5
-  //                   digits: near-black on every fill except Extrem.'s deep
-  //                   purple, which takes white. Each clears 4.5:1 on its own
-  //                   fill, so no outline stroke is needed; the shadow is one
-  //                   soft pass in the opposite tone.
-  const whiteNumber = level.limit === Infinity; // Extrem. only
   dot.style.setProperty("--marker-fill", bg);
   dot.style.setProperty("--marker-edge", level.ink);
-  dot.style.setProperty("--marker-number", whiteNumber ? "#ffffff" : "#111827");
-  dot.style.setProperty(
-    "--marker-number-shadow",
-    whiteNumber ? "0 1px 2px rgba(0, 0, 0, 0.3)" : "0 1px 1px rgba(255, 255, 255, 0.4)",
-  );
   el.appendChild(dot);
 
   return el;
