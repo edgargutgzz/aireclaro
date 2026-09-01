@@ -16,8 +16,8 @@
 //     floor, so Aceptable's ink is nudged to gold; Muy mala and Extrem.
 //     already clear 3:1 at their official `color`, so ink === color for both.
 //
-// The marker's PM2.5 number is neither of these: it sits on a white core in a
-// single fixed dark ink (globals.css), so it needs no per-level pairing.
+// The marker's PM2.5 number is neither of these: it is a white glyph with a
+// single fixed dark stroke (globals.css), so it needs no per-level pairing.
 // `bounds` is the level's PM2.5 span with no unit: the legend prints μg/m³
 // once in its header, not on every row.
 export const IMECA_LEVELS = [
@@ -51,7 +51,7 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
 // yellow and green on a pale basemap without shifting hue or breaking the
 // read-back to the legend swatch. Extrem. has ink === color, so it is
 // untouched. The legend bar keeps the pure `color`. The resting-disc alpha
-// (85%) is a separate lever and lives in globals.css, not here.
+// (75%) is a separate lever and lives in globals.css, not here.
 //
 // `ink` was retuned lighter (§ above, 3:1 not 4.5:1) after this mix was
 // tuned, so the calming effect here is weaker than when this constant was
@@ -123,11 +123,11 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   dot.style.justifyContent = "center";
   dot.textContent = Math.round(pm25!).toString();
   // Handed to CSS so the stylesheet owns the rim and the fill alpha:
-  // --marker-fill is the mixed colour, painted by globals.css at 85% at rest
+  // --marker-fill is the mixed colour, painted by globals.css at 75% at rest
   // and solid on the selected disc; --marker-edge is the ink hairline that
   // keeps a pale fill from dissolving into pale terrain. The number's color is
   // a fixed dark ink set in globals.css, not a per-level value, since it sits
-  // on a white core rather than on the fill.
+  // straight on the fill as outlined type rather than on a shape of its own.
   dot.style.setProperty("--marker-fill", bg);
   dot.style.setProperty("--marker-edge", level.ink);
   el.appendChild(dot);
