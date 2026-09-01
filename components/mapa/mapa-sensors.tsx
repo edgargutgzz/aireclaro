@@ -249,60 +249,13 @@ function LegendDetail({ className = "" }: { className?: string }) {
   );
 }
 
-// The legend takes three shapes:
-//  - Desktop rail (`collapsible`): the bar and its thresholds stay visible, the
-//    labelled list sits behind a chevron.
-//  - Mobile map (`iconWhenClosed`): at rest it's a compact icon button the size
-//    of the Capas control; tapping it unfolds the full card upward.
-//  - Capas sheet (neither): already nested in a disclosure, so it renders in
-//    full with no toggle.
-function AirQualityLegend({ className = "", collapsible = false, iconWhenClosed = false }: { className?: string; collapsible?: boolean; iconWhenClosed?: boolean }) {
+// On the map (desktop) the legend is a disclosure: the bar and its thresholds
+// stay visible, the labelled list sits behind a chevron. On mobile it's a
+// bottom sheet (see the `showLegend` panel below), so the map only carries an
+// icon button. Inside the Capas sheet it renders fully expanded with no toggle.
+function AirQualityLegend({ className = "", collapsible = false }: { className?: string; collapsible?: boolean }) {
   const [open, setOpen] = useState(false);
   const detailId = `aq-legend-detail-${useId().replace(/:/g, "")}`;
-
-  // Mobile map: an icon button at rest, the full card when open. The scale bar
-  // moves inside the open card, since nothing of it shows at rest. The card is
-  // pinned bottom-left by its wrapper, so it grows upward on its own.
-  if (iconWhenClosed) {
-    if (!open) {
-      return (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          aria-expanded={false}
-          aria-label="Calidad del aire"
-          className={`rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md ${className}`}
-        >
-          <Wind aria-hidden="true" className="h-5 w-5 text-gray-700" />
-        </button>
-      );
-    }
-    return (
-      <div
-        className={`disclosure-in-up w-[min(20rem,calc(100vw-3rem))] rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md ${className}`}
-      >
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          aria-expanded={true}
-          aria-controls={detailId}
-          className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
-        >
-          <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-            Calidad del aire
-          </span>
-          <ScaleBar labels="ends" className="min-w-0 flex-1" />
-          <ChevronRight
-            aria-hidden="true"
-            className="h-4 w-4 flex-shrink-0 -rotate-90 text-gray-400"
-          />
-        </button>
-        <div id={detailId}>
-          <LegendDetail className="mt-3 border-t border-gray-100 pt-3" />
-        </div>
-      </div>
-    );
-  }
 
   if (!collapsible) {
     return (
@@ -1253,6 +1206,7 @@ export default function MapaSensors({
   const selectedIdRef = useRef<number | null>(null);
 
   const [showFilters, setShowFilters] = useState(false);
+  const [showLegend, setShowLegend] = useState(false); // mobile only — the air-quality legend as a bottom sheet
   const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
   const [showCalidadContent, setShowCalidadContent] = useState(true); // desktop only — Calidad del aire body starts expanded
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -1695,17 +1649,22 @@ export default function MapaSensors({
 
       {/* Mobile map controls — a right-edge stack, hidden when the sheet is
           expanded. The air-quality legend sits on top of the Capas button as a
-          matching icon button; tapping it unfolds the full colour key upward,
-          leaving the Capas button pinned in place. Desktop carries the legend
-          at the foot of the left rail instead. */}
+          matching icon button; each opens its own bottom sheet. Desktop carries
+          the legend at the foot of the left rail instead. */}
       {sheetState === 'peek' && (
         <div
           className="fixed right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
           style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
         >
-          <AirQualityLegend iconWhenClosed />
           <button
-            onClick={() => setShowFilters((v) => !v)}
+            onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
+            className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showLegend ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
+            aria-label="Calidad del aire"
+          >
+            <Wind className={`h-5 w-5 ${showLegend ? 'text-gray-900' : 'text-gray-700'}`} />
+          </button>
+          <button
+            onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
             className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showFilters ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
             aria-label="Capas"
           >
@@ -1756,6 +1715,40 @@ export default function MapaSensors({
             onShowPM25Info={() => setShowPM25Info(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
           />
+        </div>
+      </div>
+
+      {/* Air-quality legend backdrop — mobile only */}
+      <div
+        className={`fixed inset-0 z-[46] bg-black/20 transition-opacity duration-300 md:hidden ${
+          showLegend ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        onClick={() => setShowLegend(false)}
+      />
+
+      {/* Air-quality legend panel — mobile: slides up from bottom, the same
+          sheet as Capas. The scale bar and its threshold list; no toggle,
+          since the sheet itself is the disclosure. */}
+      <div
+        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        style={{
+          transform: showLegend ? 'translateY(0)' : 'translateY(100%)',
+          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+        }}
+      >
+        <div
+          className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
+          onClick={() => setShowLegend(false)}
+        >
+          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
+          <p className="text-base font-medium text-gray-700">Calidad del aire</p>
+        </div>
+        <div
+          className="flex max-h-[70svh] flex-col overflow-y-auto overscroll-contain px-5"
+          style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
+        >
+          <ScaleBar />
+          <LegendDetail className="mt-4 border-t border-gray-100 pt-4" />
         </div>
       </div>
 
