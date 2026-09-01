@@ -136,26 +136,6 @@ function FreshnessBadge({ freshness, flat = false }: { freshness: Freshness; fla
   );
 }
 
-// The one text line that carries the metro reading while nothing is selected,
-// next to the legend on desktop and in a slim strip at the foot of the map on
-// mobile. The wash paints the same thing; this is its text alternative and the
-// answer to "what's the number today". Median (a symmetric statistic) with the
-// sensor count stated, so it is not leaning toward either end of the scale.
-function MetroSummary({ pm25, count }: { pm25: number | null; count: number }) {
-  const info = getQualityInfo(pm25);
-  if (!info || pm25 === null || count === 0) return null;
-  return (
-    <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[13px] leading-tight">
-      <span className="font-medium text-gray-500">Zona metropolitana</span>
-      <span className="font-semibold" style={{ color: info.textColor }}>{info.label}</span>
-      <span className="whitespace-nowrap text-gray-500">
-        mediana <span className="font-medium text-gray-700">{roundPM25(pm25)}</span> μg/m³
-      </span>
-      <span className="whitespace-nowrap text-gray-500">· {count} {count === 1 ? "sensor" : "sensores"}</span>
-    </p>
-  );
-}
-
 // The measurement itself, not just a colour key: a segmented PM2.5 scale with
 // the μg/m³ thresholds printed at the breaks, then a labelled row per level.
 //
@@ -1295,20 +1275,6 @@ export default function MapaSensors({
     return shown === mapped ? "Todos los sensores" : `${shown} de ${mapped} sensores`;
   }, [sensors, visibleSensors, data]);
 
-  // The metro reading while nothing is selected: the median PM2.5 across every
-  // visible sensor that is actually reporting, plus that count. Median so one
-  // spiking sensor cannot swing the headline; the wash shows where it is worse.
-  const areaSummary = useMemo(() => {
-    const visibleIds = new Set(visibleSensors.map((sensor) => sensor.sensor_id));
-    const values = data
-      .filter((d) => visibleIds.has(d.sensor_id))
-      .map((d) => d.pm25)
-      .filter((v): v is number => v !== null && v > 0.4)
-      .sort((a, b) => a - b);
-    if (!values.length) return null;
-    return { median: values[Math.floor(values.length / 2)], count: values.length };
-  }, [data, visibleSensors]);
-
   // The newest reading anywhere in the data set, which is what the freshness
   // badge reports. Kept as a Date rather than a formatted string: the badge needs to know how
   // old this is, and formatting the age away here is what let it insist the
@@ -1875,18 +1841,12 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* The metro reading and the scale to read it by, at the foot of this
-            rail on desktop. Same w-panel-filters width as the Capas panel, so
-            the rail keeps one edge; md:mt-auto pins it to the bottom whether the
-            panel above is open or shut. Desktop only: on mobile the summary
-            rides in a strip at the foot of the map and the legend inside the
-            Capas sheet. */}
+        {/* The air-quality scale sits at the foot of this rail on desktop. Same
+            w-panel-filters width as the Capas panel, so the rail keeps one edge;
+            md:mt-auto pins it to the bottom whether the panel above is open or
+            shut. Desktop only: on mobile the legend rides inside the Capas
+            sheet instead. */}
         <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
-          {areaSummary && (
-            <div className="mb-3 border-b border-gray-100 pb-3">
-              <MetroSummary pm25={areaSummary.median} count={areaSummary.count} />
-            </div>
-          )}
           <AirQualityLegend collapsible />
         </div>
 
@@ -1979,20 +1939,6 @@ export default function MapaSensors({
           );
         })()}
       </div>
-
-      {/* Mobile: the metro reading as a slim strip at the foot of the map, where
-          the resting sheet used to be. Hidden while a sensor sheet is open over
-          it. On desktop the same line sits by the legend. */}
-      {areaSummary && !selectedSensor && (
-        <div
-          className="pointer-events-none fixed inset-x-4 z-[40] md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem)' }}
-        >
-          <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 px-4 py-2.5 shadow-sm backdrop-blur-md">
-            <MetroSummary pm25={areaSummary.median} count={areaSummary.count} />
-          </div>
-        </div>
-      )}
 
       {/* Recomendaciones de salud popup — the same dialog as the rest, rather
           than a bare div: it was the one popup with no name for assistive
