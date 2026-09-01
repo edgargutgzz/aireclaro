@@ -112,10 +112,11 @@ type Freshness = {
 // morning. Colour is the glanceable layer and never the only one, the
 // timestamp itself is what carries the state.
 //
-// Both breakpoints frame the dot + text in FreshnessBadge (glass pill). Desktop
-// pins it to the foot of the right column; mobile floats it at the bottom-left
-// of the map, level with the Capas/legend buttons and clear of the sheet. It is
-// low-priority chrome, so it stays out of the sensor cards entirely.
+// Desktop frames the dot + text in FreshnessBadge (glass pill), pinned to the
+// foot of the right column. Mobile has no rail for a chip and a floating one
+// over the map reads as a stray control, so the same two parts sit in the
+// bottom sheet's peek header (FreshnessLine, no pill), under "Calidad del
+// Aire" — attached to the reading they date. Not in the expanded detail card.
 function FreshnessDot({ status }: { status: Freshness["status"] }) {
   const dot =
     status === "fresh" ? "bg-green-500" :
@@ -137,19 +138,7 @@ function FreshnessDot({ status }: { status: Freshness["status"] }) {
 // The label is the quiet half and the time is the information, so they do not
 // share one weight and one colour. "Actualizado" is never the dot's only
 // companion — a bare colour cannot say how old "old" is.
-//
-// `compact` (mobile floating pill) drops the "Actualizado" label and shrinks
-// the type: the dot carries the "this is a freshness readout" cue there, and
-// the pill should recede next to the Capas/legend buttons rather than match
-// them. The time itself still spells out the state.
-function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
-  if (compact) {
-    return (
-      <time dateTime={freshness.dateTime} className="whitespace-nowrap text-[11px] font-medium text-gray-600">
-        {freshness.when}
-      </time>
-    );
-  }
+function FreshnessText({ freshness }: { freshness: Freshness }) {
   return (
     <span className="whitespace-nowrap text-[13px] text-gray-500">
       Actualizado{" "}
@@ -160,20 +149,22 @@ function FreshnessText({ freshness, compact = false }: { freshness: Freshness; c
   );
 }
 
-// The dot + text in a glass pill. Desktop rides the foot of the right column;
-// mobile floats it bottom-left over the map with `compact`: shorter, no shadow
-// and a lighter ground so it reads as status, not a control.
-function FreshnessBadge({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
+// Desktop: the dot + text in a glass pill, riding the foot of the right column.
+function FreshnessBadge({ freshness }: { freshness: Freshness }) {
   return (
-    <div
-      className={
-        compact
-          ? "flex h-8 flex-shrink-0 items-center gap-1.5 rounded-lg border border-white/60 bg-white/70 px-2.5 backdrop-blur-md"
-          : "flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md"
-      }
-    >
+    <div className="flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
       <FreshnessDot status={freshness.status} />
-      <FreshnessText freshness={freshness} compact={compact} />
+      <FreshnessText freshness={freshness} />
+    </div>
+  );
+}
+
+// Mobile: the same dot + text with no pill, for the bottom sheet's peek header.
+function FreshnessLine({ freshness, className = "" }: { freshness: Freshness; className?: string }) {
+  return (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <FreshnessDot status={freshness.status} />
+      <FreshnessText freshness={freshness} />
     </div>
   );
 }
@@ -1641,9 +1632,9 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  // 5.5rem of peek showing above the nav: the grabber and the "Calidad del Aire"
-  // row. Freshness floats separately over the map, so it adds nothing here.
-  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5.5rem))';
+  // 6.5rem of peek showing above the nav: the grabber, the "Calidad del Aire"
+  // row and the freshness line under it. 5.5rem fit the row alone.
+  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 6.5rem))';
 
   const handleSheetTap = useCallback(() => {
     setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
@@ -1664,7 +1655,7 @@ export default function MapaSensors({
       {sheetState === 'peek' && (
         <div
           className="fixed right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
         >
           <button
             onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
@@ -1680,20 +1671,6 @@ export default function MapaSensors({
           >
             <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
           </button>
-        </div>
-      )}
-
-      {/* Data freshness — mobile: a compact floating pill at the bottom-left of
-          the map, low-left of the Capas/legend stack. Low-priority chrome, so it
-          sits over the map rather than in the sensor cards, reads lighter than
-          the buttons, and hides with the controls once the sheet is expanded.
-          Desktop pins the full-size badge to the foot of the left rail. */}
-      {sheetState === 'peek' && freshness && (
-        <div
-          className="fixed left-6 z-[45] md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
-        >
-          <FreshnessBadge freshness={freshness} compact />
         </div>
       )}
 
@@ -1963,8 +1940,8 @@ export default function MapaSensors({
 
         {/* The freshness badge rides the bottom of this column, pinned with
             mt-auto so it holds the same corner whether the card above is open,
-            shut or absent. Desktop only; on mobile the same badge floats at the
-            bottom-left of the map (see the mobile controls above). */}
+            shut or absent. Desktop only; on mobile the dot + text sit in the
+            bottom sheet's peek header instead (FreshnessLine). */}
         {freshness && (
           <div className="flex-shrink-0 md:mt-auto">
             <FreshnessBadge freshness={freshness} />
@@ -2160,6 +2137,12 @@ export default function MapaSensors({
               <span className="text-sm text-gray-300">—</span>
             ))}
           </div>
+          {/* Freshness sits with the reading it dates, in the always-visible
+              peek row. It drops away with the rest of this row once the sheet
+              is expanded — the detail card doesn't repeat it. */}
+          {sheetState === 'peek' && freshness && (
+            <FreshnessLine freshness={freshness} className="mt-2" />
+          )}
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
