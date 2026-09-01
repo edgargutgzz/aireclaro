@@ -704,10 +704,12 @@ function InfoDialog({
     <DialogShell
       onClose={onClose}
       labelledBy={titleId}
-      /* Glass, like the map panels, but at a higher opacity: this surface
-         carries paragraphs rather than chrome, so contrast wins over
-         transparency. */
-      className="flex max-h-[85svh] w-[85%] max-w-md flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/90 p-8 shadow-xl backdrop-blur-xl"
+      /* Not glass. The map panels are chrome and float in the workspace; this
+         surface carries paragraphs, and even at /90 the map's colour bled
+         through enough to drop the gray-500 body copy under 4.5:1. Opaque
+         white on a visible gray-200 hairline; the scrim's blur does the
+         "floating above the map" work on its own. */
+      className="flex max-h-[85svh] w-[85%] max-w-md flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white p-8 shadow-xl"
     >
       {/* The header stays put and only the body scrolls: the X is now the
           only dismiss control on screen, and a dismiss control that scrolls

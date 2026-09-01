@@ -287,10 +287,12 @@
   animation: dialog-in 160ms ease-out;
 }
 
-/* The scrim blurs harder than the map panels do, so nothing readable shows
-   through the dialog's own glass. */
+/* The dialog panel is opaque, so the scrim does all the depth work: it dims
+   and blurs the map into an unreadable ground the panel floats above. Held a
+   touch darker than the sheet scrims (0.2) because there is no translucency
+   in the panel to help separate it. */
 .info-dialog::backdrop {
-  background-color: rgb(0 0 0 / 0.3);
+  background-color: rgb(0 0 0 / 0.4);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   animation: dialog-backdrop-in 160ms ease-out;
