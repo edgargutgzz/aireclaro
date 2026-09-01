@@ -247,6 +247,23 @@
   .disclosure-in-up { animation: none; }
 }
 
+/* The trend sparkline wipes its trace on from left to right when a marker is
+   picked (never for the default sensor the card opens on). The class rides on
+   the trace <g> only, so the dashed reference lines and day dividers behind it
+   stay put while the line fills in. */
+@keyframes sparkline-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.sparkline-wipe {
+  animation: sparkline-wipe 600ms cubic-bezier(0.33, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sparkline-wipe { animation: none; }
+}
+
 /* Dialogs fade and settle in rather than snapping onto the screen. They are
    the platform's <dialog> element, so the scrim is ::backdrop rather than a
    div of our own, and the two fade in together. */

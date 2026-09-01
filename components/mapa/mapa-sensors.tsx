@@ -254,9 +254,7 @@ const prefersReducedMotion = () =>
 function Sparkline({ data, onHoverChange, animateIn = false }: { data: HistoryPoint[]; onHoverChange?: (point: HistoryPoint | null) => void; animateIn?: boolean }) {
   const svgRef = useRef<SVGSVGElement>(null);
   // useId() contains colons; strip them so the url(#id) reference is safe.
-  const rawId = useId().replace(/:/g, "");
-  const gradientId = `spark-${rawId}`;
-  const clipId = `spark-wipe-${rawId}`;
+  const gradientId = `spark-${useId().replace(/:/g, "")}`;
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const wipe = animateIn && !prefersReducedMotion();
 
@@ -388,25 +386,6 @@ function Sparkline({ data, onHoverChange, animateIn = false }: { data: HistoryPo
               <stop offset="0%" stopColor={SPARKLINE_COLOR} stopOpacity={0.28} />
               <stop offset="100%" stopColor={SPARKLINE_COLOR} stopOpacity={0} />
             </linearGradient>
-            {wipe && (
-              /* A reveal rect that grows to full width once, easing out. Only
-                 the data trace is clipped to it; the reference lines and day
-                 dividers stay put so the frame reads as stable while the line
-                 fills in. */
-              <clipPath id={clipId}>
-                <rect x={0} y={0} width={0} height={height}>
-                  <animate
-                    attributeName="width"
-                    values={`0;${width}`}
-                    keyTimes="0;1"
-                    calcMode="spline"
-                    keySplines="0.33 0 0 1"
-                    dur="0.6s"
-                    fill="freeze"
-                  />
-                </rect>
-              </clipPath>
-            )}
           </defs>
           {thresholds.map((t) => (
             <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.55} />
@@ -414,7 +393,7 @@ function Sparkline({ data, onHoverChange, animateIn = false }: { data: HistoryPo
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
           ))}
-          <g clipPath={wipe ? `url(#${clipId})` : undefined}>
+          <g className={wipe ? "sparkline-wipe" : undefined}>
             <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
             <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
             <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
