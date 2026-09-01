@@ -1637,6 +1637,20 @@ export default function MapaSensors({
         </div>
       )}
 
+      {/* Mobile air-quality legend — the colour key, in view without opening
+          Capas. Floated bottom-left, level with the Capas button, and hidden
+          with it when the sheet is expanded. Sits low on the map, so it opens
+          upward into the free space above. Desktop carries this at the foot of
+          the left rail instead. */}
+      {sheetState === 'peek' && (
+        <div
+          className="fixed left-6 right-20 z-[45] md:hidden rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md"
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
+        >
+          <AirQualityLegend collapsible />
+        </div>
+      )}
+
       {/* Layers filter backdrop — mobile only */}
       <div
         className={`fixed inset-0 z-[46] bg-black/20 transition-opacity duration-300 md:hidden ${
@@ -1924,19 +1938,10 @@ export default function MapaSensors({
         {/* The air-quality scale sits at the foot of this rail on desktop.
             Same w-panel-filters width as the Capas panel, so the rail keeps
             one edge, and md:mt-auto pins it to the bottom whether the panel
-            above is open or shut. Desktop only: on mobile the legend rides
-            inside the Capas sheet instead. */}
+            above is open or shut. Desktop only: on mobile the legend floats
+            at the bottom-left of the map, level with the Capas button. */}
         <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
           <AirQualityLegend collapsible />
-        </div>
-
-        {/* Mobile only: the air-quality scale, floated at the top of the map so
-            the colour key is in view without opening Capas. Desktop carries
-            this at the foot of this rail instead (above), so it opens upward
-            there; here it opens downward into the map. Collapsed at rest to
-            stay a single row. */}
-        <div className="pointer-events-auto w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:hidden">
-          <AirQualityLegend collapsible openDirection="down" />
         </div>
 
         {/* Mobile only: on desktop the freshness badge sits at the foot of the
