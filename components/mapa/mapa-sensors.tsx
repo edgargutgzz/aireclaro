@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Navigation, Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
+import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, USER_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -32,11 +32,6 @@ interface Data {
   sensor_id: number;
   pm25: number;
   time_stamp: string;
-}
-
-interface UserLocation {
-  latitude: number;
-  longitude: number;
 }
 
 interface HistoryPoint {
@@ -1134,19 +1129,11 @@ function LayersFilterContent({
   );
 }
 
-// How long the opening / locate camera moves run. 4.5s, not the old 3s: the
-// normal path covers five zoom levels (8 to 13) and three seconds through that
-// much scale change read as a lunge. The move stays on flyTo's own curve, which
-// implements van Wijk-Nuij and holds *perceived* zoom speed constant across the
-// change; a hand-rolled easing on top of that fights it and the zoom-in ends up
-// accelerating into the stop.
-const OPENING_MOVE_MS = 4500;
-
-// A one-off opening flourish is not "essential" motion. A visitor who asked the
-// OS for reduced motion gets an instant jumpTo to the same framing instead.
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+// Where the map opens: the whole Monterrey metro, so the painted wash is the
+// first thing you see. No opening fly and no locate-me, this is an open-data
+// map of the airshed, not a personal "air near me" readout.
+const OPENING_CENTER: [number, number] = [-100.301, 25.685];
+const OPENING_ZOOM = 10.4;
 
 // The painted PM2.5 wash: a Mapbox heatmap layer under the sensor markers,
 // weighted by the reading and coloured on the IMECA scale. It is the "this is
@@ -1184,7 +1171,6 @@ export default function MapaSensors({
   const activeColorRef = useRef<string>(SPARKLINE_COLOR);
   const selectedIdRef = useRef<number | null>(null);
 
-  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
   const [showCalidadContent, setShowCalidadContent] = useState(true); // desktop only — Calidad del aire body starts expanded
@@ -1219,18 +1205,6 @@ export default function MapaSensors({
   // reports that hour instead of the latest reading, so the chart and the big
   // number never disagree.
   const [hoveredHistory, setHoveredHistory] = useState<HistoryPoint | null>(null);
-  // idle -> locating -> active | denied | unavailable. This used to be a lone
-  // boolean that only recorded PERMISSION_DENIED, so a timeout or a failed fix
-  // left the button sitting in its resting state with nothing to show for the
-  // click, forever.
-  const [locationStatus, setLocationStatus] =
-    useState<'idle' | 'locating' | 'active' | 'denied' | 'unavailable'>('idle');
-  // Whether the permission check has finished. The opening camera waits on it,
-  // so a visitor who already granted access gets one flight, to themselves,
-  // instead of one to the default station and another back.
-  const [permissionChecked, setPermissionChecked] = useState(false);
-  const userMarkerRef = useRef<Marker | null>(null);
-  const [showLocationTip, setShowLocationTip] = useState(false);
 
   // One entry per municipality that actually has sensors, labelled with its
   // best spelling and counted so the list says how much each filter holds.
@@ -1309,7 +1283,10 @@ export default function MapaSensors({
     return shown === mapped ? "Todos los sensores" : `${shown} de ${mapped} sensores`;
   }, [sensors, visibleSensors, data]);
 
-  const nearestSensorData = useMemo(() => {
+  // The sensor the "Calidad del Aire" card speaks for when nothing is selected:
+  // a fixed representative station (TEC-AMM-RB-006), falling through to any
+  // reporting sensor. Always a real sensor, never an area average.
+  const defaultSensorData = useMemo(() => {
     if (!visibleSensors.length || !data.length) return null;
 
     const buildFromSensor = (sensor: Sensor) => {
@@ -1320,21 +1297,6 @@ export default function MapaSensors({
       return { pm25: d.pm25, readingAt: d.time_stamp, name, isSima, red: sensor.red ?? null, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
     };
 
-    if (userLocation) {
-      const sorted = [...visibleSensors].sort((a, b) =>
-        getDistance(userLocation.latitude, userLocation.longitude, a.lat, a.lon) -
-        getDistance(userLocation.latitude, userLocation.longitude, b.lat, b.lon)
-      );
-      for (const sensor of sorted) {
-        const result = buildFromSensor(sensor);
-        if (result) return result;
-      }
-    }
-
-    // No location shared (or nothing near it reporting) — open on a fixed
-    // representative sensor (TEC-AMM-RB-006), then fall through to any
-    // sensor that has a reading: the card always speaks for a real sensor,
-    // never for an area average.
     const defaultSensor = visibleSensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
     const fromDefault = defaultSensor ? buildFromSensor(defaultSensor) : null;
     if (fromDefault) return fromDefault;
@@ -1344,7 +1306,7 @@ export default function MapaSensors({
       if (result) return result;
     }
     return null;
-  }, [userLocation, visibleSensors, data]);
+  }, [visibleSensors, data]);
 
   const areaMedianPm25 = useMemo(() => {
     const visibleIds = new Set(visibleSensors.map((sensor) => sensor.sensor_id));
@@ -1397,7 +1359,7 @@ export default function MapaSensors({
   // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
     if (now === null) return null;
-    const onScreen = selectedSensor?.readingAt ?? nearestSensorData?.readingAt ?? null;
+    const onScreen = selectedSensor?.readingAt ?? defaultSensorData?.readingAt ?? null;
     const reading = onScreen ? new Date(onScreen) : latestReading;
     if (!reading || Number.isNaN(reading.getTime())) return null;
 
@@ -1409,46 +1371,24 @@ export default function MapaSensors({
       when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
       status: age < 90 * 60 * 1000 ? "fresh" : age < 6 * 60 * 60 * 1000 ? "delayed" : "stale",
     };
-  }, [selectedSensor, nearestSensorData, latestReading, now]);
+  }, [selectedSensor, defaultSensorData, latestReading, now]);
 
-  // What the location control says and shows. The arrow stays in every state:
-  // swapping it for a dot when located made the button an exact copy of the
-  // freshness badge in the opposite corner, which is not a control at all, and
-  // took away the one glyph that says "this recentres the map".
-  const locationBlocked = locationStatus === 'denied' || locationStatus === 'unavailable';
-  const locationLabel =
-    locationStatus === 'locating' ? 'Buscando…' : userLocation ? 'Mi ubicación' : 'Activar ubicación';
-  // gray-500, not gray-400: the resting state is the one asking to be clicked,
-  // and at 2.5:1 it was dimmer than the state it leads to. Active also fills
-  // the arrow (fill-current), the outline-to-solid flip Apple and Google Maps
-  // use for "now tracking", so on/off is not carried by colour alone.
-  const locationIconTone = userLocation
-    ? 'text-blue-500 fill-current'
-    : locationStatus === 'locating'
-      ? 'text-gray-400 animate-pulse motion-reduce:animate-none'
-      : 'text-gray-500';
-  const onLocationClick = () => {
-    if (userLocation) flyToUser();
-    else if (locationBlocked) setShowLocationTip(true);
-    else locate();
-  };
-
-  const nearestPm25 = nearestSensorData?.pm25 ?? null;
-  const nearestName = nearestSensorData?.name ?? null;
-  const nearestIsSima = nearestSensorData?.isSima ?? null;
-  const nearestRed = nearestSensorData?.red ?? null;
-  const nearestLat = nearestSensorData?.lat ?? null;
-  const nearestLon = nearestSensorData?.lon ?? null;
-  const displayPm25 = nearestPm25 ?? areaMedianPm25;
+  const defaultPm25 = defaultSensorData?.pm25 ?? null;
+  const defaultName = defaultSensorData?.name ?? null;
+  const defaultIsSima = defaultSensorData?.isSima ?? null;
+  const defaultRed = defaultSensorData?.red ?? null;
+  const defaultLat = defaultSensorData?.lat ?? null;
+  const defaultLon = defaultSensorData?.lon ?? null;
+  const displayPm25 = defaultPm25 ?? areaMedianPm25;
   const qualityInfo = getQualityInfo(displayPm25);
 
   // The one marker that wears the pulse: the explicitly selected sensor, else
-  // the nearest/default one the card opened on. Mirrored into refs so the map
-  // event handlers read the current value without being rebuilt on each pick.
+  // the default one the card opens on. Mirrored into refs so the map event
+  // handlers read the current value without being rebuilt on each pick.
   const activeSensorId = selectedSensor
     ? selectedSensor.sensor.sensor_id
-    : nearestSensorData
-      ? sensors.find((s) => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon)?.sensor_id ?? null
+    : defaultSensorData
+      ? sensors.find((s) => s.lat === defaultSensorData.lat && s.lon === defaultSensorData.lon)?.sensor_id ?? null
       : null;
   activeSensorIdRef.current = activeSensorId;
   activeColorRef.current =
@@ -1475,21 +1415,21 @@ export default function MapaSensors({
   useEffect(() => {
     if (map.current) return;
 
+    // Opens straight on the metro overview, no fly-in: the painted wash is the
+    // first thing on screen and there is nothing to fly toward.
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
-      center: [-100.301, 25.685],
-      zoom: 8,
+      center: OPENING_CENTER,
+      zoom: OPENING_ZOOM,
     });
 
-    // Seed the marker tier before any marker exists, so the field opens calm
+    // Seed the marker tier before any marker exists, so the dots open faint
     // rather than flashing full-size for a frame while the zoom listener catches
     // up. The listener (below) keeps it in step from here on.
     mapContainer.current!.style.setProperty("--sensor-marker-tier", "0");
 
-    // Set padding instantly (not as part of flyTo) so it doesn't get
-    // interpolated alongside the zoom animation, which looked like the map
-    // veering sideways partway through the fly-in.
+    // Card clearance: the right-hand card on desktop, the bottom sheet on mobile.
     const initialIsMobile = window.innerWidth < 768;
     (map.current as any).setPadding(
       initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
@@ -1503,162 +1443,6 @@ export default function MapaSensors({
       setMapLoaded(false);
     };
   }, []);
-
-  // Opening camera. Without a shared location we fly to the default station so
-  // the map opens the way it would if the visitor were standing next to it.
-  // Runs once. flyTo (not easeTo) even though the pan is tiny: over five zoom
-  // levels flyTo's curve keeps the *perceived* speed constant, where easeTo
-  // interpolates the zoom number linearly and the view accelerates into the
-  // stop. Zoom lands at 13, a step back from the old 14, so the move ends with
-  // more context in frame and less of a hard slam into street level.
-  const didOpeningFlyRef = useRef(false);
-  useEffect(() => {
-    if (!mapLoaded || !map.current || didOpeningFlyRef.current || userLocation) return;
-    // Hold while a granted permission is still resolving. Moving to the
-    // default station and then to the visitor a second later is two camera
-    // moves where the visitor only ever wanted one.
-    if (!permissionChecked || locationStatus === 'locating') return;
-
-    const target = nearestSensorData
-      ? [nearestSensorData.lon, nearestSensorData.lat]
-      : [-100.301, 25.685];
-    const zoom = nearestSensorData ? 13 : 10.5;
-    didOpeningFlyRef.current = true;
-
-    const isMobile = window.innerWidth < 768;
-    (map.current as any).setPadding(
-      isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
-    );
-
-    if (prefersReducedMotion()) {
-      (map.current as any).jumpTo({ center: target, zoom });
-      return;
-    }
-
-    (map.current as any).flyTo({
-      center: target,
-      zoom,
-      duration: OPENING_MOVE_MS,
-      essential: true,
-    });
-  }, [mapLoaded, userLocation, nearestSensorData, permissionChecked, locationStatus]);
-
-  // `silent` is the already-granted path on load: no one clicked, so a failure
-  // there should not throw a dialog at someone who never asked for one.
-  const locate = useCallback((silent = false) => {
-    if (!navigator.geolocation) {
-      setLocationStatus('unavailable');
-      return;
-    }
-    setLocationStatus('locating');
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setUserLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-        setLocationStatus('active');
-      },
-      (error) => {
-        // 1 PERMISSION_DENIED, 2 POSITION_UNAVAILABLE, 3 TIMEOUT. Only the
-        // first was ever recorded; the other two fell on the floor, which is
-        // how a click could lead to nothing at all and stay there.
-        setLocationStatus(error.code === 1 ? 'denied' : 'unavailable');
-        if (!silent) setShowLocationTip(true);
-      },
-      // Without a timeout a hung request never resolves and never reports.
-      // A five minute cache makes the already-granted path near instant.
-      { timeout: 10000, maximumAge: 5 * 60 * 1000 },
-    );
-  }, []);
-
-  // Read the permission on load. Granted means the visitor already said yes, so
-  // resolving it costs them no prompt and the map can open where they are.
-  // "prompt" is deliberately left alone: asking for location before anyone has
-  // asked for anything is how you collect a permanent denial.
-  useEffect(() => {
-    const permissions = navigator.permissions;
-    if (!navigator.geolocation || !permissions?.query) {
-      setPermissionChecked(true);
-      return;
-    }
-    let cancelled = false;
-    let permission: PermissionStatus | null = null;
-
-    const apply = (state: PermissionState) => {
-      if (cancelled) return;
-      if (state === 'granted') locate(true);
-      else if (state === 'denied') setLocationStatus('denied');
-      else setLocationStatus('idle');
-    };
-
-    permissions
-      .query({ name: 'geolocation' as PermissionName })
-      .then((status) => {
-        if (cancelled) return;
-        permission = status;
-        apply(status.state);
-        // Picks up a change made in the browser's own site settings, so the
-        // denied dead end can be undone without a reload.
-        status.onchange = () => apply(status.state);
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (!cancelled) setPermissionChecked(true);
-      });
-
-    return () => {
-      cancelled = true;
-      if (permission) permission.onchange = null;
-    };
-  }, [locate]);
-
-  // Lands at zoom 13, the same "standing beside the sensor" framing the opening
-  // move uses: the auto-locate-on-load path calls this with no explicit request
-  // from the visitor, so it should feel like the open, not a tighter dive.
-  // Reduced motion gets an instant jumpTo.
-  const flyToUser = useCallback(() => {
-    if (!userLocation || !map.current) return;
-    const isMobile = window.innerWidth < 768;
-    (map.current as any).setPadding(
-      isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
-    );
-    const center = [userLocation.longitude, userLocation.latitude];
-    if (prefersReducedMotion()) {
-      (map.current as any).jumpTo({ center, zoom: 13 });
-      return;
-    }
-    (map.current as any).flyTo({
-      center,
-      zoom: 13,
-      duration: OPENING_MOVE_MS,
-      essential: true,
-    });
-  }, [userLocation]);
-
-  // Add user location marker when available
-  useEffect(() => {
-    if (!userLocation || !mapLoaded || !map.current) return;
-
-    flyToUser();
-
-    // Same two-span build as the sensor markers: the halo is a sibling drawn
-    // before the dot, so it expands behind it the way Google's does.
-    const userMarkerElement = document.createElement("div");
-    userMarkerElement.className = "location-dot location-dot--map";
-    userMarkerElement.innerHTML =
-      '<span class="location-dot__pulse"></span><span class="location-dot__core"></span>';
-    // Above the sensor field, including a selected sensor: it answers "where am
-    // I", which stays true whatever the markers around it are doing.
-    userMarkerElement.style.zIndex = USER_MARKER_Z.toString();
-
-    // Replace rather than add: a permission granted mid-session runs this a
-    // second time, and the old marker used to stay behind on the map.
-    (userMarkerRef.current as any)?.remove();
-    userMarkerRef.current = new Marker({ element: userMarkerElement })
-      .setLngLat([userLocation.longitude, userLocation.latitude])
-      .addTo(map.current);
-  }, [userLocation, mapLoaded, flyToUser]);
 
   // Add the heatmap source + layer once the style is up. Empty to start; the
   // effect below feeds it. Sits just under the first label layer so place
@@ -1826,13 +1610,13 @@ export default function MapaSensors({
   }, []);
 
   // Fetch the last 48h of readings for the trend sparkline — the selected
-  // sensor if one is picked, otherwise the nearest sensor (same one backing
-  // the default "Calidad del aire" card), so the graph is visible by default.
+  // sensor if one is picked, otherwise the default sensor backing the
+  // "Calidad del aire" card, so the graph is visible by default.
   useEffect(() => {
     const target = selectedSensor
       ? { sensorId: selectedSensor.sensor.sensor_id, source: selectedSensor.sensor.source }
-      : nearestSensorData
-        ? { sensorId: nearestSensorData.sensorId, source: nearestSensorData.isSima ? "sima" : "purpleAir" }
+      : defaultSensorData
+        ? { sensorId: defaultSensorData.sensorId, source: defaultSensorData.isSima ? "sima" : "purpleAir" }
         : null;
 
     if (!target) {
@@ -1856,11 +1640,11 @@ export default function MapaSensors({
     return () => {
       cancelled = true;
     };
-  }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
+  }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, defaultSensorData?.sensorId, defaultSensorData?.isSima]);
 
   // Move the pulsing halo to whichever marker is now active — the explicitly
-  // selected sensor, else the nearest/default one the card opened on — in that
-  // sensor's own air-quality ink (yellow and green barely register as a ring on
+  // selected sensor, else the default one the card opens on — in that sensor's
+  // own air-quality ink (yellow and green barely register as a ring on
   // a light map; the darker tone also keeps the ring off the circle it wraps).
   // syncActive owns the DOM writes; the field-build effect calls it too, this
   // re-runs it when only the pick changes. No resize, no dimming of the rest:
@@ -1911,19 +1695,9 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full"
       />
 
-      {/* Mobile right-side buttons — hidden when sheet is expanded */}
+      {/* Mobile Capas button — hidden when the sheet is expanded */}
       {sheetState === 'peek' && (
-        <div className="fixed right-6 z-[45] flex flex-col gap-2 md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}>
-          <button
-            type="button"
-            onClick={onLocationClick}
-            disabled={locationStatus === 'locating'}
-            aria-busy={locationStatus === 'locating'}
-            className={`rounded-xl border p-3 shadow-sm backdrop-blur-md transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${userLocation ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
-            aria-label={locationLabel}
-          >
-            <Navigation className={`h-5 w-5 transition-colors ${locationIconTone}`} aria-hidden="true" />
-          </button>
+        <div className="fixed right-6 z-[45] md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}>
           <button
             onClick={() => setShowFilters((v) => !v)}
             className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showFilters ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
@@ -2092,7 +1866,7 @@ export default function MapaSensors({
               className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
             >
               <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
-                {nearestName ?? "Zona Metropolitana de Monterrey"}
+                {defaultName ?? "Zona Metropolitana de Monterrey"}
               </span>
               <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
             </button>
@@ -2103,18 +1877,18 @@ export default function MapaSensors({
                 {/* Quality label + PM2.5 — always shown */}
                 <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
                   <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
-                    {nearestName && (() => { const SourceIcon = getSourceIcon(Boolean(nearestIsSima)); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
+                    {defaultName && (() => { const SourceIcon = getSourceIcon(Boolean(defaultIsSima)); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
                     <span className="truncate">
-                      {nearestName
-                        ? getSourceLabel(Boolean(nearestIsSima), nearestRed)
+                      {defaultName
+                        ? getSourceLabel(Boolean(defaultIsSima), defaultRed)
                         : "Promedio de la Zona Metropolitana de Monterrey"}
                     </span>
                   </span>
-                  {nearestLat !== null && nearestLon !== null && (
+                  {defaultLat !== null && defaultLon !== null && (
                     <button
                       type="button"
                       onClick={() => {
-                        navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                        navigator.clipboard.writeText(`${defaultLat.toFixed(5)}, ${defaultLon.toFixed(5)}`);
                         setCopied(true);
                         setTimeout(() => setCopied(false), 1500);
                       }}
@@ -2146,7 +1920,7 @@ export default function MapaSensors({
                   {/* Trend sparkline — only with a station behind it: the
                       metro-wide reading is a median across sensors and has
                       no single 48h series to plot. */}
-                  {nearestName && (
+                  {defaultName && (
                     <div>
                       {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
                     </div>
@@ -2164,36 +1938,15 @@ export default function MapaSensors({
         )}
         </div>{/* end card width wrapper */}
 
-        {/* Both chips ride the bottom of this column on one row, pinned with
-            mt-auto so they hold the same corner whether the card above is
-            open, shut or absent. Kept as two surfaces, not one: the badge is
-            a passive readout and must not read as clickable, Activar is the
-            control. The freshness badge shows here on desktop; on mobile it
-            sits at the top-left instead (see the left column). */}
-        <div className="flex flex-shrink-0 items-center gap-2 md:mt-auto">
-          {freshness && <FreshnessBadge freshness={freshness} flat />}
-          <div>
-            <button
-              type="button"
-              onClick={onLocationClick}
-              disabled={locationStatus === 'locating'}
-              aria-busy={locationStatus === 'locating'}
-              className={`pointer-events-auto flex h-10 items-center gap-2 rounded-xl border px-3.5 shadow-sm backdrop-blur-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:cursor-default ${userLocation ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80 hover:bg-white/90'}`}
-            >
-              <Navigation className={`h-4 w-4 flex-shrink-0 transition-colors ${locationIconTone}`} aria-hidden="true" />
-              <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">{locationLabel}</span>
-            </button>
-            {/* Announced separately rather than off the label: a disabled
-                button's own text is not reliably read out when it changes. */}
-            <span role="status" className="sr-only">
-              {locationStatus === 'locating'
-                ? 'Buscando tu ubicación'
-                : userLocation
-                  ? 'Ubicación encontrada'
-                  : ''}
-            </span>
+        {/* The freshness badge rides the bottom of this column, pinned with
+            mt-auto so it holds the same corner whether the card above is open,
+            shut or absent. Desktop only; on mobile it sits at the top-left
+            instead (see the left column). */}
+        {freshness && (
+          <div className="flex-shrink-0 md:mt-auto">
+            <FreshnessBadge freshness={freshness} />
           </div>
-        </div>
+        )}
       </div>
 
       {/* Left column: layers panel (desktop) with the data-freshness badge under it.
@@ -2350,49 +2103,6 @@ export default function MapaSensors({
         })()}
       </div>
 
-
-      {/* Location modal. Same format as the popups reached from the Capas
-          panel: the shared InfoDialog, so the title sits in the header beside
-          the close button rather than centred under an illustration, on the
-          same glass, padding and measure as Fuente and Contaminante.
-
-          The copy follows what actually happened. It used to open with
-          "Habilita el acceso a tu ubicación" in every case, which is priming
-          copy: fine before anyone has decided, wrong after a denial, when the
-          browser will not ask again and the visitor needs to be told where the
-          setting lives, and wrong again after a timeout, which is nobody's
-          decision and is worth retrying. */}
-      {showLocationTip && (
-        <InfoDialog
-          title={locationStatus === 'denied' ? 'Ubicación bloqueada' : 'No pudimos ubicarte'}
-          onClose={() => setShowLocationTip(false)}
-        >
-          <p className="text-sm leading-relaxed text-gray-500">
-            {locationStatus === 'denied'
-              ? 'Tu navegador tiene bloqueada la ubicación para este sitio, así que no podemos volver a pedirla desde aquí. Para activarla, abre la configuración del sitio junto a la barra de direcciones y permite el acceso a la ubicación.'
-              : 'No fue posible obtener tu ubicación en este momento. Revisa que la ubicación esté activada en tu dispositivo e inténtalo de nuevo.'}
-          </p>
-          {/* The other dialogs carry no footer button, because they present
-              information and ask for nothing. This one is the exception that
-              proves the rule: a timeout or a failed fix is worth another go,
-              so there is a real action here rather than a dismissal wearing
-              an action's clothes. A denial is not retryable from the page, so
-              that case keeps the header's close button and nothing else. */}
-          {locationStatus !== 'denied' && (
-            <button
-              type="button"
-              onClick={() => {
-                setShowLocationTip(false);
-                locate();
-              }}
-              className="mt-6 w-full rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-            >
-              Reintentar
-            </button>
-          )}
-        </InfoDialog>
-      )}
-
       {/* Bottom sheet backdrop — mobile only */}
       <div
         className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
@@ -2455,8 +2165,8 @@ export default function MapaSensors({
                   className="flex min-w-0 w-full items-center gap-1.5 rounded-lg text-sm text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 >
                   <span className="truncate">
-                    {nearestName
-                      ? `${nearestIsSima ? "Estación" : "Sensor"}: ${nearestName}`
+                    {defaultName
+                      ? `${defaultIsSima ? "Estación" : "Sensor"}: ${defaultName}`
                       : "Promedio de la Zona Metropolitana de Monterrey"}
                   </span>
                   <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-90' : ''}`} />
@@ -2464,16 +2174,10 @@ export default function MapaSensors({
                 {showNearestDetail && (
                   <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
                     <div className="flex flex-col gap-3 px-4 py-3">
-                      {userLocation && nearestName && (
-                        <div className="flex items-center gap-2.5">
-                          <Navigation className="h-3 w-3 flex-shrink-0 text-gray-400" />
-                          <span className="text-sm text-gray-400">Tu sensor más cercano</span>
-                        </div>
-                      )}
-                      {nearestLat !== null && nearestLon !== null && (
+                      {defaultLat !== null && defaultLon !== null && (
                         <button
                           onClick={() => {
-                            navigator.clipboard.writeText(`${nearestLat.toFixed(5)}, ${nearestLon.toFixed(5)}`);
+                            navigator.clipboard.writeText(`${defaultLat.toFixed(5)}, ${defaultLon.toFixed(5)}`);
                             setCopied(true);
                             setTimeout(() => setCopied(false), 1500);
                           }}

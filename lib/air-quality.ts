@@ -59,17 +59,16 @@ export const getMarkerFill = (pm25: number | null): string | null => {
 // overlaps do not read at all; the tie-break matters once you are zoomed in.
 //
 // Only these lifts are value-independent and so allowed to override it: the
-// selected marker, the one under the pointer, and the visitor's own location.
-// The hover lift is what makes a click land on the disc you are actually
-// pointing at: every marker's hit box is a 40px square, so in a dense cluster
-// the squares overlap and, with all of them at the same z, the one that wins
-// the click is just whichever mapbox drew last, not the one under the cursor.
-// Raising the hovered marker above the field resolves that to the visible dot.
-// Kept tiny, because the map container opens no stacking context and these
-// compete directly with the floating panels at z-10.
+// selected marker and the one under the pointer. The hover lift is what makes a
+// click land on the disc you are actually pointing at: every marker's hit box
+// is a square, so in a dense knot the squares overlap and, with all of them at
+// the same z, the one that wins the click is just whichever mapbox drew last,
+// not the one under the cursor. Raising the hovered marker above the field
+// resolves that to the visible dot. Kept tiny, because the map container opens
+// no stacking context and these compete directly with the floating panels at
+// z-10.
 export const ACTIVE_MARKER_Z = 6;
 export const HOVER_MARKER_Z = 7;
-export const USER_MARKER_Z = 8;
 
 // `label` becomes the marker's accessible name — without it the markers are
 // unreachable by keyboard and announce as nothing to a screen reader.

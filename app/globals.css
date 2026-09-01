@@ -175,61 +175,6 @@
   .sensor-marker--selected .sensor-marker__pulse { animation: none; opacity: 0.22; }
 }
 
-/* The visitor's own location: a blue dot with a halo breathing out from
-   behind it. Used on the map and, at the same size, inside the location
-   button so the two read as the same thing. */
-.location-dot {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.location-dot__pulse {
-  position: absolute;
-  inset: -1px;
-  border-radius: 50%;
-  background: #3b82f6;
-  opacity: 0;
-  animation: location-pulse 2.4s ease-out infinite;
-  will-change: transform, opacity;
-}
-
-.location-dot__core {
-  position: relative;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #3b82f6;
-}
-
-/* On the map it is the marker itself, so it carries the white ring. */
-.location-dot--map {
-  width: 16px;
-  height: 16px;
-}
-
-.location-dot--map .location-dot__core {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
-}
-
-.location-dot--map .location-dot__pulse {
-  inset: -4px;
-}
-
-@keyframes location-pulse {
-  0% { transform: scale(0.7); opacity: 0.5; }
-  70% { transform: scale(2); opacity: 0; }
-  100% { transform: scale(2); opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .location-dot__pulse { animation: none; opacity: 0.25; }
-}
-
 /* The header's height, in one place. It used to be written as 56px and 72px
    across three files: the bar itself in two components, and the map's
    h-[calc(100svh-56px)] md:h-[calc(100svh-72px)] restating both so it could
