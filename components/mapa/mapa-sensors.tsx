@@ -1693,9 +1693,17 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full"
       />
 
-      {/* Mobile Capas button — hidden when the sheet is expanded */}
+      {/* Mobile map controls — a right-edge stack, hidden when the sheet is
+          expanded. The air-quality legend sits on top of the Capas button as a
+          matching icon button; tapping it unfolds the full colour key upward,
+          leaving the Capas button pinned in place. Desktop carries the legend
+          at the foot of the left rail instead. */}
       {sheetState === 'peek' && (
-        <div className="fixed right-6 z-[45] md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}>
+        <div
+          className="fixed right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
+        >
+          <AirQualityLegend iconWhenClosed />
           <button
             onClick={() => setShowFilters((v) => !v)}
             className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showFilters ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
@@ -1703,21 +1711,6 @@ export default function MapaSensors({
           >
             <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
           </button>
-        </div>
-      )}
-
-      {/* Mobile air-quality legend — a compact icon button at rest, level with
-          the Capas button and hidden with it when the sheet is expanded.
-          Tapping it unfolds the full colour key upward into the free space
-          above. The button and the open card carry their own chrome, so this
-          wrapper only positions them. Desktop carries this at the foot of the
-          left rail instead. */}
-      {sheetState === 'peek' && (
-        <div
-          className="fixed left-6 z-[45] md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
-        >
-          <AirQualityLegend iconWhenClosed />
         </div>
       )}
 
