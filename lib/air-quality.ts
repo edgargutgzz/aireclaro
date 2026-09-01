@@ -34,19 +34,11 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
   return { bg: level.color, text: level.ink };
 };
 
-// The level's position in IMECA_LEVELS (0 Buena … 4 Extremadamente mala), or
-// -1 for a reading that renders nothing. The cluster histogram is keyed on it.
-export const getLevelIndex = (pm25: number | null): number => {
-  if (pm25 === null || pm25 <= 0.4) return -1;
-  return IMECA_LEVELS.findIndex((level) => pm25 <= level.limit);
-};
-
 // Marker fills are the index color nudged a fixed step toward that same level's
 // darker `ink`. Enough to take the electric edge off IMECA yellow and green on
 // a pale basemap without shifting hue or breaking the read-back to the legend
 // swatch. Mala, Muy mala and Extrem. already have ink === color, so they are
-// untouched. The legend bar and the cluster ring keep the pure `color`: they
-// are thin bands read side by side, where full saturation aids separation.
+// untouched. The legend bar and the heatmap ramp keep the pure `color`.
 export const MARKER_INK_MIX = 0.22;
 export const getMarkerFill = (pm25: number | null): string | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
@@ -54,41 +46,17 @@ export const getMarkerFill = (pm25: number | null): string | null => {
   return `color-mix(in srgb, ${level.color} ${Math.round((1 - MARKER_INK_MIX) * 100)}%, ${level.ink})`;
 };
 
-// The median level across a cluster's per-level counts. A symmetric statistic,
-// so it does not lean toward either end of the scale, and it never stands in as
-// the cluster's color (the ring shows every level's share); it is only spoken,
-// as one summary word, in the cluster's accessible name.
-export const histMedianLevel = (hist: number[]): number => {
-  const total = hist.reduce((a, b) => a + b, 0);
-  if (!total) return -1;
-  const mid = total / 2;
-  let acc = 0;
-  for (let i = 0; i < hist.length; i++) {
-    acc += hist[i];
-    if (acc >= mid) return i;
-  }
-  return hist.length - 1;
-};
-
 // Markers are siblings in one container (mapbox appends every custom element
 // straight into the canvas container) and so paint in DOM order. Which one wins
 // an overlap is therefore a sampling rule, and a sampling rule correlated with
 // the value on display biases the display: ordering by severity showed the
-// worst reading in every cluster and hid the rest, making the basin look worse
+// worst reading in every overlap and hid the rest, making the basin look worse
 // than the sensors say, with nothing on screen admitting that anything had been
-// hidden. Order comes from latitude instead — see renderClusters in
+// hidden. Order comes from latitude instead — see the marker build effect in
 // mapa-sensors.tsx — which is mapbox's own convention for symbols
 // (symbol-z-order: viewport-y) precisely because it is independent of the data.
-//
-// Most overlaps no longer reach that tie-break. At zoom 12 and below a
-// Supercluster index groups the field into `sensor-cluster` bubbles, so the
-// dense basin reads as a handful of legible groups rather than a hundred
-// stacked discs.
-// The bubble does not pick a color to stand for its members — that would be the
-// same bias one rung up — it draws a conic ring split by how many of its
-// sensors sit in each level, the legend's own scale bent into a circle, and
-// nothing about the group is hidden. `histMedianLevel` is spoken in the
-// bubble's accessible name and shown nowhere.
+// At overview zoom the markers are faint dots under the heatmap wash and most
+// overlaps do not read at all; the tie-break matters once you are zoomed in.
 //
 // Only these lifts are value-independent and so allowed to override it: the
 // selected marker, the one under the pointer, and the visitor's own location.
@@ -144,56 +112,6 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   // value, since it sits on a white core rather than on the fill.
   dot.style.setProperty("--marker-edge", level.ink);
   el.appendChild(dot);
-
-  return el;
-};
-
-// A cluster bubble: a conic ring split by the level mix of the sensors inside
-// it, wrapped around a white core carrying the count in one dark ink — the same
-// "number on white, color on the rim" treatment a selected marker gets, so the
-// two read as the same family. `hist` is per-level counts (index 0..4);
-// `medianLabel` is only for the accessible name. The ring, not a single fill,
-// is what keeps a mixed group from hiding its spread behind one color.
-export const createClusterMarker = (
-  count: number,
-  hist: number[],
-  medianLabel: string,
-): HTMLElement => {
-  const el = document.createElement("button");
-  el.type = "button";
-  el.className = "sensor-cluster";
-  el.style.border = "none";
-  el.style.padding = "0";
-  el.style.background = "none";
-  el.style.fontFamily = "inherit";
-  el.setAttribute(
-    "aria-label",
-    `Grupo de ${count} sensores, calidad del aire mediana ${medianLabel}. Presiona para acercar y ver cada sensor.`,
-  );
-
-  // Grows with the count, gently and capped: a knot of fifty should read as
-  // "many", not fifty times the area of a single disc.
-  const size = Math.round(34 + (Math.min(count, 50) / 50) * 20);
-  el.style.setProperty("--cluster-size", `${size}px`);
-
-  const total = hist.reduce((a, b) => a + b, 0) || 1;
-  let acc = 0;
-  const stops = IMECA_LEVELS.map((level, i) => {
-    const start = (acc / total) * 100;
-    acc += hist[i] ?? 0;
-    const end = (acc / total) * 100;
-    return `${level.color} ${start.toFixed(2)}% ${end.toFixed(2)}%`;
-  }).join(", ");
-
-  const ring = document.createElement("span");
-  ring.className = "sensor-cluster__ring";
-  ring.style.background = `conic-gradient(from 0deg, ${stops})`;
-  el.appendChild(ring);
-
-  const core = document.createElement("span");
-  core.className = "sensor-cluster__core";
-  core.textContent = count >= 1000 ? `${(count / 1000).toFixed(1)}k` : String(count);
-  el.appendChild(core);
 
   return el;
 };
