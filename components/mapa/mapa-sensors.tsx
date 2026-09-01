@@ -1130,21 +1130,90 @@ function LayersFilterContent({
 const OPENING_CENTER: [number, number] = [-100.301, 25.685];
 const OPENING_ZOOM = 10.4;
 
-// The painted PM2.5 wash: a Mapbox heatmap layer under the sensor markers,
-// weighted by the reading and coloured on the IMECA scale. It is the "this is
-// an air-quality map" first glance, and fades out by zoom 13 as the markers
-// take over. An interpolation between sensors, so the legend calls it an
-// estimate; kept soft (low opacity, intensity near 1) so it reads as an
-// impression, not a measurement.
-const HEAT_SOURCE = "air-heat";
-const HEAT_LAYER = "air-heat";
+// The painted PM2.5 surface under the markers: not a heatmap (a heatmap colours
+// sensor *density*, so a dense knot of Mala sensors blooms red or purple that
+// nobody is reading). This is an inverse-distance-weighted grid — each cell is
+// the weighted average of the nearby readings, coloured on the IMECA scale, so
+// an area of yellow sensors paints yellow and stays yellow however many there
+// are. An estimate between sensors (the legend says so), soft and faded out by
+// zoom 13 as the markers take over.
+const AIR_GRID_SOURCE = "air-grid";
+const AIR_GRID_LAYER = "air-grid";
 
-// #rrggbb + alpha -> rgba(), for the heatmap colour ramp. Every IMECA colour is
-// a 6-digit hex.
-const hexA = (hex: string, a: number) => {
-  const n = parseInt(hex.slice(1), 16);
-  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+const GRID_CELL_LAT = 0.0063; // ~700 m
+const GRID_CELL_LON = 0.007; // ~700 m at ~25.7°N
+const GRID_SMOOTH = 400; // m — IDW smoothing length; cells within this of a
+// sensor lock onto it, past it readings blend
+const GRID_MAX_DIST = 4500; // m — no surface painted beyond this from any sensor
+const GRID_FADE_START = 2500; // m — the surface feathers out from here to MAX
+
+type GridFeature = {
+  type: "Feature";
+  properties: { pm25: number; edgeFade: number };
+  geometry: { type: "Polygon"; coordinates: number[][][] };
 };
+
+// Build the IDW grid as GeoJSON. Equirectangular distance (no per-pair trig)
+// because at metro scale the error is a metre or two and this runs over every
+// cell × every sensor on each filter change.
+function buildIdwGrid(points: { lon: number; lat: number; pm25: number }[]) {
+  if (!points.length) return { type: "FeatureCollection" as const, features: [] as GridFeature[] };
+
+  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
+  for (const p of points) {
+    minLon = Math.min(minLon, p.lon);
+    maxLon = Math.max(maxLon, p.lon);
+    minLat = Math.min(minLat, p.lat);
+    maxLat = Math.max(maxLat, p.lat);
+  }
+  const mPerDegLat = 110540;
+  const mPerDegLon = 111320 * Math.cos(((minLat + maxLat) / 2) * Math.PI / 180);
+  minLon -= GRID_MAX_DIST / mPerDegLon;
+  maxLon += GRID_MAX_DIST / mPerDegLon;
+  minLat -= GRID_MAX_DIST / mPerDegLat;
+  maxLat += GRID_MAX_DIST / mPerDegLat;
+
+  const maxD2 = GRID_MAX_DIST * GRID_MAX_DIST;
+  const smooth2 = GRID_SMOOTH * GRID_SMOOTH;
+  const features: GridFeature[] = [];
+
+  for (let lat = minLat; lat < maxLat; lat += GRID_CELL_LAT) {
+    const cLat = lat + GRID_CELL_LAT / 2;
+    for (let lon = minLon; lon < maxLon; lon += GRID_CELL_LON) {
+      const cLon = lon + GRID_CELL_LON / 2;
+      let num = 0, den = 0, minD2 = Infinity;
+      for (const p of points) {
+        const dx = (p.lon - cLon) * mPerDegLon;
+        const dy = (p.lat - cLat) * mPerDegLat;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < minD2) minD2 = d2;
+        const w = 1 / (d2 + smooth2);
+        num += w * p.pm25;
+        den += w;
+      }
+      if (minD2 > maxD2 || den === 0) continue;
+      const minD = Math.sqrt(minD2);
+      const edgeFade = minD <= GRID_FADE_START
+        ? 1
+        : Math.max(0, 1 - (minD - GRID_FADE_START) / (GRID_MAX_DIST - GRID_FADE_START));
+      features.push({
+        type: "Feature",
+        properties: { pm25: num / den, edgeFade: Number(edgeFade.toFixed(2)) },
+        geometry: {
+          type: "Polygon",
+          coordinates: [[
+            [lon, lat],
+            [lon + GRID_CELL_LON, lat],
+            [lon + GRID_CELL_LON, lat + GRID_CELL_LAT],
+            [lon, lat + GRID_CELL_LAT],
+            [lon, lat],
+          ]],
+        },
+      });
+    }
+  }
+  return { type: "FeatureCollection" as const, features };
+}
 
 // MapaSensors component
 export default function MapaSensors({
@@ -1156,10 +1225,11 @@ export default function MapaSensors({
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
-  // Every visible sensor is its own DOM marker; the heatmap wash under them
-  // (a GL layer, see below) carries the city-level read while they are faint
-  // dots at overview zoom. `markerElementsRef` maps sensor_id -> element so the
-  // active-pulse and filter effects can reach a marker without a DOM scan.
+  // Every visible sensor is its own DOM marker; the IDW colour surface under
+  // them (a GL fill layer, see below) carries the city-level read while they
+  // are faint dots at overview zoom. `markerElementsRef` maps sensor_id ->
+  // element so the active-pulse and filter effects can reach a marker without
+  // a DOM scan.
   const markersRef = useRef<Marker[]>([]);
   const markerElementsRef = useRef(new globalThis.Map<number, HTMLElement>());
   const activeSensorIdRef = useRef<number | null>(null);
@@ -1381,81 +1451,72 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Add the heatmap source + layer once the style is up. Empty to start; the
-  // effect below feeds it. Sits just under the first label layer so place
-  // names stay readable through the wash.
+  // Add the IDW-surface source + fill layer once the style is up. Empty to
+  // start; the effect below feeds it. Sits just under the first label layer so
+  // place names stay readable through the surface.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
     const m = map.current as any;
-    if (m.getSource(HEAT_SOURCE)) return;
+    if (m.getSource(AIR_GRID_SOURCE)) return;
 
-    m.addSource(HEAT_SOURCE, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    m.addSource(AIR_GRID_SOURCE, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
     const firstSymbol = m.getStyle()?.layers?.find((l: any) => l.type === "symbol")?.id;
     const c = IMECA_LEVELS;
     m.addLayer(
       {
-        id: HEAT_LAYER,
-        type: "heatmap",
-        source: HEAT_SOURCE,
+        id: AIR_GRID_LAYER,
+        type: "fill",
+        source: AIR_GRID_SOURCE,
         maxzoom: 14,
         paint: {
-          // A Mapbox heatmap accumulates weight AND count into the density it
-          // colours, so a knot of merely-Mala sensors can stack into a red or
-          // purple bloom that no single sensor is reading. Fighting that here:
-          // a low weight floor so clean air barely registers, low intensity so
-          // overlap does not compound, and a colour ramp that stops at red.
-          // The wash never paints purple; an Extrem. reading is rare and its
-          // marker carries it, whereas a purple bloom from stacked oranges is
-          // crying wolf. This is an estimate (see the legend), not a reading.
-          "heatmap-weight": [
+          // Colour interpolated on the cell's own IDW value across the IMECA
+          // breaks, same fills as the legend bar. This is a value surface, not
+          // a density one: a cell reads whatever its neighbourhood of sensors
+          // averages to, purple included when that average really is extreme.
+          "fill-color": [
             "interpolate", ["linear"], ["get", "pm25"],
-            0, 0, 15, 0.1, 25, 0.25, 45, 0.45, 79, 0.65, 130, 0.9, 250, 1,
+            0.4, c[0].color,
+            15, c[0].color,
+            25, c[1].color,
+            79, c[2].color,
+            130, c[3].color,
+            250, c[4].color,
           ],
-          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 8, 0.6, 12, 0.75],
-          "heatmap-color": [
-            "interpolate", ["linear"], ["heatmap-density"],
-            0, hexA(c[0].color, 0),
-            0.15, hexA(c[0].color, 0.5),
-            0.35, hexA(c[1].color, 0.66),
-            0.6, hexA(c[2].color, 0.8),
-            0.85, hexA(c[3].color, 0.85),
-            1, hexA(c[3].color, 0.9),
+          // Per-cell edgeFade feathers the surface out near its limit; the zoom
+          // term hands the overview to the surface and the close-up to the
+          // markers, fully gone by ~zoom 13.
+          "fill-opacity": [
+            "*",
+            ["interpolate", ["linear"], ["zoom"], 8, 0.5, 11.5, 0.45, 13, 0.12, 13.8, 0],
+            ["get", "edgeFade"],
           ],
-          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 7, 42, 10, 38, 12, 26, 13.5, 14],
-          // Strong at overview, gone by ~zoom 13 as the markers reach full
-          // size. The band from 11.5 to 13 is a deliberate cross-fade.
-          "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.85, 11.5, 0.8, 13, 0.12, 13.8, 0],
+          "fill-outline-color": "rgba(0, 0, 0, 0)",
+          "fill-antialias": true,
         },
       },
       firstSymbol,
     );
   }, [mapLoaded]);
 
-  // Feed the heatmap: every visible sensor with a real reading, as a point
-  // weighted by its pm25. Same filter as the markers, so the wash and the dots
-  // never disagree about which sensors count.
+  // Feed the surface: rebuild the IDW grid from every visible sensor with a
+  // real reading. Same filter as the markers, so the surface and the dots never
+  // disagree about which sensors count.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
-    const src = (map.current as any).getSource(HEAT_SOURCE);
+    const src = (map.current as any).getSource(AIR_GRID_SOURCE);
     if (!src) return;
-    src.setData({
-      type: "FeatureCollection",
-      features: visibleSensors.flatMap((s) => {
-        const pm25 = data.find((d) => d.sensor_id === s.sensor_id)?.pm25 ?? null;
-        if (pm25 === null || pm25 <= 0.4) return [];
-        return [{
-          type: "Feature",
-          properties: { pm25 },
-          geometry: { type: "Point", coordinates: [s.lon, s.lat] },
-        }];
-      }),
+    const points = visibleSensors.flatMap((s) => {
+      const pm25 = data.find((d) => d.sensor_id === s.sensor_id)?.pm25 ?? null;
+      if (pm25 === null || pm25 <= 0.4) return [];
+      return [{ lon: s.lon, lat: s.lat, pm25 }];
     });
+    src.setData(buildIdwGrid(points));
   }, [mapLoaded, visibleSensors, data]);
 
   // Build the marker field: one DOM marker per visible sensor with a reading.
-  // No clustering; the heatmap carries the overview and the tier CSS keeps the
-  // dots faint until you zoom in. Rebuilt only when the visible set or the
-  // readings change, not on pan or zoom.
+  // No clustering; the colour surface carries the overview and the tier CSS
+  // keeps the dots faint until you zoom in. Rebuilt only when the visible set
+  // or the readings change, not on pan or zoom.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
     const m = map.current;
