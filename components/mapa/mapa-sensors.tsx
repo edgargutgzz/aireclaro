@@ -1399,30 +1399,32 @@ export default function MapaSensors({
         source: HEAT_SOURCE,
         maxzoom: 14,
         paint: {
-          // Weight rises with the reading, so a hot sensor pushes its patch up
-          // the scale. Steep low end so a Mala sensor clearly outpaints a Buena
-          // neighbour rather than averaging grey-green with it.
+          // A Mapbox heatmap accumulates weight AND count into the density it
+          // colours, so a knot of merely-Mala sensors can stack into a red or
+          // purple bloom that no single sensor is reading. Fighting that here:
+          // a low weight floor so clean air barely registers, low intensity so
+          // overlap does not compound, and a colour ramp that stops at red.
+          // The wash never paints purple; an Extrem. reading is rare and its
+          // marker carries it, whereas a purple bloom from stacked oranges is
+          // crying wolf. This is an estimate (see the legend), not a reading.
           "heatmap-weight": [
             "interpolate", ["linear"], ["get", "pm25"],
-            0, 0, 12, 0.35, 25, 0.55, 55, 0.8, 100, 0.95, 200, 1,
+            0, 0, 15, 0.1, 25, 0.25, 45, 0.45, 79, 0.65, 130, 0.9, 250, 1,
           ],
-          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 8, 1.3, 13, 1.5],
-          // First stop transparent for a soft edge, then near-opaque so the
-          // wash actually reads as painted air. Colours land low on the density
-          // axis because the sensor field is sparse and the kernels wide.
+          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 8, 0.6, 12, 0.75],
           "heatmap-color": [
             "interpolate", ["linear"], ["heatmap-density"],
             0, hexA(c[0].color, 0),
-            0.1, hexA(c[0].color, 0.55),
-            0.25, hexA(c[1].color, 0.78),
-            0.45, hexA(c[2].color, 0.9),
-            0.65, hexA(c[3].color, 0.95),
-            0.9, hexA(c[4].color, 0.97),
+            0.15, hexA(c[0].color, 0.5),
+            0.35, hexA(c[1].color, 0.66),
+            0.6, hexA(c[2].color, 0.8),
+            0.85, hexA(c[3].color, 0.85),
+            1, hexA(c[3].color, 0.9),
           ],
-          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 7, 55, 10, 50, 12, 32, 13.5, 16],
+          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 7, 42, 10, 38, 12, 26, 13.5, 14],
           // Strong at overview, gone by ~zoom 13 as the markers reach full
           // size. The band from 11.5 to 13 is a deliberate cross-fade.
-          "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.9, 11.5, 0.85, 13, 0.12, 13.8, 0],
+          "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.85, 11.5, 0.8, 13, 0.12, 13.8, 0],
         },
       },
       firstSymbol,
