@@ -1,6 +1,5 @@
-import Link from "next/link";
-import Image from "next/image";
 import Navlinks from "@/components/navbar/navlinks";
+import Logo from "@/components/navbar/logo";
 
 // Same org as observatoriodelaire.com (shared logo), but the nav itself
 // follows Aire Claro's own visual language — the same icon+label pill
@@ -34,19 +33,7 @@ export default function SiteHeader() {
           reads at 44. Artwork on a rail gets the overshoot; text sits on the
           rail exactly. */}
       <div className="flex w-full items-center justify-between pl-11 pr-6">
-        <Link
-          href="/"
-          className="-ml-0.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-        >
-          <Image
-            src="/occamm-logo.png"
-            alt="OCCAMM, Observatorio del Aire"
-            width={140}
-            height={26}
-            priority
-            className="h-[26px] w-[140px]"
-          />
-        </Link>
+        <Logo size="lg" className="-ml-0.5" />
         <nav aria-label="Principal">
           <ul className="flex items-center gap-2">
             <Navlinks />
