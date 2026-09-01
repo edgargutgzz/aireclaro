@@ -249,13 +249,69 @@ function LegendDetail({ className = "" }: { className?: string }) {
   );
 }
 
-// On the map (desktop) the legend is a disclosure: the bar and its thresholds
-// stay visible, the labelled list sits behind a chevron. Inside the Capas
-// sheet (mobile) it is already nested in a disclosure, so it renders fully
-// expanded with no toggle.
-function AirQualityLegend({ className = "", collapsible = false, hideLabelWhenClosed = false }: { className?: string; collapsible?: boolean; hideLabelWhenClosed?: boolean }) {
+// The legend takes three shapes:
+//  - Desktop rail (`collapsible`): the bar and its thresholds stay visible, the
+//    labelled list sits behind a chevron.
+//  - Mobile map (`iconWhenClosed`): at rest it's a compact icon button the size
+//    of the Capas control; tapping it unfolds the full card upward.
+//  - Capas sheet (neither): already nested in a disclosure, so it renders in
+//    full with no toggle.
+function AirQualityLegend({ className = "", collapsible = false, iconWhenClosed = false }: { className?: string; collapsible?: boolean; iconWhenClosed?: boolean }) {
   const [open, setOpen] = useState(false);
   const detailId = `aq-legend-detail-${useId().replace(/:/g, "")}`;
+
+  // Mobile map: an icon button at rest, the full card when open. The scale bar
+  // moves inside the open card, since nothing of it shows at rest. The card is
+  // pinned bottom-left by its wrapper, so it grows upward on its own.
+  if (iconWhenClosed) {
+    if (!open) {
+      return (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-expanded={false}
+          aria-label="Calidad del aire"
+          className={`rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md ${className}`}
+        >
+          {/* The IMECA scale as a tiny swatch: reads as "colour key" the way no
+              line icon would, and ties straight back to the discs on the map. */}
+          <span
+            aria-hidden="true"
+            className="flex h-5 w-5 overflow-hidden rounded-md ring-1 ring-inset ring-black/[0.08]"
+          >
+            {IMECA_LEVELS.map((level) => (
+              <span key={level.label} className="flex-1" style={{ backgroundColor: level.color }} />
+            ))}
+          </span>
+        </button>
+      );
+    }
+    return (
+      <div
+        className={`disclosure-in-up w-[min(20rem,calc(100vw-3rem))] rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md ${className}`}
+      >
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-expanded={true}
+          aria-controls={detailId}
+          className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
+        >
+          <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+            Calidad del aire
+          </span>
+          <ScaleBar labels="ends" className="min-w-0 flex-1" />
+          <ChevronRight
+            aria-hidden="true"
+            className="h-4 w-4 flex-shrink-0 -rotate-90 text-gray-400"
+          />
+        </button>
+        <div id={detailId}>
+          <LegendDetail className="mt-3 border-t border-gray-100 pt-3" />
+        </div>
+      </div>
+    );
+  }
 
   if (!collapsible) {
     return (
@@ -274,12 +330,6 @@ function AirQualityLegend({ className = "", collapsible = false, hideLabelWhenCl
   // instead of shoving the row you just clicked ~150px up. flex-col-reverse
   // paints the button last while keeping it first in the DOM, so tab and
   // screen-reader order stay trigger-then-detail.
-  //
-  // `hideLabelWhenClosed` is for the narrow mobile pill: closed, the bar's own
-  // end labels ("Buena" / "Extrem. mala") name the scale and the "Calidad del
-  // aire" caption only steals width from the bar; open, it comes back to title
-  // the expanded panel above the "PM2.5 · μg/m³" line.
-  const showLabel = open || !hideLabelWhenClosed;
   return (
     <div className={`flex flex-col-reverse ${className}`}>
       <button
@@ -289,11 +339,9 @@ function AirQualityLegend({ className = "", collapsible = false, hideLabelWhenCl
         aria-controls={detailId}
         className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
       >
-        {showLabel && (
-          <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-            Calidad del aire
-          </span>
-        )}
+        <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+          Calidad del aire
+        </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
             now framed by the "PM2.5 · μg/m³" line the disclosure reveals just
             above, so the bar reads as the axis for the list's bounds. */}
@@ -1667,17 +1715,18 @@ export default function MapaSensors({
         </div>
       )}
 
-      {/* Mobile air-quality legend — the colour key, in view without opening
-          Capas. Floated bottom-left, level with the Capas button, and hidden
-          with it when the sheet is expanded. Sits low on the map, so it opens
-          upward into the free space above. Desktop carries this at the foot of
-          the left rail instead. */}
+      {/* Mobile air-quality legend — a compact icon button at rest, level with
+          the Capas button and hidden with it when the sheet is expanded.
+          Tapping it unfolds the full colour key upward into the free space
+          above. The button and the open card carry their own chrome, so this
+          wrapper only positions them. Desktop carries this at the foot of the
+          left rail instead. */}
       {sheetState === 'peek' && (
         <div
-          className="fixed left-6 right-20 z-[45] md:hidden rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md"
+          className="fixed left-6 z-[45] md:hidden"
           style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
         >
-          <AirQualityLegend collapsible hideLabelWhenClosed />
+          <AirQualityLegend iconWhenClosed />
         </div>
       )}
 
