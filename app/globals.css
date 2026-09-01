@@ -92,16 +92,22 @@
   background:
     radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 46%),
     color-mix(in srgb, var(--marker-fill) 85%, transparent);
-  /* Rim then lift. The rim is the level's ink hairline so a pale fill holds
-     its edge on pale terrain. The white casing ring is OFF right now (was
-     1.5px) — trying the field without it. The lift is a two-part shadow, a
-     tight contact shadow under a soft ambient one, so the disc reads as
-     floating a few millimetres off the map rather than stamped on it with a
-     hard grey ring. Kept lighter than a single 0.25 blur so a dense field of
-     these does not silt up; the gloss above lets the ambient half stay this
-     restrained. */
+  /* Rim then lift. The rim is two hairlines against the border box: the
+     level's ink so a pale fill holds its edge on pale terrain, then a 1.5px
+     white ring so the marker separates from whatever is under it. 3px silted
+     up into white veining once the discs were shrunk and packed closer; 2px
+     still read as bubble-wrap in the basin knot, 1.5 is the floor that keeps
+     each disc its own edge without the field turning cellular. Tried the
+     field with no white ring at all — the discs looked stamped on and the
+     ones over the mountains dissolved; the ring earns its place. The lift is
+     a two-part shadow, a tight contact shadow under a soft ambient one, so
+     the disc reads as floating a few millimetres off the map rather than
+     stamped on it with a hard grey ring. Kept lighter than a single 0.25
+     blur so a dense field of these does not silt up; the gloss above lets
+     the ambient half stay this restrained. */
   box-shadow:
     0 0 0 1px var(--marker-edge),
+    0 0 0 1.5px #fff,
     0 1px 2px rgba(0, 0, 0, 0.24),
     0 4px 10px rgba(0, 0, 0, 0.13);
   transform: scale(var(--dot-scale, 1));
@@ -131,30 +137,26 @@
   --dot-scale: 1.12;
 }
 
-/* Selected. The active marker leads by *size*, not by more rings. Earlier it
-   pulled the fill back to a thin ring around the white core, kept the gloss,
-   and added a static accent ring outside the white one — three concentric
-   bands that read as route furniture (there are literal highway shields on
-   this basemap) and left the disc looking weaker than its solid neighbours.
-   Now: scaled up past any hover, solid fill, no gloss (over the thin ring the
-   core leaves it only muddied the hue), and the edge pared back to the same
-   ink hairline as every other disc (white casing ring off across the board
-   right now). The animated halo alone says "this one". The :hover selector is
-   here too so hovering the active marker does not knock it back down to the
-   field's 1.12 hover scale. */
+/* Selected. The active marker leads by *size*, nothing else. Its history is a
+   list of things pulled back off it: the fill-ring-around-a-white-core, the
+   gloss, a static accent ring, and now the white core + number themselves —
+   the white centre read as a sticker and clashed with the solid discs around
+   it. What's left: a bigger disc (scaled past any hover), the same solid fill
+   and ink + 1.5px white edge as every other marker, a slightly taller lift,
+   and the animated halo. The halo alone says "this one"; the number lives in
+   the card. The :hover selector is here so hovering the active marker does
+   not knock it back down to the field's 1.12 hover scale. (`__dot::before`
+   and `dot.textContent` in createMarker are still wired up but never shown —
+   restoring the on-marker number is a one-line change if it's wanted back.) */
 .sensor-marker--selected .sensor-marker__dot,
 .sensor-marker--selected:hover .sensor-marker__dot {
   --dot-scale: 1.25;
-  color: #111827;
-  font-weight: 600;
   background: var(--marker-fill);
   box-shadow:
     0 0 0 1px var(--marker-edge),
+    0 0 0 1.5px #fff,
     0 2px 5px rgba(0, 0, 0, 0.28),
     0 7px 18px rgba(0, 0, 0, 0.18);
-}
-.sensor-marker--selected .sensor-marker__dot::before {
-  display: block;
 }
 
 /* The halo, expanding out from behind the circle while a sensor is selected,
