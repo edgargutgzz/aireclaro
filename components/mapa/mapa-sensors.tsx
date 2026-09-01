@@ -1272,21 +1272,10 @@ export default function MapaSensors({
     const reporting = new Set(
       data.filter((d) => d.pm25 !== null && d.pm25 > 0.4).map((d) => d.sensor_id),
     );
-    const mappedSensors = sensors.filter((sensor) => reporting.has(sensor.sensor_id));
-    const mapped = mappedSensors.length;
+    const mapped = sensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
     if (!mapped) return null;
     const shown = visibleSensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
-    if (shown !== mapped) return `${shown} de ${mapped} sensores`;
-    // Nothing filtered out: this is the moment to state the coverage rather
-    // than just "all of them". The claim ("the fullest PM2.5 picture of the
-    // ZMM") is about the whole field, so it lives here on the one line that
-    // summarises the field, not repeated on every marker. Only when both
-    // networks are actually on the map, so it never overstates.
-    const hasGobierno = mappedSensors.some((s) => s.source === "sima");
-    const hasCiudadano = mappedSensors.some((s) => s.source !== "sima");
-    return hasGobierno && hasCiudadano
-      ? `${mapped} sensores, ciudadanos y gobierno`
-      : "Todos los sensores";
+    return shown === mapped ? "Todos los sensores" : `${shown} de ${mapped} sensores`;
   }, [sensors, visibleSensors, data]);
 
   // The sensor the "Calidad del Aire" card speaks for when nothing is selected:
