@@ -515,18 +515,8 @@ function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={bodyId}
-          className="group -my-1 flex min-w-0 flex-1 items-center gap-2 rounded-lg py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="group -my-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
-          {/* The band swatch (legend idiom: official `color` body, `ink`
-              hairline) keyed to the current reading, so the tie between this
-              advice and the number above it is visible before the row is even
-              opened. Decorative: the band is named in words the moment it
-              expands, and again in the card headline above. */}
-          <span
-            aria-hidden="true"
-            className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-            style={{ backgroundColor: info.color, boxShadow: `inset 0 0 0 1px ${info.textColor}` }}
-          />
           <span className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
             Recomendaciones de salud
           </span>
@@ -561,7 +551,15 @@ function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info
             The paragraph is indented to the label's own left edge (ml-7:
             a 16px icon plus gap-3), the same reasoning behind the ml-11 on
             Capas' municipality rows, so the icons read as a column. */}
-        <div className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white">
+        <div
+          /* The left edge carries the band's own `ink`, the same colour the
+             "Calidad del Aire" headline above the disclosure is set in. That
+             colour rhyme, revealed only once the recs are open, is what says
+             the advice tracks the current reading. A 3px rule is a graphical
+             object, so `ink` not `color` (§3). */
+          className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white"
+          style={{ borderLeftColor: info.textColor, borderLeftWidth: 3 }}
+        >
           <div className="px-4 py-3.5">
             <div className="mb-1 flex items-center gap-3">
               <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
