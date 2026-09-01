@@ -135,24 +135,27 @@
   --dot-scale: 1.12;
 }
 
-/* Selected. The animated halo behind the disc is what says "this one", so
-   the disc itself only firms up: the same 1.5px white rim as at rest plus a
-   1px accent in the reading's own tone, and a slightly taller lift. The old
-   6px solid ring in that tone, sitting just inside the halo, doubled the
-   signal and turned the marker into a bullseye. */
-.sensor-marker--selected .sensor-marker__dot {
-  color: #1f2937;
-  /* Solid: the inspected sensor is not part of the ambient field. Same gloss
-     cue as the resting disc, just over the un-alpha'd fill. */
-  background:
-    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 46%),
-    var(--marker-fill);
+/* Selected. The active marker leads by *size*, not by more rings. Earlier it
+   pulled the fill back to a thin ring around the white core, kept the gloss,
+   and added a static accent ring outside the white one — three concentric
+   bands that read as route furniture (there are literal highway shields on
+   this basemap) and left the disc looking weaker than its solid neighbours.
+   Now: scaled up past any hover, solid fill, no gloss (over the thin ring the
+   core leaves it only muddied the hue), and the edge pared back to the same
+   ink + 1.5px white as every other disc. The animated halo alone says "this
+   one". The :hover selector is here too so hovering the active marker does
+   not knock it back down to the field's 1.12 hover scale. */
+.sensor-marker--selected .sensor-marker__dot,
+.sensor-marker--selected:hover .sensor-marker__dot {
+  --dot-scale: 1.25;
+  color: #111827;
+  font-weight: 600;
+  background: var(--marker-fill);
   box-shadow:
     0 0 0 1px var(--marker-edge),
     0 0 0 1.5px #fff,
-    0 0 0 3px var(--pulse-color),
-    0 2px 4px rgba(0, 0, 0, 0.24),
-    0 6px 16px rgba(0, 0, 0, 0.16);
+    0 2px 5px rgba(0, 0, 0, 0.28),
+    0 7px 18px rgba(0, 0, 0, 0.18);
 }
 .sensor-marker--selected .sensor-marker__dot::before {
   display: block;
@@ -162,7 +165,10 @@
    in that sensor's air-quality tone. */
 .sensor-marker__pulse {
   position: absolute;
-  inset: -7px;
+  /* -9px, not -7: the selected dot is now scaled to 1.25 (~40px), so the halo
+     base has to clear it or the first keyframe (scale .85) starts hidden
+     behind the disc instead of hugging it. */
+  inset: -9px;
   border-radius: 50%;
   background: var(--pulse-color, #3b82f6);
   opacity: 0;
