@@ -1602,14 +1602,15 @@ export default function MapaSensors({
         </div>
       )}
 
-      {/* Data freshness — mobile: the glass badge floated at the top-centre of
-          the map, just under the top bar. Centre keeps it off the marker pack
+      {/* Data freshness — mobile: a compact glass pill floated at the top-centre
+          of the map, just under the top bar. Centre keeps it off the marker pack
           around Monterrey and clear of the right-edge button stack; it hides
-          with those buttons once the sheet is expanded. Desktop pins the same
-          badge to the foot of the left rail. */}
+          with those buttons once the sheet is expanded. Low-priority chrome, so
+          it runs small and shadowless. Desktop pins the full badge to the foot
+          of the left rail. */}
       {sheetState === 'peek' && freshness && (
-        <div className="pointer-events-none absolute left-1/2 top-3 z-[45] -translate-x-1/2 md:hidden">
-          <FreshnessBadge freshness={freshness} />
+        <div className="pointer-events-none absolute left-1/2 top-2.5 z-[45] -translate-x-1/2 md:hidden">
+          <FreshnessBadge freshness={freshness} compact />
         </div>
       )}
 

@@ -29,10 +29,11 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
 
 // The label is the quiet half and the time is the information, so they do not
 // share one weight and one colour. "Actualizado" is never the dot's only
-// companion — a bare colour cannot say how old "old" is.
-export function FreshnessText({ freshness }: { freshness: Freshness }) {
+// companion — a bare colour cannot say how old "old" is. `compact` just drops
+// the type a notch for the mobile map pill, which should sit quietly.
+export function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
   return (
-    <span className="whitespace-nowrap text-[13px] text-gray-500">
+    <span className={`whitespace-nowrap text-gray-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
       Actualizado{" "}
       <time dateTime={freshness.dateTime} className="font-medium text-gray-700">
         {freshness.when}
@@ -41,14 +42,21 @@ export function FreshnessText({ freshness }: { freshness: Freshness }) {
   );
 }
 
-// The dot + text in a glass pill. Desktop rides the foot of the map's right
-// column; mobile floats it at the top-centre of the map, below the top bar and
-// clear of the marker pack around Monterrey.
-export function FreshnessBadge({ freshness }: { freshness: Freshness }) {
+// The dot + text in a glass pill. Desktop (default) rides the foot of the map's
+// right column. `compact` is the mobile map pill: floated top-centre below the
+// top bar, shrunk and shadowless so it reads as a quiet status line over the
+// map rather than a control.
+export function FreshnessBadge({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
   return (
-    <div className="flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
+    <div
+      className={
+        compact
+          ? "flex h-7 flex-shrink-0 items-center gap-1.5 rounded-full border border-white/60 bg-white/80 px-2.5 backdrop-blur-md"
+          : "flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md"
+      }
+    >
       <FreshnessDot status={freshness.status} />
-      <FreshnessText freshness={freshness} />
+      <FreshnessText freshness={freshness} compact={compact} />
     </div>
   );
 }
