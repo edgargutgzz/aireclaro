@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope, Gauge } from "lucide-react";
+import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope, Wind } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -273,7 +273,7 @@ function AirQualityLegend({ className = "", collapsible = false, iconWhenClosed 
           aria-label="Calidad del aire"
           className={`rounded-xl border border-white/60 bg-white/80 p-3 shadow-sm backdrop-blur-md ${className}`}
         >
-          <Gauge aria-hidden="true" className="h-5 w-5 text-gray-700" />
+          <Wind aria-hidden="true" className="h-5 w-5 text-gray-700" />
         </button>
       );
     }
