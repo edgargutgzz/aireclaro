@@ -34,7 +34,8 @@ export const getLevel = (pm25: number) =>
 export const getPM25Color = (pm25: number | null): { bg: string; text: string } | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   const level = getLevel(pm25);
-  return { bg: level.color, text: level.ink };
+  // `text` currently mirrors the official `color` (see getQualityInfo note).
+  return { bg: level.color, text: level.color };
 };
 
 // Marker fills are the index color nudged a fixed step toward that same level's
@@ -139,10 +140,16 @@ export interface QualityInfo {
   };
 }
 
+// NOTE (transitional): `textColor` currently returns the official NOM-172
+// `color`, not the darkened `ink`, so the estacion card headline and the
+// sparkline dots show the pure index palette. This drops "Buena" and
+// "Aceptable" below the 4.5:1 text floor (#ffff00 on white is ~1.1:1) — the
+// per-level tuning to bring those back is the next step. Revert to
+// `IMECA_LEVELS[n].ink` here to restore the legible pairing.
 export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   if (pm25 <= 15) return {
-    label: IMECA_LEVELS[0].label, color: IMECA_LEVELS[0].color, textColor: IMECA_LEVELS[0].ink,
+    label: IMECA_LEVELS[0].label, color: IMECA_LEVELS[0].color, textColor: IMECA_LEVELS[0].color,
     generalRec: "Disfruta las actividades al aire libre.",
     sensitiveRecs: {
       menores: "Disfruta las actividades al aire libre.",
@@ -152,7 +159,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     },
   };
   if (pm25 <= 25) return {
-    label: IMECA_LEVELS[1].label, color: IMECA_LEVELS[1].color, textColor: IMECA_LEVELS[1].ink,
+    label: IMECA_LEVELS[1].label, color: IMECA_LEVELS[1].color, textColor: IMECA_LEVELS[1].color,
     generalRec: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menores: "Disfruta las actividades al aire libre.",
@@ -162,7 +169,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     },
   };
   if (pm25 <= 79) return {
-    label: IMECA_LEVELS[2].label, color: IMECA_LEVELS[2].color, textColor: IMECA_LEVELS[2].ink,
+    label: IMECA_LEVELS[2].label, color: IMECA_LEVELS[2].color, textColor: IMECA_LEVELS[2].color,
     generalRec: "Es posible realizar actividades al aire libre. Si presentas síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas.",
     sensitiveRecs: {
       menores: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
@@ -172,7 +179,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     },
   };
   if (pm25 <= 130) return {
-    label: IMECA_LEVELS[3].label, color: IMECA_LEVELS[3].color, textColor: IMECA_LEVELS[3].ink,
+    label: IMECA_LEVELS[3].label, color: IMECA_LEVELS[3].color, textColor: IMECA_LEVELS[3].color,
     generalRec: "Reduce las actividades físicas al aire libre. Evita la actividad física vigorosa o prolongada en exteriores.",
     sensitiveRecs: {
       menores: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
@@ -182,7 +189,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     },
   };
   return {
-    label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].ink,
+    label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].color,
     generalRec: "Permanece en interiores. Si presentas síntomas respiratorios o cardiacos acude al médico.",
     sensitiveRecs: {
       menores: "Permanece en interiores. Acude al médico si presentas síntomas.",
