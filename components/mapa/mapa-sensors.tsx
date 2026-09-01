@@ -1480,7 +1480,6 @@ export default function MapaSensors({
         [sensorLabel, pm25 != null ? `${roundPM25(pm25)} μg/m³ PM2.5` : null, markerQuality?.label]
           .filter(Boolean)
           .join(", "),
-        isSima,
       );
       if (!el) return;
 
