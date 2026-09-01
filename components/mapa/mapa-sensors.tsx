@@ -137,7 +137,19 @@ function FreshnessDot({ status }: { status: Freshness["status"] }) {
 // The label is the quiet half and the time is the information, so they do not
 // share one weight and one colour. "Actualizado" is never the dot's only
 // companion — a bare colour cannot say how old "old" is.
-function FreshnessText({ freshness }: { freshness: Freshness }) {
+//
+// `compact` (mobile floating pill) drops the "Actualizado" label and shrinks
+// the type: the dot carries the "this is a freshness readout" cue there, and
+// the pill should recede next to the Capas/legend buttons rather than match
+// them. The time itself still spells out the state.
+function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
+  if (compact) {
+    return (
+      <time dateTime={freshness.dateTime} className="whitespace-nowrap text-[11px] font-medium text-gray-600">
+        {freshness.when}
+      </time>
+    );
+  }
   return (
     <span className="whitespace-nowrap text-[13px] text-gray-500">
       Actualizado{" "}
@@ -149,12 +161,19 @@ function FreshnessText({ freshness }: { freshness: Freshness }) {
 }
 
 // The dot + text in a glass pill. Desktop rides the foot of the right column;
-// mobile floats it bottom-left over the map.
-function FreshnessBadge({ freshness }: { freshness: Freshness }) {
+// mobile floats it bottom-left over the map with `compact`: shorter, no shadow
+// and a lighter ground so it reads as status, not a control.
+function FreshnessBadge({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
   return (
-    <div className="flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
+    <div
+      className={
+        compact
+          ? "flex h-8 flex-shrink-0 items-center gap-1.5 rounded-lg border border-white/60 bg-white/70 px-2.5 backdrop-blur-md"
+          : "flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md"
+      }
+    >
       <FreshnessDot status={freshness.status} />
-      <FreshnessText freshness={freshness} />
+      <FreshnessText freshness={freshness} compact={compact} />
     </div>
   );
 }
@@ -1664,17 +1683,17 @@ export default function MapaSensors({
         </div>
       )}
 
-      {/* Data freshness — mobile: a floating pill at the bottom-left of the map,
-          level with the Capas/legend stack on the right. Low-priority chrome, so
-          it sits over the map rather than in the sensor cards, and hides with the
-          controls once the sheet is expanded. Desktop pins the same badge to the
-          foot of the left rail. */}
+      {/* Data freshness — mobile: a compact floating pill at the bottom-left of
+          the map, low-left of the Capas/legend stack. Low-priority chrome, so it
+          sits over the map rather than in the sensor cards, reads lighter than
+          the buttons, and hides with the controls once the sheet is expanded.
+          Desktop pins the full-size badge to the foot of the left rail. */}
       {sheetState === 'peek' && freshness && (
         <div
           className="fixed left-6 z-[45] md:hidden"
           style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
         >
-          <FreshnessBadge freshness={freshness} />
+          <FreshnessBadge freshness={freshness} compact />
         </div>
       )}
 
