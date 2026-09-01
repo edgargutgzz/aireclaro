@@ -411,12 +411,29 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
         >
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={SPARKLINE_COLOR} stopOpacity={0.28} />
+              <stop offset="0%" stopColor={SPARKLINE_COLOR} stopOpacity={0.14} />
               <stop offset="100%" stopColor={SPARKLINE_COLOR} stopOpacity={0} />
             </linearGradient>
           </defs>
+          {/* IMECA bands: each level's official NOM-172 `color` (the same
+              palette as the legend and the map markers) as a faint horizontal
+              field, clipped to the visible value range. This is the chart's
+              y-axis: the line's height reads straight back to an air-quality
+              band. The pure fill `color` is used here, not the `ink` tone,
+              because at 12% even #ffff00 stays legible on white. */}
+          {IMECA_LEVELS.map((level, i) => {
+            const lower = i === 0 ? domainMin : IMECA_LEVELS[i - 1].limit;
+            const yTop = toY(Math.min(level.limit, domainMax));
+            const yBottom = toY(Math.max(lower, domainMin));
+            if (yBottom - yTop < 0.5) return null;
+            return (
+              <rect key={level.label} x={0} y={yTop} width={width} height={yBottom - yTop} fill={level.color} fillOpacity={0.12} />
+            );
+          })}
+          {/* A quiet solid hairline exactly on each band join that falls in
+              range, in that level's ink so the yellow join is still visible. */}
           {thresholds.map((t) => (
-            <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
+            <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeOpacity={0.3} />
           ))}
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
