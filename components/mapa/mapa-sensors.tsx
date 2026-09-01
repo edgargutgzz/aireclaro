@@ -39,11 +39,17 @@ interface HistoryPoint {
   time_stamp: string;
 }
 
-// Small inline trend chart for the selected sensor's last 48h. Fixed color
-// regardless of the sensor's air-quality color: the yellow "Aceptable" tone
-// in particular is too low-contrast on white to read as a line/fill. Drawn
-// with a white halo (see linePath rendering below) so the line stays legible
-// where it crosses a dashed threshold line.
+// Small inline trend chart for the selected sensor's last 48h. Line and area
+// tint to the *latest* reading's band — its `ink` for the stroke (the same
+// value the dashed threshold guides already use, so it is proven legible on
+// white), its `color` for the area fade — so the chart reads back to the
+// legend the same way the headline and the latest-hour dot do. Recolors once
+// per sensor, not per hover: the story is "this is the band right now," not a
+// value that flickers while you scrub. Drawn with a white halo (see linePath
+// rendering below) so the line stays legible where it crosses a dashed
+// threshold line. This constant remains only the neutral fallback for a
+// sensor with no valid reading; the hover crosshair uses the same neutral
+// gray as the day-boundary lines, since it marks a position, not a value.
 const SPARKLINE_COLOR = "#3b82f6";
 
 // Shown as the default "Calidad del aire" sensor when the visitor hasn't
@@ -276,6 +282,27 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
   );
 }
 
+// The card's quality headline. Text stays the level's `ink` (≥4.5:1, per
+// air-quality.ts); a dot in the level's pure `color` with an `ink` hairline
+// sits in front of it, the identical recipe LevelList uses for the legend
+// swatch, so the word reads back to the legend row it belongs to. `truncate`
+// is opt-in: the desktop card's headline shares a row with the PM2.5 value
+// and needs to give way to it, the mobile sheet's does not.
+function QualityHeadline({ quality, textClassName, truncate = false }: { quality: QualityInfo; textClassName: string; truncate?: boolean }) {
+  return (
+    <span className={`inline-flex items-center gap-2 ${truncate ? "min-w-0 flex-1" : ""}`}>
+      <span
+        aria-hidden="true"
+        className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+        style={{ backgroundColor: quality.color, boxShadow: `inset 0 0 0 1px ${quality.textColor}` }}
+      />
+      <span className={`${truncate ? "min-w-0 flex-1 truncate" : ""} ${textClassName}`} style={{ color: quality.textColor }}>
+        {quality.label}
+      </span>
+    </span>
+  );
+}
+
 function formatHistoryTime(dateStr: string) {
   const date = new Date(dateStr);
   // Readings land ~30 min past the hour but represent that hour's data —
@@ -359,6 +386,11 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
   const latestQuality = getQualityInfo(data[data.length - 1].pm25);
   const latestFill = latestQuality?.color ?? SPARKLINE_COLOR;
   const latestRing = latestQuality?.textColor ?? "#ffffff";
+  // Line and area fade share that same band: `ink` for the 2px stroke (holds
+  // 4.5:1 the way the threshold guides already prove), `color` for the area
+  // fade (an area is a fill, so it takes the pure hue at low alpha).
+  const lineColor = latestQuality?.textColor ?? SPARKLINE_COLOR;
+  const areaColor = latestQuality?.color ?? SPARKLINE_COLOR;
 
   const hovered = hoverIndex !== null ? data[hoverIndex] : null;
   const hoverPoint = hoverIndex !== null ? points[hoverIndex] : null;
@@ -414,8 +446,10 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
         >
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={SPARKLINE_COLOR} stopOpacity={0.28} />
-              <stop offset="100%" stopColor={SPARKLINE_COLOR} stopOpacity={0} />
+              {/* Lower alpha than a neutral fill would need: IMECA yellow and
+                  green vibrate at the strength a blue fade could carry. */}
+              <stop offset="0%" stopColor={areaColor} stopOpacity={0.18} />
+              <stop offset="100%" stopColor={areaColor} stopOpacity={0} />
             </linearGradient>
           </defs>
           {thresholds.map((t) => (
@@ -426,17 +460,18 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           ))}
           <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
           <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
-          <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          <path d={linePath} fill="none" stroke={lineColor} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           {/* Current hour — the rightmost point, always marked. Official
               `color` body, `ink` ring (same hue darkened) so a pale fill keeps
               its edge on the white chart. */}
           <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={latestFill} stroke={latestRing} strokeWidth={1.5} />
           {hoverPoint && hovered && (
             <>
-              {/* Crosshair stays neutral (where you are); the dot carries the
+              {/* Crosshair stays neutral (where you are, not a value) — the
+                  same gray as the day-boundary lines; the dot carries the
                   air-quality colour for that hour (what band it landed in), the
                   same body + ink-ring treatment as the always-on latest dot. */}
-              <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
+              <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
               <circle cx={hoverPoint.x} cy={hoverPoint.y} r={4} fill={hoveredQuality?.color ?? SPARKLINE_COLOR} stroke={hoveredQuality?.textColor ?? "#ffffff"} strokeWidth={1.5} />
             </>
           )}
@@ -1714,9 +1749,11 @@ export default function MapaSensors({
                     <div>
                       <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                       <div className="flex items-baseline justify-between gap-3">
-                        <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
-                          {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
-                        </span>
+                        {(hoveredQuality ?? sensorQuality) ? (
+                          <QualityHeadline quality={(hoveredQuality ?? sensorQuality)!} textClassName="text-2xl font-bold" truncate />
+                        ) : (
+                          <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: textColor }}>—</span>
+                        )}
                         {/* The chips' idiom: the number is the value and
                             carries gray-700, the unit is the quiet half. */}
                         {(hoveredHistory?.pm25 ?? pm25) !== null && (
@@ -1793,9 +1830,7 @@ export default function MapaSensors({
                   <div>
                     <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                     <div className="flex items-baseline justify-between gap-3">
-                      <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
-                        {(hoveredQuality ?? qualityInfo).label}
-                      </span>
+                      <QualityHeadline quality={hoveredQuality ?? qualityInfo} textClassName="text-2xl font-bold" truncate />
                       {/* The chips' idiom: the number is the value and
                           carries gray-700, the unit is the quiet half. */}
                       {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
@@ -1938,9 +1973,11 @@ export default function MapaSensors({
               >
               <div className="mb-5">
                 <div className="mb-2 flex items-center justify-between">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
-                    {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
-                  </div>
+                  {(hoveredQuality ?? sensorQuality) ? (
+                    <QualityHeadline quality={(hoveredQuality ?? sensorQuality)!} textClassName="text-3xl font-bold leading-tight" />
+                  ) : (
+                    <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>—</div>
+                  )}
                   {(hoveredHistory?.pm25 ?? pm25) !== null && (
                     <span className="text-sm text-gray-400">
                       {roundPM25(hoveredHistory?.pm25 ?? pm25)} μg/m³ PM2.5
@@ -2020,9 +2057,7 @@ export default function MapaSensors({
               <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
-              <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
-                {qualityInfo.label}
-              </span>
+              <QualityHeadline quality={qualityInfo} textClassName="text-2xl font-bold" />
             ) : (
               <span className="text-sm text-gray-300">—</span>
             ))}
@@ -2037,9 +2072,7 @@ export default function MapaSensors({
             <>
               <div className="mb-5">
                 <div className="mb-2 flex items-center justify-between">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
-                    {(hoveredQuality ?? qualityInfo).label}
-                  </div>
+                  <QualityHeadline quality={hoveredQuality ?? qualityInfo} textClassName="text-3xl font-bold leading-tight" />
                   {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
                     <span className="text-sm text-gray-400">
                       {roundPM25(hoveredHistory?.pm25 ?? displayPm25)} μg/m³ PM2.5
