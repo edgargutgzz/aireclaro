@@ -46,11 +46,6 @@ interface HistoryPoint {
 // where it crosses a dashed threshold line.
 const SPARKLINE_COLOR = "#3b82f6";
 
-// Shown as the default "Calidad del aire" sensor when the visitor hasn't
-// shared their location: TEC-AMM-RB-006 (PurpleAir 293003), near the centre
-// of the Monterrey metro.
-const DEFAULT_SENSOR_ID = "293003";
-
 
 
 
@@ -138,6 +133,26 @@ function FreshnessBadge({ freshness, flat = false }: { freshness: Freshness; fla
         </time>
       </span>
     </div>
+  );
+}
+
+// The one text line that carries the metro reading while nothing is selected,
+// next to the legend on desktop and in a slim strip at the foot of the map on
+// mobile. The wash paints the same thing; this is its text alternative and the
+// answer to "what's the number today". Median (a symmetric statistic) with the
+// sensor count stated, so it is not leaning toward either end of the scale.
+function MetroSummary({ pm25, count }: { pm25: number | null; count: number }) {
+  const info = getQualityInfo(pm25);
+  if (!info || pm25 === null || count === 0) return null;
+  return (
+    <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-[13px] leading-tight">
+      <span className="font-medium text-gray-500">Zona metropolitana</span>
+      <span className="font-semibold" style={{ color: info.textColor }}>{info.label}</span>
+      <span className="whitespace-nowrap text-gray-500">
+        mediana <span className="font-medium text-gray-700">{roundPM25(pm25)}</span> μg/m³
+      </span>
+      <span className="whitespace-nowrap text-gray-500">· {count} {count === 1 ? "sensor" : "sensores"}</span>
+    </p>
   );
 }
 
@@ -1197,9 +1212,6 @@ export default function MapaSensors({
   const [historyLoading, setHistoryLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showSensorDetail, setShowSensorDetail] = useState(false);
-  const [showNearestDetail, setShowNearestDetail] = useState(false);
-  const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
-  const [showQualitySource, setShowQualitySource] = useState(false);
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
   // Point the cursor is on in the 48h chart. While set, the card's headline
   // reports that hour instead of the latest reading, so the chart and the big
@@ -1283,40 +1295,18 @@ export default function MapaSensors({
     return shown === mapped ? "Todos los sensores" : `${shown} de ${mapped} sensores`;
   }, [sensors, visibleSensors, data]);
 
-  // The sensor the "Calidad del Aire" card speaks for when nothing is selected:
-  // a fixed representative station (TEC-AMM-RB-006), falling through to any
-  // reporting sensor. Always a real sensor, never an area average.
-  const defaultSensorData = useMemo(() => {
-    if (!visibleSensors.length || !data.length) return null;
-
-    const buildFromSensor = (sensor: Sensor) => {
-      const d = data.find((item) => item.sensor_id === sensor.sensor_id);
-      if (!d || d.pm25 === null || d.pm25 <= 0.4) return null;
-      const isSima = sensor.source === "sima";
-      const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-      return { pm25: d.pm25, readingAt: d.time_stamp, name, isSima, red: sensor.red ?? null, lat: sensor.lat, lon: sensor.lon, sensorId: sensor.sensor_id };
-    };
-
-    const defaultSensor = visibleSensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
-    const fromDefault = defaultSensor ? buildFromSensor(defaultSensor) : null;
-    if (fromDefault) return fromDefault;
-
-    for (const sensor of visibleSensors) {
-      const result = buildFromSensor(sensor);
-      if (result) return result;
-    }
-    return null;
-  }, [visibleSensors, data]);
-
-  const areaMedianPm25 = useMemo(() => {
+  // The metro reading while nothing is selected: the median PM2.5 across every
+  // visible sensor that is actually reporting, plus that count. Median so one
+  // spiking sensor cannot swing the headline; the wash shows where it is worse.
+  const areaSummary = useMemo(() => {
     const visibleIds = new Set(visibleSensors.map((sensor) => sensor.sensor_id));
     const values = data
       .filter((d) => visibleIds.has(d.sensor_id))
       .map((d) => d.pm25)
-      .filter((v): v is number => v !== null && v > 0.4);
+      .filter((v): v is number => v !== null && v > 0.4)
+      .sort((a, b) => a - b);
     if (!values.length) return null;
-    const sorted = [...values].sort((a, b) => a - b);
-    return sorted[Math.floor(sorted.length / 2)];
+    return { median: values[Math.floor(values.length / 2)], count: values.length };
   }, [data, visibleSensors]);
 
   // The newest reading anywhere in the data set, which is what the freshness
@@ -1346,21 +1336,15 @@ export default function MapaSensors({
 
   const hoveredQuality = hoveredHistory ? getQualityInfo(hoveredHistory.pm25) : null;
 
-  // The badge reports the reading that is actually on screen: the open
-  // sensor's, else the one the card opened on. Sensors publish on their own
-  // schedules, so a single dataset-wide "newest anywhere" would sit ahead of
-  // the station being shown and make a perfectly current reading look late.
-  // The newest reading anywhere is only the fallback, for when no sensor is
-  // speaking for itself.
-  //
-  // Readings land hourly, so 90 minutes is one missed cycle plus slack, and
-  // six hours is a pipeline that has stopped rather than a run that is late.
+  // The badge reports the selected sensor's reading when one is open, and the
+  // newest reading anywhere otherwise, which is the right thing for a metro-wide
+  // view. Readings land hourly, so 90 minutes is one missed cycle plus slack,
+  // and six hours is a pipeline that has stopped rather than a run that is late.
   // Past today the label picks up the day, so "11:00 AM" can never be
   // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
     if (now === null) return null;
-    const onScreen = selectedSensor?.readingAt ?? defaultSensorData?.readingAt ?? null;
-    const reading = onScreen ? new Date(onScreen) : latestReading;
+    const reading = selectedSensor?.readingAt ? new Date(selectedSensor.readingAt) : latestReading;
     if (!reading || Number.isNaN(reading.getTime())) return null;
 
     const age = now - reading.getTime();
@@ -1371,25 +1355,12 @@ export default function MapaSensors({
       when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
       status: age < 90 * 60 * 1000 ? "fresh" : age < 6 * 60 * 60 * 1000 ? "delayed" : "stale",
     };
-  }, [selectedSensor, defaultSensorData, latestReading, now]);
+  }, [selectedSensor, latestReading, now]);
 
-  const defaultPm25 = defaultSensorData?.pm25 ?? null;
-  const defaultName = defaultSensorData?.name ?? null;
-  const defaultIsSima = defaultSensorData?.isSima ?? null;
-  const defaultRed = defaultSensorData?.red ?? null;
-  const defaultLat = defaultSensorData?.lat ?? null;
-  const defaultLon = defaultSensorData?.lon ?? null;
-  const displayPm25 = defaultPm25 ?? areaMedianPm25;
-  const qualityInfo = getQualityInfo(displayPm25);
-
-  // The one marker that wears the pulse: the explicitly selected sensor, else
-  // the default one the card opens on. Mirrored into refs so the map event
-  // handlers read the current value without being rebuilt on each pick.
-  const activeSensorId = selectedSensor
-    ? selectedSensor.sensor.sensor_id
-    : defaultSensorData
-      ? sensors.find((s) => s.lat === defaultSensorData.lat && s.lon === defaultSensorData.lon)?.sensor_id ?? null
-      : null;
+  // The one marker that wears the pulse: only an explicitly selected sensor.
+  // At rest nothing pulses, because at rest you are looking at the whole metro,
+  // not a sensor.
+  const activeSensorId = selectedSensor?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
   activeColorRef.current =
     getQualityInfo((activeSensorId != null ? data.find((d) => d.sensor_id === activeSensorId)?.pm25 : null) ?? null)
@@ -1609,15 +1580,12 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Fetch the last 48h of readings for the trend sparkline — the selected
-  // sensor if one is picked, otherwise the default sensor backing the
-  // "Calidad del aire" card, so the graph is visible by default.
+  // Fetch the last 48h of readings for the trend sparkline. Only for the
+  // selected sensor; at rest there is no single series to plot.
   useEffect(() => {
     const target = selectedSensor
       ? { sensorId: selectedSensor.sensor.sensor_id, source: selectedSensor.sensor.source }
-      : defaultSensorData
-        ? { sensorId: defaultSensorData.sensorId, source: defaultSensorData.isSima ? "sima" : "purpleAir" }
-        : null;
+      : null;
 
     if (!target) {
       setSensorHistory([]);
@@ -1640,10 +1608,9 @@ export default function MapaSensors({
     return () => {
       cancelled = true;
     };
-  }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, defaultSensorData?.sensorId, defaultSensorData?.isSima]);
+  }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source]);
 
-  // Move the pulsing halo to whichever marker is now active — the explicitly
-  // selected sensor, else the default one the card opens on — in that sensor's
+  // Move the pulsing halo onto the selected sensor's marker, in that sensor's
   // own air-quality ink (yellow and green barely register as a ring on
   // a light map; the darker tone also keeps the ring off the circle it wraps).
   // syncActive owns the DOM writes; the field-build effect calls it too, this
@@ -1681,12 +1648,6 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5.5rem))';
-
-  const handleSheetTap = useCallback(() => {
-    setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
-  }, []);
-
   return (
     <div className="relative h-below-header">
       {/* Map container */}
@@ -1695,8 +1656,8 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full"
       />
 
-      {/* Mobile Capas button — hidden when the sheet is expanded */}
-      {sheetState === 'peek' && (
+      {/* Mobile Capas button — hidden while a sensor sheet is open over it */}
+      {!selectedSensor && (
         <div className="fixed right-6 z-[45] md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}>
           <button
             onClick={() => setShowFilters((v) => !v)}
@@ -1754,25 +1715,14 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right area — quality card, replaced by the selected sensor's card when one is
-          selected. Nav lives in the site-wide header now, not floating here.
-
-          The exact mirror of the Capas column: top-6 to bottom-12, the panel
-          on top taking whatever height is left, and this side's control, the
-          Ubicación chip, pinned to the bottom of the column with mt-auto.
-
-          Both halves of that matter. The chip used to be its own absolutely
-          positioned box at bottom-12 right-6, which is where the card's
-          bottom edge landed once the card was bounded: same z-10, later in
-          the DOM, so the card painted straight over the control. And because
-          the left column reserves h-10 + gap-2 for its freshness badge while
-          this one reserved nothing, the card also ran 48px lower than the
-          Capas panel beside it. One column with a pinned control fixes both:
-          the two panels now end on the same line because they reserve the
-          same slot, and neither control can be covered by a sibling. */}
+      {/* Desktop right column. Empty at rest; a card slides in for the selected
+          sensor. The freshness badge is pinned to the foot with mt-auto so it
+          holds the same corner as the legend does on the left, and the two
+          columns end on the same line because they reserve the same bottom
+          slot. */}
       <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
-        {/* Quality card, replaced by the selected sensor's card when one is selected */}
+        {/* Selected-sensor card; nothing here until a sensor is picked */}
         <div className="flex min-h-0 w-panel-lg flex-col">
         {selectedSensor ? (() => {
           const { sensor, pm25, color, textColor } = selectedSensor;
@@ -1855,88 +1805,9 @@ export default function MapaSensors({
               <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
             </div>
           );
-        })() : qualityInfo && (
-          <div className="pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
-            {/* Always-visible header */}
-            <button
-              type="button"
-              onClick={() => setShowCalidadContent(v => !v)}
-              aria-expanded={showCalidadContent}
-              aria-controls="calidad-card-body"
-              className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
-            >
-              <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
-                {defaultName ?? "Zona Metropolitana de Monterrey"}
-              </span>
-              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${showCalidadContent ? 'rotate-90' : ''}`} />
-            </button>
-            {/* Kept mounted so aria-controls always resolves; `hidden` keeps
-                the controls inside out of the tab order while it is shut. */}
-            <div id="calidad-card-body" hidden={!showCalidadContent} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="disclosure-in flex flex-col gap-5 px-5 pb-0 pt-3">
-                {/* Quality label + PM2.5 — always shown */}
-                <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
-                  <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
-                    {defaultName && (() => { const SourceIcon = getSourceIcon(Boolean(defaultIsSima)); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
-                    <span className="truncate">
-                      {defaultName
-                        ? getSourceLabel(Boolean(defaultIsSima), defaultRed)
-                        : "Promedio de la Zona Metropolitana de Monterrey"}
-                    </span>
-                  </span>
-                  {defaultLat !== null && defaultLon !== null && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${defaultLat.toFixed(5)}, ${defaultLon.toFixed(5)}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
-                      }}
-                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                      aria-label="Copiar coordenadas"
-                    >
-                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-                    <div className="flex items-baseline justify-between gap-3">
-                      <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
-                        {(hoveredQuality ?? qualityInfo).label}
-                      </span>
-                      {/* The chips' idiom: the number is the value and
-                          carries gray-700, the unit is the quiet half. */}
-                      {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
-                        <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
-                          <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? displayPm25)}</span> μg/m³ PM2.5
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {/* Trend sparkline — only with a station behind it: the
-                      metro-wide reading is a median across sensors and has
-                      no single 48h series to plot. */}
-                  {defaultName && (
-                    <div>
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Recommendations — collapsed by default, not needed for a data-first platform */}
-              <div className="disclosure-in relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
-                <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} />
-              </div>
-            </div>
-            <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
-          </div>
-        )}
-        </div>{/* end card width wrapper */}
+        })() : null}
+        </div>{/* end card width wrapper — empty until a sensor is picked; the
+                 metro reading lives by the legend on the left */}
 
         {/* The freshness badge rides the bottom of this column, pinned with
             mt-auto so it holds the same corner whether the card above is open,
@@ -2004,17 +1875,23 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* The air-quality scale sits at the foot of this rail on desktop.
-            Same w-panel-filters width as the Capas panel, so the rail keeps
-            one edge, and md:mt-auto pins it to the bottom whether the panel
-            above is open or shut. Desktop only: on mobile the legend rides
-            inside the Capas sheet instead. */}
+        {/* The metro reading and the scale to read it by, at the foot of this
+            rail on desktop. Same w-panel-filters width as the Capas panel, so
+            the rail keeps one edge; md:mt-auto pins it to the bottom whether the
+            panel above is open or shut. Desktop only: on mobile the summary
+            rides in a strip at the foot of the map and the legend inside the
+            Capas sheet. */}
         <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
+          {areaSummary && (
+            <div className="mb-3 border-b border-gray-100 pb-3">
+              <MetroSummary pm25={areaSummary.median} count={areaSummary.count} />
+            </div>
+          )}
           <AirQualityLegend collapsible />
         </div>
 
         {/* Mobile only: on desktop the freshness badge moves to the foot of
-            the right column, next to the Ubicación chip. */}
+            the right column. */}
         {freshness && (
           <div className="flex-shrink-0 md:hidden">
             <FreshnessBadge freshness={freshness} />
@@ -2103,102 +1980,19 @@ export default function MapaSensors({
         })()}
       </div>
 
-      {/* Bottom sheet backdrop — mobile only */}
-      <div
-        className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
-          sheetState !== 'peek' ? 'opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-        onClick={() => setSheetState('peek')}
-      />
-
-      {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
-      <div
-        className={`fixed left-0 right-0 z-[40] rounded-t-3xl flex flex-col md:hidden overflow-hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 ${sheetState === 'peek' ? 'bg-white/80 backdrop-blur-md border-t border-white/60' : 'bg-white'}`}
-        style={{
-          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
-          height: '62dvh',
-          transform: sheetTransform,
-          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
-      >
-        {/* Drag handle + peek summary */}
+      {/* Mobile: the metro reading as a slim strip at the foot of the map, where
+          the resting sheet used to be. Hidden while a sensor sheet is open over
+          it. On desktop the same line sits by the legend. */}
+      {areaSummary && !selectedSensor && (
         <div
-          className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
-          onClick={handleSheetTap}
+          className="pointer-events-none fixed inset-x-4 z-[40] md:hidden"
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem)' }}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <div className="flex items-baseline justify-between">
-            {sheetState === 'peek' && (
-              <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
-            )}
-            {sheetState === 'peek' && (qualityInfo ? (
-              <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
-                {qualityInfo.label}
-              </span>
-            ) : (
-              <span className="text-sm text-gray-300">—</span>
-            ))}
+          <div className="pointer-events-auto rounded-2xl border border-white/60 bg-white/80 px-4 py-2.5 shadow-sm backdrop-blur-md">
+            <MetroSummary pm25={areaSummary.median} count={areaSummary.count} />
           </div>
         </div>
-
-        {/* Scrollable content — visible when expanded to mid */}
-        <div
-          className={`relative z-[1] flex-1 overflow-y-auto px-5 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
-        >
-          {qualityInfo && (
-            <>
-              <div className="mb-5">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
-                    {(hoveredQuality ?? qualityInfo).label}
-                  </div>
-                  {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
-                    <span className="text-sm text-gray-400">
-                      {roundPM25(hoveredHistory?.pm25 ?? displayPm25)} μg/m³ PM2.5
-                    </span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowNearestDetail(v => !v)}
-                  aria-expanded={showNearestDetail}
-                  className="flex min-w-0 w-full items-center gap-1.5 rounded-lg text-sm text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                >
-                  <span className="truncate">
-                    {defaultName
-                      ? `${defaultIsSima ? "Estación" : "Sensor"}: ${defaultName}`
-                      : "Promedio de la Zona Metropolitana de Monterrey"}
-                  </span>
-                  <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showNearestDetail ? 'rotate-90' : ''}`} />
-                </button>
-                {showNearestDetail && (
-                  <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
-                    <div className="flex flex-col gap-3 px-4 py-3">
-                      {defaultLat !== null && defaultLon !== null && (
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${defaultLat.toFixed(5)}, ${defaultLon.toFixed(5)}`);
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 1500);
-                          }}
-                          className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                        >
-                          <Copy className="h-3 w-3 flex-shrink-0" />
-                          {copied ? 'Copiado' : 'Copiar coordenadas'}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Recommendations — open by default here, see HealthRecommendations */}
-              <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} defaultOpen />
-
-            </>
-          )}
-        </div>
-      </div>
+      )}
 
       {/* Recomendaciones de salud popup — the same dialog as the rest, rather
           than a bare div: it was the one popup with no name for assistive
