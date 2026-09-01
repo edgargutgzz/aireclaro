@@ -302,3 +302,31 @@
   .info-dialog[open],
   .info-dialog::backdrop { animation: none; }
 }
+
+/* Reduced transparency gets an escape, the same way every looping animation
+   gets a reduced-motion one. The glass recipe is applied as raw utilities
+   (bg-white/80 + backdrop-blur-md) on each component rather than through a
+   shared .glass class, so the escape overrides those utilities in place: kill
+   the blur and take every near-white translucent fill to solid. Scrims are
+   deliberately left alone. They are doing depth work, not holding text, and a
+   solid scrim would paint over the map entirely. If a .glass-* component class
+   is ever introduced, move this onto it and drop the utility selectors. */
+@media (prefers-reduced-transparency: reduce) {
+  .backdrop-blur-sm,
+  .backdrop-blur-md,
+  .backdrop-blur-xl,
+  .backdrop-blur-\[6px\],
+  .md\:backdrop-blur-xl {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .bg-white\/70,
+  .bg-white\/80,
+  .bg-white\/90,
+  .bg-white\/95,
+  .hover\:bg-white\/90:hover,
+  .md\:bg-white\/70 {
+    background-color: #fff;
+  }
+}
