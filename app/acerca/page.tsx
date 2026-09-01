@@ -97,7 +97,8 @@ export default function Acerca() {
                 src="/occamm-logo.png"
                 alt="Observatorio del Aire Logo"
                 width={140}
-                height={55}
+                height={26}
+                quality={90}
                 className="h-auto"
               />
             </Link>

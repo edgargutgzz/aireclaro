@@ -34,6 +34,10 @@ export default function Logo({
         width={img.width}
         height={img.height}
         priority
+        // A thin wordmark shown ~119px wide: default q75 WebP smears the
+        // strokes, and the source is sized (420w) so a higher quality costs
+        // almost nothing.
+        quality={90}
         className={img.className}
       />
     </Link>
