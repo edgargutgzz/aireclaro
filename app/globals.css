@@ -84,13 +84,12 @@
      colour instead of one disc masking another. The selected disc (below)
      takes it back to solid.
 
-     Resting discs are matte, no gloss. A field-wide highlight read as candy
-     once forty of them packed the basin; the rim + white ring + double shadow
-     already carry "object on the map", and every other floating surface in the
-     app (Capas panel, Actualizado chip, nav pills) is shadow-sm + blur and
-     nothing more. The system's one gloss cue now lives on the *selected* disc
-     only (below), where it marks the selection instead of texturing the whole
-     field. */
+     Discs are matte, no gloss, resting and selected alike. A highlight read
+     as candy once forty of them packed the basin; the rim + white ring +
+     double shadow already carry "object on the map", and every other floating
+     surface in the app (Capas panel, Actualizado chip, nav pills) is
+     shadow-sm + blur and nothing more. The selected disc separates by size,
+     an opaque fill, a taller lift and its pulse (below), not by a finish. */
   background: color-mix(in srgb, var(--marker-fill) 75%, transparent);
   /* Rim then lift. The rim is two hairlines against the border box: the
      level's ink so a pale fill holds its edge on pale terrain, then a 2px
@@ -129,12 +128,11 @@
    still looks like part of the disc, not a badge on it. Soft text-shadow for
    a hair of lift.
 
-   This disc keeps the one gloss highlight in the system, the same ~11 o'clock
-   radial the resting field used to wear. With the field now matte, the gloss
-   reads as *this is the selected one* rather than as a texture on everything.
-   The fill-ring, accent ring and core the marker once accreted are still gone.
-   The :hover selector is here so hovering the active marker does not knock it
-   back down to the field's 1.12 hover scale. */
+   No gloss, no fill-ring, no accent ring, no core: every finish the marker
+   ever accreted is gone, on this disc as much as the resting field. It leads
+   the field by size, an opaque (not 75%) fill, a taller lift and the pulse,
+   nothing painted on top. The :hover selector is here so hovering the active
+   marker does not knock it back down to the field's 1.12 hover scale. */
 .sensor-marker--selected .sensor-marker__dot,
 .sensor-marker--selected:hover .sensor-marker__dot {
   --dot-scale: 1.25;
@@ -144,9 +142,7 @@
   -webkit-text-stroke: 3.5px rgba(17, 24, 39, 0.5);
   paint-order: stroke;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  background:
-    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 46%),
-    var(--marker-fill);
+  background: var(--marker-fill);
   box-shadow:
     0 0 0 1px var(--marker-edge),
     0 0 0 2px #fff,
