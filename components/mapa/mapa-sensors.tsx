@@ -1703,7 +1703,13 @@ export default function MapaSensors({
           <p className="text-base font-medium text-gray-700">Capas</p>
         </div>
         <div
-          className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain px-5"
+          /* A plain block, not a flex column: the one child is the filter card,
+             which carries overflow-hidden to clip its own rounded corners. As a
+             flex item that resolves to min-height:0, so a flex parent would
+             shrink the card to fit and clip the municipios away instead of
+             letting them overflow and scroll here — which is the bug this had.
+             The desktop panel body is a plain block for the same reason. */
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5"
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <LayersFilterContent
@@ -1751,7 +1757,8 @@ export default function MapaSensors({
           <p className="text-base font-medium text-gray-700">Calidad del aire</p>
         </div>
         <div
-          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-5"
+          /* Plain block, not a flex column — see the Capas sheet body above. */
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5"
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <ScaleBar />
