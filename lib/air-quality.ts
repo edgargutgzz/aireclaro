@@ -19,10 +19,13 @@ export const IMECA_LEVELS = [
 ] as const;
 
 
-// The boundaries between levels, each carrying the color of the level it opens.
+// The boundaries between levels, each carrying the official `color` of the
+// level it opens (NOM-172 Tabla 11), not the darkened `ink`: these are
+// background reference guides, not text, so the pure hue is right even where
+// it reads faint (the Aceptable line, #ffff00).
 export const IMECA_THRESHOLDS = IMECA_LEVELS.slice(0, -1).map((level, i) => ({
   value: level.limit,
-  color: IMECA_LEVELS[i + 1].ink,
+  color: IMECA_LEVELS[i + 1].color,
 }));
 
 export const getLevel = (pm25: number) =>
