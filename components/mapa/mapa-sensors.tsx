@@ -4,6 +4,7 @@ import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch
 import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { contours } from "d3-contour";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
@@ -1130,34 +1131,38 @@ function LayersFilterContent({
 const OPENING_CENTER: [number, number] = [-100.301, 25.685];
 const OPENING_ZOOM = 10.4;
 
-// The painted PM2.5 surface under the markers: not a heatmap (a heatmap colours
-// sensor *density*, so a dense knot of Mala sensors blooms red or purple that
-// nobody is reading). This is an inverse-distance-weighted grid — each cell is
-// the weighted average of the nearby readings, coloured on the IMECA scale, so
-// an area of yellow sensors paints yellow and stays yellow however many there
-// are. An estimate between sensors (the legend says so), soft and faded out by
-// zoom 13 as the markers take over.
+// The painted PM2.5 surface under the markers — the Apple Weather look, but
+// built from ~120 real sensors rather than a global model, so it stays an
+// estimate (the legend says so) and fades out where the sensors run out.
+//
+// Not a heatmap (a heatmap colours sensor *density*, so a knot of Mala sensors
+// blooms red/purple nobody is reading). Instead: an inverse-distance-weighted
+// value grid, then `d3-contour` cuts it into IMECA-band polygons — solid
+// regions with smooth edges. An area of yellow sensors paints one solid yellow
+// region however many sensors there are.
 const AIR_GRID_SOURCE = "air-grid";
 const AIR_GRID_LAYER = "air-grid";
 
-const GRID_CELL_LAT = 0.0063; // ~700 m
-const GRID_CELL_LON = 0.007; // ~700 m at ~25.7°N
-const GRID_SMOOTH = 400; // m — IDW smoothing length; cells within this of a
-// sensor lock onto it, past it readings blend
+const GRID_CELL_DEG = 0.006; // ~600 m raster cell
+const GRID_SMOOTH = 450; // m — IDW smoothing length; within this of a sensor a
+// cell locks onto it, past it readings blend
 const GRID_MAX_DIST = 4500; // m — no surface painted beyond this from any sensor
-const GRID_FADE_START = 2500; // m — the surface feathers out from here to MAX
+// IMECA breaks; the index into this array is the `level` each band feature
+// carries (0 green, 1 yellow, 2 orange, 3 red, 4 purple).
+const BAND_THRESHOLDS = [0.4, 15, 25, 79, 130];
 
-type GridFeature = {
+type BandFeature = {
   type: "Feature";
-  properties: { pm25: number; edgeFade: number };
-  geometry: { type: "Polygon"; coordinates: number[][][] };
+  properties: { level: number };
+  geometry: { type: "MultiPolygon"; coordinates: number[][][][] };
 };
 
-// Build the IDW grid as GeoJSON. Equirectangular distance (no per-pair trig)
-// because at metro scale the error is a metre or two and this runs over every
-// cell × every sensor on each filter change.
-function buildIdwGrid(points: { lon: number; lat: number; pm25: number }[]) {
-  if (!points.length) return { type: "FeatureCollection" as const, features: [] as GridFeature[] };
+// Build the surface as GeoJSON band polygons. Equirectangular distance (no
+// per-pair trig): at metro scale the error is a metre or two and this runs over
+// every raster cell × every sensor on each filter change.
+function buildAirSurface(points: { lon: number; lat: number; pm25: number }[]) {
+  const empty = { type: "FeatureCollection" as const, features: [] as BandFeature[] };
+  if (!points.length) return empty;
 
   let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
   for (const p of points) {
@@ -1168,19 +1173,25 @@ function buildIdwGrid(points: { lon: number; lat: number; pm25: number }[]) {
   }
   const mPerDegLat = 110540;
   const mPerDegLon = 111320 * Math.cos(((minLat + maxLat) / 2) * Math.PI / 180);
-  minLon -= GRID_MAX_DIST / mPerDegLon;
-  maxLon += GRID_MAX_DIST / mPerDegLon;
-  minLat -= GRID_MAX_DIST / mPerDegLat;
-  maxLat += GRID_MAX_DIST / mPerDegLat;
+  const west = minLon - GRID_MAX_DIST / mPerDegLon;
+  const east = maxLon + GRID_MAX_DIST / mPerDegLon;
+  const south = minLat - GRID_MAX_DIST / mPerDegLat;
+  const north = maxLat + GRID_MAX_DIST / mPerDegLat;
+
+  const nx = Math.max(2, Math.ceil((east - west) / GRID_CELL_DEG));
+  const ny = Math.max(2, Math.ceil((north - south) / GRID_CELL_DEG));
+  if (nx * ny > 60000) return empty; // guard against a pathological bbox
 
   const maxD2 = GRID_MAX_DIST * GRID_MAX_DIST;
   const smooth2 = GRID_SMOOTH * GRID_SMOOTH;
-  const features: GridFeature[] = [];
 
-  for (let lat = minLat; lat < maxLat; lat += GRID_CELL_LAT) {
-    const cLat = lat + GRID_CELL_LAT / 2;
-    for (let lon = minLon; lon < maxLon; lon += GRID_CELL_LON) {
-      const cLon = lon + GRID_CELL_LON / 2;
+  // Row 0 is the north edge. Cells with no sensor within GRID_MAX_DIST get 0,
+  // so they fall below every threshold and are painted by nothing.
+  const values: number[] = new Array(nx * ny);
+  for (let iy = 0; iy < ny; iy++) {
+    const cLat = north - (iy + 0.5) * GRID_CELL_DEG;
+    for (let ix = 0; ix < nx; ix++) {
+      const cLon = west + (ix + 0.5) * GRID_CELL_DEG;
       let num = 0, den = 0, minD2 = Infinity;
       for (const p of points) {
         const dx = (p.lon - cLon) * mPerDegLon;
@@ -1191,27 +1202,36 @@ function buildIdwGrid(points: { lon: number; lat: number; pm25: number }[]) {
         num += w * p.pm25;
         den += w;
       }
-      if (minD2 > maxD2 || den === 0) continue;
-      const minD = Math.sqrt(minD2);
-      const edgeFade = minD <= GRID_FADE_START
-        ? 1
-        : Math.max(0, 1 - (minD - GRID_FADE_START) / (GRID_MAX_DIST - GRID_FADE_START));
-      features.push({
-        type: "Feature",
-        properties: { pm25: num / den, edgeFade: Number(edgeFade.toFixed(2)) },
-        geometry: {
-          type: "Polygon",
-          coordinates: [[
-            [lon, lat],
-            [lon + GRID_CELL_LON, lat],
-            [lon + GRID_CELL_LON, lat + GRID_CELL_LAT],
-            [lon, lat + GRID_CELL_LAT],
-            [lon, lat],
-          ]],
-        },
-      });
+      values[iy * nx + ix] = minD2 > maxD2 || den === 0 ? 0 : num / den;
     }
   }
+
+  // One nested MultiPolygon per threshold (area ≥ threshold), drawn back to
+  // front by `level` so each band paints over the milder one beneath it.
+  const bands = contours().size([nx, ny]).thresholds(BAND_THRESHOLDS).smooth(true)(values);
+
+  const features: BandFeature[] = [];
+  bands.forEach((band, level) => {
+    if (!band.coordinates.length) return;
+    features.push({
+      type: "Feature",
+      properties: { level },
+      geometry: {
+        type: "MultiPolygon",
+        coordinates: band.coordinates.map((poly) =>
+          poly.map((ring) =>
+            // d3 puts a cell's value at its integer grid coord; our value is
+            // that cell's centre, so shift the output back by half a cell.
+            ring.map((pt) => [
+              west + (pt[0] + 0.5) * GRID_CELL_DEG,
+              north - (pt[1] + 0.5) * GRID_CELL_DEG,
+            ]),
+          ),
+        ),
+      },
+    });
+  });
+
   return { type: "FeatureCollection" as const, features };
 }
 
@@ -1451,9 +1471,9 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Add the IDW-surface source + fill layer once the style is up. Empty to
-  // start; the effect below feeds it. Sits just under the first label layer so
-  // place names stay readable through the surface.
+  // Add the surface source + fill layer once the style is up. Empty to start;
+  // the effect below feeds it. Sits just under the first label layer so place
+  // names stay readable through the surface.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
     const m = map.current as any;
@@ -1470,32 +1490,22 @@ export default function MapaSensors({
         type: "fill",
         source: AIR_GRID_SOURCE,
         maxzoom: 14,
+        // Bands are nested (each ≥threshold region contains the next), so paint
+        // them mild-to-severe: the higher level lands on top and wins.
+        layout: { "fill-sort-key": ["get", "level"] },
         paint: {
-          // Colour interpolated on the cell's own IDW value across the IMECA
-          // breaks, same fills as the legend bar. This is a value surface, not
-          // a density one: a cell reads whatever its neighbourhood of sensors
-          // averages to, purple included when that average really is extreme.
           "fill-color": [
-            "interpolate", ["linear"], ["get", "pm25"],
-            0.4, c[0].color,
-            15, c[0].color,
-            25, c[1].color,
-            79, c[2].color,
-            130, c[3].color,
-            250, c[4].color,
+            "match", ["get", "level"],
+            1, c[1].color,
+            2, c[2].color,
+            3, c[3].color,
+            4, c[4].color,
+            c[0].color,
           ],
-          // Zoom-and-feature form: zoom is the top-level interpolate input
-          // (Mapbox forbids it nested inside other ops), each output multiplies
-          // the base opacity by the cell's edgeFade. The zoom term hands the
-          // overview to the surface and the close-up to the markers, fully gone
-          // by ~zoom 13; edgeFade feathers the surface out near its limit.
-          "fill-opacity": [
-            "interpolate", ["linear"], ["zoom"],
-            8, ["*", 0.5, ["get", "edgeFade"]],
-            11.5, ["*", 0.45, ["get", "edgeFade"]],
-            13, ["*", 0.12, ["get", "edgeFade"]],
-            13.8, ["*", 0, ["get", "edgeFade"]],
-          ],
+          // Zoom only: hands the overview to the surface and the close-up to
+          // the markers, fully gone by ~zoom 13. Kept committed (~0.7) so it
+          // reads as a surface, not a haze.
+          "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.72, 11.5, 0.66, 13, 0.1, 13.8, 0],
           "fill-outline-color": "rgba(0, 0, 0, 0)",
           "fill-antialias": true,
         },
@@ -1504,9 +1514,9 @@ export default function MapaSensors({
     );
   }, [mapLoaded]);
 
-  // Feed the surface: rebuild the IDW grid from every visible sensor with a
-  // real reading. Same filter as the markers, so the surface and the dots never
-  // disagree about which sensors count.
+  // Feed the surface: rebuild the band polygons from every visible sensor with
+  // a real reading. Same filter as the markers, so the surface and the dots
+  // never disagree about which sensors count.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
     const src = (map.current as any).getSource(AIR_GRID_SOURCE);
@@ -1516,7 +1526,7 @@ export default function MapaSensors({
       if (pm25 === null || pm25 <= 0.4) return [];
       return [{ lon: s.lon, lat: s.lat, pm25 }];
     });
-    src.setData(buildIdwGrid(points));
+    src.setData(buildAirSurface(points));
   }, [mapLoaded, visibleSensors, data]);
 
   // Build the marker field: one DOM marker per visible sensor with a reading.
