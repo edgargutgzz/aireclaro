@@ -191,11 +191,12 @@
    map's h-[calc(100svh-Npx)] restating both so it could fill what was left. The
    media query lives here so callers need no md: variant at all.
 
-   Mobile is 44px, not the Material 56: the bar holds only a ~20px logo, so a
-   compact app bar hands ~12px back to the map (h-below-header derives from this
-   var, so nothing else changes). Desktop stays 72. */
+   Mobile is 52px, still under the Material 56: the bar holds only a ~22px logo,
+   and 44px left it with barely 11px of air on each side. 52 gives the wordmark
+   room to breathe while still handing space back to the map (h-below-header
+   derives from this var, so nothing else changes). Desktop stays 72. */
 :root {
-  --header-h: 44px;
+  --header-h: 52px;
 }
 
 @media (min-width: 768px) {
