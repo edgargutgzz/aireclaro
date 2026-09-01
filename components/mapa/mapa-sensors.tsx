@@ -475,8 +475,20 @@ function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={bodyId}
-          className="group -my-1 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="group -my-1 flex min-w-0 flex-1 items-center gap-2 rounded-lg py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
+          {/* A legend-swatch disc in the band's `color` with a 1px `ink`
+              inset ring, the same mark the map marker carries. It sits on
+              the header whether the disclosure is open or closed, so the
+              tie to the current reading reads before the recs are even
+              expanded, and it replaces the old 3px left rule on the card
+              below. `color` for the fill (a filled object, §3), `ink` only
+              for the hairline so a pale level keeps its edge. */}
+          <span
+            aria-hidden="true"
+            className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+            style={{ backgroundColor: info.color, boxShadow: `inset 0 0 0 1px ${info.textColor}` }}
+          />
           <span className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
             Recomendaciones de salud
           </span>
@@ -511,25 +523,9 @@ function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info
             The paragraph is indented to the label's own left edge (ml-7:
             a 16px icon plus gap-3), the same reasoning behind the ml-11 on
             Capas' municipality rows, so the icons read as a column. */}
-        <div
-          /* The left edge carries the band's own `ink`, the same colour the
-             "Calidad del Aire" headline above the disclosure is set in. That
-             colour rhyme, revealed only once the recs are open, is what says
-             the advice tracks the current reading. A 3px rule is a graphical
-             object, so `ink` not `color` (§3).
-
-             The rule keeps its full `ink` for contrast; what softens is the
-             card behind it: a short `color` wash (the official NOM-172 fill
-             at 8% alpha) fading to nothing across the first ~44px, so the
-             edge reads as tinted glass rather than a hard stripe without the
-             pale levels ever losing the rule. */
-          className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white"
-          style={{
-            borderLeftColor: info.textColor,
-            borderLeftWidth: 3,
-            backgroundImage: `linear-gradient(to right, color-mix(in srgb, ${info.color} 8%, transparent), transparent 44px)`,
-          }}
-        >
+        {/* No colour on the card itself. The tie to the current reading is
+            the disc on the header row above, present open or closed. */}
+        <div className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white">
           <div className="px-4 py-3.5">
             <div className="mb-1 flex items-center gap-3">
               <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
