@@ -138,9 +138,9 @@ export const createMarker = (pm25: number | null, label?: string, isSima = false
   el.appendChild(dot);
 
   // Government (SIMA) badge: the Landmark mark the Capas panel and estación
-  // card already use for "gobierno", on its own dark ground so it never has to
-  // hold contrast against the five air-quality fills. Sits on __dot to scale
-  // with the selected disc. Decorative — the network is in the aria-label.
+  // card already use for "gobierno", on its own neutral gray-600 ground so it
+  // never has to hold contrast against the five air-quality fills. Sits on
+  // __dot to scale with the selected disc. Decorative — network is in aria-label.
   if (isSima) {
     const badge = document.createElement("span");
     badge.className = "sensor-marker__badge";

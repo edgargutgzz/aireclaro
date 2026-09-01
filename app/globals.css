@@ -127,7 +127,9 @@
    all five fills). Instead a small badge sits on the disc's upper-right, mostly
    over it but breaking the edge so it reads as attached and floating: the
    Landmark glyph the Capas panel and estación card already use for "gobierno",
-   on its own dark ground with the same white casing ring the marker carries.
+   on its own neutral `gray-600` ground with the same white casing ring the
+   marker carries. Kept lighter than `gray-800`, which punched a black hole in
+   the saturated disc; still dark enough that the white glyph holds at 10px.
    It rides only the ~15 spatially spread SIMA markers, so it does not pile up
    in the basin. Child of __dot, so it scales and lifts with the selected disc
    and stays pinned to the corner. Network is still named on the card, in Capas
@@ -142,11 +144,11 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #1f2937;
+  background: #4b5563;
   color: #fff;
   box-shadow:
     0 0 0 1.5px #fff,
-    0 1px 3px rgba(0, 0, 0, 0.35);
+    0 1px 3px rgba(0, 0, 0, 0.28);
   pointer-events: none;
 }
 

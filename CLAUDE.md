@@ -22,7 +22,7 @@ This is a Next.js 16 / React 19 app deployed on Vercel. It shows real-time PM2.5
 3. `components/data/purple-air-data.tsx` — queries `purpleair_mediciones` for the latest 150 readings, then deduplicates to one reading per sensor.
 4. `components/mapa/mapa-sensors.tsx` — `"use client"` Mapbox GL component that renders color-coded circular markers per sensor based on PM2.5 thresholds (Mexican Air and Health Index).
 
-**SIMA (official government stations) is live.** `app/page.tsx` fetches `sima-sensors.tsx` / `sima-data.tsx` alongside PurpleAir and merges them into the marker set tagged `source: "sima"` (`sima_sensores`, `sima_mediciones` tables). On the map, SIMA markers are the same discs as citizen sensors but carry a `Landmark` corner badge (`.sensor-marker__badge`, see `.ai-style-guide.md` §3/§5); the Capas panel's **Fuente** section filters citizen vs. government.
+**SIMA (official government stations) is live.** `app/page.tsx` fetches `sima-sensors.tsx` / `sima-data.tsx` alongside PurpleAir and merges them into the marker set tagged `source: "sima"` (`sima_sensores`, `sima_mediciones` tables). On the map, SIMA markers are the same discs as citizen sensors but carry a `Landmark` corner badge (`.sensor-marker__badge`, gray-600 ground, see `.ai-style-guide.md` §3/§5); the Capas panel's **Fuente** section filters citizen vs. government.
 
 **Supabase** is the backend. The client is created server-side via `utils/supabase/server.ts` using `@supabase/ssr`.
 
