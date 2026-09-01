@@ -426,19 +426,14 @@ function Sparkline({ data, onHoverChange, animateIn = false }: { data: HistoryPo
   );
 }
 
-// Matches Sparkline's layout (chart area, then the footer row) so there's
-// no layout shift once the real data replaces it.
-// A generic wavy line + fill, drawn in gray, so the loading state actually
-// reads as "a chart" instead of a plain flat rectangle.
-const SKELETON_PATH = "M0,150 L20,130 L40,142 L60,95 L80,108 L100,72 L120,90 L140,58 L160,100 L180,78 L200,115 L220,92 L240,60 L260,85 L280,50 L300,72 L320,58";
-
+// Matches Sparkline's layout (chart area, then the footer row) so there's no
+// layout shift once the real data replaces it. Not a fake chart: a calm
+// gray block that softly pulses, then the real trace wipes in over it. A
+// mock squiggle plus the wipe was two animations back to back.
 function SparklineSkeleton() {
   return (
     <div>
-      <svg width="100%" height={190} viewBox="0 0 320 190" preserveAspectRatio="none" className="h-[190px] animate-pulse motion-reduce:animate-none md:h-[210px]" aria-hidden="true">
-        <path d={`${SKELETON_PATH} L320,190 L0,190 Z`} fill="#f3f4f6" />
-        <path d={SKELETON_PATH} fill="none" stroke="#e5e7eb" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+      <div className="h-[190px] rounded-xl bg-gray-100 animate-pulse motion-reduce:animate-none md:h-[210px]" aria-hidden="true" />
       <div className="mt-1.5 flex items-center text-[11px] leading-none text-gray-500">
         Últimas 48 horas
       </div>
