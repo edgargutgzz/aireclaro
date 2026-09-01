@@ -1733,10 +1733,11 @@ export default function MapaSensors({
       />
 
       {/* Air-quality legend panel — mobile: slides up from bottom, the same
-          sheet as Capas. The scale bar and its threshold list; no toggle,
-          since the sheet itself is the disclosure. */}
+          sheet as Capas: a capped flex column so only the body scrolls and the
+          sheet still shrinks to fit. The scale bar and its threshold list; no
+          toggle, since the sheet itself is the disclosure. */}
       <div
-        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        className="fixed left-0 right-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
         style={{
           transform: showLegend ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
@@ -1750,7 +1751,7 @@ export default function MapaSensors({
           <p className="text-base font-medium text-gray-700">Calidad del aire</p>
         </div>
         <div
-          className="flex max-h-[70svh] flex-col overflow-y-auto overscroll-contain px-5"
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-5"
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <ScaleBar />
