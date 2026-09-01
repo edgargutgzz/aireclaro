@@ -5,22 +5,26 @@
 //   `color` — the index's own NOM-172 color, untouched. Use it for anything
 //     with area: legend swatches, the scale bar, map-marker bodies, the
 //     selected-marker pulse halo, a status chip's fill.
-//   `ink` — the same hue, darkened (and saturation held) until it clears
-//     4.5:1 on white. Use it for everything on a light ground that is not a
-//     fill: the card's quality headline, hairlines and 1px rings, the
-//     sparkline dot rings, the sparkline threshold guides, the marker rim.
-//     There is no honest dark "yellow", so Aceptable's ink is nudged to gold;
-//     Mala and worse only needed a small step and Extrem. none at all.
+//   `ink` — the same hue, darkened (and saturation held) only as far as it
+//     needs to clear 3:1 on white — the WCAG floor for large bold text and
+//     for graphical/non-text objects, which is what every `ink` use actually
+//     is (never body text): the card's quality headline (24–30px bold), the
+//     sparkline dot rings, the sparkline threshold guides, the marker rim,
+//     the legend swatch's inset hairline. Not the stricter 4.5:1 body-text
+//     floor — that was leaving real vividness on the table for no
+//     accessibility gain. There is no honest dark "yellow" at any contrast
+//     floor, so Aceptable's ink is nudged to gold; Muy mala and Extrem.
+//     already clear 3:1 at their official `color`, so ink === color for both.
 //
 // The marker's PM2.5 number is neither of these: it sits on a white core in a
 // single fixed dark ink (globals.css), so it needs no per-level pairing.
 // `bounds` is the level's PM2.5 span with no unit: the legend prints μg/m³
 // once in its header, not on every row.
 export const IMECA_LEVELS = [
-  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#0b7d2e" },
-  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#8a6d00" },
-  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#b45a00" },
-  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#e00000" },
+  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#00a400" },
+  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#ad8900" },
+  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#de6e00" },
+  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#ff0000" },
   { limit: Infinity, label: "Extremadamente mala", bounds: "> 130", color: "#8f3f97", ink: "#8f3f97" },
 ] as const;
 
@@ -45,11 +49,14 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
 // Marker fills are the index color nudged a fixed step toward that same
 // level's darker `ink` — ~25%. Enough to take the electric edge off IMECA
 // yellow and green on a pale basemap without shifting hue or breaking the
-// read-back to the legend swatch. Dropped from 32% when `ink` itself was
-// retuned darker (to clear 4.5:1 as text), so the same visual nudge now
-// needs a smaller mix. Extrem. has ink === color, so it is untouched. The
-// legend bar keeps the pure `color`. The resting-disc alpha (85%) is a
-// separate lever and lives in globals.css, not here.
+// read-back to the legend swatch. Extrem. has ink === color, so it is
+// untouched. The legend bar keeps the pure `color`. The resting-disc alpha
+// (85%) is a separate lever and lives in globals.css, not here.
+//
+// `ink` was retuned lighter (§ above, 3:1 not 4.5:1) after this mix was
+// tuned, so the calming effect here is weaker than when this constant was
+// last set — re-check the marker field on a real map if it reads too
+// electric again, and raise this mix rather than re-darkening `ink`.
 export const MARKER_INK_MIX = 0.25;
 export const getMarkerFill = (pm25: number | null): string | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
