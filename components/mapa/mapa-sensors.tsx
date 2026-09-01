@@ -561,33 +561,23 @@ function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info
             The paragraph is indented to the label's own left edge (ml-7:
             a 16px icon plus gap-3), the same reasoning behind the ml-11 on
             Capas' municipality rows, so the icons read as a column. */}
-        <div className="disclosure-in mt-4">
-          {/* Names the dependency in plain language, so the advice reads as
-              a response to the current reading rather than static boilerplate.
-              Band word in its `ink` (the same colour the card headline above
-              carries), everything else in quiet body grey. */}
-          <p className="mb-3 text-xs leading-relaxed text-gray-500">
-            Según la calidad del aire actual,{" "}
-            <span className="font-semibold" style={{ color: info.textColor }}>{info.label}</span>.
-          </p>
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-            <div className="px-4 py-3.5">
-              <div className="mb-1 flex items-center gap-3">
-                <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                <p className="text-sm font-semibold text-gray-800">Población General</p>
-              </div>
-              <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
+        <div className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white">
+          <div className="px-4 py-3.5">
+            <div className="mb-1 flex items-center gap-3">
+              <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
+              <p className="text-sm font-semibold text-gray-800">Población General</p>
             </div>
-            {SENSITIVE_GROUPS.map((g) => (
-              <div key={g.key} className="border-t border-gray-100 px-4 py-3.5">
-                <div className="mb-1 flex items-center gap-3">
-                  <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                  <p className="text-sm font-semibold text-gray-800">{g.label}</p>
-                </div>
-                <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
-              </div>
-            ))}
+            <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
           </div>
+          {SENSITIVE_GROUPS.map((g) => (
+            <div key={g.key} className="border-t border-gray-100 px-4 py-3.5">
+              <div className="mb-1 flex items-center gap-3">
+                <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                <p className="text-sm font-semibold text-gray-800">{g.label}</p>
+              </div>
+              <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.sensitiveRecs[g.key]}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
