@@ -122,14 +122,25 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   dot.style.alignItems = "center";
   dot.style.justifyContent = "center";
   dot.textContent = Math.round(pm25!).toString();
-  // Handed to CSS so the stylesheet owns the rim and the fill alpha:
-  // --marker-fill is the mixed colour, painted by globals.css at 75% at rest
-  // and solid on the selected disc; --marker-edge is the ink hairline that
-  // keeps a pale fill from dissolving into pale terrain. The number's color is
-  // a fixed dark ink set in globals.css, not a per-level value, since it sits
-  // straight on the fill as outlined type rather than on a shape of its own.
+  // Handed to CSS so the stylesheet owns the rim, the fill alpha and the
+  // selected disc's number:
+  //   --marker-fill   the mixed colour, painted by globals.css at 75% at rest
+  //                   and solid on the selected disc
+  //   --marker-edge   the ink hairline that keeps a pale fill from dissolving
+  //                   into pale terrain
+  //   --marker-number / --marker-number-shadow   the selected disc's PM2.5
+  //                   digits: near-black on every fill except Extrem.'s deep
+  //                   purple, which takes white. Each clears 4.5:1 on its own
+  //                   fill, so no outline stroke is needed; the shadow is one
+  //                   soft pass in the opposite tone.
+  const whiteNumber = level.limit === Infinity; // Extrem. only
   dot.style.setProperty("--marker-fill", bg);
   dot.style.setProperty("--marker-edge", level.ink);
+  dot.style.setProperty("--marker-number", whiteNumber ? "#ffffff" : "#111827");
+  dot.style.setProperty(
+    "--marker-number-shadow",
+    whiteNumber ? "0 1px 2px rgba(0, 0, 0, 0.3)" : "0 1px 1px rgba(255, 255, 255, 0.4)",
+  );
   el.appendChild(dot);
 
   return el;

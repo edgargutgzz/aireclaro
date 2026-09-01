@@ -41,10 +41,9 @@
   line-height: 1;
 }
 
-/* The number, and the white core it sits on, appear on one marker only: the
-   active one, meaning the sensor the card is speaking for (explicitly tapped,
-   or the default the map opens on). Every other marker is a solid disc in its
-   level's fill, at every zoom.
+/* The number appears on one marker only: the active one, meaning the sensor
+   the card is speaking for (explicitly tapped, or the default the map opens
+   on). Every other marker is a bare disc in its level's fill, at every zoom.
 
    Colour is the ambient signal across the whole field; the exact reading
    belongs to the sensor being inspected. In a basin this dense, printing the
@@ -54,11 +53,11 @@
    the card. Hover deliberately does not print it either: it would flicker
    numbers on and off under the pointer, and the number is the card's job.
 
-   Where it does show, the fill pulls back to a ring and the number sits on a
-   white core in one dark ink. A dark numeral straight on saturated orange or
-   red vibrated, and it forced white ink on purple, giving the scale a seam.
-   Colour on the ring, number on white, is one treatment for all five levels
-   and the AQI-map convention (IQAir, Google, AirNow) for the same reason. */
+   Where it does show, it sits straight on the fill in one of two inks picked
+   by the fill's luminance — near-black, or white for Extrem.'s deep purple —
+   the AQI-map convention (AirNow, PurpleAir, IQAir). Earlier designs put the
+   number on a white core, then behind a heavy outline stroke; both are gone,
+   see the selected block below. */
 
 /* The one deliberate departure from the house ring. ring-gray-900/15 is tuned
    for a known light surface; over arbitrary map imagery it disappears. A solid
@@ -117,16 +116,21 @@
   --dot-scale: 1.12;
 }
 
-/* Selected. Leads by *size*, and carries its PM2.5 reading — but with no
-   shape behind the digits. A white core read as a sticker, a dark lens read
-   worse; every version that changed the ground under the number was rejected.
-   So the number sits straight on the fill as outlined type: a white glyph
-   with a translucent-dark stroke painted *behind* it (`paint-order: stroke`),
-   the way a map label holds over any basemap colour. The halo separates the
-   digits from a pale fill (yellow, green) and the white glyph carries the
-   dark ones (orange, red, purple) — one treatment, all five levels, and it
-   still looks like part of the disc, not a badge on it. Soft text-shadow for
-   a hair of lift.
+/* Selected. Leads by *size*, and carries its PM2.5 reading straight on the
+   fill, no shape behind the digits: a white core read as a sticker, a dark
+   lens read worse, every version that changed the ground under the number was
+   rejected.
+
+   The digits are near-black (`#111827`) on every fill except Extremadamente
+   mala's deep purple, which takes white. One transition, at the very top of
+   the scale, and only one marker ever shows its number at a time, so there is
+   no visible seam. Each pairing clears 4.5:1 on its own fill, so the number
+   needs no outline — the old 3.5px `-webkit-text-stroke` was the map-label
+   trick for text over uncontrolled imagery, and on a disc whose fill we choose
+   it just doubled every stem and left a 3-digit reading barely inside the
+   circle. Picking the ink by fill luminance is the AirNow / PurpleAir / IQAir
+   convention. `--marker-number` / `--marker-number-shadow` come from
+   createMarker; the shadow is one soft pass in the opposite tone, no glow.
 
    No gloss, no fill-ring, no accent ring, no core: every finish the marker
    ever accreted is gone, on this disc as much as the resting field. It leads
@@ -136,12 +140,10 @@
 .sensor-marker--selected .sensor-marker__dot,
 .sensor-marker--selected:hover .sensor-marker__dot {
   --dot-scale: 1.25;
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  -webkit-text-stroke: 3.5px rgba(17, 24, 39, 0.5);
-  paint-order: stroke;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--marker-number, #111827);
+  text-shadow: var(--marker-number-shadow, 0 1px 1px rgba(255, 255, 255, 0.4));
   background: var(--marker-fill);
   box-shadow:
     0 0 0 1px var(--marker-edge),
