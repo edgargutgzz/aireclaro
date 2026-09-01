@@ -3,13 +3,17 @@
 import Navlinks from "@/components/navbar/navlinks";
 import SiteHeader from "@/components/navbar/site-header";
 import Logo from "@/components/navbar/logo";
+import { HeaderFreshness } from "@/components/data/freshness";
 
 export default function Navbar() {
   return (
     <>
-      {/* Mobile top bar — logo only, in normal document flow; nav links stay in the bottom bar */}
-      <header className="flex h-header flex-shrink-0 items-center bg-stone-50 px-4 md:hidden">
+      {/* Mobile top bar — logo on the left, the map's data-freshness time on the
+          trailing edge (nothing there on other routes); nav links stay in the
+          bottom bar. In normal document flow. */}
+      <header className="flex h-header flex-shrink-0 items-center justify-between gap-3 bg-stone-50 px-4 md:hidden">
         <Logo size="sm" />
+        <HeaderFreshness />
       </header>
 
       {/* Mobile navbar at bottom */}

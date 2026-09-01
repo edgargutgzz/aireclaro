@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar/navbar";
 import MainContent from "@/components/main-content";
+import { FreshnessProvider } from "@/components/data/freshness";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -101,12 +102,16 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <div className="flex min-h-svh flex-col">
-          {/* Navbar - mobile bottom bar is self-contained fixed; desktop header is in normal flow */}
-          <Navbar />
-          {/* Content - no padding */}
-          <MainContent>{children}</MainContent>
-        </div>
+        {/* FreshnessProvider spans the top bar and the map so the mobile bar can
+            show the data's "Actualizado" time, which only the map knows. */}
+        <FreshnessProvider>
+          <div className="flex min-h-svh flex-col">
+            {/* Navbar - mobile bottom bar is self-contained fixed; desktop header is in normal flow */}
+            <Navbar />
+            {/* Content - no padding */}
+            <MainContent>{children}</MainContent>
+          </div>
+        </FreshnessProvider>
         <Analytics />
         <SpeedInsights />
       </body>
