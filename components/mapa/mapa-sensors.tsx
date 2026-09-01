@@ -6,7 +6,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, getBandFill, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -152,9 +152,7 @@ function ScaleBar({ className = "", labels = "thresholds" }: { className?: strin
     <span aria-hidden="true" className={`block ${className}`}>
       <span className="flex h-2 overflow-hidden rounded-full ring-1 ring-inset ring-black/[0.08]">
         {IMECA_LEVELS.map((level) => (
-          // getBandFill, not the raw `color`: the bar is the map's key, so it
-          // shows the fill the markers actually paint (see lib/air-quality.ts).
-          <span key={level.label} className="flex-1" style={{ backgroundColor: getBandFill(level.color, level.ink) }} />
+          <span key={level.label} className="flex-1" style={{ backgroundColor: level.color }} />
         ))}
       </span>
       {labels === "ends" ? (
