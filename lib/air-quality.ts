@@ -90,7 +90,14 @@ export const HOVER_MARKER_Z = 7;
 
 // `label` becomes the marker's accessible name — without it the markers are
 // unreachable by keyboard and announce as nothing to a screen reader.
-export const createMarker = (pm25: number | null, label?: string): HTMLElement | null => {
+//
+// `isSima` doubles the rim (a second `ink` hairline just outside the white
+// ring, drawn in globals.css) so the government reference stations read apart
+// from the citizen field without a different shape — a squircle for SIMA was
+// built and pulled. The disc, fill and size stay identical; only the rim
+// changes, and the network is still spelled out on the estación card and in
+// the Capas → Fuente rows.
+export const createMarker = (pm25: number | null, label?: string, isSima = false): HTMLElement | null => {
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
 
@@ -104,7 +111,7 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   // sits behind with no stacking tricks at all.
   const el = document.createElement("button");
   el.type = "button";
-  el.className = "sensor-marker";
+  el.className = isSima ? "sensor-marker sensor-marker--sima" : "sensor-marker";
   if (label) el.setAttribute("aria-label", label);
   el.style.border = "none";
   el.style.padding = "0";
