@@ -1550,16 +1550,27 @@ export default function MapaSensors({
     };
   }, [locate]);
 
+  // Lands at zoom 13, the same "standing beside the sensor" framing the opening
+  // move uses: the auto-locate-on-load path calls this with no explicit request
+  // from the visitor, so it should feel like the open, not a tighter dive. Stays
+  // flyTo (not easeTo) because this one can be a real pan to wherever the
+  // visitor actually is. Reduced motion gets an instant jumpTo.
   const flyToUser = useCallback(() => {
     if (!userLocation || !map.current) return;
     const isMobile = window.innerWidth < 768;
     (map.current as any).setPadding(
       isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
     );
+    const center = [userLocation.longitude, userLocation.latitude];
+    if (prefersReducedMotion()) {
+      (map.current as any).jumpTo({ center, zoom: 13 });
+      return;
+    }
     (map.current as any).flyTo({
-      center: [userLocation.longitude, userLocation.latitude],
-      zoom: 14,
-      duration: 3000,
+      center,
+      zoom: 13,
+      duration: OPENING_MOVE_MS,
+      easing: easeInOutQuad,
       essential: true,
     });
   }, [userLocation]);
