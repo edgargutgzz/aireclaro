@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
@@ -12,18 +11,23 @@ import { Map, BarChart3, Info } from "lucide-react";
 const links = [
   { name: "Mapa", href: "/", icon: Map, pending: false },
   // Datos and Acerca are built but not ready to show, so both bars list them
-  // without offering them. They used to render as live-looking pills that
-  // swallowed the click and flashed a tooltip for two seconds, which told
-  // screen readers nothing at all, and a message on a timer fails SC 1.4.13 on
-  // persistence. Now the state is written on the pill itself on desktop, where
-  // there is room for a standing badge, and stays behind a tap on mobile,
-  // where there is not.
+  // without offering them. They render as a plain <span>: nothing in the tab
+  // order, nothing that looks pressable, and no control that swallows a tap.
+  // The "not yet" state is always on screen rather than behind a tap or a
+  // timer, said two ways depending on room: the "Próx." badge on the desktop
+  // bar, a bare dot on the mobile bottom bar, where three labels plus a badge
+  // do not fit three-across.
   { name: "Datos", href: "/datos", icon: BarChart3, pending: true },
   { name: "Acerca", href: "/acerca", icon: Info, pending: true },
 ];
 
+// One pill recipe, both breakpoints. Mobile: a full-width, centred tab that
+// fills its flex-1 slot, so the three sit on an even rhythm and the row never
+// overruns a narrow (320-360px) bar the way three content-sized px-5 pills
+// did. Desktop (md:) restores the approved SiteHeader pill exactly:
+// content-sized, left-aligned, px-5 py-2.5.
 const pill =
-  "flex items-center gap-2 rounded-full border border-transparent px-5 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+  "flex w-full items-center justify-center gap-2 rounded-full border border-transparent px-2 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 md:w-auto md:justify-start md:px-5 md:py-2.5";
 
 // A filled current-page pill marks a choice. Datos and Acerca are on screen
 // again but still cannot be entered, so Mapa is the only place the nav can
@@ -40,9 +44,6 @@ const soloOnDesktop = links.filter((link) => !link.pending).length === 1;
 
 export default function Navlinks() {
   const pathname = usePathname();
-  // Mobile only, see below. Sticks until it is dismissed rather than running
-  // out on a timer.
-  const [explaining, setExplaining] = useState<string | null>(null);
 
   return (
     <>
@@ -51,46 +52,28 @@ export default function Navlinks() {
 
         if (link.pending) {
           return (
-            <li key={link.name} className="relative">
-              {/* Desktop: nothing to click, and nothing that looks clickable.
-                  A <span>, so it is not in the tab order and there is no
-                  disabled control to explain: the badge is the explanation and
-                  it is simply on screen. "Próx." is an abbreviation, so it is
-                  hidden from assistive tech and the whole word given instead,
-                  the same trade the dialog links make. */}
-              <span className={clsx(pill, "hidden text-gray-500 md:flex")}>
-                <Icon className="h-5 w-5" aria-hidden="true" />
+            <li key={link.name} className="flex-1 md:flex-initial">
+              {/* Not a control: a <span>, so it is out of the tab order and
+                  there is no disabled button to explain. The signal is simply
+                  on screen. "Próx." is an abbreviation, hidden from assistive
+                  tech with the whole word given after it. The badge does not
+                  fit the mobile bar three-across, so there a bare gray dot
+                  carries the same "not yet"; the sr-only word covers both. */}
+              <span className={clsx(pill, "text-gray-500")}>
+                <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
                 <span className="text-sm font-medium">{link.name}</span>
                 <span
                   aria-hidden="true"
-                  className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-600"
+                  className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-400 md:hidden"
+                />
+                <span
+                  aria-hidden="true"
+                  className="hidden rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-600 md:inline"
                 >
                   Próx.
                 </span>
                 <span className="sr-only">Próximamente</span>
               </span>
-
-              {/* Mobile: three labels and a standing badge do not fit across a
-                  360px bottom bar, so the explanation stays behind a tap. It
-                  now waits to be dismissed, and role="status" means it is
-                  actually announced. */}
-              <button
-                type="button"
-                aria-disabled="true"
-                onClick={() => setExplaining((v) => (v === link.name ? null : link.name))}
-                className={clsx(pill, "text-gray-500 md:hidden")}
-              >
-                <Icon className="h-5 w-5" aria-hidden="true" />
-                <span className="text-sm font-medium">{link.name}</span>
-              </button>
-              {explaining === link.name && (
-                <span
-                  role="status"
-                  className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-sm md:hidden"
-                >
-                  Próximamente
-                </span>
-              )}
             </li>
           );
         }
@@ -98,7 +81,7 @@ export default function Navlinks() {
         const isCurrent = pathname === link.href;
 
         return (
-          <li key={link.name}>
+          <li key={link.name} className="flex-1 md:flex-initial">
             {/* The pill is the link, rather than a block div inside an inline
                 anchor: the focus ring and the hit area both used to be
                 measured off the inline box instead of the pill you can see.
@@ -108,9 +91,12 @@ export default function Navlinks() {
               href={link.href}
               aria-current={isCurrent ? "page" : undefined}
               className={clsx(pill, {
-                // Mobile keeps the blue fill: its bottom bar is already
-                // translucent, so glass on glass would not read as selected.
-                "border-blue-200 bg-blue-50 text-blue-600 md:text-gray-700": isCurrent,
+                // Mobile marks the current tab by tint alone, no fill: a
+                // rounded-full block behind one of three flush tabs on a
+                // translucent bar read as heavy chrome, and iOS / Material
+                // bottom tabs both lead with the tint colour. font-semibold
+                // (below) and aria-current carry the rest.
+                "text-blue-600 md:text-gray-700": isCurrent,
                 // Desktop's surface, dropped while this is the only link, see
                 // soloOnDesktop above. It drops the backdrop-blur the map's
                 // cards use, since the header behind the pill is opaque
@@ -122,7 +108,7 @@ export default function Navlinks() {
                 "text-gray-600 hover:bg-black/[0.04]": !isCurrent,
               })}
             >
-              <Icon className="h-5 w-5" aria-hidden="true" />
+              <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               <span className={clsx("text-sm", isCurrent ? "font-semibold" : "font-medium")}>
                 {link.name}
               </span>

@@ -30,7 +30,10 @@ export default function Navbar() {
         aria-label="Principal"
         className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/60 bg-white/80 backdrop-blur-md shadow-sm md:hidden"
       >
-        <ul className="flex w-full items-center justify-around px-4 pt-3 pb-3">
+        {/* flex-1 tabs (see Navlinks), so px-2 + pt-1.5/pb-1.5 around a py-3
+            pill lands the bar at exactly 56px — the --header-h mobile value and
+            the 3.5rem the map's bottom-pinned panels offset against. */}
+        <ul className="flex w-full items-center px-2 pt-1.5 pb-1.5">
           <Navlinks />
         </ul>
         <div className="h-[env(safe-area-inset-bottom)]" />
