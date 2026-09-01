@@ -353,13 +353,16 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
     setHover(Math.round(ratio * (data.length - 1)));
   };
 
-  // The latest point wears its own air-quality color; the IMECA text tones
-  // (not the marker fills) so pale zones like yellow still read on white.
+  // The latest point wears its own air-quality color: the official `color`
+  // fills the dot, its `ink` (same hue, darkened) rings it so a pale yellow or
+  // green body still holds an edge on the white chart.
   const latestQuality = getQualityInfo(data[data.length - 1].pm25);
-  const latestColor = latestQuality?.textColor ?? SPARKLINE_COLOR;
+  const latestFill = latestQuality?.color ?? SPARKLINE_COLOR;
+  const latestRing = latestQuality?.textColor ?? "#ffffff";
 
   const hovered = hoverIndex !== null ? data[hoverIndex] : null;
   const hoverPoint = hoverIndex !== null ? points[hoverIndex] : null;
+  const hoveredQuality = hovered ? getQualityInfo(hovered.pm25) : null;
   // The tooltip is pinned just inside the chart's top edge and only tracks the
   // cursor horizontally, so it holds still while you scrub instead of bobbing
   // up and down the line. It stays *inside* the plot area, never above it: the
@@ -416,7 +419,7 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
             </linearGradient>
           </defs>
           {thresholds.map((t) => (
-            <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.45} />
+            <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.55} />
           ))}
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
@@ -424,16 +427,17 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
           <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          {/* Current hour — the rightmost point, always marked */}
-          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={latestColor} stroke="white" strokeWidth={2} />
+          {/* Current hour — the rightmost point, always marked. Official
+              `color` body, `ink` ring (same hue darkened) so a pale fill keeps
+              its edge on the white chart. */}
+          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={latestFill} stroke={latestRing} strokeWidth={1.5} />
           {hoverPoint && hovered && (
             <>
               {/* Crosshair stays neutral (where you are); the dot carries the
-                  air-quality tone for that hour (what band it landed in), the
-                  same logic as the always-on latest-hour dot. Ink tones, not
-                  the marker fills, so pale zones still read on white. */}
+                  air-quality colour for that hour (what band it landed in), the
+                  same body + ink-ring treatment as the always-on latest dot. */}
               <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
-              <circle cx={hoverPoint.x} cy={hoverPoint.y} r={4} fill={getQualityInfo(hovered.pm25)?.textColor ?? SPARKLINE_COLOR} stroke="white" strokeWidth={2} />
+              <circle cx={hoverPoint.x} cy={hoverPoint.y} r={4} fill={hoveredQuality?.color ?? SPARKLINE_COLOR} stroke={hoveredQuality?.textColor ?? "#ffffff"} strokeWidth={1.5} />
             </>
           )}
         </svg>
@@ -1364,9 +1368,11 @@ export default function MapaSensors({
     ? selectedSensor.sensor.sensor_id
     : defaultSensorData?.sensorId ?? null;
   activeSensorIdRef.current = activeSensorId;
+  // The pulse halo is a large soft translucent fill, so it takes the official
+  // `color` at full chroma, not the darkened `ink`.
   activeColorRef.current =
     getQualityInfo((activeSensorId != null ? data.find((d) => d.sensor_id === activeSensorId)?.pm25 : null) ?? null)
-      ?.textColor ?? SPARKLINE_COLOR;
+      ?.color ?? SPARKLINE_COLOR;
   selectedIdRef.current = selectedSensor?.sensor.sensor_id ?? null;
 
   // Move the pulsing halo to whichever marker is now active — the explicitly

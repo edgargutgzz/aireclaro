@@ -1,31 +1,36 @@
-// Official Mexican Air and Health Index (NOM-172-SEMARNAT-2023) levels for
-// PM2.5, and the single source of truth for the scale's colors.
+// Official Mexican Air and Health Index (NOM-172-SEMARNAT-2019, Tabla 11)
+// levels for PM2.5, and the single source of truth for the scale's colors.
 //
-// `color` is the index's own color — use it for anything filled: map markers,
-// legend swatches and tints. `ink` is the same level darkened only as far as
-// it must be to read on white — use it for text and hairlines, since pure
-// #ffff00 disappears at 1px on a white chart, and for the marker's fill ring
-// hairline. `legendInk` goes a step further for small labels sitting on a
-// tinted chip. The marker's PM2.5 number is not one of these: it always sits
-// on a white core in a single dark ink (see globals.css), so it needs no
-// per-level pairing. `bounds` is the level's PM2.5 span with no unit: the
-// legend prints μg/m³ once in its header, not on every row.
+// Two tokens per level:
+//   `color` — the index's own NOM-172 color, untouched. Use it for anything
+//     with area: legend swatches, the scale bar, map-marker bodies, the
+//     selected-marker pulse halo, a status chip's fill.
+//   `ink` — the same hue, darkened (and saturation held) until it clears
+//     4.5:1 on white. Use it for everything on a light ground that is not a
+//     fill: the card's quality headline, hairlines and 1px rings, the
+//     sparkline dot rings, the sparkline threshold guides, the marker rim.
+//     There is no honest dark "yellow", so Aceptable's ink is nudged to gold;
+//     Mala and worse only needed a small step and Extrem. none at all.
+//
+// The marker's PM2.5 number is neither of these: it sits on a white core in a
+// single fixed dark ink (globals.css), so it needs no per-level pairing.
+// `bounds` is the level's PM2.5 span with no unit: the legend prints μg/m³
+// once in its header, not on every row.
 export const IMECA_LEVELS = [
-  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#00b300", legendInk: "#007200" },
-  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#b2b200", legendInk: "#808000" },
-  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#ff7e00", legendInk: "#c05e00" },
-  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#ff0000", legendInk: "#b30000" },
-  { limit: Infinity, label: "Extremadamente mala", bounds: "> 130", color: "#8f3f97", ink: "#8f3f97", legendInk: "#6b2f72" },
+  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#0b7d2e" },
+  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#8a6d00" },
+  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#b45a00" },
+  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#e00000" },
+  { limit: Infinity, label: "Extremadamente mala", bounds: "> 130", color: "#8f3f97", ink: "#8f3f97" },
 ] as const;
 
 
-// The boundaries between levels, each carrying the official `color` of the
-// level it opens (NOM-172 Tabla 11), not the darkened `ink`: these are
-// background reference guides, not text, so the pure hue is right even where
-// it reads faint (the Aceptable line, #ffff00).
+// The boundaries between levels, each carrying the `ink` of the level it
+// opens: these are 1px guide lines on the white sparkline, so they need the
+// darkened hue to be visible at all (pure #ffff00 is invisible as a hairline).
 export const IMECA_THRESHOLDS = IMECA_LEVELS.slice(0, -1).map((level, i) => ({
   value: level.limit,
-  color: IMECA_LEVELS[i + 1].color,
+  color: IMECA_LEVELS[i + 1].ink,
 }));
 
 export const getLevel = (pm25: number) =>
@@ -34,18 +39,18 @@ export const getLevel = (pm25: number) =>
 export const getPM25Color = (pm25: number | null): { bg: string; text: string } | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   const level = getLevel(pm25);
-  // `text` currently mirrors the official `color` (see getQualityInfo note).
-  return { bg: level.color, text: level.color };
+  return { bg: level.color, text: level.ink };
 };
 
-// Marker fills are the index color nudged a fixed step toward that same level's
-// darker `ink` — ~32%. Enough to take the electric edge off IMECA yellow and
-// green on a pale basemap without shifting hue or breaking the read-back to the
-// legend swatch; 22% left the field still reading as alarm at basin density.
-// Mala, Muy mala and Extrem. already have ink === color, so they are untouched.
-// The legend bar keeps the pure `color`. The resting-disc alpha (85%) is a
+// Marker fills are the index color nudged a fixed step toward that same
+// level's darker `ink` — ~25%. Enough to take the electric edge off IMECA
+// yellow and green on a pale basemap without shifting hue or breaking the
+// read-back to the legend swatch. Dropped from 32% when `ink` itself was
+// retuned darker (to clear 4.5:1 as text), so the same visual nudge now
+// needs a smaller mix. Extrem. has ink === color, so it is untouched. The
+// legend bar keeps the pure `color`. The resting-disc alpha (85%) is a
 // separate lever and lives in globals.css, not here.
-export const MARKER_INK_MIX = 0.32;
+export const MARKER_INK_MIX = 0.25;
 export const getMarkerFill = (pm25: number | null): string | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   const level = getLevel(pm25);
@@ -140,16 +145,14 @@ export interface QualityInfo {
   };
 }
 
-// NOTE (transitional): `textColor` currently returns the official NOM-172
-// `color`, not the darkened `ink`, so the estacion card headline and the
-// sparkline dots show the pure index palette. This drops "Buena" and
-// "Aceptable" below the 4.5:1 text floor (#ffff00 on white is ~1.1:1) — the
-// per-level tuning to bring those back is the next step. Revert to
-// `IMECA_LEVELS[n].ink` here to restore the legible pairing.
+// `color` is the official NOM-172 fill; `textColor` is the level's `ink`, the
+// same hue darkened to clear 4.5:1 on white. The card's quality headline uses
+// `textColor`; the sparkline dot uses `color` for its body and `textColor`
+// for its 1px ring.
 export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   if (pm25 <= 15) return {
-    label: IMECA_LEVELS[0].label, color: IMECA_LEVELS[0].color, textColor: IMECA_LEVELS[0].color,
+    label: IMECA_LEVELS[0].label, color: IMECA_LEVELS[0].color, textColor: IMECA_LEVELS[0].ink,
     generalRec: "Disfruta las actividades al aire libre.",
     sensitiveRecs: {
       menores: "Disfruta las actividades al aire libre.",
@@ -159,7 +162,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     },
   };
   if (pm25 <= 25) return {
-    label: IMECA_LEVELS[1].label, color: IMECA_LEVELS[1].color, textColor: IMECA_LEVELS[1].color,
+    label: IMECA_LEVELS[1].label, color: IMECA_LEVELS[1].color, textColor: IMECA_LEVELS[1].ink,
     generalRec: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menores: "Disfruta las actividades al aire libre.",
@@ -169,7 +172,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     },
   };
   if (pm25 <= 79) return {
-    label: IMECA_LEVELS[2].label, color: IMECA_LEVELS[2].color, textColor: IMECA_LEVELS[2].color,
+    label: IMECA_LEVELS[2].label, color: IMECA_LEVELS[2].color, textColor: IMECA_LEVELS[2].ink,
     generalRec: "Es posible realizar actividades al aire libre. Si presentas síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas.",
     sensitiveRecs: {
       menores: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
@@ -179,7 +182,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     },
   };
   if (pm25 <= 130) return {
-    label: IMECA_LEVELS[3].label, color: IMECA_LEVELS[3].color, textColor: IMECA_LEVELS[3].color,
+    label: IMECA_LEVELS[3].label, color: IMECA_LEVELS[3].color, textColor: IMECA_LEVELS[3].ink,
     generalRec: "Reduce las actividades físicas al aire libre. Evita la actividad física vigorosa o prolongada en exteriores.",
     sensitiveRecs: {
       menores: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
@@ -189,7 +192,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     },
   };
   return {
-    label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].color,
+    label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].ink,
     generalRec: "Permanece en interiores. Si presentas síntomas respiratorios o cardiacos acude al médico.",
     sensitiveRecs: {
       menores: "Permanece en interiores. Acude al médico si presentas síntomas.",
