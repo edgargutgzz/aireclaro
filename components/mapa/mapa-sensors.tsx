@@ -427,10 +427,15 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
           <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
           <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          {/* Current hour — the rightmost point, always marked. Official
-              `color` body, `ink` ring (same hue darkened) so a pale fill keeps
-              its edge on the white chart. */}
-          <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={3} fill={latestFill} stroke={latestRing} strokeWidth={1.5} />
+          {/* Current hour — the rightmost point, marked whenever nothing else
+              is in focus. Official `color` body, `ink` ring (same hue
+              darkened) so a pale fill keeps its edge on the white chart.
+              Hidden during a hover: the headline above already swaps from
+              "now" to that hour's reading, so keeping this dot up too would
+              leave two points claiming focus on the same chart. */}
+          {!hoverPoint && (
+            <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={3} fill={latestFill} stroke={latestRing} strokeWidth={1.5} />
+          )}
           {hoverPoint && hovered && (
             <>
               {/* Crosshair stays neutral (where you are); the dot carries the
