@@ -276,27 +276,6 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
   );
 }
 
-// The card's quality headline. Text stays the level's `ink` (≥4.5:1, per
-// air-quality.ts); a dot in the level's pure `color` with an `ink` hairline
-// sits in front of it, the identical recipe LevelList uses for the legend
-// swatch, so the word reads back to the legend row it belongs to. `truncate`
-// is opt-in: the desktop card's headline shares a row with the PM2.5 value
-// and needs to give way to it, the mobile sheet's does not.
-function QualityHeadline({ quality, textClassName, truncate = false }: { quality: QualityInfo; textClassName: string; truncate?: boolean }) {
-  return (
-    <span className={`inline-flex items-center gap-2 ${truncate ? "min-w-0 flex-1" : ""}`}>
-      <span
-        aria-hidden="true"
-        className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-        style={{ backgroundColor: quality.color, boxShadow: `inset 0 0 0 1px ${quality.textColor}` }}
-      />
-      <span className={`${truncate ? "min-w-0 flex-1 truncate" : ""} ${textClassName}`} style={{ color: quality.textColor }}>
-        {quality.label}
-      </span>
-    </span>
-  );
-}
-
 function formatHistoryTime(dateStr: string) {
   const date = new Date(dateStr);
   // Readings land ~30 min past the hour but represent that hour's data —
@@ -1735,11 +1714,9 @@ export default function MapaSensors({
                     <div>
                       <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                       <div className="flex items-baseline justify-between gap-3">
-                        {(hoveredQuality ?? sensorQuality) ? (
-                          <QualityHeadline quality={(hoveredQuality ?? sensorQuality)!} textClassName="text-2xl font-bold" truncate />
-                        ) : (
-                          <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: textColor }}>—</span>
-                        )}
+                        <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
+                          {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
+                        </span>
                         {/* The chips' idiom: the number is the value and
                             carries gray-700, the unit is the quiet half. */}
                         {(hoveredHistory?.pm25 ?? pm25) !== null && (
@@ -1816,7 +1793,9 @@ export default function MapaSensors({
                   <div>
                     <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                     <div className="flex items-baseline justify-between gap-3">
-                      <QualityHeadline quality={hoveredQuality ?? qualityInfo} textClassName="text-2xl font-bold" truncate />
+                      <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
+                        {(hoveredQuality ?? qualityInfo).label}
+                      </span>
                       {/* The chips' idiom: the number is the value and
                           carries gray-700, the unit is the quiet half. */}
                       {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
@@ -1959,11 +1938,9 @@ export default function MapaSensors({
               >
               <div className="mb-5">
                 <div className="mb-2 flex items-center justify-between">
-                  {(hoveredQuality ?? sensorQuality) ? (
-                    <QualityHeadline quality={(hoveredQuality ?? sensorQuality)!} textClassName="text-3xl font-bold leading-tight" />
-                  ) : (
-                    <div className="text-3xl font-bold leading-tight" style={{ color: textColor }}>—</div>
-                  )}
+                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
+                    {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
+                  </div>
                   {(hoveredHistory?.pm25 ?? pm25) !== null && (
                     <span className="text-sm text-gray-400">
                       {roundPM25(hoveredHistory?.pm25 ?? pm25)} μg/m³ PM2.5
@@ -2043,7 +2020,9 @@ export default function MapaSensors({
               <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
-              <QualityHeadline quality={qualityInfo} textClassName="text-2xl font-bold" />
+              <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
+                {qualityInfo.label}
+              </span>
             ) : (
               <span className="text-sm text-gray-300">—</span>
             ))}
@@ -2058,7 +2037,9 @@ export default function MapaSensors({
             <>
               <div className="mb-5">
                 <div className="mb-2 flex items-center justify-between">
-                  <QualityHeadline quality={hoveredQuality ?? qualityInfo} textClassName="text-3xl font-bold leading-tight" />
+                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
+                    {(hoveredQuality ?? qualityInfo).label}
+                  </div>
                   {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
                     <span className="text-sm text-gray-400">
                       {roundPM25(hoveredHistory?.pm25 ?? displayPm25)} μg/m³ PM2.5
