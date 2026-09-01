@@ -2,9 +2,11 @@
 // levels for PM2.5, and the single source of truth for the scale's colors.
 //
 // Two tokens per level:
-//   `color` — the index's own NOM-172 color, untouched. Use it for anything
-//     with area: legend swatches, the scale bar, map-marker bodies, the
-//     selected-marker pulse halo, a status chip's fill.
+//   `color` — the index's own NOM-172 color, untouched. Use it for the legend's
+//     keyed swatch dots, the selected-marker pulse halo, a status chip's fill.
+//     Anything that fills real area on the map — the markers, the legend's
+//     continuous scale bar — takes `getBandFill` instead (`color` mixed toward
+//     `ink`), so the electric edge comes off IMECA yellow/green.
 //   `ink` — the same hue, darkened (and saturation held) only as far as it
 //     needs to clear 3:1 on white — the WCAG floor for large bold text and
 //     for graphical/non-text objects, which is what every `ink` use actually
@@ -46,22 +48,28 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
   return { bg: level.color, text: level.ink };
 };
 
-// Marker fills are the index color nudged a fixed step toward that same
-// level's darker `ink` — ~25%. Enough to take the electric edge off IMECA
-// yellow and green on a pale basemap without shifting hue or breaking the
-// read-back to the legend swatch. Extrem. has ink === color, so it is
-// untouched. The legend bar keeps the pure `color`. The resting-disc alpha
-// (75%) is a separate lever and lives in globals.css, not here.
+// Band fills are the index color nudged a fixed step toward that same level's
+// darker `ink` — ~25%. Enough to take the electric edge off IMECA yellow and
+// green on a pale basemap without shifting hue or breaking the read-back to the
+// legend swatch. Extrem. has ink === color, so it is untouched. The resting-disc
+// alpha (75%) is a separate lever and lives in globals.css, not here.
+//
+// Used for both the map markers and the legend's continuous scale bar: the bar
+// is the map's key, so it should show the colours the field actually paints,
+// not the raw spec-sheet hue. The legend's small swatch dots stay pure `color`
+// (with an `ink` hairline) — a keyed reference to the official palette.
 //
 // `ink` was retuned lighter (§ above, 3:1 not 4.5:1) after this mix was
 // tuned, so the calming effect here is weaker than when this constant was
 // last set — re-check the marker field on a real map if it reads too
 // electric again, and raise this mix rather than re-darkening `ink`.
 export const MARKER_INK_MIX = 0.25;
+export const getBandFill = (color: string, ink: string): string =>
+  `color-mix(in srgb, ${color} ${Math.round((1 - MARKER_INK_MIX) * 100)}%, ${ink})`;
 export const getMarkerFill = (pm25: number | null): string | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   const level = getLevel(pm25);
-  return `color-mix(in srgb, ${level.color} ${Math.round((1 - MARKER_INK_MIX) * 100)}%, ${level.ink})`;
+  return getBandFill(level.color, level.ink);
 };
 
 // Markers are siblings in one container (mapbox appends every custom element
