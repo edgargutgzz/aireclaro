@@ -186,13 +186,16 @@
   .sensor-marker--selected .sensor-marker__pulse { animation: none; opacity: 0.22; }
 }
 
-/* The header's height, in one place. It used to be written as 56px and 72px
-   across three files: the bar itself in two components, and the map's
-   h-[calc(100svh-56px)] md:h-[calc(100svh-72px)] restating both so it could
-   fill what was left. The media query lives here so callers need no md:
-   variant at all. */
+/* The header's height, in one place. It used to be written as a mobile and a
+   desktop literal across three files: the bar itself in two components, and the
+   map's h-[calc(100svh-Npx)] restating both so it could fill what was left. The
+   media query lives here so callers need no md: variant at all.
+
+   Mobile is 44px, not the Material 56: the bar holds only a ~20px logo, so a
+   compact app bar hands ~12px back to the map (h-below-header derives from this
+   var, so nothing else changes). Desktop stays 72. */
 :root {
-  --header-h: 56px;
+  --header-h: 44px;
 }
 
 @media (min-width: 768px) {

@@ -17,10 +17,10 @@ export default function Navbar() {
           <Image
             src="/occamm-logo.png"
             alt="OCCAMM, Observatorio del Aire"
-            width={130}
-            height={24}
+            width={108}
+            height={20}
             priority
-            className="h-[24px] w-[130px]"
+            className="h-[20px] w-[108px]"
           />
         </Link>
       </header>
