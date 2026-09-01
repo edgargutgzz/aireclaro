@@ -35,11 +35,13 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
 };
 
 // Marker fills are the index color nudged a fixed step toward that same level's
-// darker `ink`. Enough to take the electric edge off IMECA yellow and green on
-// a pale basemap without shifting hue or breaking the read-back to the legend
-// swatch. Mala, Muy mala and Extrem. already have ink === color, so they are
-// untouched. The legend bar keeps the pure `color`.
-export const MARKER_INK_MIX = 0.22;
+// darker `ink` — ~32%. Enough to take the electric edge off IMECA yellow and
+// green on a pale basemap without shifting hue or breaking the read-back to the
+// legend swatch; 22% left the field still reading as alarm at basin density.
+// Mala, Muy mala and Extrem. already have ink === color, so they are untouched.
+// The legend bar keeps the pure `color`. The resting-disc alpha (85%) is a
+// separate lever and lives in globals.css, not here.
+export const MARKER_INK_MIX = 0.32;
 export const getMarkerFill = (pm25: number | null): string | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   const level = getLevel(pm25);
@@ -103,12 +105,14 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   dot.style.display = "flex";
   dot.style.alignItems = "center";
   dot.style.justifyContent = "center";
-  dot.style.backgroundColor = bg;
   dot.textContent = Math.round(pm25!).toString();
-  // Handed to CSS so the stylesheet owns the rim: --marker-edge is the ink
-  // hairline that keeps a pale fill from dissolving into pale terrain. The
-  // number's color is a fixed dark ink set in globals.css, not a per-level
-  // value, since it sits on a white core rather than on the fill.
+  // Handed to CSS so the stylesheet owns the rim and the fill alpha:
+  // --marker-fill is the mixed colour, painted by globals.css at 85% at rest
+  // and solid on the selected disc; --marker-edge is the ink hairline that
+  // keeps a pale fill from dissolving into pale terrain. The number's color is
+  // a fixed dark ink set in globals.css, not a per-level value, since it sits
+  // on a white core rather than on the fill.
+  dot.style.setProperty("--marker-fill", bg);
   dot.style.setProperty("--marker-edge", level.ink);
   el.appendChild(dot);
 

@@ -23,13 +23,16 @@
    does not touch. The anchor half of mapbox's transform is translate(-50%,
    -50%), a percentage of the element's own box, so the marker centres itself.
 
-   One size at every zoom, 40px. Sizing by zoom was tried and taken back out:
-   shrinking the disc at metro zoom quietened the field but cost the marker its
-   identity, reading as basemap furniture rather than as a sensor. */
+   One size at every zoom, 32px. Sizing by *zoom* was tried and taken back out:
+   shrinking the disc at metro zoom cost the marker its identity, reading as
+   basemap furniture. A flat 32px at every zoom is a different lever: the rim +
+   white ring + double shadow below (added after that experiment) carry the
+   "this is a sensor" read that a bare shrunk disc lost, and 32 loosens the
+   pile-up in the basin that 40 could not avoid. */
 .sensor-marker {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   /* Micro numbers, per the type scale, only ever shown on the selected marker. */
   font-size: 11px;
   font-weight: 500;
@@ -74,16 +77,22 @@
   inset: 0;
   color: transparent;
   font-variant-numeric: tabular-nums;
+  /* Fill comes in as a var so CSS owns the alpha: a resting disc is held at
+     85% so where discs pile up in the basin the overlap reads as denser
+     colour instead of one disc masking another. The selected disc (below)
+     takes it back to solid. */
+  background-color: color-mix(in srgb, var(--marker-fill) 85%, transparent);
   /* Rim then lift. The rim is two hairlines against the border box: the
-     level's ink so a pale fill holds its edge on pale terrain, then white so
-     the marker separates from whatever is under it. The lift is a two-part
-     shadow, a tight contact shadow under a soft ambient one, so the disc
-     reads as floating a few millimetres off the map rather than stamped on
-     it with a hard grey ring. Kept lighter than a single 0.25 blur so a
-     dense field of these does not silt up. */
+     level's ink so a pale fill holds its edge on pale terrain, then a 2px
+     white ring so the marker separates from whatever is under it (3px silted
+     up into white veining once the discs were shrunk and packed closer). The
+     lift is a two-part shadow, a tight contact shadow under a soft ambient
+     one, so the disc reads as floating a few millimetres off the map rather
+     than stamped on it with a hard grey ring. Kept lighter than a single
+     0.25 blur so a dense field of these does not silt up. */
   box-shadow:
     0 0 0 1px var(--marker-edge),
-    0 0 0 3px #fff,
+    0 0 0 2px #fff,
     0 1px 2px rgba(0, 0, 0, 0.24),
     0 3px 8px rgba(0, 0, 0, 0.12);
   transform: scale(var(--dot-scale, 1));
@@ -94,14 +103,15 @@
    behind the numeral with z-index (the dot's own transform is the stacking
    context, so -1 stays inside the marker) and inside the fill ring, which
    keeps a pale core from dissolving into pale terrain the way a bare disc
-   would. 24px on the 40px box leaves an ~8px ring: thick enough to read as a
-   deliberate band rather than a punched hole. The inset shadow gives the core
-   a hair of depth so it layers over the fill instead of cutting through it. */
+   would. inset 5px on the 32px box leaves a ~22px core and a ~5px ring: still
+   holds a 3-digit reading, and the ring reads as a deliberate band rather
+   than a punched hole. The inset shadow gives the core a hair of depth so it
+   layers over the fill instead of cutting through it. */
 .sensor-marker__dot::before {
   content: "";
   display: none;
   position: absolute;
-  inset: 8px;
+  inset: 5px;
   z-index: -1;
   border-radius: 50%;
   background: #fff;
@@ -119,10 +129,12 @@
    and turned the marker into a bullseye. */
 .sensor-marker--selected .sensor-marker__dot {
   color: #1f2937;
+  /* Solid: the inspected sensor is not part of the ambient field. */
+  background-color: var(--marker-fill);
   box-shadow:
     0 0 0 1px var(--marker-edge),
-    0 0 0 3px #fff,
-    0 0 0 4px var(--pulse-color),
+    0 0 0 2px #fff,
+    0 0 0 3px var(--pulse-color),
     0 2px 4px rgba(0, 0, 0, 0.24),
     0 6px 16px rgba(0, 0, 0, 0.16);
 }
