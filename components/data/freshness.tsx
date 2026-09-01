@@ -51,7 +51,7 @@ export function FreshnessBadge({ freshness, compact = false }: { freshness: Fres
     <div
       className={
         compact
-          ? "flex h-7 flex-shrink-0 items-center gap-1.5 rounded-full border border-white/60 bg-white/80 px-2.5 backdrop-blur-md"
+          ? "flex h-7 flex-shrink-0 items-center gap-1.5 rounded-xl border border-white/60 bg-white/80 px-2.5 backdrop-blur-md"
           : "flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md"
       }
     >
