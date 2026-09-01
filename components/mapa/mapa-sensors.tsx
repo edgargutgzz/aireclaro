@@ -222,8 +222,9 @@ function LegendDetail({ className = "" }: { className?: string }) {
 // stay visible, the labelled list sits behind a chevron. Inside the Capas
 // sheet (mobile) it is already nested in a disclosure, so it renders fully
 // expanded with no toggle.
-function AirQualityLegend({ className = "", collapsible = false }: { className?: string; collapsible?: boolean }) {
+function AirQualityLegend({ className = "", collapsible = false, openDirection = "up" }: { className?: string; collapsible?: boolean; openDirection?: "up" | "down" }) {
   const [open, setOpen] = useState(false);
+  const detailId = `aq-legend-detail-${useId().replace(/:/g, "")}`;
 
   if (!collapsible) {
     return (
@@ -239,38 +240,48 @@ function AirQualityLegend({ className = "", collapsible = false }: { className?:
 
   // Wide enough that the label, the bar and the chevron sit on one row.
   //
-  // This legend is pinned to the foot of its column, so it opens upward: the
-  // button row holds its place on the bottom edge and the detail unfolds into
-  // the gap above it, instead of shoving the row you just clicked ~150px up.
-  // flex-col-reverse paints the button last while keeping it first in the DOM,
-  // so tab and screen-reader order stay trigger-then-detail.
+  // Two placements. Pinned to the foot of a column (desktop, `openDirection`
+  // "up"): the button row holds its place on the bottom edge and the detail
+  // unfolds into the gap above it, instead of shoving the row you just clicked
+  // ~150px up. Floated at the top of the map (mobile, "down"): the detail
+  // unfolds below the button, into the map. flex-col-reverse for the upward
+  // case paints the button last while keeping it first in the DOM, so tab and
+  // screen-reader order stay trigger-then-detail; the downward case is already
+  // in that order, so it uses a plain flex-col.
+  const down = openDirection === "down";
   return (
-    <div className={`flex flex-col-reverse ${className}`}>
+    <div className={`flex ${down ? "flex-col" : "flex-col-reverse"} ${className}`}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        aria-controls="aq-legend-detail"
+        aria-controls={detailId}
         className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
       >
         <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
           Calidad del aire
         </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
-            now framed by the "PM2.5 · μg/m³" line the disclosure reveals just
-            above, so the bar reads as the axis for the list's bounds. */}
+            now framed by the "PM2.5 · μg/m³" line the disclosure reveals, so
+            the bar reads as the axis for the list's bounds. */}
         <ScaleBar labels={open ? "thresholds" : "ends"} className="min-w-0 flex-1" />
-        {/* Rotates up when open, toward the detail it reveals: every downward
-            panel points its chevron down, so this one points the other way. */}
+        {/* Points toward the detail it reveals: up when the panel opens
+            upward, down when it opens into the map below. */}
         <ChevronRight
           aria-hidden="true"
-          className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? "-rotate-90" : ""}`}
+          className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? (down ? "rotate-90" : "-rotate-90") : ""}`}
         />
       </button>
       {/* Kept mounted so aria-controls always resolves; `hidden` keeps the shut
           content out of the tab order. */}
-      <div id="aq-legend-detail" hidden={!open}>
-        <LegendDetail className="disclosure-in-up mb-3 border-b border-gray-100 pb-3" />
+      <div id={detailId} hidden={!open}>
+        <LegendDetail
+          className={
+            down
+              ? "disclosure-in mt-3 border-t border-gray-100 pt-3"
+              : "disclosure-in-up mb-3 border-b border-gray-100 pb-3"
+          }
+        />
       </div>
     </div>
   );
@@ -1668,7 +1679,6 @@ export default function MapaSensors({
             onShowPM25Info={() => setShowPM25Info(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
           />
-          <AirQualityLegend className="border-t border-gray-100 pt-4" />
         </div>
       </div>
 
@@ -1918,6 +1928,15 @@ export default function MapaSensors({
             inside the Capas sheet instead. */}
         <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
           <AirQualityLegend collapsible />
+        </div>
+
+        {/* Mobile only: the air-quality scale, floated at the top of the map so
+            the colour key is in view without opening Capas. Desktop carries
+            this at the foot of this rail instead (above), so it opens upward
+            there; here it opens downward into the map. Collapsed at rest to
+            stay a single row. */}
+        <div className="pointer-events-auto w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:hidden">
+          <AirQualityLegend collapsible openDirection="down" />
         </div>
 
         {/* Mobile only: on desktop the freshness badge sits at the foot of the
