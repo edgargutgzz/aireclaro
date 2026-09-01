@@ -91,12 +91,13 @@ export const HOVER_MARKER_Z = 7;
 // `label` becomes the marker's accessible name — without it the markers are
 // unreachable by keyboard and announce as nothing to a screen reader.
 //
-// `isSima` doubles the rim (a second `ink` hairline just outside the white
-// ring, drawn in globals.css) so the government reference stations read apart
-// from the citizen field without a different shape — a squircle for SIMA was
-// built and pulled. The disc, fill and size stay identical; only the rim
-// changes, and the network is still spelled out on the estación card and in
-// the Capas → Fuente rows.
+// `isSima` pins a small Landmark badge to the disc's upper-right (styled in
+// globals.css, `.sensor-marker__badge`) so the government reference stations
+// read apart from the citizen field. The disc itself is untouched: a different
+// shape (squircle) was built and pulled, and a glyph inside the fill is the
+// PM2.5-number problem again. The badge is a child of the dot so it tracks the
+// selected disc's scale and lift; the network is also on the estación card, in
+// Capas → Fuente, and in this button's aria-label.
 export const createMarker = (pm25: number | null, label?: string, isSima = false): HTMLElement | null => {
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
@@ -135,6 +136,25 @@ export const createMarker = (pm25: number | null, label?: string, isSima = false
   dot.style.setProperty("--marker-fill", bg);
   dot.style.setProperty("--marker-edge", level.ink);
   el.appendChild(dot);
+
+  // Government (SIMA) badge: the Landmark mark the Capas panel and estación
+  // card already use for "gobierno", on its own dark ground so it never has to
+  // hold contrast against the five air-quality fills. Sits on __dot to scale
+  // with the selected disc. Decorative — the network is in the aria-label.
+  if (isSima) {
+    const badge = document.createElement("span");
+    badge.className = "sensor-marker__badge";
+    badge.setAttribute("aria-hidden", "true");
+    badge.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">' +
+      '<polygon points="12 2 20 7 4 7" fill="currentColor" stroke="none" />' +
+      '<line x1="4" x2="20" y1="22" y2="22" />' +
+      '<line x1="7" x2="7" y1="18" y2="11" />' +
+      '<line x1="12" x2="12" y1="18" y2="11" />' +
+      '<line x1="17" x2="17" y1="18" y2="11" />' +
+      "</svg>";
+    dot.appendChild(badge);
+  }
 
   return el;
 };

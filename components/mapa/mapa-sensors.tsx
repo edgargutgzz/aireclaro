@@ -1466,7 +1466,12 @@ export default function MapaSensors({
       const markerQuality = getQualityInfo(pm25);
       const el = createMarker(
         pm25,
-        [sensorLabel, pm25 != null ? `${roundPM25(pm25)} μg/m³ PM2.5` : null, markerQuality?.label]
+        [
+          getSourceLabel(isSima, sensor.red),
+          sensorLabel,
+          pm25 != null ? `${roundPM25(pm25)} μg/m³ PM2.5` : null,
+          markerQuality?.label,
+        ]
           .filter(Boolean)
           .join(", "),
         isSima,
