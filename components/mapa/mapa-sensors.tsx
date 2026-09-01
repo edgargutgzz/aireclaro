@@ -1560,8 +1560,9 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  // 5.5rem of peek showing above the nav: the grabber and the "Calidad del Aire"
-  // row. Freshness floats at the top of the map, so it adds nothing here.
+  // 5.5rem of peek showing above the nav: the grabber and the summary row (the
+  // default sensor name + its reading). Freshness floats at the top of the map,
+  // so it adds nothing here.
   const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5.5rem))';
 
   const handleSheetTap = useCallback(() => {
@@ -2063,16 +2064,18 @@ export default function MapaSensors({
           onClick={handleSheetTap}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <div className="flex items-baseline justify-between">
+          <div className="flex items-baseline justify-between gap-3">
             {sheetState === 'peek' && (
-              <span className="text-base font-medium text-gray-700">Calidad del Aire</span>
+              <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
+                {defaultName ?? "Zona Metropolitana de Monterrey"}
+              </span>
             )}
             {sheetState === 'peek' && (qualityInfo ? (
-              <span className="text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
+              <span className="flex-shrink-0 text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
                 {qualityInfo.label}
               </span>
             ) : (
-              <span className="text-sm text-gray-300">—</span>
+              <span className="flex-shrink-0 text-sm text-gray-300">—</span>
             ))}
           </div>
         </div>
