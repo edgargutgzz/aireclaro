@@ -39,17 +39,11 @@ interface HistoryPoint {
   time_stamp: string;
 }
 
-// Small inline trend chart for the selected sensor's last 48h. Line and area
-// tint to the *latest* reading's band — its `ink` for the stroke (the same
-// value the dashed threshold guides already use, so it is proven legible on
-// white), its `color` for the area fade — so the chart reads back to the
-// legend the same way the headline and the latest-hour dot do. Recolors once
-// per sensor, not per hover: the story is "this is the band right now," not a
-// value that flickers while you scrub. Drawn with a white halo (see linePath
-// rendering below) so the line stays legible where it crosses a dashed
-// threshold line. This constant remains only the neutral fallback for a
-// sensor with no valid reading; the hover crosshair uses the same neutral
-// gray as the day-boundary lines, since it marks a position, not a value.
+// Small inline trend chart for the selected sensor's last 48h. Fixed color
+// regardless of the sensor's air-quality color: the yellow "Aceptable" tone
+// in particular is too low-contrast on white to read as a line/fill. Drawn
+// with a white halo (see linePath rendering below) so the line stays legible
+// where it crosses a dashed threshold line.
 const SPARKLINE_COLOR = "#3b82f6";
 
 // Shown as the default "Calidad del aire" sensor when the visitor hasn't
@@ -386,11 +380,6 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
   const latestQuality = getQualityInfo(data[data.length - 1].pm25);
   const latestFill = latestQuality?.color ?? SPARKLINE_COLOR;
   const latestRing = latestQuality?.textColor ?? "#ffffff";
-  // Line and area fade share that same band: `ink` for the 2px stroke (holds
-  // 4.5:1 the way the threshold guides already prove), `color` for the area
-  // fade (an area is a fill, so it takes the pure hue at low alpha).
-  const lineColor = latestQuality?.textColor ?? SPARKLINE_COLOR;
-  const areaColor = latestQuality?.color ?? SPARKLINE_COLOR;
 
   const hovered = hoverIndex !== null ? data[hoverIndex] : null;
   const hoverPoint = hoverIndex !== null ? points[hoverIndex] : null;
@@ -446,10 +435,8 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
         >
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              {/* Lower alpha than a neutral fill would need: IMECA yellow and
-                  green vibrate at the strength a blue fade could carry. */}
-              <stop offset="0%" stopColor={areaColor} stopOpacity={0.18} />
-              <stop offset="100%" stopColor={areaColor} stopOpacity={0} />
+              <stop offset="0%" stopColor={SPARKLINE_COLOR} stopOpacity={0.28} />
+              <stop offset="100%" stopColor={SPARKLINE_COLOR} stopOpacity={0} />
             </linearGradient>
           </defs>
           {thresholds.map((t) => (
@@ -460,18 +447,17 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           ))}
           <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
           <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
-          <path d={linePath} fill="none" stroke={lineColor} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+          <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
           {/* Current hour — the rightmost point, always marked. Official
               `color` body, `ink` ring (same hue darkened) so a pale fill keeps
               its edge on the white chart. */}
           <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={4} fill={latestFill} stroke={latestRing} strokeWidth={1.5} />
           {hoverPoint && hovered && (
             <>
-              {/* Crosshair stays neutral (where you are, not a value) — the
-                  same gray as the day-boundary lines; the dot carries the
+              {/* Crosshair stays neutral (where you are); the dot carries the
                   air-quality colour for that hour (what band it landed in), the
                   same body + ink-ring treatment as the always-on latest dot. */}
-              <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
+              <line x1={hoverPoint.x} y1={0} x2={hoverPoint.x} y2={height} stroke={SPARKLINE_COLOR} strokeWidth={1} strokeDasharray="3,3" strokeOpacity={0.5} />
               <circle cx={hoverPoint.x} cy={hoverPoint.y} r={4} fill={hoveredQuality?.color ?? SPARKLINE_COLOR} stroke={hoveredQuality?.textColor ?? "#ffffff"} strokeWidth={1.5} />
             </>
           )}
