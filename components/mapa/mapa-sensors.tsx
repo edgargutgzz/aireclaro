@@ -4,7 +4,6 @@ import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch
 import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { contours } from "d3-contour";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
@@ -1125,115 +1124,27 @@ function LayersFilterContent({
   );
 }
 
-// Where the map opens: the whole Monterrey metro, so the painted wash is the
-// first thing you see. No opening fly and no locate-me, this is an open-data
-// map of the airshed, not a personal "air near me" readout.
+// Where the map opens: the whole Monterrey metro, so the ambient tint reads at
+// a glance. No opening fly and no locate-me, this is an open-data map of the
+// airshed, not a personal "air near me" readout.
 const OPENING_CENTER: [number, number] = [-100.301, 25.685];
 const OPENING_ZOOM = 10.4;
 
-// The painted PM2.5 surface under the markers — the Apple Weather look, but
-// built from ~120 real sensors rather than a global model, so it stays an
-// estimate (the legend says so) and fades out where the sensors run out.
-//
-// Not a heatmap (a heatmap colours sensor *density*, so a knot of Mala sensors
-// blooms red/purple nobody is reading). Instead: an inverse-distance-weighted
-// value grid, then `d3-contour` cuts it into IMECA-band polygons — solid
-// regions with smooth edges. An area of yellow sensors paints one solid yellow
-// region however many sensors there are.
-const AIR_GRID_SOURCE = "air-grid";
-const AIR_GRID_LAYER = "air-grid";
-
-const GRID_CELL_DEG = 0.006; // ~600 m raster cell
-const GRID_SMOOTH = 450; // m — IDW smoothing length; within this of a sensor a
-// cell locks onto it, past it readings blend
-const GRID_MAX_DIST = 4500; // m — no surface painted beyond this from any sensor
-// IMECA breaks; the index into this array is the `level` each band feature
-// carries (0 green, 1 yellow, 2 orange, 3 red, 4 purple).
-const BAND_THRESHOLDS = [0.4, 15, 25, 79, 130];
-
-type BandFeature = {
-  type: "Feature";
-  properties: { level: number };
-  geometry: { type: "MultiPolygon"; coordinates: number[][][][] };
+// The ambient tint (IQAir's move): the whole basemap washed in the colour of
+// the metro's current median level, so the map reads "yellow today" at a
+// glance. No spatial interpolation — that overclaims from ~120 points — just
+// one flat colour. A world-covering fill on top of the basemap style; DOM
+// markers sit above it untinted. Its colour is set from `areaMedianLevel`.
+const AIR_TINT_SOURCE = "air-tint";
+const AIR_TINT_LAYER = "air-tint";
+const WORLD_POLYGON = {
+  type: "Feature" as const,
+  properties: {},
+  geometry: {
+    type: "Polygon" as const,
+    coordinates: [[[-180, -85], [180, -85], [180, 85], [-180, 85], [-180, -85]]],
+  },
 };
-
-// Build the surface as GeoJSON band polygons. Equirectangular distance (no
-// per-pair trig): at metro scale the error is a metre or two and this runs over
-// every raster cell × every sensor on each filter change.
-function buildAirSurface(points: { lon: number; lat: number; pm25: number }[]) {
-  const empty = { type: "FeatureCollection" as const, features: [] as BandFeature[] };
-  if (!points.length) return empty;
-
-  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
-  for (const p of points) {
-    minLon = Math.min(minLon, p.lon);
-    maxLon = Math.max(maxLon, p.lon);
-    minLat = Math.min(minLat, p.lat);
-    maxLat = Math.max(maxLat, p.lat);
-  }
-  const mPerDegLat = 110540;
-  const mPerDegLon = 111320 * Math.cos(((minLat + maxLat) / 2) * Math.PI / 180);
-  const west = minLon - GRID_MAX_DIST / mPerDegLon;
-  const east = maxLon + GRID_MAX_DIST / mPerDegLon;
-  const south = minLat - GRID_MAX_DIST / mPerDegLat;
-  const north = maxLat + GRID_MAX_DIST / mPerDegLat;
-
-  const nx = Math.max(2, Math.ceil((east - west) / GRID_CELL_DEG));
-  const ny = Math.max(2, Math.ceil((north - south) / GRID_CELL_DEG));
-  if (nx * ny > 60000) return empty; // guard against a pathological bbox
-
-  const maxD2 = GRID_MAX_DIST * GRID_MAX_DIST;
-  const smooth2 = GRID_SMOOTH * GRID_SMOOTH;
-
-  // Row 0 is the north edge. Cells with no sensor within GRID_MAX_DIST get 0,
-  // so they fall below every threshold and are painted by nothing.
-  const values: number[] = new Array(nx * ny);
-  for (let iy = 0; iy < ny; iy++) {
-    const cLat = north - (iy + 0.5) * GRID_CELL_DEG;
-    for (let ix = 0; ix < nx; ix++) {
-      const cLon = west + (ix + 0.5) * GRID_CELL_DEG;
-      let num = 0, den = 0, minD2 = Infinity;
-      for (const p of points) {
-        const dx = (p.lon - cLon) * mPerDegLon;
-        const dy = (p.lat - cLat) * mPerDegLat;
-        const d2 = dx * dx + dy * dy;
-        if (d2 < minD2) minD2 = d2;
-        const w = 1 / (d2 + smooth2);
-        num += w * p.pm25;
-        den += w;
-      }
-      values[iy * nx + ix] = minD2 > maxD2 || den === 0 ? 0 : num / den;
-    }
-  }
-
-  // One nested MultiPolygon per threshold (area ≥ threshold), drawn back to
-  // front by `level` so each band paints over the milder one beneath it.
-  const bands = contours().size([nx, ny]).thresholds(BAND_THRESHOLDS).smooth(true)(values);
-
-  const features: BandFeature[] = [];
-  bands.forEach((band, level) => {
-    if (!band.coordinates.length) return;
-    features.push({
-      type: "Feature",
-      properties: { level },
-      geometry: {
-        type: "MultiPolygon",
-        coordinates: band.coordinates.map((poly) =>
-          poly.map((ring) =>
-            // d3 puts a cell's value at its integer grid coord; our value is
-            // that cell's centre, so shift the output back by half a cell.
-            ring.map((pt) => [
-              west + (pt[0] + 0.5) * GRID_CELL_DEG,
-              north - (pt[1] + 0.5) * GRID_CELL_DEG,
-            ]),
-          ),
-        ),
-      },
-    });
-  });
-
-  return { type: "FeatureCollection" as const, features };
-}
 
 // MapaSensors component
 export default function MapaSensors({
@@ -1245,11 +1156,10 @@ export default function MapaSensors({
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
-  // Every visible sensor is its own DOM marker; the IDW colour surface under
-  // them (a GL fill layer, see below) carries the city-level read while they
-  // are faint dots at overview zoom. `markerElementsRef` maps sensor_id ->
-  // element so the active-pulse and filter effects can reach a marker without
-  // a DOM scan.
+  // Every visible sensor is its own DOM marker; the ambient map tint (a GL
+  // fill layer, see below) carries the city-level read while they are faint
+  // dots at overview zoom. `markerElementsRef` maps sensor_id -> element so the
+  // active-pulse and filter effects can reach a marker without a DOM scan.
   const markersRef = useRef<Marker[]>([]);
   const markerElementsRef = useRef(new globalThis.Map<number, HTMLElement>());
   const activeSensorIdRef = useRef<number | null>(null);
@@ -1365,6 +1275,20 @@ export default function MapaSensors({
     return shown === mapped ? "Todos los sensores" : `${shown} de ${mapped} sensores`;
   }, [sensors, visibleSensors, data]);
 
+  // The metro's median reading, mapped to its IMECA colour — this is what the
+  // ambient map tint uses. Median so one spiking sensor cannot swing the whole
+  // map; null when nothing is reporting (then no tint).
+  const areaTintColor = useMemo(() => {
+    const visibleIds = new Set(visibleSensors.map((s) => s.sensor_id));
+    const values = data
+      .filter((d) => visibleIds.has(d.sensor_id))
+      .map((d) => d.pm25)
+      .filter((v): v is number => v !== null && v > 0.4)
+      .sort((a, b) => a - b);
+    if (!values.length) return null;
+    return getPM25Color(values[Math.floor(values.length / 2)])?.bg ?? null;
+  }, [data, visibleSensors]);
+
   // The newest reading anywhere in the data set, which is what the freshness
   // badge reports. Kept as a Date rather than a formatted string: the badge needs to know how
   // old this is, and formatting the age away here is what let it insist the
@@ -1442,8 +1366,8 @@ export default function MapaSensors({
   useEffect(() => {
     if (map.current) return;
 
-    // Opens straight on the metro overview, no fly-in: the painted wash is the
-    // first thing on screen and there is nothing to fly toward.
+    // Opens straight on the metro overview, no fly-in: nothing to fly toward,
+    // and the tint reads the same at any framing.
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
@@ -1471,68 +1395,48 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Add the surface source + fill layer once the style is up. Empty to start;
-  // the effect below feeds it. Sits just under the first label layer so place
-  // names stay readable through the surface.
+  // Add the ambient-tint layer once the style is up: a world-covering fill on
+  // top of the basemap, colour set by the effect below. DOM markers render
+  // above it, so they stay untinted.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
     const m = map.current as any;
-    if (m.getLayer(AIR_GRID_LAYER)) return;
+    if (m.getLayer(AIR_TINT_LAYER)) return;
 
-    if (!m.getSource(AIR_GRID_SOURCE)) {
-      m.addSource(AIR_GRID_SOURCE, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    if (!m.getSource(AIR_TINT_SOURCE)) {
+      m.addSource(AIR_TINT_SOURCE, { type: "geojson", data: WORLD_POLYGON });
     }
     const firstSymbol = m.getStyle()?.layers?.find((l: any) => l.type === "symbol")?.id;
-    const c = IMECA_LEVELS;
     m.addLayer(
       {
-        id: AIR_GRID_LAYER,
+        id: AIR_TINT_LAYER,
         type: "fill",
-        source: AIR_GRID_SOURCE,
-        maxzoom: 14,
-        // Bands are nested (each ≥threshold region contains the next), so paint
-        // them mild-to-severe: the higher level lands on top and wins.
-        layout: { "fill-sort-key": ["get", "level"] },
+        source: AIR_TINT_SOURCE,
         paint: {
-          "fill-color": [
-            "match", ["get", "level"],
-            1, c[1].color,
-            2, c[2].color,
-            3, c[3].color,
-            4, c[4].color,
-            c[0].color,
-          ],
-          // Zoom only: hands the overview to the surface and the close-up to
-          // the markers, fully gone by ~zoom 13. Kept committed (~0.7) so it
-          // reads as a surface, not a haze.
-          "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.72, 11.5, 0.66, 13, 0.1, 13.8, 0],
-          "fill-outline-color": "rgba(0, 0, 0, 0)",
-          "fill-antialias": true,
+          "fill-color": "#000000", // real colour comes from the effect below
+          // A touch lighter as you zoom in so streets and the markers read
+          // clearly, but it never fully leaves — the tint is the point.
+          "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.2, 13, 0.12, 15, 0.08],
+          "fill-antialias": false,
         },
       },
       firstSymbol,
     );
   }, [mapLoaded]);
 
-  // Feed the surface: rebuild the band polygons from every visible sensor with
-  // a real reading. Same filter as the markers, so the surface and the dots
-  // never disagree about which sensors count.
+  // Set the tint to the metro's median level; hide it when nothing is reporting.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
-    const src = (map.current as any).getSource(AIR_GRID_SOURCE);
-    if (!src) return;
-    const points = visibleSensors.flatMap((s) => {
-      const pm25 = data.find((d) => d.sensor_id === s.sensor_id)?.pm25 ?? null;
-      if (pm25 === null || pm25 <= 0.4) return [];
-      return [{ lon: s.lon, lat: s.lat, pm25 }];
-    });
-    src.setData(buildAirSurface(points));
-  }, [mapLoaded, visibleSensors, data]);
+    const m = map.current as any;
+    if (!m.getLayer(AIR_TINT_LAYER)) return;
+    m.setPaintProperty(AIR_TINT_LAYER, "fill-color", areaTintColor ?? "#000000");
+    m.setLayoutProperty(AIR_TINT_LAYER, "visibility", areaTintColor ? "visible" : "none");
+  }, [mapLoaded, areaTintColor]);
 
   // Build the marker field: one DOM marker per visible sensor with a reading.
-  // No clustering; the colour surface carries the overview and the tier CSS
-  // keeps the dots faint until you zoom in. Rebuilt only when the visible set
-  // or the readings change, not on pan or zoom.
+  // No clustering; the ambient tint carries the overview and the tier CSS keeps
+  // the dots faint until you zoom in. Rebuilt only when the visible set or the
+  // readings change, not on pan or zoom.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
     const m = map.current;
