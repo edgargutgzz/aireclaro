@@ -243,11 +243,22 @@ function formatHistoryTime(dateStr: string) {
   return `${getRelativeDayLabel(date)} ${format(date, "h")}:00 ${format(date, "a")}`;
 }
 
-function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChange?: (point: HistoryPoint | null) => void }) {
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+
+// `animateIn` wipes the trace on from left to right, once, on mount — passed
+// only when a marker is explicitly picked. The default sensor the card opens
+// on skips it: the map is already flying to that marker at startup, and a
+// second motion on top of that zoom is too much at once.
+function Sparkline({ data, onHoverChange, animateIn = false }: { data: HistoryPoint[]; onHoverChange?: (point: HistoryPoint | null) => void; animateIn?: boolean }) {
   const svgRef = useRef<SVGSVGElement>(null);
   // useId() contains colons; strip them so the url(#id) reference is safe.
-  const gradientId = `spark-${useId().replace(/:/g, "")}`;
+  const rawId = useId().replace(/:/g, "");
+  const gradientId = `spark-${rawId}`;
+  const clipId = `spark-wipe-${rawId}`;
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const wipe = animateIn && !prefersReducedMotion();
 
   if (data.length < 2) {
     return <p className="text-sm leading-relaxed text-gray-500">Sin datos suficientes para mostrar la tendencia</p>;
@@ -377,6 +388,25 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
               <stop offset="0%" stopColor={SPARKLINE_COLOR} stopOpacity={0.28} />
               <stop offset="100%" stopColor={SPARKLINE_COLOR} stopOpacity={0} />
             </linearGradient>
+            {wipe && (
+              /* A reveal rect that grows to full width once, easing out. Only
+                 the data trace is clipped to it; the reference lines and day
+                 dividers stay put so the frame reads as stable while the line
+                 fills in. */
+              <clipPath id={clipId}>
+                <rect x={0} y={0} width={0} height={height}>
+                  <animate
+                    attributeName="width"
+                    values={`0;${width}`}
+                    keyTimes="0;1"
+                    calcMode="spline"
+                    keySplines="0.33 0 0 1"
+                    dur="0.6s"
+                    fill="freeze"
+                  />
+                </rect>
+              </clipPath>
+            )}
           </defs>
           {thresholds.map((t) => (
             <line key={t.value} x1={0} y1={toY(t.value)} x2={width} y2={toY(t.value)} stroke={t.color} strokeWidth={1} strokeDasharray="4,3" strokeOpacity={0.55} />
@@ -384,18 +414,20 @@ function Sparkline({ data, onHoverChange }: { data: HistoryPoint[]; onHoverChang
           {dayBoundaries.map((b) => (
             <line key={b.x} x1={b.x} y1={0} x2={b.x} y2={height} stroke="#9ca3af" strokeWidth={1} strokeDasharray="2,3" />
           ))}
-          <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
-          <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
-          <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          {/* Current hour — the rightmost point, marked whenever nothing else
-              is in focus. Official `color` body, `ink` ring (same hue
-              darkened) so a pale fill keeps its edge on the white chart.
-              Hidden during a hover: the headline above already swaps from
-              "now" to that hour's reading, so keeping this dot up too would
-              leave two points claiming focus on the same chart. */}
-          {!hoverPoint && (
-            <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={3} fill={latestFill} stroke={latestRing} strokeWidth={1.5} />
-          )}
+          <g clipPath={wipe ? `url(#${clipId})` : undefined}>
+            <path d={areaPath} fill={`url(#${gradientId})`} stroke="none" />
+            <path d={linePath} fill="none" stroke="white" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+            <path d={linePath} fill="none" stroke={SPARKLINE_COLOR} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+            {/* Current hour — the rightmost point, marked whenever nothing else
+                is in focus. Official `color` body, `ink` ring (same hue
+                darkened) so a pale fill keeps its edge on the white chart.
+                Hidden during a hover: the headline above already swaps from
+                "now" to that hour's reading, so keeping this dot up too would
+                leave two points claiming focus on the same chart. */}
+            {!hoverPoint && (
+              <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r={3} fill={latestFill} stroke={latestRing} strokeWidth={1.5} />
+            )}
+          </g>
           {hoverPoint && hovered && (
             <>
               {/* Crosshair stays neutral (where you are); the dot carries the
@@ -1118,10 +1150,6 @@ const OPENING_CENTER: [number, number] = [-100.301, 25.685];
 const OPENING_ZOOM = 8;
 const OPENING_MOVE_MS = 4500;
 
-const prefersReducedMotion = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-
 // MapaSensors component
 export default function MapaSensors({
   sensors,
@@ -1783,9 +1811,10 @@ export default function MapaSensors({
                         )}
                       </div>
                     </div>
-                    {/* Trend sparkline — power-user context (raw history, not just a snapshot) */}
+                    {/* Trend sparkline — power-user context (raw history, not just a snapshot).
+                        `key` on the sensor id so each new pick remounts and replays the wipe. */}
                     <div>
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
+                      {historyLoading ? <SparklineSkeleton /> : <Sparkline key={selectedSensor.sensor.sensor_id} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn />}
                     </div>
                   </div>
                 </div>
