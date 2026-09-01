@@ -102,38 +102,69 @@ type Freshness = {
   status: "fresh" | "delayed" | "stale";
 };
 
-// How current the reading on screen is. One component for both breakpoints;
-// this used to be two copies of the same markup, one of them md:hidden.
+// How current the reading on screen is, in three parts: a colour dot, the
+// "Actualizado <time>" text, and — desktop only — the glass pill that frames
+// them.
 //
 // Three states, because a dot that is only ever green cannot tell you
 // anything. The time used to be floored to the hour and carried no day, so if
 // ingestion stopped it went on reporting a cheerful green 11:00 AM the next
 // morning. Colour is the glanceable layer and never the only one, the
 // timestamp itself is what carries the state.
-function FreshnessBadge({ freshness }: { freshness: Freshness }) {
+//
+// Desktop frames the dot + text in FreshnessBadge, pinned to the foot of the
+// right column. Mobile has no rail to pin a chip to, so the same two parts sit
+// in the bottom sheet (FreshnessLine, no pill) next to the reading they date,
+// instead of floating over the top-left of the map where the markers pack in.
+function FreshnessDot({ status }: { status: Freshness["status"] }) {
   const dot =
-    freshness.status === "fresh" ? "bg-green-500" :
-    freshness.status === "delayed" ? "bg-amber-500" :
+    status === "fresh" ? "bg-green-500" :
+    status === "delayed" ? "bg-amber-500" :
     "bg-gray-400";
 
   return (
+    <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
+      {/* Only fresh data pulses. A dot that keeps ticking in amber or grey
+          reads as "working on it" when the truth is "this is old". */}
+      {status === "fresh" && (
+        <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
+      )}
+      <span className={`relative h-2 w-2 rounded-full ${dot}`} />
+    </span>
+  );
+}
+
+// The label is the quiet half and the time is the information, so they do not
+// share one weight and one colour. "Actualizado" is never the dot's only
+// companion — a bare colour cannot say how old "old" is.
+function FreshnessText({ freshness }: { freshness: Freshness }) {
+  return (
+    <span className="whitespace-nowrap text-[13px] text-gray-500">
+      Actualizado{" "}
+      <time dateTime={freshness.dateTime} className="font-medium text-gray-700">
+        {freshness.when}
+      </time>
+    </span>
+  );
+}
+
+// Desktop: the dot + text in a glass pill, riding the foot of the right column.
+function FreshnessBadge({ freshness }: { freshness: Freshness }) {
+  return (
     <div className="flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md">
-      <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
-        {/* Only fresh data pulses. A dot that keeps ticking in amber or grey
-            reads as "working on it" when the truth is "this is old". */}
-        {freshness.status === "fresh" && (
-          <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
-        )}
-        <span className={`relative h-2 w-2 rounded-full ${dot}`} />
-      </span>
-      {/* The label is the quiet half and the time is the information, so they
-          no longer share one weight and one colour. */}
-      <span className="whitespace-nowrap text-[13px] text-gray-500">
-        Actualizado{" "}
-        <time dateTime={freshness.dateTime} className="font-medium text-gray-700">
-          {freshness.when}
-        </time>
-      </span>
+      <FreshnessDot status={freshness.status} />
+      <FreshnessText freshness={freshness} />
+    </div>
+  );
+}
+
+// Mobile: the same dot + text with no pill, for the bottom sheet header and
+// its expanded body.
+function FreshnessLine({ freshness, className = "" }: { freshness: Freshness; className?: string }) {
+  return (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <FreshnessDot status={freshness.status} />
+      <FreshnessText freshness={freshness} />
     </div>
   );
 }
@@ -1606,7 +1637,10 @@ export default function MapaSensors({
     return () => { (map.current as any)?.off("click", handler); };
   }, [mapLoaded]);
 
-  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5.5rem))';
+  // 6.5rem of peek showing above the nav: the grabber, the "Calidad del Aire"
+  // row and, under it, the freshness line that used to be a chip floating over
+  // the map's top-left. 5.5rem fit the row alone.
+  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 6.5rem))';
 
   const handleSheetTap = useCallback(() => {
     setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
@@ -1622,7 +1656,7 @@ export default function MapaSensors({
 
       {/* Mobile Capas button — hidden when the sheet is expanded */}
       {sheetState === 'peek' && (
-        <div className="fixed right-6 z-[45] md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}>
+        <div className="fixed right-6 z-[45] md:hidden" style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}>
           <button
             onClick={() => setShowFilters((v) => !v)}
             className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showFilters ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
@@ -1641,7 +1675,7 @@ export default function MapaSensors({
       {sheetState === 'peek' && (
         <div
           className="fixed left-6 right-20 z-[45] md:hidden rounded-xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
+          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 7.5rem)' }}
         >
           <AirQualityLegend collapsible hideLabelWhenClosed />
         </div>
@@ -1867,8 +1901,9 @@ export default function MapaSensors({
 
         {/* The freshness badge rides the bottom of this column, pinned with
             mt-auto so it holds the same corner whether the card above is open,
-            shut or absent. Desktop only; on mobile it sits at the top-left
-            instead (see the left column). */}
+            shut or absent. Desktop only; on mobile freshness sits in the bottom
+            sheet instead (FreshnessLine, in the peek header and the expanded
+            body). */}
         {freshness && (
           <div className="flex-shrink-0 md:mt-auto">
             <FreshnessBadge freshness={freshness} />
@@ -1876,8 +1911,9 @@ export default function MapaSensors({
         )}
       </div>
 
-      {/* Left column: layers panel (desktop) with the data-freshness badge under it.
-          On mobile the panel is a bottom sheet, so only the badge shows here. */}
+      {/* Left column: layers panel (desktop) with the data-freshness badge
+          pinned under it. On mobile the panel is a bottom sheet and freshness
+          moved into that sheet, so this column renders nothing here. */}
       {/* Wider on desktop so the indented municipality rows have room; the
           mobile width stays as it was, since 380px would overhang a small
           phone from left-4.
@@ -1939,14 +1975,6 @@ export default function MapaSensors({
         <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
           <AirQualityLegend collapsible />
         </div>
-
-        {/* Mobile only: on desktop the freshness badge sits at the foot of the
-            right column instead. */}
-        {freshness && (
-          <div className="flex-shrink-0 md:hidden">
-            <FreshnessBadge freshness={freshness} />
-          </div>
-        )}
       </div>
 
       {/* Mobile: sensor info panel — slides up from bottom */}
@@ -1986,6 +2014,7 @@ export default function MapaSensors({
                     </span>
                   )}
                 </div>
+                {freshness && <FreshnessLine freshness={freshness} className="mb-2" />}
                 <button
                   type="button"
                   onClick={() => setShowSensorDetail(v => !v)}
@@ -2066,6 +2095,11 @@ export default function MapaSensors({
               <span className="text-sm text-gray-300">—</span>
             ))}
           </div>
+          {/* Freshness rides here at rest, where the chip over the map's
+              top-left used to be. Expanded, it moves into the body below. */}
+          {sheetState === 'peek' && freshness && (
+            <FreshnessLine freshness={freshness} className="mt-2" />
+          )}
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
@@ -2085,6 +2119,7 @@ export default function MapaSensors({
                     </span>
                   )}
                 </div>
+                {freshness && <FreshnessLine freshness={freshness} className="mb-2" />}
                 <button
                   type="button"
                   onClick={() => setShowDefaultDetail(v => !v)}
