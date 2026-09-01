@@ -225,8 +225,8 @@ function LevelList() {
             className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
             style={{ backgroundColor: level.color, boxShadow: `inset 0 0 0 1px ${level.ink}` }}
           />
-          <span className="min-w-0 flex-1 truncate text-[13px] text-gray-700">{level.label}</span>
-          <span className="flex-shrink-0 text-[13px] text-gray-500">{level.bounds}</span>
+          <span className="min-w-0 flex-1 truncate text-sm text-gray-700">{level.label}</span>
+          <span className="flex-shrink-0 text-sm text-gray-500">{level.bounds}</span>
         </li>
       ))}
     </ul>
