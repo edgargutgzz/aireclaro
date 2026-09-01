@@ -1683,9 +1683,13 @@ export default function MapaSensors({
         onClick={() => setShowFilters(false)}
       />
 
-      {/* Layers filter panel — mobile: slides up from bottom */}
+      {/* Layers filter panel — mobile: slides up from bottom. A flex column with
+          a capped height so only the body scrolls (the header stays put), while
+          the sheet still shrinks to fit a short list. An earlier version left
+          the scroll on an inner max-height div with no height on the shell,
+          which iOS wouldn't scroll once the municipios list overflowed. */}
       <div
-        className="fixed left-0 right-0 bottom-0 z-[47] rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+        className="fixed left-0 right-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
         style={{
           transform: showFilters ? 'translateY(0)' : 'translateY(100%)',
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
@@ -1699,7 +1703,7 @@ export default function MapaSensors({
           <p className="text-base font-medium text-gray-700">Capas</p>
         </div>
         <div
-          className="flex max-h-[70svh] flex-col gap-3 overflow-y-auto overscroll-contain px-5"
+          className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain px-5"
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <LayersFilterContent
