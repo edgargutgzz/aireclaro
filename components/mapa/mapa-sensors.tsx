@@ -1457,9 +1457,11 @@ export default function MapaSensors({
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
     const m = map.current as any;
-    if (m.getSource(AIR_GRID_SOURCE)) return;
+    if (m.getLayer(AIR_GRID_LAYER)) return;
 
-    m.addSource(AIR_GRID_SOURCE, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    if (!m.getSource(AIR_GRID_SOURCE)) {
+      m.addSource(AIR_GRID_SOURCE, { type: "geojson", data: { type: "FeatureCollection", features: [] } });
+    }
     const firstSymbol = m.getStyle()?.layers?.find((l: any) => l.type === "symbol")?.id;
     const c = IMECA_LEVELS;
     m.addLayer(
@@ -1482,13 +1484,17 @@ export default function MapaSensors({
             130, c[3].color,
             250, c[4].color,
           ],
-          // Per-cell edgeFade feathers the surface out near its limit; the zoom
-          // term hands the overview to the surface and the close-up to the
-          // markers, fully gone by ~zoom 13.
+          // Zoom-and-feature form: zoom is the top-level interpolate input
+          // (Mapbox forbids it nested inside other ops), each output multiplies
+          // the base opacity by the cell's edgeFade. The zoom term hands the
+          // overview to the surface and the close-up to the markers, fully gone
+          // by ~zoom 13; edgeFade feathers the surface out near its limit.
           "fill-opacity": [
-            "*",
-            ["interpolate", ["linear"], ["zoom"], 8, 0.5, 11.5, 0.45, 13, 0.12, 13.8, 0],
-            ["get", "edgeFade"],
+            "interpolate", ["linear"], ["zoom"],
+            8, ["*", 0.5, ["get", "edgeFade"]],
+            11.5, ["*", 0.45, ["get", "edgeFade"]],
+            13, ["*", 0.12, ["get", "edgeFade"]],
+            13.8, ["*", 0, ["get", "edgeFade"]],
           ],
           "fill-outline-color": "rgba(0, 0, 0, 0)",
           "fill-antialias": true,
