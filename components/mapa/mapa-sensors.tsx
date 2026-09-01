@@ -1607,7 +1607,7 @@ export default function MapaSensors({
           the sheet is expanded. Low-priority chrome, so it runs small and
           shadowless. Desktop pins the full badge to the foot of the left rail. */}
       {sheetState === 'peek' && freshness && (
-        <div className="pointer-events-none absolute left-4 top-2.5 z-[45] md:hidden">
+        <div className="pointer-events-none absolute left-4 top-4 z-[45] md:hidden">
           <FreshnessBadge freshness={freshness} compact />
         </div>
       )}
