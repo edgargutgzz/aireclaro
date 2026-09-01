@@ -4,9 +4,10 @@ import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch
 import { Navigation, Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import Supercluster from "supercluster";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, USER_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, createMarker, createClusterMarker, getLevelIndex, histMedianLevel, ACTIVE_MARKER_Z, HOVER_MARKER_Z, USER_MARKER_Z, roundPM25, getDistance, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -33,6 +34,11 @@ interface Data {
   pm25: number;
   time_stamp: string;
 }
+
+// What each point in the Supercluster index carries. A type alias, not an
+// interface, so it satisfies GeoJsonProperties' index signature. `levelIndex`
+// (0..4) is what the cluster histogram is bucketed on.
+type ClusterPointProps = { sensorId: number; pm25: number; levelIndex: number };
 
 interface UserLocation {
   latitude: number;
@@ -1153,8 +1159,18 @@ export default function MapaSensors({
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
-  const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, HTMLElement>());
+  // The sensor field is a Supercluster index rebuilt whenever the visible set
+  // or the readings change; `renderedRef` is the Marker currently on the map
+  // for each cluster/leaf key, and `leafElsRef` caches a single sensor's DOM
+  // element so it keeps its selection and hover state while it drifts in and
+  // out of a cluster on zoom. See renderField / syncActive below.
+  const clusterIndexRef = useRef<Supercluster<ClusterPointProps, { hist: number[] }> | null>(null);
+  const renderedRef = useRef(new globalThis.Map<string, Marker>());
+  const leafElsRef = useRef(new globalThis.Map<number, HTMLElement>());
+  const lastFieldKeyRef = useRef<string>("");
+  const activeSensorIdRef = useRef<number | null>(null);
+  const activeColorRef = useRef<string>(SPARKLINE_COLOR);
+  const selectedIdRef = useRef<number | null>(null);
 
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -1414,6 +1430,175 @@ export default function MapaSensors({
   const displayPm25 = nearestPm25 ?? areaMedianPm25;
   const qualityInfo = getQualityInfo(displayPm25);
 
+  // Stable id -> record lookups for the cluster renderer, which works from
+  // Supercluster's output and has to get back to the full sensor and its
+  // latest reading without scanning the arrays on every view change.
+  const sensorById = useMemo(() => {
+    const m = new globalThis.Map<number, Sensor>();
+    sensors.forEach((s) => m.set(s.sensor_id, s));
+    return m;
+  }, [sensors]);
+  const dataById = useMemo(() => {
+    const m = new globalThis.Map<number, Data>();
+    data.forEach((d) => m.set(d.sensor_id, d));
+    return m;
+  }, [data]);
+
+  // The one marker that wears the pulse: the explicitly selected sensor, else
+  // the nearest/default one the card opened on. Mirrored into refs so the map
+  // event handlers read the current value without being torn down on each pick.
+  const activeSensorId = selectedSensor
+    ? selectedSensor.sensor.sensor_id
+    : nearestSensorData
+      ? sensors.find((s) => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon)?.sensor_id ?? null
+      : null;
+  activeSensorIdRef.current = activeSensorId;
+  activeColorRef.current =
+    getQualityInfo((activeSensorId != null ? dataById.get(activeSensorId)?.pm25 : null) ?? null)?.textColor ??
+    SPARKLINE_COLOR;
+  selectedIdRef.current = selectedSensor?.sensor.sensor_id ?? null;
+
+  // Tap a cluster: zoom to where Supercluster says it splits, capped so a tight
+  // knot doesn't slam to street level. flyTo for the move, jumpTo under reduced
+  // motion, the same rules as the opening camera.
+  const expandCluster = useCallback((clusterId: number, lng: number, lat: number) => {
+    const index = clusterIndexRef.current;
+    const m = map.current;
+    if (!index || !m) return;
+    const targetZoom = Math.min(index.getClusterExpansionZoom(clusterId), 15);
+    if (prefersReducedMotion()) {
+      (m as any).jumpTo({ center: [lng, lat], zoom: targetZoom });
+      return;
+    }
+    (m as any).flyTo({ center: [lng, lat], zoom: targetZoom, duration: 700, essential: true });
+  }, []);
+
+  // Paint the active-sensor pulse onto whichever leaf currently carries it.
+  // Split out from renderField so changing the selection updates the halo even
+  // when the field (zoom, bounds) hasn't moved.
+  const syncActive = useCallback(() => {
+    const activeId = activeSensorIdRef.current;
+    const activeColor = activeColorRef.current;
+    leafElsRef.current.forEach((el, id) => {
+      const isActive = id === activeId;
+      el.classList.toggle("sensor-marker--selected", isActive);
+      el.style.setProperty("--pulse-color", activeColor);
+      if (isActive) el.style.zIndex = ACTIVE_MARKER_Z.toString();
+      else if (el.style.zIndex === ACTIVE_MARKER_Z.toString()) el.style.zIndex = "";
+    });
+  }, []);
+
+  // Reconcile the sensor field with the current view: ask the index for the
+  // clusters and leaves in frame at this zoom, add what's new, remove what
+  // left. A leaf reuses its cached element, so a selected or hovered sensor
+  // keeps that state when a neighbouring cluster reshuffles around it. Deduped
+  // on a coarse zoom+bounds key so a small pan costs nothing.
+  const renderField = useCallback(() => {
+    const m = map.current;
+    const index = clusterIndexRef.current;
+    if (!m || !index) return;
+
+    // Cast to reach the camera getters, the same way this file already casts to
+    // reach flyTo / setPadding on this Map type.
+    const cam = m as any;
+    const zoom = Math.round(cam.getZoom());
+    const b = cam.getBounds() as {
+      getWest(): number; getSouth(): number; getEast(): number; getNorth(): number;
+    } | null;
+    if (!b) return;
+    const bbox: [number, number, number, number] = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+    const key = `${zoom}|${bbox.map((n) => n.toFixed(3)).join(",")}`;
+    if (key === lastFieldKeyRef.current) return;
+    lastFieldKeyRef.current = key;
+
+    const features = index
+      .getClusters(bbox, zoom)
+      // North to south: the same value-independent overlap order the single
+      // markers always used. Clustering has already removed most overlaps.
+      .sort((a, c) => c.geometry.coordinates[1] - a.geometry.coordinates[1]);
+
+    const rendered = renderedRef.current;
+    const nextKeys = new Set<string>();
+
+    for (const feature of features) {
+      const [lng, lat] = feature.geometry.coordinates as [number, number];
+      const props = feature.properties;
+
+      if ("cluster" in props) {
+        const ckey = `cluster_${props.cluster_id}`;
+        nextKeys.add(ckey);
+        if (!rendered.has(ckey)) {
+          const hist = props.hist ?? [0, 0, 0, 0, 0];
+          const medianIdx = histMedianLevel(hist);
+          const medianLabel = medianIdx >= 0 ? IMECA_LEVELS[medianIdx].label : "sin dato";
+          const el = createClusterMarker(props.point_count, hist, medianLabel);
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+            expandCluster(props.cluster_id, lng, lat);
+          });
+          rendered.set(ckey, new Marker({ element: el }).setLngLat([lng, lat]).addTo(m));
+        }
+        continue;
+      }
+
+      const sensorId = props.sensorId;
+      const lkey = `sensor_${sensorId}`;
+      nextKeys.add(lkey);
+      if (rendered.has(lkey)) continue;
+
+      let el = leafElsRef.current.get(sensorId);
+      if (!el) {
+        const sensor = sensorById.get(sensorId);
+        if (!sensor) continue;
+        const reading = dataById.get(sensorId);
+        const pm25 = reading?.pm25 ?? null;
+        const isSima = sensor.source === "sima";
+        const sensorLabel = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+        const markerQuality = getQualityInfo(pm25);
+        const created = createMarker(
+          pm25,
+          [sensorLabel, pm25 != null ? `${roundPM25(pm25)} μg/m³ PM2.5` : null, markerQuality?.label]
+            .filter(Boolean)
+            .join(", "),
+        );
+        if (!created) continue;
+        el = created;
+        el.style.cursor = "pointer";
+        const colorInfo = getPM25Color(pm25);
+        const color = colorInfo?.bg ?? "#ffffff";
+        const textColor = colorInfo?.text ?? "#ffffff";
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isDesktop = window.innerWidth >= 768;
+          if (isDesktop && selectedIdRef.current === sensorId) {
+            setSelectedSensor(null);
+            return;
+          }
+          setSelectedSensor({ sensor, pm25, color, textColor, readingAt: reading?.time_stamp ?? null });
+        });
+        // Lift the hovered marker so a click in a dense spot lands on the disc
+        // under the cursor, not on whichever hit box mapbox drew last.
+        el.addEventListener("mouseenter", () => {
+          if (!el!.classList.contains("sensor-marker--selected")) el!.style.zIndex = HOVER_MARKER_Z.toString();
+        });
+        el.addEventListener("mouseleave", () => {
+          if (!el!.classList.contains("sensor-marker--selected")) el!.style.zIndex = "";
+        });
+        leafElsRef.current.set(sensorId, el);
+      }
+      rendered.set(lkey, new Marker({ element: el }).setLngLat([lng, lat]).addTo(m));
+    }
+
+    for (const [k, marker] of rendered) {
+      if (nextKeys.has(k)) continue;
+      (marker as any).remove();
+      rendered.delete(k);
+      if (k.startsWith("sensor_")) leafElsRef.current.delete(Number(k.slice(7)));
+    }
+
+    syncActive();
+  }, [sensorById, dataById, expandCluster, syncActive]);
+
   // Initialize map once
   useEffect(() => {
     if (map.current) return;
@@ -1424,6 +1609,11 @@ export default function MapaSensors({
       center: [-100.301, 25.685],
       zoom: 8,
     });
+
+    // Seed the marker tier before any marker exists, so the field opens calm
+    // rather than flashing full-size for a frame while the zoom listener catches
+    // up. The listener (below) keeps it in step from here on.
+    mapContainer.current!.style.setProperty("--sensor-marker-tier", "0");
 
     // Set padding instantly (not as part of flyTo) so it doesn't get
     // interpolated alongside the zoom animation, which looked like the map
@@ -1598,91 +1788,107 @@ export default function MapaSensors({
       .addTo(map.current);
   }, [userLocation, mapLoaded, flyToUser]);
 
-  // Add sensors when both map and data are ready
+  // Build / rebuild the cluster index whenever the visible set or the readings
+  // change, then paint the field. Only sensors with a real reading go in: a
+  // silent sensor has nothing to cluster and, per getMarkerFill, nothing to
+  // draw. `map`/`reduce` accumulate a per-level histogram (associative, so it
+  // survives Supercluster's tree merges), which the bubble's ring is drawn
+  // from and its median read off.
   useEffect(() => {
-    if (!mapLoaded || !map.current || !sensors.length || !data.length) {
-      return;
-    }
+    if (!mapLoaded || !map.current) return;
 
-    markersRef.current.forEach((marker) => (marker as any).remove());
-    markersRef.current = [];
-    markerElementsRef.current.clear();
-
-    // North to south, so the southern marker of an overlapping pair is appended
-    // last and paints in front. Mapbox's own symbol convention (viewport-y),
-    // and the point is that latitude has nothing to do with the reading: any
-    // order that tracked PM2.5 would decide overlaps in favour of one end of
-    // the scale and quietly bias every cluster on the map.
-    [...sensors].sort((a, b) => b.lat - a.lat).forEach((sensor) => {
-      const isSima = sensor.source === "sima";
-
-      if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return;
-      if (isSima && !showSima) return;
-      if (!isSima) {
-        const inOccamm = !!sensor.red;
-        if (inOccamm ? !showOccamm : !showOtros) return;
-      }
-
-      const latestData = data.find(
-        (dataItem) => dataItem.sensor_id === sensor.sensor_id,
-      );
-
-      const sensorLabel = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-      const markerQuality = getQualityInfo(latestData?.pm25 ?? null);
-      const markerElement = createMarker(
-        latestData ? latestData.pm25 : null,
-        [sensorLabel, latestData?.pm25 != null ? `${roundPM25(latestData.pm25)} μg/m³ PM2.5` : null, markerQuality?.label]
-          .filter(Boolean)
-          .join(", "),
-      );
-
-      if (!markerElement) return;
-
-      const colorInfo = getPM25Color(latestData?.pm25 ?? null);
-      const color = colorInfo?.bg ?? "#ffffff";
-      const textColor = colorInfo?.text ?? "#ffffff";
-
-      markerElement.style.cursor = "pointer";
-      markerElement.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isDesktop = window.innerWidth >= 768;
-        if (isDesktop && selectedSensor?.sensor.sensor_id === sensor.sensor_id) {
-          setSelectedSensor(null);
-          return;
-        }
-        setSelectedSensor({ sensor, pm25: latestData?.pm25 ?? null, color, textColor, readingAt: latestData?.time_stamp ?? null });
-      });
-
-      // Lift the hovered marker above its neighbours so the click resolves to
-      // the disc under the cursor, not to whichever overlapping 40px hit box
-      // mapbox happened to paint last. The selected marker keeps its own
-      // higher lift; don't stomp it.
-      markerElement.addEventListener("mouseenter", () => {
-        if (!markerElement.classList.contains("sensor-marker--selected")) {
-          markerElement.style.zIndex = HOVER_MARKER_Z.toString();
-        }
-      });
-      markerElement.addEventListener("mouseleave", () => {
-        if (!markerElement.classList.contains("sensor-marker--selected")) {
-          markerElement.style.zIndex = "";
-        }
-      });
-
-      markerElementsRef.current.set(sensor.sensor_id, markerElement);
-
-      const marker = new Marker({ element: markerElement })
-        .setLngLat([sensor.lon, sensor.lat])
-        .addTo(map.current!);
-
-      markersRef.current.push(marker);
+    const points = visibleSensors.flatMap((sensor): Supercluster.PointFeature<ClusterPointProps>[] => {
+      const pm25 = dataById.get(sensor.sensor_id)?.pm25 ?? null;
+      if (pm25 === null || pm25 <= 0.4) return [];
+      return [{
+        type: "Feature",
+        properties: { sensorId: sensor.sensor_id, pm25, levelIndex: getLevelIndex(pm25) },
+        geometry: { type: "Point", coordinates: [sensor.lon, sensor.lat] },
+      }];
     });
-  }, [mapLoaded, sensors, data, showOtros, showOccamm, showSima, hiddenMunicipios]);
 
-  // Cleanup markers when component unmounts
+    const index = new Supercluster<ClusterPointProps, { hist: number[] }>({
+      radius: 60,
+      // Clusters live at zoom 12 and below, where the field is a metro-wide
+      // blob; from zoom 13 (the opening/locate landing) every sensor is its own
+      // marker, so the active one always has a dot to pulse.
+      maxZoom: 12,
+      minPoints: 3,
+      map: (props) => {
+        const hist = [0, 0, 0, 0, 0];
+        if (props.levelIndex >= 0) hist[props.levelIndex] = 1;
+        return { hist };
+      },
+      reduce: (acc, props) => {
+        for (let i = 0; i < 5; i++) acc.hist[i] += props.hist[i];
+      },
+    });
+    index.load(points);
+    clusterIndexRef.current = index;
+
+    // The view hasn't moved but the index under it has, so clear renderField's
+    // dedupe before the repaint.
+    lastFieldKeyRef.current = "";
+    renderField();
+  }, [mapLoaded, visibleSensors, dataById, renderField]);
+
+  // Repaint the field as the view changes. Throttled on `move` so a fly-in
+  // doesn't recompute every frame; `moveend` guarantees the final state.
   useEffect(() => {
+    const m = map.current;
+    if (!mapLoaded || !m) return;
+    let last = 0;
+    const onMove = () => {
+      const t = performance.now();
+      if (t - last < 120) return;
+      last = t;
+      renderField();
+    };
+    const onMoveEnd = () => {
+      last = 0;
+      renderField();
+    };
+    m.on("move", onMove);
+    m.on("moveend", onMoveEnd);
     return () => {
-      markersRef.current.forEach((marker) => (marker as any).remove());
-      markersRef.current = [];
+      (m as any).off("move", onMove);
+      (m as any).off("moveend", onMoveEnd);
+    };
+  }, [mapLoaded, renderField]);
+
+  // The 0..1 tier the marker CSS rides (see globals.css), written onto the map
+  // container from the live zoom: flat and small at metro overview, full marker
+  // from zoom 13 in. rAF-coalesced so a fly-in stays smooth.
+  useEffect(() => {
+    const m = map.current;
+    if (!mapLoaded || !m) return;
+    const cam = m as any;
+    const container = cam.getContainer() as HTMLElement;
+    let raf: number | null = null;
+    const apply = () => {
+      raf = null;
+      const tier = Math.max(0, Math.min(1, (cam.getZoom() - 10.5) / 2.5));
+      container.style.setProperty("--sensor-marker-tier", tier.toFixed(3));
+    };
+    const onZoom = () => {
+      if (raf == null) raf = requestAnimationFrame(apply);
+    };
+    apply();
+    m.on("zoom", onZoom);
+    return () => {
+      (m as any).off("zoom", onZoom);
+      if (raf != null) cancelAnimationFrame(raf);
+    };
+  }, [mapLoaded]);
+
+  // Cleanup the field when the component unmounts.
+  useEffect(() => {
+    const rendered = renderedRef.current;
+    const leafEls = leafElsRef.current;
+    return () => {
+      rendered.forEach((marker) => (marker as any).remove());
+      rendered.clear();
+      leafEls.clear();
     };
   }, []);
 
@@ -1719,39 +1925,18 @@ export default function MapaSensors({
     };
   }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source, nearestSensorData?.sensorId, nearestSensorData?.isSima]);
 
-  // Highlight the active marker — the explicitly selected sensor if there is
-  // one, otherwise the nearest/default sensor — with a ring and a pulsing halo
-  // in that sensor's own air-quality tone, the same one the card's headline
-  // wears. No resize, no dimming of the other markers: those read as broken or
-  // as too much, since there is always a default "active" sensor.
+  // Move the pulsing halo to whatever leaf is now active — the explicitly
+  // selected sensor, else the nearest/default one the card opened on — in that
+  // sensor's own air-quality ink (yellow and green barely register as a ring on
+  // a light map; the darker tone also keeps the ring off the circle it wraps).
+  // syncActive owns the DOM writes; this only re-runs it when the pick changes,
+  // since renderField already calls it on every field repaint. No resize, no
+  // dimming of the rest: there is always a default active sensor, so that would
+  // read as broken or as too much.
   useEffect(() => {
     if (!mapLoaded) return;
-
-    const activeSensorId = selectedSensor
-      ? selectedSensor.sensor.sensor_id
-      : nearestSensorData
-        ? sensors.find(s => s.lat === nearestSensorData.lat && s.lon === nearestSensorData.lon)?.sensor_id
-        : undefined;
-
-    // The selected sensor's own air-quality tone. The ink, not the fill: on a
-    // light map pure IMECA yellow and green barely register as a ring, and the
-    // darker tone keeps the ring from merging into the circle it wraps.
-    const activePm25 = data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null;
-    const activeColor = getQualityInfo(activePm25)?.textColor ?? SPARKLINE_COLOR;
-
-    markerElementsRef.current.forEach((el, sensorId) => {
-      const isActive = sensorId === activeSensorId;
-      el.classList.toggle('sensor-marker--selected', isActive);
-      el.style.setProperty('--pulse-color', activeColor);
-      // Lifted only while selected, and then straight back into latitude order.
-      // This is a response to what the visitor just asked for, not a standing
-      // opinion about which readings matter, so it does not bias the field.
-      // It used to write to el.parentElement, which mapbox shares between all
-      // markers, so it set and unset one node once per marker and the active
-      // one was only ever lifted if it happened to be iterated last.
-      el.style.zIndex = isActive ? ACTIVE_MARKER_Z.toString() : "";
-    });
-  }, [nearestSensorData, mapLoaded, sensors, data, showSima, showOtros, showOccamm, selectedSensor]);
+    syncActive();
+  }, [mapLoaded, activeSensorId, syncActive]);
 
   // A chart that unmounts mid-hover (new sensor picked, history reloaded)
   // never fires its mouseleave, so drop the stale point explicitly.

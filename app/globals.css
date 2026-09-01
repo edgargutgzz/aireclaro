@@ -14,7 +14,7 @@
   animation: colorCycle 6s ease-in-out infinite;
 }
 
-/* Map markers. One size at every zoom, 40px.
+/* Map markers.
 
    Sizing is width/height, never transform: mapbox rewrites
    element.style.transform on every map move to position the marker, and an
@@ -23,19 +23,30 @@
    does not touch. The anchor half of mapbox's transform is translate(-50%,
    -50%), a percentage of the element's own box, so the marker centres itself.
 
-   Sizing by zoom was tried and taken back out: shrinking the disc at metro
-   zoom quietened the field, but it cost the marker its identity, reading as
-   basemap furniture rather than as a sensor. The loudness it was aimed at is
-   a basemap problem, and the basemap is where to spend it. */
+   Size and chrome ride one 0..1 tier, --sensor-marker-tier, that
+   mapa-sensors.tsx writes onto the map container from the live zoom: 0 at
+   metro overview, 1 from zoom 13 in. At tier 0 the disc is small, flat and
+   un-ringed, a texture the eye reads as a field; at tier 1 it is the full
+   standing-beside-it marker. Sizing by zoom was tried and reverted once, when
+   nothing else carried the city-level reading and a shrunk disc just lost its
+   identity. The Supercluster bubbles and this tier now carry that reading
+   together, so a quiet dot at low zoom is doing its job, not failing at the
+   old one. The selected marker pins its own tier to 1 (below), so the sensor
+   the card speaks for stays full size and legible over the calm field. */
 .sensor-marker {
   position: relative;
-  width: 40px;
-  height: 40px;
-  /* Micro numbers, per the type scale. This was 12px/700, which is hero-metric
-     weight on a 40px disc. */
-  font-size: 11px;
+  --mt: var(--sensor-marker-tier, 1);
+  width: calc(22px + 18px * var(--mt));
+  height: calc(22px + 18px * var(--mt));
+  /* Micro numbers, per the type scale, and only ever shown on the selected
+     marker (tier pinned to 1), so this resolves to 11px in practice. */
+  font-size: calc(9px + 2px * var(--mt));
   font-weight: 500;
   line-height: 1;
+}
+
+.sensor-marker--selected {
+  --mt: 1;
 }
 
 /* The number, and the white core it sits on, appear on one marker only: the
@@ -83,11 +94,15 @@
      reads as floating a few millimetres off the map rather than stamped on
      it with a hard grey ring. Kept lighter than a single 0.25 blur so a
      dense field of these does not silt up. */
+  /* The ink hairline holds at every tier so a pale fill keeps its edge on pale
+     terrain; the white ring and the two-part lift fade in with the tier, so at
+     metro zoom the disc is a flat chip and only earns its float as you close
+     in. The selected marker overrides this block with the full lift. */
   box-shadow:
     0 0 0 1px var(--marker-edge),
-    0 0 0 3px #fff,
-    0 1px 2px rgba(0, 0, 0, 0.24),
-    0 3px 8px rgba(0, 0, 0, 0.12);
+    0 0 0 calc(3px * var(--mt, 1)) rgba(255, 255, 255, var(--mt, 1)),
+    0 1px 2px rgba(0, 0, 0, calc(0.24 * var(--mt, 1))),
+    0 3px 8px rgba(0, 0, 0, calc(0.12 * var(--mt, 1)));
   transform: scale(var(--dot-scale, 1));
   transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
@@ -152,6 +167,61 @@
   0% { transform: scale(0.85); opacity: 0.32; }
   70% { transform: scale(1.75); opacity: 0; }
   100% { transform: scale(1.75); opacity: 0; }
+}
+
+/* Cluster bubble. Stands in for a knot of sensors at zoom 12 and below: a conic ring
+   split by how many of its members sit in each IMECA level (the legend bar bent
+   into a circle), around a white core carrying the count. Same "count on white,
+   color on the rim" split as a selected marker, so the two read as one family,
+   and no single fill is asked to speak for a mixed group. Built in
+   createClusterMarker; --cluster-size and the ring's conic-gradient come in
+   inline. The lift is fixed, not tier-driven: a cluster only exists at the
+   zooms where it is carrying the reading, so it always gets to float. */
+.sensor-cluster {
+  position: relative;
+  width: var(--cluster-size, 40px);
+  height: var(--cluster-size, 40px);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.sensor-cluster__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24),
+    0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.sensor-cluster__core {
+  position: absolute;
+  inset: 22%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #1f2937;
+  font-variant-numeric: tabular-nums;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
+  transform: scale(var(--core-scale, 1));
+  transition: transform 0.15s ease;
+}
+
+.sensor-cluster:hover .sensor-cluster__core {
+  --core-scale: 1.08;
+}
+
+/* Same solid gray-900 focus outline as the single markers, and for the same
+   reason: the house ring disappears over arbitrary map imagery. */
+.sensor-cluster:focus-visible {
+  outline: 2px solid #111827;
+  outline-offset: 3px;
+  border-radius: 50%;
 }
 
 @media (prefers-reduced-motion: reduce) {
