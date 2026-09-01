@@ -75,13 +75,24 @@
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
+  border-radius: 50%;
   color: transparent;
   font-variant-numeric: tabular-nums;
   /* Fill comes in as a var so CSS owns the alpha: a resting disc is held at
      85% so where discs pile up in the basin the overlap reads as denser
      colour instead of one disc masking another. The selected disc (below)
-     takes it back to solid. */
-  background-color: color-mix(in srgb, var(--marker-fill) 85%, transparent);
+     takes it back to solid.
+
+     Over the fill sits one restrained highlight at ~11 o'clock — a single
+     gloss cue that lifts the disc off the basemap so it reads as an object
+     sitting on the map rather than a flat swatch stamped into it. Deliberately
+     the only dimensional cue: no bevel, no bottom-edge core shadow. Every
+     other floating surface in the app (Capas panel, Actualizado chip, nav
+     pills) is shadow-sm + blur and nothing more, and the marker has to read
+     as the same design system, not a heavier one bolted on. */
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 46%),
+    color-mix(in srgb, var(--marker-fill) 85%, transparent);
   /* Rim then lift. The rim is two hairlines against the border box: the
      level's ink so a pale fill holds its edge on pale terrain, then a 2px
      white ring so the marker separates from whatever is under it (3px silted
@@ -89,14 +100,34 @@
      lift is a two-part shadow, a tight contact shadow under a soft ambient
      one, so the disc reads as floating a few millimetres off the map rather
      than stamped on it with a hard grey ring. Kept lighter than a single
-     0.25 blur so a dense field of these does not silt up. */
+     0.25 blur so a dense field of these does not silt up; the gloss above
+     lets the ambient half stay this restrained. */
   box-shadow:
     0 0 0 1px var(--marker-edge),
     0 0 0 2px #fff,
     0 1px 2px rgba(0, 0, 0, 0.24),
-    0 3px 8px rgba(0, 0, 0, 0.12);
+    0 4px 10px rgba(0, 0, 0, 0.13);
   transform: scale(var(--dot-scale, 1));
   transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+/* Government (SIMA) stations: a squircle instead of a disc. Shape is the only
+   channel free to carry "which network" — colour is the IMECA level — and it
+   reads across the whole field at a glance without a per-marker badge that
+   would collide and clip at basin density. 30% radius is unmistakably not a
+   circle at 32px while still soft enough to belong beside the app's rounded
+   panels. Core, halo and focus ring follow the same corner. */
+.sensor-marker--sima .sensor-marker__dot {
+  border-radius: 30%;
+}
+.sensor-marker--sima .sensor-marker__dot::before {
+  border-radius: 26%;
+}
+.sensor-marker--sima .sensor-marker__pulse {
+  border-radius: 30%;
+}
+.sensor-marker--sima:focus-visible {
+  border-radius: 30%;
 }
 
 /* The white core the number sits on, so the ink never touches the fill. Held
@@ -129,8 +160,11 @@
    and turned the marker into a bullseye. */
 .sensor-marker--selected .sensor-marker__dot {
   color: #1f2937;
-  /* Solid: the inspected sensor is not part of the ambient field. */
-  background-color: var(--marker-fill);
+  /* Solid: the inspected sensor is not part of the ambient field. Same gloss
+     cue as the resting disc, just over the un-alpha'd fill. */
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 46%),
+    var(--marker-fill);
   box-shadow:
     0 0 0 1px var(--marker-edge),
     0 0 0 2px #fff,

@@ -90,7 +90,15 @@ export const HOVER_MARKER_Z = 7;
 
 // `label` becomes the marker's accessible name — without it the markers are
 // unreachable by keyboard and announce as nothing to a screen reader.
-export const createMarker = (pm25: number | null, label?: string): HTMLElement | null => {
+// `isSima` switches the disc to a squircle: shape, never colour, is what tells
+// a government station apart from a citizen sensor in the field (colour is
+// spoken for by the IMECA level), the same circle/square split AirNow's Fire
+// and Smoke map uses for low-cost sensors vs regulatory monitors.
+export const createMarker = (
+  pm25: number | null,
+  label?: string,
+  isSima = false,
+): HTMLElement | null => {
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
 
@@ -104,7 +112,7 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
   // sits behind with no stacking tricks at all.
   const el = document.createElement("button");
   el.type = "button";
-  el.className = "sensor-marker";
+  el.className = isSima ? "sensor-marker sensor-marker--sima" : "sensor-marker";
   if (label) el.setAttribute("aria-label", label);
   el.style.border = "none";
   el.style.padding = "0";
@@ -117,7 +125,9 @@ export const createMarker = (pm25: number | null, label?: string): HTMLElement |
 
   const dot = document.createElement("span");
   dot.className = "sensor-marker__dot";
-  dot.style.borderRadius = "50%";
+  // Radius lives in globals.css now (50% disc, 30% for .sensor-marker--sima):
+  // an inline border-radius here would beat the stylesheet and the squircle
+  // could never take.
   dot.style.display = "flex";
   dot.style.alignItems = "center";
   dot.style.justifyContent = "center";
