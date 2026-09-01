@@ -1124,11 +1124,23 @@ function LayersFilterContent({
   );
 }
 
-// Where the map opens: the whole Monterrey metro. No opening fly and no
-// locate-me, this is an open-data map of the airshed, not a personal "air near
-// me" readout.
+// The map opens zoomed out over the metro, then one flyTo settles in on the
+// default sensor at zoom 13, the "standing beside it" framing. No locate-me,
+// this is an open-data map of the airshed, not a personal "air near me" readout.
+//
+// flyTo, not easeTo, for the ~5 zoom levels: flyTo runs the van Wijk-Nuij curve
+// that holds *perceived* zoom speed constant, where easeTo interpolates the
+// zoom number linearly and the view accelerates into the stop. 4.5s, not 3s:
+// three seconds over five levels read as a lunge. No custom easing on flyTo,
+// its curve is already tuned. A visitor who asked the OS for reduced motion
+// gets an instant jumpTo to the same framing.
 const OPENING_CENTER: [number, number] = [-100.301, 25.685];
-const OPENING_ZOOM = 10.4;
+const OPENING_ZOOM = 8;
+const OPENING_MOVE_MS = 4500;
+
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
 
 // MapaSensors component
 export default function MapaSensors({
@@ -1389,11 +1401,10 @@ export default function MapaSensors({
     });
   }, []);
 
-  // Initialize map once
+  // Initialize map once, zoomed out; the opening flyTo below settles it in.
   useEffect(() => {
     if (map.current) return;
 
-    // Opens straight on the metro overview, no fly-in: nothing to fly toward.
     map.current = new Map({
       container: mapContainer.current!,
       style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
@@ -1401,7 +1412,9 @@ export default function MapaSensors({
       zoom: OPENING_ZOOM,
     });
 
-    // Card clearance: the right-hand card on desktop, the bottom sheet on mobile.
+    // Set padding instantly, not as part of flyTo: interpolating it alongside
+    // the zoom looked like the map veering sideways partway through the fly-in.
+    // Card clearance on desktop, bottom sheet on mobile.
     const initialIsMobile = window.innerWidth < 768;
     (map.current as any).setPadding(
       initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
@@ -1415,6 +1428,27 @@ export default function MapaSensors({
       setMapLoaded(false);
     };
   }, []);
+
+  // Opening camera. Runs once: a single flyTo from the zoomed-out start to the
+  // default sensor at zoom 13 (or the metro at 10.5 if nothing is reporting).
+  // jumpTo under reduced motion. essential: true so a backgrounded tab doesn't
+  // drop the move.
+  const didOpeningFlyRef = useRef(false);
+  useEffect(() => {
+    if (!mapLoaded || !map.current || didOpeningFlyRef.current) return;
+    didOpeningFlyRef.current = true;
+
+    const target: [number, number] = defaultSensorData
+      ? [defaultSensorData.lon, defaultSensorData.lat]
+      : OPENING_CENTER;
+    const zoom = defaultSensorData ? 13 : 10.5;
+
+    if (prefersReducedMotion()) {
+      (map.current as any).jumpTo({ center: target, zoom });
+      return;
+    }
+    (map.current as any).flyTo({ center: target, zoom, duration: OPENING_MOVE_MS, essential: true });
+  }, [mapLoaded, defaultSensorData]);
 
   // Build the marker field: one DOM marker per visible sensor with a reading.
   // No clustering. Rebuilt only when the visible set or the readings change,
