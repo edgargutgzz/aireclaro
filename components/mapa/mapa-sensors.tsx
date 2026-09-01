@@ -1127,6 +1127,20 @@ function LayersFilterContent({
   );
 }
 
+// The opening camera move: how long it runs and the curve it runs on.
+// 4.5s, not 3s, because the normal path covers five zoom levels (8 to 13) and
+// three seconds through that much scale change read as a lunge. easeInOutQuad
+// starts the move from rest and decelerates into the stop, instead of the
+// default curve that begins at full speed the instant the map is static.
+const OPENING_MOVE_MS = 4500;
+const easeInOutQuad = (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+
+// A one-off opening flourish is not "essential" motion. A visitor who asked the
+// OS for reduced motion gets an instant jumpTo to the same framing instead.
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+
 // MapaSensors component
 export default function MapaSensors({
   sensors,
@@ -1426,13 +1440,17 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Opening camera. Without a shared location we fly to the default station
-  // at the same zoom flyToUser uses, so the map opens the way it would if the
-  // visitor happened to be standing next to it. Runs once.
+  // Opening camera. Without a shared location we move to the default station so
+  // the map opens the way it would if the visitor were standing next to it.
+  // Runs once. easeTo, not flyTo: the pan is tiny (default view to a sensor in
+  // the same metro), so flyTo's zoom-out / travel / zoom-in parabola only added
+  // speed with no distance to smooth; a plain zoom ramp is calmer. Zoom lands
+  // at 13, a step back from the old 14, so the move ends with more context in
+  // frame and less of a hard slam into street level.
   const didOpeningFlyRef = useRef(false);
   useEffect(() => {
     if (!mapLoaded || !map.current || didOpeningFlyRef.current || userLocation) return;
-    // Hold while a granted permission is still resolving. Flying to the
+    // Hold while a granted permission is still resolving. Moving to the
     // default station and then to the visitor a second later is two camera
     // moves where the visitor only ever wanted one.
     if (!permissionChecked || locationStatus === 'locating') return;
@@ -1440,16 +1458,24 @@ export default function MapaSensors({
     const target = nearestSensorData
       ? [nearestSensorData.lon, nearestSensorData.lat]
       : [-100.301, 25.685];
+    const zoom = nearestSensorData ? 13 : 10.5;
     didOpeningFlyRef.current = true;
 
     const isMobile = window.innerWidth < 768;
     (map.current as any).setPadding(
       isMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
     );
-    (map.current as any).flyTo({
+
+    if (prefersReducedMotion()) {
+      (map.current as any).jumpTo({ center: target, zoom });
+      return;
+    }
+
+    (map.current as any).easeTo({
       center: target,
-      zoom: nearestSensorData ? 14 : 10.5,
-      duration: 3000,
+      zoom,
+      duration: OPENING_MOVE_MS,
+      easing: easeInOutQuad,
       essential: true,
     });
   }, [mapLoaded, userLocation, nearestSensorData, permissionChecked, locationStatus]);
