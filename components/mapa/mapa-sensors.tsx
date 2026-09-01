@@ -1679,26 +1679,29 @@ export default function MapaSensors({
         maxzoom: 14,
         paint: {
           // Weight rises with the reading, so a hot sensor pushes its patch up
-          // the scale. Modest, with intensity near 1, so overlapping kernels
-          // settle toward a colour instead of spiking past it.
+          // the scale. Steep low end so a Mala sensor clearly outpaints a Buena
+          // neighbour rather than averaging grey-green with it.
           "heatmap-weight": [
             "interpolate", ["linear"], ["get", "pm25"],
-            0, 0, 15, 0.3, 25, 0.45, 79, 0.75, 130, 0.9, 300, 1,
+            0, 0, 12, 0.35, 25, 0.55, 55, 0.8, 100, 0.95, 200, 1,
           ],
-          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 8, 1, 13, 1.2],
+          "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 8, 1.3, 13, 1.5],
+          // First stop transparent for a soft edge, then near-opaque so the
+          // wash actually reads as painted air. Colours land low on the density
+          // axis because the sensor field is sparse and the kernels wide.
           "heatmap-color": [
             "interpolate", ["linear"], ["heatmap-density"],
             0, hexA(c[0].color, 0),
-            0.2, hexA(c[0].color, 0.5),
-            0.4, hexA(c[1].color, 0.55),
-            0.6, hexA(c[2].color, 0.6),
-            0.8, hexA(c[3].color, 0.62),
-            1, hexA(c[4].color, 0.65),
+            0.1, hexA(c[0].color, 0.55),
+            0.25, hexA(c[1].color, 0.78),
+            0.45, hexA(c[2].color, 0.9),
+            0.65, hexA(c[3].color, 0.95),
+            0.9, hexA(c[4].color, 0.97),
           ],
-          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 7, 36, 10, 34, 12, 22, 13.5, 12],
-          // Full-strength at overview, gone by 13 as the markers reach full
-          // size. The band in between is a deliberate cross-fade.
-          "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 9, 0.55, 11, 0.5, 13, 0],
+          "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 7, 55, 10, 50, 12, 32, 13.5, 16],
+          // Strong at overview, gone by ~zoom 13 as the markers reach full
+          // size. The band from 11.5 to 13 is a deliberate cross-fade.
+          "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.9, 11.5, 0.85, 13, 0.12, 13.8, 0],
         },
       },
       firstSymbol,
@@ -1797,7 +1800,7 @@ export default function MapaSensors({
     let raf: number | null = null;
     const apply = () => {
       raf = null;
-      const tier = Math.max(0, Math.min(1, (cam.getZoom() - 10.5) / 2.5));
+      const tier = Math.max(0, Math.min(1, (cam.getZoom() - 11) / 2));
       container.style.setProperty("--sensor-marker-tier", tier.toFixed(3));
     };
     const onZoom = () => {

@@ -25,17 +25,17 @@
 
    Size, opacity and chrome ride one 0..1 tier, --sensor-marker-tier, that
    mapa-sensors.tsx writes onto the map container from the live zoom: 0 at
-   metro overview, 1 from zoom 13 in. At tier 0 the marker is a ~10px dot at
-   half opacity, sitting quietly on top of the heatmap wash to show where a
-   real sensor is; at tier 1 it is the full 40px standing-beside-it marker.
-   The wash carries the city-level reading, so a faint dot at low zoom is
+   zoom 11 and below, 1 from zoom 13 in. At tier 0 the marker is a ~7px dot at
+   about a third opacity, a pinprick showing where a real sensor is under the
+   heatmap wash; at tier 1 it is the full 40px standing-beside-it marker. The
+   wash carries the city-level reading, so a barely-there dot at low zoom is
    doing its job. The selected marker pins its own tier to 1 (below), so the
    sensor the card speaks for stays full size over the wash. */
 .sensor-marker {
   position: relative;
   --mt: var(--sensor-marker-tier, 1);
-  width: calc(10px + 30px * var(--mt));
-  height: calc(10px + 30px * var(--mt));
+  width: calc(7px + 33px * var(--mt));
+  height: calc(7px + 33px * var(--mt));
   /* Micro numbers, per the type scale, and only ever shown on the selected
      marker (tier pinned to 1), so this resolves to 11px in practice. */
   font-size: calc(9px + 2px * var(--mt));
@@ -101,10 +101,10 @@
     0 0 0 calc(3px * var(--mt, 1)) rgba(255, 255, 255, var(--mt, 1)),
     0 1px 2px rgba(0, 0, 0, calc(0.24 * var(--mt, 1))),
     0 3px 8px rgba(0, 0, 0, calc(0.12 * var(--mt, 1)));
-  /* Fades toward half opacity at overview zoom so the dots read as a quiet
-     layer over the wash. On the dot, not the button, so a keyboard focus ring
-     stays full strength. Selected pins --mt to 1, so it stays solid. */
-  opacity: calc(0.5 + 0.5 * var(--mt, 1));
+  /* Fades to about a third opacity at overview zoom so the dots read as a
+     quiet layer under the wash. On the dot, not the button, so a keyboard
+     focus ring stays full strength. Selected pins --mt to 1, so it stays solid. */
+  opacity: calc(0.32 + 0.68 * var(--mt, 1));
   transform: scale(var(--dot-scale, 1));
   transition: box-shadow 0.15s ease, color 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
 }
