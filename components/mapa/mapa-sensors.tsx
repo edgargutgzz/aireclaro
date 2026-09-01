@@ -7,7 +7,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
-import { FreshnessBadge, useFreshness, type Freshness } from "@/components/data/freshness";
+import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -1326,15 +1326,6 @@ export default function MapaSensors({
     };
   }, [selectedSensor, defaultSensorData, latestReading, now]);
 
-  // Hand the freshness up to the layout so the mobile top bar can show it on
-  // the trailing edge, opposite the logo. Cleared on unmount so it does not
-  // linger on the other routes, which never set it.
-  const { setFreshness } = useFreshness();
-  useEffect(() => {
-    setFreshness(freshness);
-    return () => setFreshness(null);
-  }, [freshness, setFreshness]);
-
   const defaultPm25 = defaultSensorData?.pm25 ?? null;
   const defaultName = defaultSensorData?.name ?? null;
   const defaultIsSima = defaultSensorData?.isSima ?? null;
@@ -1570,7 +1561,7 @@ export default function MapaSensors({
   }, [mapLoaded]);
 
   // 5.5rem of peek showing above the nav: the grabber and the "Calidad del Aire"
-  // row. Freshness lives in the top bar now, so it adds nothing here.
+  // row. Freshness floats at the top of the map, so it adds nothing here.
   const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5.5rem))';
 
   const handleSheetTap = useCallback(() => {
@@ -1608,6 +1599,17 @@ export default function MapaSensors({
           >
             <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
           </button>
+        </div>
+      )}
+
+      {/* Data freshness — mobile: the glass badge floated at the top-centre of
+          the map, just under the top bar. Centre keeps it off the marker pack
+          around Monterrey and clear of the right-edge button stack; it hides
+          with those buttons once the sheet is expanded. Desktop pins the same
+          badge to the foot of the left rail. */}
+      {sheetState === 'peek' && freshness && (
+        <div className="pointer-events-none absolute left-1/2 top-3 z-[45] -translate-x-1/2 md:hidden">
+          <FreshnessBadge freshness={freshness} />
         </div>
       )}
 
@@ -1877,8 +1879,8 @@ export default function MapaSensors({
 
         {/* The freshness badge rides the bottom of this column, pinned with
             mt-auto so it holds the same corner whether the card above is open,
-            shut or absent. Desktop only; on mobile the dot + text sit on the
-            trailing edge of the top bar instead (HeaderFreshness). */}
+            shut or absent. Desktop only; on mobile the same badge floats at the
+            top-centre of the map (see the mobile controls above). */}
         {freshness && (
           <div className="flex-shrink-0 md:mt-auto">
             <FreshnessBadge freshness={freshness} />
