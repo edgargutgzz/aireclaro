@@ -1,14 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { monterreyNaiveHoursAgo } from "@/lib/monterrey-time";
 
 const HOURS_OF_HISTORY = 48;
-
-// time_stamp is stored as naive local time (Monterrey, no UTC offset in the
-// string), not UTC — so the query cutoff must be computed in the same naive
-// local terms, or the comparison silently loses hours equal to the offset.
-// Fixed UTC-6 (CST) year-round: Mexico abolished DST nationally in 2022, and
-// Nuevo León isn't one of the US-border exceptions that still observes it.
-const MONTERREY_UTC_OFFSET_MS = -6 * 60 * 60 * 1000;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,9 +14,7 @@ export async function GET(request: Request) {
   }
 
   const table = source === "sima" ? "sima_mediciones" : "purpleair_mediciones";
-  const since = new Date(
-    Date.now() + MONTERREY_UTC_OFFSET_MS - HOURS_OF_HISTORY * 60 * 60 * 1000
-  ).toISOString().replace("Z", "");
+  const since = monterreyNaiveHoursAgo(HOURS_OF_HISTORY);
 
   const supabase = await createClient();
   const { data, error } = await supabase
