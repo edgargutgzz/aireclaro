@@ -2607,9 +2607,7 @@ export default function MapaSensors({
               <p className="mt-2">
                 Al ser de bajo costo, no están calibrados como las estaciones
                 oficiales y pueden sobreestimar las PM2.5 cuando hay mucha
-                humedad. Son útiles para ver patrones locales y tendencias en el
-                tiempo, y conviene compararlos con la estación de gobierno más
-                cercana.
+                humedad.
               </p>
             </InfoSection>
             <InfoSection
