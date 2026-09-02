@@ -1507,9 +1507,12 @@ export default function MapaSensors({
 
   // Which sensors can carry a marker at all: a valid reading now, or anywhere
   // in the loaded window. The DOM marker set is built from this once and then
-  // shown/hidden per frame, so it never churns while scrubbing.
+  // shown/hidden per frame, so it never churns while scrubbing. Every SIMA
+  // reference station is always in — it shows grey (see paintFrame) rather
+  // than vanishing on an hour it didn't report.
   const markerableIds = useMemo(() => {
     const ids = new Set<string>();
+    for (const s of sensors) if (s.source === "sima") ids.add(String(s.sensor_id));
     for (const d of data) if (d.pm25 != null && d.pm25 > 0.4) ids.add(String(d.sensor_id));
     if (fieldHistory) {
       for (const id in fieldHistory.series) {
@@ -1517,7 +1520,7 @@ export default function MapaSensors({
       }
     }
     return ids;
-  }, [data, fieldHistory]);
+  }, [sensors, data, fieldHistory]);
 
   // Any valid reading for a sensor, so createMarker builds an element that
   // paintFrame then colours for the current frame.
@@ -1697,16 +1700,37 @@ export default function MapaSensors({
       const key = String(id);
       const pm25 = readings.get(key) ?? null;
       const fill = getMarkerFill(pm25);
-      if (fill == null) { el.hidden = true; return; }
-      el.hidden = false;
+      const sensor = sensorById.get(key);
+      const isSima = sensor?.source === "sima";
       const dot = el.querySelector<HTMLElement>(".sensor-marker__dot");
+
+      if (fill == null) {
+        // Citizen sensors drop out; SIMA reference stations stay as a grey
+        // "no reading this hour" disc so the network's shape holds.
+        if (!isSima) { el.hidden = true; return; }
+        el.hidden = false;
+        el.classList.add("sensor-marker--nodata");
+        if (dot) {
+          dot.style.setProperty("--marker-fill", "#9ca3af");
+          dot.style.setProperty("--marker-edge", "#6b7280");
+        }
+        if (sensor) {
+          el.setAttribute("aria-label", [
+            getSourceLabel(true, sensor.red),
+            sensor.nombre_display || sensor.nombre,
+            "sin lectura",
+          ].join(", "));
+        }
+        return;
+      }
+
+      el.hidden = false;
+      el.classList.remove("sensor-marker--nodata");
       if (dot) {
         dot.style.setProperty("--marker-fill", fill);
         dot.style.setProperty("--marker-edge", getLevel(pm25 as number).ink);
       }
-      const sensor = sensorById.get(key);
       if (sensor) {
-        const isSima = sensor.source === "sima";
         const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
         el.setAttribute("aria-label", [
           getSourceLabel(isSima, sensor.red),

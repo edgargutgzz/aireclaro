@@ -169,6 +169,23 @@
   z-index: 3;
 }
 
+/* A SIMA station with no reading for the hour on screen: kept on the map as a
+   quiet grey disc (fill vars set by paintFrame) rather than dropped, so the
+   network's shape stays legible. Recedes behind the live coloured field — a
+   flatter lift and a notch more transparency — but the Landmark badge still
+   marks it as a government station. Never applies to citizen sensors; those
+   drop out. */
+.sensor-marker--nodata .sensor-marker__dot {
+  background: color-mix(in srgb, var(--marker-fill) 55%, transparent);
+  box-shadow:
+    0 0 0 1px var(--marker-edge),
+    0 0 0 2px #fff,
+    0 1px 2px rgba(0, 0, 0, 0.16);
+}
+.sensor-marker--nodata:hover .sensor-marker__dot {
+  --dot-scale: 1.12;
+}
+
 /* The halo, expanding out from behind the circle while a sensor is selected,
    in that sensor's air-quality tone. */
 .sensor-marker__pulse {
