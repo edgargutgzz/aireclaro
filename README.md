@@ -1,112 +1,81 @@
 # Aire Claro
 
-Aire Claro is a platform that provides real-time information about air quality in the Metropolitan Area of Monterrey and Saltillo. The platform combines data from official stations and citizen sensors to provide the most comprehensive coverage of the region.
+An open-data platform for air quality in the Monterrey–Saltillo metropolitan
+area, built by the **Observatorio Ciudadano de la Calidad del Aire (OCCAMM)**.
 
-## 🚀 Features
+## What this is
 
-- Real-time air quality monitoring
-- Data from official stations (SIMA) and citizen sensors (Purple Air)
-- PM2.5 particle measurements
-- Interactive map visualization
-- Information based on the Mexican Air and Health Index
-- Responsive interface for mobile and desktop devices
+Aire Claro's goal is to be a state-of-the-art open-data platform that empowers
+NGOs, government, universities, other organizations, and power users to use
+air-quality information to **take action for a cleaner city**.
 
-## 🛠️ Technologies
+The principle: Aire Claro reports what named monitoring stations and sensors
+*measured* — it does not publish its own verdict on "the city's air". It aims
+to be the trustworthy, well-attributed measurement layer that others build their
+analysis and advocacy on. See [`docs/methodology.md`](docs/methodology.md).
 
-- [Next.js](https://nextjs.org/) - React Framework
-- [TypeScript](https://www.typescriptlang.org/) - Typed JavaScript Superset
-- [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
-- [Mapbox GL](https://www.mapbox.com/mapbox-gl-js) - Map Visualization
-- [Supabase](https://supabase.com/) - Backend and Database
-- [Recharts](https://recharts.org/) - Data Visualization
-- [Vercel Analytics](https://vercel.com/analytics) - Web Analytics
+## Status
 
-## 📋 Prerequisites
+- **Live:** a real-time interactive map of PM2.5 across the metro — official
+  SIMA reference stations and PurpleAir citizen sensors, colour-coded by the
+  Mexican Air and Health Index (NOM-172-SEMARNAT-2023), with a per-station
+  detail card, a 48h trend, shareable views, and a time scrubber over the last
+  ~6 weeks of the whole field.
+- **Planned (the actual product):** a public API, bulk and per-sensor data
+  download, a methodology page, and a data license. Not built yet.
 
-- Node.js (recommended version: 18.x or higher)
-- pnpm (package manager)
+## Data sources
 
-## 🔧 Installation
+- **SIMA** — [Sistema Integral de Monitoreo Ambiental](https://aire.nl.gob.mx/),
+  Gobierno de Nuevo León. 16 government reference stations.
+- **PurpleAir** — [citizen sensor network](https://www.purpleair.com/). ~165
+  low-cost sensors.
 
-1. Clone the repository:
+Reliability, corrections, known gaps, and the metro-vs-Saltillo station scope
+are covered in [`docs/methodology.md`](docs/methodology.md). A separate
+ingestion job (outside this repo) writes both sources into Supabase hourly; the
+app is read-only against that database.
 
-```bash
-git clone https://github.com/your-username/aireclaro.git
-cd aireclaro
-```
+## Running it
 
-2. Install dependencies:
+Requires **Node 22+** and **pnpm**.
 
 ```bash
 pnpm install
 ```
 
-3. Create a `.env.local` file in the project root with the following environment variables:
+Create `.env.local`:
 
 ```env
-NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=…
+NEXT_PUBLIC_SUPABASE_URL=…
+NEXT_PUBLIC_SUPABASE_ANON_KEY=…
 ```
-
-4. Start the development server:
 
 ```bash
-pnpm dev
+pnpm dev      # localhost:3000
+pnpm build    # production build
 ```
 
-The application will be available at `http://localhost:3000`
+`pnpm lint` is currently broken; the checks that gate a change are
+`pnpm exec tsc --noEmit` and `pnpm build`.
 
-## 🚀 Available Scripts
+## Stack
 
-- `pnpm dev` - Starts the development server
-- `pnpm build` - Builds the application for production
-- `pnpm start` - Starts the production server
-- `pnpm lint` - Runs the linter
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS · Mapbox GL ·
+Supabase · Chart.js · deployed on Vercel.
 
-## 📊 Data Sources
+## Documentation
 
-- [SIMA](http://aire.nl.gob.mx/) - Comprehensive Environmental Monitoring System
-- [Purple Air](https://map.purpleair.com/) - Citizen Sensor Network
+| Doc | Contents |
+|---|---|
+| [`docs/architecture.md`](docs/architecture.md) | data model, ingestion boundary, home-page data flow, API routes, the `field_history` RPC, the URL-state model |
+| [`docs/methodology.md`](docs/methodology.md) | editorial stance, data sources and their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license & citation status |
+| [`.ai-style-guide.md`](.ai-style-guide.md) | the visual contract for the UI |
+| [`CLAUDE.md`](CLAUDE.md) | working guidance for AI coding agents |
 
-## 📝 License
-
-This project is maintained by the Citizen Observatory of Air Quality (OCCAMM).
-
-## 📧 Contact
-
-For more information or questions, contact:
+## Contact
 
 - Email: contacto@observatoriodelaire.com
-- Website: [Observatorio del Aire](https://www.observatoriodelaire.com/)
-
-## 🤝 Contributing
-
-Contributions are welcome. Please read the contribution guidelines before submitting a pull request.
-
-## 📚 Additional Resources
-
-- [Privacy Policy](/aviso-privacidad)
-- [Open Data](https://datamx.io/dataset/calidad-del-aire-en-nuevo-leon)
-
-## 🌟 About
-
-Aire Claro is a citizen science initiative that aims to provide transparent and accessible air quality information to the residents of Monterrey and Saltillo. The platform uses both official monitoring stations and citizen sensors to create the most comprehensive air quality monitoring network in the region.
-
-## 🔍 Key Features in Detail
-
-- **Real-time Monitoring**: Updates every hour with the latest air quality measurements
-- **Multiple Data Sources**: Combines official SIMA stations with Purple Air citizen sensors
-- **Health Risk Assessment**: Uses the Mexican Air and Health Index for risk assessment
-- **Mobile-Friendly**: Optimized for both desktop and mobile devices
-- **Data Transparency**: All data is publicly available and can be downloaded
-- **Interactive Maps**: Visual representation of air quality across the metropolitan area
-- **Historical Data**: Access to historical air quality measurements
-
-## 🎯 Project Goals
-
-- Provide accurate and accessible air quality information
-- Promote citizen participation in environmental monitoring
-- Increase awareness about air quality issues
-- Support informed decision-making regarding outdoor activities
-- Contribute to public health protection
+- Web: [observatoriodelaire.com](https://www.observatoriodelaire.com/)
+- [Privacy policy](/aviso-privacidad)

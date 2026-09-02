@@ -1,47 +1,75 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code working in this repo. Read this first, then the doc
+pointers below as the task needs them.
+
+## The objective — drives every decision
+
+**Aire Claro is a state-of-the-art open-data platform. Its priority is to
+empower NGOs, government, universities, other organizations, and power users to
+use air-quality information to take action for a cleaner city.**
+
+Weigh proposals against this in a product-management sense — scope, sequencing,
+priority — not just feasibility. Act as product strategist as well as
+developer/designer: when a request pulls the product off-objective, or a
+smaller/different scope serves it better, say so before building. The
+open-data layer (public API, bulk + per-sensor download, methodology page, data
+license) is *the product* — planned, not built yet; it comes before
+amplification features like embeds.
+
+These are **guiding principles, not a cage.** Keep thinking, investigating, and
+proposing freely — they inform judgment, they don't replace it.
+
+## How we build — priority order
+
+1. **Best practices over bespoke.** Front-end and back-end alike — reach for the
+   established pattern, framework, or library. Don't reinvent the wheel.
+2. **It works first, before how it looks.** Loads fast. Doesn't break. Function
+   before form.
+3. **Then how it looks — consistency and order before aesthetics.** Follow
+   `.ai-style-guide.md`, reuse the same conventions, tokens, and components.
+   Taste calls ("lighter / stronger / nicer") come *after* consistency is in
+   place, and are never a reason to diverge from the system.
+
+## Editorial invariant
+
+**Report what a named station or sensor measured. Never a metro-wide verdict,
+headline number, or aggregate.** The scientific-NGO reason and the details are
+in `docs/methodology.md`.
 
 ## Commands
 
 ```bash
-pnpm dev        # Start development server (localhost:3000)
-pnpm build      # Production build
-pnpm lint       # Run ESLint
+pnpm dev        # localhost:3000
+pnpm build      # production build
+pnpm exec tsc --noEmit   # the type gate
 ```
 
-No test suite is configured.
+**`pnpm lint` is broken in this repo** — the gate is `tsc --noEmit` then
+`pnpm build`. No test suite. `pnpm build` always logs one
+`DYNAMIC_SERVER_USAGE` warning on `/` — that one is expected (cookies).
 
-## Architecture
+## This repo's workflow
 
-This is a Next.js 16 / React 19 app deployed on Vercel. It shows real-time PM2.5 air quality data for the Monterrey–Saltillo metro area on an interactive Mapbox map.
+- Commit straight to `main` and push — no branches, PRs, or confirmation.
+- No local-preview workflow: push and let the user check production. Skip the
+  dev-server / screenshot / artifact review steps unless asked.
+- Stop any background `pnpm dev` when wrapping up.
+- User-facing Spanish copy: sentence case, no em-dashes (commas / periods).
 
-**Data flow (home page):**
-1. `app/page.tsx` — server component that fetches in parallel and passes data as props to the map.
-2. `components/data/purple-air-sensors.tsx` — queries `purpleair_sensores` table (sensor metadata: id, name, lat/lon). Active sensors only (`.eq("estatus", "activo")`). **Individual sensors are hidden here using `.neq("sensor_id", <id>)` chained calls.**
-3. `components/data/purple-air-data.tsx` — queries `purpleair_mediciones` for the latest 150 readings, then deduplicates to one reading per sensor.
-4. `components/mapa/mapa-sensors.tsx` — `"use client"` Mapbox GL component that renders color-coded circular markers per sensor based on PM2.5 thresholds (Mexican Air and Health Index).
+## Where things are documented
 
-**SIMA (official government stations) is live.** `app/page.tsx` fetches `sima-sensors.tsx` / `sima-data.tsx` alongside PurpleAir and merges them into the marker set tagged `source: "sima"` (`sima_sensores`, `sima_mediciones` tables). On the map, SIMA markers are the same discs as citizen sensors but carry a `Landmark` corner badge (`.sensor-marker__badge`, gray-500 ground, see `.ai-style-guide.md` §3/§5); the Capas panel's **Fuente** section filters citizen vs. government.
+| Doc | For |
+|---|---|
+| `README.md` | what the platform is, quickstart, the doc index |
+| `docs/architecture.md` | data model, ingestion boundary, home-page flow, API routes, the `field_history` RPC, URL-state model, `/datos` |
+| `docs/methodology.md` | editorial stance, data sources & their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license/citation status |
+| `.ai-style-guide.md` | the visual contract — read before writing **any** UI |
 
-**Supabase** is the backend. The client is created server-side via `utils/supabase/server.ts` using `@supabase/ssr`.
+## Hiding / showing a PurpleAir sensor
 
-## Hiding/showing sensors
-
-To hide a PurpleAir sensor, add `.neq("sensor_id", <id>)` in `components/data/purple-air-sensors.tsx`. To show a hidden sensor, remove its `.neq()` line from that file.
-
-## PM2.5 color scale (Mexican IMECA)
-
-| Range (μg/m³) | Color  | Label                  |
-|---------------|--------|------------------------|
-| ≤ 0.4 or null | Gray   | Not shown on map       |
-| 0.4 – 15      | Green  | Buena                  |
-| 15 – 25       | Yellow | Aceptable              |
-| 25 – 79       | Orange | Mala                   |
-| 79 – 130      | Red    | Muy mala               |
-| > 130         | Purple | Extremadamente mala    |
-
-Gray markers (no valid reading) are not rendered at all.
+Add / remove a `.neq("sensor_id", <id>)` line in
+`components/data/purple-air-sensors.tsx`.
 
 ## Environment variables
 
