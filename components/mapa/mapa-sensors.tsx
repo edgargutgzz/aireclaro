@@ -1169,7 +1169,6 @@ export default function MapaSensors({
   const [sensorHistory, setSensorHistory] = useState<HistoryPoint[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showSensorDetail, setShowSensorDetail] = useState(false);
   const [showDefaultDetail, setShowDefaultDetail] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
@@ -1979,71 +1978,75 @@ export default function MapaSensors({
         }}
       >
         {selectedSensor && (() => {
-          const { sensor, pm25, color, textColor } = selectedSensor;
+          const { sensor, pm25, textColor } = selectedSensor;
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
             <>
+              {/* Drag handle + station name — the name rides up here as the
+                  sheet's title, the same role the header gives it on the
+                  desktop card, instead of hiding behind a disclosure. */}
               <div
-                className="flex-shrink-0 cursor-grab select-none px-5 pb-2 pt-3"
+                className="flex-shrink-0 cursor-grab select-none px-5 pb-3 pt-3"
                 onClick={() => setSelectedSensor(null)}
               >
                 <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
+                <p className="truncate text-base font-medium text-gray-700">{sensorName}</p>
               </div>
               <div
                 className="relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8"
               >
-              <div className="mb-5">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
-                    {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
-                  </div>
-                  {(hoveredHistory?.pm25 ?? pm25) !== null && (
-                    <span className="text-sm text-gray-400">
-                      {roundPM25(hoveredHistory?.pm25 ?? pm25)} μg/m³ PM2.5
+                {/* Body mirrors the desktop station card: a source line closed
+                    off by a rule, then the reading and its 48h trace, then the
+                    recommendations behind a rule. */}
+                <div className="flex flex-col gap-5 pt-1">
+                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
+                    <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
+                      {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
+                      <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
                     </span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowSensorDetail(v => !v)}
-                  aria-expanded={showSensorDetail}
-                  className="flex min-w-0 w-full items-center gap-1.5 rounded-lg text-sm text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                >
-                  <span className="truncate">{isSima ? "Estación" : "Sensor"}: {sensorName}</span>
-                  <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showSensorDetail ? 'rotate-90' : ''}`} />
-                </button>
-                {showSensorDetail && (
-                  <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
-                    <div className="flex flex-col gap-3 px-4 py-3">
-                      {(isSima || sensor.red) && (
-                        <div className="flex items-center gap-2.5">
-                          {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon className="h-3 w-3 flex-shrink-0 text-gray-400" />; })()}
-                          <span className="text-sm text-gray-400">{getSourceLabel(isSima, sensor.red)}</span>
-                        </div>
-                      )}
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                      >
-                        <Copy className="h-3 w-3 flex-shrink-0" />
-                        {copied ? 'Copiado' : 'Copiar coordenadas'}
-                      </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                      aria-label="Copiar coordenadas"
+                    >
+                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
+                          {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
+                        </span>
+                        {(hoveredHistory?.pm25 ?? pm25) !== null && (
+                          <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
+                            <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? pm25)}</span> μg/m³ PM2.5
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      {historyLoading ? <SparklineSkeleton /> : <Sparkline key={selectedSensor.sensor.sensor_id} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn />}
                     </div>
                   </div>
-                )}
+
+                  {sensorQuality && (
+                    <div className="relative z-[1] border-t border-gray-100 pt-5">
+                      <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} defaultOpen />
+                    </div>
+                  )}
+                </div>
               </div>
-              {sensorQuality && (
-                <>
-                  <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} defaultOpen />
-                </>
-              )}
-            </div>
             </>
           );
         })()}
