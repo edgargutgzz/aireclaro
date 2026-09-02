@@ -610,7 +610,7 @@ function DialogLink({ href, children }: { href: string; children: React.ReactNod
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="rounded-sm underline underline-offset-2 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+      className="rounded-sm font-medium text-gray-700 underline underline-offset-2 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
     >
       {children}
       <span className="sr-only"> (abre en una nueva pestaña)</span>
@@ -813,7 +813,7 @@ function InfoSection({
       <div
         id={panelId}
         hidden={!open}
-        className="disclosure-in border-t border-gray-100 bg-gray-50/60 px-4 py-3.5 text-sm leading-relaxed text-gray-500"
+        className="disclosure-in border-t border-gray-100 bg-gray-50 px-4 py-3.5 text-[15px] leading-relaxed text-gray-600"
       >
         {children}
       </div>
@@ -2562,7 +2562,7 @@ export default function MapaSensors({
           tech, no focus handling and no Escape. */}
       {cuidarmeQuality && (
         <InfoDialog title="Recomendaciones de salud" onClose={() => setCuidarmeQuality(null)}>
-          <p className="text-sm leading-relaxed text-gray-500">
+          <p className="text-[15px] leading-relaxed text-gray-600">
             Recomendaciones oficiales según el Índice de Aire y Salud{" "}
             <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
               NOM-172-SEMARNAT-2023
@@ -2575,7 +2575,7 @@ export default function MapaSensors({
       {/* OCCAMM info popup */}
       {showOccammInfo && (
         <InfoDialog title="Red OCCAMM" onClose={() => setShowOccammInfo(false)}>
-          <p className="text-sm leading-relaxed text-gray-500">
+          <p className="text-[15px] leading-relaxed text-gray-600">
             Red de sensores del{" "}
             <DialogLink href="https://observatoriodelaire.com">
               Observatorio Ciudadano de la Calidad del Aire

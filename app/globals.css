@@ -382,8 +382,12 @@
    in the panel to help separate it. */
 .info-dialog::backdrop {
   background-color: rgb(0 0 0 / 0.4);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  /* A light blur, not a heavy one: 12px made the seam between the crisp opaque
+     panel and the churned-up map behind it a hard, restless edge. The dim does
+     most of the "map is now an unreadable ground" work; the blur only has to
+     take the edge off. */
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   animation: dialog-backdrop-in 160ms ease-out;
 }
 
