@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope, Wind, Share2 } from "lucide-react";
+import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope, Wind } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
@@ -1136,32 +1136,6 @@ function LayersFilterContent({
   );
 }
 
-// Copies the current URL — which the ?sensor= / ?src= / ?hide= effects keep in
-// sync with what's on screen — so the address bar is the shareable artifact and
-// this button just hands it over. Self-contained transient state, matching the
-// "Coordenadas" copy control it sits beside.
-function ShareButton({ className = "" }: { className?: string }) {
-  const [done, setDone] = useState(false);
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => {
-          navigator.clipboard?.writeText(window.location.href);
-          setDone(true);
-          setTimeout(() => setDone(false), 1500);
-        }}
-        className={`-my-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${className}`}
-        aria-label="Copiar enlace para compartir"
-      >
-        {done ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Share2 aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-        <span>{done ? "Copiado" : "Compartir"}</span>
-      </button>
-      <span role="status" className="sr-only">{done ? "Enlace copiado" : ""}</span>
-    </>
-  );
-}
-
 // The map opens zoomed out over the metro, then one flyTo settles in on the
 // default sensor at zoom 13, the "standing beside it" framing. No locate-me,
 // this is an open-data map of the airshed, not a personal "air near me" readout.
@@ -1839,22 +1813,19 @@ export default function MapaSensors({
                       {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
                       <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
                     </span>
-                    <div className="flex flex-shrink-0 items-center gap-3">
-                      <ShareButton />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                        aria-label="Copiar coordenadas"
-                      >
-                        {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-                        <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                      aria-label="Copiar coordenadas"
+                    >
+                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                    </button>
                   </div>
 
                   {/* Reading now and the last 48h are one story: the big
@@ -1922,24 +1893,21 @@ export default function MapaSensors({
                         : "Promedio de la Zona Metropolitana de Monterrey"}
                     </span>
                   </span>
-                  <div className="flex flex-shrink-0 items-center gap-3">
-                    <ShareButton />
-                    {defaultLat !== null && defaultLon !== null && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${defaultLat.toFixed(5)}, ${defaultLon.toFixed(5)}`);
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 1500);
-                        }}
-                        className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                        aria-label="Copiar coordenadas"
-                      >
-                        {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-                        <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                      </button>
-                    )}
-                  </div>
+                  {defaultLat !== null && defaultLon !== null && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${defaultLat.toFixed(5)}, ${defaultLon.toFixed(5)}`);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                      aria-label="Copiar coordenadas"
+                    >
+                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                    </button>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-3">
@@ -2141,24 +2109,21 @@ export default function MapaSensors({
                   {hasStation && (() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
                   <span className="truncate">{sourceLabel}</span>
                 </span>
-                <div className="flex flex-shrink-0 items-center gap-3">
-                  <ShareButton />
-                  {lat !== null && lon !== null && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${lat.toFixed(5)}, ${lon.toFixed(5)}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
-                      }}
-                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                      aria-label="Copiar coordenadas"
-                    >
-                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                    </button>
-                  )}
-                </div>
+                {lat !== null && lon !== null && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${lat.toFixed(5)}, ${lon.toFixed(5)}`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    }}
+                    className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                    aria-label="Copiar coordenadas"
+                  >
+                    {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+                    <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                  </button>
+                )}
               </div>
 
               <div className="flex flex-col gap-3">
