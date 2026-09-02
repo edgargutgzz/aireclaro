@@ -44,7 +44,15 @@ async function viaRpc(
   supabase: Awaited<ReturnType<typeof createClient>>,
   since: string,
 ): Promise<{ perSensor: PerSensor; hourKeys: Set<string> } | null> {
-  const { data, error } = await supabase.rpc("field_history", { since_ts: since });
+  // The 2-month aggregation sits near Supabase's request ceiling and gets
+  // killed (57014) on a cold cache maybe 1 call in 10. An immediate retry runs
+  // against warm buffers and lands in ~3s, so try up to 3 times before giving
+  // up to the paged fallback.
+  let result = await supabase.rpc("field_history", { since_ts: since });
+  for (let attempt = 1; attempt < 3 && result.error?.code === "57014"; attempt++) {
+    result = await supabase.rpc("field_history", { since_ts: since });
+  }
+  const { data, error } = result;
   if (error) {
     console.warn("field_history() unavailable, paging raw rows:", error.message);
     return null;
