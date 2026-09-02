@@ -13,9 +13,12 @@
 -- so since_ts is passed in the same naive terms and the hour keys come out as
 -- "YYYY-MM-DDTHH", matching monterreyHourKey() on the client.
 
+-- sensor_id is text: PurpleAir ids are numeric but SIMA station ids are string
+-- codes ("SE", "NO", "Norte2"…), so both are cast to text and the client keys
+-- everything on String(sensor_id).
 create or replace function field_history(since_ts timestamp without time zone)
 returns table (
-  sensor_id bigint,
+  sensor_id text,
   source    text,
   hours     text[],
   pm25      numeric[]
@@ -25,23 +28,23 @@ stable
 as $$
   with buckets as (
     select
-      m.sensor_id::bigint as sensor_id,
-      'purpleAir'::text   as source,
+      m.sensor_id::text as sensor_id,
+      'purpleAir'::text as source,
       to_char(date_trunc('hour', m.time_stamp), 'YYYY-MM-DD"T"HH24') as hour_key,
       round(avg(m.pm25)::numeric, 1) as pm25
     from purpleair_mediciones m
-    where m.time_stamp >= since_ts and m.pm25 is not null
+    where m.time_stamp >= since_ts and m.pm25 > 0.4
     group by m.sensor_id, date_trunc('hour', m.time_stamp)
 
     union all
 
     select
-      m.sensor_id::bigint as sensor_id,
-      'sima'::text        as source,
+      m.sensor_id::text as sensor_id,
+      'sima'::text      as source,
       to_char(date_trunc('hour', m.time_stamp), 'YYYY-MM-DD"T"HH24') as hour_key,
       round(avg(m.pm25)::numeric, 1) as pm25
     from sima_mediciones m
-    where m.time_stamp >= since_ts and m.pm25 is not null
+    where m.time_stamp >= since_ts and m.pm25 > 0.4
     group by m.sensor_id, date_trunc('hour', m.time_stamp)
   )
   select

@@ -19,10 +19,12 @@ const MAX_HOURS = 24 * 31;
 const PAGE = 1000;
 const MAX_PAGES = 20;
 
-type PerSensor = Map<number, Map<string, number>>;
+// Keyed by String(sensor_id): PurpleAir ids are numeric, SIMA station ids are
+// string codes ("SE", "NO", "Norte2"…).
+type PerSensor = Map<string, Map<string, number>>;
 
 // field_history() rows: one per sensor, parallel arrays.
-type RpcRow = { sensor_id: number; source: string; hours: string[]; pm25: (number | null)[] };
+type RpcRow = { sensor_id: string; source: string; hours: string[]; pm25: (number | null)[] };
 
 async function viaRpc(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -39,12 +41,14 @@ async function viaRpc(
     const buckets = new Map<string, number>();
     row.hours.forEach((h, i) => {
       const v = row.pm25[i];
-      if (v != null) {
+      // > 0.4 is the "valid reading" threshold used everywhere; it also drops
+      // SIMA's -9999 no-data sentinel.
+      if (v != null && v > 0.4) {
         buckets.set(h, v);
         hourKeys.add(h);
       }
     });
-    perSensor.set(Number(row.sensor_id), buckets);
+    perSensor.set(String(row.sensor_id), buckets);
   }
   return { perSensor, hourKeys };
 }
@@ -55,7 +59,7 @@ async function viaPages(
 ): Promise<{ perSensor: PerSensor; hourKeys: Set<string> }> {
   const perSensor: PerSensor = new Map();
   const hourKeys = new Set<string>();
-  const acc = new Map<number, Map<string, { sum: number; n: number }>>();
+  const acc = new Map<string, Map<string, { sum: number; n: number }>>();
 
   for (const table of ["purpleair_mediciones", "sima_mediciones"] as const) {
     for (let page = 0; page < MAX_PAGES; page++) {
@@ -67,16 +71,18 @@ async function viaPages(
         .from(table)
         .select("sensor_id, pm25, time_stamp")
         .gte("time_stamp", since)
-        .not("pm25", "is", null)
+        .gt("pm25", 0.4)
         .order("time_stamp", { ascending: false })
         .range(from, from + PAGE - 1);
       if (error) throw error;
-      for (const row of (data ?? []) as { sensor_id: number; pm25: number | null; time_stamp: string }[]) {
-        if (row.pm25 == null) continue;
+      for (const row of (data ?? []) as { sensor_id: number | string; pm25: number | null; time_stamp: string }[]) {
+        // Drops nulls and SIMA's -9999 no-data sentinel.
+        if (row.pm25 == null || row.pm25 <= 0.4) continue;
         const key = monterreyHourKey(row.time_stamp);
         hourKeys.add(key);
-        let s = acc.get(row.sensor_id);
-        if (!s) { s = new Map(); acc.set(row.sensor_id, s); }
+        const sid = String(row.sensor_id);
+        let s = acc.get(sid);
+        if (!s) { s = new Map(); acc.set(sid, s); }
         const b = s.get(key) ?? { sum: 0, n: 0 };
         b.sum += row.pm25;
         b.n += 1;

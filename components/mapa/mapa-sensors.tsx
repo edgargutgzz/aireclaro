@@ -1454,26 +1454,32 @@ export default function MapaSensors({
   );
 
   const sensorById = useMemo(() => {
-    const m = new globalThis.Map<number, Sensor>();
-    sensors.forEach((s) => m.set(s.sensor_id, s));
+    const m = new globalThis.Map<string, Sensor>();
+    sensors.forEach((s) => m.set(String(s.sensor_id), s));
     return m;
   }, [sensors]);
 
-  // Latest reading per sensor, as a lookup — the live frame.
+  // All the per-sensor lookups below key on String(sensor_id): PurpleAir ids
+  // are numbers, SIMA station ids are string codes ("SE", "NO", "Norte2"…),
+  // and field_history's series is a plain object so its keys are strings too.
+  // Coercing to Number turned every SIMA id into NaN and dropped the stations
+  // from the scrubbed frame.
+
+  // Latest reading per sensor — the live frame.
   const liveReadings = useMemo(() => {
-    const m = new globalThis.Map<number, number | null>();
-    for (const d of data) m.set(d.sensor_id, d.pm25);
+    const m = new globalThis.Map<string, number | null>();
+    for (const d of data) m.set(String(d.sensor_id), d.pm25);
     return m;
   }, [data]);
 
   const scrubbing = scrubIndex != null && fieldHistory != null;
 
   // The frame the map paints: live readings, or the scrubbed hour's slice.
-  const frameReadings = useMemo<globalThis.Map<number, number | null>>(() => {
+  const frameReadings = useMemo<globalThis.Map<string, number | null>>(() => {
     if (scrubIndex == null || !fieldHistory) return liveReadings;
-    const m = new globalThis.Map<number, number | null>();
+    const m = new globalThis.Map<string, number | null>();
     for (const id in fieldHistory.series) {
-      m.set(Number(id), fieldHistory.series[id][scrubIndex] ?? null);
+      m.set(id, fieldHistory.series[id][scrubIndex] ?? null);
     }
     return m;
   }, [scrubIndex, fieldHistory, liveReadings]);
@@ -1484,11 +1490,11 @@ export default function MapaSensors({
   // in the loaded window. The DOM marker set is built from this once and then
   // shown/hidden per frame, so it never churns while scrubbing.
   const markerableIds = useMemo(() => {
-    const ids = new Set<number>();
-    for (const d of data) if (d.pm25 != null && d.pm25 > 0.4) ids.add(d.sensor_id);
+    const ids = new Set<string>();
+    for (const d of data) if (d.pm25 != null && d.pm25 > 0.4) ids.add(String(d.sensor_id));
     if (fieldHistory) {
       for (const id in fieldHistory.series) {
-        if (fieldHistory.series[id].some((v) => v != null && v > 0.4)) ids.add(Number(id));
+        if (fieldHistory.series[id].some((v) => v != null && v > 0.4)) ids.add(id);
       }
     }
     return ids;
@@ -1496,10 +1502,10 @@ export default function MapaSensors({
 
   // Any valid reading for a sensor, so createMarker builds an element that
   // paintFrame then colours for the current frame.
-  const seedPm25 = useCallback((id: number): number => {
+  const seedPm25 = useCallback((id: string): number => {
     const live = liveReadings.get(id);
     if (live != null && live > 0.4) return live;
-    const arr = fieldHistory?.series[String(id)];
+    const arr = fieldHistory?.series[id];
     if (arr) for (const v of arr) if (v != null && v > 0.4) return v;
     return 1;
   }, [liveReadings, fieldHistory]);
@@ -1633,8 +1639,8 @@ export default function MapaSensors({
   // scrubbing, else the live value. The card headline, the disc and the pulse
   // halo all read through this so they never disagree.
   const framePm25 = useCallback(
-    (id: number | null | undefined, live: number | null) =>
-      scrubbing && id != null ? frameReadings.get(id) ?? null : live,
+    (id: number | string | null | undefined, live: number | null) =>
+      scrubbing && id != null ? frameReadings.get(String(id)) ?? null : live,
     [scrubbing, frameReadings],
   );
   const displayPm25 = framePm25(defaultSensorData?.sensorId, defaultPm25);
@@ -1667,9 +1673,10 @@ export default function MapaSensors({
   // edge from the reading, hidden when there's none that hour. Refreshes the
   // aria-label too, so a scrubbed disc doesn't announce the live number. This
   // is what runs on every scrub step — O(n) style writes, no DOM churn.
-  const paintFrame = useCallback((readings: globalThis.Map<number, number | null>) => {
+  const paintFrame = useCallback((readings: globalThis.Map<string, number | null>) => {
     markerElementsRef.current.forEach((el, id) => {
-      const pm25 = readings.get(id) ?? null;
+      const key = String(id);
+      const pm25 = readings.get(key) ?? null;
       const fill = getMarkerFill(pm25);
       if (fill == null) { el.hidden = true; return; }
       el.hidden = false;
@@ -1678,7 +1685,7 @@ export default function MapaSensors({
         dot.style.setProperty("--marker-fill", fill);
         dot.style.setProperty("--marker-edge", getLevel(pm25 as number).ink);
       }
-      const sensor = sensorById.get(id);
+      const sensor = sensorById.get(key);
       if (sensor) {
         const isSima = sensor.source === "sima";
         const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
@@ -1767,7 +1774,7 @@ export default function MapaSensors({
     // loaded window (markerableIds), then coloured/hidden per frame by
     // paintFrame — so scrubbing never rebuilds the field.
     [...visibleSensors]
-      .filter((sensor) => markerableIds.has(sensor.sensor_id))
+      .filter((sensor) => markerableIds.has(String(sensor.sensor_id)))
       .sort((a, b) => b.lat - a.lat)
       .forEach((sensor) => {
         const isSima = sensor.source === "sima";
@@ -1775,7 +1782,7 @@ export default function MapaSensors({
         // Seeded with any valid reading so createMarker builds an element;
         // paintFrame sets the real colour and label immediately below.
         const el = createMarker(
-          seedPm25(sensor.sensor_id),
+          seedPm25(String(sensor.sensor_id)),
           [getSourceLabel(isSima, sensor.red), sensorLabel].filter(Boolean).join(", "),
           isSima,
         );
