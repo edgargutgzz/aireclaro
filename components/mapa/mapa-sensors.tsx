@@ -283,7 +283,7 @@ const prefersReducedMotion = () =>
 // only when a marker is explicitly picked. The default sensor the card opens
 // on skips it: the map is already flying to that marker at startup, and a
 // second motion on top of that zoom is too much at once.
-function Sparkline({ data, onHoverChange, animateIn = false }: { data: HistoryPoint[]; onHoverChange?: (point: HistoryPoint | null) => void; animateIn?: boolean }) {
+function Sparkline({ data, onHoverChange, animateIn = false, windowLabel = "Últimas 48 horas" }: { data: HistoryPoint[]; onHoverChange?: (point: HistoryPoint | null) => void; animateIn?: boolean; windowLabel?: string }) {
   const svgRef = useRef<SVGSVGElement>(null);
   // useId() contains colons; strip them so the url(#id) reference is safe.
   const gradientId = `spark-${useId().replace(/:/g, "")}`;
@@ -451,7 +451,7 @@ function Sparkline({ data, onHoverChange, animateIn = false }: { data: HistoryPo
         </svg>
       </div>
       <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] leading-none text-gray-500">
-        <span>Últimas 48 horas</span>
+        <span>{windowLabel}</span>
         <span>Máx {Math.round(max)} · Mín {Math.round(min)} μg/m³</span>
       </div>
     </div>
@@ -1671,6 +1671,26 @@ export default function MapaSensors({
     : defaultSensorData?.sensorId ?? null;
   activeSensorIdRef.current = activeSensorId;
 
+  // While scrubbing, the card's sparkline is a 48h window ending at the
+  // scrubbed hour, sliced from the field-history the map already holds — so the
+  // chart and the headline describe the same moment. Live, it stays the
+  // /api/sensor-history fetch (sensorHistory).
+  const scrubbedSpark = useMemo<HistoryPoint[] | null>(() => {
+    if (!scrubbing || scrubIndex == null || !fieldHistory || activeSensorId == null) return null;
+    const arr = fieldHistory.series[String(activeSensorId)];
+    if (!arr) return [];
+    const out: HistoryPoint[] = [];
+    for (let k = Math.max(0, scrubIndex - 47); k <= scrubIndex; k++) {
+      const v = arr[k];
+      if (v != null && v > 0.4) out.push({ pm25: v, time_stamp: `${fieldHistory.hours[k]}:00:00` });
+    }
+    return out;
+  }, [scrubbing, scrubIndex, fieldHistory, activeSensorId]);
+
+  const sparkData = scrubbing ? scrubbedSpark ?? [] : sensorHistory;
+  const sparkLoading = historyLoading && !scrubbing;
+  const sparkWindowLabel = scrubbing ? "48 horas" : undefined;
+
   // A sensor's reading for the frame on screen: the scrubbed hour when
   // scrubbing, else the live value. The card headline, the disc and the pulse
   // halo all read through this so they never disagree.
@@ -1934,11 +1954,11 @@ export default function MapaSensors({
     syncActive();
   }, [mapLoaded, activeSensorId, syncActive]);
 
-  // A chart that unmounts mid-hover (new sensor picked, history reloaded)
-  // never fires its mouseleave, so drop the stale point explicitly.
+  // A chart whose data changes under a held hover (new sensor picked, history
+  // reloaded, scrub step) never fires its mouseleave, so drop the stale point.
   useEffect(() => {
     setHoveredHistory(null);
-  }, [sensorHistory, selectedSensor]);
+  }, [sensorHistory, selectedSensor, scrubIndex]);
 
   // Filters can hide whatever is open: drop the selection rather than leave the
   // card describing a sensor that is no longer on the map.
@@ -2239,7 +2259,7 @@ export default function MapaSensors({
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot).
                         `key` on the sensor id so each new pick remounts and replays the wipe. */}
                     <div>
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline key={selectedSensor.sensor.sensor_id} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn />}
+                      {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={selectedSensor.sensor.sensor_id} data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} animateIn />}
                     </div>
                   </div>
                 </div>
@@ -2321,7 +2341,7 @@ export default function MapaSensors({
                       no single 48h series to plot. */}
                   {defaultName && (
                     <div>
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
+                      {sparkLoading ? <SparklineSkeleton /> : <Sparkline data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} />}
                     </div>
                   )}
                 </div>
@@ -2523,7 +2543,7 @@ export default function MapaSensors({
                 </div>
                 {hasStation && (
                   <div>
-                    {historyLoading ? <SparklineSkeleton /> : <Sparkline key={sparklineKey} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn={Boolean(sel)} />}
+                    {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={sparklineKey} data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} animateIn={Boolean(sel)} />}
                   </div>
                 )}
               </div>
