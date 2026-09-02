@@ -6,13 +6,16 @@
 export type Freshness = {
   dateTime: string;
   when: string;
-  status: "fresh" | "delayed" | "stale";
+  // "historical" is the time scrubber: the map is showing a past hour, not a
+  // late live reading, so it gets its own neutral treatment and "Mostrando".
+  status: "fresh" | "delayed" | "stale" | "historical";
 };
 
 export function FreshnessDot({ status }: { status: Freshness["status"] }) {
   const dot =
     status === "fresh" ? "bg-green-500" :
     status === "delayed" ? "bg-amber-500" :
+    status === "historical" ? "bg-blue-500" :
     "bg-gray-400";
 
   return (
@@ -34,7 +37,7 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
 export function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
   return (
     <span className={`whitespace-nowrap text-gray-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
-      Actualizado{" "}
+      {freshness.status === "historical" ? "Mostrando" : "Actualizado"}{" "}
       <time dateTime={freshness.dateTime} className="font-medium text-gray-700">
         {freshness.when}
       </time>

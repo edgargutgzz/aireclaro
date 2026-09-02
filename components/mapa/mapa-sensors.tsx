@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
-import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope, Wind } from "lucide-react";
+import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope, Wind, Play, Pause } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, getMarkerFill, getLevel, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
-import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
+import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, readScrubParam, writeScrubParam } from "@/lib/map-url-state";
+import { parseMonterreyNaive } from "@/lib/monterrey-time";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -65,6 +66,10 @@ function buildSelection(sensor: Sensor, data: Data[]): SelectedSensor {
     readingAt: reading?.time_stamp ?? null,
   };
 }
+
+// The whole marker field over a recent window, from /api/field-history: one
+// pm25 value per sensor per hour, so the time scrubber is an array lookup.
+type FieldHistory = { hours: string[]; series: Record<string, (number | null)[]> };
 
 // Small inline trend chart for the selected sensor's last 48h. Fixed color
 // regardless of the sensor's air-quality color: the yellow "Aceptable" tone
@@ -1136,6 +1141,103 @@ function LayersFilterContent({
   );
 }
 
+// Desktop time scrubber. A range input over the loaded window, a play button
+// that steps hourly to the end, a live/"Ahora" toggle, and a context strip
+// behind the track — the metro-wide median per hour — so episodes are visible
+// as shape and you can scrub straight to a peak.
+function TimeScrubber({
+  hours,
+  index,
+  playing,
+  medianByHour,
+  onIndex,
+  onPlayingChange,
+}: {
+  hours: string[];
+  index: number | null;
+  playing: boolean;
+  medianByHour: number[];
+  onIndex: (i: number | null) => void;
+  onPlayingChange: (p: boolean) => void;
+}) {
+  const reduceMotion = prefersReducedMotion();
+  const last = hours.length - 1;
+  const live = index == null;
+  const value = index ?? last;
+
+  const label = live
+    ? "En vivo"
+    : (() => {
+        const d = parseMonterreyNaive(`${hours[index!]}:00:00`);
+        return `${getRelativeDayLabel(d)}, ${format(d, "h")}:00 ${format(d, "a")}`;
+      })();
+
+  const W = 100;
+  const H = 24;
+  const max = Math.max(1, ...medianByHour);
+  const strip = medianByHour
+    .map((v, i) => `${((i / Math.max(1, last)) * W).toFixed(2)},${(H - (v / max) * H).toFixed(2)}`)
+    .join(" ");
+
+  return (
+    <div className="pointer-events-auto hidden w-[min(88vw,38rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
+      {!reduceMotion && (
+        <button
+          type="button"
+          onClick={() => {
+            if (live) onIndex(Math.max(0, last - 24));
+            onPlayingChange(!playing);
+          }}
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          aria-label={playing ? "Pausar" : "Reproducir"}
+        >
+          {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-px" />}
+        </button>
+      )}
+
+      <div className="relative min-w-0 flex-1">
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="none"
+          className="pointer-events-none absolute inset-x-0 top-0 h-6 w-full opacity-70"
+          aria-hidden="true"
+        >
+          <polyline points={strip} fill="none" stroke="#9ca3af" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+        </svg>
+        <input
+          type="range"
+          min={0}
+          max={last}
+          value={value}
+          onChange={(e) => {
+            const i = Number(e.target.value);
+            onIndex(i >= last ? null : i);
+          }}
+          aria-label="Hora"
+          className="relative mt-4 w-full cursor-pointer appearance-none bg-transparent focus-visible:outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-gray-200 [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-gray-200 [&::-webkit-slider-thumb]:mt-[-6px] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:ring-1 [&::-webkit-slider-thumb]:ring-gray-900/20"
+        />
+      </div>
+
+      <span className={`flex-shrink-0 whitespace-nowrap text-[13px] font-medium ${live ? "text-gray-500" : "text-blue-600"}`}>
+        {label}
+      </span>
+
+      {!live && (
+        <button
+          type="button"
+          onClick={() => {
+            onPlayingChange(false);
+            onIndex(null);
+          }}
+          className="flex-shrink-0 rounded-lg px-2 py-1 text-[13px] font-medium text-gray-500 transition-colors hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        >
+          Ahora
+        </button>
+      )}
+    </div>
+  );
+}
+
 // The map opens zoomed out over the metro, then one flyTo settles in on the
 // default sensor at zoom 13, the "standing beside it" framing. No locate-me,
 // this is an open-data map of the airshed, not a personal "air near me" readout.
@@ -1222,6 +1324,14 @@ export default function MapaSensors({
   // number never disagree.
   const [hoveredHistory, setHoveredHistory] = useState<HistoryPoint | null>(null);
 
+  // Time scrubber (desktop). `scrubIndex` null = live; a number indexes into
+  // fieldHistory.hours. fieldHistory is the whole field over a recent window,
+  // fetched once so a scrub step is a lookup, not a request.
+  const [fieldHistory, setFieldHistory] = useState<FieldHistory | null>(null);
+  const [scrubIndex, setScrubIndex] = useState<number | null>(null);
+  const [scrubPlaying, setScrubPlaying] = useState(false);
+  const pendingScrubKey = useRef(readScrubParam());
+
   // One entry per municipality that actually has sensors, labelled with its
   // best spelling and counted so the list says how much each filter holds.
   // Two levels, state then municipality, so every sensor sits under a row:
@@ -1283,6 +1393,74 @@ export default function MapaSensors({
     }),
     [sensors, hiddenMunicipios, showSima, showOccamm, showOtros],
   );
+
+  const sensorById = useMemo(() => {
+    const m = new globalThis.Map<number, Sensor>();
+    sensors.forEach((s) => m.set(s.sensor_id, s));
+    return m;
+  }, [sensors]);
+
+  // Latest reading per sensor, as a lookup — the live frame.
+  const liveReadings = useMemo(() => {
+    const m = new globalThis.Map<number, number | null>();
+    for (const d of data) m.set(d.sensor_id, d.pm25);
+    return m;
+  }, [data]);
+
+  const scrubbing = scrubIndex != null && fieldHistory != null;
+
+  // The frame the map paints: live readings, or the scrubbed hour's slice.
+  const frameReadings = useMemo<globalThis.Map<number, number | null>>(() => {
+    if (scrubIndex == null || !fieldHistory) return liveReadings;
+    const m = new globalThis.Map<number, number | null>();
+    for (const id in fieldHistory.series) {
+      m.set(Number(id), fieldHistory.series[id][scrubIndex] ?? null);
+    }
+    return m;
+  }, [scrubIndex, fieldHistory, liveReadings]);
+  const frameReadingsRef = useRef(frameReadings);
+  frameReadingsRef.current = frameReadings;
+
+  // Which sensors can carry a marker at all: a valid reading now, or anywhere
+  // in the loaded window. The DOM marker set is built from this once and then
+  // shown/hidden per frame, so it never churns while scrubbing.
+  const markerableIds = useMemo(() => {
+    const ids = new Set<number>();
+    for (const d of data) if (d.pm25 != null && d.pm25 > 0.4) ids.add(d.sensor_id);
+    if (fieldHistory) {
+      for (const id in fieldHistory.series) {
+        if (fieldHistory.series[id].some((v) => v != null && v > 0.4)) ids.add(Number(id));
+      }
+    }
+    return ids;
+  }, [data, fieldHistory]);
+
+  // Any valid reading for a sensor, so createMarker builds an element that
+  // paintFrame then colours for the current frame.
+  const seedPm25 = useCallback((id: number): number => {
+    const live = liveReadings.get(id);
+    if (live != null && live > 0.4) return live;
+    const arr = fieldHistory?.series[String(id)];
+    if (arr) for (const v of arr) if (v != null && v > 0.4) return v;
+    return 1;
+  }, [liveReadings, fieldHistory]);
+
+  // Metro-wide median PM2.5 per hour, for the scrubber's context strip — a
+  // guide to where the episodes are, not a value shown on the map.
+  const medianByHour = useMemo(() => {
+    if (!fieldHistory) return [] as number[];
+    return fieldHistory.hours.map((_, i) => {
+      const vals: number[] = [];
+      for (const id in fieldHistory.series) {
+        const v = fieldHistory.series[id][i];
+        if (v != null && v > 0.4) vals.push(v);
+      }
+      if (!vals.length) return 0;
+      vals.sort((a, b) => a - b);
+      const mid = Math.floor(vals.length / 2);
+      return vals.length % 2 ? vals[mid] : (vals[mid - 1] + vals[mid]) / 2;
+    });
+  }, [fieldHistory]);
 
   // What the panel says about itself in its own header, so the collapsed card
   // answers "is the map filtered?" rather than holding 380px of empty glass
@@ -1363,6 +1541,17 @@ export default function MapaSensors({
   // Past today the label picks up the day, so "11:00 AM" can never be
   // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
+    // Scrubbed: the badge names the hour on screen and goes neutral, so a past
+    // frame is never mistaken for a late live reading.
+    if (scrubbing && scrubIndex != null) {
+      const reading = parseMonterreyNaive(`${fieldHistory!.hours[scrubIndex]}:00:00`);
+      const hour = `${format(reading, "h")}:00 ${format(reading, "a")}`;
+      return {
+        dateTime: reading.toISOString(),
+        when: `${getRelativeDayLabel(reading).toLowerCase()} ${hour}`,
+        status: "historical",
+      };
+    }
     if (now === null) return null;
     const onScreen = selectedSensor?.readingAt ?? defaultSensorData?.readingAt ?? null;
     const reading = onScreen ? new Date(onScreen) : latestReading;
@@ -1376,7 +1565,7 @@ export default function MapaSensors({
       when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
       status: age < 90 * 60 * 1000 ? "fresh" : age < 6 * 60 * 60 * 1000 ? "delayed" : "stale",
     };
-  }, [selectedSensor, defaultSensorData, latestReading, now]);
+  }, [scrubbing, scrubIndex, fieldHistory, selectedSensor, defaultSensorData, latestReading, now]);
 
   const defaultPm25 = defaultSensorData?.pm25 ?? null;
   const defaultName = defaultSensorData?.name ?? null;
@@ -1384,9 +1573,6 @@ export default function MapaSensors({
   const defaultRed = defaultSensorData?.red ?? null;
   const defaultLat = defaultSensorData?.lat ?? null;
   const defaultLon = defaultSensorData?.lon ?? null;
-  const displayPm25 = defaultPm25;
-  const qualityInfo = getQualityInfo(displayPm25);
-
   // The one marker that wears the pulse: the explicitly selected sensor, else
   // the default one the card opens on. Mirrored into refs so the map event
   // handlers read the current value without being rebuilt on each pick.
@@ -1394,11 +1580,24 @@ export default function MapaSensors({
     ? selectedSensor.sensor.sensor_id
     : defaultSensorData?.sensorId ?? null;
   activeSensorIdRef.current = activeSensorId;
+
+  // A sensor's reading for the frame on screen: the scrubbed hour when
+  // scrubbing, else the live value. The card headline, the disc and the pulse
+  // halo all read through this so they never disagree.
+  const framePm25 = useCallback(
+    (id: number | null | undefined, live: number | null) =>
+      scrubbing && id != null ? frameReadings.get(id) ?? null : live,
+    [scrubbing, frameReadings],
+  );
+  const displayPm25 = framePm25(defaultSensorData?.sensorId, defaultPm25);
+  const qualityInfo = getQualityInfo(displayPm25);
+
   // The pulse halo is a large soft translucent fill, so it takes the official
   // `color` at full chroma, not the darkened `ink`.
   activeColorRef.current =
-    getQualityInfo((activeSensorId != null ? data.find((d) => d.sensor_id === activeSensorId)?.pm25 : null) ?? null)
-      ?.color ?? SPARKLINE_COLOR;
+    getQualityInfo(
+      framePm25(activeSensorId, activeSensorId != null ? data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null : null),
+    )?.color ?? SPARKLINE_COLOR;
   selectedIdRef.current = selectedSensor?.sensor.sensor_id ?? null;
 
   // Move the pulsing halo to whichever marker is now active — the explicitly
@@ -1415,6 +1614,35 @@ export default function MapaSensors({
       else if (el.style.zIndex === ACTIVE_MARKER_Z.toString()) el.style.zIndex = "";
     });
   }, []);
+
+  // Recolour every marker for a frame without touching the marker set: fill and
+  // edge from the reading, hidden when there's none that hour. Refreshes the
+  // aria-label too, so a scrubbed disc doesn't announce the live number. This
+  // is what runs on every scrub step — O(n) style writes, no DOM churn.
+  const paintFrame = useCallback((readings: globalThis.Map<number, number | null>) => {
+    markerElementsRef.current.forEach((el, id) => {
+      const pm25 = readings.get(id) ?? null;
+      const fill = getMarkerFill(pm25);
+      if (fill == null) { el.hidden = true; return; }
+      el.hidden = false;
+      const dot = el.querySelector<HTMLElement>(".sensor-marker__dot");
+      if (dot) {
+        dot.style.setProperty("--marker-fill", fill);
+        dot.style.setProperty("--marker-edge", getLevel(pm25 as number).ink);
+      }
+      const sensor = sensorById.get(id);
+      if (sensor) {
+        const isSima = sensor.source === "sima";
+        const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+        el.setAttribute("aria-label", [
+          getSourceLabel(isSima, sensor.red),
+          name,
+          `${roundPM25(pm25)} μg/m³ PM2.5`,
+          getQualityInfo(pm25)?.label,
+        ].filter(Boolean).join(", "));
+      }
+    });
+  }, [sensorById]);
 
   // Initialize map once, zoomed out; the opening flyTo below settles it in.
   useEffect(() => {
@@ -1486,51 +1714,57 @@ export default function MapaSensors({
     // North to south, so the southern disc of an overlapping pair paints in
     // front. Latitude has nothing to do with the reading; any order tracking
     // PM2.5 would bias every overlap toward one end of the scale.
-    [...visibleSensors].sort((a, b) => b.lat - a.lat).forEach((sensor) => {
-      const reading = data.find((d) => d.sensor_id === sensor.sensor_id);
-      const pm25 = reading?.pm25 ?? null;
-      const isSima = sensor.source === "sima";
-      const sensorLabel = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-      const markerQuality = getQualityInfo(pm25);
-      const el = createMarker(
-        pm25,
-        [
-          getSourceLabel(isSima, sensor.red),
-          sensorLabel,
-          pm25 != null ? `${roundPM25(pm25)} μg/m³ PM2.5` : null,
-          markerQuality?.label,
-        ]
-          .filter(Boolean)
-          .join(", "),
-        isSima,
-      );
-      if (!el) return;
+    //
+    // Built for every visible sensor with a reading now OR anywhere in the
+    // loaded window (markerableIds), then coloured/hidden per frame by
+    // paintFrame — so scrubbing never rebuilds the field.
+    [...visibleSensors]
+      .filter((sensor) => markerableIds.has(sensor.sensor_id))
+      .sort((a, b) => b.lat - a.lat)
+      .forEach((sensor) => {
+        const isSima = sensor.source === "sima";
+        const sensorLabel = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+        // Seeded with any valid reading so createMarker builds an element;
+        // paintFrame sets the real colour and label immediately below.
+        const el = createMarker(
+          seedPm25(sensor.sensor_id),
+          [getSourceLabel(isSima, sensor.red), sensorLabel].filter(Boolean).join(", "),
+          isSima,
+        );
+        if (!el) return;
 
-      el.style.cursor = "pointer";
-      el.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isDesktop = window.innerWidth >= 768;
-        if (isDesktop && selectedIdRef.current === sensor.sensor_id) {
-          setSelectedSensor(null);
-          return;
-        }
-        setSelectedSensor(buildSelection(sensor, data));
-      });
-      // Lift the hovered marker so a click in a dense spot lands on the disc
-      // under the cursor, not on whichever hit box mapbox drew last.
-      el.addEventListener("mouseenter", () => {
-        if (!el.classList.contains("sensor-marker--selected")) el.style.zIndex = HOVER_MARKER_Z.toString();
-      });
-      el.addEventListener("mouseleave", () => {
-        if (!el.classList.contains("sensor-marker--selected")) el.style.zIndex = "";
+        el.style.cursor = "pointer";
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const isDesktop = window.innerWidth >= 768;
+          if (isDesktop && selectedIdRef.current === sensor.sensor_id) {
+            setSelectedSensor(null);
+            return;
+          }
+          setSelectedSensor(buildSelection(sensor, data));
+        });
+        // Lift the hovered marker so a click in a dense spot lands on the disc
+        // under the cursor, not on whichever hit box mapbox drew last.
+        el.addEventListener("mouseenter", () => {
+          if (!el.classList.contains("sensor-marker--selected")) el.style.zIndex = HOVER_MARKER_Z.toString();
+        });
+        el.addEventListener("mouseleave", () => {
+          if (!el.classList.contains("sensor-marker--selected")) el.style.zIndex = "";
+        });
+
+        markerElementsRef.current.set(sensor.sensor_id, el);
+        markersRef.current.push(new Marker({ element: el }).setLngLat([sensor.lon, sensor.lat]).addTo(m));
       });
 
-      markerElementsRef.current.set(sensor.sensor_id, el);
-      markersRef.current.push(new Marker({ element: el }).setLngLat([sensor.lon, sensor.lat]).addTo(m));
-    });
-
+    paintFrame(frameReadingsRef.current);
     syncActive();
-  }, [mapLoaded, visibleSensors, data, syncActive]);
+  }, [mapLoaded, visibleSensors, markerableIds, seedPm25, paintFrame, syncActive]);
+
+  // Repaint on a scrub step (or a live-data refresh) without rebuilding markers.
+  useEffect(() => {
+    if (!mapLoaded) return;
+    paintFrame(frameReadings);
+  }, [mapLoaded, frameReadings, paintFrame]);
 
   // Cleanup the marker field when the component unmounts.
   useEffect(() => {
@@ -1616,6 +1850,43 @@ export default function MapaSensors({
   useEffect(() => {
     writeFilterParams({ showOccamm, showOtros, showSima, hiddenMunicipios });
   }, [showOccamm, showOtros, showSima, hiddenMunicipios]);
+
+  // Pull the whole-field window once, for the time scrubber. Desktop-only
+  // feature, but the fetch is cheap and cached; the UI just doesn't render on
+  // mobile. A ?t= in the URL is resolved against the window as it lands.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/field-history?hours=72")
+      .then((r) => r.json())
+      .then((d: FieldHistory) => {
+        if (cancelled || !Array.isArray(d?.hours) || !d.series) return;
+        setFieldHistory(d);
+        // ?t= only applies on desktop for now — the scrubber UI, and so the
+        // way back to live, is desktop-only.
+        const key = pendingScrubKey.current;
+        pendingScrubKey.current = null;
+        if (key && window.innerWidth >= 768) {
+          const i = d.hours.indexOf(key);
+          if (i !== -1) setScrubIndex(i);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  // Mirror the scrubbed hour into ?t= (absent = live).
+  useEffect(() => {
+    writeScrubParam(scrubbing && scrubIndex != null ? fieldHistory!.hours[scrubIndex] : null);
+  }, [scrubbing, scrubIndex, fieldHistory]);
+
+  // Playback: step one hour at a time to the end of the window, then stop.
+  useEffect(() => {
+    if (!scrubPlaying || !fieldHistory) return;
+    const last = fieldHistory.hours.length - 1;
+    if (scrubIndex == null || scrubIndex >= last) { setScrubPlaying(false); return; }
+    const id = window.setTimeout(() => setScrubIndex((i) => (i == null ? null : i + 1)), 700);
+    return () => window.clearTimeout(id);
+  }, [scrubPlaying, scrubIndex, fieldHistory]);
 
   // Tapping the map dismisses the sensor sheet on mobile, where that gesture
   // is how you get back to the map. On desktop the card stays on whatever was
@@ -1783,7 +2054,8 @@ export default function MapaSensors({
 
         <div className="flex min-h-0 w-panel-lg flex-col">
         {selectedSensor ? (() => {
-          const { sensor, pm25, color, textColor } = selectedSensor;
+          const { sensor, color, textColor } = selectedSensor;
+          const pm25 = framePm25(sensor.sensor_id, selectedSensor.pm25);
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
@@ -2049,8 +2321,8 @@ export default function MapaSensors({
         const name = sel
           ? (isSima && s!.nombre_display ? s!.nombre_display : s!.nombre)
           : (defaultName ?? "Zona Metropolitana de Monterrey");
-        const quality = sel ? getQualityInfo(sel.pm25) : qualityInfo;
-        const pm25 = sel ? sel.pm25 : displayPm25;
+        const pm25 = sel ? framePm25(sel.sensor.sensor_id, sel.pm25) : displayPm25;
+        const quality = sel ? getQualityInfo(pm25) : qualityInfo;
         const fallbackColor = sel ? sel.textColor : quality?.textColor;
         const hasStation = Boolean(sel) || Boolean(defaultName);
         const sourceLabel = sel
@@ -2159,6 +2431,21 @@ export default function MapaSensors({
       </div>
         );
       })()}
+
+      {/* Time scrubber — desktop only. Repaints the whole marker field at the
+          chosen hour; "Ahora" returns to live. */}
+      {fieldHistory && fieldHistory.hours.length > 1 && (
+        <div className="pointer-events-none absolute bottom-6 left-1/2 z-20 hidden -translate-x-1/2 md:block">
+          <TimeScrubber
+            hours={fieldHistory.hours}
+            index={scrubIndex}
+            playing={scrubPlaying}
+            medianByHour={medianByHour}
+            onIndex={setScrubIndex}
+            onPlayingChange={setScrubPlaying}
+          />
+        </div>
+      )}
 
       {/* Recomendaciones de salud popup — the same dialog as the rest, rather
           than a bare div: it was the one popup with no name for assistive

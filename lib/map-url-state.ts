@@ -12,6 +12,7 @@
 const SENSOR_PARAM = "sensor";
 const SRC_PARAM = "src";
 const HIDE_PARAM = "hide";
+const TIME_PARAM = "t";
 
 type SrcKind = "occamm" | "otros" | "gob";
 export type SrcState = Record<SrcKind, boolean>;
@@ -66,6 +67,23 @@ export function readFilterParams(): { src: SrcState | null; hide: string[] } {
   const hide = rawHide ? rawHide.split(",").map((s) => s.trim()).filter(Boolean) : [];
 
   return { src, hide };
+}
+
+// ---- ?t= (time scrubber) -----------------------------------------------------
+
+// The hour key ("YYYY-MM-DDTHH") the map is scrubbed to, or null for live.
+export function readScrubParam(): string | null {
+  if (typeof window === "undefined") return null;
+  const raw = new URLSearchParams(window.location.search).get(TIME_PARAM);
+  return raw && /^\d{4}-\d{2}-\d{2}T\d{2}$/.test(raw) ? raw : null;
+}
+
+export function writeScrubParam(hourKey: string | null): void {
+  if (typeof window === "undefined") return;
+  const url = new URL(window.location.href);
+  if (hourKey == null) url.searchParams.delete(TIME_PARAM);
+  else url.searchParams.set(TIME_PARAM, hourKey);
+  replaceIfChanged(url);
 }
 
 export function writeFilterParams(state: {
