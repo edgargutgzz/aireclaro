@@ -473,6 +473,20 @@ function SparklineSkeleton() {
   );
 }
 
+// The card's big quality line. With no reading for the moment on screen — a
+// SIMA station that didn't report that hour — it reads "No disponible" in the
+// quiet gray treatment, not the huge coloured headline.
+function QualityHeadline({ info, fallbackColor }: { info: QualityInfo | null; fallbackColor?: string }) {
+  if (!info) {
+    return <span className="min-w-0 flex-1 truncate text-lg font-medium text-gray-400">No disponible</span>;
+  }
+  return (
+    <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: info.textColor ?? fallbackColor }}>
+      {info.label}
+    </span>
+  );
+}
+
 const SENSITIVE_GROUPS = [
   { key: "menores", label: "Niñas y Niños", icon: Baby },
   { key: "adultos", label: "Adultos mayores", icon: PersonStanding },
@@ -2212,9 +2226,7 @@ export default function MapaSensors({
                     <div>
                       <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                       <div className="flex items-baseline justify-between gap-3">
-                        <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
-                          {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
-                        </span>
+                        <QualityHeadline info={hoveredQuality ?? sensorQuality} fallbackColor={textColor} />
                         {/* The chips' idiom: the number is the value and
                             carries gray-700, the unit is the quiet half. */}
                         {(hoveredHistory?.pm25 ?? pm25) !== null && (
@@ -2501,9 +2513,7 @@ export default function MapaSensors({
                 <div>
                   <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? quality)?.textColor ?? fallbackColor }}>
-                      {(hoveredQuality ?? quality)?.label ?? "—"}
-                    </span>
+                    <QualityHeadline info={hoveredQuality ?? quality} fallbackColor={fallbackColor} />
                     {(hoveredHistory?.pm25 ?? pm25) !== null && (
                       <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
                         <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? pm25)}</span> μg/m³ PM2.5
