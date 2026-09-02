@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAnonClient } from "@/utils/supabase/anon";
 import { NextResponse } from "next/server";
 import { monterreyNaiveNow, monterreyNaiveHoursAgo, monterreyHourKey } from "@/lib/monterrey-time";
 
@@ -55,7 +55,7 @@ type PerSensor = Map<string, Map<string, number>>;
 type RpcRow = { sensor_id: string; source: string; hours: string[]; pm25: (number | null)[] };
 
 async function viaRpc(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAnonClient>,
   since: string,
 ): Promise<{ perSensor: PerSensor; hourKeys: Set<string> } | null> {
   // The 2-month aggregation sits near Supabase's request ceiling and gets
@@ -90,7 +90,7 @@ async function viaRpc(
 }
 
 async function viaPages(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createAnonClient>,
   since: string,
 ): Promise<{ perSensor: PerSensor; hourKeys: Set<string> }> {
   const perSensor: PerSensor = new Map();
@@ -142,7 +142,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const since = resolveSince(searchParams.get("since"));
 
-  const supabase = await createClient();
+  const supabase = createAnonClient();
 
   let result: { perSensor: PerSensor; hourKeys: Set<string> };
   try {
@@ -167,6 +167,9 @@ export async function GET(request: Request) {
 
   return NextResponse.json(
     { hours: orderedHours, series },
-    { headers: { "cache-control": "public, max-age=0, s-maxage=300, stale-while-revalidate=600" } },
+    // s-maxage matches the warming cron (every 10 min, vercel.json) so a normal
+    // request is almost always a dead-fresh edge hit; the long SWR window keeps
+    // it instant even if a cron run is missed.
+    { headers: { "cache-control": "public, max-age=0, s-maxage=600, stale-while-revalidate=3600" } },
   );
 }
