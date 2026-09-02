@@ -1159,8 +1159,8 @@ function LayersFilterContent({
 
 // Desktop time scrubber. A range input over the loaded window, a play button
 // that steps hourly to the end, a live/"Ahora" toggle, and a context strip
-// behind the track — the median across the metro SIMA stations per hour — so
-// episodes are visible as shape and you can scrub straight to a peak.
+// behind the track — the median across the whole field per hour — so episodes
+// are visible as shape and you can scrub straight to a peak.
 function TimeScrubber({
   hours,
   index,
@@ -1578,30 +1578,18 @@ export default function MapaSensors({
     return 1;
   }, [liveReadings, fieldHistory]);
 
-  // The SIMA reference stations inside the Monterrey metro: the government
-  // network minus FIN, which sits in Saltillo (~85 km out). docs/methodology.md
-  // names these 15 as the basis for anything metro-scale.
-  const metroStationIds = useMemo(
-    () =>
-      new Set(
-        sensors
-          .filter((s) => s.source === "sima" && String(s.sensor_id) !== "FIN")
-          .map((s) => String(s.sensor_id)),
-      ),
-    [sensors],
-  );
-
-  // Median PM2.5 per hour across the metro SIMA stations, for the scrubber's
-  // context strip — a guide to where the episodes are, not a value shown on the
-  // map. Calibrated, spatially-spread stations only: the citizen network is
-  // clustered and uncorrected, so a median over the whole field would be
-  // spatially biased and lean high (docs/methodology.md).
+  // Median PM2.5 per hour across the whole scrubbable field — every sensor the
+  // map paints at that hour, citizen sensors included — for the scrubber's
+  // context strip. Deliberately the same population you scrub on the map, so a
+  // red patch in the strip lines up with red discs in the field. A navigation
+  // guide to where the episodes are: aria-hidden, never surfaced as a number,
+  // never a published metro value (docs/methodology.md).
   const medianByHour = useMemo(() => {
     if (!fieldHistory) return [] as number[];
     return fieldHistory.hours.map((_, i) => {
       const vals: number[] = [];
-      for (const id of metroStationIds) {
-        const v = fieldHistory.series[id]?.[i];
+      for (const id in fieldHistory.series) {
+        const v = fieldHistory.series[id][i];
         if (v != null && v > 0.4) vals.push(v);
       }
       if (!vals.length) return 0;
@@ -1609,7 +1597,7 @@ export default function MapaSensors({
       const mid = Math.floor(vals.length / 2);
       return vals.length % 2 ? vals[mid] : (vals[mid - 1] + vals[mid]) / 2;
     });
-  }, [fieldHistory, metroStationIds]);
+  }, [fieldHistory]);
 
   // What the panel says about itself in its own header, so the collapsed card
   // answers "is the map filtered?" rather than holding 380px of empty glass
