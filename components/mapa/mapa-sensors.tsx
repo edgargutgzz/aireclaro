@@ -1169,7 +1169,6 @@ export default function MapaSensors({
   const [sensorHistory, setSensorHistory] = useState<HistoryPoint[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [showDefaultDetail, setShowDefaultDetail] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
   // Point the cursor is on in the 48h chart. While set, the card's headline
@@ -1977,17 +1976,28 @@ export default function MapaSensors({
           exactly as the desktop card only re-titles its header until you
           open it. */}
       {(() => {
+        // One card shape for both subjects. A picked marker fills these from
+        // the selection; with nothing picked they come from the default
+        // sensor behind the metro-wide reading (or, with no backing sensor,
+        // the bare median — no network line, no coordinates, no trace).
         const sel = selectedSensor;
-        const selSensor = sel?.sensor;
-        const selIsSima = selSensor?.source === "sima";
-        const selName = selSensor
-          ? (selIsSima && selSensor.nombre_display ? selSensor.nombre_display : selSensor.nombre)
-          : null;
-        const selQuality = sel ? getQualityInfo(sel.pm25) : null;
-
-        // What the peek row and the collapsed sheet advertise.
-        const peekName = sel ? selName : (defaultName ?? "Zona Metropolitana de Monterrey");
-        const peekQuality = sel ? selQuality : qualityInfo;
+        const s = sel?.sensor;
+        const isSima = sel ? s!.source === "sima" : Boolean(defaultIsSima);
+        const name = sel
+          ? (isSima && s!.nombre_display ? s!.nombre_display : s!.nombre)
+          : (defaultName ?? "Zona Metropolitana de Monterrey");
+        const quality = sel ? getQualityInfo(sel.pm25) : qualityInfo;
+        const pm25 = sel ? sel.pm25 : displayPm25;
+        const fallbackColor = sel ? sel.textColor : quality?.textColor;
+        const hasStation = Boolean(sel) || Boolean(defaultName);
+        const sourceLabel = sel
+          ? getSourceLabel(isSima, s!.red)
+          : defaultName
+            ? getSourceLabel(isSima, defaultRed)
+            : "Promedio de la Zona Metropolitana de Monterrey";
+        const lat = sel ? s!.lat : defaultLat;
+        const lon = sel ? s!.lon : defaultLon;
+        const sparklineKey = sel ? s!.sensor_id : undefined;
 
         return (
       <div
@@ -2008,11 +2018,11 @@ export default function MapaSensors({
           {sheetState === 'peek' && (
             <div className="flex items-baseline justify-between gap-3">
               <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
-                {peekName}
+                {name}
               </span>
-              {peekQuality ? (
-                <span className="flex-shrink-0 text-2xl font-bold" style={{ color: peekQuality.textColor }}>
-                  {peekQuality.label}
+              {quality ? (
+                <span className="flex-shrink-0 text-2xl font-bold" style={{ color: quality.textColor }}>
+                  {quality.label}
                 </span>
               ) : (
                 <span className="flex-shrink-0 text-sm text-gray-300">—</span>
@@ -2021,122 +2031,66 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* Scrollable content — visible when expanded to mid */}
+        {/* Scrollable content — visible when expanded to mid. Same body for a
+            picked station and the default reading: name heading, a source
+            line closed off by a rule, the reading and its 48h trace, then
+            the recommendations behind a rule. Mirrors the desktop card. */}
         <div
           className={`relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
         >
-          {sel ? (
-            /* Picked station — the desktop card body: name heading, a source
-               line closed off by a rule, the reading and its 48h trace, then
-               the recommendations behind a rule. */
+          {(sel || qualityInfo) && (
             <div className="flex flex-col gap-5">
-              <p className="truncate text-base font-medium text-gray-700">{selName}</p>
+              <p className="truncate text-base font-medium text-gray-700">{name}</p>
 
               <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
                 <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
-                  {(() => { const SourceIcon = getSourceIcon(selIsSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
-                  <span className="truncate">{getSourceLabel(selIsSima, selSensor!.red)}</span>
+                  {hasStation && (() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
+                  <span className="truncate">{sourceLabel}</span>
                 </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${selSensor!.lat.toFixed(5)}, ${selSensor!.lon.toFixed(5)}`);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 1500);
-                  }}
-                  className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                  aria-label="Copiar coordenadas"
-                >
-                  {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-                  <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                </button>
+                {lat !== null && lon !== null && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${lat.toFixed(5)}, ${lon.toFixed(5)}`);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1500);
+                    }}
+                    className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                    aria-label="Copiar coordenadas"
+                  >
+                    {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+                    <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                  </button>
+                )}
               </div>
 
               <div className="flex flex-col gap-3">
                 <div>
                   <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? selQuality)?.textColor ?? sel.textColor }}>
-                      {(hoveredQuality ?? selQuality)?.label ?? "—"}
+                    <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? quality)?.textColor ?? fallbackColor }}>
+                      {(hoveredQuality ?? quality)?.label ?? "—"}
                     </span>
-                    {(hoveredHistory?.pm25 ?? sel.pm25) !== null && (
+                    {(hoveredHistory?.pm25 ?? pm25) !== null && (
                       <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
-                        <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? sel.pm25)}</span> μg/m³ PM2.5
+                        <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? pm25)}</span> μg/m³ PM2.5
                       </span>
                     )}
                   </div>
                 </div>
-                <div>
-                  {historyLoading ? <SparklineSkeleton /> : <Sparkline key={selSensor!.sensor_id} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn />}
-                </div>
-              </div>
-
-              {selQuality && (
-                <div className="relative z-[1] border-t border-gray-100 pt-5">
-                  <HealthRecommendations info={selQuality} onShowInfo={() => setCuidarmeQuality(selQuality)} defaultOpen />
-                </div>
-              )}
-            </div>
-          ) : qualityInfo && (
-            <>
-              <div className="mb-5">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="text-3xl font-bold leading-tight" style={{ color: (hoveredQuality ?? qualityInfo).textColor }}>
-                    {(hoveredQuality ?? qualityInfo).label}
-                  </div>
-                  {(hoveredHistory?.pm25 ?? displayPm25) !== null && (
-                    <span className="text-sm text-gray-400">
-                      {roundPM25(hoveredHistory?.pm25 ?? displayPm25)} μg/m³ PM2.5
-                    </span>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowDefaultDetail(v => !v)}
-                  aria-expanded={showDefaultDetail}
-                  className="flex min-w-0 w-full items-center gap-1.5 rounded-lg text-sm text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                >
-                  <span className="truncate">
-                    {defaultName
-                      ? `${defaultIsSima ? "Estación" : "Sensor"}: ${defaultName}`
-                      : "Promedio de la Zona Metropolitana de Monterrey"}
-                  </span>
-                  <ChevronRight className={`h-3 w-3 flex-shrink-0 transition-transform duration-200 ${showDefaultDetail ? 'rotate-90' : ''}`} />
-                </button>
-                {showDefaultDetail && (
-                  <div className="mt-3 overflow-hidden rounded-xl bg-gray-50">
-                    <div className="flex flex-col gap-3 px-4 py-3">
-                      {defaultLat !== null && defaultLon !== null && (
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${defaultLat.toFixed(5)}, ${defaultLon.toFixed(5)}`);
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 1500);
-                          }}
-                          className="flex items-center gap-2.5 text-sm text-gray-400 transition-colors active:opacity-70"
-                        >
-                          <Copy className="h-3 w-3 flex-shrink-0" />
-                          {copied ? 'Copiado' : 'Copiar coordenadas'}
-                        </button>
-                      )}
-                    </div>
+                {hasStation && (
+                  <div>
+                    {historyLoading ? <SparklineSkeleton /> : <Sparkline key={sparklineKey} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn={Boolean(sel)} />}
                   </div>
                 )}
               </div>
 
-              {/* Trend sparkline — only with a station behind the reading: the
-                  bare metro median is a cross-sensor figure with no single
-                  48h series to plot. Matches the desktop default card. */}
-              {defaultName && (
-                <div className="mb-5">
-                  {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
+              {quality && (
+                <div className="relative z-[1] border-t border-gray-100 pt-5">
+                  <HealthRecommendations info={quality} onShowInfo={() => setCuidarmeQuality(quality)} defaultOpen />
                 </div>
               )}
-
-              {/* Recommendations — open by default here, see HealthRecommendations */}
-              <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} defaultOpen />
-
-            </>
+            </div>
           )}
         </div>
       </div>
