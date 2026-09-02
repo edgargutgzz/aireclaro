@@ -14,6 +14,15 @@
   animation: colorCycle 6s ease-in-out infinite;
 }
 
+/* Mute the basemap a touch. The filter rides the WebGL canvas only; the
+   sensor markers are DOM overlays and the attribution controls are their own
+   nodes, so the discs, badges and legend keep their full colour. A blunt
+   global pass, not per-layer — if this needs to protect water legibility or
+   only calm the greens, move it into the Mapbox Studio style instead. */
+.mapboxgl-canvas {
+  filter: saturate(0.85);
+}
+
 /* Map markers.
 
    Sizing is width/height, never transform: mapbox rewrites
