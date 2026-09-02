@@ -79,6 +79,12 @@ type FieldHistory = { hours: string[]; series: Record<string, (number | null)[]>
 // where it crosses a dashed threshold line.
 const SPARKLINE_COLOR = "#3b82f6";
 
+// The station the estación card shows at rest, before any marker is picked:
+// SIMA "CE" — Monterrey: Obispado, the central government reference station.
+// A named station's own reading, not a metro-wide claim. If it's filtered out
+// (Capas → gobierno off) the card is simply empty.
+const DEFAULT_SENSOR_ID = "CE";
+
 
 
 
@@ -1617,6 +1623,16 @@ export default function MapaSensors({
     return newest ? new Date(newest) : null;
   }, [data]);
 
+  // The station the card falls back to when nothing is picked: Obispado (CE),
+  // built the same way a click builds a selection. Null only if it's filtered
+  // out or absent from the feed. `cardSubject` is what every card consumer
+  // reads — the explicit pick, else this.
+  const defaultSelection = useMemo<SelectedSensor | null>(() => {
+    const obispado = visibleSensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
+    return obispado ? buildSelection(obispado, data) : null;
+  }, [visibleSensors, data]);
+  const cardSubject = selectedSensor ?? defaultSelection;
+
   // Null until mounted, so the server and the first client render agree on a
   // value that is by definition different on each; then re-read on a timer,
   // because a tab left open all afternoon should watch the badge go amber
@@ -1631,11 +1647,10 @@ export default function MapaSensors({
 
   const hoveredQuality = hoveredHistory ? getQualityInfo(hoveredHistory.pm25) : null;
 
-  // The scrubber's readout reports the reading on screen: the open sensor's,
-  // else the newest anywhere in the live set. Sensors publish on their own
-  // schedules, so a dataset-wide "newest" would sit ahead of one station and
-  // make a current reading look late — it's only the fallback for when nothing
-  // is picked.
+  // The scrubber's readout reports the reading on screen: the card's station
+  // (picked, else Obispado), else the newest anywhere in the live set. Sensors
+  // publish on their own schedules, so a dataset-wide "newest" would sit ahead
+  // of one station and make a current reading look late.
   //
   // Readings land hourly, so 90 minutes is one missed cycle plus slack, and
   // six hours is a pipeline that has stopped rather than a run that is late.
@@ -1643,7 +1658,7 @@ export default function MapaSensors({
   // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
     if (now === null) return null;
-    const reading = selectedSensor?.readingAt ? new Date(selectedSensor.readingAt) : latestReading;
+    const reading = cardSubject?.readingAt ? new Date(cardSubject.readingAt) : latestReading;
     if (!reading || Number.isNaN(reading.getTime())) return null;
 
     const age = now - reading.getTime();
@@ -1654,12 +1669,12 @@ export default function MapaSensors({
       when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
       status: age < 90 * 60 * 1000 ? "fresh" : age < 6 * 60 * 60 * 1000 ? "delayed" : "stale",
     };
-  }, [selectedSensor, latestReading, now]);
+  }, [cardSubject, latestReading, now]);
 
-  // The marker that wears the pulse: the explicitly selected sensor, or none.
+  // The marker that wears the pulse: the card's station (picked, else Obispado).
   // Mirrored into refs so the map event handlers read the current value
   // without being rebuilt on each pick.
-  const activeSensorId = selectedSensor?.sensor.sensor_id ?? null;
+  const activeSensorId = cardSubject?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
 
   // While scrubbing, the card's sparkline is a 48h window ending at the
@@ -1802,9 +1817,9 @@ export default function MapaSensors({
   }, []);
 
   // Opening camera. Runs once: a single flyTo from the zoomed-out start to the
-  // metro overview — or, with a shared ?sensor= link, to that station at
-  // zoom 13. jumpTo under reduced motion. essential: true so a backgrounded
-  // tab doesn't drop the move.
+  // card's station at zoom 13 (a ?sensor= link's target, else Obispado), or the
+  // metro overview if that station isn't in the feed. jumpTo under reduced
+  // motion. essential: true so a backgrounded tab doesn't drop the move.
   const didOpeningFlyRef = useRef(false);
   useEffect(() => {
     if (!mapLoaded || !map.current || didOpeningFlyRef.current) return;
@@ -1813,8 +1828,13 @@ export default function MapaSensors({
     const urlSensor = initialSensorId != null
       ? sensors.find((s) => s.sensor_id === initialSensorId)
       : undefined;
-    const focus = urlSensor
-      ? { center: [urlSensor.lon, urlSensor.lat] as [number, number], zoom: 13 }
+    const station = urlSensor
+      ? { lon: urlSensor.lon, lat: urlSensor.lat }
+      : defaultSelection
+        ? { lon: defaultSelection.sensor.lon, lat: defaultSelection.sensor.lat }
+        : null;
+    const focus = station
+      ? { center: [station.lon, station.lat] as [number, number], zoom: 13 }
       : { center: OPENING_CENTER, zoom: 10.5 };
 
     if (prefersReducedMotion()) {
@@ -1822,7 +1842,7 @@ export default function MapaSensors({
       return;
     }
     (map.current as any).flyTo({ ...focus, duration: OPENING_MOVE_MS, essential: true });
-  }, [mapLoaded, sensors, initialSensorId]);
+  }, [mapLoaded, sensors, initialSensorId, defaultSelection]);
 
   // Build the marker field: one DOM marker per visible sensor with a reading.
   // No clustering. Rebuilt only when the visible set or the readings change,
@@ -1903,14 +1923,15 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Fetch the last 48h of readings for the picked sensor's trend sparkline.
+  // Fetch the last 48h of readings for the card station's trend sparkline —
+  // the picked sensor, else the default (Obispado).
   useEffect(() => {
-    if (!selectedSensor) {
+    if (!cardSubject) {
       setSensorHistory([]);
       setHistoryLoading(false);
       return;
     }
-    const target = { sensorId: selectedSensor.sensor.sensor_id, source: selectedSensor.sensor.source };
+    const target = { sensorId: cardSubject.sensor.sensor_id, source: cardSubject.sensor.source };
     let cancelled = false;
     setHistoryLoading(true);
     fetch(`/api/sensor-history?sensor_id=${target.sensorId}&source=${target.source}`)
@@ -1927,7 +1948,7 @@ export default function MapaSensors({
     return () => {
       cancelled = true;
     };
-  }, [selectedSensor?.sensor.sensor_id, selectedSensor?.sensor.source]);
+  }, [cardSubject?.sensor.sensor_id, cardSubject?.sensor.source]);
 
   // Move the pulsing halo to whichever marker is now active — the explicitly
   // selected sensor, else the default one the card opens on — in that sensor's
@@ -2019,26 +2040,34 @@ export default function MapaSensors({
     return () => window.clearTimeout(id);
   }, [scrubPlaying, scrubIndex, scrubSpeed, fieldHistory]);
 
-  // Clicking empty map closes the card — the card is a response to a pick, not
-  // a persistent panel. Mapbox fires `click` only on a genuine click, not a
-  // drag/pan, and the marker's own handler stops propagation, so this only
-  // catches clicks that missed every disc.
+  // Close the estación card back to its rest state — the default station
+  // (Obispado). On mobile that also collapses the sheet to peek.
+  const closeCard = useCallback(() => {
+    setSelectedSensor(null);
+    setSheetState('peek');
+  }, []);
+
+  // Clicking empty map dismisses a picked sensor (back to the default station).
+  // Mapbox fires `click` only on a genuine click, not a drag/pan, and the
+  // marker's own handler stops propagation, so this only catches clicks that
+  // missed every disc.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
-    const handler = () => setSelectedSensor(null);
+    const handler = () => closeCard();
     map.current.on("click", handler);
     return () => { (map.current as any)?.off("click", handler); };
-  }, [mapLoaded]);
+  }, [mapLoaded, closeCard]);
 
-  // Escape closes the card too (unless a dialog is open — it owns Escape first).
+  // Escape dismisses a picked sensor too (unless a dialog is open — it owns
+  // Escape first).
   useEffect(() => {
     if (!selectedSensor) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !document.querySelector("dialog[open]")) setSelectedSensor(null);
+      if (e.key === "Escape" && !document.querySelector("dialog[open]")) closeCard();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selectedSensor]);
+  }, [selectedSensor, closeCard]);
 
   // 5.5rem of peek showing above the nav: the grabber and the summary row (the
   // default sensor name + its reading). Freshness floats at the top of the map,
@@ -2202,16 +2231,15 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column. Empty until a marker is picked; then the estación
-          card appears, closable with its X (also Escape and a click on empty
-          map). No default sensor — the map is an airshed view, not a featured
-          point. */}
+      {/* Desktop right column. At rest it shows the default station (Obispado);
+          picking a marker swaps it and adds an X that closes back to the
+          default (also Escape and a click on empty map). */}
       <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
         <div className="flex min-h-0 w-panel-lg flex-col">
-        {selectedSensor && (() => {
-          const { sensor, textColor } = selectedSensor;
-          const pm25 = framePm25(sensor.sensor_id, selectedSensor.pm25);
+        {cardSubject && (() => {
+          const { sensor, textColor } = cardSubject;
+          const pm25 = framePm25(sensor.sensor_id, cardSubject.pm25);
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
@@ -2219,14 +2247,16 @@ export default function MapaSensors({
             <div className="pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
               <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
                 <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">{sensorName}</span>
-                <button
-                  type="button"
-                  onClick={() => setSelectedSensor(null)}
-                  aria-label="Cerrar"
-                  className="-my-1 -mr-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                >
-                  <X aria-hidden="true" className="h-4 w-4" />
-                </button>
+                {selectedSensor && (
+                  <button
+                    type="button"
+                    onClick={closeCard}
+                    aria-label="Cerrar"
+                    className="-my-1 -mr-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                  >
+                    <X aria-hidden="true" className="h-4 w-4" />
+                  </button>
+                )}
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <div className={`disclosure-in flex flex-col gap-5 px-5 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
@@ -2273,7 +2303,7 @@ export default function MapaSensors({
                     {/* Trend sparkline — power-user context (raw history, not just a snapshot).
                         `key` on the sensor id so each new pick remounts and replays the wipe. */}
                     <div>
-                      {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={selectedSensor.sensor.sensor_id} data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} animateIn />}
+                      {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={String(sensor.sensor_id)} data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} animateIn />}
                     </div>
                   </div>
                 </div>
@@ -2361,23 +2391,24 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Bottom sheet backdrop — mobile only, only with a sheet open past peek */}
+      {/* Bottom sheet backdrop — mobile only, only when the sheet is open past peek */}
       <div
         className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
-          selectedSensor && sheetState !== 'peek' ? 'opacity-100' : 'pointer-events-none opacity-0'
+          cardSubject && sheetState !== 'peek' ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
-        onClick={() => setSelectedSensor(null)}
+        onClick={closeCard}
       />
 
-      {/* Bottom sheet — mobile twin of the desktop card. Off-screen until a
-          marker is tapped; the grabber toggles peek/mid, the X (or the
-          backdrop, or a tap on the map) closes it. */}
+      {/* Bottom sheet — mobile twin of the desktop card. At rest it peeks the
+          default station (Obispado); tapping a marker swaps the subject, the
+          grabber toggles peek/mid, and the X / backdrop / map tap close a pick
+          back to the default. */}
       {(() => {
-        const sel = selectedSensor;
-        const s = sel?.sensor;
+        const subj = cardSubject;
+        const s = subj?.sensor;
         const isSima = s?.source === "sima";
         const name = s ? (isSima && s.nombre_display ? s.nombre_display : s.nombre) : "";
-        const pm25 = sel ? framePm25(s!.sensor_id, sel.pm25) : null;
+        const pm25 = subj ? framePm25(s!.sensor_id, subj.pm25) : null;
         const quality = getQualityInfo(pm25);
         const sourceLabel = s ? getSourceLabel(isSima, s.red) : "";
         const lat = s?.lat ?? null;
@@ -2389,12 +2420,12 @@ export default function MapaSensors({
         style={{
           bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
           height: '62dvh',
-          transform: sel ? sheetTransform : 'translateY(100%)',
+          transform: subj ? sheetTransform : 'translateY(100%)',
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
-        aria-hidden={!sel}
+        aria-hidden={!subj}
       >
-        {sel && (
+        {subj && (
           <>
         <div
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
@@ -2411,14 +2442,16 @@ export default function MapaSensors({
                   {quality.label}
                 </span>
               )}
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); setSelectedSensor(null); }}
-                aria-label="Cerrar"
-                className="-mr-1 -translate-y-px rounded-lg p-1 text-gray-400 active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-              >
-                <X aria-hidden="true" className="h-4 w-4" />
-              </button>
+              {selectedSensor && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); closeCard(); }}
+                  aria-label="Cerrar"
+                  className="-mr-1 -translate-y-px rounded-lg p-1 text-gray-400 active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                >
+                  <X aria-hidden="true" className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -2456,7 +2489,7 @@ export default function MapaSensors({
                 <div>
                   <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
                   <div className="flex items-baseline justify-between gap-3">
-                    <QualityHeadline info={hoveredQuality ?? quality} fallbackColor={sel.textColor} />
+                    <QualityHeadline info={hoveredQuality ?? quality} fallbackColor={subj.textColor} />
                     {(hoveredHistory?.pm25 ?? pm25) !== null && (
                       <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
                         <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? pm25)}</span> μg/m³ PM2.5
@@ -2465,7 +2498,7 @@ export default function MapaSensors({
                   </div>
                 </div>
                 <div>
-                  {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={s!.sensor_id} data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} animateIn />}
+                  {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={String(s!.sensor_id)} data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} animateIn />}
                 </div>
               </div>
 
