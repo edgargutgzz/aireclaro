@@ -7,7 +7,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getPM25Color, getMarkerFill, getLevel, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
-import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
+import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, readScrubParam, writeScrubParam } from "@/lib/map-url-state";
 import { parseMonterreyNaive } from "@/lib/monterrey-time";
 
@@ -1151,6 +1151,7 @@ function TimeScrubber({
   playing,
   speed,
   medianByHour,
+  freshness,
   onIndex,
   onPlayingChange,
   onSpeedChange,
@@ -1160,6 +1161,7 @@ function TimeScrubber({
   playing: boolean;
   speed: number;
   medianByHour: number[];
+  freshness: Freshness | null;
   onIndex: (i: number | null) => void;
   onPlayingChange: (p: boolean) => void;
   onSpeedChange: (s: number) => void;
@@ -1170,8 +1172,10 @@ function TimeScrubber({
   const live = index == null;
   const value = index ?? last;
 
-  const label = live
-    ? "En vivo"
+  // Scrubbed: the hour on screen. Live: the readout is the freshness badge —
+  // same question ("what moment, how current"), one widget.
+  const scrubbedLabel = live
+    ? null
     : (() => {
         const d = parseMonterreyNaive(`${hours[index!]}:00:00`);
         return `${getRelativeDayLabel(d)}, ${format(d, "h")}:00 ${format(d, "a")}`;
@@ -1193,7 +1197,7 @@ function TimeScrubber({
   const labelStep = Math.max(1, Math.ceil(dayTicks.length / 7));
 
   return (
-    <div className="pointer-events-auto hidden w-[min(92vw,44rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
+    <div className="pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
       {!reduceMotion && (
         <>
           <button
@@ -1259,21 +1263,29 @@ function TimeScrubber({
         />
       </div>
 
-      <span className={`flex-shrink-0 whitespace-nowrap text-[13px] font-medium ${live ? "text-gray-500" : "text-blue-600"}`}>
-        {label}
-      </span>
-
-      {!live && (
-        <button
-          type="button"
-          onClick={() => {
-            onPlayingChange(false);
-            onIndex(null);
-          }}
-          className="flex-shrink-0 rounded-lg px-2 py-1 text-[13px] font-medium text-gray-500 transition-colors hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-        >
-          Ahora
-        </button>
+      {live ? (
+        freshness ? (
+          <span className="flex flex-shrink-0 items-center gap-1.5">
+            <FreshnessDot status={freshness.status} />
+            <FreshnessText freshness={freshness} compact />
+          </span>
+        ) : (
+          <span className="flex-shrink-0 whitespace-nowrap text-[13px] font-medium text-gray-500">En vivo</span>
+        )
+      ) : (
+        <>
+          <span className="flex-shrink-0 whitespace-nowrap text-[13px] font-medium text-blue-600">{scrubbedLabel}</span>
+          <button
+            type="button"
+            onClick={() => {
+              onPlayingChange(false);
+              onIndex(null);
+            }}
+            className="flex-shrink-0 rounded-lg px-2 py-1 text-[13px] font-medium text-gray-500 transition-colors hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            Ahora
+          </button>
+        </>
       )}
     </div>
   );
@@ -2250,18 +2262,9 @@ export default function MapaSensors({
           </div>
         )}
         </div>{/* end card width wrapper */}
-
-        {/* The freshness badge rides the bottom of this column, pinned with
-            mt-auto so it holds the same corner whether the card above is open,
-            shut or absent. Desktop only; on mobile the same badge floats at the
-            top-centre of the map (see the mobile controls above). Hidden while
-            scrubbing — the scrubber below carries the time on screen, and a
-            live-freshness dot next to a historical frame only muddies it. */}
-        {freshness && !scrubbing && (
-          <div className="flex-shrink-0 md:mt-auto">
-            <FreshnessBadge freshness={freshness} />
-          </div>
-        )}
+        {/* Data freshness lives in the scrubber's readout now (desktop) — it's
+            the same question as "what moment am I looking at". On mobile the
+            badge still floats at the top-left of the map. */}
       </div>
 
       {/* Left column: layers panel (desktop) with the data-freshness badge
@@ -2469,13 +2472,14 @@ export default function MapaSensors({
       {/* Time scrubber — desktop only. Repaints the whole marker field at the
           chosen hour; "Ahora" returns to live. */}
       {fieldHistory && fieldHistory.hours.length > 1 && (
-        <div className="pointer-events-none absolute bottom-12 left-1/2 z-20 hidden -translate-x-1/2 md:block">
+        <div className="pointer-events-none absolute bottom-12 right-6 z-20 hidden md:block">
           <TimeScrubber
             hours={fieldHistory.hours}
             index={scrubIndex}
             playing={scrubPlaying}
             speed={scrubSpeed}
             medianByHour={medianByHour}
+            freshness={freshness}
             onIndex={setScrubIndex}
             onPlayingChange={setScrubPlaying}
             onSpeedChange={setScrubSpeed}
