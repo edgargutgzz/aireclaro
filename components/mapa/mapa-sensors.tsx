@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, useCallback, type Dispatch, type SetStateAction } from "react";
+import { useSearchParams } from "next/navigation";
 import { Layers, Copy, ChevronRight, Landmark, Users, UsersRound, Check, Minus, Info, X, Baby, PersonStanding, Heart, Stethoscope, Wind, Play, Pause } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -8,7 +9,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getPM25Color, getMarkerFill, getLevel, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
-import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, readScrubParam, writeScrubParam } from "@/lib/map-url-state";
+import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, writeScrubParam } from "@/lib/map-url-state";
 import { parseMonterreyNaive } from "@/lib/monterrey-time";
 
 // Initialize Mapbox
@@ -1384,7 +1385,11 @@ export default function MapaSensors({
   const [scrubIndex, setScrubIndex] = useState<number | null>(null);
   const [scrubPlaying, setScrubPlaying] = useState(false);
   const [scrubSpeed, setScrubSpeed] = useState(1);
-  const pendingScrubKey = useRef(readScrubParam());
+  // Router search params — only for *navigation* changes (nav-bar link, back /
+  // forward). Our own ?t= writes go through the History API and don't touch
+  // this, so it can't fight scrubbing; it just lets a click on "Mapa" (or Back)
+  // that lands on a ?t=-less URL return the map to live.
+  const routerSearch = useSearchParams();
 
   // One entry per municipality that actually has sensors, labelled with its
   // best spelling and counted so the list says how much each filter holds.
@@ -1896,7 +1901,7 @@ export default function MapaSensors({
 
   // Pull the whole-field window once, for the time scrubber. Desktop-only
   // feature, but the fetch is cheap and cached; the UI just doesn't render on
-  // mobile. A ?t= in the URL is resolved against the window as it lands.
+  // mobile. The ?t= → scrubIndex sync is the routerSearch effect below.
   useEffect(() => {
     let cancelled = false;
     fetch("/api/field-history?hours=336")
@@ -1904,18 +1909,25 @@ export default function MapaSensors({
       .then((d: FieldHistory) => {
         if (cancelled || !Array.isArray(d?.hours) || !d.series) return;
         setFieldHistory(d);
-        // ?t= only applies on desktop for now — the scrubber UI, and so the
-        // way back to live, is desktop-only.
-        const key = pendingScrubKey.current;
-        pendingScrubKey.current = null;
-        if (key && window.innerWidth >= 768) {
-          const i = d.hours.indexOf(key);
-          if (i !== -1) setScrubIndex(i);
-        }
       })
       .catch(() => {});
     return () => { cancelled = true; };
   }, []);
+
+  // Follow the router's ?t=: on load a shared "look at this moment" link
+  // restores the scrub; a nav-bar "Mapa" click or Back that lands on a
+  // ?t=-less URL drops back to live. Our own scrub writes go through the
+  // History API and don't move routerSearch, so this never fights a drag.
+  // Desktop only — the scrubber, and the way back, don't exist on mobile.
+  useEffect(() => {
+    const key = routerSearch.get("t");
+    if (key == null) { setScrubIndex(null); return; }
+    if (typeof window !== "undefined" && window.innerWidth < 768) return;
+    if (fieldHistory) {
+      const i = fieldHistory.hours.indexOf(key);
+      setScrubIndex(i === -1 ? null : i);
+    }
+  }, [routerSearch, fieldHistory]);
 
   // Mirror the scrubbed hour into ?t= (absent = live).
   useEffect(() => {
