@@ -8,7 +8,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getPM25Color, getMarkerFill, getLevel, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
-import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
+import { FreshnessBadge, FreshnessDot, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, writeScrubParam } from "@/lib/map-url-state";
 import { parseMonterreyNaive } from "@/lib/monterrey-time";
 
@@ -1187,13 +1187,14 @@ function TimeScrubber({
   const live = index == null;
   const value = index ?? last;
 
-  // Scrubbed: the hour on screen. Live: the readout is the freshness badge —
-  // same question ("what moment, how current"), one widget.
-  const scrubbedLabel = live
+  // The right-side readout: the moment on screen, stacked as label over value
+  // to keep it narrow. Scrubbed — day over time; live — "Actualizado" over the
+  // freshness time (see the render below).
+  const scrubbed = live
     ? null
     : (() => {
         const d = parseMonterreyNaive(`${hours[index!]}:00:00`);
-        return `${getRelativeDayLabel(d)}, ${format(d, "h")}:00 ${format(d, "a")}`;
+        return { day: getRelativeDayLabel(d), time: `${format(d, "h")}:00 ${format(d, "a")}` };
       })();
 
   // The context strip: a bar in each slot's air-quality colour, so an episode
@@ -1295,7 +1296,7 @@ function TimeScrubber({
             onIndex(i >= last ? null : i);
           }}
           aria-label="Hora del mapa"
-          aria-valuetext={live ? "En vivo" : scrubbedLabel ?? undefined}
+          aria-valuetext={scrubbed ? `${scrubbed.day}, ${scrubbed.time}` : "En vivo"}
           className="time-scrubber absolute inset-x-0 bottom-0"
         />
       </div>
@@ -1307,14 +1308,22 @@ function TimeScrubber({
                 stays for delayed/stale, where "how behind is the pipeline" is
                 worth flagging. */}
             {freshness.status !== "fresh" && <FreshnessDot status={freshness.status} />}
-            <FreshnessText freshness={freshness} compact />
+            <span className="flex flex-col items-end leading-tight">
+              <span className="text-[10px] text-gray-400">Actualizado</span>
+              <time dateTime={freshness.dateTime} className="whitespace-nowrap text-[13px] font-medium text-gray-700">
+                {freshness.when}
+              </time>
+            </span>
           </span>
         ) : (
           <span className="flex-shrink-0 whitespace-nowrap text-[13px] font-medium text-gray-500">En vivo</span>
         )
       ) : (
         <>
-          <span className="flex-shrink-0 whitespace-nowrap text-[13px] font-medium text-gray-700">{scrubbedLabel}</span>
+          <span className="flex flex-shrink-0 flex-col items-end leading-tight">
+            <span className="text-[10px] text-gray-400">{scrubbed!.day}</span>
+            <span className="whitespace-nowrap text-[13px] font-medium text-gray-700">{scrubbed!.time}</span>
+          </span>
           <button
             type="button"
             onClick={() => {
