@@ -31,12 +31,6 @@ proposing freely — they inform judgment, they don't replace it.
    Taste calls ("lighter / stronger / nicer") come *after* consistency is in
    place, and are never a reason to diverge from the system.
 
-## Editorial invariant
-
-**Report what a named station or sensor measured. Never a metro-wide verdict,
-headline number, or aggregate.** The scientific-NGO reason and the details are
-in `docs/methodology.md`.
-
 ## Commands
 
 ```bash
@@ -63,7 +57,7 @@ pnpm exec tsc --noEmit   # the type gate
 |---|---|
 | `README.md` | what the platform is, quickstart, the doc index |
 | `docs/architecture.md` | data model, ingestion boundary, home-page flow, API routes, the `field_history` RPC, URL-state model, `/datos` |
-| `docs/methodology.md` | editorial stance, data sources & their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license/citation status |
+| `docs/methodology.md` | how readings are presented, data sources & their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license/citation status |
 | `.ai-style-guide.md` | the visual contract — read before writing **any** UI |
 
 ## Hiding / showing a PurpleAir sensor

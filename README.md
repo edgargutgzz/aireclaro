@@ -70,7 +70,7 @@ Supabase · Chart.js · deployed on Vercel.
 | Doc | Contents |
 |---|---|
 | [`docs/architecture.md`](docs/architecture.md) | data model, ingestion boundary, home-page data flow, API routes, the `field_history` RPC, the URL-state model |
-| [`docs/methodology.md`](docs/methodology.md) | editorial stance, data sources and their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license & citation status |
+| [`docs/methodology.md`](docs/methodology.md) | how readings are presented, data sources and their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license & citation status |
 | [`.ai-style-guide.md`](.ai-style-guide.md) | the visual contract for the UI |
 | [`CLAUDE.md`](CLAUDE.md) | working guidance for AI coding agents |
 

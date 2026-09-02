@@ -81,8 +81,8 @@ const SPARKLINE_COLOR = "#3b82f6";
 
 // The station the estación card shows at rest, before any marker is picked:
 // SIMA "CE" — Monterrey: Obispado, the central government reference station.
-// A named station's own reading, not a metro-wide claim. If it's filtered out
-// (Capas → gobierno off) the card is simply empty.
+// The card shows this one station's own reading; there is no median fallback,
+// so if it's filtered out (Capas → gobierno off) the card is simply empty.
 const DEFAULT_SENSOR_ID = "CE";
 
 
