@@ -1682,6 +1682,14 @@ export default function MapaSensors({
   const sparkLoading = historyLoading && !scrubbing;
   const sparkWindowLabel = scrubbing ? "48 horas" : undefined;
 
+  // The scrubbed hour as prose, for the mobile read-only banner ("Mostrando …").
+  const scrubbedMoment = scrubbing && scrubIndex != null && fieldHistory
+    ? (() => {
+        const d = parseMonterreyNaive(`${fieldHistory.hours[scrubIndex]}:00:00`);
+        return `${getRelativeDayLabel(d)}, ${format(d, "h")}:00 ${format(d, "a")}`;
+      })()
+    : null;
+
   // A sensor's reading for the frame on screen: the scrubbed hour when
   // scrubbing, else the live value. The card headline, the disc and the pulse
   // halo all read through this so they never disagree.
@@ -1985,11 +1993,11 @@ export default function MapaSensors({
   // restores the scrub; a nav-bar "Mapa" click or Back that lands on a
   // ?t=-less URL drops back to live. Our own scrub writes go through the
   // History API and don't move routerSearch, so this never fights a drag.
-  // Desktop only — the scrubber, and the way back, don't exist on mobile.
+  // Mobile has no scrubber control, but it honours ?t= read-only (the banner
+  // below) so a shared link isn't dead on a phone.
   useEffect(() => {
     const key = routerSearch.get("t");
     if (key == null) { setScrubIndex(null); return; }
-    if (typeof window !== "undefined" && window.innerWidth < 768) return;
     if (fieldHistory) {
       const i = fieldHistory.hours.indexOf(key);
       setScrubIndex(i === -1 ? null : i);
@@ -2082,6 +2090,24 @@ export default function MapaSensors({
       {sheetState === 'peek' && freshness && !scrubbing && (
         <div className="pointer-events-none absolute left-4 top-4 z-[45] md:hidden">
           <FreshnessBadge freshness={freshness} compact />
+        </div>
+      )}
+
+      {/* Mobile: read-only ?t= view. There's no scrubber control on a phone, so
+          a shared "look at this moment" link just repaints the field and shows
+          this banner — the time it's pinned to, and one tap back to live. */}
+      {scrubbing && scrubbedMoment && (
+        <div className="absolute inset-x-4 top-4 z-[45] flex items-center gap-2 rounded-xl border border-blue-200/70 bg-white/90 px-3 py-2 text-[13px] shadow-sm backdrop-blur-md md:hidden">
+          <span className="min-w-0 flex-1 truncate text-gray-500">
+            Mostrando <span className="font-medium text-blue-600">{scrubbedMoment}</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setScrubIndex(null)}
+            className="flex-shrink-0 rounded-lg px-2 py-0.5 font-medium text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            Ver en vivo
+          </button>
         </div>
       )}
 
