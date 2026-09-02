@@ -1334,15 +1334,15 @@ function TimeScrubber({
 // Shown in the scrubber's place while the field-history window loads (the
 // aggregation runs a few seconds on a cold cache), so the control appears with
 // the map instead of popping in later. Same shell dimensions, no layout shift
-// on swap.
+// on swap; the pulse is the only "loading" signal, no text.
 function TimeScrubberSkeleton() {
   return (
-    <div className="pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
-      <div className="h-9 w-9 flex-shrink-0 rounded-full border border-gray-200" aria-hidden="true" />
+    <div className="pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex" aria-hidden="true">
+      <div className="h-9 w-9 flex-shrink-0 rounded-full border border-gray-200" />
       <div className="min-w-0 flex-1 pt-3.5">
-        <div className="h-[30px] animate-pulse rounded bg-gray-100 motion-reduce:animate-none" aria-hidden="true" />
+        <div className="h-[30px] animate-pulse rounded bg-gray-100 motion-reduce:animate-none" />
       </div>
-      <span className="flex-shrink-0 whitespace-nowrap text-[13px] font-medium text-gray-400">Cargando histórico…</span>
+      <div className="h-3.5 w-24 flex-shrink-0 animate-pulse rounded bg-gray-100 motion-reduce:animate-none" />
     </div>
   );
 }
