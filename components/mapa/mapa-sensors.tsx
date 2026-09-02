@@ -1948,12 +1948,13 @@ export default function MapaSensors({
     }
   }, [visibleSensors, selectedSensor]);
 
-  // Mirror the current selection into ?sensor= so the view is shareable. Runs
-  // on mount too, which drops the param when ?sensor= named nothing that
-  // resolved. Straight through the History API — see lib/map-url-state.
+  // ?sensor= is consume-once: it seeds the initial selection (a shared "look at
+  // this station" link), then it's stripped from the URL so a reload or a nav
+  // click lands clean — no featured sensor by default. Selecting a marker
+  // afterward does NOT put it back in the URL.
   useEffect(() => {
-    writeSensorParam(selectedSensor?.sensor.sensor_id ?? null);
-  }, [selectedSensor]);
+    writeSensorParam(null);
+  }, []);
 
   // Mirror the Capas filters into ?src= / ?hide= so a filtered view travels.
   // Also runs on mount, which cleans an unknown municipio key or a redundant
