@@ -1816,10 +1816,11 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Opening camera. Runs once: a single flyTo from the zoomed-out start to the
-  // card's station at zoom 13 (a ?sensor= link's target, else Obispado), or the
-  // metro overview if that station isn't in the feed. jumpTo under reduced
-  // motion. essential: true so a backgrounded tab doesn't drop the move.
+  // Opening camera. Runs once. A shared ?sensor= link flies in close (zoom 13)
+  // to the station it's about. A normal load lands on the metro field, centred
+  // on the default station so its pulse is in frame — knowing which station the
+  // card speaks for matters, but going right to it doesn't. jumpTo under
+  // reduced motion. essential: true so a backgrounded tab doesn't drop the move.
   const didOpeningFlyRef = useRef(false);
   useEffect(() => {
     if (!mapLoaded || !map.current || didOpeningFlyRef.current) return;
@@ -1828,14 +1829,11 @@ export default function MapaSensors({
     const urlSensor = initialSensorId != null
       ? sensors.find((s) => s.sensor_id === initialSensorId)
       : undefined;
-    const station = urlSensor
-      ? { lon: urlSensor.lon, lat: urlSensor.lat }
+    const focus = urlSensor
+      ? { center: [urlSensor.lon, urlSensor.lat] as [number, number], zoom: 13 }
       : defaultSelection
-        ? { lon: defaultSelection.sensor.lon, lat: defaultSelection.sensor.lat }
-        : null;
-    const focus = station
-      ? { center: [station.lon, station.lat] as [number, number], zoom: 13 }
-      : { center: OPENING_CENTER, zoom: 10.5 };
+        ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 11 }
+        : { center: OPENING_CENTER, zoom: 10.5 };
 
     if (prefersReducedMotion()) {
       (map.current as any).jumpTo(focus);
