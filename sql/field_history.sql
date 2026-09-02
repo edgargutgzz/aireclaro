@@ -1,9 +1,11 @@
 -- field_history: the whole marker field over a window, hourly buckets, as one
 -- row per sensor with parallel hours[] / pm25[] arrays.
 --
--- Why: the time scrubber needs the full 2026-07-01 -> now window of every
--- sensor at once. As raw measurement rows that's ~250k rows and dozens of
--- paged requests; this aggregates in the database and returns ~200 rows.
+-- Why: the time scrubber needs a rolling ~42-day window of every sensor at
+-- once. As raw measurement rows that's ~250k rows and dozens of paged
+-- requests; this aggregates in the database and returns ~200 rows. (Windows
+-- past ~60 days hit Supabase's request ceiling — the scrubber is bounded and
+-- deep history lives in /datos.)
 --
 -- Run in the Supabase SQL editor. /api/field-history calls it and retries a
 -- statement-timeout (57014) before falling back to a short paged fetch, so

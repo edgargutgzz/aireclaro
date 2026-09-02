@@ -1,12 +1,12 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
-import { monterreyNaiveNow, monterreyHourKey } from "@/lib/monterrey-time";
+import { monterreyNaiveNow, monterreyNaiveHoursAgo, monterreyHourKey } from "@/lib/monterrey-time";
 
-// The whole marker field from a start date to now, bucketed to the hour, so the
-// map can be scrubbed through an episode without a fetch per step. One payload,
-// held client-side; scrubbing is then an array lookup.
+// The whole marker field over a rolling recent window, bucketed to the hour, so
+// the map can be scrubbed through an episode without a fetch per step. One
+// payload, held client-side; scrubbing is then an array lookup.
 //
-//   { hours:  ["2026-07-01T00", …],              ascending hour keys present
+//   { hours:  ["2026-07-22T00", …],              ascending hour keys present
 //     series: { "<sensor_id>": [12, 14, null, …] } pm25 per hour, aligned to hours }
 //
 // Primary path is the field_history() Postgres function (sql/field_history.sql):
@@ -15,21 +15,35 @@ import { monterreyNaiveNow, monterreyHourKey } from "@/lib/monterrey-time";
 // measurement rows, which the row cap limits to roughly the last few days of
 // PurpleAir (SIMA's 16 stations fit whatever the window).
 
-// The reliable continuous data starts here — everything before June 2026 is
-// behind a multi-month ingestion gap (see the SIMA history probe).
-const DEFAULT_SINCE = "2026-07-01T00:00:00";
-const EARLIEST_SINCE = "2026-06-01T00:00:00";
+// A rolling 42-day window: bounded so the aggregation stays well under
+// Supabase's request ceiling (~60 days is where it starts timing out), and long
+// enough to show weekly cycles and any recent episode. Deep history is the
+// /datos section's job, not the scrubber's.
+const WINDOW_DAYS = 42;
+// An explicit ?since= may reach a little further back, but not past what the
+// aggregation can serve before the request ceiling (~60 days).
+const MAX_WINDOW_DAYS = 50;
 const PAGE = 1000;
 const MAX_PAGES = 20;
 
+// Start of the day, N days ago, in naive Monterrey terms. Flooring to midnight
+// keeps the value stable for 24h so the CDN cache + warming cron aren't
+// defeated by a `since` that changes every request.
+function midnightDaysAgo(days: number): string {
+  return `${monterreyNaiveHoursAgo(days * 24).slice(0, 10)}T00:00:00`;
+}
+
 // ?since=YYYY-MM-DD[THH:MM[:SS]], naive Monterrey wall-clock, clamped to
-// [EARLIEST_SINCE, now]. Anything unparseable falls back to DEFAULT_SINCE.
+// [MAX_WINDOW_DAYS ago, now]. Anything absent or unparseable is the rolling
+// 42-day default.
 function resolveSince(raw: string | null): string {
+  const rollingDefault = midnightDaysAgo(WINDOW_DAYS);
   const m = raw?.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2})(?::(\d{2}))?)?$/);
-  if (!m) return DEFAULT_SINCE;
+  if (!m) return rollingDefault;
   const iso = `${m[1]}T${m[2] ?? "00:00"}:${m[3] ?? "00"}`;
-  if (iso < EARLIEST_SINCE) return EARLIEST_SINCE;
-  if (iso > monterreyNaiveNow()) return DEFAULT_SINCE;
+  const floor = midnightDaysAgo(MAX_WINDOW_DAYS);
+  if (iso < floor) return floor;
+  if (iso > monterreyNaiveNow()) return rollingDefault;
   return iso;
 }
 
