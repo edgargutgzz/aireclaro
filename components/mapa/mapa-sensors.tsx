@@ -2595,10 +2595,19 @@ export default function MapaSensors({
               open={openFuente === "Sensores Ciudadanos"}
               onToggle={() => setOpenFuente((v) => (v === "Sensores Ciudadanos" ? null : "Sensores Ciudadanos"))}
             >
-              Sensores de bajo costo que forman parte de{" "}
-              <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
-              , una red global de monitoreo comunitario instalada por
-              ciudadanos, escuelas y organizaciones independientes.
+              <p>
+                Sensores de bajo costo que forman parte de{" "}
+                <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
+                , una red global de monitoreo comunitario instalada por
+                ciudadanos, escuelas y organizaciones independientes.
+              </p>
+              <p className="mt-2">
+                Al ser de bajo costo, no están calibrados como las estaciones
+                oficiales y pueden sobreestimar las PM2.5 cuando hay mucha
+                humedad. Son útiles para ver patrones locales y tendencias en el
+                tiempo, y conviene compararlos con la estación de gobierno más
+                cercana.
+              </p>
             </InfoSection>
             <InfoSection
               title="Estaciones de Gobierno"
