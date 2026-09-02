@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { getPM25Color, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
+import { readSensorParam, writeSensorParam } from "@/lib/map-url-state";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -38,6 +39,31 @@ interface Data {
 interface HistoryPoint {
   pm25: number;
   time_stamp: string;
+}
+
+// What the estación card renders when a marker is picked. Built the same way
+// whether the pick comes from a click or from ?sensor= on load, so both paths
+// go through buildSelection.
+type SelectedSensor = {
+  sensor: Sensor;
+  pm25: number | null;
+  color: string;
+  textColor: string;
+  // Raw, not pre-formatted: the freshness badge needs to work out how old this is.
+  readingAt: string | null;
+};
+
+function buildSelection(sensor: Sensor, data: Data[]): SelectedSensor {
+  const reading = data.find((d) => d.sensor_id === sensor.sensor_id);
+  const pm25 = reading?.pm25 ?? null;
+  const colorInfo = getPM25Color(pm25);
+  return {
+    sensor,
+    pm25,
+    color: colorInfo?.bg ?? "#ffffff",
+    textColor: colorInfo?.text ?? "#ffffff",
+    readingAt: reading?.time_stamp ?? null,
+  };
 }
 
 // Small inline trend chart for the selected sensor's last 48h. Fixed color
@@ -1158,14 +1184,15 @@ export default function MapaSensors({
   const [showSima, setShowSima] = useState(true);
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>([]);
   const [showOccamm, setShowOccamm] = useState(true);
-  const [selectedSensor, setSelectedSensor] = useState<{
-    sensor: Sensor;
-    pm25: number | null;
-    color: string;
-    textColor: string;
-    // Raw, not pre-formatted: the badge needs to work out how old this is.
-    readingAt: string | null;
-  } | null>(null);
+  // The sensor_id named in ?sensor= at page load, resolved once. Seeds the card
+  // selection below and, in the opening-camera effect, where the fly-in settles.
+  const initialSensorId = useRef(readSensorParam()).current;
+
+  const [selectedSensor, setSelectedSensor] = useState<SelectedSensor | null>(() => {
+    if (initialSensorId == null) return null;
+    const sensor = sensors.find((s) => s.sensor_id === initialSensorId);
+    return sensor ? buildSelection(sensor, data) : null;
+  });
   const [sensorHistory, setSensorHistory] = useState<HistoryPoint[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -1407,17 +1434,24 @@ export default function MapaSensors({
     if (!mapLoaded || !map.current || didOpeningFlyRef.current) return;
     didOpeningFlyRef.current = true;
 
-    const target: [number, number] = defaultSensorData
-      ? [defaultSensorData.lon, defaultSensorData.lat]
-      : OPENING_CENTER;
-    const zoom = defaultSensorData ? 13 : 10.5;
+    // A shared ?sensor= link settles the fly-in on that station instead of the
+    // default one — flying to the thing the link is about is the right
+    // entrance, so it reuses the same motion rather than skipping it.
+    const urlSensor = initialSensorId != null
+      ? sensors.find((s) => s.sensor_id === initialSensorId)
+      : undefined;
+    const focus = urlSensor
+      ? { center: [urlSensor.lon, urlSensor.lat] as [number, number], zoom: 13 }
+      : defaultSensorData
+        ? { center: [defaultSensorData.lon, defaultSensorData.lat] as [number, number], zoom: 13 }
+        : { center: OPENING_CENTER, zoom: 10.5 };
 
     if (prefersReducedMotion()) {
-      (map.current as any).jumpTo({ center: target, zoom });
+      (map.current as any).jumpTo(focus);
       return;
     }
-    (map.current as any).flyTo({ center: target, zoom, duration: OPENING_MOVE_MS, essential: true });
-  }, [mapLoaded, defaultSensorData]);
+    (map.current as any).flyTo({ ...focus, duration: OPENING_MOVE_MS, essential: true });
+  }, [mapLoaded, defaultSensorData, sensors, initialSensorId]);
 
   // Build the marker field: one DOM marker per visible sensor with a reading.
   // No clustering. Rebuilt only when the visible set or the readings change,
@@ -1453,10 +1487,6 @@ export default function MapaSensors({
       );
       if (!el) return;
 
-      const colorInfo = getPM25Color(pm25);
-      const color = colorInfo?.bg ?? "#ffffff";
-      const textColor = colorInfo?.text ?? "#ffffff";
-
       el.style.cursor = "pointer";
       el.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -1465,7 +1495,7 @@ export default function MapaSensors({
           setSelectedSensor(null);
           return;
         }
-        setSelectedSensor({ sensor, pm25, color, textColor, readingAt: reading?.time_stamp ?? null });
+        setSelectedSensor(buildSelection(sensor, data));
       });
       // Lift the hovered marker so a click in a dense spot lands on the disc
       // under the cursor, not on whichever hit box mapbox drew last.
@@ -1553,6 +1583,13 @@ export default function MapaSensors({
       setSelectedSensor(null);
     }
   }, [visibleSensors, selectedSensor]);
+
+  // Mirror the current selection into ?sensor= so the view is shareable. Runs
+  // on mount too, which drops the param when ?sensor= named nothing that
+  // resolved. Straight through the History API — see lib/map-url-state.
+  useEffect(() => {
+    writeSensorParam(selectedSensor?.sensor.sensor_id ?? null);
+  }, [selectedSensor]);
 
   // Tapping the map dismisses the sensor sheet on mobile, where that gesture
   // is how you get back to the map. On desktop the card stays on whatever was
