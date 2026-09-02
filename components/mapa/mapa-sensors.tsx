@@ -1182,20 +1182,55 @@ function TimeScrubber({
         return `${getRelativeDayLabel(d)}, ${format(d, "h")}:00 ${format(d, "a")}`;
       })();
 
-  // One bar per hour in that hour's air-quality colour, so an episode reads as
-  // a red patch. Height floored at a 15 μg/m³ reference so a calm stretch isn't
-  // a wall of full-height green.
-  const H = 30;
-  const scaleMax = Math.max(15, ...medianByHour);
-  const barW = 100 / Math.max(1, n);
+  // The context strip: a bar in each slot's air-quality colour, so an episode
+  // reads as a red patch. Past ~3 weeks the hourly bars are sub-pixel and mush,
+  // so it buckets to one bar per day (the day's mean of the hourly medians);
+  // the slider stays hourly either way. Memoised on the series, not the scrub
+  // position — dragging must not re-render ~1500 <rect>s per frame.
+  const strip = useMemo(() => {
+    const H = 30;
+    const daily = n > 480;
+    const scaleMax = Math.max(15, ...medianByHour);
 
-  // Midnights — white dividers, plus a sparse date label above the strip.
-  const dayTicks = hours.flatMap((h, i) =>
-    i > 0 && h.slice(-2) === "00"
-      ? [{ pct: (i / last) * 100, label: format(parseMonterreyNaive(`${h}:00:00`), "d MMM", { locale: es }) }]
-      : [],
-  );
-  const labelStep = Math.max(1, Math.ceil(dayTicks.length / 7));
+    type Bar = { x: number; w: number; v: number };
+    let bars: Bar[];
+    if (daily) {
+      const groups = new globalThis.Map<string, { sum: number; k: number; start: number }>();
+      hours.forEach((h, i) => {
+        const day = h.slice(0, 10);
+        let g = groups.get(day);
+        if (!g) { g = { sum: 0, k: 0, start: i }; groups.set(day, g); }
+        if (medianByHour[i] > 0.4) { g.sum += medianByHour[i]; g.k += 1; }
+      });
+      bars = [...groups.values()].map((g) => ({ x: (g.start / n) * 100, w: (24 / n) * 100, v: g.k ? g.sum / g.k : 0 }));
+    } else {
+      const bw = 100 / Math.max(1, n);
+      bars = medianByHour.map((v, i) => ({ x: i * bw, w: bw, v }));
+    }
+
+    const dayTicks = hours.flatMap((h, i) =>
+      i > 0 && h.slice(-2) === "00"
+        ? [{ pct: (i / last) * 100, label: format(parseMonterreyNaive(`${h}:00:00`), "d MMM", { locale: es }) }]
+        : [],
+    );
+    const labelStep = Math.max(1, Math.ceil(dayTicks.length / 7));
+
+    const svg = (
+      <svg viewBox={`0 0 100 ${H}`} preserveAspectRatio="none" className="pointer-events-none block h-[30px] w-full" aria-hidden="true">
+        {bars.map((b, i) => {
+          if (b.v <= 0.4) return null;
+          const bh = Math.max(1.5, (b.v / scaleMax) * H);
+          return <rect key={i} x={b.x} width={b.w} y={H - bh} height={bh} fill={getPM25Color(b.v)?.bg ?? "#e5e7eb"} />;
+        })}
+        {!daily &&
+          dayTicks.map((t) => (
+            <line key={t.pct} x1={t.pct} x2={t.pct} y1={0} y2={H} stroke="#ffffff" strokeWidth={1} strokeOpacity={0.7} vectorEffect="non-scaling-stroke" />
+          ))}
+      </svg>
+    );
+
+    return { svg, labels: dayTicks.filter((_, i) => i % labelStep === 0) };
+  }, [hours, medianByHour, n, last]);
 
   return (
     <div className="pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
@@ -1224,32 +1259,16 @@ function TimeScrubber({
       )}
 
       <div className="relative min-w-0 flex-1 pt-3.5">
-        {dayTicks.map((t, i) =>
-          i % labelStep === 0 ? (
-            <span
-              key={t.pct}
-              className="pointer-events-none absolute top-0 -translate-x-1/2 whitespace-nowrap text-[9px] leading-none text-gray-400"
-              style={{ left: `${t.pct}%` }}
-            >
-              {t.label}
-            </span>
-          ) : null,
-        )}
-        <svg
-          viewBox={`0 0 100 ${H}`}
-          preserveAspectRatio="none"
-          className="pointer-events-none block h-[30px] w-full"
-          aria-hidden="true"
-        >
-          {medianByHour.map((v, i) => {
-            if (v <= 0.4) return null;
-            const barH = Math.max(1.5, (v / scaleMax) * H);
-            return <rect key={i} x={i * barW} width={barW} y={H - barH} height={barH} fill={getPM25Color(v)?.bg ?? "#e5e7eb"} />;
-          })}
-          {dayTicks.map((t) => (
-            <line key={t.pct} x1={t.pct} x2={t.pct} y1={0} y2={H} stroke="#ffffff" strokeWidth={1} strokeOpacity={0.7} vectorEffect="non-scaling-stroke" />
-          ))}
-        </svg>
+        {strip.labels.map((t) => (
+          <span
+            key={t.pct}
+            className="pointer-events-none absolute top-0 -translate-x-1/2 whitespace-nowrap text-[9px] leading-none text-gray-400"
+            style={{ left: `${t.pct}%` }}
+          >
+            {t.label}
+          </span>
+        ))}
+        {strip.svg}
         <input
           type="range"
           min={0}
@@ -1911,7 +1930,7 @@ export default function MapaSensors({
   // mobile. The ?t= → scrubIndex sync is the routerSearch effect below.
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/field-history?hours=336")
+    fetch("/api/field-history")
       .then((r) => r.json())
       .then((d: FieldHistory) => {
         if (cancelled || !Array.isArray(d?.hours) || !d.series) return;

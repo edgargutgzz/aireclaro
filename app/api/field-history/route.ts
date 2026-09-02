@@ -1,23 +1,37 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
-import { monterreyNaiveHoursAgo, monterreyHourKey } from "@/lib/monterrey-time";
+import { monterreyNaiveNow, monterreyHourKey } from "@/lib/monterrey-time";
 
-// The whole marker field over a recent window, bucketed to the hour, so the map
-// can be scrubbed through an episode without a fetch per step. One payload, held
-// client-side; scrubbing is then an array lookup.
+// The whole marker field from a start date to now, bucketed to the hour, so the
+// map can be scrubbed through an episode without a fetch per step. One payload,
+// held client-side; scrubbing is then an array lookup.
 //
-//   { hours:  ["2026-08-19T00", …],              ascending hour keys present
+//   { hours:  ["2026-07-01T00", …],              ascending hour keys present
 //     series: { "<sensor_id>": [12, 14, null, …] } pm25 per hour, aligned to hours }
 //
 // Primary path is the field_history() Postgres function (sql/field_history.sql):
 // it aggregates in the database and returns ~180 rows regardless of window
 // length. If that function isn't installed yet, we fall back to paging raw
-// measurement rows, which the row cap limits to roughly the last four days.
+// measurement rows, which the row cap limits to roughly the last few days of
+// PurpleAir (SIMA's 16 stations fit whatever the window).
 
-const DEFAULT_HOURS = 24 * 14; // two weeks
-const MAX_HOURS = 24 * 31;
+// The reliable continuous data starts here — everything before June 2026 is
+// behind a multi-month ingestion gap (see the SIMA history probe).
+const DEFAULT_SINCE = "2026-07-01T00:00:00";
+const EARLIEST_SINCE = "2026-06-01T00:00:00";
 const PAGE = 1000;
 const MAX_PAGES = 20;
+
+// ?since=YYYY-MM-DD[THH:MM[:SS]], naive Monterrey wall-clock, clamped to
+// [EARLIEST_SINCE, now]. Anything unparseable falls back to DEFAULT_SINCE.
+function resolveSince(raw: string | null): string {
+  const m = raw?.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2})(?::(\d{2}))?)?$/);
+  if (!m) return DEFAULT_SINCE;
+  const iso = `${m[1]}T${m[2] ?? "00:00"}:${m[3] ?? "00"}`;
+  if (iso < EARLIEST_SINCE) return EARLIEST_SINCE;
+  if (iso > monterreyNaiveNow()) return DEFAULT_SINCE;
+  return iso;
+}
 
 // Keyed by String(sensor_id): PurpleAir ids are numeric, SIMA station ids are
 // string codes ("SE", "NO", "Norte2"…).
@@ -94,7 +108,9 @@ async function viaPages(
 
   for (const [id, buckets] of acc) {
     const out = new Map<string, number>();
-    for (const [key, { sum, n }] of buckets) out.set(key, Math.round((sum / n) * 10) / 10);
+    // Integer μg/m³: the field feed drives banded markers and a banded median
+    // strip, so a decimal is just payload.
+    for (const [key, { sum, n }] of buckets) out.set(key, Math.round(sum / n));
     perSensor.set(id, out);
   }
   return { perSensor, hourKeys };
@@ -102,11 +118,7 @@ async function viaPages(
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const hours = Math.min(
-    MAX_HOURS,
-    Math.max(6, Number(searchParams.get("hours")) || DEFAULT_HOURS),
-  );
-  const since = monterreyNaiveHoursAgo(hours);
+  const since = resolveSince(searchParams.get("since"));
 
   const supabase = await createClient();
 

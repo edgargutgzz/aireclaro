@@ -31,7 +31,7 @@ as $$
       m.sensor_id::text as sensor_id,
       'purpleAir'::text as source,
       to_char(date_trunc('hour', m.time_stamp), 'YYYY-MM-DD"T"HH24') as hour_key,
-      round(avg(m.pm25)::numeric, 1) as pm25
+      round(avg(m.pm25)::numeric) as pm25
     from purpleair_mediciones m
     where m.time_stamp >= since_ts and m.pm25 > 0.4
     group by m.sensor_id, date_trunc('hour', m.time_stamp)
@@ -42,7 +42,7 @@ as $$
       m.sensor_id::text as sensor_id,
       'sima'::text      as source,
       to_char(date_trunc('hour', m.time_stamp), 'YYYY-MM-DD"T"HH24') as hour_key,
-      round(avg(m.pm25)::numeric, 1) as pm25
+      round(avg(m.pm25)::numeric) as pm25
     from sima_mediciones m
     where m.time_stamp >= since_ts and m.pm25 > 0.4
     group by m.sensor_id, date_trunc('hour', m.time_stamp)
