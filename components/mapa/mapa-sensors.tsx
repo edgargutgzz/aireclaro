@@ -1234,7 +1234,9 @@ function TimeScrubber({
         {bars.map((b, i) => {
           if (b.v <= 0.4) return null;
           const bh = Math.max(1.5, (b.v / scaleMax) * H);
-          return <rect key={i} x={b.x} width={b.w} y={H - bh} height={bh} fill={getPM25Color(b.v)?.bg ?? "#e5e7eb"} />;
+          // The marker fill (calmed colour), not the pure NOM colour — the
+          // strip reads as "the map's discs, small", the legend key keeps pure.
+          return <rect key={i} x={b.x} width={b.w} y={H - bh} height={bh} fill={getMarkerFill(b.v) ?? "#e5e7eb"} />;
         })}
         {!daily &&
           dayTicks.map((t) => (
@@ -1276,7 +1278,7 @@ function TimeScrubber({
         {strip.labels.map((t) => (
           <span
             key={t.pct}
-            className="pointer-events-none absolute top-0 -translate-x-1/2 whitespace-nowrap text-[9px] leading-none text-gray-400"
+            className="pointer-events-none absolute top-0 -translate-x-1/2 whitespace-nowrap text-[10px] leading-none text-gray-500"
             style={{ left: `${t.pct}%` }}
           >
             {t.label}
@@ -1292,15 +1294,19 @@ function TimeScrubber({
             const i = Number(e.target.value);
             onIndex(i >= last ? null : i);
           }}
-          aria-label="Hora"
-          className="absolute inset-x-0 bottom-0 h-[30px] w-full cursor-pointer appearance-none bg-transparent focus-visible:outline-none [&::-moz-range-thumb]:h-[30px] [&::-moz-range-thumb]:w-[3px] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-gray-900 [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-[30px] [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:h-[30px] [&::-webkit-slider-thumb]:w-[3px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-900"
+          aria-label="Hora del mapa"
+          aria-valuetext={live ? "En vivo" : scrubbedLabel ?? undefined}
+          className="time-scrubber absolute inset-x-0 bottom-0"
         />
       </div>
 
       {live ? (
         freshness ? (
           <span className="flex flex-shrink-0 items-center gap-1.5">
-            <FreshnessDot status={freshness.status} />
+            {/* Fresh data needs no dot — the time says it's current. The dot
+                stays for delayed/stale, where "how behind is the pipeline" is
+                worth flagging. */}
+            {freshness.status !== "fresh" && <FreshnessDot status={freshness.status} />}
             <FreshnessText freshness={freshness} compact />
           </span>
         ) : (
@@ -1308,7 +1314,7 @@ function TimeScrubber({
         )
       ) : (
         <>
-          <span className="flex-shrink-0 whitespace-nowrap text-[13px] font-medium text-blue-600">{scrubbedLabel}</span>
+          <span className="flex-shrink-0 whitespace-nowrap text-[13px] font-medium text-gray-700">{scrubbedLabel}</span>
           <button
             type="button"
             onClick={() => {
