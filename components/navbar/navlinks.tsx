@@ -10,14 +10,14 @@ import { Map, BarChart3, Info } from "lucide-react";
 // inside a <nav>.
 const links = [
   { name: "Mapa", href: "/", icon: Map, pending: false },
-  // Datos and Acerca are built but not ready to show, so both bars list them
-  // without offering them. They render as a plain <span>: nothing in the tab
-  // order, nothing that looks pressable, and no control that swallows a tap.
-  // The "not yet" state is always on screen rather than behind a tap or a
-  // timer, said two ways depending on room: the "Próx." badge on the desktop
-  // bar, a bare dot on the mobile bottom bar, where three labels plus a badge
-  // do not fit three-across.
-  { name: "Datos", href: "/datos", icon: BarChart3, pending: true },
+  { name: "Datos", href: "/datos", icon: BarChart3, pending: false },
+  // Acerca is built but not ready to show, so both bars list it without
+  // offering it. It renders as a plain <span>: nothing in the tab order,
+  // nothing that looks pressable, and no control that swallows a tap. The
+  // "not yet" state is always on screen rather than behind a tap or a timer,
+  // said two ways depending on room: the "Próx." badge on the desktop bar, a
+  // bare dot on the mobile bottom bar, where three labels plus a badge do not
+  // fit three-across.
   { name: "Acerca", href: "/acerca", icon: Info, pending: true },
 ];
 
@@ -29,17 +29,13 @@ const links = [
 const pill =
   "flex w-full items-center justify-center gap-2 rounded-full border border-transparent px-2 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 md:w-auto md:justify-start md:px-5 md:py-2.5";
 
-// A filled current-page pill marks a choice. Datos and Acerca are on screen
-// again but still cannot be entered, so Mapa is the only place the nav can
-// take you and the white fill would mark a choice that is not on offer. Weight
-// and ink still say "current", the two pending pills say it from the other
-// side by being grayed and badged, and aria-current says it to assistive tech.
-// The fill comes back on its own the day a second link goes live.
-//
-// This used to carry a second argument, that a filled pill is a *surface* and
-// its edge would land on the 24px rail while the bare logo sits on the 44px
-// text rail. That one is moot now: Mapa is no longer the last thing in the bar,
-// so it is Acerca's padding that sets the header's right inset.
+// A filled current-page pill marks a choice, and now that Mapa and Datos are
+// both live the nav can take you to more than one place, so the fill is back:
+// the current pill gets the white glass surface on desktop, a blue wash on the
+// mobile bottom bar. Acerca stays grayed and badged. `soloOnDesktop` is the
+// switch — it flips false the moment a second link goes live, and drops back to
+// the fill-less "weight + ink + aria-current" treatment if we ever return to a
+// single live link.
 const soloOnDesktop = links.filter((link) => !link.pending).length === 1;
 
 export default function Navlinks() {
@@ -91,13 +87,11 @@ export default function Navlinks() {
               href={link.href}
               aria-current={isCurrent ? "page" : undefined}
               className={clsx(pill, {
-                // While Mapa is the only live link, "current" is the same on
-                // both bars: darker ink, font-semibold (below) and
-                // aria-current, no fill. A selected fill marks a choice that
-                // is not on offer, and on desktop it also breaks the header's
-                // rail alignment. See soloOnDesktop above.
+                // Fallback for a single live link: "current" is just darker
+                // ink, font-semibold (below) and aria-current, no fill. See
+                // soloOnDesktop above.
                 "text-gray-700 md:hover:bg-black/[0.04]": isCurrent && soloOnDesktop,
-                // The fill returns on both the day a second link ships.
+                // Two or more live links: the current pill takes a fill.
                 // Desktop takes the white glass pill (no backdrop-blur: the
                 // stone-50 header behind it is opaque, nothing to blur).
                 // The mobile bottom bar is itself glass, so white would
