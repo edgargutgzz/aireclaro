@@ -1541,17 +1541,6 @@ export default function MapaSensors({
   // Past today the label picks up the day, so "11:00 AM" can never be
   // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
-    // Scrubbed: the badge names the hour on screen and goes neutral, so a past
-    // frame is never mistaken for a late live reading.
-    if (scrubbing && scrubIndex != null) {
-      const reading = parseMonterreyNaive(`${fieldHistory!.hours[scrubIndex]}:00:00`);
-      const hour = `${format(reading, "h")}:00 ${format(reading, "a")}`;
-      return {
-        dateTime: reading.toISOString(),
-        when: `${getRelativeDayLabel(reading).toLowerCase()} ${hour}`,
-        status: "historical",
-      };
-    }
     if (now === null) return null;
     const onScreen = selectedSensor?.readingAt ?? defaultSensorData?.readingAt ?? null;
     const reading = onScreen ? new Date(onScreen) : latestReading;
@@ -1565,7 +1554,7 @@ export default function MapaSensors({
       when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
       status: age < 90 * 60 * 1000 ? "fresh" : age < 6 * 60 * 60 * 1000 ? "delayed" : "stale",
     };
-  }, [scrubbing, scrubIndex, fieldHistory, selectedSensor, defaultSensorData, latestReading, now]);
+  }, [selectedSensor, defaultSensorData, latestReading, now]);
 
   const defaultPm25 = defaultSensorData?.pm25 ?? null;
   const defaultName = defaultSensorData?.name ?? null;
@@ -1947,7 +1936,7 @@ export default function MapaSensors({
           map, just under the top bar. It hides with the right-edge buttons once
           the sheet is expanded. Low-priority chrome, so it runs small and
           shadowless. Desktop pins the full badge to the foot of the left rail. */}
-      {sheetState === 'peek' && freshness && (
+      {sheetState === 'peek' && freshness && !scrubbing && (
         <div className="pointer-events-none absolute left-4 top-4 z-[45] md:hidden">
           <FreshnessBadge freshness={freshness} compact />
         </div>
@@ -2222,8 +2211,10 @@ export default function MapaSensors({
         {/* The freshness badge rides the bottom of this column, pinned with
             mt-auto so it holds the same corner whether the card above is open,
             shut or absent. Desktop only; on mobile the same badge floats at the
-            top-centre of the map (see the mobile controls above). */}
-        {freshness && (
+            top-centre of the map (see the mobile controls above). Hidden while
+            scrubbing — the scrubber below carries the time on screen, and a
+            live-freshness dot next to a historical frame only muddies it. */}
+        {freshness && !scrubbing && (
           <div className="flex-shrink-0 md:mt-auto">
             <FreshnessBadge freshness={freshness} />
           </div>
@@ -2435,7 +2426,7 @@ export default function MapaSensors({
       {/* Time scrubber — desktop only. Repaints the whole marker field at the
           chosen hour; "Ahora" returns to live. */}
       {fieldHistory && fieldHistory.hours.length > 1 && (
-        <div className="pointer-events-none absolute bottom-6 left-1/2 z-20 hidden -translate-x-1/2 md:block">
+        <div className="pointer-events-none absolute bottom-12 left-1/2 z-20 hidden -translate-x-1/2 md:block">
           <TimeScrubber
             hours={fieldHistory.hours}
             index={scrubIndex}
