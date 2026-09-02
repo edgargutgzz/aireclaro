@@ -1962,96 +1962,6 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Mobile: sensor info panel — slides up from bottom. It sits above the
-          bottom nav (bottom: 3.5rem), so translateY(100%) parks it with its top
-          edge still ~3.5rem above the viewport floor rather than fully off
-          screen. Without pointer-events-none that invisible strip sat at z-48,
-          over the Capas sheet, and swallowed the swipe that should scroll the
-          municipios list. */}
-      <div
-        className={`fixed left-0 right-0 z-[48] flex flex-col rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden ${selectedSensor ? '' : 'pointer-events-none'}`}
-        style={{
-          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
-          height: '62dvh',
-          transform: selectedSensor ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
-      >
-        {selectedSensor && (() => {
-          const { sensor, pm25, textColor } = selectedSensor;
-          const isSima = sensor.source === "sima";
-          const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-          const sensorQuality = getQualityInfo(pm25);
-          return (
-            <>
-              {/* Drag handle + station name — the name rides up here as the
-                  sheet's title, the same role the header gives it on the
-                  desktop card, instead of hiding behind a disclosure. */}
-              <div
-                className="flex-shrink-0 cursor-grab select-none px-5 pb-3 pt-3"
-                onClick={() => setSelectedSensor(null)}
-              >
-                <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-                <p className="truncate text-base font-medium text-gray-700">{sensorName}</p>
-              </div>
-              <div
-                className="relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8"
-              >
-                {/* Body mirrors the desktop station card: a source line closed
-                    off by a rule, then the reading and its 48h trace, then the
-                    recommendations behind a rule. */}
-                <div className="flex flex-col gap-5 pt-1">
-                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
-                    <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
-                      {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
-                      <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
-                      }}
-                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                      aria-label="Copiar coordenadas"
-                    >
-                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    <div>
-                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? sensorQuality)?.textColor ?? textColor }}>
-                          {(hoveredQuality ?? sensorQuality)?.label ?? "—"}
-                        </span>
-                        {(hoveredHistory?.pm25 ?? pm25) !== null && (
-                          <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
-                            <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? pm25)}</span> μg/m³ PM2.5
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      {historyLoading ? <SparklineSkeleton /> : <Sparkline key={selectedSensor.sensor.sensor_id} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn />}
-                    </div>
-                  </div>
-
-                  {sensorQuality && (
-                    <div className="relative z-[1] border-t border-gray-100 pt-5">
-                      <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} defaultOpen />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </>
-          );
-        })()}
-      </div>
-
       {/* Bottom sheet backdrop — mobile only */}
       <div
         className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
@@ -2060,7 +1970,26 @@ export default function MapaSensors({
         onClick={() => setSheetState('peek')}
       />
 
-      {/* Bottom sheet — 3-state: peek / mid / full — mobile only */}
+      {/* Bottom sheet — peek / mid — mobile only. One sheet, the mobile twin of
+          the desktop station card: its subject is the picked station when
+          there is one, otherwise the metro-wide reading. Tapping a marker
+          swaps the subject but leaves the sheet at whatever height it was,
+          exactly as the desktop card only re-titles its header until you
+          open it. */}
+      {(() => {
+        const sel = selectedSensor;
+        const selSensor = sel?.sensor;
+        const selIsSima = selSensor?.source === "sima";
+        const selName = selSensor
+          ? (selIsSima && selSensor.nombre_display ? selSensor.nombre_display : selSensor.nombre)
+          : null;
+        const selQuality = sel ? getQualityInfo(sel.pm25) : null;
+
+        // What the peek row and the collapsed sheet advertise.
+        const peekName = sel ? selName : (defaultName ?? "Zona Metropolitana de Monterrey");
+        const peekQuality = sel ? selQuality : qualityInfo;
+
+        return (
       <div
         className={`fixed left-0 right-0 z-[40] rounded-t-3xl flex flex-col md:hidden overflow-hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 ${sheetState === 'peek' ? 'bg-white/80 backdrop-blur-md border-t border-white/60' : 'bg-white'}`}
         style={{
@@ -2076,27 +2005,79 @@ export default function MapaSensors({
           onClick={handleSheetTap}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          <div className="flex items-baseline justify-between gap-3">
-            {sheetState === 'peek' && (
+          {sheetState === 'peek' && (
+            <div className="flex items-baseline justify-between gap-3">
               <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
-                {defaultName ?? "Zona Metropolitana de Monterrey"}
+                {peekName}
               </span>
-            )}
-            {sheetState === 'peek' && (qualityInfo ? (
-              <span className="flex-shrink-0 text-2xl font-bold" style={{ color: qualityInfo.textColor }}>
-                {qualityInfo.label}
-              </span>
-            ) : (
-              <span className="flex-shrink-0 text-sm text-gray-300">—</span>
-            ))}
-          </div>
+              {peekQuality ? (
+                <span className="flex-shrink-0 text-2xl font-bold" style={{ color: peekQuality.textColor }}>
+                  {peekQuality.label}
+                </span>
+              ) : (
+                <span className="flex-shrink-0 text-sm text-gray-300">—</span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Scrollable content — visible when expanded to mid */}
         <div
           className={`relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
         >
-          {qualityInfo && (
+          {sel ? (
+            /* Picked station — the desktop card body: name heading, a source
+               line closed off by a rule, the reading and its 48h trace, then
+               the recommendations behind a rule. */
+            <div className="flex flex-col gap-5">
+              <p className="truncate text-base font-medium text-gray-700">{selName}</p>
+
+              <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
+                <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
+                  {(() => { const SourceIcon = getSourceIcon(selIsSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
+                  <span className="truncate">{getSourceLabel(selIsSima, selSensor!.red)}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${selSensor!.lat.toFixed(5)}, ${selSensor!.lon.toFixed(5)}`);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  }}
+                  className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                  aria-label="Copiar coordenadas"
+                >
+                  {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+                  <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <div>
+                  <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: (hoveredQuality ?? selQuality)?.textColor ?? sel.textColor }}>
+                      {(hoveredQuality ?? selQuality)?.label ?? "—"}
+                    </span>
+                    {(hoveredHistory?.pm25 ?? sel.pm25) !== null && (
+                      <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
+                        <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? sel.pm25)}</span> μg/m³ PM2.5
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  {historyLoading ? <SparklineSkeleton /> : <Sparkline key={selSensor!.sensor_id} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn />}
+                </div>
+              </div>
+
+              {selQuality && (
+                <div className="relative z-[1] border-t border-gray-100 pt-5">
+                  <HealthRecommendations info={selQuality} onShowInfo={() => setCuidarmeQuality(selQuality)} defaultOpen />
+                </div>
+              )}
+            </div>
+          ) : qualityInfo && (
             <>
               <div className="mb-5">
                 <div className="mb-2 flex items-center justify-between">
@@ -2150,6 +2131,8 @@ export default function MapaSensors({
           )}
         </div>
       </div>
+        );
+      })()}
 
       {/* Recomendaciones de salud popup — the same dialog as the rest, rather
           than a bare div: it was the one popup with no name for assistive
