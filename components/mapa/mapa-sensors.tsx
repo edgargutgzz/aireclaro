@@ -2079,11 +2079,7 @@ export default function MapaSensors({
                 </div>
                 {hasStation && (
                   <div>
-                    {/* Opening the sheet is the mobile stand-in for the desktop
-                        card appearing, so the trace wipes on every expand:
-                        `sheetState` sits in the key to force a remount, and
-                        drives `animateIn` so the wipe only runs once open. */}
-                    {historyLoading ? <SparklineSkeleton /> : <Sparkline key={`${sparklineKey ?? 'default'}-${sheetState}`} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn={sheetState === 'mid'} />}
+                    {historyLoading ? <SparklineSkeleton /> : <Sparkline key={sparklineKey} data={sensorHistory} onHoverChange={setHoveredHistory} animateIn={Boolean(sel)} />}
                   </div>
                 )}
               </div>
