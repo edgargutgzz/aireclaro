@@ -2124,6 +2124,15 @@ export default function MapaSensors({
                 )}
               </div>
 
+              {/* Trend sparkline — only with a station behind the reading: the
+                  bare metro median is a cross-sensor figure with no single
+                  48h series to plot. Matches the desktop default card. */}
+              {defaultName && (
+                <div className="mb-5">
+                  {historyLoading ? <SparklineSkeleton /> : <Sparkline data={sensorHistory} onHoverChange={setHoveredHistory} />}
+                </div>
+              )}
+
               {/* Recommendations — open by default here, see HealthRecommendations */}
               <HealthRecommendations info={qualityInfo} onShowInfo={() => setCuidarmeQuality(qualityInfo)} defaultOpen />
 
