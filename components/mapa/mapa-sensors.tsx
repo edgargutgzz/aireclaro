@@ -2009,39 +2009,38 @@ export default function MapaSensors({
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
         }}
       >
-        {/* Drag handle + peek summary */}
+        {/* Drag handle + title. The name stays pinned here whether the sheet
+            is peeking or open, the same role the header gives it on the
+            desktop card; the reading only tags along while collapsed, since
+            that is the sheet's resting state and it has to carry a value. */}
         <div
           className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
           onClick={handleSheetTap}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300/60" />
-          {sheetState === 'peek' && (
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
-                {name}
+          <div className="flex items-baseline justify-between gap-3">
+            <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">
+              {name}
+            </span>
+            {sheetState === 'peek' && (quality ? (
+              <span className="flex-shrink-0 text-2xl font-bold" style={{ color: quality.textColor }}>
+                {quality.label}
               </span>
-              {quality ? (
-                <span className="flex-shrink-0 text-2xl font-bold" style={{ color: quality.textColor }}>
-                  {quality.label}
-                </span>
-              ) : (
-                <span className="flex-shrink-0 text-sm text-gray-300">—</span>
-              )}
-            </div>
-          )}
+            ) : (
+              <span className="flex-shrink-0 text-sm text-gray-300">—</span>
+            ))}
+          </div>
         </div>
 
         {/* Scrollable content — visible when expanded to mid. Same body for a
-            picked station and the default reading: name heading, a source
-            line closed off by a rule, the reading and its 48h trace, then
-            the recommendations behind a rule. Mirrors the desktop card. */}
+            picked station and the default reading: a source line closed off
+            by a rule, the reading and its 48h trace, then the recommendations
+            behind a rule. Mirrors the desktop card. */}
         <div
-          className={`relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
+          className={`relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-2 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
         >
           {(sel || qualityInfo) && (
             <div className="flex flex-col gap-5">
-              <p className="truncate text-base font-medium text-gray-700">{name}</p>
-
               <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
                 <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
                   {hasStation && (() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
@@ -2093,6 +2092,7 @@ export default function MapaSensors({
             </div>
           )}
         </div>
+        <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
       </div>
         );
       })()}
