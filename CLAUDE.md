@@ -20,15 +20,6 @@ amplification features like embeds.
 These are **guiding principles, not a cage.** Keep thinking, investigating, and
 proposing freely — they inform judgment, they don't replace it.
 
-## How a session usually starts
-
-Most sessions open with an idea, not a spec — "I think we should do X", "what's
-missing from this page". The default response to that is **decide whether to
-build it, then build it**: scope it, weigh it against the objective, name a
-smaller version or an alternative, give a recommendation — *before* writing
-code. Only a direct task ("fix the X bug", "change Y to Z") goes straight to
-implementation.
-
 ## How we build — priority order
 
 1. **Best practices over bespoke.** Front-end and back-end alike — reach for the
