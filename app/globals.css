@@ -23,18 +23,38 @@
    does not touch. The anchor half of mapbox's transform is translate(-50%,
    -50%), a percentage of the element's own box, so the marker centres itself.
 
-   One size at every zoom, 27px. Sizing by *zoom* was tried and taken back out:
+   One size at every zoom. Sizing by *zoom* was tried and taken back out:
    shrinking the disc at metro zoom cost the marker its identity, reading as
    basemap furniture. A flat size at every zoom is a different lever: the rim +
    white ring + double shadow below (added after that experiment) carry the
    "this is a sensor" read that a bare shrunk disc lost. 32 was the first flat
    value; 27, paired with a heavier 2px white ring and a matte (un-glossed)
    fill, packs the basin as a field of countable instrument dots rather than
-   one glossy mass, without any disc losing its own edge. */
+   one glossy mass, without any disc losing its own edge.
+
+   Size then splits by *network*, not by zoom and not by value: SIMA reference
+   stations hold this 27px disc at 75% rest alpha; citizen (PurpleAir) discs
+   get `.sensor-marker--citizen` below — 24px and 65% alpha — so the calibrated
+   reference field reads as the spine and the uncorrected citizen field (not
+   methodologically comparable, see docs/methodology) as texture around it.
+   Keyed on provenance, independent of the PM2.5 reading, so it does not bias
+   the render — the same axis the `--sima` z-index rule already uses. */
 .sensor-marker {
   position: relative;
   width: 27px;
   height: 27px;
+}
+
+/* Citizen (PurpleAir) discs: one step lighter than the SIMA reference field.
+   24px vs 27, and 65% rest alpha vs 75% (via --marker-rest-alpha, read by
+   __dot below). Nothing else changes — the rim, white ring, double shadow,
+   hover grow and selected treatment are all shared, so a selected citizen
+   disc still goes solid and scales like any other. Same specificity as the
+   base rule, so this must stay after it in source order. */
+.sensor-marker--citizen {
+  width: 24px;
+  height: 24px;
+  --marker-rest-alpha: 65%;
 }
 
 /* No marker prints its reading. Colour is the ambient signal across the whole
@@ -65,10 +85,11 @@
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
-  /* Fill comes in as a var so CSS owns the alpha: a resting disc is held at
-     75% so where discs pile up in the basin the overlap reads as denser
-     colour instead of one disc masking another. The selected disc (below)
-     takes it back to solid.
+  /* Fill comes in as a var so CSS owns the alpha: a resting SIMA disc is held
+     at 75% so where discs pile up in the basin the overlap reads as denser
+     colour instead of one disc masking another; citizen discs rest lower, at
+     --marker-rest-alpha 65% (see the network-weight note above). The selected
+     disc (below) takes it back to solid.
 
      Discs are matte, no gloss, resting and selected alike. A highlight read
      as candy once forty of them packed the basin; the rim + white ring +
@@ -76,7 +97,7 @@
      surface in the app (Capas panel, Actualizado chip, nav pills) is
      shadow-sm + blur and nothing more. The selected disc separates by size,
      an opaque fill, a taller lift and its pulse (below), not by a finish. */
-  background: color-mix(in srgb, var(--marker-fill) 75%, transparent);
+  background: color-mix(in srgb, var(--marker-fill) var(--marker-rest-alpha, 75%), transparent);
   /* Rim then lift. The rim is two hairlines against the border box: the
      level's ink so a pale fill holds its edge on pale terrain, then a 2px
      white ring so the marker separates from whatever is under it. The white
@@ -105,11 +126,11 @@
 
 /* Selected. Leads by *size* and the pulse, nothing else: a bigger disc
    (--dot-scale, past the field's 1.12 hover), an opaque fill where the field
-   rests at 75%, a taller two-part lift, and the halo in the sensor's own
-   air-quality tone. No number, no gloss, no fill-ring, no accent ring, no
-   core — every treatment the marker ever accreted is gone. The :hover selector
-   is here so hovering the active marker does not knock it back down to the
-   field's 1.12 hover scale. */
+   rests translucent (75% SIMA, 65% citizen), a taller two-part lift, and the
+   halo in the sensor's own air-quality tone. No number, no gloss, no fill-ring,
+   no accent ring, no core — every treatment the marker ever accreted is gone.
+   The :hover selector is here so hovering the active marker does not knock it
+   back down to the field's 1.12 hover scale. */
 .sensor-marker--selected .sensor-marker__dot,
 .sensor-marker--selected:hover .sensor-marker__dot {
   --dot-scale: 1.25;
@@ -121,8 +142,9 @@
     0 7px 18px rgba(0, 0, 0, 0.18);
 }
 
-/* Government (SIMA) reference stations. The disc, fill and size stay identical
-   to the citizen field — a squircle for SIMA was built and pulled, and a glyph
+/* Government (SIMA) reference stations. Same disc *shape* as the citizen field
+   (fuller: 27px / 75% alpha vs the citizen 24px / 65% — see .sensor-marker--citizen)
+   — a squircle for SIMA was built and pulled, and a glyph
    *inside* the disc is the PM2.5-number problem again (no single ink survives
    all five fills). Instead a small badge sits on the disc's upper-right, mostly
    over it but breaking the edge so it reads as attached and floating: the

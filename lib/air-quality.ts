@@ -98,6 +98,12 @@ export const HOVER_MARKER_Z = 7;
 // PM2.5-number problem again. The badge is a child of the dot so it tracks the
 // selected disc's scale and lift; the network is also on the estación card, in
 // Capas → Fuente, and in this button's aria-label.
+//
+// The two networks also split by weight: SIMA keeps `.sensor-marker`'s 27px
+// disc at 75% rest alpha; citizen sensors get `.sensor-marker--citizen`, which
+// globals.css takes down to 24px / 65% so the calibrated reference field reads
+// as the spine and the uncorrected PurpleAir field as texture around it. Keyed
+// on provenance, not on the reading, so it does not bias the render.
 export const createMarker = (pm25: number | null, label?: string, isSima = false): HTMLElement | null => {
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
@@ -112,7 +118,7 @@ export const createMarker = (pm25: number | null, label?: string, isSima = false
   // sits behind with no stacking tricks at all.
   const el = document.createElement("button");
   el.type = "button";
-  el.className = isSima ? "sensor-marker sensor-marker--sima" : "sensor-marker";
+  el.className = isSima ? "sensor-marker sensor-marker--sima" : "sensor-marker sensor-marker--citizen";
   if (label) el.setAttribute("aria-label", label);
   el.style.border = "none";
   el.style.padding = "0";
