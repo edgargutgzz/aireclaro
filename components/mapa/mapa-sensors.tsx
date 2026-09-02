@@ -1884,8 +1884,14 @@ export default function MapaSensors({
             return;
           }
           setSelectedSensor(buildSelection(sensor, data));
-          // Mobile: open the sheet on the detail the tap asked for.
-          if (!isDesktop) setSheetState("mid");
+          // Mobile: don't touch the sheet height. A fresh tap from `peek` just
+          // swaps the subject there — the peek row already carries the name and
+          // the quality word, which is the whole "what is this" — and the map
+          // stays clear for scanning disc to disc. If the sheet is already at
+          // `mid` (the user committed to reading detail) it stays there and the
+          // subject swaps in place. Opening to `mid` on every tap buried the
+          // disc under a 62dvh panel and turned field-scanning into
+          // tap/dismiss/tap.
         });
         // Lift the hovered marker so a click in a dense spot lands on the disc
         // under the cursor, not on whichever hit box mapbox drew last.
