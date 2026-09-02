@@ -1235,9 +1235,10 @@ function TimeScrubber({
         {bars.map((b, i) => {
           if (b.v <= 0.4) return null;
           const bh = Math.max(1.5, (b.v / scaleMax) * H);
-          // The marker fill (calmed colour), not the pure NOM colour — the
-          // strip reads as "the map's discs, small", the legend key keeps pure.
-          return <rect key={i} x={b.x} width={b.w} y={H - bh} height={bh} fill={getMarkerFill(b.v) ?? "#e5e7eb"} />;
+          // The marker fill (calmed colour), held translucent like a resting
+          // disc — the strip is secondary context, so it sits a touch lighter
+          // than the map's discs. The pure NOM colour stays on the legend key.
+          return <rect key={i} x={b.x} width={b.w} y={H - bh} height={bh} fill={getMarkerFill(b.v) ?? "#e5e7eb"} fillOpacity={0.68} />;
         })}
         {!daily &&
           dayTicks.map((t) => (
