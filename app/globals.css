@@ -158,6 +158,17 @@
   height: 10px;
 }
 
+/* SIMA stations always sit above the citizen field where discs overlap: they
+   are the reference-grade instruments and should never be buried under a
+   community sensor in a knot. A resting z of 3 clears the citizen field (no
+   z-index, so 0) while staying under ACTIVE_MARKER_Z (6) and HOVER_MARKER_Z
+   (7) — both set inline by the map component and so beating this rule — so a
+   selected or hovered citizen disc still lifts over a SIMA one as before, and
+   3 < 10 keeps every marker below the floating panels. */
+.sensor-marker--sima {
+  z-index: 3;
+}
+
 /* The halo, expanding out from behind the circle while a sensor is selected,
    in that sensor's air-quality tone. */
 .sensor-marker__pulse {
