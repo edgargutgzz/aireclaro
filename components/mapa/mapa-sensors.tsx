@@ -1303,29 +1303,32 @@ function TimeScrubber({
         />
       </div>
 
-      {/* Fixed width, right-aligned. The scrubbed state carries an extra "Ahora"
-          button that the live state drops; without a reserved box the track
-          would widen by ~50px the instant a drag crosses into live at the right
-          end, yanking the strip and thumb out from under the cursor. Both
-          states now lay out inside the same footprint. */}
+      {/* Fixed width, and filled in both states. The scrubbed state carries an
+          "Ahora" button; the live state fills the same spot with an "En vivo"
+          tag rather than leaving it blank. Without the reserved box the track
+          would widen by ~50px the instant a drag crossed into live at the right
+          end, yanking the strip and thumb out from under the cursor; without
+          the live-state tag that reserved space read as a gap against the
+          strip. */}
       <div className="flex w-[8rem] flex-shrink-0 items-center justify-end gap-2">
         {live ? (
-          freshness ? (
-            <>
-              {/* Fresh data needs no dot — the time says it's current. The dot
-                  stays for delayed/stale, where "how behind is the pipeline" is
-                  worth flagging. */}
-              {freshness.status !== "fresh" && <FreshnessDot status={freshness.status} />}
+          <>
+            {freshness && (
               <span className="flex flex-col items-end leading-tight">
                 <span className="text-[10px] text-gray-400">Actualizado</span>
                 <time dateTime={freshness.dateTime} className="whitespace-nowrap text-[13px] font-medium text-gray-700">
                   {freshness.when}
                 </time>
               </span>
-            </>
-          ) : (
-            <span className="whitespace-nowrap text-[13px] font-medium text-gray-500">En vivo</span>
-          )
+            )}
+            {/* Not a button — you're already live. A status tag, in the "Ahora"
+                slot. The dot rides it only when the pipeline is behind, the
+                same fresh/delayed/stale rule the readout used before. */}
+            <span className="flex flex-shrink-0 items-center gap-1 px-2 py-1 text-[13px] font-medium text-gray-400">
+              {freshness && freshness.status !== "fresh" && <FreshnessDot status={freshness.status} />}
+              En vivo
+            </span>
+          </>
         ) : (
           <>
             <span className="flex flex-col items-end leading-tight">
