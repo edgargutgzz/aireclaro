@@ -205,6 +205,13 @@
   animation: marker-pulse 2.4s ease-out infinite;
 }
 
+/* No pulse on a grey station: the halo says "live reading, right now", and a
+   no-data disc has none — being selected doesn't change that. */
+.sensor-marker--selected.sensor-marker--nodata .sensor-marker__pulse {
+  animation: none;
+  opacity: 0;
+}
+
 @keyframes marker-pulse {
   0% { transform: scale(0.85); opacity: 0.32; }
   70% { transform: scale(1.75); opacity: 0; }
@@ -213,6 +220,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .sensor-marker--selected .sensor-marker__pulse { animation: none; opacity: 0.22; }
+  .sensor-marker--selected.sensor-marker--nodata .sensor-marker__pulse { opacity: 0; }
 }
 
 /* The header's height, in one place. It used to be written as a mobile and a
