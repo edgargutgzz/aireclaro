@@ -1331,6 +1331,22 @@ function TimeScrubber({
   );
 }
 
+// Shown in the scrubber's place while the field-history window loads (the
+// aggregation runs a few seconds on a cold cache), so the control appears with
+// the map instead of popping in later. Same shell dimensions, no layout shift
+// on swap.
+function TimeScrubberSkeleton() {
+  return (
+    <div className="pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
+      <div className="h-9 w-9 flex-shrink-0 rounded-full border border-gray-200" aria-hidden="true" />
+      <div className="min-w-0 flex-1 pt-3.5">
+        <div className="h-[30px] animate-pulse rounded bg-gray-100 motion-reduce:animate-none" aria-hidden="true" />
+      </div>
+      <span className="flex-shrink-0 whitespace-nowrap text-[13px] font-medium text-gray-400">Cargando histórico…</span>
+    </div>
+  );
+}
+
 // The map opens zoomed out over the metro, then one flyTo settles in on the
 // default sensor at zoom 13, the "standing beside it" framing. No locate-me,
 // this is an open-data map of the airshed, not a personal "air near me" readout.
@@ -1994,13 +2010,16 @@ export default function MapaSensors({
   // mobile. The ?t= → scrubIndex sync is the routerSearch effect below.
   useEffect(() => {
     let cancelled = false;
+    const empty: FieldHistory = { hours: [], series: {} };
     fetch("/api/field-history")
       .then((r) => r.json())
       .then((d: FieldHistory) => {
-        if (cancelled || !Array.isArray(d?.hours) || !d.series) return;
-        setFieldHistory(d);
+        if (cancelled) return;
+        // An empty window resolves the skeleton (nothing renders) instead of
+        // leaving it spinning forever.
+        setFieldHistory(Array.isArray(d?.hours) && d.series ? d : empty);
       })
-      .catch(() => {});
+      .catch(() => { if (!cancelled) setFieldHistory(empty); });
     return () => { cancelled = true; };
   }, []);
 
@@ -2568,20 +2587,25 @@ export default function MapaSensors({
       })()}
 
       {/* Time scrubber — desktop only. Repaints the whole marker field at the
-          chosen hour; "Ahora" returns to live. */}
-      {fieldHistory && fieldHistory.hours.length > 1 && (
+          chosen hour; "Ahora" returns to live. Skeleton while the window
+          loads; nothing once loaded if the window came back empty. */}
+      {(!fieldHistory || fieldHistory.hours.length > 1) && (
         <div className="pointer-events-none absolute bottom-12 right-6 z-20 hidden md:block">
-          <TimeScrubber
-            hours={fieldHistory.hours}
-            index={scrubIndex}
-            playing={scrubPlaying}
-            speed={scrubSpeed}
-            medianByHour={medianByHour}
-            freshness={freshness}
-            onIndex={setScrubIndex}
-            onPlayingChange={setScrubPlaying}
-            onSpeedChange={setScrubSpeed}
-          />
+          {fieldHistory ? (
+            <TimeScrubber
+              hours={fieldHistory.hours}
+              index={scrubIndex}
+              playing={scrubPlaying}
+              speed={scrubSpeed}
+              medianByHour={medianByHour}
+              freshness={freshness}
+              onIndex={setScrubIndex}
+              onPlayingChange={setScrubPlaying}
+              onSpeedChange={setScrubSpeed}
+            />
+          ) : (
+            <TimeScrubberSkeleton />
+          )}
         </div>
       )}
 
