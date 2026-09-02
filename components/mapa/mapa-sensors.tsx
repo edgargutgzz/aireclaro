@@ -1149,19 +1149,24 @@ function TimeScrubber({
   hours,
   index,
   playing,
+  speed,
   medianByHour,
   onIndex,
   onPlayingChange,
+  onSpeedChange,
 }: {
   hours: string[];
   index: number | null;
   playing: boolean;
+  speed: number;
   medianByHour: number[];
   onIndex: (i: number | null) => void;
   onPlayingChange: (p: boolean) => void;
+  onSpeedChange: (s: number) => void;
 }) {
   const reduceMotion = prefersReducedMotion();
-  const last = hours.length - 1;
+  const n = hours.length;
+  const last = n - 1;
   const live = index == null;
   const value = index ?? last;
 
@@ -1172,37 +1177,73 @@ function TimeScrubber({
         return `${getRelativeDayLabel(d)}, ${format(d, "h")}:00 ${format(d, "a")}`;
       })();
 
-  const W = 100;
-  const H = 24;
-  const max = Math.max(1, ...medianByHour);
-  const strip = medianByHour
-    .map((v, i) => `${((i / Math.max(1, last)) * W).toFixed(2)},${(H - (v / max) * H).toFixed(2)}`)
-    .join(" ");
+  // One bar per hour in that hour's air-quality colour, so an episode reads as
+  // a red patch. Height floored at a 15 μg/m³ reference so a calm stretch isn't
+  // a wall of full-height green.
+  const H = 30;
+  const scaleMax = Math.max(15, ...medianByHour);
+  const barW = 100 / Math.max(1, n);
+
+  // Midnights — white dividers, plus a sparse date label above the strip.
+  const dayTicks = hours.flatMap((h, i) =>
+    i > 0 && h.slice(-2) === "00"
+      ? [{ pct: (i / last) * 100, label: format(parseMonterreyNaive(`${h}:00:00`), "d MMM", { locale: es }) }]
+      : [],
+  );
+  const labelStep = Math.max(1, Math.ceil(dayTicks.length / 7));
 
   return (
-    <div className="pointer-events-auto hidden w-[min(88vw,38rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
+    <div className="pointer-events-auto hidden w-[min(92vw,44rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
       {!reduceMotion && (
-        <button
-          type="button"
-          onClick={() => {
-            if (live) onIndex(Math.max(0, last - 24));
-            onPlayingChange(!playing);
-          }}
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          aria-label={playing ? "Pausar" : "Reproducir"}
-        >
-          {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-px" />}
-        </button>
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              if (live) onIndex(Math.max(0, last - 72));
+              onPlayingChange(!playing);
+            }}
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-700 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            aria-label={playing ? "Pausar" : "Reproducir"}
+          >
+            {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-px" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => onSpeedChange(speed >= 4 ? 1 : speed * 2)}
+            className="flex-shrink-0 rounded-lg px-1.5 py-1 text-[12px] font-semibold tabular-nums text-gray-500 transition-colors hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            aria-label={`Velocidad ${speed}×`}
+          >
+            {speed}×
+          </button>
+        </>
       )}
 
-      <div className="relative min-w-0 flex-1">
+      <div className="relative min-w-0 flex-1 pt-3.5">
+        {dayTicks.map((t, i) =>
+          i % labelStep === 0 ? (
+            <span
+              key={t.pct}
+              className="pointer-events-none absolute top-0 -translate-x-1/2 whitespace-nowrap text-[9px] leading-none text-gray-400"
+              style={{ left: `${t.pct}%` }}
+            >
+              {t.label}
+            </span>
+          ) : null,
+        )}
         <svg
-          viewBox={`0 0 ${W} ${H}`}
+          viewBox={`0 0 100 ${H}`}
           preserveAspectRatio="none"
-          className="pointer-events-none absolute inset-x-0 top-0 h-6 w-full opacity-70"
+          className="pointer-events-none block h-[30px] w-full"
           aria-hidden="true"
         >
-          <polyline points={strip} fill="none" stroke="#9ca3af" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+          {medianByHour.map((v, i) => {
+            if (v <= 0.4) return null;
+            const barH = Math.max(1.5, (v / scaleMax) * H);
+            return <rect key={i} x={i * barW} width={barW} y={H - barH} height={barH} fill={getPM25Color(v)?.bg ?? "#e5e7eb"} />;
+          })}
+          {dayTicks.map((t) => (
+            <line key={t.pct} x1={t.pct} x2={t.pct} y1={0} y2={H} stroke="#ffffff" strokeWidth={1} strokeOpacity={0.7} vectorEffect="non-scaling-stroke" />
+          ))}
         </svg>
         <input
           type="range"
@@ -1214,7 +1255,7 @@ function TimeScrubber({
             onIndex(i >= last ? null : i);
           }}
           aria-label="Hora"
-          className="relative mt-4 w-full cursor-pointer appearance-none bg-transparent focus-visible:outline-none [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:shadow [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-gray-200 [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-gray-200 [&::-webkit-slider-thumb]:mt-[-6px] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:ring-1 [&::-webkit-slider-thumb]:ring-gray-900/20"
+          className="absolute inset-x-0 bottom-0 h-[30px] w-full cursor-pointer appearance-none bg-transparent focus-visible:outline-none [&::-moz-range-thumb]:h-[30px] [&::-moz-range-thumb]:w-[3px] [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-gray-900 [&::-moz-range-track]:bg-transparent [&::-webkit-slider-runnable-track]:h-[30px] [&::-webkit-slider-runnable-track]:bg-transparent [&::-webkit-slider-thumb]:h-[30px] [&::-webkit-slider-thumb]:w-[3px] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gray-900"
         />
       </div>
 
@@ -1330,6 +1371,7 @@ export default function MapaSensors({
   const [fieldHistory, setFieldHistory] = useState<FieldHistory | null>(null);
   const [scrubIndex, setScrubIndex] = useState<number | null>(null);
   const [scrubPlaying, setScrubPlaying] = useState(false);
+  const [scrubSpeed, setScrubSpeed] = useState(1);
   const pendingScrubKey = useRef(readScrubParam());
 
   // One entry per municipality that actually has sensors, labelled with its
@@ -1845,7 +1887,7 @@ export default function MapaSensors({
   // mobile. A ?t= in the URL is resolved against the window as it lands.
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/field-history?hours=72")
+    fetch("/api/field-history?hours=336")
       .then((r) => r.json())
       .then((d: FieldHistory) => {
         if (cancelled || !Array.isArray(d?.hours) || !d.series) return;
@@ -1869,13 +1911,14 @@ export default function MapaSensors({
   }, [scrubbing, scrubIndex, fieldHistory]);
 
   // Playback: step one hour at a time to the end of the window, then stop.
+  // Interval scales with the speed toggle (1× = 700ms/hour).
   useEffect(() => {
     if (!scrubPlaying || !fieldHistory) return;
     const last = fieldHistory.hours.length - 1;
     if (scrubIndex == null || scrubIndex >= last) { setScrubPlaying(false); return; }
-    const id = window.setTimeout(() => setScrubIndex((i) => (i == null ? null : i + 1)), 700);
+    const id = window.setTimeout(() => setScrubIndex((i) => (i == null ? null : i + 1)), 700 / scrubSpeed);
     return () => window.clearTimeout(id);
-  }, [scrubPlaying, scrubIndex, fieldHistory]);
+  }, [scrubPlaying, scrubIndex, scrubSpeed, fieldHistory]);
 
   // Tapping the map dismisses the sensor sheet on mobile, where that gesture
   // is how you get back to the map. On desktop the card stays on whatever was
@@ -2431,9 +2474,11 @@ export default function MapaSensors({
             hours={fieldHistory.hours}
             index={scrubIndex}
             playing={scrubPlaying}
+            speed={scrubSpeed}
             medianByHour={medianByHour}
             onIndex={setScrubIndex}
             onPlayingChange={setScrubPlaying}
+            onSpeedChange={setScrubSpeed}
           />
         </div>
       )}
