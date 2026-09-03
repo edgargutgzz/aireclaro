@@ -59,14 +59,6 @@ const BASEMAP_GROUND = "#f2f1ef";
 // ground is what separates land from water without either colour being loud.
 const BASEMAP_WATER = "#c9d6dd";
 const BASEMAP_WATERWAY = "#bcccd5"; // the thin river / arroyo centrelines
-// Hillshade: light-v11 has no terrain shade at all (vector-only, no DEM), so the
-// sierras don't read as landforms. Its composite source does carry the
-// mapbox-terrain-v2 "hillshade" layer (vector shadow polygons by intensity
-// "level"), so we add one subtle fill from it — dark grey, opacity ramped by
-// level — under the water/roads/labels. Keep it faint: relief, not a relief map.
-const BASEMAP_HILLSHADE_SHADOW = "#8a9099";
-const BASEMAP_HILLSHADE_OPACITY = 0.08; // faint even at the steepest; the mountains are context, not subject
-const BASEMAP_HILLSHADE_MIN_LEVEL = 78; // drop the low bands that spread texture over the foothills
 
 export default function MapaSensors({
   sensors,
@@ -647,35 +639,6 @@ export default function MapaSensors({
         paint("water", "fill-color", BASEMAP_WATER);
         paint("water-shadow", "fill-color", BASEMAP_WATER);
         paint("waterway", "line-color", BASEMAP_WATERWAY);
-        // Hillshade: one faint fill from the terrain-v2 "hillshade" layer (shadow
-        // polygons only), under the water so water stays clean. Only the steepest
-        // bands (>= MIN_LEVEL) so it's a soft hint on the sierras, not rendered
-        // ridges — the mountains are context here, not the subject.
-        if (!m.getLayer("terrain-hillshade") && m.getSource("composite")) {
-          m.addLayer(
-            {
-              id: "terrain-hillshade",
-              type: "fill",
-              source: "composite",
-              "source-layer": "hillshade",
-              filter: [
-                "all",
-                ["==", ["get", "class"], "shadow"],
-                [">=", ["get", "level"], BASEMAP_HILLSHADE_MIN_LEVEL],
-              ],
-              paint: {
-                "fill-color": BASEMAP_HILLSHADE_SHADOW,
-                "fill-antialias": false,
-                "fill-opacity": [
-                  "interpolate", ["linear"], ["get", "level"],
-                  BASEMAP_HILLSHADE_MIN_LEVEL, BASEMAP_HILLSHADE_OPACITY * 0.6,
-                  94, BASEMAP_HILLSHADE_OPACITY,
-                ],
-              },
-            },
-            m.getLayer("waterway") ? "waterway" : undefined
-          );
-        }
       } catch {
         // upstream layer shape changed — basemap still renders, just paler
       }
