@@ -580,11 +580,11 @@ export default function MapaSensors({
 
     map.current = new Map({
       container: mapContainer.current!,
-      // Classic Dark: muted, flat, no 3D buildings / lighting / model assets,
+      // Classic Light: muted, flat, no 3D buildings / lighting / model assets,
       // small style + streets-v8 tiles, so it loads fast and stays out of the
       // way while the NOM-172 marker colours carry the read.
       // Previous bespoke style: mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd
-      style: "mapbox://styles/mapbox/dark-v11",
+      style: "mapbox://styles/mapbox/light-v11",
       center: OPENING_CENTER,
       zoom: OPENING_ZOOM,
     });
@@ -598,7 +598,7 @@ export default function MapaSensors({
     );
 
     map.current.on("style.load", () => {
-      // Classic Dark labels follow the viewer's locale; pin to Spanish.
+      // Classic Light labels follow the viewer's locale; pin to Spanish.
       try {
         (map.current as any).setLanguage("es");
       } catch {
