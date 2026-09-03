@@ -64,6 +64,26 @@ export const getMarkerFill = (pm25: number | null): string | null => {
   return `color-mix(in srgb, ${level.color} ${Math.round((1 - MARKER_INK_MIX) * 100)}%, ${level.ink})`;
 };
 
+// The same mix as getMarkerFill, resolved to a plain hex string. Mapbox GL
+// paint properties can't parse CSS `color-mix()`, so the GL marker field
+// (components/mapa/mapa-sensors.tsx) precomputes each disc's fill through this.
+// Numeric sRGB blend: (1 - MARKER_INK_MIX) of the level `color` + MARKER_INK_MIX
+// of its `ink`, identical to what the browser resolves for the DOM markers.
+const hexToRgb = (hex: string): [number, number, number] => {
+  const h = hex.replace("#", "");
+  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+};
+const rgbToHex = (r: number, g: number, b: number): string =>
+  "#" + [r, g, b].map((n) => Math.round(Math.min(255, Math.max(0, n))).toString(16).padStart(2, "0")).join("");
+export const getMarkerFillHex = (pm25: number | null): string | null => {
+  if (pm25 === null || pm25 <= 0.4) return null;
+  const level = getLevel(pm25);
+  const [cr, cg, cb] = hexToRgb(level.color);
+  const [ir, ig, ib] = hexToRgb(level.ink);
+  const t = MARKER_INK_MIX;
+  return rgbToHex(cr * (1 - t) + ir * t, cg * (1 - t) + ig * t, cb * (1 - t) + ib * t);
+};
+
 // Markers are siblings in one container (mapbox appends every custom element
 // straight into the canvas container) and so paint in DOM order. Which one wins
 // an overlap is therefore a sampling rule, and a sampling rule correlated with

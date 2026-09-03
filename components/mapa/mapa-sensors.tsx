@@ -7,7 +7,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { getPM25Color, getMarkerFill, getLevel, createMarker, ACTIVE_MARKER_Z, HOVER_MARKER_Z, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
+import { getPM25Color, getMarkerFill, getMarkerFillHex, getLevel, createMarker, roundPM25, getQualityInfo, IMECA_LEVELS, IMECA_THRESHOLDS, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, FreshnessDot, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, writeScrubParam } from "@/lib/map-url-state";
 import { parseMonterreyNaive } from "@/lib/monterrey-time";
@@ -1382,6 +1382,31 @@ const OPENING_CENTER: [number, number] = [-100.301, 25.685];
 const OPENING_ZOOM = 8;
 const OPENING_MOVE_MS = 4500;
 
+// The marker field is a single native Mapbox GL circle layer, not ~180 DOM
+// markers: the GPU sizes every disc per zoom, resolves overlap/hit-testing
+// deterministically, and never rewrites an element transform on pan. The one
+// exception is the *selected* station, which stays a DOM marker so it can carry
+// the expanding CSS pulse halo GL can't draw (see syncActive).
+const FIELD_SOURCE = "sensor-field";
+const FIELD_LAYER = "sensor-field-dots";
+
+// Resting disc radius (px) by zoom, before the hover multiplier. SIMA reference
+// stations run a step fuller than the citizen field at every zoom — the same
+// weight split the DOM markers carried (27 vs 24px), now zoom-responsive. The
+// stroke width stays flat (below) so a shrunk disc keeps its "instrument" edge
+// instead of reading as basemap furniture, which is what killed the last
+// zoom-sizing attempt.
+const simaR = (sima: number, citizen: number) => [
+  "case", ["boolean", ["get", "isSima"], false], sima, citizen,
+];
+const FIELD_RADIUS = [
+  "interpolate", ["linear"], ["zoom"],
+  8, simaR(3.5, 3),
+  11, simaR(6, 5),
+  13.5, simaR(10, 8.5),
+  16, simaR(15, 13),
+];
+
 // MapaSensors component
 export default function MapaSensors({
   sensors,
@@ -1392,11 +1417,13 @@ export default function MapaSensors({
 }) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<Map | null>(null);
-  // Every visible sensor is its own DOM marker. `markerElementsRef` maps
-  // sensor_id -> element so the active-pulse and filter effects can reach a
-  // marker without a DOM scan.
-  const markersRef = useRef<Marker[]>([]);
-  const markerElementsRef = useRef(new globalThis.Map<number, HTMLElement>());
+  // The marker field is one GL circle layer (FIELD_LAYER). The only DOM marker
+  // is the selected station, held here so a new pick can replace it; `activeFid`
+  // is that station's feature id in the GL source, tracked so its flat disc can
+  // be toggled off (feature-state `selected`) while the DOM marker stands in.
+  const selectedMarkerRef = useRef<Marker | null>(null);
+  const activeFidRef = useRef<string | null>(null);
+  const hoveredFidRef = useRef<string | null>(null);
   const activeSensorIdRef = useRef<number | null>(null);
   const activeColorRef = useRef<string>(SPARKLINE_COLOR);
   const selectedIdRef = useRef<number | null>(null);
@@ -1608,15 +1635,14 @@ export default function MapaSensors({
     return ids;
   }, [sensors, data, fieldHistory]);
 
-  // Any valid reading for a sensor, so createMarker builds an element that
-  // paintFrame then colours for the current frame.
-  const seedPm25 = useCallback((id: string): number => {
-    const live = liveReadings.get(id);
-    if (live != null && live > 0.4) return live;
-    const arr = fieldHistory?.series[id];
-    if (arr) for (const v of arr) if (v != null && v > 0.4) return v;
-    return 1;
-  }, [liveReadings, fieldHistory]);
+  // Snapshots the GL field-build and map event handlers read without being
+  // rebuilt on every render (they run once, or off a ref-stable useCallback).
+  const visibleSensorsRef = useRef(visibleSensors);
+  visibleSensorsRef.current = visibleSensors;
+  const markerableIdsRef = useRef(markerableIds);
+  markerableIdsRef.current = markerableIds;
+  const dataRef = useRef(data);
+  dataRef.current = data;
 
   // Median PM2.5 per hour across the whole scrubbable field — every sensor the
   // map paints at that hour, citizen sensors included — for the scrubber's
@@ -1769,71 +1795,155 @@ export default function MapaSensors({
     )?.color ?? SPARKLINE_COLOR;
   selectedIdRef.current = selectedSensor?.sensor.sensor_id ?? null;
 
-  // Move the pulsing halo to whichever marker is now active — the explicitly
-  // selected sensor, else the default one the card opens on — in that sensor's
-  // own air-quality ink.
-  const syncActive = useCallback(() => {
-    const activeId = activeSensorIdRef.current;
-    const activeColor = activeColorRef.current;
-    markerElementsRef.current.forEach((el, id) => {
-      const isActive = id === activeId;
-      el.classList.toggle("sensor-marker--selected", isActive);
-      el.style.setProperty("--pulse-color", activeColor);
-      if (isActive) el.style.zIndex = ACTIVE_MARKER_Z.toString();
-      else if (el.style.zIndex === ACTIVE_MARKER_Z.toString()) el.style.zIndex = "";
-    });
-  }, []);
+  // The GL source's features for one frame (live readings or a scrubbed hour).
+  // Citizen sensors with no reading drop out; SIMA reference stations stay as a
+  // grey `nodata` disc so the network's shape holds. `sortKey` puts the
+  // southern disc of an overlapping pair on top and every SIMA disc above the
+  // citizen field — latitude and provenance only, never the reading, so an
+  // overlap is never biased toward one end of the scale.
+  const buildFieldData = useCallback(
+    (readings: globalThis.Map<string, number | null>): GeoJSON.FeatureCollection => {
+      const features: GeoJSON.Feature[] = [];
+      for (const sensor of visibleSensorsRef.current) {
+        const fid = String(sensor.sensor_id);
+        if (!markerableIdsRef.current.has(fid)) continue;
+        const isSima = sensor.source === "sima";
+        const pm25 = readings.get(fid) ?? null;
+        const hasReading = pm25 != null && pm25 > 0.4;
+        if (!hasReading && !isSima) continue;
+        features.push({
+          type: "Feature",
+          id: fid,
+          geometry: { type: "Point", coordinates: [sensor.lon, sensor.lat] },
+          properties: {
+            fid,
+            fill: hasReading ? getMarkerFillHex(pm25)! : "#9ca3af",
+            isSima,
+            nodata: !hasReading,
+            sortKey: (isSima ? 1_000_000 : 0) - sensor.lat,
+          },
+        });
+      }
+      return { type: "FeatureCollection", features };
+    },
+    [],
+  );
 
-  // Recolour every marker for a frame without touching the marker set: fill and
-  // edge from the reading, hidden when there's none that hour. Refreshes the
-  // aria-label too, so a scrubbed disc doesn't announce the live number. This
-  // is what runs on every scrub step — O(n) style writes, no DOM churn.
-  const paintFrame = useCallback((readings: globalThis.Map<string, number | null>) => {
-    markerElementsRef.current.forEach((el, id) => {
-      const key = String(id);
-      const pm25 = readings.get(key) ?? null;
-      const fill = getMarkerFill(pm25);
-      const sensor = sensorById.get(key);
-      const isSima = sensor?.source === "sima";
+  // Repaint the one DOM marker (the selected station) for the current frame:
+  // fill, edge and the aria-label, so a scrubbed disc never announces the live
+  // number. Mutates the existing element — no rebuild, so the pulse animation
+  // doesn't restart mid-playback.
+  const paintSelectedMarker = useCallback(
+    (readings: globalThis.Map<string, number | null>) => {
+      const el = (selectedMarkerRef.current as any)?.getElement() as HTMLElement | undefined;
+      const id = activeFidRef.current;
+      if (!el || !id) return;
+      const sensor = sensorById.get(id);
+      if (!sensor) return;
+      const isSima = sensor.source === "sima";
+      const pm25 = readings.get(id) ?? null;
+      const has = pm25 != null && pm25 > 0.4;
       const dot = el.querySelector<HTMLElement>(".sensor-marker__dot");
-
-      if (fill == null) {
-        // Citizen sensors drop out; SIMA reference stations stay as a grey
-        // "no reading this hour" disc so the network's shape holds.
-        if (!isSima) { el.hidden = true; return; }
-        el.hidden = false;
-        el.classList.add("sensor-marker--nodata");
-        if (dot) {
-          dot.style.setProperty("--marker-fill", "#9ca3af");
-          dot.style.setProperty("--marker-edge", "#6b7280");
-        }
-        if (sensor) {
-          el.setAttribute("aria-label", [
-            getSourceLabel(true, sensor.red),
-            sensor.nombre_display || sensor.nombre,
-            "sin lectura",
-          ].join(", "));
-        }
-        return;
-      }
-
-      el.hidden = false;
-      el.classList.remove("sensor-marker--nodata");
+      el.classList.toggle("sensor-marker--nodata", !has);
       if (dot) {
-        dot.style.setProperty("--marker-fill", fill);
-        dot.style.setProperty("--marker-edge", getLevel(pm25 as number).ink);
+        dot.style.setProperty("--marker-fill", has ? getMarkerFill(pm25)! : "#9ca3af");
+        dot.style.setProperty("--marker-edge", has ? getLevel(pm25 as number).ink : "#6b7280");
       }
-      if (sensor) {
-        const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-        el.setAttribute("aria-label", [
+      const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+      el.setAttribute(
+        "aria-label",
+        [
           getSourceLabel(isSima, sensor.red),
           name,
-          `${roundPM25(pm25)} μg/m³ PM2.5`,
-          getQualityInfo(pm25)?.label,
-        ].filter(Boolean).join(", "));
+          has ? `${roundPM25(pm25)} μg/m³ PM2.5` : "sin lectura",
+          has ? getQualityInfo(pm25)?.label : null,
+        ]
+          .filter(Boolean)
+          .join(", "),
+      );
+    },
+    [sensorById],
+  );
+
+  // Push a frame to the GL field: rebuild the source data, re-assert the
+  // hover/selected feature-state (setData drops it), repaint the DOM marker.
+  // This is the whole per-scrub-step cost now — one setData, no DOM churn.
+  const updateField = useCallback(
+    (readings: globalThis.Map<string, number | null>) => {
+      const m = map.current as any;
+      const src = m?.getSource(FIELD_SOURCE);
+      if (!m || !src) return;
+      src.setData(buildFieldData(readings));
+      if (hoveredFidRef.current) {
+        m.setFeatureState({ source: FIELD_SOURCE, id: hoveredFidRef.current }, { hover: true });
       }
+      if (activeFidRef.current) {
+        m.setFeatureState({ source: FIELD_SOURCE, id: activeFidRef.current }, { selected: true });
+      }
+      paintSelectedMarker(readings);
+    },
+    [buildFieldData, paintSelectedMarker],
+  );
+
+  // Move the selection to whichever station is now active: hide that station's
+  // flat GL disc (feature-state `selected`) and stand a single DOM marker in
+  // its place — the DOM marker carries the expanding CSS pulse halo GL can't
+  // draw, plus a fuller opaque disc and the SIMA badge. Rebuilt only when the
+  // active station's identity changes, not on a scrub step.
+  const syncActive = useCallback(() => {
+    const m = map.current as any;
+    if (!m) return;
+    const activeId = activeSensorIdRef.current;
+    const nextFid = activeId != null ? String(activeId) : null;
+
+    if (activeFidRef.current && activeFidRef.current !== nextFid && m.getSource(FIELD_SOURCE)) {
+      m.setFeatureState({ source: FIELD_SOURCE, id: activeFidRef.current }, { selected: false });
+    }
+    activeFidRef.current = nextFid;
+    if (nextFid && m.getSource(FIELD_SOURCE)) {
+      m.setFeatureState({ source: FIELD_SOURCE, id: nextFid }, { selected: true });
+    }
+
+    (selectedMarkerRef.current as any)?.remove();
+    selectedMarkerRef.current = null;
+    if (activeId == null) return;
+
+    const sensor = sensorById.get(String(activeId));
+    if (!sensor) return;
+    const isSima = sensor.source === "sima";
+    const pm25 = frameReadingsRef.current.get(String(activeId)) ?? null;
+    const has = pm25 != null && pm25 > 0.4;
+    const name = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
+    const el = createMarker(
+      has ? (pm25 as number) : 1,
+      [
+        getSourceLabel(isSima, sensor.red),
+        name,
+        has ? `${roundPM25(pm25)} μg/m³ PM2.5` : "sin lectura",
+        has ? getQualityInfo(pm25)?.label : null,
+      ]
+        .filter(Boolean)
+        .join(", "),
+      isSima,
+    );
+    if (!el) return;
+    el.classList.add("sensor-marker--selected");
+    if (!has) el.classList.add("sensor-marker--nodata");
+    el.style.setProperty("--pulse-color", activeColorRef.current);
+    el.style.cursor = "pointer";
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (window.innerWidth >= 768 && selectedIdRef.current === sensor.sensor_id) {
+        setSelectedSensor(null);
+        return;
+      }
+      setSelectedSensor(buildSelection(sensor, dataRef.current));
     });
-  }, [sensorById]);
+    selectedMarkerRef.current = new Marker({ element: el })
+      .setLngLat([sensor.lon, sensor.lat])
+      .addTo(m);
+    paintSelectedMarker(frameReadingsRef.current);
+  }, [sensorById, paintSelectedMarker]);
 
   // Initialize map once, zoomed out; the opening flyTo below settles it in.
   useEffect(() => {
@@ -1889,88 +1999,125 @@ export default function MapaSensors({
     (map.current as any).flyTo({ ...focus, duration: OPENING_MOVE_MS, essential: true });
   }, [mapLoaded, sensors, initialSensorId, defaultSelection]);
 
-  // Build the marker field: one DOM marker per visible sensor with a reading.
-  // No clustering. Rebuilt only when the visible set or the readings change,
-  // not on pan or zoom.
+  // Stand up the GL marker field once the style is ready: one geojson source
+  // and one circle layer, plus the hover/click handlers. No clustering — every
+  // markerable sensor is always in the source; the GPU sizes each disc per
+  // zoom and resolves overlap by `circle-sort-key`. The disc has a flat 1.5px
+  // white stroke and no drop shadow — flat reads far better in the basin knot
+  // than the old ink hairline + white ring + double shadow, and the selected
+  // DOM marker keeps the lift + pulse.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
-    const m = map.current;
+    const m = map.current as any;
 
-    markersRef.current.forEach((mk) => (mk as any).remove());
-    markersRef.current = [];
-    markerElementsRef.current.clear();
-
-    // North to south, so the southern disc of an overlapping pair paints in
-    // front. Latitude has nothing to do with the reading; any order tracking
-    // PM2.5 would bias every overlap toward one end of the scale.
-    //
-    // Built for every visible sensor with a reading now OR anywhere in the
-    // loaded window (markerableIds), then coloured/hidden per frame by
-    // paintFrame — so scrubbing never rebuilds the field.
-    [...visibleSensors]
-      .filter((sensor) => markerableIds.has(String(sensor.sensor_id)))
-      .sort((a, b) => b.lat - a.lat)
-      .forEach((sensor) => {
-        const isSima = sensor.source === "sima";
-        const sensorLabel = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
-        // Seeded with any valid reading so createMarker builds an element;
-        // paintFrame sets the real colour and label immediately below.
-        const el = createMarker(
-          seedPm25(String(sensor.sensor_id)),
-          [getSourceLabel(isSima, sensor.red), sensorLabel].filter(Boolean).join(", "),
-          isSima,
-        );
-        if (!el) return;
-
-        el.style.cursor = "pointer";
-        el.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const isDesktop = window.innerWidth >= 768;
-          if (isDesktop && selectedIdRef.current === sensor.sensor_id) {
-            setSelectedSensor(null);
-            return;
-          }
-          setSelectedSensor(buildSelection(sensor, data));
-          // Mobile: don't touch the sheet height. A fresh tap from `peek` just
-          // swaps the subject there — the peek row already carries the name and
-          // the quality word, which is the whole "what is this" — and the map
-          // stays clear for scanning disc to disc. If the sheet is already at
-          // `mid` (the user committed to reading detail) it stays there and the
-          // subject swaps in place. Opening to `mid` on every tap buried the
-          // disc under a 62dvh panel and turned field-scanning into
-          // tap/dismiss/tap.
-        });
-        // Lift the hovered marker so a click in a dense spot lands on the disc
-        // under the cursor, not on whichever hit box mapbox drew last.
-        el.addEventListener("mouseenter", () => {
-          if (!el.classList.contains("sensor-marker--selected")) el.style.zIndex = HOVER_MARKER_Z.toString();
-        });
-        el.addEventListener("mouseleave", () => {
-          if (!el.classList.contains("sensor-marker--selected")) el.style.zIndex = "";
-        });
-
-        markerElementsRef.current.set(sensor.sensor_id, el);
-        markersRef.current.push(new Marker({ element: el }).setLngLat([sensor.lon, sensor.lat]).addTo(m));
+    if (!m.getSource(FIELD_SOURCE)) {
+      m.addSource(FIELD_SOURCE, {
+        type: "geojson",
+        data: buildFieldData(frameReadingsRef.current),
+        promoteId: "fid",
       });
+    }
+    if (!m.getLayer(FIELD_LAYER)) {
+      m.addLayer({
+        id: FIELD_LAYER,
+        type: "circle",
+        source: FIELD_SOURCE,
+        layout: { "circle-sort-key": ["get", "sortKey"] as any },
+        paint: {
+          "circle-color": ["get", "fill"] as any,
+          "circle-radius": [
+            "*",
+            FIELD_RADIUS,
+            ["case", ["boolean", ["feature-state", "hover"], false], 1.14, 1],
+          ] as any,
+          // The selected station's flat disc is hidden (opacity 0) — the DOM
+          // marker stands in for it. Rest of the field: SIMA fuller than
+          // citizen, no-data SIMA discs recede.
+          "circle-opacity": [
+            "case",
+            ["boolean", ["feature-state", "selected"], false], 0,
+            ["boolean", ["get", "nodata"], false], 0.5,
+            ["boolean", ["get", "isSima"], false], 0.82,
+            0.62,
+          ] as any,
+          "circle-stroke-width": [
+            "case",
+            ["boolean", ["feature-state", "selected"], false], 0,
+            1.5,
+          ] as any,
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-opacity": [
+            "case",
+            ["boolean", ["get", "nodata"], false], 0.65,
+            0.95,
+          ] as any,
+        },
+      });
+    }
 
-    paintFrame(frameReadingsRef.current);
+    const canvas = m.getCanvas() as HTMLCanvasElement;
+    const onMove = (e: any) => {
+      canvas.style.cursor = "pointer";
+      const f = e.features?.[0];
+      const fid = f ? String(f.id ?? (f.properties as any)?.fid) : null;
+      if (!fid || fid === hoveredFidRef.current) return;
+      if (hoveredFidRef.current) {
+        m.setFeatureState({ source: FIELD_SOURCE, id: hoveredFidRef.current }, { hover: false });
+      }
+      hoveredFidRef.current = fid;
+      m.setFeatureState({ source: FIELD_SOURCE, id: fid }, { hover: true });
+    };
+    const onLeave = () => {
+      canvas.style.cursor = "";
+      if (hoveredFidRef.current) {
+        m.setFeatureState({ source: FIELD_SOURCE, id: hoveredFidRef.current }, { hover: false });
+      }
+      hoveredFidRef.current = null;
+    };
+    // GL hands us the topmost rendered disc under the pointer, collision-aware
+    // — no DOM hit-box guessing, so a click in a dense knot lands on the disc
+    // you can see. On desktop, re-clicking the open station closes the card.
+    const onClick = (e: any) => {
+      const f = e.features?.[0];
+      if (!f) return;
+      const fid = String(f.id ?? (f.properties as any)?.fid);
+      const sensor = sensorById.get(fid);
+      if (!sensor) return;
+      if (window.innerWidth >= 768 && selectedIdRef.current === sensor.sensor_id) {
+        setSelectedSensor(null);
+        return;
+      }
+      setSelectedSensor(buildSelection(sensor, dataRef.current));
+    };
+    m.on("mousemove", FIELD_LAYER, onMove);
+    m.on("mouseleave", FIELD_LAYER, onLeave);
+    m.on("click", FIELD_LAYER, onClick);
+
+    updateField(frameReadingsRef.current);
     syncActive();
-  }, [mapLoaded, visibleSensors, markerableIds, seedPm25, paintFrame, syncActive]);
 
-  // Repaint on a scrub step (or a live-data refresh) without rebuilding markers.
+    return () => {
+      m.off("mousemove", FIELD_LAYER, onMove);
+      m.off("mouseleave", FIELD_LAYER, onLeave);
+      m.off("click", FIELD_LAYER, onClick);
+    };
+  }, [mapLoaded, buildFieldData, updateField, syncActive, sensorById]);
+
+  // Push a frame to the field: a filter change (visibleSensors), a scrub step
+  // or a live-data refresh (frameReadings). One setData, no marker churn — and
+  // not syncActive, so the selected DOM marker's pulse doesn't restart on every
+  // playback step (updateField repaints its disc in place instead).
   useEffect(() => {
     if (!mapLoaded) return;
-    paintFrame(frameReadings);
-  }, [mapLoaded, frameReadings, paintFrame]);
+    updateField(frameReadings);
+  }, [mapLoaded, visibleSensors, markerableIds, frameReadings, updateField]);
 
-  // Cleanup the marker field when the component unmounts.
+  // Drop the DOM selected marker when the component unmounts (the GL source and
+  // layer go with map.remove() in the init effect's cleanup).
   useEffect(() => {
-    const markers = markersRef.current;
-    const elements = markerElementsRef.current;
     return () => {
-      markers.forEach((mk) => (mk as any).remove());
-      markersRef.current = [];
-      elements.clear();
+      (selectedMarkerRef.current as any)?.remove();
+      selectedMarkerRef.current = null;
     };
   }, []);
 
@@ -2099,16 +2246,62 @@ export default function MapaSensors({
   }, []);
 
   // Clicking empty map dismisses a picked sensor (desktop back to nothing,
-  // mobile back to the default station).
-  // Mapbox fires `click` only on a genuine click, not a drag/pan, and the
-  // marker's own handler stops propagation, so this only catches clicks that
-  // missed every disc.
+  // mobile back to the default station). Mapbox fires `click` only on a genuine
+  // click, not a drag/pan; a hit on the disc layer means the field handler
+  // already owns this click, so bail rather than close.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
-    const handler = () => closeCard();
-    map.current.on("click", handler);
-    return () => { (map.current as any)?.off("click", handler); };
+    const m = map.current as any;
+    const handler = (e: any) => {
+      if (m.getLayer(FIELD_LAYER) && m.queryRenderedFeatures(e.point, { layers: [FIELD_LAYER] }).length) return;
+      closeCard();
+    };
+    m.on("click", handler);
+    return () => { m?.off("click", handler); };
   }, [mapLoaded, closeCard]);
+
+  // Keyboard / screen-reader path into the field: the GL discs are canvas-drawn
+  // and not tabbable, so every markerable station is also a visually-hidden
+  // button that selects it (opens the card) and eases the camera to it. Labels
+  // carry the reading for the frame on screen.
+  const a11yStations = useMemo(
+    () =>
+      [...visibleSensors]
+        .filter((s) => markerableIds.has(String(s.sensor_id)))
+        .sort((a, b) =>
+          (a.nombre_display || a.nombre).localeCompare(b.nombre_display || b.nombre, "es"),
+        )
+        .map((s) => {
+          const isSima = s.source === "sima";
+          const pm25 = frameReadings.get(String(s.sensor_id)) ?? null;
+          const has = pm25 != null && pm25 > 0.4;
+          const name = isSima && s.nombre_display ? s.nombre_display : s.nombre;
+          return {
+            sensor: s,
+            label: [
+              getSourceLabel(isSima, s.red),
+              name,
+              has ? `${roundPM25(pm25)} μg/m³ PM2.5` : "sin lectura",
+              has ? getQualityInfo(pm25)?.label : null,
+            ]
+              .filter(Boolean)
+              .join(", "),
+          };
+        }),
+    [visibleSensors, markerableIds, frameReadings],
+  );
+
+  const selectFromList = useCallback(
+    (s: Sensor) => {
+      setSelectedSensor(buildSelection(s, dataRef.current));
+      const m = map.current as any;
+      if (!m) return;
+      const focus = { center: [s.lon, s.lat] as [number, number], zoom: Math.max(m.getZoom(), 12) };
+      if (prefersReducedMotion()) m.jumpTo(focus);
+      else m.easeTo(focus);
+    },
+    [],
+  );
 
   // Escape dismisses a picked sensor too (unless a dialog is open — it owns
   // Escape first).
@@ -2137,6 +2330,18 @@ export default function MapaSensors({
         ref={mapContainer}
         className="absolute left-0 top-0 h-full w-full"
       />
+
+      {/* Keyboard / screen-reader equivalent for the GL marker field. */}
+      <div className="sr-only">
+        <h2>Estaciones de monitoreo de calidad del aire</h2>
+        <ul>
+          {a11yStations.map(({ sensor, label }) => (
+            <li key={sensor.sensor_id}>
+              <button type="button" onClick={() => selectFromList(sensor)}>{label}</button>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* Mobile map controls — a right-edge stack, hidden when the sheet is
           expanded. The air-quality legend sits on top of the Capas button as a
