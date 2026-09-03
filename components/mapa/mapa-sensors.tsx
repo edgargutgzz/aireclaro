@@ -580,9 +580,11 @@ export default function MapaSensors({
 
     map.current = new Map({
       container: mapContainer.current!,
-      // Muted stock basemap so the NOM-172 marker colours carry the read.
+      // Stock Mapbox Standard, dropped to its "monochrome" theme so the
+      // NOM-172 marker colours carry the read. "Monochrome" in Studio is a
+      // theme of Standard, not a standalone style — it's set via config below.
       // Previous bespoke style: mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd
-      style: "mapbox://styles/mapbox/monochrome-light",
+      style: "mapbox://styles/mapbox/standard",
       center: OPENING_CENTER,
       zoom: OPENING_ZOOM,
     });
@@ -595,14 +597,21 @@ export default function MapaSensors({
       initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
     );
 
-    map.current.on("load", () => {
-      // monochrome-light is a Standard-family style: labels follow the viewer's
-      // locale unless pinned. Force Spanish to match the rest of the UI.
+    map.current.on("style.load", () => {
+      const m = map.current as any;
+      // Muted, flat, Spanish. Standard ships "day" 3D buildings and locale
+      // labels by default — none of which this data map wants.
       try {
-        (map.current as any).setConfigProperty("basemap", "language", "es");
+        m.setConfigProperty("basemap", "theme", "monochrome");
+        m.setConfigProperty("basemap", "lightPreset", "day");
+        m.setConfigProperty("basemap", "show3dObjects", false);
+        m.setConfigProperty("basemap", "language", "es");
       } catch {
-        // older style schema / API shape — labels fall back to locale, harmless
+        // config schema shift — basemap still renders, just not tuned
       }
+    });
+
+    map.current.on("load", () => {
       setMapLoaded(true);
     });
 
