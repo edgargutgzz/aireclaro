@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
+import { createAnonClient } from "@/utils/supabase/anon";
 
 // NOM-025-SSA1-2021 daily PM2.5 limit. 33 µg/m³ in 2025, lowered to 25 µg/m³ in 2026.
 const PM25_LIMIT = 25;
@@ -21,7 +21,11 @@ export default async function SimaDiasInsalubres(
   year: number,
   month: number, // 1-indexed
 ): Promise<DiaInsalubre[]> {
-  const supabase = await createClient();
+  // Cookie-free client: this is a public, user-agnostic read, and using the
+  // SSR client's cookies() would force /datos to render dynamically on every
+  // request instead of being statically generated + revalidated (see the
+  // `revalidate` in app/datos/page.tsx).
+  const supabase = createAnonClient();
 
   const start = new Date(Date.UTC(year, month - 1, 1)).toISOString().slice(0, 19);
   const end = new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 19);
