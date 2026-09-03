@@ -1389,6 +1389,64 @@ const OPENING_MOVE_MS = 4500;
 // the expanding CSS pulse halo GL can't draw (see syncActive).
 const FIELD_SOURCE = "sensor-field";
 const FIELD_LAYER = "sensor-field-dots";
+// The government (SIMA) reference stations carry the Landmark badge at all times
+// — GL circles can't hold one, so it's a second `symbol` layer over the same
+// source, filtered to `isSima`, with the badge pre-rendered to a raster icon
+// (makeSimaBadge). ~15 stations, spatially spread, so `icon-allow-overlap`.
+const SIMA_BADGE_LAYER = "sensor-field-sima-badge";
+const SIMA_BADGE_IMAGE = "sima-badge";
+
+// The SIMA badge as an ImageData: gray-500 disc, white casing ring, white
+// Landmark glyph — pixel-for-pixel the `.sensor-marker__badge` the DOM markers
+// use, so a selected station's DOM badge and the field badge match. Drawn at 2×
+// for retina; `addImage` is told `pixelRatio: 2`.
+function makeSimaBadge(): ImageData {
+  const S = 2; // device scale
+  const box = 22; // logical px (disc + casing + slack)
+  const cvs = document.createElement("canvas");
+  cvs.width = box * S;
+  cvs.height = box * S;
+  const ctx = cvs.getContext("2d")!;
+  ctx.scale(S, S);
+  const c = box / 2;
+  const rDisc = 8.5;
+  ctx.beginPath();
+  ctx.arc(c, c, rDisc + 1.5, 0, Math.PI * 2);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(c, c, rDisc, 0, Math.PI * 2);
+  ctx.fillStyle = "#6b7280"; // gray-500 — as light as the white glyph clears 3:1
+  ctx.fill();
+  ctx.save();
+  ctx.translate(c, c);
+  const g = 11 / 24; // fit lucide's 24 viewBox into ~11 logical px
+  ctx.scale(g, g);
+  ctx.translate(-12, -12);
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 2.4;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.beginPath(); // roof
+  ctx.moveTo(12, 2.5);
+  ctx.lineTo(20, 7);
+  ctx.lineTo(4, 7);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath(); // base
+  ctx.moveTo(4, 21.5);
+  ctx.lineTo(20, 21.5);
+  ctx.stroke();
+  for (const x of [7, 12, 17]) {
+    ctx.beginPath();
+    ctx.moveTo(x, 17.5);
+    ctx.lineTo(x, 11);
+    ctx.stroke();
+  }
+  ctx.restore();
+  return ctx.getImageData(0, 0, cvs.width, cvs.height);
+}
 
 // Resting disc radius (px) by zoom, before the hover multiplier. SIMA reference
 // stations run a step fuller than the citizen field at every zoom — the same
@@ -2060,6 +2118,37 @@ export default function MapaSensors({
           ] as any,
         },
       });
+      }
+      // Landmark badge on every SIMA station (grey no-data ones included) —
+      // hidden only while it's the selected station, whose DOM marker carries
+      // its own scaling badge. Fixed pixel offset: it sits on the disc's
+      // upper-right edge at the opening zoom, drifts a little in/out at the
+      // extremes, which is fine on ~15 spread stations.
+      if (!m.hasImage(SIMA_BADGE_IMAGE)) {
+        m.addImage(SIMA_BADGE_IMAGE, makeSimaBadge(), { pixelRatio: 2 });
+      }
+      if (!m.getLayer(SIMA_BADGE_LAYER)) {
+        m.addLayer({
+          id: SIMA_BADGE_LAYER,
+          type: "symbol",
+          source: FIELD_SOURCE,
+          filter: ["==", ["get", "isSima"], true] as any,
+          layout: {
+            "icon-image": SIMA_BADGE_IMAGE,
+            "icon-size": 0.9,
+            "icon-offset": [8, -8],
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "symbol-sort-key": ["get", "sortKey"] as any,
+          },
+          paint: {
+            "icon-opacity": [
+              "case",
+              ["boolean", ["feature-state", "selected"], false], 0,
+              1,
+            ] as any,
+          },
+        });
       }
     } catch (err) {
       console.error("[map] failed to add the sensor field layer", err);
