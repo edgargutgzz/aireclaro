@@ -1252,7 +1252,7 @@ function TimeScrubber({
   }, [hours, medianByHour, n, last]);
 
   return (
-    <div className="pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex">
+    <div className="glass pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl px-4 py-3 md:flex">
       {!reduceMotion && (
         <>
           <button
@@ -1358,7 +1358,7 @@ function TimeScrubber({
 // on swap; the pulse is the only "loading" signal, no text.
 function TimeScrubberSkeleton() {
   return (
-    <div className="pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl border border-white/60 bg-white/80 px-4 py-3 shadow-sm backdrop-blur-md md:flex" aria-hidden="true">
+    <div className="glass pointer-events-auto hidden w-[min(90vw,40rem)] items-center gap-3 rounded-2xl px-4 py-3 md:flex" aria-hidden="true">
       <div className="h-9 w-9 flex-shrink-0 rounded-full border border-gray-200" />
       <div className="min-w-0 flex-1 pt-3.5">
         <div className="h-[30px] animate-pulse rounded bg-gray-100 motion-reduce:animate-none" />
@@ -2115,14 +2115,14 @@ export default function MapaSensors({
         >
           <button
             onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
-            className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showLegend ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
+            className={`rounded-xl p-3 transition-colors duration-200 ${showLegend ? 'border border-gray-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
             aria-label="Calidad del aire"
           >
             <Wind className={`h-5 w-5 ${showLegend ? 'text-gray-900' : 'text-gray-700'}`} />
           </button>
           <button
             onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
-            className={`rounded-xl border p-3 backdrop-blur-md shadow-sm transition-colors duration-200 ${showFilters ? 'border-gray-900/30 bg-white/90' : 'border-white/60 bg-white/80'}`}
+            className={`rounded-xl p-3 transition-colors duration-200 ${showFilters ? 'border border-gray-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
             aria-label="Capas"
           >
             <Layers className={`h-5 w-5 ${showFilters ? 'text-gray-900' : 'text-gray-700'}`} />
@@ -2262,7 +2262,7 @@ export default function MapaSensors({
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
           return (
-            <div className="pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md">
+            <div className="glass pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl">
               <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
                 <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">{sensorName}</span>
                 {selectedSensor && (
@@ -2356,7 +2356,7 @@ export default function MapaSensors({
           on the panel body, with the badge itself living in a different corner
           of this file. */}
       <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-12 md:left-6 md:top-6 md:w-panel-filters">
-        <div className="pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/80 shadow-sm backdrop-blur-md md:flex">
+        <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:flex">
           {/* The header carries the filter state, in the same "label · summary"
               idiom the rows inside the panel already use. gray-500 rather than
               the rows' gray-300: at 13px on this material that is the first
@@ -2404,7 +2404,7 @@ export default function MapaSensors({
             one edge, and md:mt-auto pins it to the bottom whether the panel
             above is open or shut. Desktop only: on mobile the legend floats
             at the bottom-left of the map, level with the Capas button. */}
-        <div className="pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl border border-white/60 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-md md:mt-auto md:block">
+        <div className="glass pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl px-5 py-4 md:mt-auto md:block">
           <AirQualityLegend collapsible />
         </div>
       </div>

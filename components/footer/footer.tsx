@@ -3,6 +3,17 @@ import { AiFillInstagram, AiFillTikTok } from "react-icons/ai";
 import { FaFacebook, FaYoutube } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 
+const socialLinks = [
+  { href: "https://www.instagram.com/observatoriomty/", label: "Instagram", Icon: AiFillInstagram, size: 18 },
+  { href: "https://www.facebook.com/observatoriomty", label: "Facebook", Icon: FaFacebook, size: 16 },
+  { href: "https://x.com/observatoriomty", label: "X", Icon: FaSquareXTwitter, size: 16 },
+  { href: "https://www.youtube.com/@observatoriomty", label: "YouTube", Icon: FaYoutube, size: 18 },
+  { href: "https://www.tiktok.com/@observatoriomty", label: "TikTok", Icon: AiFillTikTok, size: 18 },
+];
+
+const socialLinkClass =
+  "flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-md";
+
 export default function Footer() {
   return (
     <footer className="bg-stone-100">
@@ -23,41 +34,11 @@ export default function Footer() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="https://www.instagram.com/observatoriomty/"
-            target="_blank"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm backdrop-blur-md transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-md"
-          >
-            <AiFillInstagram size={18} />
-          </Link>
-          <Link
-            href="https://www.facebook.com/observatoriomty"
-            target="_blank"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm backdrop-blur-md transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-md"
-          >
-            <FaFacebook size={16} />
-          </Link>
-          <Link
-            href="https://x.com/observatoriomty"
-            target="_blank"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm backdrop-blur-md transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-md"
-          >
-            <FaSquareXTwitter size={16} />
-          </Link>
-          <Link
-            href="https://www.youtube.com/@observatoriomty"
-            target="_blank"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm backdrop-blur-md transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-md"
-          >
-            <FaYoutube size={18} />
-          </Link>
-          <Link
-            href="https://www.tiktok.com/@observatoriomty"
-            target="_blank"
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm backdrop-blur-md transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-md"
-          >
-            <AiFillTikTok size={18} />
-          </Link>
+          {socialLinks.map(({ href, label, Icon, size }) => (
+            <Link key={label} href={href} target="_blank" aria-label={label} className={socialLinkClass}>
+              <Icon size={size} />
+            </Link>
+          ))}
         </div>
       </div>
 

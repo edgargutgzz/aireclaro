@@ -15,7 +15,7 @@ export default function Navbar() {
       {/* Mobile navbar at bottom */}
       <nav
         aria-label="Principal"
-        className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/60 bg-white/80 backdrop-blur-md shadow-sm md:hidden"
+        className="glass fixed bottom-0 left-0 right-0 z-50 border-x-0 border-b-0 md:hidden"
       >
         {/* flex-1 tabs (see Navlinks), so px-2 + pt-1.5/pb-1.5 around a py-3
             pill lands this bar at exactly 56px — the 3.5rem the map's

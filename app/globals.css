@@ -52,19 +52,11 @@
 
 /* The signature glass surface as one class, so the recipe is not retyped per
    component and the reduced-transparency escape below has a single hook.
-   Matches .ai-style-guide.md §3 "Glass panel". */
+   Matches .ai-style-guide.md §3 "Glass panel": border-white/60 + bg-white/80 +
+   shadow-sm + backdrop-blur-md. Radius and padding stay on the caller. */
 @layer components {
   .glass {
     @apply border border-white/60 bg-white/80 shadow-sm backdrop-blur-md;
-  }
-}
-
-/* The house focus ring (.ai-style-guide.md §5 "Focus"): a neutral 2px ring at
-   15% ink, never the accent colour. shadcn components are retuned to this in
-   components/ui; this utility is for hand-written controls. */
-@layer utilities {
-  .ring-house {
-    @apply outline-none ring-2 ring-gray-900/15;
   }
 }
 

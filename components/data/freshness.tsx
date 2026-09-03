@@ -50,9 +50,11 @@ export function FreshnessBadge({ freshness, compact = false }: { freshness: Fres
   return (
     <div
       className={
+        // Shared glass pill; the compact mobile variant drops the shadow so it
+        // reads as a quiet status line rather than a control.
         compact
-          ? "flex h-7 flex-shrink-0 items-center gap-1.5 rounded-xl border border-white/60 bg-white/80 px-2.5 backdrop-blur-md"
-          : "flex h-10 flex-shrink-0 items-center gap-2 rounded-xl border border-white/60 bg-white/80 px-3.5 shadow-sm backdrop-blur-md"
+          ? "glass flex h-7 flex-shrink-0 items-center gap-1.5 rounded-xl px-2.5 shadow-none"
+          : "glass flex h-10 flex-shrink-0 items-center gap-2 rounded-xl px-3.5"
       }
     >
       <FreshnessDot status={freshness.status} />
