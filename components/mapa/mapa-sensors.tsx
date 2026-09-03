@@ -48,11 +48,21 @@ import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 // so if it's filtered out (Capas → gobierno off) the card is simply empty.
 const DEFAULT_SENSOR_ID = "CE";
 
-// light-v11's base ground is near-white, which is most of why the map reads
-// washed out. One conservative step off white — a very light warm grey — is
-// enough to give it body without touching the hillshade, parks or roads that
-// paint on top. Applied on style.load; tune in small increments.
+// Subtle repaint of stock light-v11, applied on style.load. Tuned in small
+// increments — each value is a knob.
+//
+// Ground: near-white was most of why the map read washed out; one step off
+// white, a very light warm grey.
 const BASEMAP_GROUND = "#f2f1ef";
+// Water: light-v11's water is a barely-there pale blue. A step deeper and cooler
+// so the Río Santa Catarina and the dams read across the city. Cool vs the warm
+// ground is what separates land from water without either colour being loud.
+const BASEMAP_WATER = "#c9d6dd";
+const BASEMAP_WATERWAY = "#bcccd5"; // the thin river / arroyo centrelines
+// Hillshade: light-v11 ships a gentle terrain shade. Nudge it up a little so the
+// Sierra Madre, Cerro de la Silla and Las Mitras read as raised ground.
+const BASEMAP_HILLSHADE_SHADOW = "#9aa0a6";
+const BASEMAP_HILLSHADE_EXAGGERATION = 0.6;
 
 export default function MapaSensors({
   sensors,
@@ -611,10 +621,16 @@ export default function MapaSensors({
       } catch {
         // API shape shift — labels fall back to locale, harmless
       }
-      // Nudge the base ground one step off near-white (BASEMAP_GROUND). Only the
-      // background-type layers plus a "land" fill if this build has one; nothing
-      // layered on top (hillshade, parks, roads, water) is touched.
+      // Repaint a few layers off stock light-v11 — see the BASEMAP_* knobs.
+      const paint = (id: string, prop: string, value: string | number) => {
+        try {
+          if (m.getLayer(id)) m.setPaintProperty(id, prop, value);
+        } catch {
+          // that layer isn't in this build — skip it
+        }
+      };
       try {
+        // Ground: background-type layers, plus a "land" fill if this build has one.
         for (const layer of m.getStyle()?.layers ?? []) {
           if (layer.type === "background") {
             m.setPaintProperty(layer.id, "background-color", BASEMAP_GROUND);
@@ -623,6 +639,13 @@ export default function MapaSensors({
         if (m.getLayer("land") && m.getLayer("land").type === "fill") {
           m.setPaintProperty("land", "fill-color", BASEMAP_GROUND);
         }
+        // Water: the river channel + dams, then the thin centrelines.
+        paint("water", "fill-color", BASEMAP_WATER);
+        paint("water-shadow", "fill-color", BASEMAP_WATER);
+        paint("waterway", "line-color", BASEMAP_WATERWAY);
+        // Hillshade: deeper shadow + a touch more exaggeration for the sierras.
+        paint("hillshade", "hillshade-shadow-color", BASEMAP_HILLSHADE_SHADOW);
+        paint("hillshade", "hillshade-exaggeration", BASEMAP_HILLSHADE_EXAGGERATION);
       } catch {
         // upstream layer shape changed — basemap still renders, just paler
       }
