@@ -28,8 +28,11 @@ proposing freely — they inform judgment, they don't replace it.
    before form.
 3. **Then how it looks — consistency and order before aesthetics.** Follow
    `.ai-style-guide.md`, reuse the same conventions, tokens, and components.
-   Taste calls ("lighter / stronger / nicer") come *after* consistency is in
-   place, and are never a reason to diverge from the system.
+   Interactive primitives come from **shadcn/ui** (`components/ui/`, added with
+   `pnpm dlx shadcn@2.10.0 add <name>` — pinned to 2.x, this repo is Tailwind
+   v3); don't hand-roll a control shadcn covers. Taste calls ("lighter /
+   stronger / nicer") come *after* consistency is in place, and are never a
+   reason to diverge from the system.
 
 ## Commands
 

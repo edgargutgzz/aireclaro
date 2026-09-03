@@ -2,6 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── shadcn/ui design tokens ────────────────────────────────────────────────
+   HSL channel triplets consumed via `hsl(var(--x))` in tailwind.config.ts.
+   The app is light-only (.ai-style-guide.md §3): there is a `:root` block only,
+   no `.dark`. Values are the house language — `background` = the app's
+   `gray-50`, `card`/`popover` = white, `primary` = blue-600, borders `gray-200`,
+   text `gray-800`, muted `gray-500`. The air-quality scale is not a token here;
+   it lives in lib/air-quality.ts. */
+:root {
+  --background: 210 20% 98%;            /* gray-50  #f9fafb */
+  --foreground: 215 28% 17%;            /* gray-800 #1f2937 */
+
+  --card: 0 0% 100%;
+  --card-foreground: 215 28% 17%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 28% 17%;
+
+  --primary: 221 83% 53%;              /* blue-600 #2563eb */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 14% 96%;            /* gray-100 #f3f4f6 */
+  --secondary-foreground: 215 28% 17%;
+
+  --muted: 220 14% 96%;               /* gray-100 */
+  --muted-foreground: 220 9% 46%;      /* gray-500 #6b7280 */
+
+  --accent: 220 14% 96%;              /* gray-100 — hover ground */
+  --accent-foreground: 215 28% 17%;
+
+  --destructive: 0 72% 51%;           /* red-600 #dc2626 */
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 220 13% 91%;              /* gray-200 #e5e7eb */
+  --input: 220 13% 91%;
+  --ring: 221 39% 11%;               /* gray-900 — used at low opacity, see the
+                                         house focus ring below */
+
+  --radius: 0.75rem;                  /* 12px — the house button radius (§5) */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* The signature glass surface as one class, so the recipe is not retyped per
+   component and the reduced-transparency escape below has a single hook.
+   Matches .ai-style-guide.md §3 "Glass panel". */
+@layer components {
+  .glass {
+    @apply border border-white/60 bg-white/80 shadow-sm backdrop-blur-md;
+  }
+}
+
+/* The house focus ring (.ai-style-guide.md §5 "Focus"): a neutral 2px ring at
+   15% ink, never the accent colour. shadcn components are retuned to this in
+   components/ui; this utility is for hand-written controls. */
+@layer utilities {
+  .ring-house {
+    @apply outline-none ring-2 ring-gray-900/15;
+  }
+}
+
 @keyframes colorCycle {
   0%   { color: #06b6d4; }
   33%  { color: #8b5cf6; }
@@ -397,14 +463,13 @@
 }
 
 /* Reduced transparency gets an escape, the same way every looping animation
-   gets a reduced-motion one. The glass recipe is applied as raw utilities
-   (bg-white/80 + backdrop-blur-md) on each component rather than through a
-   shared .glass class, so the escape overrides those utilities in place: kill
-   the blur and take every near-white translucent fill to solid. Scrims are
-   deliberately left alone. They are doing depth work, not holding text, and a
-   solid scrim would paint over the map entirely. If a .glass-* component class
-   is ever introduced, move this onto it and drop the utility selectors. */
+   gets a reduced-motion one. Two hooks: the shared `.glass` class, and the raw
+   utilities still used directly on some components (bg-white/80 +
+   backdrop-blur-md). Both drop the blur and take every near-white translucent
+   fill to solid. Scrims are deliberately left alone. They are doing depth work,
+   not holding text, and a solid scrim would paint over the map entirely. */
 @media (prefers-reduced-transparency: reduce) {
+  .glass,
   .backdrop-blur-sm,
   .backdrop-blur-md,
   .backdrop-blur-xl,
@@ -414,6 +479,7 @@
     backdrop-filter: none;
   }
 
+  .glass,
   .bg-white\/70,
   .bg-white\/80,
   .bg-white\/90,
