@@ -8,7 +8,7 @@ export default function Navbar() {
   return (
     <>
       {/* Mobile top bar — logo only, in normal document flow; nav links stay in the bottom bar */}
-      <header className="flex h-header flex-shrink-0 items-center bg-stone-50 px-4 md:hidden">
+      <header className="flex h-header flex-shrink-0 items-center border-b border-gray-200/70 bg-stone-50 px-4 md:hidden">
         <Logo size="sm" />
       </header>
 

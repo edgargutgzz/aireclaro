@@ -7,7 +7,7 @@ import Logo from "@/components/navbar/logo";
 // text links. Desktop only - mobile keeps its own bottom nav bar.
 export default function SiteHeader() {
   return (
-    <header className="hidden h-header items-center bg-stone-50 md:flex">
+    <header className="hidden h-header items-center border-b border-gray-200/70 bg-stone-50 md:flex">
       {/* Full bleed rather than a centred max-w container. Everything below
           this bar is laid out against the viewport, so a boxed header left the
           logo around 100px inside the app's own left edge on a wide screen.

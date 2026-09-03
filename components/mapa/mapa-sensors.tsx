@@ -48,6 +48,12 @@ import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 // so if it's filtered out (Capas → gobierno off) the card is simply empty.
 const DEFAULT_SENSOR_ID = "CE";
 
+// light-v11's ground is near-white; these repaint it into the chrome's warm-grey
+// stone family so the white .glass panels and the stone-50 header separate from
+// the map by tone, not just blur. Applied on style.load (see below).
+const BASEMAP_GROUND = "#e7e5e4"; // stone-200
+const BASEMAP_WATER = "#d8dee2"; // one step cooler + deeper than the ground
+
 export default function MapaSensors({
   sensors,
   data,
@@ -598,11 +604,31 @@ export default function MapaSensors({
     );
 
     map.current.on("style.load", () => {
+      const m = map.current as any;
       // Classic Light labels follow the viewer's locale; pin to Spanish.
       try {
-        (map.current as any).setLanguage("es");
+        m.setLanguage("es");
       } catch {
         // API shape shift — labels fall back to locale, harmless
+      }
+      // light-v11's ground is near-white, so the white .glass panels and the
+      // stone-50 header have nothing to separate against. Deepen the ground to
+      // stone-200 — same warm-grey family as the chrome — so the panels read as
+      // floating and the header reads as chrome. Water nudged one step cooler.
+      try {
+        for (const layer of m.getStyle()?.layers ?? []) {
+          if (layer.type === "background") {
+            m.setPaintProperty(layer.id, "background-color", BASEMAP_GROUND);
+          }
+        }
+        if (m.getLayer("land")) {
+          const t = m.getLayer("land").type;
+          if (t === "background") m.setPaintProperty("land", "background-color", BASEMAP_GROUND);
+          else if (t === "fill") m.setPaintProperty("land", "fill-color", BASEMAP_GROUND);
+        }
+        if (m.getLayer("water")) m.setPaintProperty("water", "fill-color", BASEMAP_WATER);
+      } catch {
+        // upstream layer shape changed — basemap still renders, just paler
       }
     });
 
