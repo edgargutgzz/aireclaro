@@ -26,9 +26,11 @@ proposing freely — they inform judgment, they don't replace it.
    established pattern, framework, or library. Don't reinvent the wheel.
 2. **It works first, before how it looks.** Loads fast. Doesn't break. Function
    before form.
-3. **Then how it looks — consistency and order before aesthetics.** Follow
-   `.ai-style-guide.md`, reuse the same conventions, tokens, and components.
-   Interactive primitives come from **shadcn/ui** (`components/ui/`, added with
+3. **Then how it looks — consistency and order before aesthetics.** Reuse the
+   same conventions, tokens, and components; consult `.ai-style-guide.md` when
+   adding a **new component** or changing a **token** (a one-off tweak to an
+   existing component doesn't need a full read). Interactive primitives come
+   from **shadcn/ui** (`components/ui/`, added with
    `pnpm dlx shadcn@2.10.0 add <name>` — pinned to 2.x, this repo is Tailwind
    v3); don't hand-roll a control shadcn covers. Taste calls ("lighter /
    stronger / nicer") come *after* consistency is in place, and are never a
@@ -59,9 +61,9 @@ pnpm exec tsc --noEmit   # the type gate
 | Doc | For |
 |---|---|
 | `README.md` | what the platform is, quickstart, the doc index |
-| `docs/architecture.md` | data model, ingestion boundary, home-page flow, API routes, the `field_history` RPC, URL-state model, `/datos` |
+| `docs/architecture.md` | data model, ingestion boundary, home-page flow, the GL marker field, API routes, the `field_history` RPC, URL-state model, `/datos` |
 | `docs/methodology.md` | how readings are presented, data sources & their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license/citation status |
-| `.ai-style-guide.md` | the visual contract — read before writing **any** UI |
+| `.ai-style-guide.md` | the visual contract (tokens, spacing, component recipes) — consult for a new component or a token change |
 
 ## Hiding / showing a PurpleAir sensor
 
