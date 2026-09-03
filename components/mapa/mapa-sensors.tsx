@@ -1453,6 +1453,21 @@ export default function MapaSensors({
   // number never disagree.
   const [hoveredHistory, setHoveredHistory] = useState<HistoryPoint | null>(null);
 
+  // Desktop drops the default-station card at rest: the right column is empty
+  // and the map stands alone until a marker is picked. Mobile still rests its
+  // sheet on the default station, so the fallback applies there. Tracked in
+  // state (not just a CSS `md:` toggle) because the active-marker pulse has to
+  // follow the card — no card, no pulse. Starts false so SSR and the first
+  // client render agree; the effect promotes it on a wide viewport.
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const sync = () => setIsDesktop(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   // Time scrubber (desktop). `scrubIndex` null = live; a number indexes into
   // fieldHistory.hours. fieldHistory is the whole field over a recent window,
   // fetched once so a scrub step is a lookup, not a request.
@@ -1685,10 +1700,13 @@ export default function MapaSensors({
     };
   }, [cardSubject, latestReading, now]);
 
-  // The marker that wears the pulse: the card's station (picked, else Obispado).
-  // Mirrored into refs so the map event handlers read the current value
-  // without being rebuilt on each pick.
-  const activeSensorId = cardSubject?.sensor.sensor_id ?? null;
+  // The marker that wears the pulse: the card's station. On desktop that is the
+  // explicit pick only (empty right column and no pulse at rest); on mobile the
+  // sheet still rests on Obispado, so the fallback carries. Mirrored into refs
+  // so the map event handlers read the current value without being rebuilt on
+  // each pick.
+  const pulseSubject = isDesktop ? selectedSensor : cardSubject;
+  const activeSensorId = pulseSubject?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
 
   // While scrubbing, the card's sparkline is a 48h window ending at the
@@ -1973,8 +1991,8 @@ export default function MapaSensors({
   // own air-quality ink (yellow and green barely register as a ring on
   // a light map; the darker tone also keeps the ring off the circle it wraps).
   // syncActive owns the DOM writes; the field-build effect calls it too, this
-  // re-runs it when only the pick changes. No resize, no dimming of the rest:
-  // there is always a default active sensor, so that would read as broken.
+  // re-runs it when only the pick changes (including desktop dropping to no
+  // pick, which clears the pulse). No resize, no dimming of the rest.
   useEffect(() => {
     if (!mapLoaded) return;
     syncActive();
@@ -2058,14 +2076,15 @@ export default function MapaSensors({
     return () => window.clearTimeout(id);
   }, [scrubPlaying, scrubIndex, scrubSpeed, fieldHistory]);
 
-  // Close the estación card back to its rest state — the default station
-  // (Obispado). On mobile that also collapses the sheet to peek.
+  // Close the estación card. On desktop the right column goes empty; on mobile
+  // the sheet falls back to the default station (Obispado) and collapses to peek.
   const closeCard = useCallback(() => {
     setSelectedSensor(null);
     setSheetState('peek');
   }, []);
 
-  // Clicking empty map dismisses a picked sensor (back to the default station).
+  // Clicking empty map dismisses a picked sensor (desktop back to nothing,
+  // mobile back to the default station).
   // Mapbox fires `click` only on a genuine click, not a drag/pan, and the
   // marker's own handler stops propagation, so this only catches clicks that
   // missed every disc.
@@ -2249,9 +2268,9 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column. At rest it shows the default station (Obispado);
-          picking a marker swaps it and adds an X that closes back to the
-          default (also Escape and a click on empty map). */}
+      {/* Desktop right column. Empty at rest — the map stands alone; picking a
+          marker opens the card, and the X / Escape / a click on empty map close
+          it back to nothing. */}
       <div className="pointer-events-none absolute bottom-10 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
         {/* flex-1 so this wrapper takes the column height left over the
@@ -2259,9 +2278,9 @@ export default function MapaSensors({
             own overflow-y-auto body scrolls instead of the card overrunning
             into the scrubber when the recommendations are expanded. */}
         <div className="flex min-h-0 w-panel-lg flex-1 flex-col">
-        {cardSubject && (() => {
-          const { sensor, textColor } = cardSubject;
-          const pm25 = framePm25(sensor.sensor_id, cardSubject.pm25);
+        {selectedSensor && (() => {
+          const { sensor, textColor } = selectedSensor;
+          const pm25 = framePm25(sensor.sensor_id, selectedSensor.pm25);
           const isSima = sensor.source === "sima";
           const sensorName = isSima && sensor.nombre_display ? sensor.nombre_display : sensor.nombre;
           const sensorQuality = getQualityInfo(pm25);
@@ -2269,16 +2288,14 @@ export default function MapaSensors({
             <div className="glass pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl">
               <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
                 <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">{sensorName}</span>
-                {selectedSensor && (
-                  <button
-                    type="button"
-                    onClick={closeCard}
-                    aria-label="Cerrar"
-                    className="-my-1 -mr-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                  >
-                    <X aria-hidden="true" className="h-4 w-4" />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={closeCard}
+                  aria-label="Cerrar"
+                  className="-my-1 -mr-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                >
+                  <X aria-hidden="true" className="h-4 w-4" />
+                </button>
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <div className={`disclosure-in flex flex-col gap-5 px-5 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
