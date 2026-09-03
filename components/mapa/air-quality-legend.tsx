@@ -99,7 +99,7 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
     return (
       <div className={className}>
         <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-          Calidad del aire
+          Calidad del aire mexicano
         </p>
         <ScaleBar className="mt-3" />
         <LegendDetail className="mt-3 border-t border-gray-100 pt-3" />
@@ -122,7 +122,7 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
         className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
       >
         <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-          Calidad del aire
+          Calidad del aire mexicano
         </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
             now framed by the "PM2.5 · μg/m³" line the disclosure reveals just
