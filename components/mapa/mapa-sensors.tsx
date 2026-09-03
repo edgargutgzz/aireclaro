@@ -891,7 +891,7 @@ function LayersFilterContent({
   const [openEstados, setOpenEstados] = useState<string[]>([]);
   // One section open at a time: three expanded sections is how a filter panel
   // grows past the map it filters.
-  const [openSection, setOpenSection] = useState<'ubicacion' | 'fuente' | 'contaminante' | null>('ubicacion');
+  const [openSection, setOpenSection] = useState<'ubicacion' | 'fuente' | 'contaminante' | null>('fuente');
   const toggleSection = (name: 'ubicacion' | 'fuente' | 'contaminante') =>
     setOpenSection((current) => (current === name ? null : name));
   const citizenState: CheckState =
@@ -966,76 +966,9 @@ function LayersFilterContent({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      {/* Ubicación — state, then its municipalities. Every sensor sits under a
-          row, so hiding everything really does empty the map. */}
+      {/* Fuente first — the network is the primary cut, and it now drives
+          the Ubicación counts below. */}
       <div>
-        {sectionRow('ubicacion', 'Ubicación', ubicacionSummary)}
-        {openSection === 'ubicacion' && (
-          <div className="disclosure-in border-t border-gray-100 bg-gray-50/60">
-            {estados.map((estado, i) => {
-              const keys = estado.municipios.map((m) => m.key);
-              const hidden = keys.filter((k) => hiddenMunicipios.includes(k)).length;
-              const state: CheckState = hidden === 0 ? 'checked' : hidden === keys.length ? 'unchecked' : 'indeterminate';
-              const open = openEstados.includes(estado.key);
-              return (
-                <div key={estado.key} className={i > 0 ? "border-t border-gray-100" : ""}>
-                  <div className="flex w-full items-center transition-colors hover:bg-gray-100/70">
-                    <button
-                      type="button"
-                      role="checkbox"
-                      aria-checked={state === 'indeterminate' ? 'mixed' : state === 'checked'}
-                      onClick={() => setHiddenMunicipios((prev) => state === 'checked'
-                        ? [...prev, ...keys.filter((k) => !prev.includes(k))]
-                        : prev.filter((k) => !keys.includes(k)))}
-                      className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
-                    >
-                      <LayerCheckbox state={state} size={boxSize} />
-                      <span className={`min-w-0 flex-1 truncate text-sm font-medium ${state === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
-                        {estado.label}
-                      </span>
-                      <span className="flex-shrink-0 text-xs text-gray-500">{estado.count}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setOpenEstados((prev) => open ? prev.filter((k) => k !== estado.key) : [...prev, estado.key])}
-                      className="mr-2 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-200/70 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                      aria-expanded={open}
-                      aria-label={open ? `Ocultar municipios de ${estado.label}` : `Mostrar municipios de ${estado.label}`}
-                    >
-                      <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
-                    </button>
-                  </div>
-                  {open && (
-                    <div role="group" aria-label={`Municipios de ${estado.label}`} className="disclosure-in flex flex-col">
-                      {estado.municipios.map((m) => {
-                        const on = !hiddenMunicipios.includes(m.key);
-                        return (
-                          <div key={m.key} className="flex items-center border-t border-gray-100 transition-colors hover:bg-gray-100/70">
-                            <button
-                              type="button"
-                              role="checkbox"
-                              aria-checked={on}
-                              onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
-                              className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
-                            >
-                              <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
-                              <span className={`min-w-0 flex-1 truncate text-sm ${on ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
-                              <span className="flex-shrink-0 text-xs text-gray-500">{m.count}</span>
-                            </button>
-                            {trailingSlot}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      <div className="border-t border-gray-100">
         {sectionRow('fuente', 'Fuente', fuenteSummary, {
           onClick: onShowFuenteInfo,
           ariaLabel: "Más información sobre las fuentes de datos",
@@ -1122,6 +1055,75 @@ function LayersFilterContent({
               </button>
               {trailingSlot}
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Ubicación — state, then its municipalities. Every sensor sits under a
+          row, so hiding everything really does empty the map. */}
+      <div className="border-t border-gray-100">
+        {sectionRow('ubicacion', 'Ubicación', ubicacionSummary)}
+        {openSection === 'ubicacion' && (
+          <div className="disclosure-in border-t border-gray-100 bg-gray-50/60">
+            {estados.map((estado, i) => {
+              const keys = estado.municipios.map((m) => m.key);
+              const hidden = keys.filter((k) => hiddenMunicipios.includes(k)).length;
+              const state: CheckState = hidden === 0 ? 'checked' : hidden === keys.length ? 'unchecked' : 'indeterminate';
+              const open = openEstados.includes(estado.key);
+              return (
+                <div key={estado.key} className={i > 0 ? "border-t border-gray-100" : ""}>
+                  <div className="flex w-full items-center transition-colors hover:bg-gray-100/70">
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={state === 'indeterminate' ? 'mixed' : state === 'checked'}
+                      onClick={() => setHiddenMunicipios((prev) => state === 'checked'
+                        ? [...prev, ...keys.filter((k) => !prev.includes(k))]
+                        : prev.filter((k) => !keys.includes(k)))}
+                      className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
+                    >
+                      <LayerCheckbox state={state} size={boxSize} />
+                      <span className={`min-w-0 flex-1 truncate text-sm font-medium ${state === 'unchecked' ? 'text-gray-400' : 'text-gray-800'}`}>
+                        {estado.label}
+                      </span>
+                      <span className="flex-shrink-0 text-xs text-gray-500">{estado.count}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOpenEstados((prev) => open ? prev.filter((k) => k !== estado.key) : [...prev, estado.key])}
+                      className="mr-2 flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-200/70 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                      aria-expanded={open}
+                      aria-label={open ? `Ocultar municipios de ${estado.label}` : `Mostrar municipios de ${estado.label}`}
+                    >
+                      <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
+                    </button>
+                  </div>
+                  {open && (
+                    <div role="group" aria-label={`Municipios de ${estado.label}`} className="disclosure-in flex flex-col">
+                      {estado.municipios.map((m) => {
+                        const on = !hiddenMunicipios.includes(m.key);
+                        return (
+                          <div key={m.key} className="flex items-center border-t border-gray-100 transition-colors hover:bg-gray-100/70">
+                            <button
+                              type="button"
+                              role="checkbox"
+                              aria-checked={on}
+                              onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
+                              className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${subRowPadding}`}
+                            >
+                              <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
+                              <span className={`min-w-0 flex-1 truncate text-sm ${on ? 'text-gray-600' : 'text-gray-400'}`}>{m.label}</span>
+                              <span className="flex-shrink-0 text-xs text-gray-500">{m.count}</span>
+                            </button>
+                            {trailingSlot}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
