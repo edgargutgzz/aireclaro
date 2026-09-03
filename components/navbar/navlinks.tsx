@@ -2,28 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import clsx from "clsx";
 import { Map, BarChart3 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 // Shared pill-style nav links, used in both the mobile bottom bar and the
 // desktop SiteHeader. Renders <li> elements: both callers wrap this in a <ul>
-// inside a <nav>.
-// Both destinations are live. A link can still be marked `pending: true` to
-// list it without offering it — it then renders as a plain <span> (out of the
-// tab order, nothing pressable) with a standing "not yet" cue: a "Próx." badge
-// on desktop, a bare dot on the mobile bar. See the pending branch below.
+// inside a <nav>. The pill is the shadcn Button's `nav` variant/size (shape,
+// gray-600 resting ink, house focus ring, 20px icons); the state classes
+// below layer on top.
+//
+// A link can still be marked `pending: true` to list it without offering it —
+// it then renders as a plain <span> (out of the tab order, nothing pressable)
+// with a standing "not yet" cue: a "Próx." badge on desktop, a bare dot on the
+// mobile bar. See the pending branch below.
 const links = [
   { name: "Mapa", href: "/", icon: Map, pending: false },
   { name: "Datos", href: "/datos", icon: BarChart3, pending: false },
 ];
 
-// One pill recipe, both breakpoints. Mobile: a full-width, centred tab that
-// fills its flex-1 slot, so the three sit on an even rhythm and the row never
-// overruns a narrow (320-360px) bar the way three content-sized px-5 pills
-// did. Desktop (md:) restores the approved SiteHeader pill exactly:
-// content-sized, left-aligned, px-5 py-2.5.
-const pill =
-  "flex w-full items-center justify-center gap-2 rounded-full border border-transparent px-2 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 md:w-auto md:justify-start md:px-5 md:py-2.5";
+// The base pill, straight from the Button variant — used as-is for the pending
+// span, and as the starting point for each live link.
+const navPill = buttonVariants({ variant: "nav", size: "nav" });
 
 // A filled current-page pill marks a choice. With more than one live link the
 // nav can take you somewhere, so the current pill gets a fill: the white glass
@@ -49,7 +49,7 @@ export default function Navlinks() {
                   tech with the whole word given after it. The badge does not
                   fit the mobile bar three-across, so there a bare gray dot
                   carries the same "not yet"; the sr-only word covers both. */}
-              <span className={clsx(pill, "text-gray-500")}>
+              <span className={cn(navPill, "text-gray-500")}>
                 <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
                 <span className="text-sm font-medium">{link.name}</span>
                 <span
@@ -72,36 +72,35 @@ export default function Navlinks() {
 
         return (
           <li key={link.name} className="flex-1 md:flex-initial">
-            {/* The pill is the link, rather than a block div inside an inline
-                anchor: the focus ring and the hit area both used to be
-                measured off the inline box instead of the pill you can see.
-                aria-current is the only thing that tells assistive tech which
-                page this is, the styling alone said nothing. */}
-            <Link
-              href={link.href}
-              aria-current={isCurrent ? "page" : undefined}
-              className={clsx(pill, {
+            {/* The pill is the link itself (Button asChild → the <a>), so the
+                focus ring and hit area match what you see. aria-current is the
+                only thing that tells assistive tech which page this is. */}
+            <Button
+              asChild
+              variant="nav"
+              size="nav"
+              className={cn({
                 // Fallback for a single live link: "current" is just darker
-                // ink, font-semibold (below) and aria-current, no fill. See
-                // soloOnDesktop above.
+                // ink, font-semibold (below) and aria-current, no fill.
                 "text-gray-700 md:hover:bg-black/[0.04]": isCurrent && soloOnDesktop,
                 // Two or more live links: the current pill takes a fill.
                 // Desktop takes the white glass pill (no backdrop-blur: the
-                // stone-50 header behind it is opaque, nothing to blur).
-                // The mobile bottom bar is itself glass, so white would
-                // vanish on it and it takes a blue wash instead.
+                // stone-50 header behind it is opaque). The mobile bottom bar
+                // is itself glass, so white would vanish on it and it takes a
+                // blue wash instead.
                 "border-blue-200 bg-blue-50 text-blue-600 md:border-white/60 md:bg-white md:text-gray-700 md:shadow-sm":
                   isCurrent && !soloOnDesktop,
-                // gray-600, not gray-400: an unselected label sat at 2.5:1 on
-                // this background, against the 4.5:1 text asks for.
-                "text-gray-600 hover:bg-black/[0.04]": !isCurrent,
+                // Resting hover. gray-600 ink already comes from the variant.
+                "hover:bg-black/[0.04]": !isCurrent,
               })}
             >
-              <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-              <span className={clsx("text-sm", isCurrent ? "font-semibold" : "font-medium")}>
-                {link.name}
-              </span>
-            </Link>
+              <Link href={link.href} aria-current={isCurrent ? "page" : undefined}>
+                <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                <span className={cn("text-sm", isCurrent ? "font-semibold" : "font-medium")}>
+                  {link.name}
+                </span>
+              </Link>
+            </Button>
           </li>
         );
       })}

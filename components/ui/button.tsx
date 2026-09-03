@@ -23,12 +23,20 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // The navbar pill (.ai-style-guide.md §5 "Nav pill"): a block flex row
+        // (not the base `inline-flex`), rounded-full, transparent border,
+        // gray-600 resting ink, 20px icons. Callers layer the current-page /
+        // pending state classes on top via `className`.
+        nav: "flex rounded-full border border-transparent text-gray-600 [&_svg]:size-5",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 px-3 text-xs",
         lg: "h-10 px-8",
         icon: "h-9 w-9",
+        // Full-width centred tab on the mobile bar, content-sized left-aligned
+        // pill on desktop.
+        nav: "w-full gap-2 px-2 py-3 md:w-auto md:justify-start md:px-5 md:py-2.5",
       },
     },
     defaultVariants: {
