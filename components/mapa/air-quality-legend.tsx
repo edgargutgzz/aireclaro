@@ -77,7 +77,7 @@ export function LegendDetail({ className = "" }: { className?: string }) {
       {/* More air under the citation on mobile, where the level list runs right
           up against it in the bottom sheet; the desktop rail keeps mt-3. */}
       <p className="mt-5 text-[11px] leading-relaxed text-gray-400 md:mt-3">
-        Índice de Aire y Salud mexicano{" "}
+        Índice de Aire y Salud Mexicano{" "}
         <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
           NOM-172-SEMARNAT-2023
         </DialogLink>
