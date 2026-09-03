@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
-import { ChevronRight, Check, Copy, Layers, Wind, X } from "lucide-react";
+import { ChevronRight, Layers, Wind, X } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
-import { getMarkerFill, getMarkerFillHex, getLevel, createMarker, roundPM25, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
+import { getMarkerFill, getMarkerFillHex, getLevel, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, writeScrubParam } from "@/lib/map-url-state";
 import { parseMonterreyNaive } from "@/lib/monterrey-time";
@@ -15,8 +15,6 @@ import {
   SPARKLINE_COLOR,
   municipioKey,
   estadoKey,
-  getSourceLabel,
-  getSourceIcon,
   getRelativeDayLabel,
   prefersReducedMotion,
   buildSelection,
@@ -34,12 +32,11 @@ import {
   makeSimaBadge,
   FIELD_RADIUS,
 } from "./field-layer";
-import { Sparkline, SparklineSkeleton } from "./sparkline";
 import { TimeScrubber, TimeScrubberSkeleton } from "./time-scrubber";
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
-import { QualityHeadline, HealthRecommendations } from "./station-card";
-import { DialogLink, InfoDialog, InfoSection } from "./info-dialog";
+import { HealthRecommendations, StationReading } from "./station-card";
+import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 
 // Initialize Mapbox
 (mapboxgl as any).accessToken =
@@ -102,9 +99,6 @@ export default function MapaSensors({
   const [showOtros, setShowOtros] = useState(() => seedSource("otros"));
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showPM25Info, setShowPM25Info] = useState(false);
-  // One pollutant open at a time in its popup; opening another closes it.
-  const [openPollutant, setOpenPollutant] = useState<string | null>("PM2.5");
-  const [openFuente, setOpenFuente] = useState<string | null>("Sensores Ciudadanos");
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
   const [showSima, setShowSima] = useState(() => seedSource("gob"));
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>(seedHidden);
@@ -368,8 +362,6 @@ export default function MapaSensors({
     const id = window.setInterval(tick, 60_000);
     return () => window.clearInterval(id);
   }, []);
-
-  const hoveredQuality = hoveredHistory ? getQualityInfo(hoveredHistory.pm25) : null;
 
   // The scrubber's readout reports the reading on screen: the card's station
   // (picked, else Obispado), else the newest anywhere in the live set. Sensors
@@ -982,6 +974,14 @@ export default function MapaSensors({
     setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
   }, []);
 
+  // Copy a station's coordinates and flash the "Copiado" state for 1.5s. Shared
+  // by the desktop card and the mobile sheet's copy button.
+  const copyCoords = useCallback((lat: number, lon: number) => {
+    navigator.clipboard.writeText(`${lat.toFixed(5)}, ${lon.toFixed(5)}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }, []);
+
   return (
     <div className="relative h-below-header">
       {/* Map container */}
@@ -1158,15 +1158,13 @@ export default function MapaSensors({
             into the scrubber when the recommendations are expanded. */}
         <div className="flex min-h-0 w-panel-lg flex-1 flex-col">
         {selectedSensor && (() => {
-          const { sensor, textColor } = selectedSensor;
+          const { sensor } = selectedSensor;
           const pm25 = framePm25(sensor.sensor_id, selectedSensor.pm25);
-          const isSima = sensor.source === "sima";
-          const sensorName = displayName(sensor);
           const sensorQuality = getQualityInfo(pm25);
           return (
             <div className="glass pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl">
               <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
-                <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">{sensorName}</span>
+                <span className="min-w-0 flex-1 truncate text-base font-medium text-gray-700">{displayName(sensor)}</span>
                 <button
                   type="button"
                   onClick={closeCard}
@@ -1178,52 +1176,18 @@ export default function MapaSensors({
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <div className={`disclosure-in flex flex-col gap-5 px-5 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
-                  {/* What kind of source this is, in the Capas panel's own
-                      words. A rule underneath closes the group off from the
-                      reading below: a card or a filled row is too much
-                      furniture for a single line. */}
-                  <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
-                    <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
-                      {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
-                      <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${sensor.lat.toFixed(5)}, ${sensor.lon.toFixed(5)}`);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
-                      }}
-                      className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                      aria-label="Copiar coordenadas"
-                    >
-                      {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-                      <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                    </button>
-                  </div>
-
-                  {/* Reading now and the last 48h are one story: the big
-                      number is just the newest point on the chart below it. */}
-                  <div className="flex flex-col gap-3">
-                    <div>
-                      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-                      <div className="flex items-baseline justify-between gap-3">
-                        <QualityHeadline info={hoveredQuality ?? sensorQuality} fallbackColor={textColor} />
-                        {/* The chips' idiom: the number is the value and
-                            carries gray-700, the unit is the quiet half. */}
-                        {(hoveredHistory?.pm25 ?? pm25) !== null && (
-                          <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
-                            <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? pm25)}</span> μg/m³ PM2.5
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {/* Trend sparkline — power-user context (raw history, not just a snapshot).
-                        `key` on the sensor id so each new pick remounts and replays the wipe. */}
-                    <div>
-                      {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={String(sensor.sensor_id)} data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} animateIn />}
-                    </div>
-                  </div>
+                  <StationReading
+                    subject={selectedSensor}
+                    pm25={pm25}
+                    hovered={hoveredHistory}
+                    sparkLoading={sparkLoading}
+                    sparkData={sparkData}
+                    sparkWindowLabel={sparkWindowLabel}
+                    onHoverChange={setHoveredHistory}
+                    copied={copied}
+                    onCopyCoords={() => copyCoords(sensor.lat, sensor.lon)}
+                    copyInteractionClass="hover:text-gray-700"
+                  />
                 </div>
 
                 {/* Recommendations — collapsed by default, not needed for a data-first platform */}
@@ -1352,13 +1316,9 @@ export default function MapaSensors({
       {(() => {
         const subj = cardSubject;
         const s = subj?.sensor;
-        const isSima = s?.source === "sima";
         const name = s ? displayName(s) : "";
         const pm25 = subj ? framePm25(s!.sensor_id, subj.pm25) : null;
         const quality = getQualityInfo(pm25);
-        const sourceLabel = s ? getSourceLabel(isSima, s.red) : "";
-        const lat = s?.lat ?? null;
-        const lon = s?.lon ?? null;
 
         return (
       <div
@@ -1399,44 +1359,18 @@ export default function MapaSensors({
           className={`relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-2 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
         >
             <div className="flex flex-col gap-5">
-              <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
-                <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
-                  {(() => { const SourceIcon = getSourceIcon(isSima); return <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />; })()}
-                  <span className="truncate">{sourceLabel}</span>
-                </span>
-                {lat !== null && lon !== null && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(`${lat.toFixed(5)}, ${lon.toFixed(5)}`);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 1500);
-                    }}
-                    className="-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                    aria-label="Copiar coordenadas"
-                  >
-                    {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
-                    <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
-                  </button>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <div>
-                  <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-                  <div className="flex items-baseline justify-between gap-3">
-                    <QualityHeadline info={hoveredQuality ?? quality} fallbackColor={subj.textColor} />
-                    {(hoveredHistory?.pm25 ?? pm25) !== null && (
-                      <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
-                        <span className="font-medium text-gray-700">{roundPM25(hoveredHistory?.pm25 ?? pm25)}</span> μg/m³ PM2.5
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={String(s!.sensor_id)} data={sparkData} onHoverChange={setHoveredHistory} windowLabel={sparkWindowLabel} animateIn />}
-                </div>
-              </div>
+              <StationReading
+                subject={subj}
+                pm25={pm25}
+                hovered={hoveredHistory}
+                sparkLoading={sparkLoading}
+                sparkData={sparkData}
+                sparkWindowLabel={sparkWindowLabel}
+                onHoverChange={setHoveredHistory}
+                copied={copied}
+                onCopyCoords={() => copyCoords(s!.lat, s!.lon)}
+                copyInteractionClass="active:opacity-70"
+              />
 
               {quality && (
                 <div className="relative z-[1] border-t border-gray-100 pt-5">
@@ -1484,86 +1418,88 @@ export default function MapaSensors({
 
       {/* Fuente info popup — covers both sources in one place instead of a separate icon per row */}
       {showFuenteInfo && (
-        <InfoDialog
+        <AccordionDialog
           title="Fuente"
-          onClose={() => { setShowFuenteInfo(false); setOpenFuente("Sensores Ciudadanos"); }}
-        >
-          <div className="overflow-hidden rounded-2xl border border-gray-200">
-            <InfoSection
-              title="Sensores Ciudadanos"
-              open={openFuente === "Sensores Ciudadanos"}
-              onToggle={() => setOpenFuente((v) => (v === "Sensores Ciudadanos" ? null : "Sensores Ciudadanos"))}
-            >
-              <p>
-                Sensores de bajo costo que forman parte de{" "}
-                <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
-                , una red global de monitoreo comunitario instalada por
-                ciudadanos, escuelas y organizaciones independientes.
-              </p>
-              <p className="mt-2">
-                Al ser de bajo costo, no están calibrados como las estaciones
-                oficiales y pueden sobreestimar las PM2.5 cuando hay mucha
-                humedad.
-              </p>
-            </InfoSection>
-            <InfoSection
-              title="Estaciones de Gobierno"
-              open={openFuente === "Estaciones de Gobierno"}
-              onToggle={() => setOpenFuente((v) => (v === "Estaciones de Gobierno" ? null : "Estaciones de Gobierno"))}
-            >
-              Estaciones de monitoreo que forman parte del{" "}
-              <DialogLink href="https://aire.nl.gob.mx/">
-                Sistema Integral de Monitoreo Ambiental (SIMA)
-              </DialogLink>
-              , operado por el Gobierno de Nuevo León.
-            </InfoSection>
-          </div>
-        </InfoDialog>
+          onClose={() => setShowFuenteInfo(false)}
+          sections={[
+            {
+              title: "Sensores Ciudadanos",
+              body: (
+                <>
+                  <p>
+                    Sensores de bajo costo que forman parte de{" "}
+                    <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
+                    , una red global de monitoreo comunitario instalada por
+                    ciudadanos, escuelas y organizaciones independientes.
+                  </p>
+                  <p className="mt-2">
+                    Al ser de bajo costo, no están calibrados como las estaciones
+                    oficiales y pueden sobreestimar las PM2.5 cuando hay mucha
+                    humedad.
+                  </p>
+                </>
+              ),
+            },
+            {
+              title: "Estaciones de Gobierno",
+              body: (
+                <>
+                  Estaciones de monitoreo que forman parte del{" "}
+                  <DialogLink href="https://aire.nl.gob.mx/">
+                    Sistema Integral de Monitoreo Ambiental (SIMA)
+                  </DialogLink>
+                  , operado por el Gobierno de Nuevo León.
+                </>
+              ),
+            },
+          ]}
+        />
       )}
 
-      {/* PM2.5 info popup */}
+      {/* PM2.5 info popup — PM2.5 is what the map shows, so it reads straight
+          away; the two we don't have yet stay one click away. */}
       {showPM25Info && (
-        <InfoDialog
+        <AccordionDialog
           title="Contaminante"
-          onClose={() => { setShowPM25Info(false); setOpenPollutant("PM2.5"); }}
-        >
-          {/* PM2.5 is what the map shows, so it reads straight away; the two
-              we don't have yet stay one click away. */}
-          <div className="overflow-hidden rounded-2xl border border-gray-200">
-            <InfoSection
-              title="PM2.5"
-              open={openPollutant === "PM2.5"}
-              onToggle={() => setOpenPollutant((v) => (v === "PM2.5" ? null : "PM2.5"))}
-            >
-              Partículas en suspensión en el aire con un diámetro de
-              2.5 micrómetros o menos, unas 30 veces más delgadas que
-              un cabello humano. Evaden las defensas de la nariz y la
-              garganta, por lo que son las más peligrosas para la
-              salud.
-            </InfoSection>
-            <InfoSection
-              title="PM10"
-              open={openPollutant === "PM10"}
-              onToggle={() => setOpenPollutant((v) => (v === "PM10" ? null : "PM10"))}
-            >
-              Partículas de mayor tamaño, con un diámetro de hasta 10
-              micrómetros. Quedan retenidas principalmente en la nariz
-              y la garganta, por lo que representan un menor riesgo
-              para la salud que las PM2.5.
-            </InfoSection>
-            <InfoSection
-              title="Ozono"
-              open={openPollutant === "Ozono"}
-              onToggle={() => setOpenPollutant((v) => (v === "Ozono" ? null : "Ozono"))}
-            >
-              Gas que no se emite directamente: se forma cuando la luz
-              solar reacciona con los gases del tráfico y la industria.
-              Alcanza sus niveles más altos en las tardes soleadas e
-              irrita las vías respiratorias, sobre todo al hacer
-              ejercicio al aire libre.
-            </InfoSection>
-          </div>
-        </InfoDialog>
+          onClose={() => setShowPM25Info(false)}
+          sections={[
+            {
+              title: "PM2.5",
+              body: (
+                <>
+                  Partículas en suspensión en el aire con un diámetro de
+                  2.5 micrómetros o menos, unas 30 veces más delgadas que
+                  un cabello humano. Evaden las defensas de la nariz y la
+                  garganta, por lo que son las más peligrosas para la
+                  salud.
+                </>
+              ),
+            },
+            {
+              title: "PM10",
+              body: (
+                <>
+                  Partículas de mayor tamaño, con un diámetro de hasta 10
+                  micrómetros. Quedan retenidas principalmente en la nariz
+                  y la garganta, por lo que representan un menor riesgo
+                  para la salud que las PM2.5.
+                </>
+              ),
+            },
+            {
+              title: "Ozono",
+              body: (
+                <>
+                  Gas que no se emite directamente: se forma cuando la luz
+                  solar reacciona con los gases del tráfico y la industria.
+                  Alcanza sus niveles más altos en las tardes soleadas e
+                  irrita las vías respiratorias, sobre todo al hacer
+                  ejercicio al aire libre.
+                </>
+              ),
+            },
+          ]}
+        />
       )}
 
     </div>

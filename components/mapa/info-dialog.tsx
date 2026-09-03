@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ChevronRight, X } from "lucide-react";
 
 // External links inside a dialog. One place for the underline, the rel
@@ -220,5 +220,38 @@ export function InfoSection({
         {children}
       </div>
     </div>
+  );
+}
+
+// An InfoDialog whose body is a single-open accordion — the shared shape of the
+// Fuente and Contaminante popups. Owns its own open-section state (keyed by
+// section title); it resets on close because each popup only mounts this while
+// its flag is set. `sections` renders top-to-bottom, the first open by default.
+export function AccordionDialog({
+  title,
+  onClose,
+  sections,
+}: {
+  title: string;
+  onClose: () => void;
+  sections: { title: string; body: React.ReactNode }[];
+}) {
+  const [open, setOpen] = useState<string | null>(sections[0]?.title ?? null);
+
+  return (
+    <InfoDialog title={title} onClose={onClose}>
+      <div className="overflow-hidden rounded-2xl border border-gray-200">
+        {sections.map((section) => (
+          <InfoSection
+            key={section.title}
+            title={section.title}
+            open={open === section.title}
+            onToggle={() => setOpen((v) => (v === section.title ? null : section.title))}
+          >
+            {section.body}
+          </InfoSection>
+        ))}
+      </div>
+    </InfoDialog>
   );
 }

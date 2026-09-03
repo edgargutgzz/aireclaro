@@ -1,8 +1,11 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, ChevronRight, Heart, Info, PersonStanding, Stethoscope, UsersRound } from "lucide-react";
-import type { QualityInfo } from "@/lib/air-quality";
+import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound } from "lucide-react";
+import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
+import type { HistoryPoint, SelectedSensor } from "./types";
+import { getSourceIcon, getSourceLabel } from "./lib";
+import { Sparkline, SparklineSkeleton } from "./sparkline";
 
 // The card's big quality line. With no reading for the moment on screen — a
 // SIMA station that didn't report that hour — it reads "No disponible" in the
@@ -128,5 +131,91 @@ export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }:
         </div>
       </div>
     </div>
+  );
+}
+
+// The shared middle of the estación card: the source line closed off by a
+// rule, then "Calidad del Aire" with the reading and its 48h trace. The
+// desktop card and the mobile sheet both render this; they differ only in the
+// header above it and how the health recommendations below it are wrapped, so
+// those stay at the call sites. Returns a fragment — the caller supplies the
+// flex column and its gap.
+export function StationReading({
+  subject,
+  pm25,
+  hovered,
+  sparkLoading,
+  sparkData,
+  sparkWindowLabel,
+  onHoverChange,
+  copied,
+  onCopyCoords,
+  copyInteractionClass,
+}: {
+  subject: SelectedSensor;
+  pm25: number | null;
+  hovered: HistoryPoint | null;
+  sparkLoading: boolean;
+  sparkData: HistoryPoint[];
+  sparkWindowLabel?: string;
+  onHoverChange: (point: HistoryPoint | null) => void;
+  copied: boolean;
+  onCopyCoords: () => void;
+  // The one class that differs between the two hosts: the desktop card darkens
+  // the label on hover, the mobile sheet dims it on tap.
+  copyInteractionClass: string;
+}) {
+  const { sensor } = subject;
+  const isSima = sensor.source === "sima";
+  const SourceIcon = getSourceIcon(isSima);
+  const quality = getQualityInfo(pm25);
+  const hoveredQuality = hovered ? getQualityInfo(hovered.pm25) : null;
+  const shownPm25 = hovered?.pm25 ?? pm25;
+
+  return (
+    <>
+      {/* What kind of source this is, in the Capas panel's own words. A rule
+          underneath closes the group off from the reading below: a card or a
+          filled row is too much furniture for a single line. */}
+      <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-5">
+        <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-gray-500">
+          <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+          <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
+        </span>
+        <button
+          type="button"
+          onClick={onCopyCoords}
+          className={`-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${copyInteractionClass}`}
+          aria-label="Copiar coordenadas"
+        >
+          {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}
+          <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
+        </button>
+      </div>
+
+      {/* Reading now and the last 48h are one story: the big number is just the
+          newest point on the chart below it. */}
+      <div className="flex flex-col gap-3">
+        <div>
+          <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+          <div className="flex items-baseline justify-between gap-3">
+            <QualityHeadline info={hoveredQuality ?? quality} fallbackColor={subject.textColor} />
+            {/* The chips' idiom: the number is the value and carries gray-700,
+                the unit is the quiet half. */}
+            {shownPm25 !== null && (
+              <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
+                <span className="font-medium text-gray-700">{roundPM25(shownPm25)}</span> μg/m³ PM2.5
+              </span>
+            )}
+          </div>
+        </div>
+        {/* Trend sparkline — power-user context (raw history, not just a
+            snapshot). `key` on the sensor id so each new pick remounts and
+            replays the wipe. */}
+        <div>
+          {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={String(sensor.sensor_id)} data={sparkData} onHoverChange={onHoverChange} windowLabel={sparkWindowLabel} animateIn />}
+        </div>
+      </div>
+    </>
   );
 }
