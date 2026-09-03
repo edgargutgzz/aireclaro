@@ -1396,15 +1396,22 @@ const FIELD_LAYER = "sensor-field-dots";
 // stroke width stays flat (below) so a shrunk disc keeps its "instrument" edge
 // instead of reading as basemap furniture, which is what killed the last
 // zoom-sizing attempt.
-const simaR = (sima: number, citizen: number) => [
-  "case", ["boolean", ["get", "isSima"], false], sima, citizen,
+// radius = (SIMA ? sima : citizen) * (hovered ? 1.14 : 1), evaluated per stop.
+// The zoom `interpolate` MUST stay top-level in the paint value — Mapbox
+// silently drops a layer whose zoom expression is nested inside `*` (this repo
+// hit that once already with an IDW layer), so the hover multiply is folded
+// into each stop's output instead of wrapping the whole interpolate.
+const stopR = (sima: number, citizen: number) => [
+  "*",
+  ["case", ["boolean", ["get", "isSima"], false], sima, citizen],
+  ["case", ["boolean", ["feature-state", "hover"], false], 1.14, 1],
 ];
 const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
-  8, simaR(3.5, 3),
-  11, simaR(6, 5),
-  13.5, simaR(10, 8.5),
-  16, simaR(15, 13),
+  8, stopR(3.5, 3),
+  11, stopR(6, 5),
+  13.5, stopR(10, 8.5),
+  16, stopR(15, 13),
 ];
 
 // MapaSensors component
@@ -1811,16 +1818,19 @@ export default function MapaSensors({
         const pm25 = readings.get(fid) ?? null;
         const hasReading = pm25 != null && pm25 > 0.4;
         if (!hasReading && !isSima) continue;
+        const lon = Number(sensor.lon);
+        const lat = Number(sensor.lat);
+        if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
         features.push({
           type: "Feature",
           id: fid,
-          geometry: { type: "Point", coordinates: [sensor.lon, sensor.lat] },
+          geometry: { type: "Point", coordinates: [lon, lat] },
           properties: {
             fid,
             fill: hasReading ? getMarkerFillHex(pm25)! : "#9ca3af",
             isSima,
             nodata: !hasReading,
-            sortKey: (isSima ? 1_000_000 : 0) - sensor.lat,
+            sortKey: (isSima ? 1_000_000 : 0) - lat,
           },
         });
       }
@@ -2010,14 +2020,15 @@ export default function MapaSensors({
     if (!mapLoaded || !map.current) return;
     const m = map.current as any;
 
-    if (!m.getSource(FIELD_SOURCE)) {
-      m.addSource(FIELD_SOURCE, {
-        type: "geojson",
-        data: buildFieldData(frameReadingsRef.current),
-        promoteId: "fid",
-      });
-    }
-    if (!m.getLayer(FIELD_LAYER)) {
+    try {
+      if (!m.getSource(FIELD_SOURCE)) {
+        m.addSource(FIELD_SOURCE, {
+          type: "geojson",
+          data: buildFieldData(frameReadingsRef.current),
+          promoteId: "fid",
+        });
+      }
+      if (!m.getLayer(FIELD_LAYER)) {
       m.addLayer({
         id: FIELD_LAYER,
         type: "circle",
@@ -2025,11 +2036,7 @@ export default function MapaSensors({
         layout: { "circle-sort-key": ["get", "sortKey"] as any },
         paint: {
           "circle-color": ["get", "fill"] as any,
-          "circle-radius": [
-            "*",
-            FIELD_RADIUS,
-            ["case", ["boolean", ["feature-state", "hover"], false], 1.14, 1],
-          ] as any,
+          "circle-radius": FIELD_RADIUS as any,
           // The selected station's flat disc is hidden (opacity 0) — the DOM
           // marker stands in for it. Rest of the field: SIMA fuller than
           // citizen, no-data SIMA discs recede.
@@ -2053,6 +2060,10 @@ export default function MapaSensors({
           ] as any,
         },
       });
+      }
+    } catch (err) {
+      console.error("[map] failed to add the sensor field layer", err);
+      return;
     }
 
     const canvas = m.getCanvas() as HTMLCanvasElement;
