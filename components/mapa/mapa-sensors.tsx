@@ -975,7 +975,21 @@ function LayersFilterContent({
         })}
         {openSection === 'fuente' && (
           <div className="disclosure-in border-t border-gray-100 bg-gray-50/60">
-            <div className="flex w-full items-center transition-colors hover:bg-gray-100/70">
+            <div className="flex items-center transition-colors hover:bg-gray-100/70">
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={showSima}
+                onClick={() => setShowSima((v) => !v)}
+                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
+              >
+                <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
+                <span className={`min-w-0 flex-1 truncate text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
+                <span className="flex-shrink-0 text-xs text-gray-500">{sourceCounts.gobierno}</span>
+              </button>
+              {trailingSlot}
+            </div>
+            <div className="flex w-full items-center border-t border-gray-100 transition-colors hover:bg-gray-100/70">
               <button
                 type="button"
                 role="checkbox"
@@ -1041,20 +1055,6 @@ function LayersFilterContent({
                 </div>
               </div>
             )}
-            <div className="flex items-center border-t border-gray-100 transition-colors hover:bg-gray-100/70">
-              <button
-                type="button"
-                role="checkbox"
-                aria-checked={showSima}
-                onClick={() => setShowSima((v) => !v)}
-                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${rowPadding}`}
-              >
-                <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-                <span className={`min-w-0 flex-1 truncate text-sm font-medium ${showSima ? 'text-gray-800' : 'text-gray-400'}`}>Estaciones de Gobierno</span>
-                <span className="flex-shrink-0 text-xs text-gray-500">{sourceCounts.gobierno}</span>
-              </button>
-              {trailingSlot}
-            </div>
           </div>
         )}
       </div>
