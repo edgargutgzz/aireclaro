@@ -59,10 +59,13 @@ const BASEMAP_GROUND = "#f2f1ef";
 // ground is what separates land from water without either colour being loud.
 const BASEMAP_WATER = "#c9d6dd";
 const BASEMAP_WATERWAY = "#bcccd5"; // the thin river / arroyo centrelines
-// Hillshade: light-v11 ships a gentle terrain shade. Nudge it up a little so the
-// Sierra Madre, Cerro de la Silla and Las Mitras read as raised ground.
-const BASEMAP_HILLSHADE_SHADOW = "#9aa0a6";
-const BASEMAP_HILLSHADE_EXAGGERATION = 0.6;
+// Hillshade: light-v11 has no terrain shade at all (vector-only, no DEM), so the
+// sierras don't read as landforms. Its composite source does carry the
+// mapbox-terrain-v2 "hillshade" layer (vector shadow polygons by intensity
+// "level"), so we add one subtle fill from it — dark grey, opacity ramped by
+// level — under the water/roads/labels. Keep it faint: relief, not a relief map.
+const BASEMAP_HILLSHADE_SHADOW = "#8a9099";
+const BASEMAP_HILLSHADE_OPACITY = 0.16; // at the strongest level; lower levels scale down
 
 export default function MapaSensors({
   sensors,
@@ -643,9 +646,30 @@ export default function MapaSensors({
         paint("water", "fill-color", BASEMAP_WATER);
         paint("water-shadow", "fill-color", BASEMAP_WATER);
         paint("waterway", "line-color", BASEMAP_WATERWAY);
-        // Hillshade: deeper shadow + a touch more exaggeration for the sierras.
-        paint("hillshade", "hillshade-shadow-color", BASEMAP_HILLSHADE_SHADOW);
-        paint("hillshade", "hillshade-exaggeration", BASEMAP_HILLSHADE_EXAGGERATION);
+        // Hillshade: add one faint fill from the terrain-v2 "hillshade" layer
+        // (shadow polygons only), under the water so water stays clean. Opacity
+        // ramps with the polygon's "level" so only the steep sierras get much.
+        if (!m.getLayer("terrain-hillshade") && m.getSource("composite")) {
+          m.addLayer(
+            {
+              id: "terrain-hillshade",
+              type: "fill",
+              source: "composite",
+              "source-layer": "hillshade",
+              filter: ["==", ["get", "class"], "shadow"],
+              paint: {
+                "fill-color": BASEMAP_HILLSHADE_SHADOW,
+                "fill-antialias": false,
+                "fill-opacity": [
+                  "interpolate", ["linear"], ["get", "level"],
+                  56, BASEMAP_HILLSHADE_OPACITY * 0.25,
+                  94, BASEMAP_HILLSHADE_OPACITY,
+                ],
+              },
+            },
+            m.getLayer("waterway") ? "waterway" : undefined
+          );
+        }
       } catch {
         // upstream layer shape changed — basemap still renders, just paler
       }
