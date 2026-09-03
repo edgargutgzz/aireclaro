@@ -2254,10 +2254,10 @@ export default function MapaSensors({
           default (also Escape and a click on empty map). */}
       <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
-        {/* flex-1 so this wrapper fills the height-bounded column (top-6 →
-            bottom-12); that bounds the card below, so its own
-            overflow-y-auto body scrolls instead of the card overrunning the
-            viewport when the recommendations are expanded. */}
+        {/* flex-1 so this wrapper takes the column height left over the
+            gap-2 and the pinned scrubber below; that bounds the card, so its
+            own overflow-y-auto body scrolls instead of the card overrunning
+            into the scrubber when the recommendations are expanded. */}
         <div className="flex min-h-0 w-panel-lg flex-1 flex-col">
         {cardSubject && (() => {
           const { sensor, textColor } = cardSubject;
@@ -2342,9 +2342,35 @@ export default function MapaSensors({
           );
         })()}
         </div>{/* end card width wrapper */}
-        {/* Data freshness lives in the scrubber's readout now (desktop) — it's
-            the same question as "what moment am I looking at". On mobile the
-            badge still floats at the top-left of the map. */}
+
+        {/* Time scrubber — pinned at the foot of this rail, the mirror of the
+            legend under the Capas column. It lives inside the column (not as a
+            free-floating sibling) so the flex-1 card wrapper above always stops
+            gap-2 short of it, however tall its content grows — the scrubber is
+            taller than the legend, so a shared bottom-12 used to bury the
+            card's last rows behind it. Skeleton while the window loads; nothing
+            if the loaded window came back with a single hour.
+            Data freshness reads out inside the scrubber now — same question as
+            "what moment am I looking at". */}
+        {(!fieldHistory || fieldHistory.hours.length > 1) && (
+          <div className="pointer-events-none flex-shrink-0">
+            {fieldHistory ? (
+              <TimeScrubber
+                hours={fieldHistory.hours}
+                index={scrubIndex}
+                playing={scrubPlaying}
+                speed={scrubSpeed}
+                medianByHour={medianByHour}
+                freshness={freshness}
+                onIndex={setScrubIndex}
+                onPlayingChange={setScrubPlaying}
+                onSpeedChange={setScrubSpeed}
+              />
+            ) : (
+              <TimeScrubberSkeleton />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Left column: layers panel (desktop) with the data-freshness badge
@@ -2538,28 +2564,6 @@ export default function MapaSensors({
         );
       })()}
 
-      {/* Time scrubber — desktop only. Repaints the whole marker field at the
-          chosen hour; "Ahora" returns to live. Skeleton while the window
-          loads; nothing once loaded if the window came back empty. */}
-      {(!fieldHistory || fieldHistory.hours.length > 1) && (
-        <div className="pointer-events-none absolute bottom-12 right-6 z-20 hidden md:block">
-          {fieldHistory ? (
-            <TimeScrubber
-              hours={fieldHistory.hours}
-              index={scrubIndex}
-              playing={scrubPlaying}
-              speed={scrubSpeed}
-              medianByHour={medianByHour}
-              freshness={freshness}
-              onIndex={setScrubIndex}
-              onPlayingChange={setScrubPlaying}
-              onSpeedChange={setScrubSpeed}
-            />
-          ) : (
-            <TimeScrubberSkeleton />
-          )}
-        </div>
-      )}
 
       {/* Recomendaciones de salud popup — the same dialog as the rest, rather
           than a bare div: it was the one popup with no name for assistive
