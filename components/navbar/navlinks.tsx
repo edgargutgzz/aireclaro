@@ -25,12 +25,12 @@ const links = [
 // span, and as the starting point for each live link.
 const navPill = buttonVariants({ variant: "nav", size: "nav" });
 
-// Current-page treatment, identical on both bars: darkest ink + `font-semibold`
-// (on the label) + `aria-current`, over a faint neutral wash a step past the
-// hover. Monochrome so it reads the same on the opaque `stone-50` desktop
-// header and the translucent mobile bar; a white pill vanished on the latter,
-// which is why this used to fork blue-on-mobile / white-on-desktop.
-const navCurrent = "bg-gray-900/[0.08] text-gray-900";
+// Current-page treatment, identical on both bars: darkest ink (`text-gray-900`,
+// the icon follows via currentColor) + `font-semibold` on the label +
+// `aria-current`. No fill — the mobile pill is `w-full`, so any background
+// stretched the whole tab into a gray lozenge; weight + ink carry it, the way
+// an iOS tab bar does.
+const navCurrent = "text-gray-900";
 
 export default function Navlinks() {
   const pathname = usePathname();
