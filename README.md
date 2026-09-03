@@ -63,7 +63,7 @@ pnpm build    # production build
 ## Stack
 
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS · Mapbox GL ·
-Supabase · Chart.js · deployed on Vercel.
+Supabase · deployed on Vercel.
 
 ## Documentation
 
