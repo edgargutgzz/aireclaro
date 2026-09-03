@@ -2252,7 +2252,7 @@ export default function MapaSensors({
       {/* Desktop right column. At rest it shows the default station (Obispado);
           picking a marker swaps it and adds an X that closes back to the
           default (also Escape and a click on empty map). */}
-      <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
+      <div className="pointer-events-none absolute bottom-10 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
         {/* flex-1 so this wrapper takes the column height left over the
             gap-2 and the pinned scrubber below; that bounds the card, so its
@@ -2347,7 +2347,7 @@ export default function MapaSensors({
             legend under the Capas column. It lives inside the column (not as a
             free-floating sibling) so the flex-1 card wrapper above always stops
             gap-2 short of it, however tall its content grows — the scrubber is
-            taller than the legend, so a shared bottom-12 used to bury the
+            taller than the legend, so a shared bottom offset used to bury the
             card's last rows behind it. Skeleton while the window loads; nothing
             if the loaded window came back with a single hour.
             Data freshness reads out inside the scrubber now — same question as
@@ -2385,7 +2385,7 @@ export default function MapaSensors({
           over. It used to be held off the badge by a hand-counted max-height
           on the panel body, with the badge itself living in a different corner
           of this file. */}
-      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-12 md:left-6 md:top-6 md:w-panel-filters">
+      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-10 md:left-6 md:top-6 md:w-panel-filters">
         <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:flex">
           {/* The header carries the filter state, in the same "label · summary"
               idiom the rows inside the panel already use. gray-500 rather than
