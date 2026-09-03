@@ -107,14 +107,10 @@
    methodologically comparable, see docs/methodology) as texture around it.
    Keyed on provenance, independent of the PM2.5 reading, so it does not bias
    the render — the same axis the `--sima` z-index rule already uses. */
-/* Now only the *selected* station's marker (the field is a GL circle layer).
-   Sized ~1.15x the unselected field disc's opening-zoom radius so the
-   selected/unselected gap stays what it was — keep these in step with
-   FIELD_RADIUS in mapa-sensors.tsx. */
 .sensor-marker {
   position: relative;
-  width: 31px;
-  height: 31px;
+  width: 27px;
+  height: 27px;
 }
 
 /* Citizen (PurpleAir) discs: one step lighter than the SIMA reference field.
@@ -124,8 +120,8 @@
    disc still goes solid and scales like any other. Same specificity as the
    base rule, so this must stay after it in source order. */
 .sensor-marker--citizen {
-  width: 27.5px;
-  height: 27.5px;
+  width: 24px;
+  height: 24px;
   --marker-rest-alpha: 65%;
 }
 
