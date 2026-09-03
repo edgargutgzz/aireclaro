@@ -39,6 +39,16 @@
                                          house focus ring below */
 
   --radius: 0.75rem;                  /* 12px — the house button radius (§5) */
+
+  /* Categorical chart series (shadcn Chart reads these via chartConfig).
+     PROVISIONAL blue-anchored ramp — finalize with the `dataviz` skill when
+     the first /datos charts are built. Air-quality series pull their colours
+     from lib/air-quality.ts instead, set explicitly per chart. */
+  --chart-1: 221 83% 53%;            /* blue-600  */
+  --chart-2: 189 94% 43%;            /* cyan-500  */
+  --chart-3: 262 83% 58%;            /* violet-500 */
+  --chart-4: 38 92% 50%;             /* amber-500 */
+  --chart-5: 340 82% 52%;            /* rose-500  */
 }
 
 @layer base {
