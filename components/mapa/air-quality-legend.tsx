@@ -77,7 +77,7 @@ export function LegendDetail({ className = "" }: { className?: string }) {
       {/* More air under the citation on mobile, where the level list runs right
           up against it in the bottom sheet; the desktop rail keeps mt-3. */}
       <p className="mt-5 text-[11px] leading-relaxed text-gray-400 md:mt-3">
-        Índice de Aire y Salud{" "}
+        Índice de Aire y Salud mexicano{" "}
         <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
           NOM-172-SEMARNAT-2023
         </DialogLink>
@@ -99,7 +99,7 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
     return (
       <div className={className}>
         <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-          Calidad del aire mexicano
+          Calidad del aire
         </p>
         <ScaleBar className="mt-3" />
         <LegendDetail className="mt-3 border-t border-gray-100 pt-3" />
@@ -122,7 +122,7 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
         className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
       >
         <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-          Calidad del aire mexicano
+          Calidad del aire
         </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
             now framed by the "PM2.5 · μg/m³" line the disclosure reveals just
