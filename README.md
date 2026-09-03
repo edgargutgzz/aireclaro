@@ -10,9 +10,10 @@ NGOs, government, universities, other organizations, and power users to use
 air-quality information to **take action for a cleaner city**.
 
 The principle: Aire Claro reports what named monitoring stations and sensors
-*measured* — it does not publish its own verdict on "the city's air". It aims
-to be the trustworthy, well-attributed measurement layer that others build their
-analysis and advocacy on. See [`docs/methodology.md`](docs/methodology.md).
+*measured*. On the map every reading is tied to a station; metro-scale views
+(the `/datos` section) are fine but stay well-attributed. It aims to be the
+trustworthy measurement layer that others build their analysis and advocacy on.
+See [`docs/methodology.md`](docs/methodology.md).
 
 ## Status
 
@@ -62,8 +63,8 @@ pnpm build    # production build
 
 ## Stack
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS · Mapbox GL ·
-Supabase · deployed on Vercel.
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS · shadcn/ui ·
+Mapbox GL · Supabase · deployed on Vercel.
 
 ## Documentation
 
