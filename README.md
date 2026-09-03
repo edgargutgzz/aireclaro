@@ -78,4 +78,3 @@ Supabase · deployed on Vercel.
 
 - Email: contacto@observatoriodelaire.com
 - Web: [observatoriodelaire.com](https://www.observatoriodelaire.com/)
-- [Privacy policy](/aviso-privacidad)

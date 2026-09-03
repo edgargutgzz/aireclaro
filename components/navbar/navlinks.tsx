@@ -3,19 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
-import { Map, BarChart3, Info } from "lucide-react";
+import { Map, BarChart3 } from "lucide-react";
 
 // Shared pill-style nav links, used in both the mobile bottom bar and the
 // desktop SiteHeader. Renders <li> elements: both callers wrap this in a <ul>
 // inside a <nav>.
-// All three destinations are live. A link can still be marked `pending: true`
-// to list it without offering it — it then renders as a plain <span> (out of
-// the tab order, nothing pressable) with a standing "not yet" cue: a "Próx."
-// badge on desktop, a bare dot on the mobile bar. See the pending branch below.
+// Both destinations are live. A link can still be marked `pending: true` to
+// list it without offering it — it then renders as a plain <span> (out of the
+// tab order, nothing pressable) with a standing "not yet" cue: a "Próx." badge
+// on desktop, a bare dot on the mobile bar. See the pending branch below.
 const links = [
   { name: "Mapa", href: "/", icon: Map, pending: false },
   { name: "Datos", href: "/datos", icon: BarChart3, pending: false },
-  { name: "Acerca", href: "/acerca", icon: Info, pending: false },
 ];
 
 // One pill recipe, both breakpoints. Mobile: a full-width, centred tab that
