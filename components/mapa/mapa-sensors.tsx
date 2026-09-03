@@ -2254,7 +2254,11 @@ export default function MapaSensors({
           default (also Escape and a click on empty map). */}
       <div className="pointer-events-none absolute bottom-12 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
-        <div className="flex min-h-0 w-panel-lg flex-col">
+        {/* flex-1 so this wrapper fills the height-bounded column (top-6 →
+            bottom-12); that bounds the card below, so its own
+            overflow-y-auto body scrolls instead of the card overrunning the
+            viewport when the recommendations are expanded. */}
+        <div className="flex min-h-0 w-panel-lg flex-1 flex-col">
         {cardSubject && (() => {
           const { sensor, textColor } = cardSubject;
           const pm25 = framePm25(sensor.sensor_id, cardSubject.pm25);
