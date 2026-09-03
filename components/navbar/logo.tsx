@@ -5,8 +5,7 @@ import clsx from "clsx";
 // The OCCAMM wordmark as a home link. One artwork, one focus ring, two sizes:
 // `sm` for the compact mobile top bar, `lg` for the desktop SiteHeader (which
 // also passes `-ml-0.5` to nudge the mark onto the header's text rail, see the
-// comment there). The acerca page's logo is deliberately not this one: it
-// links out to observatoriodelaire.com with its own hover treatment.
+// comment there).
 const SIZES = {
   sm: { width: 119, height: 22, className: "h-[22px] w-[119px]" },
   lg: { width: 140, height: 26, className: "h-[26px] w-[140px]" },
