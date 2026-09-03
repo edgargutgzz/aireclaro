@@ -2338,27 +2338,30 @@ export default function MapaSensors({
     return () => window.clearTimeout(id);
   }, [scrubPlaying, scrubIndex, scrubSpeed, fieldHistory]);
 
-  // Close the estación card. On desktop the right column goes empty; on mobile
-  // the sheet falls back to the default station (Obispado) and collapses to peek.
+  // Close the estación card. **Desktop only** — the right column goes empty and
+  // the map stands alone. On mobile there is no "close": the sheet always rests
+  // on a station (a pick, else the default Obispado); the most a mobile gesture
+  // does is collapse it back to `peek`.
   const closeCard = useCallback(() => {
     setSelectedSensor(null);
     setSheetState('peek');
   }, []);
 
-  // Clicking empty map dismisses a picked sensor (desktop back to nothing,
-  // mobile back to the default station). Mapbox fires `click` only on a genuine
-  // click, not a drag/pan; a hit on the disc layer means the field handler
-  // already owns this click, so bail rather than close.
+  // Clicking empty map: on desktop it dismisses the pick (back to a bare map);
+  // on mobile it just collapses the sheet to peek, never dropping the card.
+  // Mapbox fires `click` only on a genuine click, not a drag/pan; a hit on the
+  // disc layer means the field handler already owns this click, so bail.
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
     const m = map.current as any;
     const handler = (e: any) => {
       if (m.getLayer(FIELD_LAYER) && m.queryRenderedFeatures(e.point, { layers: [FIELD_LAYER] }).length) return;
-      closeCard();
+      if (isDesktop) closeCard();
+      else setSheetState('peek');
     };
     m.on("click", handler);
     return () => { m?.off("click", handler); };
-  }, [mapLoaded, closeCard]);
+  }, [mapLoaded, closeCard, isDesktop]);
 
   // Keyboard / screen-reader path into the field: the GL discs are canvas-drawn
   // and not tabbable, so every markerable station is also a visually-hidden
@@ -2403,16 +2406,16 @@ export default function MapaSensors({
     [],
   );
 
-  // Escape dismisses a picked sensor too (unless a dialog is open — it owns
-  // Escape first).
+  // Escape dismisses a picked sensor too — desktop only, matching the X (mobile
+  // has no close), and only when a dialog isn't open (it owns Escape first).
   useEffect(() => {
-    if (!selectedSensor) return;
+    if (!selectedSensor || !isDesktop) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !document.querySelector("dialog[open]")) closeCard();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selectedSensor, closeCard]);
+  }, [selectedSensor, isDesktop, closeCard]);
 
   // 5.5rem of peek showing above the nav: the grabber and the summary row (the
   // default sensor name + its reading). Freshness floats at the top of the map,
@@ -2776,18 +2779,20 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Bottom sheet backdrop — mobile only, only when the sheet is open past peek */}
+      {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
+          peek. Tapping it collapses the sheet back to peek; it does NOT close
+          the card (there is no close on mobile). */}
       <div
         className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
           cardSubject && sheetState !== 'peek' ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
-        onClick={closeCard}
+        onClick={() => setSheetState('peek')}
       />
 
       {/* Bottom sheet — mobile twin of the desktop card. At rest it peeks the
-          default station (Obispado); tapping a marker swaps the subject, the
-          grabber toggles peek/mid, and the X / backdrop / map tap close a pick
-          back to the default. */}
+          default station (Obispado); tapping a marker swaps the subject and the
+          grabber toggles peek/mid. There is no close on mobile — the sheet
+          always rests on a station (that's a desktop-only affordance). */}
       {(() => {
         const subj = cardSubject;
         const s = subj?.sensor;
@@ -2826,16 +2831,6 @@ export default function MapaSensors({
                 <span className="text-2xl font-bold" style={{ color: quality.textColor }}>
                   {quality.label}
                 </span>
-              )}
-              {selectedSensor && (
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); closeCard(); }}
-                  aria-label="Cerrar"
-                  className="-mr-1 -translate-y-px rounded-lg p-1 text-gray-400 active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                >
-                  <X aria-hidden="true" className="h-4 w-4" />
-                </button>
               )}
             </div>
           </div>
