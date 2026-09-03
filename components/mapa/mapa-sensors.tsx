@@ -1466,10 +1466,10 @@ const stopR = (sima: number, citizen: number) => [
 ];
 const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
-  8, stopR(5.5, 4.5),
-  11, stopR(9.5, 8),
-  13.5, stopR(13, 11),
-  16, stopR(16, 14),
+  8, stopR(6.3, 5.2),
+  11, stopR(11, 9.2),
+  13.5, stopR(15, 12.7),
+  16, stopR(18.4, 16.1),
 ];
 
 // MapaSensors component
