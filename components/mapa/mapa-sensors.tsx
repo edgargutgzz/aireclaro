@@ -48,6 +48,12 @@ import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 // so if it's filtered out (Capas → gobierno off) the card is simply empty.
 const DEFAULT_SENSOR_ID = "CE";
 
+// light-v11's base ground is near-white, which is most of why the map reads
+// washed out. One conservative step off white — a very light warm grey — is
+// enough to give it body without touching the hillshade, parks or roads that
+// paint on top. Applied on style.load; tune in small increments.
+const BASEMAP_GROUND = "#f2f1ef";
+
 export default function MapaSensors({
   sensors,
   data,
@@ -598,11 +604,27 @@ export default function MapaSensors({
     );
 
     map.current.on("style.load", () => {
+      const m = map.current as any;
       // Classic Light labels follow the viewer's locale; pin to Spanish.
       try {
-        (map.current as any).setLanguage("es");
+        m.setLanguage("es");
       } catch {
         // API shape shift — labels fall back to locale, harmless
+      }
+      // Nudge the base ground one step off near-white (BASEMAP_GROUND). Only the
+      // background-type layers plus a "land" fill if this build has one; nothing
+      // layered on top (hillshade, parks, roads, water) is touched.
+      try {
+        for (const layer of m.getStyle()?.layers ?? []) {
+          if (layer.type === "background") {
+            m.setPaintProperty(layer.id, "background-color", BASEMAP_GROUND);
+          }
+        }
+        if (m.getLayer("land") && m.getLayer("land").type === "fill") {
+          m.setPaintProperty("land", "fill-color", BASEMAP_GROUND);
+        }
+      } catch {
+        // upstream layer shape changed — basemap still renders, just paler
       }
     });
 
