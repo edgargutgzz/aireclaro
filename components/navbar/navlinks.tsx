@@ -25,12 +25,12 @@ const links = [
 // span, and as the starting point for each live link.
 const navPill = buttonVariants({ variant: "nav", size: "nav" });
 
-// Current-page treatment, identical on both bars: darkest ink (`text-gray-900`,
-// the icon follows via currentColor) + `font-semibold` on the label +
-// `aria-current`. No fill — the mobile pill is `w-full`, so any background
-// stretched the whole tab into a gray lozenge; weight + ink carry it, the way
-// an iOS tab bar does.
-const navCurrent = "text-gray-900";
+// Current-page treatment, identical on both bars: a faint neutral wash a step
+// past the hover + darkest ink (`text-gray-900`, icon follows via currentColor)
+// + `font-semibold` on the label + `aria-current`. The mobile pill is capped
+// at `max-w` and centred (see the Button `nav` size), so the wash reads as a
+// content-hugging pill on both bars, not a full-tab lozenge.
+const navCurrent = "bg-gray-900/[0.08] text-gray-900";
 
 export default function Navlinks() {
   const pathname = usePathname();

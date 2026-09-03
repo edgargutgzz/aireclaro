@@ -34,9 +34,10 @@ const buttonVariants = cva(
         sm: "h-8 px-3 text-xs",
         lg: "h-10 px-8",
         icon: "h-9 w-9",
-        // Full-width centred tab on the mobile bar, content-sized left-aligned
-        // pill on desktop.
-        nav: "w-full gap-2 px-2 py-3 md:w-auto md:justify-start md:px-5 md:py-2.5",
+        // Mobile bar: a centred pill capped at max-w so the current-page wash
+        // hugs its content instead of spanning the whole flex-1 tab (the tap
+        // target stays comfortably large). Desktop: content-sized, left-aligned.
+        nav: "mx-auto w-full max-w-[7.5rem] gap-2 px-2 py-3 md:mx-0 md:w-auto md:max-w-none md:justify-start md:px-5 md:py-2.5",
       },
     },
     defaultVariants: {
