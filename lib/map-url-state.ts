@@ -71,13 +71,8 @@ export function readFilterParams(): { src: SrcState | null; hide: string[] } {
 
 // ---- ?t= (time scrubber) -----------------------------------------------------
 
-// The hour key ("YYYY-MM-DDTHH") the map is scrubbed to, or null for live.
-export function readScrubParam(): string | null {
-  if (typeof window === "undefined") return null;
-  const raw = new URLSearchParams(window.location.search).get(TIME_PARAM);
-  return raw && /^\d{4}-\d{2}-\d{2}T\d{2}$/.test(raw) ? raw : null;
-}
-
+// Writes only. `?t=` is read directly via `useSearchParams` in mapa-sensors.tsx
+// (so a "Mapa" click / Back that lands on a ?t=-less URL returns to live).
 export function writeScrubParam(hourKey: string | null): void {
   if (typeof window === "undefined") return;
   const url = new URL(window.location.href);
