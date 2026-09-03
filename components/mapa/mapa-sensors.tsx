@@ -48,11 +48,15 @@ import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 // so if it's filtered out (Capas → gobierno off) the card is simply empty.
 const DEFAULT_SENSOR_ID = "CE";
 
-// light-v11's ground is near-white; these repaint it into the chrome's warm-grey
+// light-v11's ground is near-white; we repaint it into the chrome's warm-grey
 // stone family so the white .glass panels and the stone-50 header separate from
-// the map by tone, not just blur. Applied on style.load (see below).
-const BASEMAP_GROUND = "#e7e5e4"; // stone-200
-const BASEMAP_WATER = "#d8dee2"; // one step cooler + deeper than the ground
+// the map by tone, not just blur. Deepening the ground flattens the style's own
+// land/water/park contrast though, so water goes distinctly blue and the nature
+// layers get a faint sage back. Applied on style.load (see below).
+const BASEMAP_GROUND = "#e7e5e4"; // stone-200 — land / the base background
+const BASEMAP_WATER = "#aecbd9"; // a muted map-blue, clearly not land
+const BASEMAP_WATERWAY = "#9cbccb"; // rivers/canals, a step deeper than open water
+const BASEMAP_GREEN = "#dbe1d2"; // sage wash for parks / reserves / forest
 
 export default function MapaSensors({
   sensors,
@@ -611,22 +615,37 @@ export default function MapaSensors({
       } catch {
         // API shape shift — labels fall back to locale, harmless
       }
-      // light-v11's ground is near-white, so the white .glass panels and the
-      // stone-50 header have nothing to separate against. Deepen the ground to
-      // stone-200 — same warm-grey family as the chrome — so the panels read as
-      // floating and the header reads as chrome. Water nudged one step cooler.
+      // Deepen light-v11's near-white ground into the chrome's stone family so
+      // the white .glass panels + stone-50 header separate by tone. Then put the
+      // land/water/park contrast back on top: warm-grey land, a real map-blue for
+      // water, a faint sage for the nature layers.
+      const paint = (id: string, prop: string, value: string) => {
+        try {
+          if (m.getLayer(id)) m.setPaintProperty(id, prop, value);
+        } catch {
+          // that layer isn't in this build — skip it
+        }
+      };
       try {
+        // Base ground: every background-type layer, plus a "land" fill if present.
         for (const layer of m.getStyle()?.layers ?? []) {
           if (layer.type === "background") {
             m.setPaintProperty(layer.id, "background-color", BASEMAP_GROUND);
           }
         }
-        if (m.getLayer("land")) {
-          const t = m.getLayer("land").type;
-          if (t === "background") m.setPaintProperty("land", "background-color", BASEMAP_GROUND);
-          else if (t === "fill") m.setPaintProperty("land", "fill-color", BASEMAP_GROUND);
+        if (m.getLayer("land") && m.getLayer("land").type === "fill") {
+          m.setPaintProperty("land", "fill-color", BASEMAP_GROUND);
         }
-        if (m.getLayer("water")) m.setPaintProperty("water", "fill-color", BASEMAP_WATER);
+        // Water — the one thing that must not read as land.
+        paint("water", "fill-color", BASEMAP_WATER);
+        paint("water-shadow", "fill-color", BASEMAP_WATER);
+        paint("waterway", "line-color", BASEMAP_WATERWAY);
+        paint("waterway-shadow", "line-color", BASEMAP_WATERWAY);
+        // Nature: parks, reserves, forest wash. Left "landuse" alone — in
+        // light-v11 it also covers residential/commercial, not just green.
+        paint("national-park", "fill-color", BASEMAP_GREEN);
+        paint("landcover", "fill-color", BASEMAP_GREEN);
+        paint("park", "fill-color", BASEMAP_GREEN);
       } catch {
         // upstream layer shape changed — basemap still renders, just paler
       }
