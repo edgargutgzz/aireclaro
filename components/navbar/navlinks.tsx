@@ -25,12 +25,12 @@ const links = [
 // span, and as the starting point for each live link.
 const navPill = buttonVariants({ variant: "nav", size: "nav" });
 
-// A filled current-page pill marks a choice. With more than one live link the
-// nav can take you somewhere, so the current pill gets a fill: the white glass
-// surface on desktop, a blue wash on the mobile bottom bar. `soloOnDesktop` is
-// the switch — it drops back to the fill-less "weight + ink + aria-current"
-// treatment only if we ever return to a single live link.
-const soloOnDesktop = links.filter((link) => !link.pending).length === 1;
+// Current-page treatment, identical on both bars: darkest ink + `font-semibold`
+// (on the label) + `aria-current`, over a faint neutral wash a step past the
+// hover. Monochrome so it reads the same on the opaque `stone-50` desktop
+// header and the translucent mobile bar; a white pill vanished on the latter,
+// which is why this used to fork blue-on-mobile / white-on-desktop.
+const navCurrent = "bg-gray-900/[0.08] text-gray-900";
 
 export default function Navlinks() {
   const pathname = usePathname();
@@ -79,20 +79,9 @@ export default function Navlinks() {
               asChild
               variant="nav"
               size="nav"
-              className={cn({
-                // Fallback for a single live link: "current" is just darker
-                // ink, font-semibold (below) and aria-current, no fill.
-                "text-gray-700 md:hover:bg-black/[0.04]": isCurrent && soloOnDesktop,
-                // Two or more live links: the current pill takes a fill.
-                // Desktop takes the white glass pill (no backdrop-blur: the
-                // stone-50 header behind it is opaque). The mobile bottom bar
-                // is itself glass, so white would vanish on it and it takes a
-                // blue wash instead.
-                "border-blue-200 bg-blue-50 text-blue-600 md:border-white/60 md:bg-white md:text-gray-700 md:shadow-sm":
-                  isCurrent && !soloOnDesktop,
-                // Resting hover. gray-600 ink already comes from the variant.
-                "hover:bg-black/[0.04]": !isCurrent,
-              })}
+              className={cn(
+                isCurrent ? navCurrent : "hover:bg-black/[0.04]",
+              )}
             >
               <Link href={link.href} aria-current={isCurrent ? "page" : undefined}>
                 <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
