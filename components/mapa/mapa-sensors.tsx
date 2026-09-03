@@ -1593,7 +1593,16 @@ export default function MapaSensors({
   // Two levels, state then municipality, so every sensor sits under a row:
   // the map reaches into Coahuila (Saltillo, Arteaga) even though this
   // observatory follows the Monterrey metro area.
+  //
+  // Counts are faceted: a row tallies only the sensors that also pass the
+  // current Fuente filter, so "Monterrey · 47" drops to the handful of
+  // government stations when Fuente is narrowed to Gobierno. Every row still
+  // renders (a filtered-out municipality reads 0, not gone) so the list
+  // doesn't reflow each time a source is toggled.
   const estados = useMemo(() => {
+    const sourceOn = (sensor: Sensor) =>
+      sensor.source === "sima" ? showSima : sensor.red ? showOccamm : showOtros;
+
     const byState = new globalThis.Map<string, {
       key: string;
       label: string;
@@ -1606,22 +1615,24 @@ export default function MapaSensors({
       const mKey = municipioKey(sensor.municipio);
       if (!sKey || !mKey) return;
 
+      const n = sourceOn(sensor) ? 1 : 0;
+
       let state = byState.get(sKey);
       if (!state) {
         state = { key: sKey, label: sensor.estado!.trim(), count: 0, municipios: new globalThis.Map() };
         byState.set(sKey, state);
       }
-      state.count += 1;
+      state.count += n;
       // Prefer the accented spelling wherever the data disagrees with itself
       if (/[^\x00-\x7F]/.test(sensor.estado!) && !/[^\x00-\x7F]/.test(state.label)) state.label = sensor.estado!.trim();
 
       const label = sensor.municipio!.trim();
       const municipio = state.municipios.get(mKey);
       if (!municipio) {
-        state.municipios.set(mKey, { key: mKey, label, count: 1 });
+        state.municipios.set(mKey, { key: mKey, label, count: n });
         return;
       }
-      municipio.count += 1;
+      municipio.count += n;
       if (/[^\x00-\x7F]/.test(label) && !/[^\x00-\x7F]/.test(municipio.label)) municipio.label = label;
     });
 
@@ -1631,7 +1642,7 @@ export default function MapaSensors({
         municipios: Array.from(state.municipios.values()).sort((a, b) => a.label.localeCompare(b.label, "es")),
       }))
       .sort((a, b) => b.count - a.count);
-  }, [sensors]);
+  }, [sensors, showSima, showOccamm, showOtros]);
 
   // How many sensors each source contributes, so the Fuente rows carry the
   // same information the Ubicación rows do.
