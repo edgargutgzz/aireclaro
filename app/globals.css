@@ -146,6 +146,16 @@
   border-radius: 50%;
 }
 
+/* Mapbox gives the GL canvas tabindex="0" and focuses it on any map grab. That
+   focus is silent under the mouse, but the next keypress flips :focus-visible on
+   and paints a full-viewport blue ring that only clears by focusing something
+   else — most visibly when Escape closes the estación card. The map's keyboard
+   affordances aren't promoted here (the markers are their own focusable buttons,
+   with the house ring above), so suppress the canvas ring. */
+.mapboxgl-canvas:focus {
+  outline: none;
+}
+
 /* The circle itself. Painted after the pulse, so it always covers it. The rim
    grows outward from the border box: a hairline in the level's own ink, since
    Buena and Aceptable are lighter than most of the basemap and dissolve into
