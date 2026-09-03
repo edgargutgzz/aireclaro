@@ -580,7 +580,9 @@ export default function MapaSensors({
 
     map.current = new Map({
       container: mapContainer.current!,
-      style: "mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd",
+      // Muted stock basemap so the NOM-172 marker colours carry the read.
+      // Previous bespoke style: mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd
+      style: "mapbox://styles/mapbox/monochrome-light",
       center: OPENING_CENTER,
       zoom: OPENING_ZOOM,
     });
@@ -593,7 +595,16 @@ export default function MapaSensors({
       initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
     );
 
-    map.current.on("load", () => setMapLoaded(true));
+    map.current.on("load", () => {
+      // monochrome-light is a Standard-family style: labels follow the viewer's
+      // locale unless pinned. Force Spanish to match the rest of the UI.
+      try {
+        (map.current as any).setConfigProperty("basemap", "language", "es");
+      } catch {
+        // older style schema / API shape — labels fall back to locale, harmless
+      }
+      setMapLoaded(true);
+    });
 
     return () => {
       (map.current as any)?.remove();
