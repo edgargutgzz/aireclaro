@@ -65,7 +65,8 @@ const BASEMAP_WATERWAY = "#bcccd5"; // the thin river / arroyo centrelines
 // "level"), so we add one subtle fill from it — dark grey, opacity ramped by
 // level — under the water/roads/labels. Keep it faint: relief, not a relief map.
 const BASEMAP_HILLSHADE_SHADOW = "#8a9099";
-const BASEMAP_HILLSHADE_OPACITY = 0.16; // at the strongest level; lower levels scale down
+const BASEMAP_HILLSHADE_OPACITY = 0.08; // faint even at the steepest; the mountains are context, not subject
+const BASEMAP_HILLSHADE_MIN_LEVEL = 78; // drop the low bands that spread texture over the foothills
 
 export default function MapaSensors({
   sensors,
@@ -646,9 +647,10 @@ export default function MapaSensors({
         paint("water", "fill-color", BASEMAP_WATER);
         paint("water-shadow", "fill-color", BASEMAP_WATER);
         paint("waterway", "line-color", BASEMAP_WATERWAY);
-        // Hillshade: add one faint fill from the terrain-v2 "hillshade" layer
-        // (shadow polygons only), under the water so water stays clean. Opacity
-        // ramps with the polygon's "level" so only the steep sierras get much.
+        // Hillshade: one faint fill from the terrain-v2 "hillshade" layer (shadow
+        // polygons only), under the water so water stays clean. Only the steepest
+        // bands (>= MIN_LEVEL) so it's a soft hint on the sierras, not rendered
+        // ridges — the mountains are context here, not the subject.
         if (!m.getLayer("terrain-hillshade") && m.getSource("composite")) {
           m.addLayer(
             {
@@ -656,13 +658,17 @@ export default function MapaSensors({
               type: "fill",
               source: "composite",
               "source-layer": "hillshade",
-              filter: ["==", ["get", "class"], "shadow"],
+              filter: [
+                "all",
+                ["==", ["get", "class"], "shadow"],
+                [">=", ["get", "level"], BASEMAP_HILLSHADE_MIN_LEVEL],
+              ],
               paint: {
                 "fill-color": BASEMAP_HILLSHADE_SHADOW,
                 "fill-antialias": false,
                 "fill-opacity": [
                   "interpolate", ["linear"], ["get", "level"],
-                  56, BASEMAP_HILLSHADE_OPACITY * 0.25,
+                  BASEMAP_HILLSHADE_MIN_LEVEL, BASEMAP_HILLSHADE_OPACITY * 0.6,
                   94, BASEMAP_HILLSHADE_OPACITY,
                 ],
               },
