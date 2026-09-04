@@ -241,6 +241,34 @@ export function LayersFilterContent({
         )}
       </div>
 
+      <div className="border-t border-gray-100">
+        {sectionRow('contaminante', 'Contaminante', 'PM2.5', {
+          onClick: onShowPM25Info,
+          ariaLabel: "Por qué medimos PM2.5",
+        })}
+        {/* No control here: unlike the filters above this is a selector, and
+            with PM2.5 as the only live option there is nothing to operate. */}
+        {openSection === 'contaminante' && (
+          <div className="disclosure-in border-t border-gray-100 bg-gray-50/60">
+            <div className={`flex items-center gap-3 pl-4 pr-2 ${rowPadding}`}>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-800">PM2.5</span>
+              <Check className="h-4 w-4 flex-shrink-0 text-gray-700" strokeWidth={2.5} />
+              {trailingSlot}
+            </div>
+            {["PM10", "Ozono"].map((name) => (
+              <div
+                key={name}
+                className={`flex items-center gap-3 border-t border-gray-100 pl-4 pr-2 ${rowPadding}`}
+              >
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-400">{name}</span>
+                <span className="flex-shrink-0 text-xs text-gray-500">No disponible</span>
+                {trailingSlot}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Ubicación — state, then its municipalities. Every sensor sits under a
           row, so hiding everything really does empty the map. */}
       <div className="border-t border-gray-100">
@@ -306,34 +334,6 @@ export function LayersFilterContent({
                 </div>
               );
             })}
-          </div>
-        )}
-      </div>
-
-      <div className="border-t border-gray-100">
-        {sectionRow('contaminante', 'Contaminante', 'PM2.5', {
-          onClick: onShowPM25Info,
-          ariaLabel: "Por qué medimos PM2.5",
-        })}
-        {/* No control here: unlike the filters above this is a selector, and
-            with PM2.5 as the only live option there is nothing to operate. */}
-        {openSection === 'contaminante' && (
-          <div className="disclosure-in border-t border-gray-100 bg-gray-50/60">
-            <div className={`flex items-center gap-3 pl-4 pr-2 ${rowPadding}`}>
-              <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-800">PM2.5</span>
-              <Check className="h-4 w-4 flex-shrink-0 text-gray-700" strokeWidth={2.5} />
-              {trailingSlot}
-            </div>
-            {["PM10", "Ozono"].map((name) => (
-              <div
-                key={name}
-                className={`flex items-center gap-3 border-t border-gray-100 pl-4 pr-2 ${rowPadding}`}
-              >
-                <span className="min-w-0 flex-1 truncate text-sm font-medium text-gray-400">{name}</span>
-                <span className="flex-shrink-0 text-xs text-gray-500">No disponible</span>
-                {trailingSlot}
-              </div>
-            ))}
           </div>
         )}
       </div>
