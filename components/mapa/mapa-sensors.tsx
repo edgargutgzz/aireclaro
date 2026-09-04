@@ -1,20 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
 import { ChevronRight, Layers, Wind, X } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
-import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, writeScrubParam } from "@/lib/map-url-state";
-import { parseMonterreyNaive } from "@/lib/monterrey-time";
-import type { Sensor, Data, HistoryPoint, SelectedSensor, FieldHistory } from "./types";
+import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
+import type { Sensor, Data, HistoryPoint, SelectedSensor } from "./types";
 import {
   SPARKLINE_COLOR,
-  municipioKey,
-  estadoKey,
   getRelativeDayLabel,
   prefersReducedMotion,
   buildSelection,
@@ -32,7 +28,6 @@ import {
   makeSimaBadge,
   FIELD_RADIUS,
 } from "./field-layer";
-import { TimeScrubber, TimeScrubberSkeleton } from "./time-scrubber";
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
 import { HealthRecommendations, StationReading } from "./station-card";
@@ -82,10 +77,9 @@ export default function MapaSensors({
 
   // ---- Initial state from the URL (lib/map-url-state) ----------------------
   // Resolved once on mount. ?sensor= seeds the card selection and the opening
-  // camera; ?src= / ?hide= seed the Capas filters. A ?sensor= link wins over a
-  // conflicting ?src= / ?hide= in the same URL: its station's source and
-  // municipio are forced visible so the clear-selection effect can't drop the
-  // very sensor the link is about.
+  // camera; ?src= seeds the Capas Fuente filter. A ?sensor= link wins over a
+  // conflicting ?src= in the same URL: its station's source is forced visible
+  // so the clear-selection effect can't drop the very sensor the link is about.
   const initialSensorId = useRef(readSensorParam()).current;
   const initialFilters = useRef(readFilterParams()).current;
   const linkedSensor = initialSensorId != null
@@ -96,12 +90,6 @@ export default function MapaSensors({
     : null;
   const seedSource = (kind: "occamm" | "otros" | "gob") =>
     linkedSource === kind ? true : initialFilters.src ? initialFilters.src[kind] : true;
-  const seedHidden = () => {
-    if (!initialFilters.hide.length) return [];
-    const known = new Set(sensors.map((s) => municipioKey(s.municipio)).filter(Boolean) as string[]);
-    const linkedMuni = linkedSensor ? municipioKey(linkedSensor.municipio) : null;
-    return initialFilters.hide.filter((k) => known.has(k) && k !== linkedMuni);
-  };
   // -----------------------------------------------------------------------------
 
   const [showFilters, setShowFilters] = useState(false);
@@ -110,10 +98,8 @@ export default function MapaSensors({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [showOtros, setShowOtros] = useState(() => seedSource("otros"));
   const [showOccammInfo, setShowOccammInfo] = useState(false);
-  const [showPM25Info, setShowPM25Info] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
   const [showSima, setShowSima] = useState(() => seedSource("gob"));
-  const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>(seedHidden);
   const [showOccamm, setShowOccamm] = useState(() => seedSource("occamm"));
 
   const [selectedSensor, setSelectedSensor] = useState<SelectedSensor | null>(() =>
@@ -159,77 +145,7 @@ export default function MapaSensors({
     if (def) setSelectedSensor(buildSelection(def, data));
   }, [isDesktop, linkedSensor, selectedSensor, sensors, data]);
 
-  // Time scrubber (desktop). `scrubIndex` null = live; a number indexes into
-  // fieldHistory.hours. fieldHistory is the whole field over a recent window,
-  // fetched once so a scrub step is a lookup, not a request.
-  const [fieldHistory, setFieldHistory] = useState<FieldHistory | null>(null);
-  const [scrubIndex, setScrubIndex] = useState<number | null>(null);
-  const [scrubPlaying, setScrubPlaying] = useState(false);
-  const [scrubSpeed, setScrubSpeed] = useState(1);
-  // Router search params — only for *navigation* changes (nav-bar link, back /
-  // forward). Our own ?t= writes go through the History API and don't touch
-  // this, so it can't fight scrubbing; it just lets a click on "Mapa" (or Back)
-  // that lands on a ?t=-less URL return the map to live.
-  const routerSearch = useSearchParams();
-
-  // One entry per municipality that actually has sensors, labelled with its
-  // best spelling and counted so the list says how much each filter holds.
-  // Two levels, state then municipality, so every sensor sits under a row:
-  // the map reaches into Coahuila (Saltillo, Arteaga) even though this
-  // observatory follows the Monterrey metro area.
-  //
-  // Counts are faceted: a row tallies only the sensors that also pass the
-  // current Fuente filter, so "Monterrey · 47" drops to the handful of
-  // government stations when Fuente is narrowed to Gobierno. Every row still
-  // renders (a filtered-out municipality reads 0, not gone) so the list
-  // doesn't reflow each time a source is toggled.
-  const estados = useMemo(() => {
-    const sourceOn = (sensor: Sensor) =>
-      sensor.source === "sima" ? showSima : sensor.red ? showOccamm : showOtros;
-
-    const byState = new globalThis.Map<string, {
-      key: string;
-      label: string;
-      count: number;
-      municipios: globalThis.Map<string, { key: string; label: string; count: number }>;
-    }>();
-
-    sensors.forEach((sensor) => {
-      const sKey = estadoKey(sensor.estado);
-      const mKey = municipioKey(sensor.municipio);
-      if (!sKey || !mKey) return;
-
-      const n = sourceOn(sensor) ? 1 : 0;
-
-      let state = byState.get(sKey);
-      if (!state) {
-        state = { key: sKey, label: sensor.estado!.trim(), count: 0, municipios: new globalThis.Map() };
-        byState.set(sKey, state);
-      }
-      state.count += n;
-      // Prefer the accented spelling wherever the data disagrees with itself
-      if (/[^\x00-\x7F]/.test(sensor.estado!) && !/[^\x00-\x7F]/.test(state.label)) state.label = sensor.estado!.trim();
-
-      const label = sensor.municipio!.trim();
-      const municipio = state.municipios.get(mKey);
-      if (!municipio) {
-        state.municipios.set(mKey, { key: mKey, label, count: n });
-        return;
-      }
-      municipio.count += n;
-      if (/[^\x00-\x7F]/.test(label) && !/[^\x00-\x7F]/.test(municipio.label)) municipio.label = label;
-    });
-
-    return Array.from(byState.values())
-      .map((state) => ({
-        ...state,
-        municipios: Array.from(state.municipios.values()).sort((a, b) => a.label.localeCompare(b.label, "es")),
-      }))
-      .sort((a, b) => b.count - a.count);
-  }, [sensors, showSima, showOccamm, showOtros]);
-
-  // How many sensors each source contributes, so the Fuente rows carry the
-  // same information the Ubicación rows do.
+  // How many sensors each source contributes, so the Fuente rows carry a count.
   const sourceCounts = useMemo(() => {
     const occamm = sensors.filter((sensor) => sensor.source !== "sima" && sensor.red).length;
     const otros = sensors.filter((sensor) => sensor.source !== "sima" && !sensor.red).length;
@@ -238,11 +154,10 @@ export default function MapaSensors({
 
   const visibleSensors = useMemo(
     () => sensors.filter((sensor) => {
-      if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return false;
       if (sensor.source === "sima") return showSima;
       return sensor.red ? showOccamm : showOtros;
     }),
-    [sensors, hiddenMunicipios, showSima, showOccamm, showOtros],
+    [sensors, showSima, showOccamm, showOtros],
   );
 
   const sensorById = useMemo(() => {
@@ -252,48 +167,30 @@ export default function MapaSensors({
   }, [sensors]);
 
   // All the per-sensor lookups below key on String(sensor_id): PurpleAir ids
-  // are numbers, SIMA station ids are string codes ("SE", "NO", "Norte2"…),
-  // and field_history's series is a plain object so its keys are strings too.
+  // are numbers, SIMA station ids are string codes ("SE", "NO", "Norte2"…).
   // Coercing to Number turned every SIMA id into NaN and dropped the stations
-  // from the scrubbed frame.
+  // from the frame.
 
-  // Latest reading per sensor — the live frame.
-  const liveReadings = useMemo(() => {
+  // Latest reading per sensor — the frame the map paints. There is only the
+  // live frame now (the time scrubber and its field-history window were
+  // removed). `frameReadings` is kept as the name the field-build path reads.
+  const frameReadings = useMemo(() => {
     const m = new globalThis.Map<string, number | null>();
     for (const d of data) m.set(String(d.sensor_id), d.pm25);
     return m;
   }, [data]);
-
-  const scrubbing = scrubIndex != null && fieldHistory != null;
-
-  // The frame the map paints: live readings, or the scrubbed hour's slice.
-  const frameReadings = useMemo<globalThis.Map<string, number | null>>(() => {
-    if (scrubIndex == null || !fieldHistory) return liveReadings;
-    const m = new globalThis.Map<string, number | null>();
-    for (const id in fieldHistory.series) {
-      m.set(id, fieldHistory.series[id][scrubIndex] ?? null);
-    }
-    return m;
-  }, [scrubIndex, fieldHistory, liveReadings]);
   const frameReadingsRef = useRef(frameReadings);
   frameReadingsRef.current = frameReadings;
 
-  // Which sensors can carry a marker at all: a valid reading now, or anywhere
-  // in the loaded window. The DOM marker set is built from this once and then
-  // shown/hidden per frame, so it never churns while scrubbing. Every SIMA
-  // reference station is always in — it shows grey (see paintFrame) rather
+  // Which sensors can carry a marker at all: a valid reading now. Every SIMA
+  // reference station is always in — it shows grey (see buildFieldData) rather
   // than vanishing on an hour it didn't report.
   const markerableIds = useMemo(() => {
     const ids = new Set<string>();
     for (const s of sensors) if (s.source === "sima") ids.add(String(s.sensor_id));
     for (const d of data) if (d.pm25 != null && d.pm25 > 0.4) ids.add(String(d.sensor_id));
-    if (fieldHistory) {
-      for (const id in fieldHistory.series) {
-        if (fieldHistory.series[id].some((v) => v != null && v > 0.4)) ids.add(id);
-      }
-    }
     return ids;
-  }, [sensors, data, fieldHistory]);
+  }, [sensors, data]);
 
   // Snapshots the GL field-build and map event handlers read without being
   // rebuilt on every render (they run once, or off a ref-stable useCallback).
@@ -303,27 +200,6 @@ export default function MapaSensors({
   markerableIdsRef.current = markerableIds;
   const dataRef = useRef(data);
   dataRef.current = data;
-
-  // Median PM2.5 per hour across the whole scrubbable field — every sensor the
-  // map paints at that hour, citizen sensors included — for the scrubber's
-  // context strip. Deliberately the same population you scrub on the map, so a
-  // red patch in the strip lines up with red discs in the field. A navigation
-  // guide to where the episodes are: aria-hidden, never surfaced as a number,
-  // never a published metro value (docs/methodology.md).
-  const medianByHour = useMemo(() => {
-    if (!fieldHistory) return [] as number[];
-    return fieldHistory.hours.map((_, i) => {
-      const vals: number[] = [];
-      for (const id in fieldHistory.series) {
-        const v = fieldHistory.series[id][i];
-        if (v != null && v > 0.4) vals.push(v);
-      }
-      if (!vals.length) return 0;
-      vals.sort((a, b) => a - b);
-      const mid = Math.floor(vals.length / 2);
-      return vals.length % 2 ? vals[mid] : (vals[mid - 1] + vals[mid]) / 2;
-    });
-  }, [fieldHistory]);
 
   // What the panel says about itself in its own header, so the collapsed card
   // answers "is the map filtered?" rather than holding 380px of empty glass
@@ -375,7 +251,7 @@ export default function MapaSensors({
     return () => window.clearInterval(id);
   }, []);
 
-  // The scrubber's readout reports the reading on screen: the card's station
+  // The freshness readout reports the reading on screen: the card's station
   // (picked, else Obispado), else the newest anywhere in the live set. Sensors
   // publish on their own schedules, so a dataset-wide "newest" would sit ahead
   // of one station and make a current reading look late.
@@ -408,52 +284,18 @@ export default function MapaSensors({
   const activeSensorId = pulseSubject?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
 
-  // While scrubbing, the card's sparkline is a 48h window ending at the
-  // scrubbed hour, sliced from the field-history the map already holds — so the
-  // chart and the headline describe the same moment. Live, it stays the
-  // /api/sensor-history fetch (sensorHistory).
-  const scrubbedSpark = useMemo<HistoryPoint[] | null>(() => {
-    if (!scrubbing || scrubIndex == null || !fieldHistory || activeSensorId == null) return null;
-    const arr = fieldHistory.series[String(activeSensorId)];
-    if (!arr) return [];
-    const out: HistoryPoint[] = [];
-    for (let k = Math.max(0, scrubIndex - 47); k <= scrubIndex; k++) {
-      const v = arr[k];
-      if (v != null && v > 0.4) out.push({ pm25: v, time_stamp: `${fieldHistory.hours[k]}:00:00` });
-    }
-    return out;
-  }, [scrubbing, scrubIndex, fieldHistory, activeSensorId]);
-
-  const sparkData = scrubbing ? scrubbedSpark ?? [] : sensorHistory;
-  const sparkLoading = historyLoading && !scrubbing;
-  const sparkWindowLabel = scrubbing ? "48 horas" : undefined;
-
-  // The scrubbed hour as prose, for the mobile read-only banner ("Mostrando …").
-  const scrubbedMoment = scrubbing && scrubIndex != null && fieldHistory
-    ? (() => {
-        const d = parseMonterreyNaive(`${fieldHistory.hours[scrubIndex]}:00:00`);
-        return `${getRelativeDayLabel(d)}, ${format(d, "h")}:00 ${format(d, "a")}`;
-      })()
-    : null;
-
-  // A sensor's reading for the frame on screen: the scrubbed hour when
-  // scrubbing, else the live value. The card headline, the disc and the pulse
-  // halo all read through this so they never disagree.
-  const framePm25 = useCallback(
-    (id: number | string | null | undefined, live: number | null) =>
-      scrubbing && id != null ? frameReadings.get(String(id)) ?? null : live,
-    [scrubbing, frameReadings],
-  );
+  const sparkData = sensorHistory;
+  const sparkLoading = historyLoading;
 
   // The pulse halo is a large soft translucent fill, so it takes the official
   // `color` at full chroma, not the darkened `ink`.
   activeColorRef.current =
     getQualityInfo(
-      framePm25(activeSensorId, activeSensorId != null ? data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null : null),
+      activeSensorId != null ? data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null : null,
     )?.color ?? SPARKLINE_COLOR;
   selectedIdRef.current = selectedSensor?.sensor.sensor_id ?? null;
 
-  // The GL source's features for one frame (live readings or a scrubbed hour).
+  // The GL source's features for the live frame.
   // Citizen sensors with no reading drop out; SIMA reference stations stay as a
   // grey `nodata` disc so the network's shape holds. `sortKey` puts the
   // southern disc of an overlapping pair on top and every SIMA disc above the
@@ -491,9 +333,8 @@ export default function MapaSensors({
   );
 
   // Repaint the one DOM marker (the selected station) for the current frame:
-  // fill, edge and the aria-label, so a scrubbed disc never announces the live
-  // number. Mutates the existing element — no rebuild, so the pulse animation
-  // doesn't restart mid-playback.
+  // fill, edge and the aria-label. Mutates the existing element — no rebuild,
+  // so the pulse animation doesn't restart on a live-data refresh.
   const paintSelectedMarker = useCallback(
     (readings: globalThis.Map<string, number | null>) => {
       const el = (selectedMarkerRef.current as any)?.getElement() as HTMLElement | undefined;
@@ -516,7 +357,7 @@ export default function MapaSensors({
 
   // Push a frame to the GL field: rebuild the source data, re-assert the
   // hover/selected feature-state (setData drops it), repaint the DOM marker.
-  // This is the whole per-scrub-step cost now — one setData, no DOM churn.
+  // One setData, no DOM churn.
   const updateField = useCallback(
     (readings: globalThis.Map<string, number | null>) => {
       const m = map.current as any;
@@ -538,7 +379,7 @@ export default function MapaSensors({
   // flat GL disc (feature-state `selected`) and stand a single DOM marker in
   // its place — the DOM marker carries the expanding CSS pulse halo GL can't
   // draw, plus a fuller opaque disc and the SIMA badge. Rebuilt only when the
-  // active station's identity changes, not on a scrub step.
+  // active station's identity changes, not on a live-data refresh.
   const syncActive = useCallback(() => {
     const m = map.current as any;
     if (!m) return;
@@ -817,10 +658,10 @@ export default function MapaSensors({
     };
   }, [mapLoaded, buildFieldData, updateField, syncActive, sensorById]);
 
-  // Push a frame to the field: a filter change (visibleSensors), a scrub step
-  // or a live-data refresh (frameReadings). One setData, no marker churn — and
-  // not syncActive, so the selected DOM marker's pulse doesn't restart on every
-  // playback step (updateField repaints its disc in place instead).
+  // Push a frame to the field: a filter change (visibleSensors) or a live-data
+  // refresh (frameReadings). One setData, no marker churn — and not syncActive,
+  // so the selected DOM marker's pulse doesn't restart (updateField repaints
+  // its disc in place instead).
   useEffect(() => {
     if (!mapLoaded) return;
     updateField(frameReadings);
@@ -875,10 +716,10 @@ export default function MapaSensors({
   }, [mapLoaded, activeSensorId, syncActive]);
 
   // A chart whose data changes under a held hover (new sensor picked, history
-  // reloaded, scrub step) never fires its mouseleave, so drop the stale point.
+  // reloaded) never fires its mouseleave, so drop the stale point.
   useEffect(() => {
     setHoveredHistory(null);
-  }, [sensorHistory, selectedSensor, scrubIndex]);
+  }, [sensorHistory, selectedSensor]);
 
   // Filters can hide whatever is open: drop the selection rather than leave the
   // card describing a sensor that is no longer on the map.
@@ -897,60 +738,11 @@ export default function MapaSensors({
     writeSensorParam(null);
   }, []);
 
-  // Mirror the Capas filters into ?src= / ?hide= so a filtered view travels.
-  // Also runs on mount, which cleans an unknown municipio key or a redundant
-  // src= out of the URL.
+  // Mirror the Capas Fuente filter into ?src= so a filtered view travels. Also
+  // runs on mount, which cleans a redundant src= out of the URL.
   useEffect(() => {
-    writeFilterParams({ showOccamm, showOtros, showSima, hiddenMunicipios });
-  }, [showOccamm, showOtros, showSima, hiddenMunicipios]);
-
-  // Pull the whole-field window once, for the time scrubber. Desktop-only
-  // feature, but the fetch is cheap and cached; the UI just doesn't render on
-  // mobile. The ?t= → scrubIndex sync is the routerSearch effect below.
-  useEffect(() => {
-    let cancelled = false;
-    const empty: FieldHistory = { hours: [], series: {} };
-    fetch("/api/field-history")
-      .then((r) => r.json())
-      .then((d: FieldHistory) => {
-        if (cancelled) return;
-        // An empty window resolves the skeleton (nothing renders) instead of
-        // leaving it spinning forever.
-        setFieldHistory(Array.isArray(d?.hours) && d.series ? d : empty);
-      })
-      .catch(() => { if (!cancelled) setFieldHistory(empty); });
-    return () => { cancelled = true; };
-  }, []);
-
-  // Follow the router's ?t=: on load a shared "look at this moment" link
-  // restores the scrub; a nav-bar "Mapa" click or Back that lands on a
-  // ?t=-less URL drops back to live. Our own scrub writes go through the
-  // History API and don't move routerSearch, so this never fights a drag.
-  // Mobile has no scrubber control, but it honours ?t= read-only (the banner
-  // below) so a shared link isn't dead on a phone.
-  useEffect(() => {
-    const key = routerSearch.get("t");
-    if (key == null) { setScrubIndex(null); return; }
-    if (fieldHistory) {
-      const i = fieldHistory.hours.indexOf(key);
-      setScrubIndex(i === -1 ? null : i);
-    }
-  }, [routerSearch, fieldHistory]);
-
-  // Mirror the scrubbed hour into ?t= (absent = live).
-  useEffect(() => {
-    writeScrubParam(scrubbing && scrubIndex != null ? fieldHistory!.hours[scrubIndex] : null);
-  }, [scrubbing, scrubIndex, fieldHistory]);
-
-  // Playback: step one hour at a time to the end of the window, then stop.
-  // Interval scales with the speed toggle (1× = 700ms/hour).
-  useEffect(() => {
-    if (!scrubPlaying || !fieldHistory) return;
-    const last = fieldHistory.hours.length - 1;
-    if (scrubIndex == null || scrubIndex >= last) { setScrubPlaying(false); return; }
-    const id = window.setTimeout(() => setScrubIndex((i) => (i == null ? null : i + 1)), 700 / scrubSpeed);
-    return () => window.clearTimeout(id);
-  }, [scrubPlaying, scrubIndex, scrubSpeed, fieldHistory]);
+    writeFilterParams({ showOccamm, showOtros, showSima });
+  }, [showOccamm, showOtros, showSima]);
 
   // Close the estación card. **Desktop only** — the right column goes empty and
   // the map stands alone. On mobile there is no "close": the sheet always rests
@@ -1085,27 +877,9 @@ export default function MapaSensors({
           map, just under the top bar. It hides with the right-edge buttons once
           the sheet is expanded. Low-priority chrome, so it runs small and
           shadowless. Desktop pins the full badge to the foot of the left rail. */}
-      {sheetState === 'peek' && freshness && !scrubbing && (
+      {sheetState === 'peek' && freshness && (
         <div className="pointer-events-none absolute left-4 top-4 z-[45] md:hidden">
           <FreshnessBadge freshness={freshness} compact />
-        </div>
-      )}
-
-      {/* Mobile: read-only ?t= view. There's no scrubber control on a phone, so
-          a shared "look at this moment" link just repaints the field and shows
-          this banner — the time it's pinned to, and one tap back to live. */}
-      {scrubbing && scrubbedMoment && (
-        <div className="absolute inset-x-4 top-4 z-[45] flex items-center gap-2 rounded-xl border border-blue-200/70 bg-white/90 px-3 py-2 text-[13px] shadow-sm backdrop-blur-md md:hidden">
-          <span className="min-w-0 flex-1 truncate text-gray-500">
-            Mostrando <span className="font-medium text-blue-600">{scrubbedMoment}</span>
-          </span>
-          <button
-            type="button"
-            onClick={() => setScrubIndex(null)}
-            className="flex-shrink-0 rounded-lg px-2 py-0.5 font-medium text-gray-500 transition-colors active:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          >
-            Ver en vivo
-          </button>
         </div>
       )}
 
@@ -1119,9 +893,7 @@ export default function MapaSensors({
 
       {/* Layers filter panel — mobile: slides up from bottom. A flex column with
           a capped height so only the body scrolls (the header stays put), while
-          the sheet still shrinks to fit a short list. An earlier version left
-          the scroll on an inner max-height div with no height on the shell,
-          which iOS wouldn't scroll once the municipios list overflowed. */}
+          the sheet still shrinks to fit a short list. */}
       <div
         className="fixed left-0 right-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
         style={{
@@ -1139,10 +911,10 @@ export default function MapaSensors({
         <div
           /* A plain block, not a flex column: the one child is the filter card,
              which carries overflow-hidden to clip its own rounded corners. As a
-             flex item that resolves to min-height:0, so a flex parent would
-             shrink the card to fit and clip the municipios away instead of
-             letting them overflow and scroll here — which is the bug this had.
-             The desktop panel body is a plain block for the same reason. */
+             flex item it would resolve to min-height:0 and a flex parent would
+             shrink the card to fit and clip its rows instead of letting them
+             overflow and scroll here. The desktop panel body is a plain block
+             for the same reason. */
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5"
           style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
@@ -1153,12 +925,8 @@ export default function MapaSensors({
             setShowOccamm={setShowOccamm}
             showSima={showSima}
             setShowSima={setShowSima}
-            estados={estados}
-                sourceCounts={sourceCounts}
-            hiddenMunicipios={hiddenMunicipios}
-            setHiddenMunicipios={setHiddenMunicipios}
+            sourceCounts={sourceCounts}
             onShowOccammInfo={() => setShowOccammInfo(true)}
-            onShowPM25Info={() => setShowPM25Info(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
           />
         </div>
@@ -1205,14 +973,13 @@ export default function MapaSensors({
           empty and the map stands alone until another marker is picked. */}
       <div className="pointer-events-none absolute bottom-10 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
-        {/* flex-1 so this wrapper takes the column height left over the
-            gap-2 and the pinned scrubber below; that bounds the card, so its
-            own overflow-y-auto body scrolls instead of the card overrunning
-            into the scrubber when the recommendations are expanded. */}
+        {/* flex-1 so the wrapper takes the full column height; that bounds the
+            card, so its own overflow-y-auto body scrolls instead of the card
+            overrunning the column when the recommendations are expanded. */}
         <div className="flex min-h-0 w-panel-lg flex-1 flex-col">
         {selectedSensor && (() => {
           const { sensor } = selectedSensor;
-          const pm25 = framePm25(sensor.sensor_id, selectedSensor.pm25);
+          const pm25 = selectedSensor.pm25;
           const sensorQuality = getQualityInfo(pm25);
           return (
             <div className="glass pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl">
@@ -1235,7 +1002,6 @@ export default function MapaSensors({
                     hovered={hoveredHistory}
                     sparkLoading={sparkLoading}
                     sparkData={sparkData}
-                    sparkWindowLabel={sparkWindowLabel}
                     onHoverChange={setHoveredHistory}
                     copied={copied}
                     onCopyCoords={() => copyCoords(sensor.lat, sensor.lon)}
@@ -1255,49 +1021,15 @@ export default function MapaSensors({
           );
         })()}
         </div>{/* end card width wrapper */}
-
-        {/* Time scrubber — pinned at the foot of this rail, the mirror of the
-            legend under the Capas column. It lives inside the column (not as a
-            free-floating sibling) so the flex-1 card wrapper above always stops
-            gap-2 short of it, however tall its content grows — the scrubber is
-            taller than the legend, so a shared bottom offset used to bury the
-            card's last rows behind it. Skeleton while the window loads; nothing
-            if the loaded window came back with a single hour.
-            Data freshness reads out inside the scrubber now — same question as
-            "what moment am I looking at". */}
-        {(!fieldHistory || fieldHistory.hours.length > 1) && (
-          <div className="pointer-events-none flex-shrink-0">
-            {fieldHistory ? (
-              <TimeScrubber
-                hours={fieldHistory.hours}
-                index={scrubIndex}
-                playing={scrubPlaying}
-                speed={scrubSpeed}
-                medianByHour={medianByHour}
-                freshness={freshness}
-                onIndex={setScrubIndex}
-                onPlayingChange={setScrubPlaying}
-                onSpeedChange={setScrubSpeed}
-              />
-            ) : (
-              <TimeScrubberSkeleton />
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Left column: layers panel (desktop) with the data-freshness badge
-          pinned under it. On mobile the panel is a bottom sheet and freshness
-          moved into that sheet, so this column renders nothing here. */}
-      {/* Wider on desktop so the indented municipality rows have room; the
-          mobile width stays as it was, since 380px would overhang a small
-          phone from left-4.
+      {/* Left column (desktop): the Capas panel, the air-quality legend, and
+          the data-freshness badge pinned at the foot of the rail. On mobile the
+          panel and legend are bottom sheets and freshness is the top-left pill,
+          so this column renders nothing there.
 
-          On desktop the column runs the whole height and the badge is pinned
-          to the bottom of it, so the panel simply grows into whatever is left
-          over. It used to be held off the badge by a hand-counted max-height
-          on the panel body, with the badge itself living in a different corner
-          of this file. */}
+          The column runs the whole height; the legend + badge sit at the bottom
+          (md:mt-auto) and the panel grows into whatever is left over. */}
       <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-10 md:left-6 md:top-6 md:w-panel-filters">
         <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:flex">
           {/* The header carries the filter state, in the same "label · summary"
@@ -1320,8 +1052,7 @@ export default function MapaSensors({
             /* Only the body scrolls, so the "Capas" header stays in place, and
                overscroll-contain stops a scroll that reaches the end from
                panning the map underneath. flex-1 min-h-0 takes whatever the
-               column has left after the badge, which is the same job the old
-               calc(100svh - 236px) was doing by hand. */
+               column has left after the legend + badge. */
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6 pt-3">
               <LayersFilterContent
                 showOtros={showOtros}
@@ -1330,26 +1061,31 @@ export default function MapaSensors({
                 setShowOccamm={setShowOccamm}
                 showSima={showSima}
                 setShowSima={setShowSima}
-                estados={estados}
                 sourceCounts={sourceCounts}
-                hiddenMunicipios={hiddenMunicipios}
-                setHiddenMunicipios={setHiddenMunicipios}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
-                onShowPM25Info={() => setShowPM25Info(true)}
                 onShowFuenteInfo={() => setShowFuenteInfo(true)}
               />
             </div>
           )}
         </div>
 
-        {/* The air-quality scale sits at the foot of this rail on desktop.
-            Same w-panel-filters width as the Capas panel, so the rail keeps
-            one edge, and md:mt-auto pins it to the bottom whether the panel
+        {/* The air-quality scale sits near the foot of this rail on desktop.
+            Same w-panel-filters width as the Capas panel, and md:mt-auto pins
+            it (with the freshness badge below) to the bottom whether the panel
             above is open or shut. Desktop only: on mobile the legend floats
             at the bottom-left of the map, level with the Capas button. */}
         <div className="glass pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl px-5 py-4 md:mt-auto md:block">
           <AirQualityLegend collapsible />
         </div>
+
+        {/* Data freshness — the foot of the desktop rail. Same "what am I
+            looking at" question the scrubber's readout used to answer, now
+            that the scrubber is gone. */}
+        {freshness && (
+          <div className="pointer-events-none hidden w-full flex-shrink-0 md:block">
+            <FreshnessBadge freshness={freshness} />
+          </div>
+        )}
       </div>
 
       {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
@@ -1370,7 +1106,7 @@ export default function MapaSensors({
         const subj = cardSubject;
         const s = subj?.sensor;
         const name = s ? displayName(s) : "";
-        const pm25 = subj ? framePm25(s!.sensor_id, subj.pm25) : null;
+        const pm25 = subj ? subj.pm25 : null;
         const quality = getQualityInfo(pm25);
 
         return (
@@ -1418,7 +1154,6 @@ export default function MapaSensors({
                 hovered={hoveredHistory}
                 sparkLoading={sparkLoading}
                 sparkData={sparkData}
-                sparkWindowLabel={sparkWindowLabel}
                 onHoverChange={setHoveredHistory}
                 copied={copied}
                 onCopyCoords={() => copyCoords(s!.lat, s!.lon)}
@@ -1502,52 +1237,6 @@ export default function MapaSensors({
                     Sistema Integral de Monitoreo Ambiental (SIMA)
                   </DialogLink>
                   , operado por el Gobierno de Nuevo León.
-                </>
-              ),
-            },
-          ]}
-        />
-      )}
-
-      {/* PM2.5 info popup — PM2.5 is what the map shows, so it reads straight
-          away; the two we don't have yet stay one click away. */}
-      {showPM25Info && (
-        <AccordionDialog
-          title="Contaminante"
-          onClose={() => setShowPM25Info(false)}
-          sections={[
-            {
-              title: "PM2.5",
-              body: (
-                <>
-                  Partículas en suspensión en el aire con un diámetro de
-                  2.5 micrómetros o menos, unas 30 veces más delgadas que
-                  un cabello humano. Evaden las defensas de la nariz y la
-                  garganta, por lo que son las más peligrosas para la
-                  salud.
-                </>
-              ),
-            },
-            {
-              title: "PM10",
-              body: (
-                <>
-                  Partículas de mayor tamaño, con un diámetro de hasta 10
-                  micrómetros. Quedan retenidas principalmente en la nariz
-                  y la garganta, por lo que representan un menor riesgo
-                  para la salud que las PM2.5.
-                </>
-              ),
-            },
-            {
-              title: "Ozono",
-              body: (
-                <>
-                  Gas que no se emite directamente: se forma cuando la luz
-                  solar reacciona con los gases del tráfico y la industria.
-                  Alcanza sus niveles más altos en las tardes soleadas e
-                  irrita las vías respiratorias, sobre todo al hacer
-                  ejercicio al aire libre.
                 </>
               ),
             },

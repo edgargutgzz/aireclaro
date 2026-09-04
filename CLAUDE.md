@@ -61,7 +61,7 @@ pnpm exec tsc --noEmit   # the type gate
 | Doc | For |
 |---|---|
 | `README.md` | what the platform is, quickstart, the doc index |
-| `docs/architecture.md` | data model, ingestion boundary, home-page flow, the GL marker field, API routes, the `field_history` RPC, URL-state model, `/datos` |
+| `docs/architecture.md` | data model, ingestion boundary, home-page flow, the GL marker field, API routes, URL-state model, `/datos` |
 | `docs/methodology.md` | how readings are presented, data sources & their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license/citation status |
 | `.ai-style-guide.md` | the visual contract (tokens, spacing, component recipes) — consult for a new component or a token change |
 

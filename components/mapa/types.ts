@@ -36,7 +36,3 @@ export type SelectedSensor = {
   // Raw, not pre-formatted: the freshness badge needs to work out how old this is.
   readingAt: string | null;
 };
-
-// The whole marker field over a recent window, from /api/field-history: one
-// pm25 value per sensor per hour, so the time scrubber is an array lookup.
-export type FieldHistory = { hours: string[]; series: Record<string, (number | null)[]> };

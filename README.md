@@ -18,10 +18,10 @@ See [`docs/methodology.md`](docs/methodology.md).
 ## Status
 
 - **Live:** a real-time interactive map of PM2.5 across the metro — official
-  SIMA reference stations and PurpleAir citizen sensors, colour-coded by the
-  Mexican Air and Health Index (NOM-172-SEMARNAT-2023), with a per-station
-  detail card, a 48h trend, shareable views, and a time scrubber over the last
-  ~6 weeks of the whole field.
+  SIMA reference stations and PurpleAir citizen sensors on one view (the only
+  site that combines both), colour-coded by the Mexican Air and Health Index
+  (NOM-172-SEMARNAT-2023), with a per-station detail card, a 48h trend, and
+  shareable views.
 - **Planned (the actual product):** a public API, bulk and per-sensor data
   download, a methodology page, and a data license. Not built yet.
 
@@ -70,7 +70,7 @@ Mapbox GL · Supabase · deployed on Vercel.
 
 | Doc | Contents |
 |---|---|
-| [`docs/architecture.md`](docs/architecture.md) | data model, ingestion boundary, home-page data flow, API routes, the `field_history` RPC, the URL-state model |
+| [`docs/architecture.md`](docs/architecture.md) | data model, ingestion boundary, home-page data flow, API routes, the URL-state model |
 | [`docs/methodology.md`](docs/methodology.md) | how readings are presented, data sources and their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license & citation status |
 | [`.ai-style-guide.md`](.ai-style-guide.md) | the visual contract for the UI |
 | [`CLAUDE.md`](CLAUDE.md) | working guidance for AI coding agents |
