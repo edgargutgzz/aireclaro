@@ -1,9 +1,9 @@
 "use client";
 
 import { useId, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Info } from "lucide-react";
 import { IMECA_LEVELS } from "@/lib/air-quality";
-import { DialogLink } from "./info-dialog";
+import { DialogLink, InfoDialog } from "./info-dialog";
 
 // The measurement itself, not just a colour key: a segmented PM2.5 scale with
 // the μg/m³ thresholds printed at the breaks, then a labelled row per level.
@@ -70,10 +70,35 @@ function LevelList() {
 }
 
 export function LegendDetail({ className = "" }: { className?: string }) {
+  // The map only shows PM2.5, and it's the deliberate choice, not a limitation
+  // (methodology.md) — so the "what is it" text lives here, next to the unit
+  // line, rather than as a filter row for a filter with one option.
+  const [showPM25Info, setShowPM25Info] = useState(false);
+
   return (
     <div className={className}>
-      <p className="mb-2 text-[11px] leading-none text-gray-400">PM2.5 · μg/m³</p>
+      <div className="mb-2 flex items-center gap-1">
+        <p className="text-[11px] leading-none text-gray-400">PM2.5 · μg/m³</p>
+        <button
+          type="button"
+          onClick={() => setShowPM25Info(true)}
+          className="-my-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          aria-label="Qué es PM2.5"
+        >
+          <Info aria-hidden="true" className="h-3 w-3" />
+        </button>
+      </div>
       <LevelList />
+      {showPM25Info && (
+        <InfoDialog title="PM2.5" onClose={() => setShowPM25Info(false)}>
+          <p className="text-sm leading-relaxed text-gray-600">
+            Partículas en suspensión en el aire con un diámetro de 2.5
+            micrómetros o menos, unas 30 veces más delgadas que un cabello
+            humano. Evaden las defensas de la nariz y la garganta, por lo que son
+            las más peligrosas para la salud.
+          </p>
+        </InfoDialog>
+      )}
       {/* More air under the citation on mobile, where the level list runs right
           up against it in the bottom sheet; the desktop rail keeps mt-3. */}
       <p className="mt-5 text-[11px] leading-relaxed text-gray-400 md:mt-3">
