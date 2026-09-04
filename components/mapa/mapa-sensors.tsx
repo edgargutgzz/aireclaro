@@ -6,7 +6,7 @@ import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
-import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
+import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
 import {
@@ -1023,23 +1023,24 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* The air-quality scale sits near the foot of this rail on desktop.
-            Same w-panel-filters width as the Capas panel, and md:mt-auto pins
-            it (with the freshness badge below) to the bottom whether the panel
-            above is open or shut. Desktop only: on mobile the legend floats
-            at the bottom-left of the map, level with the Capas button. */}
-        <div className="glass pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl px-5 py-4 md:mt-auto md:block">
-          <AirQualityLegend collapsible />
-        </div>
-
-        {/* Data freshness — the foot of the desktop rail. Same "what am I
-            looking at" question the scrubber's readout used to answer, now
-            that the scrubber is gone. */}
-        {freshness && (
-          <div className="pointer-events-none hidden w-full flex-shrink-0 md:block">
-            <FreshnessBadge freshness={freshness} />
+        {/* The air-quality scale sits at the foot of this rail on desktop, with
+            the data-freshness line folded in as its footer row — "how to read
+            the field" and "how current the field is" are one object. Same
+            w-panel-filters width as the Capas panel; md:mt-auto pins it to the
+            bottom whether the legend is open or shut. Desktop only: on mobile
+            the legend floats bottom-left of the map and freshness is the
+            top-left pill. */}
+        <div className="glass pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl md:mt-auto md:block">
+          <div className="px-5 py-4">
+            <AirQualityLegend collapsible />
           </div>
-        )}
+          {freshness && (
+            <div className="flex items-center gap-2 border-t border-gray-100 px-5 py-3">
+              <FreshnessDot status={freshness.status} />
+              <FreshnessText freshness={freshness} />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
