@@ -4,11 +4,11 @@ import { es } from "date-fns/locale";
 import { getPM25Color, getQualityInfo, roundPM25 } from "@/lib/air-quality";
 import type { Sensor, Data, SelectedSensor } from "./types";
 
-// Small inline trend chart colour for the selected sensor's last 48h. Fixed
-// regardless of the sensor's air-quality color: the yellow "Aceptable" tone in
-// particular is too low-contrast on white to read as a line/fill. Also the
-// resting fallback for the pulse halo before a reading resolves.
-export const SPARKLINE_COLOR = "#3b82f6";
+// The resting fallback tone for the selected-station pulse halo, used before a
+// reading resolves (or when the station has none). A neutral blue rather than a
+// band colour: the yellow "Aceptable" tone in particular barely registers as a
+// ring on the light map.
+export const PULSE_FALLBACK_COLOR = "#3b82f6";
 
 // The two tables spell municipalities inconsistently — "Garcia"/"García",
 // "San Nicolas"/"San Nicolás", and "General Escobedo" for what the rest of the
@@ -72,13 +72,6 @@ export function getRelativeDayLabel(date: Date) {
   const now = new Date();
   const dayDiff = Math.floor((now.setHours(0, 0, 0, 0) - new Date(date).setHours(0, 0, 0, 0)) / 86400000);
   return dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM", { locale: es });
-}
-
-export function formatHistoryTime(dateStr: string) {
-  const date = new Date(dateStr);
-  // Readings land ~30 min past the hour but represent that hour's data —
-  // floor to the hour, matching how timestamps are shown everywhere else.
-  return `${getRelativeDayLabel(date)} ${format(date, "h")}:00 ${format(date, "a")}`;
 }
 
 export const prefersReducedMotion = () =>

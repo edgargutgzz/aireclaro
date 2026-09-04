@@ -9,8 +9,7 @@
 //     needs to clear 3:1 on white — the WCAG floor for large bold text and
 //     for graphical/non-text objects, which is what every `ink` use actually
 //     is (never body text): the card's quality headline (24–30px bold), the
-//     sparkline dot rings, the sparkline threshold guides, the marker rim,
-//     the legend swatch's inset hairline. Not the stricter 4.5:1 body-text
+//     marker rim, the legend swatch's inset hairline. Not the stricter 4.5:1 body-text
 //     floor — that was leaving real vividness on the table for no
 //     accessibility gain. There is no honest dark "yellow" at any contrast
 //     floor, so Aceptable's ink is nudged to gold; Muy mala and Extrem.
@@ -28,14 +27,6 @@ export const IMECA_LEVELS = [
   { limit: Infinity, label: "Extremadamente mala", bounds: "> 130", color: "#8f3f97", ink: "#8f3f97" },
 ] as const;
 
-
-// The boundaries between levels, each carrying the `ink` of the level it
-// opens: these are 1px guide lines on the white sparkline, so they need the
-// darkened hue to be visible at all (pure #ffff00 is invisible as a hairline).
-export const IMECA_THRESHOLDS = IMECA_LEVELS.slice(0, -1).map((level, i) => ({
-  value: level.limit,
-  color: IMECA_LEVELS[i + 1].ink,
-}));
 
 export const getLevel = (pm25: number) =>
   IMECA_LEVELS.find((level) => pm25 <= level.limit) ?? IMECA_LEVELS[IMECA_LEVELS.length - 1];
@@ -204,8 +195,7 @@ export interface QualityInfo {
 
 // `color` is the official NOM-172 fill; `textColor` is the level's `ink`, the
 // same hue darkened to clear 4.5:1 on white. The card's quality headline uses
-// `textColor`; the sparkline dot uses `color` for its body and `textColor`
-// for its 1px ring.
+// `textColor`.
 export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   if (pm25 <= 15) return {

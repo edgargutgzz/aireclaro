@@ -20,8 +20,7 @@ See [`docs/methodology.md`](docs/methodology.md).
 - **Live:** a real-time interactive map of PM2.5 across the metro — official
   SIMA reference stations and PurpleAir citizen sensors on one view (the only
   site that combines both), colour-coded by the Mexican Air and Health Index
-  (NOM-172-SEMARNAT-2023), with a per-station detail card, a 48h trend, and
-  shareable views.
+  (NOM-172-SEMARNAT-2023), with a per-station detail card and shareable views.
 - **Planned (the actual product):** a public API, bulk and per-sensor data
   download, a methodology page, and a data license. Not built yet.
 

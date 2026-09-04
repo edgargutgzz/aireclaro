@@ -20,11 +20,6 @@ export interface Data {
   time_stamp: string;
 }
 
-export interface HistoryPoint {
-  pm25: number;
-  time_stamp: string;
-}
-
 // What the estación card renders when a marker is picked. Built the same way
 // whether the pick comes from a click or from ?sensor= on load, so both paths
 // go through buildSelection.

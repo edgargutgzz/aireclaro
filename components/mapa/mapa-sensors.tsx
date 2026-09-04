@@ -8,9 +8,9 @@ import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
-import type { Sensor, Data, HistoryPoint, SelectedSensor } from "./types";
+import type { Sensor, Data, SelectedSensor } from "./types";
 import {
-  SPARKLINE_COLOR,
+  PULSE_FALLBACK_COLOR,
   getRelativeDayLabel,
   prefersReducedMotion,
   buildSelection,
@@ -72,7 +72,7 @@ export default function MapaSensors({
   const activeFidRef = useRef<string | null>(null);
   const hoveredFidRef = useRef<string | null>(null);
   const activeSensorIdRef = useRef<number | null>(null);
-  const activeColorRef = useRef<string>(SPARKLINE_COLOR);
+  const activeColorRef = useRef<string>(PULSE_FALLBACK_COLOR);
   const selectedIdRef = useRef<number | null>(null);
 
   // ---- Initial state from the URL (lib/map-url-state) ----------------------
@@ -105,15 +105,9 @@ export default function MapaSensors({
   const [selectedSensor, setSelectedSensor] = useState<SelectedSensor | null>(() =>
     linkedSensor ? buildSelection(linkedSensor, data) : null,
   );
-  const [sensorHistory, setSensorHistory] = useState<HistoryPoint[]>([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
-  // Point the cursor is on in the 48h chart. While set, the card's headline
-  // reports that hour instead of the latest reading, so the chart and the big
-  // number never disagree.
-  const [hoveredHistory, setHoveredHistory] = useState<HistoryPoint | null>(null);
 
   // Desktop drops the default-station card at rest: the right column is empty
   // and the map stands alone until a marker is picked. Mobile still rests its
@@ -284,15 +278,12 @@ export default function MapaSensors({
   const activeSensorId = pulseSubject?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
 
-  const sparkData = sensorHistory;
-  const sparkLoading = historyLoading;
-
   // The pulse halo is a large soft translucent fill, so it takes the official
   // `color` at full chroma, not the darkened `ink`.
   activeColorRef.current =
     getQualityInfo(
       activeSensorId != null ? data.find((d) => d.sensor_id === activeSensorId)?.pm25 ?? null : null,
-    )?.color ?? SPARKLINE_COLOR;
+    )?.color ?? PULSE_FALLBACK_COLOR;
   selectedIdRef.current = selectedSensor?.sensor.sensor_id ?? null;
 
   // The GL source's features for the live frame.
@@ -676,33 +667,6 @@ export default function MapaSensors({
     };
   }, []);
 
-  // Fetch the last 48h of readings for the card station's trend sparkline —
-  // the picked sensor, else the default (Obispado).
-  useEffect(() => {
-    if (!cardSubject) {
-      setSensorHistory([]);
-      setHistoryLoading(false);
-      return;
-    }
-    const target = { sensorId: cardSubject.sensor.sensor_id, source: cardSubject.sensor.source };
-    let cancelled = false;
-    setHistoryLoading(true);
-    fetch(`/api/sensor-history?sensor_id=${target.sensorId}&source=${target.source}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled) setSensorHistory(Array.isArray(data) ? data : []);
-      })
-      .catch(() => {
-        if (!cancelled) setSensorHistory([]);
-      })
-      .finally(() => {
-        if (!cancelled) setHistoryLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [cardSubject?.sensor.sensor_id, cardSubject?.sensor.source]);
-
   // Move the pulsing halo to whichever marker is now active — the explicitly
   // selected sensor, else the default one the card opens on — in that sensor's
   // own air-quality ink (yellow and green barely register as a ring on
@@ -714,12 +678,6 @@ export default function MapaSensors({
     if (!mapLoaded) return;
     syncActive();
   }, [mapLoaded, activeSensorId, syncActive]);
-
-  // A chart whose data changes under a held hover (new sensor picked, history
-  // reloaded) never fires its mouseleave, so drop the stale point.
-  useEffect(() => {
-    setHoveredHistory(null);
-  }, [sensorHistory, selectedSensor]);
 
   // Filters can hide whatever is open: drop the selection rather than leave the
   // card describing a sensor that is no longer on the map.
@@ -999,10 +957,6 @@ export default function MapaSensors({
                   <StationReading
                     subject={selectedSensor}
                     pm25={pm25}
-                    hovered={hoveredHistory}
-                    sparkLoading={sparkLoading}
-                    sparkData={sparkData}
-                    onHoverChange={setHoveredHistory}
                     copied={copied}
                     onCopyCoords={() => copyCoords(sensor.lat, sensor.lon)}
                     copyInteractionClass="hover:text-gray-700"
@@ -1142,8 +1096,8 @@ export default function MapaSensors({
         </div>
 
         {/* Scrollable content — visible when expanded to mid. Mirrors the
-            desktop card: a source line closed off by a rule, the reading and
-            its trace, then the recommendations behind a rule. */}
+            desktop card: a source line closed off by a rule, the reading, then
+            the recommendations behind a rule. */}
         <div
           className={`relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-2 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
         >
@@ -1151,10 +1105,6 @@ export default function MapaSensors({
               <StationReading
                 subject={subj}
                 pm25={pm25}
-                hovered={hoveredHistory}
-                sparkLoading={sparkLoading}
-                sparkData={sparkData}
-                onHoverChange={setHoveredHistory}
                 copied={copied}
                 onCopyCoords={() => copyCoords(s!.lat, s!.lon)}
                 copyInteractionClass="active:opacity-70"

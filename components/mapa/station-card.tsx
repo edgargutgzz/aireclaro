@@ -3,9 +3,8 @@
 import { useId, useState } from "react";
 import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound } from "lucide-react";
 import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
-import type { HistoryPoint, SelectedSensor } from "./types";
+import type { SelectedSensor } from "./types";
 import { getSourceIcon, getSourceLabel } from "./lib";
-import { Sparkline, SparklineSkeleton } from "./sparkline";
 
 // The card's big quality line. With no reading for the moment on screen — a
 // SIMA station that didn't report that hour — it reads "No disponible" in the
@@ -135,30 +134,20 @@ export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }:
 }
 
 // The shared middle of the estación card: the source line closed off by a
-// rule, then "Calidad del Aire" with the reading and its 48h trace. The
-// desktop card and the mobile sheet both render this; they differ only in the
-// header above it and how the health recommendations below it are wrapped, so
-// those stay at the call sites. Returns a fragment — the caller supplies the
-// flex column and its gap.
+// rule, then "Calidad del Aire" with the current reading. The desktop card and
+// the mobile sheet both render this; they differ only in the header above it
+// and how the health recommendations below it are wrapped, so those stay at the
+// call sites. Returns a fragment — the caller supplies the flex column and its
+// gap.
 export function StationReading({
   subject,
   pm25,
-  hovered,
-  sparkLoading,
-  sparkData,
-  sparkWindowLabel,
-  onHoverChange,
   copied,
   onCopyCoords,
   copyInteractionClass,
 }: {
   subject: SelectedSensor;
   pm25: number | null;
-  hovered: HistoryPoint | null;
-  sparkLoading: boolean;
-  sparkData: HistoryPoint[];
-  sparkWindowLabel?: string;
-  onHoverChange: (point: HistoryPoint | null) => void;
   copied: boolean;
   onCopyCoords: () => void;
   // The one class that differs between the two hosts: the desktop card darkens
@@ -169,8 +158,6 @@ export function StationReading({
   const isSima = sensor.source === "sima";
   const SourceIcon = getSourceIcon(isSima);
   const quality = getQualityInfo(pm25);
-  const hoveredQuality = hovered ? getQualityInfo(hovered.pm25) : null;
-  const shownPm25 = hovered?.pm25 ?? pm25;
 
   return (
     <>
@@ -193,27 +180,18 @@ export function StationReading({
         </button>
       </div>
 
-      {/* Reading now and the last 48h are one story: the big number is just the
-          newest point on the chart below it. */}
-      <div className="flex flex-col gap-3">
-        <div>
-          <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
-          <div className="flex items-baseline justify-between gap-3">
-            <QualityHeadline info={hoveredQuality ?? quality} fallbackColor={subject.textColor} />
-            {/* The chips' idiom: the number is the value and carries gray-700,
-                the unit is the quiet half. */}
-            {shownPm25 !== null && (
-              <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
-                <span className="font-medium text-gray-700">{roundPM25(shownPm25)}</span> μg/m³ PM2.5
-              </span>
-            )}
-          </div>
-        </div>
-        {/* Trend sparkline — power-user context (raw history, not just a
-            snapshot). `key` on the sensor id so each new pick remounts and
-            replays the wipe. */}
-        <div>
-          {sparkLoading ? <SparklineSkeleton /> : <Sparkline key={String(sensor.sensor_id)} data={sparkData} onHoverChange={onHoverChange} windowLabel={sparkWindowLabel} animateIn />}
+      {/* The current reading: the band label, then the µg/m³ value. */}
+      <div>
+        <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
+        <div className="flex items-baseline justify-between gap-3">
+          <QualityHeadline info={quality} fallbackColor={subject.textColor} />
+          {/* The chips' idiom: the number is the value and carries gray-700,
+              the unit is the quiet half. */}
+          {pm25 !== null && (
+            <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-500">
+              <span className="font-medium text-gray-700">{roundPM25(pm25)}</span> μg/m³ PM2.5
+            </span>
+          )}
         </div>
       </div>
     </>
