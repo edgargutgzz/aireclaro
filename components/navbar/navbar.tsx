@@ -8,14 +8,16 @@ export default function Navbar() {
   return (
     <>
       {/* Mobile top bar — logo only, in normal document flow; nav links stay in the bottom bar */}
-      <header className="flex h-header flex-shrink-0 items-center bg-stone-50 px-4 md:hidden">
+      <header className="flex h-header flex-shrink-0 items-center border-b border-stone-200 bg-stone-50 px-4 md:hidden">
         <Logo size="sm" />
       </header>
 
-      {/* Mobile navbar at bottom */}
+      {/* Mobile navbar at bottom. `.glass` gives it a border on every side; the
+          x/b edges are zeroed and the top edge takes the same stone hairline
+          the two top bars use, so all three chrome edges read alike. */}
       <nav
         aria-label="Principal"
-        className="glass fixed bottom-0 left-0 right-0 z-50 border-x-0 border-b-0 md:hidden"
+        className="glass fixed bottom-0 left-0 right-0 z-50 border-x-0 border-b-0 border-t-stone-200 md:hidden"
       >
         {/* flex-1 tabs (see Navlinks), so px-2 + pt-1.5/pb-1.5 around a py-3
             pill lands this bar at exactly 56px — the 3.5rem the map's
