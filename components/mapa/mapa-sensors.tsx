@@ -1237,6 +1237,18 @@ export default function MapaSensors({
           onClose={() => setShowFuenteInfo(false)}
           sections={[
             {
+              title: "Estaciones de Gobierno",
+              body: (
+                <>
+                  Estaciones de monitoreo que forman parte del{" "}
+                  <DialogLink href="https://aire.nl.gob.mx/">
+                    Sistema Integral de Monitoreo Ambiental (SIMA)
+                  </DialogLink>
+                  , operado por el Gobierno de Nuevo León.
+                </>
+              ),
+            },
+            {
               title: "Sensores Ciudadanos",
               body: (
                 <>
@@ -1251,18 +1263,6 @@ export default function MapaSensors({
                     oficiales y pueden sobreestimar las PM2.5 cuando hay mucha
                     humedad.
                   </p>
-                </>
-              ),
-            },
-            {
-              title: "Estaciones de Gobierno",
-              body: (
-                <>
-                  Estaciones de monitoreo que forman parte del{" "}
-                  <DialogLink href="https://aire.nl.gob.mx/">
-                    Sistema Integral de Monitoreo Ambiental (SIMA)
-                  </DialogLink>
-                  , operado por el Gobierno de Nuevo León.
                 </>
               ),
             },
