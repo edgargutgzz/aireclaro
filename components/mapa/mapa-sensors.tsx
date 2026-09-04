@@ -11,6 +11,8 @@ import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams 
 import type { Sensor, Data, SelectedSensor } from "./types";
 import {
   PULSE_FALLBACK_COLOR,
+  municipioKey,
+  estadoKey,
   getRelativeDayLabel,
   prefersReducedMotion,
   buildSelection,
@@ -77,9 +79,10 @@ export default function MapaSensors({
 
   // ---- Initial state from the URL (lib/map-url-state) ----------------------
   // Resolved once on mount. ?sensor= seeds the card selection and the opening
-  // camera; ?src= seeds the Capas Fuente filter. A ?sensor= link wins over a
-  // conflicting ?src= in the same URL: its station's source is forced visible
-  // so the clear-selection effect can't drop the very sensor the link is about.
+  // camera; ?src= / ?hide= seed the Capas filters. A ?sensor= link wins over a
+  // conflicting ?src= / ?hide= in the same URL: its station's source and
+  // municipio are forced visible so the clear-selection effect can't drop the
+  // very sensor the link is about.
   const initialSensorId = useRef(readSensorParam()).current;
   const initialFilters = useRef(readFilterParams()).current;
   const linkedSensor = initialSensorId != null
@@ -90,6 +93,12 @@ export default function MapaSensors({
     : null;
   const seedSource = (kind: "occamm" | "otros" | "gob") =>
     linkedSource === kind ? true : initialFilters.src ? initialFilters.src[kind] : true;
+  const seedHidden = () => {
+    if (!initialFilters.hide.length) return [];
+    const known = new Set(sensors.map((s) => municipioKey(s.municipio)).filter(Boolean) as string[]);
+    const linkedMuni = linkedSensor ? municipioKey(linkedSensor.municipio) : null;
+    return initialFilters.hide.filter((k) => known.has(k) && k !== linkedMuni);
+  };
   // -----------------------------------------------------------------------------
 
   const [showFilters, setShowFilters] = useState(false);
@@ -100,6 +109,7 @@ export default function MapaSensors({
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
   const [showSima, setShowSima] = useState(() => seedSource("gob"));
+  const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>(seedHidden);
   const [showOccamm, setShowOccamm] = useState(() => seedSource("occamm"));
 
   const [selectedSensor, setSelectedSensor] = useState<SelectedSensor | null>(() =>
@@ -139,7 +149,64 @@ export default function MapaSensors({
     if (def) setSelectedSensor(buildSelection(def, data));
   }, [isDesktop, linkedSensor, selectedSensor, sensors, data]);
 
-  // How many sensors each source contributes, so the Fuente rows carry a count.
+  // One entry per municipality that actually has sensors, labelled with its
+  // best spelling and counted so the list says how much each filter holds.
+  // Two levels, state then municipality, so every sensor sits under a row:
+  // the map reaches into Coahuila (Saltillo, Arteaga) even though this
+  // observatory follows the Monterrey metro area.
+  //
+  // Counts are faceted: a row tallies only the sensors that also pass the
+  // current Fuente filter, so "Monterrey · 47" drops to the handful of
+  // government stations when Fuente is narrowed to Gobierno. Every row still
+  // renders (a filtered-out municipality reads 0, not gone) so the list
+  // doesn't reflow each time a source is toggled.
+  const estados = useMemo(() => {
+    const sourceOn = (sensor: Sensor) =>
+      sensor.source === "sima" ? showSima : sensor.red ? showOccamm : showOtros;
+
+    const byState = new globalThis.Map<string, {
+      key: string;
+      label: string;
+      count: number;
+      municipios: globalThis.Map<string, { key: string; label: string; count: number }>;
+    }>();
+
+    sensors.forEach((sensor) => {
+      const sKey = estadoKey(sensor.estado);
+      const mKey = municipioKey(sensor.municipio);
+      if (!sKey || !mKey) return;
+
+      const n = sourceOn(sensor) ? 1 : 0;
+
+      let state = byState.get(sKey);
+      if (!state) {
+        state = { key: sKey, label: sensor.estado!.trim(), count: 0, municipios: new globalThis.Map() };
+        byState.set(sKey, state);
+      }
+      state.count += n;
+      // Prefer the accented spelling wherever the data disagrees with itself
+      if (/[^\x00-\x7F]/.test(sensor.estado!) && !/[^\x00-\x7F]/.test(state.label)) state.label = sensor.estado!.trim();
+
+      const label = sensor.municipio!.trim();
+      const municipio = state.municipios.get(mKey);
+      if (!municipio) {
+        state.municipios.set(mKey, { key: mKey, label, count: n });
+        return;
+      }
+      municipio.count += n;
+      if (/[^\x00-\x7F]/.test(label) && !/[^\x00-\x7F]/.test(municipio.label)) municipio.label = label;
+    });
+
+    return Array.from(byState.values())
+      .map((state) => ({
+        ...state,
+        municipios: Array.from(state.municipios.values()).sort((a, b) => a.label.localeCompare(b.label, "es")),
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [sensors, showSima, showOccamm, showOtros]);
+
+  // How many sensors each source contributes, so the Fuente rows carry the
+  // same information the Ubicación rows do.
   const sourceCounts = useMemo(() => {
     const occamm = sensors.filter((sensor) => sensor.source !== "sima" && sensor.red).length;
     const otros = sensors.filter((sensor) => sensor.source !== "sima" && !sensor.red).length;
@@ -148,10 +215,11 @@ export default function MapaSensors({
 
   const visibleSensors = useMemo(
     () => sensors.filter((sensor) => {
+      if (hiddenMunicipios.includes(municipioKey(sensor.municipio) ?? "")) return false;
       if (sensor.source === "sima") return showSima;
       return sensor.red ? showOccamm : showOtros;
     }),
-    [sensors, showSima, showOccamm, showOtros],
+    [sensors, hiddenMunicipios, showSima, showOccamm, showOtros],
   );
 
   const sensorById = useMemo(() => {
@@ -696,11 +764,12 @@ export default function MapaSensors({
     writeSensorParam(null);
   }, []);
 
-  // Mirror the Capas Fuente filter into ?src= so a filtered view travels. Also
-  // runs on mount, which cleans a redundant src= out of the URL.
+  // Mirror the Capas filters into ?src= / ?hide= so a filtered view travels.
+  // Also runs on mount, which cleans an unknown municipio key or a redundant
+  // src= out of the URL.
   useEffect(() => {
-    writeFilterParams({ showOccamm, showOtros, showSima });
-  }, [showOccamm, showOtros, showSima]);
+    writeFilterParams({ showOccamm, showOtros, showSima, hiddenMunicipios });
+  }, [showOccamm, showOtros, showSima, hiddenMunicipios]);
 
   // Close the estación card. **Desktop only** — the right column goes empty and
   // the map stands alone. On mobile there is no "close": the sheet always rests
@@ -883,7 +952,10 @@ export default function MapaSensors({
             setShowOccamm={setShowOccamm}
             showSima={showSima}
             setShowSima={setShowSima}
+            estados={estados}
             sourceCounts={sourceCounts}
+            hiddenMunicipios={hiddenMunicipios}
+            setHiddenMunicipios={setHiddenMunicipios}
             onShowOccammInfo={() => setShowOccammInfo(true)}
             onShowFuenteInfo={() => setShowFuenteInfo(true)}
           />
@@ -1015,7 +1087,10 @@ export default function MapaSensors({
                 setShowOccamm={setShowOccamm}
                 showSima={showSima}
                 setShowSima={setShowSima}
+                estados={estados}
                 sourceCounts={sourceCounts}
+                hiddenMunicipios={hiddenMunicipios}
+                setHiddenMunicipios={setHiddenMunicipios}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
                 onShowFuenteInfo={() => setShowFuenteInfo(true)}
               />

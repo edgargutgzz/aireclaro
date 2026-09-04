@@ -7,9 +7,11 @@
 //   ?sensor=<id>              the picked station
 //   ?src=occamm,otros,gob     which Fuente groups are shown (omitted = all;
 //                             "none" = all hidden)
+//   ?hide=monterrey,guadalupe hidden municipio keys (normalizeName form)
 
 const SENSOR_PARAM = "sensor";
 const SRC_PARAM = "src";
+const HIDE_PARAM = "hide";
 
 type SrcKind = "occamm" | "otros" | "gob";
 export type SrcState = Record<SrcKind, boolean>;
@@ -42,12 +44,12 @@ export function writeSensorParam(sensorId: number | null): void {
   replaceIfChanged(url);
 }
 
-// ---- ?src= ------------------------------------------------------------------
+// ---- ?src= / ?hide= ----------------------------------------------------------
 
 // null src means the param was absent or named nothing valid — treat as "all
 // sources on" rather than "all off", so a typo doesn't blank the map.
-export function readFilterParams(): { src: SrcState | null } {
-  if (typeof window === "undefined") return { src: null };
+export function readFilterParams(): { src: SrcState | null; hide: string[] } {
+  if (typeof window === "undefined") return { src: null, hide: [] };
   const p = new URLSearchParams(window.location.search);
 
   const rawSrc = p.get(SRC_PARAM);
@@ -60,13 +62,17 @@ export function readFilterParams(): { src: SrcState | null } {
     if (parsed.occamm || parsed.otros || parsed.gob) src = parsed;
   }
 
-  return { src };
+  const rawHide = p.get(HIDE_PARAM);
+  const hide = rawHide ? rawHide.split(",").map((s) => s.trim()).filter(Boolean) : [];
+
+  return { src, hide };
 }
 
 export function writeFilterParams(state: {
   showOccamm: boolean;
   showOtros: boolean;
   showSima: boolean;
+  hiddenMunicipios: string[];
 }): void {
   if (typeof window === "undefined") return;
   const url = new URL(window.location.href);
@@ -78,6 +84,9 @@ export function writeFilterParams(state: {
 
   if (on.length === 3) url.searchParams.delete(SRC_PARAM);
   else url.searchParams.set(SRC_PARAM, on.length ? on.join(",") : "none");
+
+  if (state.hiddenMunicipios.length) url.searchParams.set(HIDE_PARAM, state.hiddenMunicipios.join(","));
+  else url.searchParams.delete(HIDE_PARAM);
 
   replaceIfChanged(url);
 }
