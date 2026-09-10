@@ -1,15 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
+
+export type Pollutant = "pm25" | "pm10";
 
 export interface MonthData {
   ano: number;
@@ -24,6 +19,12 @@ const MONTH_FULL = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
+
+const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
+const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
+  pm25: { antes: 33, desde: 25 },
+  pm10: { antes: 60, desde: 50 },
+};
 
 // Reserved status pair (good/bad), not a categorical hue set: red/green is the
 // universal convention for a health chart like this and stays even though the
@@ -70,86 +71,103 @@ function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] })
   );
 }
 
-const INFO_TABS = [
-  {
-    id: "fuente",
-    label: "Datos oficiales",
-    body: (
-      <>
-        Los datos de calidad del aire (PM2.5 µg/m³) provienen de las estaciones
-        de monitoreo del{" "}
-        <a
-          href="http://aire.nl.gob.mx"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          Sistema Integral de Monitoreo Ambiental (SIMA)
-        </a>{" "}
-        de Nuevo León.
-      </>
-    ),
-  },
-  {
-    id: "norma",
-    label: "Norma mexicana",
-    body: (
-      <>
-        Se clasifica la calidad del aire como saludable o insalubre con base
-        en el límite diario establecido por la{" "}
-        <a
-          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          NOM-025-SSA1-2021
-        </a>
-        . El límite fue de 33 µg/m³ hasta el 26 de diciembre de 2025 y bajó a
-        25 µg/m³ a partir del 27 de diciembre de 2025.
-      </>
-    ),
-  },
-  {
-    id: "metodologia",
-    label: "Metodología",
-    body: (
-      <>
-        Un día se contabiliza si al menos una estación reportó un promedio
-        válido (mínimo 75% de horas con dato). Si alguna estación registra un
-        valor que supera el límite del día, el día completo se clasifica como
-        insalubre. Saltillo (estación Finanzas) queda fuera del conteo, ya que
-        pertenece a otra zona metropolitana.
-      </>
-    ),
-  },
-  {
-    id: "salud",
-    label: "Impacto en salud",
-    body: (
-      <>
-        Las partículas PM2.5 son tan pequeñas que penetran profundo en los
-        pulmones y llegan al torrente sanguíneo. La exposición prolongada se
-        asocia con enfermedades respiratorias, cardiovasculares y daño
-        sistémico.
-      </>
-    ),
-  },
-];
+function infoTabs(pollutant: Pollutant) {
+  const label = POLLUTANT_LABEL[pollutant];
+  const { antes, desde } = POLLUTANT_LIMITS[pollutant];
+  return [
+    {
+      id: "fuente",
+      label: "Datos oficiales",
+      body: (
+        <>
+          Los datos de calidad del aire ({label} µg/m³) provienen de las
+          estaciones de monitoreo del{" "}
+          <a
+            href="http://aire.nl.gob.mx"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            Sistema Integral de Monitoreo Ambiental (SIMA)
+          </a>{" "}
+          de Nuevo León.
+        </>
+      ),
+    },
+    {
+      id: "norma",
+      label: "Norma mexicana",
+      body: (
+        <>
+          Se clasifica la calidad del aire como saludable o insalubre con base
+          en el límite diario establecido por la{" "}
+          <a
+            href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            NOM-025-SSA1-2021
+          </a>
+          . El límite fue de {antes} µg/m³ hasta el 26 de diciembre de 2025 y
+          bajó a {desde} µg/m³ a partir del 27 de diciembre de 2025.
+        </>
+      ),
+    },
+    {
+      id: "metodologia",
+      label: "Metodología",
+      body: (
+        <>
+          Un día se contabiliza si al menos una estación reportó un promedio
+          válido (mínimo 75% de horas con dato). Si alguna estación registra
+          un valor que supera el límite del día, el día completo se clasifica
+          como insalubre. Saltillo (estación Finanzas) queda fuera del
+          conteo, ya que pertenece a otra zona metropolitana.
+        </>
+      ),
+    },
+    {
+      id: "salud",
+      label: "Impacto en salud",
+      body:
+        pollutant === "pm10" ? (
+          <>
+            Las partículas PM10 penetran las vías respiratorias superiores y
+            pueden alojarse en bronquios y pulmones. La exposición frecuente
+            irrita ojos, nariz y garganta, y agrava el asma, la bronquitis y
+            la EPOC.
+          </>
+        ) : (
+          <>
+            Las partículas PM2.5 son tan pequeñas que penetran profundo en
+            los pulmones y llegan al torrente sanguíneo. La exposición
+            prolongada se asocia con enfermedades respiratorias,
+            cardiovasculares y daño sistémico.
+          </>
+        ),
+    },
+  ];
+}
 
-export default function DiasInsalubresChart({ data }: { data: MonthData[] }) {
-  const years = useMemo(() => [...new Set(data.map((d) => d.ano))].sort(), [data]);
+export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, MonthData[]> }) {
+  const [pollutant, setPollutant] = useState<Pollutant>("pm25");
+  const activeData = data[pollutant];
+
+  const years = useMemo(() => [...new Set(activeData.map((d) => d.ano))].sort(), [activeData]);
   const [selectedYear, setSelectedYear] = useState<number | null>(years[years.length - 1] ?? null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
+  const year = selectedYear !== null && years.includes(selectedYear) ? selectedYear : years[years.length - 1] ?? null;
+
   const chartData = useMemo(() => {
-    const byMonth = new Map(data.filter((d) => d.ano === selectedYear).map((d) => [d.mesNumero, d]));
+    const byMonth = new Map(activeData.filter((d) => d.ano === year).map((d) => [d.mesNumero, d]));
     return Array.from({ length: 12 }, (_, i) => {
       const mesNumero = i + 1;
       const row = byMonth.get(mesNumero);
       return {
         mesNumero,
-        ano: selectedYear ?? 0,
+        ano: year ?? 0,
         mesLabel: MONTH_SHORT[i],
         insalubres: row?.diasInsalubres ?? 0,
         saludables: row ? row.diasTotales - row.diasInsalubres : 0,
@@ -157,9 +175,10 @@ export default function DiasInsalubresChart({ data }: { data: MonthData[] }) {
         sinDatos: !row,
       };
     });
-  }, [data, selectedYear]);
+  }, [activeData, year]);
 
   const totalInsalubres = chartData.reduce((sum, d) => sum + d.insalubres, 0);
+  const tabs = infoTabs(pollutant);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
@@ -170,24 +189,39 @@ export default function DiasInsalubresChart({ data }: { data: MonthData[] }) {
           </h3>
           <p className="mt-1 text-sm text-gray-500">
             <span className="font-semibold text-red-600">{totalInsalubres}</span>{" "}
-            días insalubres de PM2.5 en {selectedYear}
+            días insalubres de {POLLUTANT_LABEL[pollutant]} en {year}
           </p>
         </div>
-        {years.length > 1 && (
+        <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
-            {years.map((year) => (
+            {(["pm25", "pm10"] as const).map((p) => (
               <button
-                key={year}
-                onClick={() => setSelectedYear(year)}
+                key={p}
+                onClick={() => setPollutant(p)}
                 className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                  selectedYear === year ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                  pollutant === p ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                {year}
+                {POLLUTANT_LABEL[p]}
               </button>
             ))}
           </div>
-        )}
+          {years.length > 1 && (
+            <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+              {years.map((y) => (
+                <button
+                  key={y}
+                  onClick={() => setSelectedYear(y)}
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                    year === y ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  {y}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="px-5 pb-2 pt-4">
@@ -232,7 +266,7 @@ export default function DiasInsalubresChart({ data }: { data: MonthData[] }) {
 
       <div className="px-5 pb-5 pt-1">
         <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-          {INFO_TABS.map((tab) => (
+          {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
@@ -249,7 +283,7 @@ export default function DiasInsalubresChart({ data }: { data: MonthData[] }) {
         {activeTab && (
           <div className="mt-3 rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
             <p className="text-sm leading-relaxed text-gray-600">
-              {INFO_TABS.find((t) => t.id === activeTab)?.body}
+              {tabs.find((t) => t.id === activeTab)?.body}
             </p>
           </div>
         )}
