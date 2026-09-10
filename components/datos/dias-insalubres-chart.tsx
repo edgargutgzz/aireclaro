@@ -20,6 +20,12 @@ const MONTH_FULL = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
 ];
 
+// PM10 numbers don't yet reconcile with the client's own PM10 chart (23 vs
+// 15 insalubre days for Aug 2026, traced to one station, NO3, that may or
+// may not be in their dataset) — hide the tab until that's resolved. The
+// fetch/aggregation stays in place; flip this back on once it checks out.
+const SHOW_PM10_TAB = false;
+
 const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
 const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
   pm25: { antes: 33, desde: 25 },
@@ -193,19 +199,21 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
-            {(["pm25", "pm10"] as const).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPollutant(p)}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                  pollutant === p ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                {POLLUTANT_LABEL[p]}
-              </button>
-            ))}
-          </div>
+          {SHOW_PM10_TAB && (
+            <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+              {(["pm25", "pm10"] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPollutant(p)}
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                    pollutant === p ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  {POLLUTANT_LABEL[p]}
+                </button>
+              ))}
+            </div>
+          )}
           {years.length > 1 && (
             <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
               {years.map((y) => (
