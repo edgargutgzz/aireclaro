@@ -191,7 +191,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-base font-medium text-gray-700">
-            Días insalubres en la zona metropolitana de Monterrey
+            Días insalubres en la Zona Metropolitana de Monterrey
           </h3>
           <p className="mt-1 text-sm text-gray-500">
             <span className="font-semibold text-red-600">{totalInsalubres}</span>{" "}
