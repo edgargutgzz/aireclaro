@@ -233,7 +233,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       </div>
 
       <div className="px-5 pb-2 pt-4">
-        <ChartContainer config={chartConfig} className="aspect-auto h-72 w-full md:h-96">
+        <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[28rem]">
           <BarChart data={chartData} barCategoryGap="20%">
             <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
             <XAxis
