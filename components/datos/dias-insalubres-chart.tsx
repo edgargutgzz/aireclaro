@@ -3,16 +3,9 @@
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
+import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 
-export type Pollutant = "pm25" | "pm10";
-
-export interface MonthData {
-  ano: number;
-  mesNumero: number;
-  mes: string;
-  diasInsalubres: number;
-  diasTotales: number;
-}
+export type { MonthData, Pollutant };
 
 const MONTH_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 const MONTH_FULL = [

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
 import { createServiceClient } from "@/utils/supabase/service";
+import { computeDiasInsalubresMensual, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 
 // Pulls SINAICA's finalized (post-month-close) hourly readings (PM2.5 and
 // PM10 by default) for the 15 Monterrey metro SIMA stations into
@@ -186,12 +186,34 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // días insalubres reads a cached aggregate over this table (see
-  // components/datos/dias-insalubres.tsx) that otherwise only refreshes on
-  // its own timer -- bust it now so new data shows up right away instead of
-  // waiting for that fallback.
+  // /datos reads a precomputed month-level rollup (dias_insalubres_mensual)
+  // instead of the ~15k-row sima_promedios_diarios view directly -- that
+  // view recomputes its full aggregation on every call, which is fine for
+  // one monthly cron run but was never meant to be hit on every page view
+  // (2026-09-12 outage). Recompute the whole history (not just the target
+  // month) so a re-sync or a threshold/HIDDEN_MONTHS change self-corrects
+  // every month, not just going forward.
+  let diasInsalubresError: string | undefined;
   if (rowsWritten > 0) {
-    revalidateTag("dias-insalubres", "max");
+    try {
+      const monthly = await computeDiasInsalubresMensual(supabase);
+      const upsertRows = (Object.entries(monthly) as [Pollutant, typeof monthly.pm25][]).flatMap(
+        ([pollutant, months]) =>
+          months.map((m) => ({
+            ano: m.ano,
+            mes: m.mesNumero,
+            parametro: pollutant === "pm25" ? "PM2.5" : "PM10",
+            dias_insalubres: m.diasInsalubres,
+            dias_totales: m.diasTotales,
+          })),
+      );
+      const { error } = await supabase
+        .from("dias_insalubres_mensual")
+        .upsert(upsertRows, { onConflict: "ano,mes,parametro" });
+      if (error) diasInsalubresError = error.message;
+    } catch (err) {
+      diasInsalubresError = err instanceof Error ? err.message : String(err);
+    }
   }
 
   return NextResponse.json({
@@ -201,5 +223,6 @@ export async function GET(request: NextRequest) {
     estaciones: estaciones.length,
     rowsWritten,
     errors,
+    diasInsalubresError,
   });
 }
