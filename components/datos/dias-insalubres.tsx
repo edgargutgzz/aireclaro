@@ -10,10 +10,14 @@ import DiasInsalubresChart, { type MonthData, type Pollutant } from "@/component
 // it isn't part of this metro area.
 const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
-// TEMPORARY: July 2026's finalized pull landed with an off-by-one day offset
-// (a variant of the drifting SINAICA lag). Hide the whole month from the
-// chart until the ingestion is corrected and re-synced, then delete this.
-const HIDDEN_MONTHS = new Set(["2026-07"]);
+// TEMPORARY: July 2026's finalized PM10 pull landed with an off-by-one day
+// offset (a variant of the drifting SINAICA lag). Hide it from the PM10
+// series until the ingestion is corrected and re-synced, then delete this.
+// PM2.5 was re-verified as correct, so it's no longer hidden.
+const HIDDEN_MONTHS: Record<"PM2.5" | "PM10", Set<string>> = {
+  "PM2.5": new Set(),
+  PM10: new Set(["2026-07"]),
+};
 
 function aggregateByMonth(
   rows: { fecha: string; promedio: number | null }[],
@@ -64,9 +68,12 @@ export default async function DiasInsalubres() {
     throw new Error(`Failed to load días insalubres: ${error.message}`);
   }
 
-  const visibleRows = (rows ?? []).filter((r) => !HIDDEN_MONTHS.has(r.fecha.slice(0, 7)));
-  const pm25Rows = visibleRows.filter((r) => r.parametro === "PM2.5");
-  const pm10Rows = visibleRows.filter((r) => r.parametro === "PM10");
+  const pm25Rows = (rows ?? []).filter(
+    (r) => r.parametro === "PM2.5" && !HIDDEN_MONTHS["PM2.5"].has(r.fecha.slice(0, 7)),
+  );
+  const pm10Rows = (rows ?? []).filter(
+    (r) => r.parametro === "PM10" && !HIDDEN_MONTHS.PM10.has(r.fecha.slice(0, 7)),
+  );
 
   const data: Record<Pollutant, MonthData[]> = {
     pm25: aggregateByMonth(pm25Rows, getLimitForDate),
