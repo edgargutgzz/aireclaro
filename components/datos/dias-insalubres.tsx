@@ -1,4 +1,5 @@
-import { createClient } from "@/utils/supabase/server";
+import { unstable_cache } from "next/cache";
+import { createPublicClient } from "@/utils/supabase/public";
 import { getLimitForDate, getLimitForDatePM10 } from "@/lib/pm25-limits";
 import DiasInsalubresChart, { type MonthData, type Pollutant } from "@/components/datos/dias-insalubres-chart";
 
@@ -63,7 +64,7 @@ function aggregateByMonth(
 // fetching all ~19 at once blew past Postgres's statement timeout under
 // contention (2026-09-12 outage), and fetching them one at a time blew past
 // the gateway timeout instead. Batching trades off between the two.
-function baseQuery(supabase: Awaited<ReturnType<typeof createClient>>) {
+function baseQuery(supabase: ReturnType<typeof createPublicClient>) {
   return supabase
     .from("sima_promedios_diarios")
     .select("sensor_id, fecha, promedio, parametro", { count: "exact" })
@@ -77,7 +78,7 @@ function baseQuery(supabase: Awaited<ReturnType<typeof createClient>>) {
 
 const BATCH_SIZE = 4;
 
-async function fetchAllPromediosDiarios(supabase: Awaited<ReturnType<typeof createClient>>) {
+async function fetchAllPromediosDiarios(supabase: ReturnType<typeof createPublicClient>) {
   const pageSize = 1000;
   type Row = { sensor_id: string; fecha: string; promedio: number | null; parametro: string };
 
@@ -107,21 +108,38 @@ async function fetchAllPromediosDiarios(supabase: Awaited<ReturnType<typeof crea
   return rows;
 }
 
+// The chart itself only needs ~80 numbers (months x pollutants), not the
+// ~19,000+ underlying daily-average rows -- and sima_mediciones_finales (so
+// this view) only changes when the monthly SINAICA sync cron runs, not on
+// every page view. Caching the small aggregated result means Postgres runs
+// the expensive view/pagination at most once per cache period instead of on
+// every visitor, which is what actually caused the 2026-09-12 outage (see
+// fetchAllPromediosDiarios above). The cron route calls
+// revalidateTag("dias-insalubres") right after a sync completes, so this
+// also refreshes immediately on new data; the time-based revalidate below is
+// just a safety net in case that tag invalidation is ever missed.
+const getDiasInsalubresData = unstable_cache(
+  async (): Promise<Record<Pollutant, MonthData[]>> => {
+    const supabase = createPublicClient();
+    const rows = await fetchAllPromediosDiarios(supabase);
+
+    const pm25Rows = (rows ?? []).filter(
+      (r) => r.parametro === "PM2.5" && !HIDDEN_MONTHS["PM2.5"].has(r.fecha.slice(0, 7)),
+    );
+    const pm10Rows = (rows ?? []).filter(
+      (r) => r.parametro === "PM10" && !HIDDEN_MONTHS.PM10.has(r.fecha.slice(0, 7)),
+    );
+
+    return {
+      pm25: aggregateByMonth(pm25Rows, getLimitForDate),
+      pm10: aggregateByMonth(pm10Rows, getLimitForDatePM10),
+    };
+  },
+  ["dias-insalubres"],
+  { tags: ["dias-insalubres"], revalidate: 60 * 60 * 24 * 7 },
+);
+
 export default async function DiasInsalubres() {
-  const supabase = await createClient();
-  const rows = await fetchAllPromediosDiarios(supabase);
-
-  const pm25Rows = (rows ?? []).filter(
-    (r) => r.parametro === "PM2.5" && !HIDDEN_MONTHS["PM2.5"].has(r.fecha.slice(0, 7)),
-  );
-  const pm10Rows = (rows ?? []).filter(
-    (r) => r.parametro === "PM10" && !HIDDEN_MONTHS.PM10.has(r.fecha.slice(0, 7)),
-  );
-
-  const data: Record<Pollutant, MonthData[]> = {
-    pm25: aggregateByMonth(pm25Rows, getLimitForDate),
-    pm10: aggregateByMonth(pm10Rows, getLimitForDatePM10),
-  };
-
+  const data = await getDiasInsalubresData();
   return <DiasInsalubresChart data={data} />;
 }

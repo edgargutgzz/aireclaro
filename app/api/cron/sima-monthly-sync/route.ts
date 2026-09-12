@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { createServiceClient } from "@/utils/supabase/service";
 
 // Pulls SINAICA's finalized (post-month-close) hourly readings (PM2.5 and
@@ -183,6 +184,14 @@ export async function GET(request: NextRequest) {
     } else {
       rowsWritten += rows.length;
     }
+  }
+
+  // días insalubres reads a cached aggregate over this table (see
+  // components/datos/dias-insalubres.tsx) that otherwise only refreshes on
+  // its own timer -- bust it now so new data shows up right away instead of
+  // waiting for that fallback.
+  if (rowsWritten > 0) {
+    revalidateTag("dias-insalubres", "max");
   }
 
   return NextResponse.json({
