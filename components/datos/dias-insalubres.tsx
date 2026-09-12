@@ -57,27 +57,46 @@ function aggregateByMonth(
 // PostgREST caps an unpaginated select at 1000 rows. This table already
 // exceeds that combined across both pollutants, so an unpaginated fetch
 // silently drops rows (undercounting días insalubres) -- page through with
-// .range() until a page comes back short.
+// .range(). sima_promedios_diarios is a view that recomputes its aggregation
+// on every call, so pages are fetched in parallel (order is only needed for
+// stable pagination, not for the aggregation below) -- fetching them one at
+// a time re-ran that aggregation 19+ times back to back and occasionally blew
+// past the statement/gateway timeout (2026-09-12 outage).
+function baseQuery(supabase: Awaited<ReturnType<typeof createClient>>) {
+  return supabase
+    .from("sima_promedios_diarios")
+    .select("sensor_id, fecha, promedio, parametro", { count: "exact" })
+    .in("parametro", ["PM2.5", "PM10"])
+    .neq("sensor_id", "FIN")
+    .not("promedio", "is", null)
+    .order("fecha", { ascending: true })
+    .order("sensor_id", { ascending: true })
+    .order("parametro", { ascending: true });
+}
+
 async function fetchAllPromediosDiarios(supabase: Awaited<ReturnType<typeof createClient>>) {
   const pageSize = 1000;
-  const rows: { sensor_id: string; fecha: string; promedio: number | null; parametro: string }[] = [];
-  for (let from = 0; ; from += pageSize) {
-    const { data, error } = await supabase
-      .from("sima_promedios_diarios")
-      .select("sensor_id, fecha, promedio, parametro")
-      .in("parametro", ["PM2.5", "PM10"])
-      .neq("sensor_id", "FIN")
-      .not("promedio", "is", null)
-      .order("fecha", { ascending: true })
-      .order("sensor_id", { ascending: true })
-      .order("parametro", { ascending: true })
-      .range(from, from + pageSize - 1);
+  type Row = { sensor_id: string; fecha: string; promedio: number | null; parametro: string };
 
-    if (error) {
-      throw new Error(`Failed to load días insalubres: ${error.message}`);
+  const first = await baseQuery(supabase).range(0, pageSize - 1);
+  if (first.error) {
+    throw new Error(`Failed to load días insalubres: ${first.error.message}`);
+  }
+  const total = first.count ?? first.data?.length ?? 0;
+
+  const pages = await Promise.all(
+    Array.from({ length: Math.max(0, Math.ceil(total / pageSize) - 1) }, (_, i) => {
+      const from = (i + 1) * pageSize;
+      return baseQuery(supabase).range(from, from + pageSize - 1);
+    }),
+  );
+
+  const rows: Row[] = [...(first.data ?? [])];
+  for (const page of pages) {
+    if (page.error) {
+      throw new Error(`Failed to load días insalubres: ${page.error.message}`);
     }
-    rows.push(...(data ?? []));
-    if (!data || data.length < pageSize) break;
+    rows.push(...(page.data ?? []));
   }
   return rows;
 }
