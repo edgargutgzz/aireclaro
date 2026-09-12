@@ -58,10 +58,11 @@ function aggregateByMonth(
 // exceeds that combined across both pollutants, so an unpaginated fetch
 // silently drops rows (undercounting días insalubres) -- page through with
 // .range(). sima_promedios_diarios is a view that recomputes its aggregation
-// on every call, so pages are fetched in parallel (order is only needed for
-// stable pagination, not for the aggregation below) -- fetching them one at
-// a time re-ran that aggregation 19+ times back to back and occasionally blew
-// past the statement/gateway timeout (2026-09-12 outage).
+// on every call, so pages are fetched in small concurrent batches (order is
+// only needed for stable pagination, not for the aggregation below) --
+// fetching all ~19 at once blew past Postgres's statement timeout under
+// contention (2026-09-12 outage), and fetching them one at a time blew past
+// the gateway timeout instead. Batching trades off between the two.
 function baseQuery(supabase: Awaited<ReturnType<typeof createClient>>) {
   return supabase
     .from("sima_promedios_diarios")
@@ -74,6 +75,8 @@ function baseQuery(supabase: Awaited<ReturnType<typeof createClient>>) {
     .order("parametro", { ascending: true });
 }
 
+const BATCH_SIZE = 4;
+
 async function fetchAllPromediosDiarios(supabase: Awaited<ReturnType<typeof createClient>>) {
   const pageSize = 1000;
   type Row = { sensor_id: string; fecha: string; promedio: number | null; parametro: string };
@@ -84,19 +87,22 @@ async function fetchAllPromediosDiarios(supabase: Awaited<ReturnType<typeof crea
   }
   const total = first.count ?? first.data?.length ?? 0;
 
-  const pages = await Promise.all(
-    Array.from({ length: Math.max(0, Math.ceil(total / pageSize) - 1) }, (_, i) => {
-      const from = (i + 1) * pageSize;
-      return baseQuery(supabase).range(from, from + pageSize - 1);
-    }),
-  );
-
   const rows: Row[] = [...(first.data ?? [])];
-  for (const page of pages) {
-    if (page.error) {
-      throw new Error(`Failed to load días insalubres: ${page.error.message}`);
+  const remainingPages = Math.max(0, Math.ceil(total / pageSize) - 1);
+  for (let batchStart = 0; batchStart < remainingPages; batchStart += BATCH_SIZE) {
+    const batch = await Promise.all(
+      Array.from({ length: Math.min(BATCH_SIZE, remainingPages - batchStart) }, (_, j) => {
+        const i = batchStart + j;
+        const from = (i + 1) * pageSize;
+        return baseQuery(supabase).range(from, from + pageSize - 1);
+      }),
+    );
+    for (const page of batch) {
+      if (page.error) {
+        throw new Error(`Failed to load días insalubres: ${page.error.message}`);
+      }
+      rows.push(...(page.data ?? []));
     }
-    rows.push(...(page.data ?? []));
   }
   return rows;
 }
