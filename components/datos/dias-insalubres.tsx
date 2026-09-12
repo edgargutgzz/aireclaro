@@ -69,6 +69,8 @@ async function fetchAllPromediosDiarios(supabase: Awaited<ReturnType<typeof crea
       .neq("sensor_id", "FIN")
       .not("promedio", "is", null)
       .order("fecha", { ascending: true })
+      .order("sensor_id", { ascending: true })
+      .order("parametro", { ascending: true })
       .range(from, from + pageSize - 1);
 
     if (error) {
