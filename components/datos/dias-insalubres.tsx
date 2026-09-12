@@ -54,19 +54,35 @@ function aggregateByMonth(
   return Array.from(porMes.values()).sort((a, b) => a.ano - b.ano || a.mesNumero - b.mesNumero);
 }
 
+// PostgREST caps an unpaginated select at 1000 rows. This table already
+// exceeds that combined across both pollutants, so an unpaginated fetch
+// silently drops rows (undercounting días insalubres) -- page through with
+// .range() until a page comes back short.
+async function fetchAllPromediosDiarios(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const pageSize = 1000;
+  const rows: { sensor_id: string; fecha: string; promedio: number | null; parametro: string }[] = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("sima_promedios_diarios")
+      .select("sensor_id, fecha, promedio, parametro")
+      .in("parametro", ["PM2.5", "PM10"])
+      .neq("sensor_id", "FIN")
+      .not("promedio", "is", null)
+      .order("fecha", { ascending: true })
+      .range(from, from + pageSize - 1);
+
+    if (error) {
+      throw new Error(`Failed to load días insalubres: ${error.message}`);
+    }
+    rows.push(...(data ?? []));
+    if (!data || data.length < pageSize) break;
+  }
+  return rows;
+}
+
 export default async function DiasInsalubres() {
   const supabase = await createClient();
-
-  const { data: rows, error } = await supabase
-    .from("sima_promedios_diarios")
-    .select("sensor_id, fecha, promedio, parametro")
-    .in("parametro", ["PM2.5", "PM10"])
-    .neq("sensor_id", "FIN")
-    .not("promedio", "is", null);
-
-  if (error) {
-    throw new Error(`Failed to load días insalubres: ${error.message}`);
-  }
+  const rows = await fetchAllPromediosDiarios(supabase);
 
   const pm25Rows = (rows ?? []).filter(
     (r) => r.parametro === "PM2.5" && !HIDDEN_MONTHS["PM2.5"].has(r.fecha.slice(0, 7)),
