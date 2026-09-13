@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/utils/supabase/service";
 import { computeDiasInsalubresMensual, type Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { computeCoberturaDiaria } from "@/lib/cobertura-aggregate";
 
 // Pulls SINAICA's finalized (post-month-close) hourly readings (PM2.5 and
 // PM10 by default) for the 15 Monterrey metro SIMA stations into
@@ -216,6 +217,29 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // Same precompute pattern for the "Cobertura de estaciones" grid on
+  // /datos -- one row per (sensor_id, fecha), chunked because the full
+  // history is already well past a single upsert's comfortable row count.
+  let coberturaError: string | undefined;
+  if (rowsWritten > 0) {
+    try {
+      const cobertura = await computeCoberturaDiaria(supabase);
+      const chunkSize = 1000;
+      for (let i = 0; i < cobertura.length; i += chunkSize) {
+        const chunk = cobertura.slice(i, i + chunkSize);
+        const { error } = await supabase
+          .from("sima_cobertura_diaria")
+          .upsert(chunk, { onConflict: "sensor_id,fecha" });
+        if (error) {
+          coberturaError = error.message;
+          break;
+        }
+      }
+    } catch (err) {
+      coberturaError = err instanceof Error ? err.message : String(err);
+    }
+  }
+
   return NextResponse.json({
     fechaInit,
     fechaFin,
@@ -224,5 +248,6 @@ export async function GET(request: NextRequest) {
     rowsWritten,
     errors,
     diasInsalubresError,
+    coberturaError,
   });
 }
