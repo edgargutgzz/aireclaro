@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY, withOpacity } from "@/lib/datos-colors";
 
@@ -36,9 +37,12 @@ const tabs = [
   {
     id: "fuente",
     label: "Datos oficiales",
+    icon: ShieldCheck,
+    accent: "green" as const,
     body: (
       <>
-        Los datos provienen de las estaciones de monitoreo del{" "}
+        Los datos de calidad del aire (PM2.5 µg/m³) provienen de las
+        estaciones de monitoreo del{" "}
         <a
           href="http://aire.nl.gob.mx"
           target="_blank"
@@ -54,15 +58,58 @@ const tabs = [
   {
     id: "metodologia",
     label: "Metodología",
+    icon: BookOpen,
+    accent: "violet" as const,
     body: (
       <>
-        Un día se considera cubierto cuando la estación reportó al menos 75%
-        de horas válidas (18 de 24) para PM2.5. Saltillo (estación Finanzas)
-        queda fuera, ya que pertenece a otra zona metropolitana.
+        Para garantizar mayor certeza en la información, los datos se
+        analizan siguiendo los criterios establecidos por la{" "}
+        <a
+          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          NOM-025-SSA1-2021
+        </a>
+        . Un día se contabiliza como &ldquo;con datos&rdquo; cuando al menos
+        el 75% de las horas del día contaron con una medición válida de
+        PM2.5, por lo que algunos días pueden no aparecer aunque la estación
+        haya operado parcialmente. Saltillo (estación Finanzas) queda fuera,
+        ya que pertenece a otra zona metropolitana.
+      </>
+    ),
+  },
+  {
+    id: "salud",
+    label: "Impacto en salud",
+    icon: HeartPulse,
+    accent: "violet" as const,
+    body: (
+      <>
+        Las partículas PM2.5 son tan pequeñas que penetran profundo en los
+        pulmones y llegan al torrente sanguíneo. La exposición prolongada se
+        asocia con enfermedades respiratorias, cardiovasculares y daño
+        sistémico. Si quieres entender mejor cómo nos afecta, te compartimos
+        la siguiente{" "}
+        <a
+          href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          infografía
+        </a>
+        .
       </>
     ),
   },
 ];
+
+const TAB_ACCENT = {
+  green: { icon: "text-green-600", active: "border-green-200 bg-green-50" },
+  violet: { icon: "text-violet-500", active: "border-violet-200 bg-violet-50" },
+};
 
 interface Cell {
   fecha: string;
@@ -269,6 +316,18 @@ export default function CoberturaEstacionesChart({
   const dates = useMemo(() => allDates.filter((d) => d.startsWith(String(year))), [allDates, year]);
   const { cells, totalCols, monthLabelForCol } = useMemo(() => buildCalendarLayout(dates), [dates]);
 
+  const pctCobertura = useMemo(() => {
+    if (cells.length === 0 || estaciones.length === 0) return 0;
+    let cubierto = 0;
+    for (const estacion of estaciones) {
+      const porFecha = coberturaPorEstacion.get(estacion.sensorId);
+      for (const c of cells) {
+        if (porFecha?.get(c.fecha) === true) cubierto += 1;
+      }
+    }
+    return Math.round((cubierto / (cells.length * estaciones.length)) * 100);
+  }, [cells, estaciones, coberturaPorEstacion]);
+
   if (allDates.length === 0) {
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 py-12 text-center text-sm text-gray-500">
@@ -285,7 +344,7 @@ export default function CoberturaEstacionesChart({
             Cobertura de estaciones en la Zona Metropolitana de Monterrey
           </h3>
           <p className="mt-1 text-sm text-gray-500">
-            Un día se considera cubierto cuando la estación reportó al menos 75% de horas válidas (18 de 24).
+            <span className="font-semibold text-green-600">{pctCobertura}%</span> de cobertura de PM2.5 en {year}
           </p>
         </div>
         {years.length > 1 && (
@@ -330,20 +389,23 @@ export default function CoberturaEstacionesChart({
       </div>
 
       <div className="px-5 pb-5 pt-1">
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
-              className={`rounded-xl border px-3.5 py-2.5 text-left text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                activeTab === tab.id
-                  ? "border-gray-300 bg-gray-50 text-gray-800"
-                  : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const accent = TAB_ACCENT[tab.accent];
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                  activeTab === tab.id ? accent.active + " text-gray-800" : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                <Icon className={`h-4 w-4 ${accent.icon}`} />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
         {activeTab && (
           <div className="mt-3 rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
