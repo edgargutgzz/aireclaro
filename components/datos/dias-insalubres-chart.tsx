@@ -83,7 +83,6 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       id: "fuente",
       label: "Datos oficiales",
       icon: ShieldCheck,
-      accent: "green",
       body: (
         <>
           Los datos de calidad del aire ({label} µg/m³) provienen de las
@@ -104,7 +103,6 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       id: "norma",
       label: "Norma mexicana",
       icon: Scale,
-      accent: "green",
       body: (
         <>
           Se clasifica la calidad del aire como saludable o insalubre con base
@@ -126,7 +124,6 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       id: "metodologia",
       label: "Metodología",
       icon: BookOpen,
-      accent: "violet",
       body: (
         <>
           Un día se contabiliza si al menos una estación reportó un promedio
@@ -141,7 +138,6 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       id: "salud",
       label: "Impacto en salud",
       icon: HeartPulse,
-      accent: "violet",
       body:
         pollutant === "pm10" ? (
           <>
@@ -261,7 +257,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
         </ChartContainer>
       </div>
 
-      <div className="px-5 pb-5 pt-1">
+      <div className="px-5 pb-5 pt-4">
         <InfoTabs tabs={tabs} />
       </div>
     </ChartCard>

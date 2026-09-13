@@ -41,7 +41,6 @@ const tabs: InfoTab[] = [
     id: "fuente",
     label: "Datos oficiales",
     icon: ShieldCheck,
-    accent: "green" as const,
     body: (
       <>
         Los datos de calidad del aire (PM2.5 µg/m³) provienen de las
@@ -62,7 +61,6 @@ const tabs: InfoTab[] = [
     id: "metodologia",
     label: "Metodología",
     icon: BookOpen,
-    accent: "violet" as const,
     body: (
       <>
         Para garantizar mayor certeza en la información, los datos se
@@ -87,7 +85,6 @@ const tabs: InfoTab[] = [
     id: "salud",
     label: "Impacto en salud",
     icon: HeartPulse,
-    accent: "violet" as const,
     body: (
       <>
         Las partículas PM2.5 son tan pequeñas que penetran profundo en los
@@ -366,7 +363,7 @@ export default function CoberturaEstacionesChart({
         </span>
       </div>
 
-      <div className="px-5 pb-5 pt-1">
+      <div className="px-5 pb-5 pt-4">
         <InfoTabs tabs={tabs} />
       </div>
     </ChartCard>

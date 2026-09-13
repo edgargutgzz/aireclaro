@@ -8,20 +8,16 @@ import type { LucideIcon } from "lucide-react";
 // (2026-09-13: cobertura got icon+pill styling, días insalubres was left on
 // the old plain-border buttons). One component means one place to keep
 // them consistent, instead of trusting two files not to diverge.
-export type TabAccent = "green" | "violet";
-
+//
+// Deliberately monochrome (2026-09-13): these are a secondary "learn more"
+// row, not calls to action -- per-tab accent colors made them compete with
+// the chart above for attention. Icons stay for scannability, colors don't.
 export interface InfoTab {
   id: string;
   label: string;
   icon: LucideIcon;
-  accent: TabAccent;
   body: React.ReactNode;
 }
-
-const ACCENT_STYLES: Record<TabAccent, { icon: string; active: string }> = {
-  green: { icon: "text-green-600", active: "border-green-200 bg-green-50" },
-  violet: { icon: "text-violet-500", active: "border-violet-200 bg-violet-50" },
-};
 
 export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
   const [activeTab, setActiveTab] = useState<string | null>(null);
@@ -31,16 +27,17 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
       <div className="flex flex-wrap gap-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
-          const accent = ACCENT_STYLES[tab.accent];
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
               className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                activeTab === tab.id ? accent.active + " text-gray-800" : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                activeTab === tab.id
+                  ? "border-gray-300 bg-gray-50 text-gray-800"
+                  : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
-              <Icon className={`h-4 w-4 ${accent.icon}`} />
+              <Icon className="h-4 w-4 text-gray-400" />
               {tab.label}
             </button>
           );
