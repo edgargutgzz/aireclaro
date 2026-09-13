@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
+import { COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY, withOpacity } from "@/lib/datos-colors";
 
 interface Estacion {
   sensorId: string;
@@ -19,7 +20,11 @@ const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
-const COLOR_CUBIERTO = "#00a400"; // matches "saludables" green elsewhere on this page
+// The días insalubres chart renders COLOR_SALUDABLE through Recharts'
+// fillOpacity (SVG-only), so a flat div background needs withOpacity() to
+// reproduce that same effective green against the white card -- the bare
+// hex alone renders visibly darker/more saturated than the chart above.
+const COLOR_CUBIERTO = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY);
 const COLOR_INSUFICIENTE = "#e5e7eb"; // gray-200 -- a data-quality gap, not a health-severity color
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
@@ -246,7 +251,7 @@ export default function CoberturaEstacionesChart({
 }) {
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  const { dates, coberturaPorEstacion } = useMemo(() => {
+  const { dates: allDates, coberturaPorEstacion } = useMemo(() => {
     const dateSet = new Set<string>();
     const porEstacion = new Map<string, Map<string, boolean>>();
     for (const row of cobertura) {
@@ -257,9 +262,14 @@ export default function CoberturaEstacionesChart({
     return { dates: Array.from(dateSet).sort(), coberturaPorEstacion: porEstacion };
   }, [cobertura]);
 
+  const years = useMemo(() => [...new Set(allDates.map((d) => Number(d.slice(0, 4))))].sort(), [allDates]);
+  const [selectedYear, setSelectedYear] = useState<number | null>(years[years.length - 1] ?? null);
+  const year = selectedYear !== null && years.includes(selectedYear) ? selectedYear : years[years.length - 1] ?? null;
+
+  const dates = useMemo(() => allDates.filter((d) => d.startsWith(String(year))), [allDates, year]);
   const { cells, totalCols, monthLabelForCol } = useMemo(() => buildCalendarLayout(dates), [dates]);
 
-  if (dates.length === 0) {
+  if (allDates.length === 0) {
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 py-12 text-center text-sm text-gray-500">
         Sin datos de cobertura por el momento.
@@ -269,13 +279,30 @@ export default function CoberturaEstacionesChart({
 
   return (
     <div>
-      <div className="mb-4">
-        <h3 className="text-base font-medium text-gray-700">
-          Cobertura de estaciones en la Zona Metropolitana de Monterrey
-        </h3>
-        <p className="mt-1 text-sm text-gray-500">
-          Un día se considera cubierto cuando la estación reportó al menos 75% de horas válidas (18 de 24).
-        </p>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-base font-medium text-gray-700">
+            Cobertura de estaciones en la Zona Metropolitana de Monterrey
+          </h3>
+          <p className="mt-1 text-sm text-gray-500">
+            Un día se considera cubierto cuando la estación reportó al menos 75% de horas válidas (18 de 24).
+          </p>
+        </div>
+        {years.length > 1 && (
+          <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+            {years.map((y) => (
+              <button
+                key={y}
+                onClick={() => setSelectedYear(y)}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                  year === y ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {y}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="space-y-4">

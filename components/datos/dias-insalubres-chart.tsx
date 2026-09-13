@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { COLOR_INSALUBRE, COLOR_INSALUBRE_OPACITY, COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY } from "@/lib/datos-colors";
 
 export type { MonthData, Pollutant };
 
@@ -32,8 +33,8 @@ const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
 // position (insalubre always at the base), a persistent legend, and the exact
 // counts always in plain text (header stat + tooltip), never color alone.
 const chartConfig = {
-  insalubres: { label: "Insalubres", color: "#ff0000" },
-  saludables: { label: "Saludables", color: "#00a400" },
+  insalubres: { label: "Insalubres", color: COLOR_INSALUBRE },
+  saludables: { label: "Saludables", color: COLOR_SALUDABLE },
 } satisfies ChartConfig;
 
 function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
@@ -247,7 +248,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               dataKey="insalubres"
               stackId="dias"
               fill={chartConfig.insalubres.color}
-              fillOpacity={0.6}
+              fillOpacity={COLOR_INSALUBRE_OPACITY}
               stroke="#fff"
               strokeWidth={2}
               radius={[0, 0, 0, 0]}
@@ -256,7 +257,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               dataKey="saludables"
               stackId="dias"
               fill={chartConfig.saludables.color}
-              fillOpacity={0.5}
+              fillOpacity={COLOR_SALUDABLE_OPACITY}
               stroke="#fff"
               strokeWidth={2}
               radius={[4, 4, 0, 0]}
