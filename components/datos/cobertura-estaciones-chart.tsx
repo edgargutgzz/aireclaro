@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY, withOpacity } from "@/lib/datos-colors";
+import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 
 interface Estacion {
   sensorId: string;
@@ -33,7 +34,7 @@ const COLOR_INSUFICIENTE = "#e5e7eb"; // gray-200 -- a data-quality gap, not a h
 const WEEKDAY_LETTER: Record<number, string> = { 0: "L", 2: "M", 4: "V", 6: "D" };
 const WEEKDAY_FULL = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
-const tabs = [
+const tabs: InfoTab[] = [
   {
     id: "fuente",
     label: "Datos oficiales",
@@ -105,11 +106,6 @@ const tabs = [
     ),
   },
 ];
-
-const TAB_ACCENT = {
-  green: { icon: "text-green-600", active: "border-green-200 bg-green-50" },
-  violet: { icon: "text-violet-500", active: "border-violet-200 bg-violet-50" },
-};
 
 interface Cell {
   fecha: string;
@@ -296,8 +292,6 @@ export default function CoberturaEstacionesChart({
   estaciones: Estacion[];
   cobertura: CoberturaDia[];
 }) {
-  const [activeTab, setActiveTab] = useState<string | null>(null);
-
   const { dates: allDates, coberturaPorEstacion } = useMemo(() => {
     const dateSet = new Set<string>();
     const porEstacion = new Map<string, Map<string, boolean>>();
@@ -389,29 +383,7 @@ export default function CoberturaEstacionesChart({
       </div>
 
       <div className="px-5 pb-5 pt-1">
-        <div className="flex flex-wrap gap-2">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const accent = TAB_ACCENT[tab.accent];
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                  activeTab === tab.id ? accent.active + " text-gray-800" : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                <Icon className={`h-4 w-4 ${accent.icon}`} />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-        {activeTab && (
-          <div className="mt-3 rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
-            <p className="text-sm leading-relaxed text-gray-600">{tabs.find((t) => t.id === activeTab)?.body}</p>
-          </div>
-        )}
+        <InfoTabs tabs={tabs} />
       </div>
     </div>
   );

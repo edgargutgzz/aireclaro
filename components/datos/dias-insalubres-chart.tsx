@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE, COLOR_INSALUBRE_OPACITY, COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY } from "@/lib/datos-colors";
+import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 
 export type { MonthData, Pollutant };
 
@@ -71,13 +73,15 @@ function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] })
   );
 }
 
-function infoTabs(pollutant: Pollutant) {
+function infoTabs(pollutant: Pollutant): InfoTab[] {
   const label = POLLUTANT_LABEL[pollutant];
   const { antes, desde } = POLLUTANT_LIMITS[pollutant];
   return [
     {
       id: "fuente",
       label: "Datos oficiales",
+      icon: ShieldCheck,
+      accent: "green",
       body: (
         <>
           Los datos de calidad del aire ({label} µg/m³) provienen de las
@@ -97,6 +101,8 @@ function infoTabs(pollutant: Pollutant) {
     {
       id: "norma",
       label: "Norma mexicana",
+      icon: Scale,
+      accent: "green",
       body: (
         <>
           Se clasifica la calidad del aire como saludable o insalubre con base
@@ -117,6 +123,8 @@ function infoTabs(pollutant: Pollutant) {
     {
       id: "metodologia",
       label: "Metodología",
+      icon: BookOpen,
+      accent: "violet",
       body: (
         <>
           Un día se contabiliza si al menos una estación reportó un promedio
@@ -130,6 +138,8 @@ function infoTabs(pollutant: Pollutant) {
     {
       id: "salud",
       label: "Impacto en salud",
+      icon: HeartPulse,
+      accent: "violet",
       body:
         pollutant === "pm10" ? (
           <>
@@ -156,7 +166,6 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
 
   const years = useMemo(() => [...new Set(activeData.map((d) => d.ano))].sort(), [activeData]);
   const [selectedYear, setSelectedYear] = useState<number | null>(years[years.length - 1] ?? null);
-  const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const year = selectedYear !== null && years.includes(selectedYear) ? selectedYear : years[years.length - 1] ?? null;
 
@@ -267,28 +276,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       </div>
 
       <div className="px-5 pb-5 pt-1">
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(activeTab === tab.id ? null : tab.id)}
-              className={`rounded-xl border px-3.5 py-2.5 text-left text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                activeTab === tab.id
-                  ? "border-gray-300 bg-gray-50 text-gray-800"
-                  : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        {activeTab && (
-          <div className="mt-3 rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
-            <p className="text-sm leading-relaxed text-gray-600">
-              {tabs.find((t) => t.id === activeTab)?.body}
-            </p>
-          </div>
-        )}
+        <InfoTabs tabs={tabs} />
       </div>
     </div>
   );
