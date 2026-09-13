@@ -5,6 +5,8 @@ import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY, withOpacity } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
+import YearToggle from "@/components/datos/year-toggle";
+import ChartCard from "@/components/datos/chart-card";
 
 interface Estacion {
   sensorId: string;
@@ -331,33 +333,15 @@ export default function CoberturaEstacionesChart({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-base font-medium text-gray-700">
-            Cobertura de estaciones en la Zona Metropolitana de Monterrey
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            <span className="font-semibold text-green-600">{pctCobertura}%</span> de cobertura de PM2.5 en {year}
-          </p>
-        </div>
-        {years.length > 1 && (
-          <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
-            {years.map((y) => (
-              <button
-                key={y}
-                onClick={() => setSelectedYear(y)}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                  year === y ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                {y}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
+    <ChartCard
+      title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
+      subtitle={
+        <>
+          <span className="font-semibold text-green-600">{pctCobertura}%</span> de cobertura de PM2.5 en {year}
+        </>
+      }
+      headerRight={<YearToggle years={years} year={year} onChange={setSelectedYear} />}
+    >
       <div className="grid grid-cols-1 gap-x-6 gap-y-5 px-5 pt-4 lg:grid-cols-2">
         {estaciones.map((estacion) => (
           <EstacionCalendario
@@ -373,11 +357,11 @@ export default function CoberturaEstacionesChart({
 
       <div className="flex items-center gap-4 px-5 pb-4 pt-4 text-xs text-gray-500">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-[2px]" style={{ backgroundColor: COLOR_CUBIERTO }} />
+          <span className="inline-block h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_CUBIERTO }} />
           Cubierto
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
+          <span className="inline-block h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
           Datos insuficientes
         </span>
       </div>
@@ -385,6 +369,6 @@ export default function CoberturaEstacionesChart({
       <div className="px-5 pb-5 pt-1">
         <InfoTabs tabs={tabs} />
       </div>
-    </div>
+    </ChartCard>
   );
 }

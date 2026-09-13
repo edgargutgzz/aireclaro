@@ -7,6 +7,8 @@ import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTool
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE, COLOR_INSALUBRE_OPACITY, COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
+import YearToggle from "@/components/datos/year-toggle";
+import ChartCard from "@/components/datos/chart-card";
 
 export type { MonthData, Pollutant };
 
@@ -190,18 +192,16 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
   const tabs = infoTabs(pollutant);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-base font-medium text-gray-700">
-            Días insalubres en la Zona Metropolitana de Monterrey
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            <span className="font-semibold text-red-600">{totalInsalubres}</span>{" "}
-            días insalubres de {POLLUTANT_LABEL[pollutant]} en {year}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+    <ChartCard
+      title="Días insalubres en la Zona Metropolitana de Monterrey"
+      subtitle={
+        <>
+          <span className="font-semibold text-red-600">{totalInsalubres}</span>{" "}
+          días insalubres de {POLLUTANT_LABEL[pollutant]} en {year}
+        </>
+      }
+      headerRight={
+        <>
           {SHOW_PM10_TAB && (
             <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
               {(["pm25", "pm10"] as const).map((p) => (
@@ -217,24 +217,10 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               ))}
             </div>
           )}
-          {years.length > 1 && (
-            <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
-              {years.map((y) => (
-                <button
-                  key={y}
-                  onClick={() => setSelectedYear(y)}
-                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                    year === y ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  {y}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
+          <YearToggle years={years} year={year} onChange={setSelectedYear} />
+        </>
+      }
+    >
       <div className="px-5 pb-2 pt-4">
         <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[28rem]">
           <BarChart data={chartData} barCategoryGap="20%">
@@ -252,7 +238,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
             />
             <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend content={<ChartLegendContent className="text-gray-500" />} />
             <Bar
               dataKey="insalubres"
               stackId="dias"
@@ -278,6 +264,6 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       <div className="px-5 pb-5 pt-1">
         <InfoTabs tabs={tabs} />
       </div>
-    </div>
+    </ChartCard>
   );
 }
