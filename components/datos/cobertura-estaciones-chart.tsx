@@ -138,7 +138,7 @@ function EstacionCalendario({
   const gridWidth = WEEKDAY_COL_WIDTH + totalCols * (CELL + GAP);
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+    <div>
       <div className="mb-3 flex items-center justify-between">
         <h4 className="text-sm font-semibold text-gray-800">{estacion.nombre}</h4>
         {diasSinDatos > 0 && (
@@ -278,8 +278,8 @@ export default function CoberturaEstacionesChart({
   }
 
   return (
-    <div>
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-base font-medium text-gray-700">
             Cobertura de estaciones en la Zona Metropolitana de Monterrey
@@ -305,7 +305,7 @@ export default function CoberturaEstacionesChart({
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-5 px-5 pt-4 lg:grid-cols-2">
         {estaciones.map((estacion) => (
           <EstacionCalendario
             key={estacion.sensorId}
@@ -318,7 +318,7 @@ export default function CoberturaEstacionesChart({
         ))}
       </div>
 
-      <div className="mt-4 flex items-center gap-4 text-xs text-gray-500">
+      <div className="flex items-center gap-4 px-5 pb-4 pt-4 text-xs text-gray-500">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-2.5 w-2.5 rounded-[2px]" style={{ backgroundColor: COLOR_CUBIERTO }} />
           Cubierto
@@ -329,7 +329,7 @@ export default function CoberturaEstacionesChart({
         </span>
       </div>
 
-      <div className="mt-3">
+      <div className="px-5 pb-5 pt-1">
         <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           {tabs.map((tab) => (
             <button
