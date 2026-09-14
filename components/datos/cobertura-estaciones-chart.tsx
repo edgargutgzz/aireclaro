@@ -344,28 +344,32 @@ export default function CoberturaEstacionesChart({
       }
       headerRight={<YearToggle years={years} year={year} onChange={setSelectedYear} />}
     >
-      <div className="grid grid-cols-1 gap-x-6 gap-y-5 px-5 pt-4 lg:grid-cols-2">
-        {estaciones.map((estacion) => (
-          <EstacionCalendario
-            key={estacion.sensorId}
-            estacion={estacion}
-            cells={cells}
-            totalCols={totalCols}
-            monthLabelForCol={monthLabelForCol}
-            coberturaPorFecha={coberturaPorEstacion.get(estacion.sensorId) ?? new Map()}
-          />
-        ))}
-      </div>
-
-      <div className="flex items-center gap-4 px-5 pb-4 pt-4 text-xs text-gray-500">
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_CUBIERTO }} />
-          Cubierto
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
-          Datos insuficientes
-        </span>
+      {/* Same shell as días insalubres: symmetric pt-6/pb-6 around the
+          content, legend on its own row above (right-aligned here -- no
+          "Días del mes"-equivalent label to pair it with on the left). */}
+      <div className="px-5 pb-6 pt-6">
+        <div className="mb-3 flex items-center justify-end gap-4 text-xs text-gray-500">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_CUBIERTO }} />
+            Cubierto
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
+            Datos insuficientes
+          </span>
+        </div>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+          {estaciones.map((estacion) => (
+            <EstacionCalendario
+              key={estacion.sensorId}
+              estacion={estacion}
+              cells={cells}
+              totalCols={totalCols}
+              monthLabelForCol={monthLabelForCol}
+              coberturaPorFecha={coberturaPorEstacion.get(estacion.sensorId) ?? new Map()}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
