@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE, COLOR_INSALUBRE_OPACITY, COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY } from "@/lib/datos-colors";
+import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -260,19 +260,30 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             />
             <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
             <ChartLegend content={<ChartLegendContent className="text-gray-500" />} />
-            {/* Light tint fill (see COLOR_*_OPACITY in datos-colors.ts) with a
-                full-strength colored border, both ends of the stack rounded --
-                the look the user asked back to, over the plainer solid-fill /
-                white-gap "best practices" version. No maxBarSize cap: the
-                dataviz skill's 24px default read too skinny on this chart's
-                width (8 wide category slots), so bars fill the
-                barCategoryGap-controlled band instead -- a deliberate
-                deviation, not an oversight. */}
+            {/* Gradient-painted fill (per-bar bounding box, so it rescales with
+                each bar's own height): full color at the top of each segment
+                fading toward transparent at its bottom, echoing an area
+                chart's gradient wash -- requested explicitly over the flat
+                tint. A full-strength colored border still carries the edge/
+                identity; fillOpacity is left at 1 since the gradient stops
+                now own the opacity ramp. No maxBarSize cap: the dataviz
+                skill's 24px default read too skinny on this chart's width (8
+                wide category slots), so bars fill the barCategoryGap band
+                instead -- a deliberate deviation, not an oversight. */}
+            <defs>
+              <linearGradient id="insalubresGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={COLOR_INSALUBRE} stopOpacity={0.9} />
+                <stop offset="100%" stopColor={COLOR_INSALUBRE} stopOpacity={0.08} />
+              </linearGradient>
+              <linearGradient id="saludablesGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={COLOR_SALUDABLE} stopOpacity={0.9} />
+                <stop offset="100%" stopColor={COLOR_SALUDABLE} stopOpacity={0.08} />
+              </linearGradient>
+            </defs>
             <Bar
               dataKey="insalubres"
               stackId="dias"
-              fill={chartConfig.insalubres.color}
-              fillOpacity={COLOR_INSALUBRE_OPACITY}
+              fill="url(#insalubresGradient)"
               stroke={chartConfig.insalubres.color}
               strokeWidth={1.5}
               radius={[0, 0, 4, 4]}
@@ -280,8 +291,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             <Bar
               dataKey="saludables"
               stackId="dias"
-              fill={chartConfig.saludables.color}
-              fillOpacity={COLOR_SALUDABLE_OPACITY}
+              fill="url(#saludablesGradient)"
               stroke={chartConfig.saludables.color}
               strokeWidth={1.5}
               radius={[4, 4, 0, 0]}
