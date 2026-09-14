@@ -242,7 +242,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
         </>
       }
     >
-      <div className="px-5 pb-2 pt-4">
+      <div className="px-5 pb-6 pt-4">
         {/* Matches the client's own observatoriodelaire.com chart, per a
             reference screenshot -- a light fill (pixel-sampled) with a
             separate, more saturated border of the same hue (not one hex at
