@@ -368,7 +368,7 @@ export default function CoberturaEstacionesChart({
         </span>
       </div>
 
-      <div className="px-5 pb-5 pt-4">
+      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
         <InfoTabs tabs={tabs} />
       </div>
     </ChartCard>

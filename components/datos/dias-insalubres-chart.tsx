@@ -315,7 +315,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
         </ChartContainer>
       </div>
 
-      <div className="px-5 pb-5 pt-1">
+      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
         <InfoTabs tabs={tabs} />
       </div>
     </ChartCard>
