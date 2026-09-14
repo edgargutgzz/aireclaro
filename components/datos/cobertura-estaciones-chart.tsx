@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_SALUDABLE } from "@/lib/datos-colors";
+import { COLOR_SALUDABLE_BORDER } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -24,10 +24,12 @@ const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
-// Solid, like the días insalubres bars -- a tint would read weaker than
-// COLOR_INSUFICIENTE at this 11px cell size, and this grid is a binary
-// covered/not-covered status, not a magnitude that would call for a wash.
-const COLOR_CUBIERTO = COLOR_SALUDABLE;
+// The more saturated "border" tone, not the días insalubres bars' pale
+// fill -- a tint reads weaker than COLOR_INSUFICIENTE at this 11px cell
+// size (this grid is a binary covered/not-covered status, no border of its
+// own to add identity), and the pale fill is too low-contrast as text
+// color below (tooltip/subtitle).
+const COLOR_CUBIERTO = COLOR_SALUDABLE_BORDER;
 const COLOR_INSUFICIENTE = "#e5e7eb"; // gray-200 -- a data-quality gap, not a health-severity color
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
@@ -274,7 +276,7 @@ function EstacionCalendario({
               </span>
               <span
                 className="text-sm font-semibold"
-                style={{ color: tooltip.cubierto ? COLOR_SALUDABLE : "rgb(107,114,128)" }}
+                style={{ color: tooltip.cubierto ? COLOR_SALUDABLE_BORDER : "rgb(107,114,128)" }}
               >
                 {tooltip.cubierto ? "Con datos" : "Sin datos"}
               </span>
@@ -336,7 +338,7 @@ export default function CoberturaEstacionesChart({
       title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
       subtitle={
         <>
-          <span className="font-semibold" style={{ color: COLOR_SALUDABLE }}>
+          <span className="font-semibold" style={{ color: COLOR_SALUDABLE_BORDER }}>
             {pctCobertura}%
           </span>{" "}
           de cobertura de PM2.5 en {year}

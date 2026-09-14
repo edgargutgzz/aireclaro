@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
+import { COLOR_INSALUBRE, COLOR_INSALUBRE_BORDER, COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -37,8 +37,8 @@ const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
 // (insalubre always at the base), a persistent legend, and the exact
 // counts always in plain text (header stat + tooltip), never color alone.
 const chartConfig = {
-  insalubres: { label: "Insalubres", color: COLOR_INSALUBRE },
-  saludables: { label: "Saludables", color: COLOR_SALUDABLE },
+  insalubres: { label: "Insalubres", color: COLOR_INSALUBRE_BORDER },
+  saludables: { label: "Saludables", color: COLOR_SALUDABLE_BORDER },
 } satisfies ChartConfig;
 
 function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
@@ -59,14 +59,14 @@ function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] })
       </span>
       <div className="flex gap-4">
         <div className="flex flex-col gap-0.5">
-          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_INSALUBRE }}>
+          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_INSALUBRE_BORDER }}>
             {row.insalubres}
           </span>
           <span className="text-xs text-gray-500">insalubres</span>
         </div>
         <div className="w-px bg-gray-100" />
         <div className="flex flex-col gap-0.5">
-          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_SALUDABLE }}>
+          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_SALUDABLE_BORDER }}>
             {row.saludables}
           </span>
           <span className="text-xs text-gray-500">saludables</span>
@@ -215,7 +215,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       title="Días insalubres en la Zona Metropolitana de Monterrey"
       subtitle={
         <>
-          <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
+          <span className="font-semibold" style={{ color: COLOR_INSALUBRE_BORDER }}>
             {totalInsalubres}
           </span>{" "}
           días insalubres de {POLLUTANT_LABEL[pollutant]} en {year}
@@ -243,6 +243,11 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       }
     >
       <div className="px-5 pb-2 pt-4">
+        {/* Matches the client's own observatoriodelaire.com chart, per a
+            reference screenshot -- a light fill (pixel-sampled) with a
+            separate, more saturated border of the same hue (not one hex at
+            two opacities). */}
+        <span className="mb-3 block text-xs text-gray-400">Días del mes</span>
         <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[28rem]">
           <BarChart data={chartData} barCategoryGap="20%">
             <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
@@ -260,15 +265,14 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             />
             <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
             <ChartLegend content={<ChartLegendContent className="text-gray-500" />} />
-            {/* Solid fill, by explicit request over the earlier gradient-painted
-                version. No maxBarSize cap: the dataviz skill's 24px default
-                read too skinny on this chart's width (8 wide category
-                slots), so bars fill the barCategoryGap band instead -- a
-                deliberate deviation, not an oversight. */}
+            {/* No maxBarSize cap: the dataviz skill's 24px default read too
+                skinny on this chart's width (8 wide category slots), so
+                bars fill the barCategoryGap band instead -- a deliberate
+                deviation, not an oversight. */}
             <Bar
               dataKey="insalubres"
               stackId="dias"
-              fill={chartConfig.insalubres.color}
+              fill={COLOR_INSALUBRE}
               fillOpacity={1}
               stroke={chartConfig.insalubres.color}
               strokeWidth={1.5}
@@ -277,7 +281,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             <Bar
               dataKey="saludables"
               stackId="dias"
-              fill={chartConfig.saludables.color}
+              fill={COLOR_SALUDABLE}
               fillOpacity={1}
               stroke={chartConfig.saludables.color}
               strokeWidth={1.5}
