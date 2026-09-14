@@ -20,6 +20,11 @@ import ChartCard from "@/components/datos/chart-card";
 export type { MonthData, Pollutant };
 
 const MONTH_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+// Natural width per month category -- the chart never compresses narrower
+// than this (12 months * this = the scroll threshold), so bars stay a
+// consistent, readable width instead of shrinking as more months fill in
+// or the viewport narrows.
+const MONTH_COL_WIDTH = 110;
 const MONTH_FULL = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
@@ -271,48 +276,57 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             </span>
           </div>
         </div>
-        <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[32rem]">
-          <BarChart data={chartData} barCategoryGap="20%">
-            <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
-            <XAxis
-              dataKey="mesLabel"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              allowDecimals={false}
-              tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
-            />
-            <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
-            {/* No maxBarSize cap: the dataviz skill's 24px default read too
-                skinny on this chart's width (8 wide category slots), so
-                bars fill the barCategoryGap band instead -- a deliberate
-                deviation, not an oversight. */}
-            <Bar
-              dataKey="insalubres"
-              stackId="dias"
-              fill={COLOR_INSALUBRE}
-              fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
-              stroke={COLOR_INSALUBRE}
-              strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
-              strokeWidth={1.5}
-              radius={[0, 0, 4, 4]}
-            />
-            <Bar
-              dataKey="saludables"
-              stackId="dias"
-              fill={COLOR_SALUDABLE}
-              fillOpacity={COLOR_SALUDABLE_FILL_OPACITY}
-              stroke={COLOR_SALUDABLE}
-              strokeOpacity={COLOR_SALUDABLE_BORDER_OPACITY}
-              strokeWidth={1.5}
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        </ChartContainer>
+        {/* All 12 months render (Sep-Dic just come out empty), but the chart
+            never compresses below MONTH_COL_WIDTH per month to fit -- it
+            fills the card when there's room, same as before, and scrolls
+            horizontally instead of squeezing months together when there
+            isn't (narrow viewports, or once more months have data). */}
+        <div className="overflow-x-auto">
+          <div style={{ minWidth: MONTH_COL_WIDTH * 12 }}>
+            <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[32rem]">
+              <BarChart data={chartData} barCategoryGap="20%">
+                <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
+                <XAxis
+                  dataKey="mesLabel"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  allowDecimals={false}
+                  tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
+                />
+                <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
+                {/* No maxBarSize cap: the dataviz skill's 24px default read
+                    too skinny on this chart's width, so bars fill the
+                    barCategoryGap band instead -- a deliberate deviation,
+                    not an oversight. */}
+                <Bar
+                  dataKey="insalubres"
+                  stackId="dias"
+                  fill={COLOR_INSALUBRE}
+                  fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
+                  stroke={COLOR_INSALUBRE}
+                  strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
+                  strokeWidth={1.5}
+                  radius={[0, 0, 4, 4]}
+                />
+                <Bar
+                  dataKey="saludables"
+                  stackId="dias"
+                  fill={COLOR_SALUDABLE}
+                  fillOpacity={COLOR_SALUDABLE_FILL_OPACITY}
+                  stroke={COLOR_SALUDABLE}
+                  strokeOpacity={COLOR_SALUDABLE_BORDER_OPACITY}
+                  strokeWidth={1.5}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ChartContainer>
+          </div>
+        </div>
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
