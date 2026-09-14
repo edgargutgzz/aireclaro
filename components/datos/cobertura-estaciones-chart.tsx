@@ -201,7 +201,7 @@ function EstacionCalendario({
   const gridWidth = WEEKDAY_COL_WIDTH + totalCols * (CELL + GAP);
 
   return (
-    <div className="rounded-xl bg-gray-50 p-4">
+    <div className="rounded-xl border border-gray-100 bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
         <h4 className="text-sm font-semibold text-gray-800">{estacion.nombre}</h4>
         {diasSinDatos > 0 && (
