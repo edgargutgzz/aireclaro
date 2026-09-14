@@ -25,7 +25,7 @@ export default function ChartCard({
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
       <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-base font-medium text-gray-700">{title}</h3>
+          <h3 className="text-lg font-medium text-gray-700">{title}</h3>
           <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
         </div>
         {headerRight && <div className="flex items-center gap-2">{headerRight}</div>}
