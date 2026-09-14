@@ -6,10 +6,14 @@
 // these through Recharts' fillOpacity (an SVG-only prop), so anything
 // outside Recharts needs withOpacity() to reproduce the same effective
 // color against a white background, not just the same base hex.
-export const COLOR_SALUDABLE = "#00a400";
-export const COLOR_SALUDABLE_OPACITY = 0.5;
-export const COLOR_INSALUBRE = "#ff0000";
-export const COLOR_INSALUBRE_OPACITY = 0.6;
+//
+// Muted editorial tones, not the NOM-172 scale's own (electric) green/red --
+// this pair only needs to read as "good vs. bad" at a glance on a chart, not
+// carry the scale's precision, so it's desaturated for a calmer page.
+export const COLOR_SALUDABLE = "#3f7d4f";
+export const COLOR_SALUDABLE_OPACITY = 0.6;
+export const COLOR_INSALUBRE = "#b8453f";
+export const COLOR_INSALUBRE_OPACITY = 0.65;
 
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);
