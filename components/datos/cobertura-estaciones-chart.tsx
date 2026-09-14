@@ -119,6 +119,20 @@ interface Cell {
   col: number;
 }
 
+// Every calendar date in the year, Jan 1 - Dec 31, not just the dates that
+// happen to have a cobertura row -- matching días insalubres showing all 12
+// months (Sep-Dic empty rather than absent). A date with no row renders the
+// same as one with cubierto=false: both mean "no valid coverage," whether
+// that's because SINAICA hasn't been synced yet or the day genuinely has no
+// data.
+function fullYearDates(year: number): string[] {
+  const dates: string[] = [];
+  for (let d = new Date(Date.UTC(year, 0, 1)); d.getUTCFullYear() === year; d.setUTCDate(d.getUTCDate() + 1)) {
+    dates.push(d.toISOString().slice(0, 10));
+  }
+  return dates;
+}
+
 // Monday-first GitHub-style week grid: row 0-6 = Lunes..Domingo, col = week
 // index since the first date. Built once from the shared date axis (not per
 // station) so all 16 station calendars stay aligned and the layout math
@@ -170,18 +184,22 @@ function EstacionCalendario({
   totalCols,
   monthLabelForCol,
   coberturaPorFecha,
+  realDates,
 }: {
   estacion: Estacion;
   cells: Cell[];
   totalCols: number;
   monthLabelForCol: Map<number, string>;
   coberturaPorFecha: Map<string, boolean>;
+  realDates: string[];
 }) {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
 
+  // Over realDates, not the full-year cells -- a day that hasn't happened
+  // yet isn't a "día sin datos," it just hasn't occurred.
   const diasSinDatos = useMemo(
-    () => cells.filter((c) => coberturaPorFecha.get(c.fecha) !== true).length,
-    [cells, coberturaPorFecha],
+    () => realDates.filter((fecha) => coberturaPorFecha.get(fecha) !== true).length,
+    [realDates, coberturaPorFecha],
   );
 
   const gridWidth = WEEKDAY_COL_WIDTH + totalCols * (CELL + GAP);
@@ -268,7 +286,12 @@ function EstacionCalendario({
                     style={{
                       gridColumn: c.col + 1,
                       gridRow: c.row + 1,
-                      backgroundColor: cubierto === undefined ? "transparent" : cubierto ? COLOR_CUBIERTO : COLOR_INSUFICIENTE,
+                      // Undefined (no row at all -- typically a future date
+                      // not yet synced) renders the same as false: every
+                      // cell is now a real calendar date (the grid spans
+                      // the full year), so there's no padding case left
+                      // that actually needs to stay invisible.
+                      backgroundColor: cubierto ? COLOR_CUBIERTO : COLOR_INSUFICIENTE,
                     }}
                   />
                 );
@@ -320,20 +343,26 @@ export default function CoberturaEstacionesChart({
   const [selectedYear, setSelectedYear] = useState<number | null>(years[years.length - 1] ?? null);
   const year = selectedYear !== null && years.includes(selectedYear) ? selectedYear : years[years.length - 1] ?? null;
 
-  const dates = useMemo(() => allDates.filter((d) => d.startsWith(String(year))), [allDates, year]);
+  // The grid shows every day of the year (Sep-Dic included, per días
+  // insalubres), but the % stat below is computed only over days that
+  // actually occurred -- a day that hasn't happened yet isn't a coverage
+  // gap, and counting it would silently deflate the percentage the further
+  // into the year you look.
+  const dates = useMemo(() => (year !== null ? fullYearDates(year) : []), [year]);
+  const realDates = useMemo(() => allDates.filter((d) => d.startsWith(String(year))), [allDates, year]);
   const { cells, totalCols, monthLabelForCol } = useMemo(() => buildCalendarLayout(dates), [dates]);
 
   const pctCobertura = useMemo(() => {
-    if (cells.length === 0 || estaciones.length === 0) return 0;
+    if (realDates.length === 0 || estaciones.length === 0) return 0;
     let cubierto = 0;
     for (const estacion of estaciones) {
       const porFecha = coberturaPorEstacion.get(estacion.sensorId);
-      for (const c of cells) {
-        if (porFecha?.get(c.fecha) === true) cubierto += 1;
+      for (const fecha of realDates) {
+        if (porFecha?.get(fecha) === true) cubierto += 1;
       }
     }
-    return Math.round((cubierto / (cells.length * estaciones.length)) * 100);
-  }, [cells, estaciones, coberturaPorEstacion]);
+    return Math.round((cubierto / (realDates.length * estaciones.length)) * 100);
+  }, [realDates, estaciones, coberturaPorEstacion]);
 
   if (allDates.length === 0) {
     return (
@@ -379,6 +408,7 @@ export default function CoberturaEstacionesChart({
               totalCols={totalCols}
               monthLabelForCol={monthLabelForCol}
               coberturaPorFecha={coberturaPorEstacion.get(estacion.sensorId) ?? new Map()}
+              realDates={realDates}
             />
           ))}
         </div>
