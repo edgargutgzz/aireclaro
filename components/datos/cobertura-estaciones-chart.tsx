@@ -187,7 +187,11 @@ function EstacionCalendario({
       <div className="mb-3 flex items-center justify-between">
         <h4 className="text-sm font-semibold text-gray-800">{estacion.nombre}</h4>
         {diasSinDatos > 0 && (
-          <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-600">
+          // Gray, not red -- red is reserved for health severity
+          // (COLOR_INSALUBRE) elsewhere in /datos; a coverage gap is a
+          // data-quality issue, the same distinction COLOR_INSUFICIENTE
+          // already draws for the grid cells themselves.
+          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
             {diasSinDatos} días sin datos
           </span>
         )}
