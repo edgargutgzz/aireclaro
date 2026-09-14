@@ -15,10 +15,10 @@
 // one hex each, rendered at two different opacities (a lighter fill, a
 // stronger border/text), not two distinct hexes like the last few rounds.
 export const COLOR_SALUDABLE = "#22c55e"; // Tailwind green-500
-export const COLOR_SALUDABLE_FILL_OPACITY = 0.45;
+export const COLOR_SALUDABLE_FILL_OPACITY = 0.55;
 export const COLOR_SALUDABLE_BORDER_OPACITY = 0.8;
 export const COLOR_INSALUBRE = "#ef4444"; // Tailwind red-500
-export const COLOR_INSALUBRE_FILL_OPACITY = 0.55;
+export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 export const COLOR_INSALUBRE_BORDER_OPACITY = 0.9;
 
 export function withOpacity(hex: string, opacity: number): string {
