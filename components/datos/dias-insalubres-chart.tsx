@@ -249,7 +249,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
         </>
       }
     >
-      <div className="px-5 pb-6 pt-4">
+      <div className="px-5 pb-6 pt-6">
         {/* Colors ported exactly from the client's own observatoriodelaire.com
             chart -- one hex each (Tailwind red-500/green-500) at two
             opacities (fill, border), not two distinct hexes. */}
