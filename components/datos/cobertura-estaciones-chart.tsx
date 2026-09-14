@@ -395,11 +395,11 @@ export default function CoberturaEstacionesChart({
               className="h-2 w-2 rounded-[2px]"
               style={{ backgroundColor: COLOR_CUBIERTO_FILL, border: `1px solid ${COLOR_CUBIERTO_BORDER}` }}
             />
-            Cubierto
+            Con datos
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
-            Datos insuficientes
+            Sin datos
           </span>
         </div>
         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
