@@ -25,7 +25,7 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -35,7 +35,7 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
               onClick={() => setActiveTab(isActive ? null : tab.id)}
               aria-expanded={isActive}
               aria-controls={panelId}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+              className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
                 isActive
                   ? "border-gray-300 bg-gray-50 text-gray-800"
                   : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
