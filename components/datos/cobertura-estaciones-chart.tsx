@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_SALUDABLE, withOpacity } from "@/lib/datos-colors";
+import { COLOR_SALUDABLE } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -24,11 +24,10 @@ const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
-// Its own opacity, not the bar chart's fill opacity -- días insalubres uses a
-// light pastel fill because each bar also carries a full-strength border, but
-// these are bare 11px cells with no border, so they need a stronger tint to
-// stay scannable against COLOR_INSUFICIENTE at a glance.
-const COLOR_CUBIERTO = withOpacity(COLOR_SALUDABLE, 0.55);
+// Solid, like the días insalubres bars -- a tint would read weaker than
+// COLOR_INSUFICIENTE at this 11px cell size, and this grid is a binary
+// covered/not-covered status, not a magnitude that would call for a wash.
+const COLOR_CUBIERTO = COLOR_SALUDABLE;
 const COLOR_INSUFICIENTE = "#e5e7eb"; // gray-200 -- a data-quality gap, not a health-severity color
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
@@ -273,7 +272,10 @@ function EstacionCalendario({
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
                 {formatTooltipDate(tooltip.fecha, tooltip.row)}
               </span>
-              <span className={`text-sm font-semibold ${tooltip.cubierto ? "text-green-600" : "text-gray-500"}`}>
+              <span
+                className="text-sm font-semibold"
+                style={{ color: tooltip.cubierto ? COLOR_SALUDABLE : "rgb(107,114,128)" }}
+              >
                 {tooltip.cubierto ? "Con datos" : "Sin datos"}
               </span>
             </div>
@@ -334,7 +336,10 @@ export default function CoberturaEstacionesChart({
       title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
       subtitle={
         <>
-          <span className="font-semibold text-green-600">{pctCobertura}%</span> de cobertura de PM2.5 en {year}
+          <span className="font-semibold" style={{ color: COLOR_SALUDABLE }}>
+            {pctCobertura}%
+          </span>{" "}
+          de cobertura de PM2.5 en {year}
         </>
       }
       headerRight={<YearToggle years={years} year={year} onChange={setSelectedYear} />}

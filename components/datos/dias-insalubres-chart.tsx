@@ -59,12 +59,16 @@ function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] })
       </span>
       <div className="flex gap-4">
         <div className="flex flex-col gap-0.5">
-          <span className="text-2xl font-bold leading-none text-red-600">{row.insalubres}</span>
+          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_INSALUBRE }}>
+            {row.insalubres}
+          </span>
           <span className="text-xs text-gray-500">insalubres</span>
         </div>
         <div className="w-px bg-gray-100" />
         <div className="flex flex-col gap-0.5">
-          <span className="text-2xl font-bold leading-none text-green-600">{row.saludables}</span>
+          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_SALUDABLE }}>
+            {row.saludables}
+          </span>
           <span className="text-xs text-gray-500">saludables</span>
         </div>
       </div>
@@ -192,7 +196,9 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       title="Días insalubres en la Zona Metropolitana de Monterrey"
       subtitle={
         <>
-          <span className="font-semibold text-red-600">{totalInsalubres}</span>{" "}
+          <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
+            {totalInsalubres}
+          </span>{" "}
           días insalubres de {POLLUTANT_LABEL[pollutant]} en {year}
         </>
       }
@@ -235,23 +241,29 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             />
             <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
             <ChartLegend content={<ChartLegendContent className="text-gray-500" />} />
+            {/* Square at the baseline, rounded only at the data-end (the top of
+                the whole stack) -- a colored border around a mark adds ink that
+                isn't data; the white stroke instead carves the 2px surface gap
+                that separates the two segments. */}
             <Bar
               dataKey="insalubres"
               stackId="dias"
               fill={chartConfig.insalubres.color}
               fillOpacity={COLOR_INSALUBRE_OPACITY}
-              stroke={chartConfig.insalubres.color}
-              strokeWidth={1.5}
-              radius={[0, 0, 4, 4]}
+              stroke="#fff"
+              strokeWidth={2}
+              radius={[0, 0, 0, 0]}
+              maxBarSize={24}
             />
             <Bar
               dataKey="saludables"
               stackId="dias"
               fill={chartConfig.saludables.color}
               fillOpacity={COLOR_SALUDABLE_OPACITY}
-              stroke={chartConfig.saludables.color}
-              strokeWidth={1.5}
+              stroke="#fff"
+              strokeWidth={2}
               radius={[4, 4, 0, 0]}
+              maxBarSize={24}
             />
           </BarChart>
         </ChartContainer>
