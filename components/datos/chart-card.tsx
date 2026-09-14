@@ -19,7 +19,11 @@ export default function ChartCard({
   children: ReactNode;
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+    // Glass, not the usual opaque reading-surface card: matches the map's
+    // floating chrome (legend/filter panels) on request, and /datos sits on
+    // a plain bg-gray-50 page rather than busy map imagery, so the
+    // contrast concern that keeps dialogs opaque doesn't apply here.
+    <div className="glass overflow-hidden rounded-2xl">
       <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-base font-medium text-gray-700">{title}</h3>
