@@ -29,13 +29,10 @@ const MONTH_ROW_HEIGHT = 18; // px
 // fill/border opacity split too (COLOR_SALUDABLE_FILL/BORDER_OPACITY).
 const COLOR_CUBIERTO_FILL = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY);
 const COLOR_CUBIERTO_BORDER = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY);
-// A plain gray-200 fill (a data-quality gap, not a health-severity color)
-// per the reference the user pointed to -- but gray-200 alone sat almost
-// invisibly on the station card's own bg-gray-50 (that reference's card is
-// white, giving it more contrast to work with). One step darker, gray-300,
-// keeps the same flat-filled-square look at a size that actually reads
-// against this card's tint.
-const COLOR_INSUFICIENTE = "#d1d5db"; // gray-300
+// A plain gray fill (a data-quality gap, not a health-severity color) --
+// lighter than gray-300 by request, but not all the way to gray-200, which
+// sat almost invisibly on the station card's own bg-gray-50.
+const COLOR_INSUFICIENTE = "#dbdfe3";
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
 // design -- labeling all 7 would be noisy at this cell size.
@@ -311,7 +308,7 @@ function EstacionCalendario({
                 className="text-sm font-semibold"
                 style={{ color: tooltip.cubierto ? COLOR_SALUDABLE : "rgb(107,114,128)" }}
               >
-                {tooltip.cubierto ? "Con datos" : "Sin datos"}
+                {tooltip.cubierto ? "Con datos" : "Datos insuficientes"}
               </span>
             </div>
           )}
@@ -399,7 +396,7 @@ export default function CoberturaEstacionesChart({
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
-            Sin datos
+            Datos insuficientes
           </span>
         </div>
         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
