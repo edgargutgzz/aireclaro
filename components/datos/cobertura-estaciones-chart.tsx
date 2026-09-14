@@ -24,10 +24,6 @@ const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
-// The días insalubres chart renders COLOR_SALUDABLE through Recharts'
-// fillOpacity (SVG-only), so a flat div background needs withOpacity() to
-// reproduce that same effective green against the white card -- the bare
-// hex alone renders visibly darker/more saturated than the chart above.
 const COLOR_CUBIERTO = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY);
 const COLOR_INSUFICIENTE = "#e5e7eb"; // gray-200 -- a data-quality gap, not a health-severity color
 
