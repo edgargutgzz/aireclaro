@@ -30,13 +30,12 @@ const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
   pm10: { antes: 60, desde: 50 },
 };
 
-// Reserved status pair (good/bad), not a categorical hue set. See
-// lib/datos-colors.ts for why saludable is blue, not green: every
-// red/green option here failed the dataviz skill's colorblind check, and
-// blue/red is the skill's own prescribed diverging fix. Still backed by
-// non-hue channels regardless: a fixed stacking position (insalubre always
-// at the base), a persistent legend, and the exact counts always in plain
-// text (header stat + tooltip), never color alone.
+// Reserved status pair (good/bad), not a categorical hue set: red/green is
+// kept by explicit user call over the dataviz skill's own passing blue/red
+// alternative (see lib/datos-colors.ts). Backed by non-hue channels since
+// the CVD check still fails for this pair: a fixed stacking position
+// (insalubre always at the base), a persistent legend, and the exact
+// counts always in plain text (header stat + tooltip), never color alone.
 const chartConfig = {
   insalubres: { label: "Insalubres", color: COLOR_INSALUBRE },
   saludables: { label: "Saludables", color: COLOR_SALUDABLE },
@@ -245,7 +244,11 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             {/* Square at the baseline, rounded only at the data-end (the top of
                 the whole stack) -- a colored border around a mark adds ink that
                 isn't data; the white stroke instead carves the 2px surface gap
-                that separates the two segments. */}
+                that separates the two segments. No maxBarSize cap: the
+                dataviz skill's 24px default read too skinny on this chart's
+                width (8 wide category slots), so bars fill the
+                barCategoryGap-controlled band instead -- a deliberate
+                deviation, not an oversight. */}
             <Bar
               dataKey="insalubres"
               stackId="dias"
@@ -254,7 +257,6 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               stroke="#fff"
               strokeWidth={2}
               radius={[0, 0, 0, 0]}
-              maxBarSize={24}
             />
             <Bar
               dataKey="saludables"
@@ -264,7 +266,6 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               stroke="#fff"
               strokeWidth={2}
               radius={[4, 4, 0, 0]}
-              maxBarSize={24}
             />
           </BarChart>
         </ChartContainer>
