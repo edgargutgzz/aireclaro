@@ -10,23 +10,26 @@
 // glance, not carry the scale's precision.
 //
 // Validated, not eyeballed (dataviz skill, scripts/validate_palette.js
-// --mode light): the prior pair (#3f7d4f/#b8453f) failed the chroma floor
-// (the green measured 0.097, just under the 0.10 "reads as gray" line --
-// the muddy look was measurable, not just a taste call) and failed CVD
-// separation outright (ΔE 4.2). This pair clears chroma and lands CVD in
-// the legal WARN band (ΔE 6.6, floor is 6) -- legal specifically because
-// the chart already ships the required secondary encoding: a text legend,
-// a 2px white gap between stacked segments, and tooltip values. No
-// red/green pair clears the CVD *target* (8) -- red and green are close
-// under deuteranopia by nature of the hues, not by any tuning choice here.
+// --mode light): the prior all-flat pair (#3f7d4f/#b8453f) failed the
+// chroma floor (the green measured 0.097, just under the 0.10 "reads as
+// gray" line) and failed CVD separation outright (ΔE 4.2). This hex pair
+// clears chroma and lands CVD in the legal WARN band (ΔE 6.6, floor is 6)
+// -- legal specifically because the chart ships secondary encoding: a
+// text legend, a colored border between stacked segments, and tooltip
+// values. No red/green pair clears the CVD *target* (8) -- red and green
+// are close under deuteranopia by nature of the hues, not by any tuning
+// choice here.
 //
-// Solid fills, opacity at 1 -- an earlier pass blended these toward white
-// via fillOpacity, which turned the muted hex pastel. The hex alone
-// carries the muting.
+// Two-tier per a supplied reference design: a light tint fill (this
+// opacity, blended over white) carries the area, the full-strength hex is
+// the *stroke* around each bar/cell -- not a softening hack this time
+// (that pastel-via-fillOpacity mistake was already made and reverted
+// once), it's the intended look, keyed off a screenshot the user held up
+// as better than the flat-fill versions.
 export const COLOR_SALUDABLE = "#2f855a";
-export const COLOR_SALUDABLE_OPACITY = 1;
+export const COLOR_SALUDABLE_OPACITY = 0.28;
 export const COLOR_INSALUBRE = "#c0392b";
-export const COLOR_INSALUBRE_OPACITY = 1;
+export const COLOR_INSALUBRE_OPACITY = 0.28;
 
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);

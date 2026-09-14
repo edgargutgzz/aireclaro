@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY, withOpacity } from "@/lib/datos-colors";
+import { COLOR_SALUDABLE, withOpacity } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -24,7 +24,11 @@ const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
-const COLOR_CUBIERTO = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_OPACITY);
+// Its own opacity, not the bar chart's fill opacity -- días insalubres uses a
+// light pastel fill because each bar also carries a full-strength border, but
+// these are bare 11px cells with no border, so they need a stronger tint to
+// stay scannable against COLOR_INSUFICIENTE at a glance.
+const COLOR_CUBIERTO = withOpacity(COLOR_SALUDABLE, 0.55);
 const COLOR_INSUFICIENTE = "#e5e7eb"; // gray-200 -- a data-quality gap, not a health-severity color
 
 // Only every other row gets a letter (L, M, V, D), matching the reference

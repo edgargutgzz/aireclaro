@@ -240,17 +240,17 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               stackId="dias"
               fill={chartConfig.insalubres.color}
               fillOpacity={COLOR_INSALUBRE_OPACITY}
-              stroke="#fff"
-              strokeWidth={2}
-              radius={[0, 0, 0, 0]}
+              stroke={chartConfig.insalubres.color}
+              strokeWidth={1.5}
+              radius={[0, 0, 4, 4]}
             />
             <Bar
               dataKey="saludables"
               stackId="dias"
               fill={chartConfig.saludables.color}
               fillOpacity={COLOR_SALUDABLE_OPACITY}
-              stroke="#fff"
-              strokeWidth={2}
+              stroke={chartConfig.saludables.color}
+              strokeWidth={1.5}
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
