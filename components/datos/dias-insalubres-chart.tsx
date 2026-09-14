@@ -30,12 +30,13 @@ const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
   pm10: { antes: 60, desde: 50 },
 };
 
-// Reserved status pair (good/bad), not a categorical hue set: red/green is the
-// universal convention for a health chart like this and stays even though the
-// dataviz skill's CVD check fails any red/green pair. Compensated with
-// non-hue channels instead of picking a different hue: a fixed stacking
-// position (insalubre always at the base), a persistent legend, and the exact
-// counts always in plain text (header stat + tooltip), never color alone.
+// Reserved status pair (good/bad), not a categorical hue set. See
+// lib/datos-colors.ts for why saludable is blue, not green: every
+// red/green option here failed the dataviz skill's colorblind check, and
+// blue/red is the skill's own prescribed diverging fix. Still backed by
+// non-hue channels regardless: a fixed stacking position (insalubre always
+// at the base), a persistent legend, and the exact counts always in plain
+// text (header stat + tooltip), never color alone.
 const chartConfig = {
   insalubres: { label: "Insalubres", color: COLOR_INSALUBRE },
   saludables: { label: "Saludables", color: COLOR_SALUDABLE },
