@@ -24,9 +24,12 @@ const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
-// Solid -- a tint reads weaker than a filled cell at this 11px size
-// (binary covered/not-covered status).
-const COLOR_CUBIERTO = COLOR_SALUDABLE;
+// Pixel-sampled from the client's own live chart (observatoriodelaire.com/
+// datos), not COLOR_SALUDABLE -- their grid cell green is a noticeably
+// lighter/softer tone than the bar green shared with días insalubres. Cell
+// fill only; text (subtitle, tooltip) stays on COLOR_SALUDABLE below, since
+// this lighter green doesn't clear contrast as text on white.
+const COLOR_CUBIERTO = "#78db88";
 // A plain gray-200 fill (a data-quality gap, not a health-severity color)
 // per the reference the user pointed to -- but gray-200 alone sat almost
 // invisibly on the station card's own bg-gray-50 (that reference's card is
