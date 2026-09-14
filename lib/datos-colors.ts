@@ -9,16 +9,16 @@
 // against the glass card. This pair only needs to say "good vs. bad" at a
 // glance, not carry the scale's precision.
 //
-// Validated, not eyeballed (dataviz skill, scripts/validate_palette.js
-// --mode light): the prior all-flat pair (#3f7d4f/#b8453f) failed the
-// chroma floor (the green measured 0.097, just under the 0.10 "reads as
-// gray" line) and failed CVD separation outright (ΔE 4.2). This hex pair
-// clears chroma and lands CVD in the legal WARN band (ΔE 6.6, floor is 6)
-// -- legal specifically because the chart ships secondary encoding: a
-// text legend, a colored border between stacked segments, and tooltip
-// values. No red/green pair clears the CVD *target* (8) -- red and green
-// are close under deuteranopia by nature of the hues, not by any tuning
-// choice here.
+// The dataviz skill's own reserved status pair (references/palette.md,
+// "good"/"critical" -- a fixed, brand-neutral scale for exactly this job,
+// not hand-tuned here). Clears the chroma floor and light-surface contrast
+// (good 3.27:1, critical 4.68:1). Still fails the CVD *adjacency* check
+// outright (ΔE 4.1, below even the 6 floor) when the two sit right next to
+// each other the way they do in a stacked bar -- true of essentially any
+// red/green pair, not a defect specific to this one. Mitigated the same
+// way as the pair before it: text legend, a colored border between
+// stacked segments, and exact counts always in plain text, never color
+// alone.
 //
 // Two-tier per a supplied reference design: a light tint fill (this
 // opacity, blended over white) carries the area, the full-strength hex is
@@ -26,9 +26,9 @@
 // (that pastel-via-fillOpacity mistake was already made and reverted
 // once), it's the intended look, keyed off a screenshot the user held up
 // as better than the flat-fill versions.
-export const COLOR_SALUDABLE = "#2f855a";
+export const COLOR_SALUDABLE = "#0ca30c";
 export const COLOR_SALUDABLE_OPACITY = 0.28;
-export const COLOR_INSALUBRE = "#c0392b";
+export const COLOR_INSALUBRE = "#d03b3b";
 export const COLOR_INSALUBRE_OPACITY = 0.28;
 
 export function withOpacity(hex: string, opacity: number): string {
