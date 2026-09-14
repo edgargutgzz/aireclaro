@@ -5,7 +5,14 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE, COLOR_INSALUBRE_BORDER, COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER } from "@/lib/datos-colors";
+import {
+  COLOR_INSALUBRE,
+  COLOR_INSALUBRE_BORDER_OPACITY,
+  COLOR_INSALUBRE_FILL_OPACITY,
+  COLOR_SALUDABLE,
+  COLOR_SALUDABLE_BORDER_OPACITY,
+  COLOR_SALUDABLE_FILL_OPACITY,
+} from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -37,8 +44,8 @@ const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
 // (insalubre always at the base), a persistent legend, and the exact
 // counts always in plain text (header stat + tooltip), never color alone.
 const chartConfig = {
-  insalubres: { label: "Insalubres", color: COLOR_INSALUBRE_BORDER },
-  saludables: { label: "Saludables", color: COLOR_SALUDABLE_BORDER },
+  insalubres: { label: "Insalubres", color: COLOR_INSALUBRE },
+  saludables: { label: "Saludables", color: COLOR_SALUDABLE },
 } satisfies ChartConfig;
 
 function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
@@ -59,14 +66,14 @@ function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] })
       </span>
       <div className="flex gap-4">
         <div className="flex flex-col gap-0.5">
-          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_INSALUBRE_BORDER }}>
+          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_INSALUBRE }}>
             {row.insalubres}
           </span>
           <span className="text-xs text-gray-500">insalubres</span>
         </div>
         <div className="w-px bg-gray-100" />
         <div className="flex flex-col gap-0.5">
-          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_SALUDABLE_BORDER }}>
+          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_SALUDABLE }}>
             {row.saludables}
           </span>
           <span className="text-xs text-gray-500">saludables</span>
@@ -215,7 +222,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       title="Días insalubres en la Zona Metropolitana de Monterrey"
       subtitle={
         <>
-          <span className="font-semibold" style={{ color: COLOR_INSALUBRE_BORDER }}>
+          <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
             {totalInsalubres}
           </span>{" "}
           días insalubres de {POLLUTANT_LABEL[pollutant]} en {year}
@@ -243,12 +250,11 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
       }
     >
       <div className="px-5 pb-6 pt-4">
-        {/* Matches the client's own observatoriodelaire.com chart, per a
-            reference screenshot -- a light fill (pixel-sampled) with a
-            separate, more saturated border of the same hue (not one hex at
-            two opacities). */}
+        {/* Colors ported exactly from the client's own observatoriodelaire.com
+            chart -- one hex each (Tailwind red-500/green-500) at two
+            opacities (fill, border), not two distinct hexes. */}
         <span className="mb-3 block text-xs text-gray-400">Días del mes</span>
-        <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[28rem]">
+        <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[32rem]">
           <BarChart data={chartData} barCategoryGap="20%">
             <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
             <XAxis
@@ -273,8 +279,9 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               dataKey="insalubres"
               stackId="dias"
               fill={COLOR_INSALUBRE}
-              fillOpacity={0.85}
-              stroke={chartConfig.insalubres.color}
+              fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
+              stroke={COLOR_INSALUBRE}
+              strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
               strokeWidth={1.5}
               radius={[0, 0, 4, 4]}
             />
@@ -282,8 +289,9 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               dataKey="saludables"
               stackId="dias"
               fill={COLOR_SALUDABLE}
-              fillOpacity={0.85}
-              stroke={chartConfig.saludables.color}
+              fillOpacity={COLOR_SALUDABLE_FILL_OPACITY}
+              stroke={COLOR_SALUDABLE}
+              strokeOpacity={COLOR_SALUDABLE_BORDER_OPACITY}
               strokeWidth={1.5}
               radius={[4, 4, 0, 0]}
             />
