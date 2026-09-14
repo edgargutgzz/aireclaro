@@ -119,8 +119,8 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          . El límite fue de {antes} µg/m³ hasta el 26 de diciembre de 2025 y
-          bajó a {desde} µg/m³ a partir del 27 de diciembre de 2025.
+          . El límite fue de {antes} µg/m³ en 2025 y bajó a {desde} µg/m³ en
+          2026.
         </>
       ),
     },
