@@ -27,9 +27,9 @@
 // area and the border (COLOR_SALUDABLE/COLOR_INSALUBRE at full strength on
 // the <Bar stroke>) carries the identity.
 export const COLOR_SALUDABLE = "#2f855a";
-export const COLOR_SALUDABLE_OPACITY = 0.35;
+export const COLOR_SALUDABLE_OPACITY = 0.42;
 export const COLOR_INSALUBRE = "#c0392b";
-export const COLOR_INSALUBRE_OPACITY = 0.35;
+export const COLOR_INSALUBRE_OPACITY = 0.42;
 
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);
