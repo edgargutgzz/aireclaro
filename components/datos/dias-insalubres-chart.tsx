@@ -273,7 +273,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               dataKey="insalubres"
               stackId="dias"
               fill={COLOR_INSALUBRE}
-              fillOpacity={1}
+              fillOpacity={0.85}
               stroke={chartConfig.insalubres.color}
               strokeWidth={1.5}
               radius={[0, 0, 4, 4]}
@@ -282,7 +282,7 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               dataKey="saludables"
               stackId="dias"
               fill={COLOR_SALUDABLE}
-              fillOpacity={1}
+              fillOpacity={0.85}
               stroke={chartConfig.saludables.color}
               strokeWidth={1.5}
               radius={[4, 4, 0, 0]}
