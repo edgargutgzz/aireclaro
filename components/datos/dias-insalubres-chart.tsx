@@ -131,11 +131,19 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       body: (
         <>
           Para garantizar mayor certeza en la información, los datos se
-          analizan siguiendo los criterios establecidos por la
-          NOM-025-SSA1-2021. Un día se contabiliza si al menos una estación
-          reportó mediciones, por lo que algunos meses pueden mostrar menos
-          días de los que corresponden. Si alguna estación registra un valor
-          que supera el límite, el día se clasifica como insalubre.
+          analizan siguiendo los criterios establecidos por la{" "}
+          <a
+            href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            NOM-025-SSA1-2021
+          </a>
+          . Un día se contabiliza si al menos una estación reportó
+          mediciones, por lo que algunos meses pueden mostrar menos días de
+          los que corresponden. Si alguna estación registra un valor que
+          supera el límite, el día se clasifica como insalubre.
         </>
       ),
     },
@@ -156,7 +164,17 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
             Las partículas PM2.5 son tan pequeñas que penetran profundo en
             los pulmones y llegan al torrente sanguíneo. La exposición
             prolongada se asocia con enfermedades respiratorias,
-            cardiovasculares y daño sistémico.
+            cardiovasculares y daño sistémico. Si quieres entender mejor
+            cómo nos afecta, te compartimos la siguiente{" "}
+            <a
+              href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+            >
+              infografía
+            </a>
+            .
           </>
         ),
     },
@@ -242,10 +260,10 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             />
             <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
             <ChartLegend content={<ChartLegendContent className="text-gray-500" />} />
-            {/* Square at the baseline, rounded only at the data-end (the top of
-                the whole stack) -- a colored border around a mark adds ink that
-                isn't data; the white stroke instead carves the 2px surface gap
-                that separates the two segments. No maxBarSize cap: the
+            {/* Light tint fill (see COLOR_*_OPACITY in datos-colors.ts) with a
+                full-strength colored border, both ends of the stack rounded --
+                the look the user asked back to, over the plainer solid-fill /
+                white-gap "best practices" version. No maxBarSize cap: the
                 dataviz skill's 24px default read too skinny on this chart's
                 width (8 wide category slots), so bars fill the
                 barCategoryGap-controlled band instead -- a deliberate
@@ -255,17 +273,17 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               stackId="dias"
               fill={chartConfig.insalubres.color}
               fillOpacity={COLOR_INSALUBRE_OPACITY}
-              stroke="#fff"
-              strokeWidth={2}
-              radius={[0, 0, 0, 0]}
+              stroke={chartConfig.insalubres.color}
+              strokeWidth={1.5}
+              radius={[0, 0, 4, 4]}
             />
             <Bar
               dataKey="saludables"
               stackId="dias"
               fill={chartConfig.saludables.color}
               fillOpacity={COLOR_SALUDABLE_OPACITY}
-              stroke="#fff"
-              strokeWidth={2}
+              stroke={chartConfig.saludables.color}
+              strokeWidth={1.5}
               radius={[4, 4, 0, 0]}
             />
           </BarChart>

@@ -19,13 +19,17 @@
 // stacked segments, and exact counts always in plain text carry the
 // meaning for colorblind readers instead of hue.
 //
-// Solid fill, opacity 1 -- bars are a "Bar/column" mark, not an "Area
-// fill" (the skill's ~10% opacity wash is for the latter, e.g. a line
-// chart's area-under-curve, not a bar's own body).
+// Light tint fill (this opacity, blended over white) + a full-strength
+// colored border, by explicit user request over the plain solid-fill
+// version -- the look from the supplied reference screenshot. Not a
+// softening hack (that pastel-via-opacity mistake happened once already,
+// see git history): a deliberate two-tier look where the tint carries the
+// area and the border (COLOR_SALUDABLE/COLOR_INSALUBRE at full strength on
+// the <Bar stroke>) carries the identity.
 export const COLOR_SALUDABLE = "#2f855a";
-export const COLOR_SALUDABLE_OPACITY = 1;
+export const COLOR_SALUDABLE_OPACITY = 0.28;
 export const COLOR_INSALUBRE = "#c0392b";
-export const COLOR_INSALUBRE_OPACITY = 1;
+export const COLOR_INSALUBRE_OPACITY = 0.28;
 
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);
