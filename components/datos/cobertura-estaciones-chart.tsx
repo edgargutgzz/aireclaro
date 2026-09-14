@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_SALUDABLE } from "@/lib/datos-colors";
+import { COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY, COLOR_SALUDABLE_FILL_OPACITY, withOpacity } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -25,8 +25,10 @@ const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
 // Same Tailwind green as días insalubres' bars (COLOR_SALUDABLE), not the
-// client's own lighter grid green -- unified back by explicit request.
-const COLOR_CUBIERTO = COLOR_SALUDABLE;
+// client's own lighter grid green -- unified back by explicit request, same
+// fill/border opacity split too (COLOR_SALUDABLE_FILL/BORDER_OPACITY).
+const COLOR_CUBIERTO_FILL = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY);
+const COLOR_CUBIERTO_BORDER = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY);
 // A plain gray-200 fill (a data-quality gap, not a health-severity color)
 // per the reference the user pointed to -- but gray-200 alone sat almost
 // invisibly on the station card's own bg-gray-50 (that reference's card is
@@ -288,7 +290,8 @@ function EstacionCalendario({
                       // cell is now a real calendar date (the grid spans
                       // the full year), so there's no padding case left
                       // that actually needs to stay invisible.
-                      backgroundColor: cubierto ? COLOR_CUBIERTO : COLOR_INSUFICIENTE,
+                      backgroundColor: cubierto ? COLOR_CUBIERTO_FILL : COLOR_INSUFICIENTE,
+                      border: cubierto ? `1px solid ${COLOR_CUBIERTO_BORDER}` : undefined,
                     }}
                   />
                 );
@@ -388,7 +391,10 @@ export default function CoberturaEstacionesChart({
       <div className="px-5 pb-6 pt-6">
         <div className="mb-3 flex items-center justify-end gap-4 text-xs text-gray-500">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_CUBIERTO }} />
+            <span
+              className="h-2 w-2 rounded-[2px]"
+              style={{ backgroundColor: COLOR_CUBIERTO_FILL, border: `1px solid ${COLOR_CUBIERTO_BORDER}` }}
+            />
             Cubierto
           </span>
           <span className="flex items-center gap-1.5">
