@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY, COLOR_SALUDABLE_FILL_OPACITY, withOpacity } from "@/lib/datos-colors";
@@ -79,8 +79,7 @@ const tabs: InfoTab[] = [
         . Un día se contabiliza como &ldquo;con datos&rdquo; cuando al menos
         el 75% de las horas del día contaron con una medición válida de
         PM2.5, por lo que algunos días pueden no aparecer aunque la estación
-        haya operado parcialmente. Saltillo (estación Finanzas) queda fuera,
-        ya que pertenece a otra zona metropolitana.
+        haya operado parcialmente.
       </>
     ),
   },
@@ -200,6 +199,26 @@ function EstacionCalendario({
 
   const gridWidth = WEEKDAY_COL_WIDTH + totalCols * (CELL + GAP);
 
+  // Right-edge fade signals there's more to scroll to (the full-year grid is
+  // usually wider than the tile) -- without it, the grid just stops at
+  // whatever column fits, and nothing on screen says that's not the end of
+  // the data. Recomputed on scroll/resize and whenever the grid's own width
+  // changes (year switch).
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const update = () => setCanScrollRight(el.scrollWidth - el.clientWidth - el.scrollLeft > 1);
+    update();
+    el.addEventListener("scroll", update);
+    window.addEventListener("resize", update);
+    return () => {
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [gridWidth]);
+
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -215,104 +234,112 @@ function EstacionCalendario({
         )}
       </div>
 
-      <div className="overflow-x-auto">
-        <div
-          className="relative"
-          style={{ width: gridWidth }}
-          onMouseLeave={() => setTooltip(null)}
-          onMouseMove={(e) => {
-            const target = (e.target as HTMLElement).closest("[data-fecha]") as HTMLElement | null;
-            if (!target) {
-              setTooltip(null);
-              return;
-            }
-            const fecha = target.dataset.fecha!;
-            const row = Number(target.dataset.row);
-            const cubiertoAttr = target.dataset.cubierto;
-            setTooltip({
-              fecha,
-              row,
-              cubierto: cubiertoAttr === "true" ? true : cubiertoAttr === "false" ? false : undefined,
-              x: e.clientX,
-              y: e.clientY,
-            });
-          }}
-        >
-          <div style={{ height: MONTH_ROW_HEIGHT, marginLeft: WEEKDAY_COL_WIDTH, position: "relative" }}>
-            {Array.from(monthLabelForCol.entries()).map(([col, label]) => (
-              <span
-                key={col}
-                className="absolute text-[10px] font-medium text-gray-400"
-                style={{ left: col * (CELL + GAP) }}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
-
-          <div className="flex">
-            <div style={{ width: WEEKDAY_COL_WIDTH }}>
-              {Array.from({ length: 7 }, (_, row) => (
-                <div
-                  key={row}
-                  className="text-[10px] font-medium leading-none text-gray-400"
-                  style={{ height: CELL + GAP }}
+      <div className="relative">
+        <div ref={scrollRef} className="overflow-x-auto">
+          <div
+            className="relative"
+            style={{ width: gridWidth }}
+            onMouseLeave={() => setTooltip(null)}
+            onMouseMove={(e) => {
+              const target = (e.target as HTMLElement).closest("[data-fecha]") as HTMLElement | null;
+              if (!target) {
+                setTooltip(null);
+                return;
+              }
+              const fecha = target.dataset.fecha!;
+              const row = Number(target.dataset.row);
+              const cubiertoAttr = target.dataset.cubierto;
+              setTooltip({
+                fecha,
+                row,
+                cubierto: cubiertoAttr === "true" ? true : cubiertoAttr === "false" ? false : undefined,
+                x: e.clientX,
+                y: e.clientY,
+              });
+            }}
+          >
+            <div style={{ height: MONTH_ROW_HEIGHT, marginLeft: WEEKDAY_COL_WIDTH, position: "relative" }}>
+              {Array.from(monthLabelForCol.entries()).map(([col, label]) => (
+                <span
+                  key={col}
+                  className="absolute text-[10px] font-medium text-gray-400"
+                  style={{ left: col * (CELL + GAP) }}
                 >
-                  {WEEKDAY_LETTER[row] ?? ""}
-                </div>
+                  {label}
+                </span>
               ))}
             </div>
-            <div
-              className="grid"
-              style={{
-                gridTemplateColumns: `repeat(${totalCols}, ${CELL}px)`,
-                gridTemplateRows: `repeat(7, ${CELL}px)`,
-                gap: GAP,
-              }}
-            >
-              {cells.map((c) => {
-                const cubierto = coberturaPorFecha.get(c.fecha);
-                return (
-                  <div
-                    key={c.fecha}
-                    data-fecha={c.fecha}
-                    data-row={c.row}
-                    data-cubierto={cubierto === undefined ? "" : String(cubierto)}
-                    className="rounded-[2px]"
-                    style={{
-                      gridColumn: c.col + 1,
-                      gridRow: c.row + 1,
-                      // Undefined (no row at all -- typically a future date
-                      // not yet synced) renders the same as false: every
-                      // cell is now a real calendar date (the grid spans
-                      // the full year), so there's no padding case left
-                      // that actually needs to stay invisible.
-                      backgroundColor: cubierto ? COLOR_CUBIERTO_FILL : COLOR_INSUFICIENTE,
-                      border: cubierto ? `1px solid ${COLOR_CUBIERTO_BORDER}` : undefined,
-                    }}
-                  />
-                );
-              })}
-            </div>
-          </div>
 
-          {tooltip && (
-            <div
-              className="pointer-events-none fixed z-20 grid gap-1 rounded-xl border border-black/[0.06] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-[6px]"
-              style={{ left: tooltip.x, top: tooltip.y, transform: "translate(-30%, -115%)" }}
-            >
-              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
-                {formatTooltipDate(tooltip.fecha, tooltip.row)}
-              </span>
-              <span
-                className="text-sm font-semibold"
-                style={{ color: tooltip.cubierto ? COLOR_SALUDABLE : "rgb(107,114,128)" }}
+            <div className="flex">
+              <div style={{ width: WEEKDAY_COL_WIDTH }}>
+                {Array.from({ length: 7 }, (_, row) => (
+                  <div
+                    key={row}
+                    className="text-[10px] font-medium leading-none text-gray-400"
+                    style={{ height: CELL + GAP }}
+                  >
+                    {WEEKDAY_LETTER[row] ?? ""}
+                  </div>
+                ))}
+              </div>
+              <div
+                className="grid"
+                style={{
+                  gridTemplateColumns: `repeat(${totalCols}, ${CELL}px)`,
+                  gridTemplateRows: `repeat(7, ${CELL}px)`,
+                  gap: GAP,
+                }}
               >
-                {tooltip.cubierto ? "Con datos" : "Datos insuficientes"}
-              </span>
+                {cells.map((c) => {
+                  const cubierto = coberturaPorFecha.get(c.fecha);
+                  return (
+                    <div
+                      key={c.fecha}
+                      data-fecha={c.fecha}
+                      data-row={c.row}
+                      data-cubierto={cubierto === undefined ? "" : String(cubierto)}
+                      className="rounded-[2px]"
+                      style={{
+                        gridColumn: c.col + 1,
+                        gridRow: c.row + 1,
+                        // Undefined (no row at all -- typically a future
+                        // date not yet synced) renders the same as false:
+                        // every cell is now a real calendar date (the grid
+                        // spans the full year), so there's no padding case
+                        // left that actually needs to stay invisible.
+                        backgroundColor: cubierto ? COLOR_CUBIERTO_FILL : COLOR_INSUFICIENTE,
+                        border: cubierto ? `1px solid ${COLOR_CUBIERTO_BORDER}` : undefined,
+                      }}
+                    />
+                  );
+                })}
+              </div>
             </div>
-          )}
+
+            {tooltip && (
+              <div
+                className="pointer-events-none fixed z-20 grid gap-1 rounded-xl border border-black/[0.06] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-[6px]"
+                style={{ left: tooltip.x, top: tooltip.y, transform: "translate(-30%, -115%)" }}
+              >
+                <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
+                  {formatTooltipDate(tooltip.fecha, tooltip.row)}
+                </span>
+                <span
+                  className="text-sm font-semibold"
+                  style={{ color: tooltip.cubierto ? COLOR_SALUDABLE : "rgb(107,114,128)" }}
+                >
+                  {tooltip.cubierto ? "Con datos" : "Datos insuficientes"}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
+        {canScrollRight && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-r from-transparent to-white"
+          />
+        )}
       </div>
     </div>
   );
