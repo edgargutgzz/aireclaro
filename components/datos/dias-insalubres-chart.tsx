@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
-import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
+import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -253,7 +253,24 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
         {/* Colors ported exactly from the client's own observatoriodelaire.com
             chart -- one hex each (Tailwind red-500/green-500) at two
             opacities (fill, border), not two distinct hexes. */}
-        <span className="mb-3 block text-xs text-gray-400">Días del mes</span>
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-xs text-gray-400">Días del mes</span>
+          {/* Legend moved up here, on the same line as the axis label,
+              instead of Recharts' default spot under the chart -- a small
+              hand-built swatch row (matching ChartLegendContent's own dot +
+              label recipe) rather than reusing that component itself,
+              since it expects Recharts to hand it a payload prop. */}
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: chartConfig.insalubres.color }} />
+              {chartConfig.insalubres.label}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: chartConfig.saludables.color }} />
+              {chartConfig.saludables.label}
+            </span>
+          </div>
+        </div>
         <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[32rem]">
           <BarChart data={chartData} barCategoryGap="20%">
             <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
@@ -270,7 +287,6 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
             />
             <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
-            <ChartLegend content={<ChartLegendContent className="text-gray-500" />} />
             {/* No maxBarSize cap: the dataviz skill's 24px default read too
                 skinny on this chart's width (8 wide category slots), so
                 bars fill the barCategoryGap band instead -- a deliberate
