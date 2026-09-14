@@ -24,11 +24,15 @@ const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
-// Solid -- a tint reads weaker than COLOR_INSUFICIENTE at this 11px cell
-// size (binary covered/not-covered status, no border of its own to add
+// Solid -- a tint reads weaker than an outlined cell at this 11px size
+// (binary covered/not-covered status, no border of its own to add
 // identity).
 const COLOR_CUBIERTO = COLOR_SALUDABLE;
-const COLOR_INSUFICIENTE = "#e5e7eb"; // gray-200 -- a data-quality gap, not a health-severity color
+// Insuficiente is a white square outlined in this gray (a data-quality gap,
+// not a health-severity color) rather than a gray-200 fill -- gray-200 sits
+// almost invisibly on the station card's own bg-gray-50 (the two are barely
+// distinguishable), so the border is what actually makes the shape read.
+const COLOR_INSUFICIENTE_BORDER = "#9ca3af"; // gray-400
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
 // design -- labeling all 7 would be noisy at this cell size.
@@ -256,7 +260,14 @@ function EstacionCalendario({
                     style={{
                       gridColumn: c.col + 1,
                       gridRow: c.row + 1,
-                      backgroundColor: cubierto === undefined ? "transparent" : cubierto ? COLOR_CUBIERTO : COLOR_INSUFICIENTE,
+                      // Insuficiente is an outlined white square, not a filled
+                      // gray one: COLOR_INSUFICIENTE (gray-200) sits almost
+                      // invisibly on the card's own bg-gray-50, so a plain
+                      // fill barely reads. A border makes it a crisp shape
+                      // against the card regardless of how close the two
+                      // grays are.
+                      backgroundColor: cubierto === undefined ? "transparent" : cubierto ? COLOR_CUBIERTO : "#fff",
+                      border: cubierto === false ? `1px solid ${COLOR_INSUFICIENTE_BORDER}` : undefined,
                     }}
                   />
                 );
@@ -354,7 +365,10 @@ export default function CoberturaEstacionesChart({
             Cubierto
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
+            <span
+              className="h-2 w-2 rounded-[2px]"
+              style={{ backgroundColor: "#fff", border: `1px solid ${COLOR_INSUFICIENTE_BORDER}` }}
+            />
             Datos insuficientes
           </span>
         </div>
