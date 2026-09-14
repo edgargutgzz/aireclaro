@@ -15,10 +15,10 @@
 // dataviz skill's lightness/chroma/CVD bands on their own (this is a light
 // decorative pastel pair, not a validated data-identity pair) -- flagged,
 // not blocking, since this is a direct aesthetic match request.
+// Solid fill (both charts), by explicit request over the earlier
+// tint/gradient versions -- no opacity constant needed anymore.
 export const COLOR_SALUDABLE = "#a7d3b4";
-export const COLOR_SALUDABLE_OPACITY = 0.42;
 export const COLOR_INSALUBRE = "#e8b8b8";
-export const COLOR_INSALUBRE_OPACITY = 0.42;
 
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);

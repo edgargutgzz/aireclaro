@@ -260,30 +260,16 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             />
             <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
             <ChartLegend content={<ChartLegendContent className="text-gray-500" />} />
-            {/* Gradient-painted fill (per-bar bounding box, so it rescales with
-                each bar's own height): full color at the top of each segment
-                fading toward transparent at its bottom, echoing an area
-                chart's gradient wash -- requested explicitly over the flat
-                tint. A full-strength colored border still carries the edge/
-                identity; fillOpacity is left at 1 since the gradient stops
-                now own the opacity ramp. No maxBarSize cap: the dataviz
-                skill's 24px default read too skinny on this chart's width (8
-                wide category slots), so bars fill the barCategoryGap band
-                instead -- a deliberate deviation, not an oversight. */}
-            <defs>
-              <linearGradient id="insalubresGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={COLOR_INSALUBRE} stopOpacity={0.9} />
-                <stop offset="100%" stopColor={COLOR_INSALUBRE} stopOpacity={0.08} />
-              </linearGradient>
-              <linearGradient id="saludablesGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={COLOR_SALUDABLE} stopOpacity={0.9} />
-                <stop offset="100%" stopColor={COLOR_SALUDABLE} stopOpacity={0.08} />
-              </linearGradient>
-            </defs>
+            {/* Solid fill, by explicit request over the earlier gradient-painted
+                version. No maxBarSize cap: the dataviz skill's 24px default
+                read too skinny on this chart's width (8 wide category
+                slots), so bars fill the barCategoryGap band instead -- a
+                deliberate deviation, not an oversight. */}
             <Bar
               dataKey="insalubres"
               stackId="dias"
-              fill="url(#insalubresGradient)"
+              fill={chartConfig.insalubres.color}
+              fillOpacity={1}
               stroke={chartConfig.insalubres.color}
               strokeWidth={1.5}
               radius={[0, 0, 4, 4]}
@@ -291,7 +277,8 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             <Bar
               dataKey="saludables"
               stackId="dias"
-              fill="url(#saludablesGradient)"
+              fill={chartConfig.saludables.color}
+              fillOpacity={1}
               stroke={chartConfig.saludables.color}
               strokeWidth={1.5}
               radius={[4, 4, 0, 0]}
