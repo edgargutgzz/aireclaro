@@ -66,13 +66,23 @@ const hexToRgb = (hex: string): [number, number, number] => {
 };
 const rgbToHex = (r: number, g: number, b: number): string =>
   "#" + [r, g, b].map((n) => Math.round(Math.min(255, Math.max(0, n))).toString(16).padStart(2, "0")).join("");
+
+// The house calming mix -- `color` nudged toward its `ink` by `t`. Exported
+// so any other data surface (not just map markers) can reuse the exact same
+// treatment instead of inventing its own tone. `t` defaults to the marker
+// mix, but callers may pass their own (e.g. 0 to intentionally skip
+// calming, which is what Muy mala/Extrem. amount to anyway since their ink
+// already equals their color).
+export const mixColorInk = (color: string, ink: string, t: number = MARKER_INK_MIX): string => {
+  const [cr, cg, cb] = hexToRgb(color);
+  const [ir, ig, ib] = hexToRgb(ink);
+  return rgbToHex(cr * (1 - t) + ir * t, cg * (1 - t) + ig * t, cb * (1 - t) + ib * t);
+};
+
 export const getMarkerFillHex = (pm25: number | null): string | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
   const level = getLevel(pm25);
-  const [cr, cg, cb] = hexToRgb(level.color);
-  const [ir, ig, ib] = hexToRgb(level.ink);
-  const t = MARKER_INK_MIX;
-  return rgbToHex(cr * (1 - t) + ir * t, cg * (1 - t) + ig * t, cb * (1 - t) + ib * t);
+  return mixColorInk(level.color, level.ink);
 };
 
 // Markers are siblings in one container (mapbox appends every custom element
