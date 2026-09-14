@@ -130,11 +130,12 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       icon: BookOpen,
       body: (
         <>
-          Un día se contabiliza si al menos una estación reportó un promedio
-          válido (mínimo 75% de horas con dato). Si alguna estación registra
-          un valor que supera el límite del día, el día completo se clasifica
-          como insalubre. Saltillo (estación Finanzas) queda fuera del
-          conteo, ya que pertenece a otra zona metropolitana.
+          Para garantizar mayor certeza en la información, los datos se
+          analizan siguiendo los criterios establecidos por la
+          NOM-025-SSA1-2021. Un día se contabiliza si al menos una estación
+          reportó mediciones, por lo que algunos meses pueden mostrar menos
+          días de los que corresponden. Si alguna estación registra un valor
+          que supera el límite, el día se clasifica como insalubre.
         </>
       ),
     },
