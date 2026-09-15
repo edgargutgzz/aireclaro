@@ -17,6 +17,11 @@
 export const COLOR_SALUDABLE = "#22c55e"; // Tailwind green-500
 export const COLOR_SALUDABLE_FILL_OPACITY = 0.55;
 export const COLOR_SALUDABLE_BORDER_OPACITY = 0.8;
+// Cobertura's grid cells read as flatter/smaller shapes than días insalubres'
+// bars, so they want a more solid fill -- kept separate from
+// COLOR_SALUDABLE_FILL_OPACITY on purpose so a bump here doesn't also
+// wash out the días insalubres chart's bars.
+export const COLOR_CUBIERTO_FILL_OPACITY = 0.8;
 export const COLOR_INSALUBRE = "#ef4444"; // Tailwind red-500
 export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 export const COLOR_INSALUBRE_BORDER_OPACITY = 0.9;

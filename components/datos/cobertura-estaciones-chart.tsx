@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY, COLOR_SALUDABLE_FILL_OPACITY, withOpacity } from "@/lib/datos-colors";
+import { COLOR_CUBIERTO_FILL_OPACITY, COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY, withOpacity } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -25,9 +25,10 @@ const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
 // Same Tailwind green as días insalubres' bars (COLOR_SALUDABLE), not the
-// client's own lighter grid green -- unified back by explicit request, same
-// fill/border opacity split too (COLOR_SALUDABLE_FILL/BORDER_OPACITY).
-const COLOR_CUBIERTO_FILL = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY);
+// client's own lighter grid green -- unified back by explicit request. Fill
+// opacity is its own (higher) constant though, so the grid cells can read
+// more solid without also washing out días insalubres' bars.
+const COLOR_CUBIERTO_FILL = withOpacity(COLOR_SALUDABLE, COLOR_CUBIERTO_FILL_OPACITY);
 const COLOR_CUBIERTO_BORDER = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY);
 // A plain gray fill (a data-quality gap, not a health-severity color) --
 // lighter than gray-300 by request, but not all the way to gray-200, which
