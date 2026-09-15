@@ -677,14 +677,18 @@ export default function MapaSensors({
         },
       });
       }
-      // Every disc's own PM2.5 reading, straight on its fill — unconditional,
-      // same as the selected DOM marker: no zoom fade, no collision-based
-      // hiding. Collision detection (allow-overlap/ignore-placement false)
-      // was tried to stop overlapping discs' digit strings from smearing
-      // together in the basin's dense knots, but it meant some discs went
-      // unlabelled, which read as broken/inconsistent rather than a fix.
-      // allow-overlap: true so every disc's number is always there — plain
-      // and predictable beats collision-avoidance cleverness here.
+      // Every disc's own PM2.5 reading, straight on its fill. No zoom fade
+      // (that part of the earlier attempt read as the numbers "loading in"
+      // during the opening flyTo and stayed removed). Label VISIBILITY is
+      // collision-detected (allow-overlap/ignore-placement both false) —
+      // where circles genuinely overlap on screen, so would their centered
+      // numbers; there's no rendering trick around that, so a disc with no
+      // room for its label goes unlabelled (still coloured, still in the
+      // card and aria-label) rather than smearing digits over its neighbour's.
+      // This is the standard technique every point-label map layer uses
+      // (Mapbox/Google POI labels). symbol-sort-key reuses the same
+      // provenance+latitude key the circle draw order uses, so which label
+      // wins a collision is still never a function of the reading.
       if (!m.getLayer(FIELD_LABEL_LAYER)) {
         m.addLayer({
           id: FIELD_LABEL_LAYER,
@@ -694,8 +698,8 @@ export default function MapaSensors({
             "text-field": ["get", "label"] as any,
             "text-size": FIELD_LABEL_SIZE as any,
             "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-            "text-allow-overlap": true,
-            "text-ignore-placement": true,
+            "text-allow-overlap": false,
+            "text-ignore-placement": false,
             "symbol-sort-key": ["get", "sortKey"] as any,
           },
           paint: {
