@@ -181,6 +181,7 @@ function EstacionCalendario({
   monthLabelForCol,
   coberturaPorFecha,
   realDates,
+  todayStr,
 }: {
   estacion: Estacion;
   cells: Cell[];
@@ -188,6 +189,7 @@ function EstacionCalendario({
   monthLabelForCol: Map<number, string>;
   coberturaPorFecha: Map<string, boolean>;
   realDates: string[];
+  todayStr: string;
 }) {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
 
@@ -329,7 +331,11 @@ function EstacionCalendario({
                   className="text-sm font-semibold"
                   style={{ color: tooltip.cubierto ? COLOR_SALUDABLE : "rgb(107,114,128)" }}
                 >
-                  {tooltip.cubierto ? "Con datos" : "Datos insuficientes"}
+                  {tooltip.cubierto
+                    ? "Con datos"
+                    : tooltip.fecha > todayStr
+                      ? "Aún no ocurre"
+                      : "Datos insuficientes"}
                 </span>
               </div>
             )}
@@ -376,6 +382,10 @@ export default function CoberturaEstacionesChart({
   const dates = useMemo(() => (year !== null ? fullYearDates(year) : []), [year]);
   const realDates = useMemo(() => allDates.filter((d) => d.startsWith(String(year))), [allDates, year]);
   const { cells, totalCols, monthLabelForCol } = useMemo(() => buildCalendarLayout(dates), [dates]);
+  // Client-evaluated once per mount -- good enough to tell a future date's
+  // tooltip apart from a past date with a real coverage gap, no need for
+  // this to stay live across a page left open past midnight.
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const pctCobertura = useMemo(() => {
     if (realDates.length === 0 || estaciones.length === 0) return 0;
@@ -437,6 +447,7 @@ export default function CoberturaEstacionesChart({
               monthLabelForCol={monthLabelForCol}
               coberturaPorFecha={coberturaPorEstacion.get(estacion.sensorId) ?? new Map()}
               realDates={realDates}
+              todayStr={todayStr}
             />
           ))}
         </div>
