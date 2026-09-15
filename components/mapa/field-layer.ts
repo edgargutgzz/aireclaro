@@ -137,21 +137,28 @@ export const FIELD_RADIUS = [
 ];
 
 // The SIMA badge (makeSimaBadge, a ~20px-core raster) tracks the same radius
-// curve as the (now-unified) disc size, so it can't quietly go undersized
-// again the way it did when it was a flat icon-size/icon-offset tuned once
-// for a much smaller SIMA-only radius. Ratio (badge diameter ≈ 1.12x radius,
-// offset ≈ 0.5x radius) is the flat values' own ratio at their original
-// tuning point, just held at every size now instead of one.
+// curve as the (now-unified, smaller) disc size. The 1.12x-radius / 0.5x-radius
+// ratio this was first given (the flat values' own ratio at their original
+// tuning point) turned out to be geometrically too tight regardless of scale:
+// with the badge's own radius (0.56x the disc radius) bigger than its offset
+// distance from centre (0.5*sqrt(2) = 0.707x radius), its inner edge reached
+// to within ~0.15x radius of the disc's exact centre — where the printed
+// number sits — and once discs shrank to match the citizen field the overlap
+// finally became visible (screenshot: badge sitting on top of the "30").
+// 0.7x radius / 0.62x radius (offset distance ≈0.88x radius, badge radius
+// ≈0.35x radius) leaves the number a clear ~0.5x-radius-wide berth, and sits
+// the badge nearer the disc's true edge — "breaking the edge" per the DOM
+// badge's own original design intent, not sitting well inside it.
 const badgeZoomRange = [FIELD_RADIUS_STOPS[0][0], FIELD_RADIUS_STOPS[FIELD_RADIUS_STOPS.length - 1][0]] as const;
 export const FIELD_BADGE_SIZE = [
   "interpolate", ["linear"], ["zoom"],
-  badgeZoomRange[0], (fieldRadiusAt(badgeZoomRange[0]) * 1.12) / 20,
-  badgeZoomRange[1], (fieldRadiusAt(badgeZoomRange[1]) * 1.12) / 20,
+  badgeZoomRange[0], (fieldRadiusAt(badgeZoomRange[0]) * 0.64) / 20,
+  badgeZoomRange[1], (fieldRadiusAt(badgeZoomRange[1]) * 0.64) / 20,
 ];
 export const FIELD_BADGE_OFFSET = [
   "interpolate", ["linear"], ["zoom"],
-  badgeZoomRange[0], ["literal", [fieldRadiusAt(badgeZoomRange[0]) * 0.5, -fieldRadiusAt(badgeZoomRange[0]) * 0.5]],
-  badgeZoomRange[1], ["literal", [fieldRadiusAt(badgeZoomRange[1]) * 0.5, -fieldRadiusAt(badgeZoomRange[1]) * 0.5]],
+  badgeZoomRange[0], ["literal", [fieldRadiusAt(badgeZoomRange[0]) * 0.65, -fieldRadiusAt(badgeZoomRange[0]) * 0.65]],
+  badgeZoomRange[1], ["literal", [fieldRadiusAt(badgeZoomRange[1]) * 0.65, -fieldRadiusAt(badgeZoomRange[1]) * 0.65]],
 ];
 
 // Every disc's number is on the moment it's on screen, same as the selected
