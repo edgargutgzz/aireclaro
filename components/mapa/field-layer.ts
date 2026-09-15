@@ -138,10 +138,18 @@ export const FIELD_RADIUS = [
 
 // The SIMA badge (makeSimaBadge, a ~20px-core raster inside a 22px canvas)
 // tracks the same radius curve as the (now-unified, smaller) disc size:
-// badge radius ≈0.32x disc radius, offset distance ≈0.9x disc radius — leaves
-// the printed number a clear berth and sits the badge nearer the disc's true
+// badge radius ≈0.425x disc radius, offset distance ≈1.2x disc radius (user:
+// "make the icon a bit bigger for the unselected estaciones") — leaves the
+// printed number a clear berth and sits the badge nearer the disc's true
 // edge, "breaking the edge" per the DOM badge's own original design intent
-// rather than sitting well inside it. Two earlier passes tuned this ratio and
+// rather than sitting well inside it. Bigger and further-out move together
+// automatically here: FIELD_BADGE_OFFSET's raw [20,-20] gets multiplied by
+// icon-size internally (see below), and icon-size is itself proportional to
+// the single constant below, so nudging that constant scales the badge up
+// AND pushes it out in lockstep — the clearance-to-badge-size ratio stays
+// constant regardless of the constant's value, so this can't reintroduce the
+// overlap a bigger badge alone would otherwise risk. Two earlier passes
+// tuned the (then-smaller) ratio and
 // (separately) fixed FIELD_BADGE_SIZE/OFFSET to track every FIELD_RADIUS_STOPS
 // entry instead of a 2-point endpoint line — both looked right in their own
 // screenshots, but the badge was STILL landing close to the number, because
@@ -162,7 +170,7 @@ export const FIELD_RADIUS = [
 // zoom-interpolates (that scaling is real, not double-applied).
 export const FIELD_BADGE_SIZE = [
   "interpolate", ["linear"], ["zoom"],
-  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, (radius * 0.64) / 20]),
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, (radius * 0.85) / 20]),
 ];
 export const FIELD_BADGE_OFFSET = ["literal", [20, -20]];
 
