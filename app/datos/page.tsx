@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-// import DiasInsalubres from "@/components/datos/dias-insalubres";
-// import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
+import DiasInsalubres from "@/components/datos/dias-insalubres";
+import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
 
 // DiasInsalubres reads a cached aggregate (see that component), but the
 // underlying query is occasionally slow/flaky (small Supabase instance,
@@ -20,13 +20,10 @@ export default function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pt-28">
-        {/* Both charts hidden for now, 2026-09-14 -- data pipelines (cron
-            computation, tables) stay in place, just not rendered. Re-enable
-            by uncommenting the imports above and this block. */}
-        {/* <DiasInsalubres />
+        <DiasInsalubres />
         <div className="mt-16">
           <CoberturaEstaciones />
-        </div> */}
+        </div>
       </div>
     </div>
   );
