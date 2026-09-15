@@ -121,8 +121,21 @@ export const FIELD_LABEL_SIZE = [
   13.5, 11,
   16, 13,
 ];
+// Selected-station hide folded into each stop's *output*, not wrapped around
+// the interpolate — Mapbox rejects a top-level `case`/`*`/anything wrapping a
+// zoom `interpolate` ("zoom expression may only be used as input to a
+// top-level step or interpolate expression"), the same rule FIELD_RADIUS's
+// stopR already works around for the hover multiplier. Wrapping it the other
+// way round doesn't throw on addLayer — Mapbox just drops the whole property
+// and logs a console error — so a bad nesting here silently renders no text
+// at all instead of failing loudly.
+const stopOpacity = (opacity: number) => [
+  "case",
+  ["boolean", ["feature-state", "selected"], false], 0,
+  opacity,
+];
 export const FIELD_LABEL_OPACITY = [
   "interpolate", ["linear"], ["zoom"],
-  9, 0,
-  11, 1,
+  9, stopOpacity(0),
+  11, stopOpacity(1),
 ];

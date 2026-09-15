@@ -669,11 +669,10 @@ export default function MapaSensors({
           },
           paint: {
             "text-color": ["get", "labelInk"] as any,
-            "text-opacity": [
-              "case",
-              ["boolean", ["feature-state", "selected"], false], 0,
-              FIELD_LABEL_OPACITY,
-            ] as any,
+            // The selected-hide is already folded into FIELD_LABEL_OPACITY's
+            // own stops (field-layer.ts) — wrapping it in another top-level
+            // `case` here is exactly the nesting Mapbox rejects.
+            "text-opacity": FIELD_LABEL_OPACITY as any,
           },
         });
       }
