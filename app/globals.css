@@ -209,17 +209,21 @@
   --dot-scale: 1.12;
 }
 
-/* Selected. Leads by *size* and the pulse: a bigger disc (--dot-scale, past
-   the field's 1.12 hover), an opaque fill where the field rests translucent
-   (75% SIMA, 65% citizen), a taller two-part lift, its number a step larger
-   and bolder than the field's GL label, and the halo in the sensor's own
-   air-quality tone. No gloss, no fill-ring, no accent ring, no core. The
+/* Selected. Leads by *size* and the pulse: a disc sized in JS off the same
+   FIELD_RADIUS stops the field uses (resizeSelectedMarker in
+   mapa-sensors.tsx, --dot-scale on top of that), an opaque fill where the
+   field rests translucent (75% SIMA, 65% citizen), a taller two-part lift,
+   its number bolder than the field's GL label, and the halo in the sensor's
+   own air-quality tone. No gloss, no fill-ring, no accent ring, no core. The
    :hover selector is here so hovering the active marker does not knock it
-   back down to the field's 1.12 hover scale. */
+   back down to the field's 1.12 hover scale. Font-size is NOT set here —
+   resizeSelectedMarker writes it inline on __dot directly, proportional to
+   the disc's own runtime size; a fixed value here would win over the
+   parent's inline style (inheritance loses to a same-specificity rule on
+   the element itself) and silently pin the digits to one size again. */
 .sensor-marker--selected .sensor-marker__dot,
 .sensor-marker--selected:hover .sensor-marker__dot {
   --dot-scale: 1.25;
-  font-size: 11px;
   font-weight: 600;
   background: var(--marker-fill);
   box-shadow:

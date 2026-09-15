@@ -32,6 +32,7 @@ import {
   FIELD_RADIUS,
   FIELD_LABEL_SIZE,
   FIELD_LABEL_OPACITY,
+  fieldRadiusAt,
 } from "./field-layer";
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
@@ -448,6 +449,33 @@ export default function MapaSensors({
     [buildFieldData, paintSelectedMarker],
   );
 
+  // The selected DOM marker's own size, read off the same FIELD_RADIUS stops
+  // the GL field uses (fieldRadiusAt) so it always leads its own category
+  // (SIMA vs citizen) by MARKER_LEAD_FACTOR — at *every* zoom, not just the
+  // zoom it happened to be created at. Before this it was a flat 27/24px in
+  // CSS while the field kept growing with zoom, so by the map's own resting
+  // zoom (11) an ordinary SIMA field disc had already grown past it —
+  // "selected leads by size" silently broke as the field was sized up.
+  // Mutates the existing element's inline size (no rebuild, so the pulse
+  // animation doesn't restart) — called on selection change and on every
+  // zoom tick.
+  const MARKER_LEAD_FACTOR = 1.3;
+  const resizeSelectedMarker = useCallback(() => {
+    const m = map.current as any;
+    const el = (selectedMarkerRef.current as any)?.getElement() as HTMLElement | undefined;
+    const id = activeFidRef.current;
+    if (!m || !el || !id) return;
+    const sensor = sensorById.get(id);
+    if (!sensor) return;
+    const diameter = fieldRadiusAt(m.getZoom(), sensor.source === "sima") * 2 * MARKER_LEAD_FACTOR;
+    el.style.width = `${diameter}px`;
+    el.style.height = `${diameter}px`;
+    // On __dot itself, not el: a fixed font-size on the selected-disc CSS
+    // rule would otherwise win over an inherited value (see globals.css).
+    const dot = el.querySelector<HTMLElement>(".sensor-marker__dot");
+    if (dot) dot.style.fontSize = `${diameter / 2.4}px`;
+  }, [sensorById]);
+
   // Move the selection to whichever station is now active: hide that station's
   // flat GL disc (feature-state `selected`) and stand a single DOM marker in
   // its place — the DOM marker carries the expanding CSS pulse halo GL can't
@@ -498,8 +526,9 @@ export default function MapaSensors({
     selectedMarkerRef.current = new Marker({ element: el })
       .setLngLat([sensor.lon, sensor.lat])
       .addTo(m);
+    resizeSelectedMarker();
     paintSelectedMarker(frameReadingsRef.current);
-  }, [sensorById, paintSelectedMarker]);
+  }, [sensorById, paintSelectedMarker, resizeSelectedMarker]);
 
   // Initialize map once, zoomed out; the opening flyTo below settles it in.
   useEffect(() => {
@@ -649,11 +678,18 @@ export default function MapaSensors({
       });
       }
       // Every disc's own PM2.5 reading, straight on its fill. text-allow-overlap
-      // so the field never silently drops a number to Mapbox's own collision
-      // detection — every visible disc carries one, consistently, once the
-      // zoom-gated opacity (FIELD_LABEL_OPACITY) lets it show. The selected
-      // station's label is hidden the same way its flat disc is: the DOM
-      // marker prints its own, larger number instead.
+      // was tried first (every visible disc carries a number, consistently)
+      // but in the basin's dense knots that meant every overlapping disc's
+      // full digit string rendered on top of its neighbours' — a blotchy
+      // smear, not readable numbers. Mapbox's own collision detection
+      // (allow-overlap/ignore-placement both false) is the standard fix: a
+      // disc that has no room for its label simply goes unlabelled — still
+      // coloured, still in the card and every aria-label — rather than
+      // printing garbled text. `symbol-sort-key` reuses the same
+      // provenance+latitude key the circle draw order uses, so which label
+      // wins a collision is still never a function of the reading. The
+      // selected station's label is hidden the same way its flat disc is:
+      // the DOM marker prints its own, larger number instead.
       if (!m.getLayer(FIELD_LABEL_LAYER)) {
         m.addLayer({
           id: FIELD_LABEL_LAYER,
@@ -663,8 +699,8 @@ export default function MapaSensors({
             "text-field": ["get", "label"] as any,
             "text-size": FIELD_LABEL_SIZE as any,
             "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-            "text-allow-overlap": true,
-            "text-ignore-placement": true,
+            "text-allow-overlap": false,
+            "text-ignore-placement": false,
             "symbol-sort-key": ["get", "sortKey"] as any,
           },
           paint: {
@@ -749,6 +785,10 @@ export default function MapaSensors({
     m.on("mousemove", FIELD_LAYER, onMove);
     m.on("mouseleave", FIELD_LAYER, onLeave);
     m.on("click", FIELD_LAYER, onClick);
+    // Keeps the selected marker's own size tracking the field's zoom curve —
+    // see resizeSelectedMarker's comment for why this has to be continuous,
+    // not just re-run on selection change.
+    m.on("zoom", resizeSelectedMarker);
 
     updateField(frameReadingsRef.current);
     syncActive();
@@ -757,8 +797,9 @@ export default function MapaSensors({
       m.off("mousemove", FIELD_LAYER, onMove);
       m.off("mouseleave", FIELD_LAYER, onLeave);
       m.off("click", FIELD_LAYER, onClick);
+      m.off("zoom", resizeSelectedMarker);
     };
-  }, [mapLoaded, buildFieldData, updateField, syncActive, sensorById]);
+  }, [mapLoaded, buildFieldData, updateField, syncActive, sensorById, resizeSelectedMarker]);
 
   // Push a frame to the field: a filter change (visibleSensors) or a live-data
   // refresh (frameReadings). One setData, no marker churn — and not syncActive,

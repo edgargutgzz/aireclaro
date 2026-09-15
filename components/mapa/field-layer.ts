@@ -107,12 +107,37 @@ const stopR = (sima: number, citizen: number) => [
 // FIELD_LABEL_SIZE at each zoom, not a flat multiplier on the old numbers),
 // so the disc always has headroom around its own digits. SIMA still ~1.25x
 // citizen.
+//
+// A single stop table, not two separate hardcoded lists: FIELD_RADIUS (the GL
+// expression) and `fieldRadiusAt` (a plain-JS interpolator the selected DOM
+// marker's runtime size reads, mapa-sensors.tsx's resizeSelectedMarker) are
+// both built from this so they can't drift apart again. They already did
+// once — the DOM marker's old fixed 27/24px size never grew alongside the
+// field's zoom-responsive one, so by zoom 11 an ordinary SIMA field disc had
+// grown *past* the selected marker, breaking "selected leads by size."
+const FIELD_RADIUS_STOPS: readonly [zoom: number, sima: number, citizen: number][] = [
+  [8, 15, 12],
+  [11, 17.5, 14],
+  [13.5, 21, 17],
+  [16, 25, 20],
+];
+export function fieldRadiusAt(zoom: number, isSima: boolean): number {
+  const stops = FIELD_RADIUS_STOPS;
+  if (zoom <= stops[0][0]) return isSima ? stops[0][1] : stops[0][2];
+  for (let i = 1; i < stops.length; i++) {
+    const [z1, s1, c1] = stops[i - 1];
+    const [z2, s2, c2] = stops[i];
+    if (zoom <= z2) {
+      const t = (zoom - z1) / (z2 - z1);
+      return (isSima ? s1 : c1) + ((isSima ? s2 : c2) - (isSima ? s1 : c1)) * t;
+    }
+  }
+  const last = stops[stops.length - 1];
+  return isSima ? last[1] : last[2];
+}
 export const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
-  8, stopR(15, 12),
-  11, stopR(17.5, 14),
-  13.5, stopR(21, 17),
-  16, stopR(25, 20),
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, sima, citizen]) => [zoom, stopR(sima, citizen)]),
 ];
 
 // The label only earns its keep once a disc is big enough to hold a 2-3 digit
