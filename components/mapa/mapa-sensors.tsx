@@ -677,9 +677,9 @@ export default function MapaSensors({
         },
       });
       }
-      // Every disc's own PM2.5 reading, straight on its fill. No zoom fade
-      // (that part of the earlier attempt read as the numbers "loading in"
-      // during the opening flyTo and stayed removed). Label VISIBILITY is
+      // Every disc's own PM2.5 reading, straight on its fill. No zoom-driven
+      // opacity fade (that part of an earlier attempt read as the numbers
+      // "loading in" and stayed removed for good). Label VISIBILITY is
       // collision-detected (allow-overlap/ignore-placement both false) —
       // where circles genuinely overlap on screen, so would their centered
       // numbers; there's no rendering trick around that, so a disc with no
@@ -689,6 +689,19 @@ export default function MapaSensors({
       // (Mapbox/Google POI labels). symbol-sort-key reuses the same
       // provenance+latitude key the circle draw order uses, so which label
       // wins a collision is still never a function of the reading.
+      //
+      // Collision detection re-runs every frame the camera moves, and the
+      // opening flyTo moves it continuously for OPENING_MOVE_MS — so with the
+      // layer visible from the start, labels keep winning and losing
+      // collisions as the view pans/zooms through, which *looks* like a fade
+      // (the same "loading in" complaint) even with zero opacity animation in
+      // the paint expression. The layer starts hidden and is revealed once
+      // the opening camera actually stops, so the very first thing a visitor
+      // sees is the settled, final label set appearing all at once — not
+      // labels churning mid-flight. Only matters for this first camera move:
+      // once visible, later user-driven pans/zooms are the user's own
+      // gesture, not something they're watching happen to them, so the
+      // ordinary collision churn during those reads as normal map behaviour.
       if (!m.getLayer(FIELD_LABEL_LAYER)) {
         m.addLayer({
           id: FIELD_LABEL_LAYER,
@@ -701,12 +714,22 @@ export default function MapaSensors({
             "text-allow-overlap": false,
             "text-ignore-placement": false,
             "symbol-sort-key": ["get", "sortKey"] as any,
+            visibility: "none",
           },
           paint: {
             "text-color": ["get", "labelInk"] as any,
             "text-opacity": FIELD_LABEL_OPACITY as any,
           },
         });
+        const revealLabels = () => {
+          try {
+            m.setLayoutProperty(FIELD_LABEL_LAYER, "visibility", "visible");
+          } catch {
+            // layer/map gone (unmount mid-timeout) — nothing to reveal
+          }
+        };
+        if (prefersReducedMotion()) revealLabels();
+        else window.setTimeout(revealLabels, OPENING_MOVE_MS);
       }
       // Landmark badge on every SIMA station (grey no-data ones included) —
       // hidden only while it's the selected station, whose DOM marker carries
