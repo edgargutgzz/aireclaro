@@ -136,31 +136,35 @@ export const FIELD_RADIUS = [
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, stopR(radius)]),
 ];
 
-// The SIMA badge (makeSimaBadge, a ~20px-core raster) tracks the same radius
-// curve as the (now-unified, smaller) disc size, ratio: badge radius ≈0.32x
-// disc radius, offset distance ≈0.92x disc radius — leaves the printed number
-// a clear ~0.6x-radius berth and sits the badge nearer the disc's true edge,
-// "breaking the edge" per the DOM badge's own original design intent rather
-// than sitting well inside it. Tuned against real screenshot crops across two
-// earlier passes (this ratio, and the 1.12x/0.5x it replaced, both read fine
-// there) before a THIRD screenshot at a different zoom showed the badge both
-// too small and still overlapping — because this was built as a straight
-// 2-stop line between zoom 8 and zoom 16, while FIELD_RADIUS itself is a
-// 4-stop piecewise curve with a different slope in each segment (8→11 grows
-// slower than 11→16). The two curves only agreed at their shared endpoints;
-// anywhere in between, the badge was scaled off a radius that didn't match
-// what was actually on screen. Built from every FIELD_RADIUS_STOPS entry now,
-// not just the first and last, so the ratio holds at every zoom, not two of
-// them — the same mistake FIELD_RADIUS/fieldRadiusAt were already factored
-// out to avoid (see the comment above), just repeated one level up.
+// The SIMA badge (makeSimaBadge, a ~20px-core raster inside a 22px canvas)
+// tracks the same radius curve as the (now-unified, smaller) disc size:
+// badge radius ≈0.32x disc radius, offset distance ≈0.9x disc radius — leaves
+// the printed number a clear berth and sits the badge nearer the disc's true
+// edge, "breaking the edge" per the DOM badge's own original design intent
+// rather than sitting well inside it. Two earlier passes tuned this ratio and
+// (separately) fixed FIELD_BADGE_SIZE/OFFSET to track every FIELD_RADIUS_STOPS
+// entry instead of a 2-point endpoint line — both looked right in their own
+// screenshots, but the badge was STILL landing close to the number, because
+// of a third, distinct bug: per Mapbox's own spec, "[icon-offset]'s] each
+// component is multiplied by the value of icon-size to obtain the final
+// offset in pixels" (confirmed against the v8 style-spec source before
+// changing this again — this file has a real scar for shipping GL expression
+// assumptions unverified). FIELD_BADGE_OFFSET was passing an already
+// disc-radius-scaled pixel value, which Mapbox then scaled DOWN AGAIN by
+// icon-size (a fraction well under 1 in our range) — so the true on-screen
+// offset was only a fraction of what the code intended.
+//
+// Since icon-size already scales linearly with radius, and Mapbox multiplies
+// offset by icon-size for you, the offset the *code* supplies must be a flat
+// constant in the base asset's own coordinate space — the radius cancels out
+// algebraically once you solve for it, so it should never have been
+// zoom/radius-dependent in the first place. FIELD_BADGE_SIZE still legitimately
+// zoom-interpolates (that scaling is real, not double-applied).
 export const FIELD_BADGE_SIZE = [
   "interpolate", ["linear"], ["zoom"],
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, (radius * 0.64) / 20]),
 ];
-export const FIELD_BADGE_OFFSET = [
-  "interpolate", ["linear"], ["zoom"],
-  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, ["literal", [radius * 0.65, -radius * 0.65]]]),
-];
+export const FIELD_BADGE_OFFSET = ["literal", [20, -20]];
 
 // Every disc's number is on the moment it's on screen, same as the selected
 // DOM marker — no zoom-gated fade-in. A fade (off below zoom 9, in by 11) was
