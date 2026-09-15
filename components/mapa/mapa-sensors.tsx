@@ -463,12 +463,12 @@ export default function MapaSensors({
   );
 
   // The selected DOM marker's own size, read off the same FIELD_RADIUS stops
-  // the GL field uses (fieldRadiusAt) so it always leads its own category
-  // (SIMA vs citizen) by MARKER_LEAD_FACTOR — at *every* zoom, not just the
-  // zoom it happened to be created at. Before this it was a flat 27/24px in
-  // CSS while the field kept growing with zoom, so by the map's own resting
-  // zoom (11) an ordinary SIMA field disc had already grown past it —
-  // "selected leads by size" silently broke as the field was sized up.
+  // the GL field uses (fieldRadiusAt) so it always leads the field by
+  // MARKER_LEAD_FACTOR — at *every* zoom, not just the zoom it happened to be
+  // created at. Before this it was a flat 27/24px in CSS while the field kept
+  // growing with zoom, so by the map's own resting zoom (11) an ordinary
+  // field disc had already grown past it — "selected leads by size" silently
+  // broke as the field was sized up.
   // Mutates the existing element's inline size (no rebuild, so the pulse
   // animation doesn't restart) — called on selection change and on every
   // zoom tick.
@@ -480,7 +480,7 @@ export default function MapaSensors({
     if (!m || !el || !id) return;
     const sensor = sensorById.get(id);
     if (!sensor) return;
-    const diameter = fieldRadiusAt(m.getZoom(), sensor.source === "sima") * 2 * MARKER_LEAD_FACTOR;
+    const diameter = fieldRadiusAt(m.getZoom()) * 2 * MARKER_LEAD_FACTOR;
     el.style.width = `${diameter}px`;
     el.style.height = `${diameter}px`;
     // On __dot itself, not el: a fixed font-size on the selected-disc CSS
@@ -667,14 +667,15 @@ export default function MapaSensors({
           "circle-color": ["get", "fill"] as any,
           "circle-radius": FIELD_RADIUS as any,
           // The selected station's flat disc is hidden (opacity 0) — the DOM
-          // marker stands in for it. Rest of the field: SIMA fuller than
-          // citizen, no-data SIMA discs recede.
+          // marker stands in for it. SIMA and citizen now rest at the same
+          // opacity (the badge is the only network differentiator); no-data
+          // SIMA discs still recede, since that's a data-state signal, not a
+          // network one.
           "circle-opacity": [
             "case",
             ["boolean", ["feature-state", "selected"], false], 0,
             ["boolean", ["get", "nodata"], false], 0.5,
-            ["boolean", ["get", "isSima"], false], 0.82,
-            0.62,
+            0.7,
           ] as any,
           "circle-stroke-width": [
             "case",

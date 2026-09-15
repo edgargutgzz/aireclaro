@@ -127,11 +127,9 @@ export const HOVER_MARKER_Z = 7;
 // selected disc's scale and lift; the network is also on the estación card, in
 // Capas → Fuente, and in this button's aria-label.
 //
-// The two networks also split by weight: SIMA keeps `.sensor-marker`'s 27px
-// disc at 75% rest alpha; citizen sensors get `.sensor-marker--citizen`, which
-// globals.css takes down to 24px / 65% so the calibrated reference field reads
-// as the spine and the uncorrected PurpleAir field as texture around it. Keyed
-// on provenance, not on the reading, so it does not bias the render.
+// The two networks no longer split by weight (disc size / rest alpha) —
+// same disc, same size, for SIMA and citizen alike; only the badge above
+// says which network a station belongs to.
 // `hasReading` false means the caller passed a placeholder pm25 just to get a
 // disc rendered (a SIMA station silent for the hour) — the grey nodata fill
 // comes entirely from CSS, so no number should print over it.

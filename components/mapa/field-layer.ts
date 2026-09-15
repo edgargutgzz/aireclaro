@@ -83,82 +83,75 @@ export function makeSimaBadge(): ImageData {
   return ctx.getImageData(0, 0, cvs.width, cvs.height);
 }
 
-// Resting disc radius (px) by zoom, before the hover multiplier. SIMA reference
-// stations run a step fuller than the citizen field at every zoom — the same
-// weight split the DOM markers carried (27 vs 24px), now zoom-responsive. The
-// stroke width stays flat (below) so a shrunk disc keeps its "instrument" edge
-// instead of reading as basemap furniture, which is what killed the last
-// zoom-sizing attempt.
-// radius = (SIMA ? sima : citizen) * (hovered ? 1.14 : 1), evaluated per stop.
-// The zoom `interpolate` MUST stay top-level in the paint value — Mapbox
-// silently drops a layer whose zoom expression is nested inside `*` (this repo
-// hit that once already with an IDW layer), so the hover multiply is folded
-// into each stop's output instead of wrapping the whole interpolate.
-const stopR = (sima: number, citizen: number) => [
+// Resting disc radius (px) by zoom, before the hover multiplier. SIMA and
+// citizen discs are now the SAME size at every zoom (2026-09-15, user: "make
+// the estaciones markers the same size as the rest, lets just have the icon
+// [be] the differentiator") — the network no longer reads apart by weight
+// (disc size, rest opacity), only by the Landmark badge. The stroke width
+// stays flat (below) so a shrunk disc keeps its "instrument" edge instead of
+// reading as basemap furniture, which is what killed the last zoom-sizing
+// attempt.
+// radius = base * (hovered ? 1.14 : 1), evaluated per stop. The zoom
+// `interpolate` MUST stay top-level in the paint value — Mapbox silently
+// drops a layer whose zoom expression is nested inside `*` (this repo hit
+// that once already with an IDW layer), so the hover multiply is folded into
+// each stop's output instead of wrapping the whole interpolate.
+const stopR = (radius: number) => [
   "*",
-  ["case", ["boolean", ["get", "isSima"], false], sima, citizen],
+  radius,
   ["case", ["boolean", ["feature-state", "hover"], false], 1.14, 1],
 ];
-// Sized twice (2026-09-15, "a bit bigger" ×2, uniform ~15% passes each time)
-// before the user flagged the actual problem: the PM2.5 number
-// (FIELD_LABEL_SIZE) didn't fit the disc at the opening/resting zoom (11) —
-// diameter there was only ~1.7x the text size, tight for two digits. This
-// pass re-derives radius from that ratio directly (diameter ≈ 2.4x
-// FIELD_LABEL_SIZE at each zoom, not a flat multiplier on the old numbers),
-// so the disc always has headroom around its own digits. SIMA still ~1.25x
-// citizen.
+// Derived from FIELD_LABEL_SIZE's own footprint (diameter ≈ 2.4x the text
+// size, so the printed number always has headroom) rather than picked
+// independently — see the git history on this file for the "a bit bigger"
+// passes that got that backwards before the fit-driven redo.
 //
-// A single stop table, not two separate hardcoded lists: FIELD_RADIUS (the GL
-// expression) and `fieldRadiusAt` (a plain-JS interpolator the selected DOM
-// marker's runtime size reads, mapa-sensors.tsx's resizeSelectedMarker) are
-// both built from this so they can't drift apart again. They already did
-// once — the DOM marker's old fixed 27/24px size never grew alongside the
-// field's zoom-responsive one, so by zoom 11 an ordinary SIMA field disc had
-// grown *past* the selected marker, breaking "selected leads by size."
-const FIELD_RADIUS_STOPS: readonly [zoom: number, sima: number, citizen: number][] = [
-  [8, 15, 12],
-  [11, 17.5, 14],
-  [13.5, 21, 17],
-  [16, 25, 20],
+// A single stop table, not a separate hardcoded list per property:
+// FIELD_RADIUS (the GL expression) and `fieldRadiusAt` (a plain-JS
+// interpolator the selected DOM marker's runtime size reads,
+// mapa-sensors.tsx's resizeSelectedMarker) are both built from this so they
+// can't drift apart again — they already did once (the DOM marker's old
+// fixed px size never grew alongside the field's zoom-responsive one).
+const FIELD_RADIUS_STOPS: readonly [zoom: number, radius: number][] = [
+  [8, 12],
+  [11, 14],
+  [13.5, 17],
+  [16, 20],
 ];
-export function fieldRadiusAt(zoom: number, isSima: boolean): number {
+export function fieldRadiusAt(zoom: number): number {
   const stops = FIELD_RADIUS_STOPS;
-  if (zoom <= stops[0][0]) return isSima ? stops[0][1] : stops[0][2];
+  if (zoom <= stops[0][0]) return stops[0][1];
   for (let i = 1; i < stops.length; i++) {
-    const [z1, s1, c1] = stops[i - 1];
-    const [z2, s2, c2] = stops[i];
+    const [z1, r1] = stops[i - 1];
+    const [z2, r2] = stops[i];
     if (zoom <= z2) {
       const t = (zoom - z1) / (z2 - z1);
-      return (isSima ? s1 : c1) + ((isSima ? s2 : c2) - (isSima ? s1 : c1)) * t;
+      return r1 + (r2 - r1) * t;
     }
   }
-  const last = stops[stops.length - 1];
-  return isSima ? last[1] : last[2];
+  return stops[stops.length - 1][1];
 }
 export const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
-  ...FIELD_RADIUS_STOPS.flatMap(([zoom, sima, citizen]) => [zoom, stopR(sima, citizen)]),
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, stopR(radius)]),
 ];
 
-// The SIMA badge (makeSimaBadge, a ~20px-core raster) was sized once, as a
-// flat icon-size/icon-offset, back when the SIMA radius topped out around 16
-// — it stayed flat through every later "bigger" pass on FIELD_RADIUS, so by
-// the time SIMA radius reached 25 the badge was sitting undersized, closer to
-// the disc's centre than its edge. These track the same ratio the fixed
-// values held at their original tuning point (badge diameter ≈ 1.12x SIMA
-// *radius*, offset ≈ 0.5x radius) across FIELD_RADIUS_STOPS' current zoom
-// range, so growing the field again later won't silently detune this too.
-const SIMA_RADIUS_AT = (zoom: number) => fieldRadiusAt(zoom, true);
+// The SIMA badge (makeSimaBadge, a ~20px-core raster) tracks the same radius
+// curve as the (now-unified) disc size, so it can't quietly go undersized
+// again the way it did when it was a flat icon-size/icon-offset tuned once
+// for a much smaller SIMA-only radius. Ratio (badge diameter ≈ 1.12x radius,
+// offset ≈ 0.5x radius) is the flat values' own ratio at their original
+// tuning point, just held at every size now instead of one.
 const badgeZoomRange = [FIELD_RADIUS_STOPS[0][0], FIELD_RADIUS_STOPS[FIELD_RADIUS_STOPS.length - 1][0]] as const;
 export const FIELD_BADGE_SIZE = [
   "interpolate", ["linear"], ["zoom"],
-  badgeZoomRange[0], (SIMA_RADIUS_AT(badgeZoomRange[0]) * 1.12) / 20,
-  badgeZoomRange[1], (SIMA_RADIUS_AT(badgeZoomRange[1]) * 1.12) / 20,
+  badgeZoomRange[0], (fieldRadiusAt(badgeZoomRange[0]) * 1.12) / 20,
+  badgeZoomRange[1], (fieldRadiusAt(badgeZoomRange[1]) * 1.12) / 20,
 ];
 export const FIELD_BADGE_OFFSET = [
   "interpolate", ["linear"], ["zoom"],
-  badgeZoomRange[0], ["literal", [SIMA_RADIUS_AT(badgeZoomRange[0]) * 0.5, -SIMA_RADIUS_AT(badgeZoomRange[0]) * 0.5]],
-  badgeZoomRange[1], ["literal", [SIMA_RADIUS_AT(badgeZoomRange[1]) * 0.5, -SIMA_RADIUS_AT(badgeZoomRange[1]) * 0.5]],
+  badgeZoomRange[0], ["literal", [fieldRadiusAt(badgeZoomRange[0]) * 0.5, -fieldRadiusAt(badgeZoomRange[0]) * 0.5]],
+  badgeZoomRange[1], ["literal", [fieldRadiusAt(badgeZoomRange[1]) * 0.5, -fieldRadiusAt(badgeZoomRange[1]) * 0.5]],
 ];
 
 // Every disc's number is on the moment it's on screen, same as the selected
