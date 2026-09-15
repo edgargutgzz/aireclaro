@@ -111,6 +111,11 @@
   position: relative;
   width: 27px;
   height: 27px;
+  /* Micro numbers, per the type scale — the DOM marker prints one (the field's
+     GL discs carry their own text layer, see FIELD_LABEL_LAYER). */
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
 }
 
 /* Citizen (PurpleAir) discs: one step lighter than the SIMA reference field.
@@ -125,16 +130,12 @@
   --marker-rest-alpha: 65%;
 }
 
-/* No marker prints its reading. Colour is the ambient signal across the whole
-   field; the exact number belongs to the sensor being inspected, and it lives
-   on the estación card (always on screen, with its word label) and in every
-   marker's aria-label. Printing the selected sensor's value on the disc was
-   tried through several treatments — a white core, a heavy outline stroke,
-   near-black straight on the fill — and each either read as a sticker stuck on
-   the disc or, on the saturated mid-tones, vibrated against the fill. The
-   marker is a locator plus a severity colour, the IQAir / Google AQI model;
-   AirNow and PurpleAir print a number on every pin, a different philosophy
-   this map does not follow. */
+/* Every marker prints its reading: the field's GL discs via FIELD_LABEL_LAYER
+   (field-layer.ts), the one DOM marker (the selected station) here. The digit
+   ink is near-black on four of the five IMECA fills and white on
+   Extremadamente mala's deep purple (getMarkerNumberInk), straight on the
+   fill with no shape behind it — each pairing clears 4.5:1 on its own fill,
+   so no outline stroke is needed. */
 
 /* The one deliberate departure from the house ring. ring-gray-900/15 is tuned
    for a known light surface; over arbitrary map imagery it disappears. A solid
@@ -163,6 +164,12 @@
 .sensor-marker__dot {
   position: absolute;
   inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--marker-number, #111827);
+  font-variant-numeric: tabular-nums;
+  text-shadow: var(--marker-number-shadow, 0 1px 1px rgba(255, 255, 255, 0.4));
   /* Fill comes in as a var so CSS owns the alpha: a resting SIMA disc is held
      at 75% so where discs pile up in the basin the overlap reads as denser
      colour instead of one disc masking another; citizen discs rest lower, at
@@ -202,16 +209,18 @@
   --dot-scale: 1.12;
 }
 
-/* Selected. Leads by *size* and the pulse, nothing else: a bigger disc
-   (--dot-scale, past the field's 1.12 hover), an opaque fill where the field
-   rests translucent (75% SIMA, 65% citizen), a taller two-part lift, and the
-   halo in the sensor's own air-quality tone. No number, no gloss, no fill-ring,
-   no accent ring, no core — every treatment the marker ever accreted is gone.
-   The :hover selector is here so hovering the active marker does not knock it
+/* Selected. Leads by *size* and the pulse: a bigger disc (--dot-scale, past
+   the field's 1.12 hover), an opaque fill where the field rests translucent
+   (75% SIMA, 65% citizen), a taller two-part lift, its number a step larger
+   and bolder than the field's GL label, and the halo in the sensor's own
+   air-quality tone. No gloss, no fill-ring, no accent ring, no core. The
+   :hover selector is here so hovering the active marker does not knock it
    back down to the field's 1.12 hover scale. */
 .sensor-marker--selected .sensor-marker__dot,
 .sensor-marker--selected:hover .sensor-marker__dot {
   --dot-scale: 1.25;
+  font-size: 11px;
+  font-weight: 600;
   background: var(--marker-fill);
   box-shadow:
     0 0 0 1px var(--marker-edge),

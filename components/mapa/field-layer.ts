@@ -19,6 +19,11 @@ export const OPENING_MOVE_MS = 4500;
 // the expanding CSS pulse halo GL can't draw (see syncActive).
 export const FIELD_SOURCE = "sensor-field";
 export const FIELD_LAYER = "sensor-field-dots";
+// Every disc's PM2.5 reading, printed straight on its fill — a second
+// `symbol` layer over the same source, text-only (no icon). The selected
+// station hides its label here (feature-state `selected`) the same way it
+// hides its flat circle: the DOM marker prints its own, larger number.
+export const FIELD_LABEL_LAYER = "sensor-field-labels";
 // The government (SIMA) reference stations carry the Landmark badge at all times
 // — GL circles can't hold one, so it's a second `symbol` layer over the same
 // source, filtered to `isSima`, with the badge pre-rendered to a raster icon
@@ -100,4 +105,22 @@ export const FIELD_RADIUS = [
   11, stopR(9.5, 8),
   13.5, stopR(13, 11),
   16, stopR(16, 14),
+];
+
+// The label only earns its keep once a disc is big enough to hold a 2-3 digit
+// number without the field turning into a wall of digits at the metro-wide
+// opening zoom (8) — the exact clutter that got the DOM version's every-marker
+// numbers reverted the same day they first shipped. Text-size tracks
+// FIELD_RADIUS loosely; opacity is the real gate, fully off below zoom 11 and
+// in by 13 (roughly where flyTo settles on a single station).
+export const FIELD_LABEL_SIZE = [
+  "interpolate", ["linear"], ["zoom"],
+  11, 9,
+  13.5, 11,
+  16, 13,
+];
+export const FIELD_LABEL_OPACITY = [
+  "interpolate", ["linear"], ["zoom"],
+  11, 0,
+  13, 1,
 ];

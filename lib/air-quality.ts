@@ -15,21 +15,28 @@
 //     floor, so Aceptable's ink is nudged to gold; Muy mala and Extrem.
 //     already clear 3:1 at their official `color`, so ink === color for both.
 //
-// Markers print no number, so there is no third digit-ink token: the reading
-// lives on the estación card and in each marker's aria-label (see createMarker).
+// `numberInk` is the third digit-ink token: the flat colour the marker's
+// printed PM2.5 number takes straight on the mixed fill (getMarkerFillHex).
+// Near-black clears 4.5:1 on every level except Extremadamente mala's deep
+// purple, which takes white instead.
 // `bounds` is the level's PM2.5 span with no unit: the legend prints μg/m³
 // once in its header, not on every row.
 export const IMECA_LEVELS = [
-  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#00a400" },
-  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#ad8900" },
-  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#de6e00" },
-  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#ff0000" },
-  { limit: Infinity, label: "Extremadamente mala", bounds: "> 130", color: "#8f3f97", ink: "#8f3f97" },
+  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#00a400", numberInk: "#111827" },
+  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#ad8900", numberInk: "#111827" },
+  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#de6e00", numberInk: "#111827" },
+  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#ff0000", numberInk: "#111827" },
+  { limit: Infinity, label: "Extremadamente mala", bounds: "> 130", color: "#8f3f97", ink: "#8f3f97", numberInk: "#ffffff" },
 ] as const;
 
 
 export const getLevel = (pm25: number) =>
   IMECA_LEVELS.find((level) => pm25 <= level.limit) ?? IMECA_LEVELS[IMECA_LEVELS.length - 1];
+
+// The number's ink for a reading, picked by the fill's luminance (AirNow /
+// PurpleAir / IQAir convention). Used by both the selected DOM marker and the
+// GL field's label layer, so the two treatments match.
+export const getMarkerNumberInk = (pm25: number): string => getLevel(pm25).numberInk;
 
 export const getPM25Color = (pm25: number | null): { bg: string; text: string } | null => {
   if (pm25 === null || pm25 <= 0.4) return null;
@@ -125,7 +132,15 @@ export const HOVER_MARKER_Z = 7;
 // globals.css takes down to 24px / 65% so the calibrated reference field reads
 // as the spine and the uncorrected PurpleAir field as texture around it. Keyed
 // on provenance, not on the reading, so it does not bias the render.
-export const createMarker = (pm25: number | null, label?: string, isSima = false): HTMLElement | null => {
+// `hasReading` false means the caller passed a placeholder pm25 just to get a
+// disc rendered (a SIMA station silent for the hour) — the grey nodata fill
+// comes entirely from CSS, so no number should print over it.
+export const createMarker = (
+  pm25: number | null,
+  label?: string,
+  isSima = false,
+  hasReading = true,
+): HTMLElement | null => {
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
 
@@ -152,16 +167,21 @@ export const createMarker = (pm25: number | null, label?: string, isSima = false
   const dot = document.createElement("span");
   dot.className = "sensor-marker__dot";
   dot.style.borderRadius = "50%";
-  // No visible number: the exact reading lives on the estación card (always on
-  // screen, with its word label) and in this button's aria-label. The marker
-  // is a locator plus a severity colour, the IQAir / Google AQI model.
-  // Handed to CSS so the stylesheet owns the rim and the fill alpha:
+  if (hasReading) dot.textContent = Math.round(pm25!).toString();
+  // Handed to CSS so the stylesheet owns the rim, the fill alpha and the
+  // printed number:
   //   --marker-fill   the mixed colour, painted by globals.css at 75% at rest
   //                   and solid on the selected disc
   //   --marker-edge   the ink hairline that keeps a pale fill from dissolving
   //                   into pale terrain
+  //   --marker-number the digit ink, straight on the fill (getMarkerNumberInk)
   dot.style.setProperty("--marker-fill", bg);
   dot.style.setProperty("--marker-edge", level.ink);
+  dot.style.setProperty("--marker-number", level.numberInk);
+  dot.style.setProperty(
+    "--marker-number-shadow",
+    level.numberInk === "#ffffff" ? "0 1px 2px rgba(0, 0, 0, 0.3)" : "0 1px 1px rgba(255, 255, 255, 0.4)",
+  );
   el.appendChild(dot);
 
   // Government (SIMA) badge: the Landmark mark the Capas panel and estación

@@ -5,7 +5,7 @@ import { ChevronRight, Layers, Wind, X } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
-import { getMarkerFill, getMarkerFillHex, getLevel, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
+import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
@@ -25,10 +25,13 @@ import {
   OPENING_MOVE_MS,
   FIELD_SOURCE,
   FIELD_LAYER,
+  FIELD_LABEL_LAYER,
   SIMA_BADGE_LAYER,
   SIMA_BADGE_IMAGE,
   makeSimaBadge,
   FIELD_RADIUS,
+  FIELD_LABEL_SIZE,
+  FIELD_LABEL_OPACITY,
 } from "./field-layer";
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
@@ -380,6 +383,8 @@ export default function MapaSensors({
           properties: {
             fid,
             fill: hasReading ? getMarkerFillHex(pm25)! : "#9ca3af",
+            label: hasReading ? Math.round(pm25 as number).toString() : "",
+            labelInk: hasReading ? getMarkerNumberInk(pm25 as number) : "#111827",
             isSima,
             nodata: !hasReading,
             sortKey: (isSima ? 1_000_000 : 0) - lat,
@@ -408,6 +413,15 @@ export default function MapaSensors({
       if (dot) {
         dot.style.setProperty("--marker-fill", has ? getMarkerFill(pm25)! : "#9ca3af");
         dot.style.setProperty("--marker-edge", has ? getLevel(pm25 as number).ink : "#6b7280");
+        dot.textContent = has ? Math.round(pm25 as number).toString() : "";
+        if (has) {
+          const numberInk = getMarkerNumberInk(pm25 as number);
+          dot.style.setProperty("--marker-number", numberInk);
+          dot.style.setProperty(
+            "--marker-number-shadow",
+            numberInk === "#ffffff" ? "0 1px 2px rgba(0, 0, 0, 0.3)" : "0 1px 1px rgba(255, 255, 255, 0.4)",
+          );
+        }
       }
       el.setAttribute("aria-label", markerLabel(sensor, pm25));
     },
@@ -466,6 +480,7 @@ export default function MapaSensors({
       has ? (pm25 as number) : 1,
       markerLabel(sensor, pm25),
       isSima,
+      has,
     );
     if (!el) return;
     el.classList.add("sensor-marker--selected");
@@ -632,6 +647,35 @@ export default function MapaSensors({
           ] as any,
         },
       });
+      }
+      // Every disc's own PM2.5 reading, straight on its fill. text-allow-overlap
+      // so the field never silently drops a number to Mapbox's own collision
+      // detection — every visible disc carries one, consistently, once the
+      // zoom-gated opacity (FIELD_LABEL_OPACITY) lets it show. The selected
+      // station's label is hidden the same way its flat disc is: the DOM
+      // marker prints its own, larger number instead.
+      if (!m.getLayer(FIELD_LABEL_LAYER)) {
+        m.addLayer({
+          id: FIELD_LABEL_LAYER,
+          type: "symbol",
+          source: FIELD_SOURCE,
+          layout: {
+            "text-field": ["get", "label"] as any,
+            "text-size": FIELD_LABEL_SIZE as any,
+            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+            "text-allow-overlap": true,
+            "text-ignore-placement": true,
+            "symbol-sort-key": ["get", "sortKey"] as any,
+          },
+          paint: {
+            "text-color": ["get", "labelInk"] as any,
+            "text-opacity": [
+              "case",
+              ["boolean", ["feature-state", "selected"], false], 0,
+              FIELD_LABEL_OPACITY,
+            ] as any,
+          },
+        });
       }
       // Landmark badge on every SIMA station (grey no-data ones included) —
       // hidden only while it's the selected station, whose DOM marker carries
