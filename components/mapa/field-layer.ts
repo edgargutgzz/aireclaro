@@ -111,16 +111,18 @@ export const FIELD_RADIUS = [
 // number without the field turning into a wall of digits at the metro-wide
 // opening zoom (8) — the exact clutter that got the DOM version's every-marker
 // numbers reverted the same day they first shipped. Text-size tracks
-// FIELD_RADIUS loosely; opacity is the real gate, fully off below zoom 11 and
-// in by 13 (roughly where flyTo settles on a single station).
+// FIELD_RADIUS loosely; opacity is the real gate, fully off below zoom 9 and
+// in by 11 — the opening flyTo settles at 11 (default station) or 10.5 (no
+// default), so the field is fully labelled by the time it comes to rest, not
+// just the one DOM marker.
 export const FIELD_LABEL_SIZE = [
   "interpolate", ["linear"], ["zoom"],
-  11, 9,
+  9, 8,
   13.5, 11,
   16, 13,
 ];
 export const FIELD_LABEL_OPACITY = [
   "interpolate", ["linear"], ["zoom"],
-  11, 0,
-  13, 1,
+  9, 0,
+  11, 1,
 ];
