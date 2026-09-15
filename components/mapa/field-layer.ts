@@ -172,7 +172,7 @@ export const FIELD_BADGE_SIZE = [
   "interpolate", ["linear"], ["zoom"],
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, (radius * 0.95) / 20]),
 ];
-export const FIELD_BADGE_OFFSET = ["literal", [13, -13]];
+export const FIELD_BADGE_OFFSET = ["literal", [20, -20]];
 
 // Every disc's number is on the moment it's on screen, same as the selected
 // DOM marker — no zoom-gated fade-in. A fade (off below zoom 9, in by 11) was
