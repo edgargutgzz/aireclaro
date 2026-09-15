@@ -99,15 +99,16 @@ const stopR = (sima: number, citizen: number) => [
   ["case", ["boolean", ["get", "isSima"], false], sima, citizen],
   ["case", ["boolean", ["feature-state", "hover"], false], 1.14, 1],
 ];
-// Every stop ~15% over the original sizing (2026-09-15, user: "a bit bigger,
-// in tandem with each marker's current size") — same SIMA/citizen weight
-// split, same curve shape, just scaled up.
+// ~15% over the original sizing (2026-09-15, user: "a bit bigger, in tandem
+// with each marker's current size"), then another ~15% pass the same day
+// (user: "a bit bigger" again) — same SIMA/citizen weight split, same curve
+// shape each time, just scaled up.
 export const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
-  8, stopR(6.5, 5),
-  11, stopR(11, 9),
-  13.5, stopR(15, 13),
-  16, stopR(18, 16),
+  8, stopR(7.5, 6),
+  11, stopR(13, 10),
+  13.5, stopR(17, 15),
+  16, stopR(21, 18),
 ];
 
 // The label only earns its keep once a disc is big enough to hold a 2-3 digit
@@ -120,9 +121,9 @@ export const FIELD_RADIUS = [
 // just the one DOM marker.
 export const FIELD_LABEL_SIZE = [
   "interpolate", ["linear"], ["zoom"],
-  9, 9,
-  13.5, 12,
-  16, 15,
+  9, 10,
+  13.5, 14,
+  16, 17,
 ];
 // Selected-station hide folded into each stop's *output*, not wrapped around
 // the interpolate — Mapbox rejects a top-level `case`/`*`/anything wrapping a
