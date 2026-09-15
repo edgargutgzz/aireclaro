@@ -99,16 +99,20 @@ const stopR = (sima: number, citizen: number) => [
   ["case", ["boolean", ["get", "isSima"], false], sima, citizen],
   ["case", ["boolean", ["feature-state", "hover"], false], 1.14, 1],
 ];
-// ~15% over the original sizing (2026-09-15, user: "a bit bigger, in tandem
-// with each marker's current size"), then another ~15% pass the same day
-// (user: "a bit bigger" again) — same SIMA/citizen weight split, same curve
-// shape each time, just scaled up.
+// Sized twice (2026-09-15, "a bit bigger" ×2, uniform ~15% passes each time)
+// before the user flagged the actual problem: the PM2.5 number
+// (FIELD_LABEL_SIZE) didn't fit the disc at the opening/resting zoom (11) —
+// diameter there was only ~1.7x the text size, tight for two digits. This
+// pass re-derives radius from that ratio directly (diameter ≈ 2.4x
+// FIELD_LABEL_SIZE at each zoom, not a flat multiplier on the old numbers),
+// so the disc always has headroom around its own digits. SIMA still ~1.25x
+// citizen.
 export const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
-  8, stopR(7.5, 6),
-  11, stopR(13, 10),
-  13.5, stopR(17, 15),
-  16, stopR(21, 18),
+  8, stopR(15, 12),
+  11, stopR(17.5, 14),
+  13.5, stopR(21, 17),
+  16, stopR(25, 20),
 ];
 
 // The label only earns its keep once a disc is big enough to hold a 2-3 digit
