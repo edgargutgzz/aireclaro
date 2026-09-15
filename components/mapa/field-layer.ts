@@ -170,7 +170,7 @@ export const FIELD_RADIUS = [
 // zoom-interpolates (that scaling is real, not double-applied).
 export const FIELD_BADGE_SIZE = [
   "interpolate", ["linear"], ["zoom"],
-  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, (radius * 0.85) / 20]),
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, (radius * 0.95) / 20]),
 ];
 export const FIELD_BADGE_OFFSET = ["literal", [20, -20]];
 
