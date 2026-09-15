@@ -247,16 +247,28 @@
    It rides only the ~15 spatially spread SIMA markers, so it does not pile up
    in the basin. Child of __dot, so it scales and lifts with the selected disc
    and stays pinned to the corner. Network is still named on the card, in Capas
-   → Fuente, and in the marker's aria-label — the badge is not the only channel. */
+   → Fuente, and in the marker's aria-label — the badge is not the only channel.
+
+   Sized in `em`, not fixed px: the disc's own diameter is now zoom-responsive
+   (resizeSelectedMarker, mapa-sensors.tsx, sets __dot's font-size off the same
+   fieldRadiusAt curve the field uses) and ranges roughly 2-3x wider than the
+   original fixed 27px disc this badge was tuned for. A fixed-px badge sitting
+   on a much bigger disc reads as floating near the top rather than pinned to
+   a corner. `em` resolves against __dot's inherited (JS-driven) font-size, so
+   the badge — and its glyph — grow and reposition in lockstep with the disc,
+   automatically, with no extra JS. Ratios (1.45em / -0.45em / 0.9em) are the
+   original fixed values (16px / -5px / 10px) divided by the original 11px
+   font-size, so the *relationship* is unchanged, only now it holds at every
+   size instead of just the one the badge was tuned at. */
 .sensor-marker__badge {
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: -0.45em;
+  right: -0.45em;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 1.45em;
+  height: 1.45em;
   border-radius: 50%;
   background: #6b7280;
   color: #fff;
@@ -267,8 +279,8 @@
 }
 
 .sensor-marker__badge svg {
-  width: 10px;
-  height: 10px;
+  width: 0.9em;
+  height: 0.9em;
 }
 
 /* SIMA stations always sit above the citizen field where discs overlap: they

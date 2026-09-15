@@ -32,6 +32,8 @@ import {
   FIELD_RADIUS,
   FIELD_LABEL_SIZE,
   FIELD_LABEL_OPACITY,
+  FIELD_BADGE_SIZE,
+  FIELD_BADGE_OFFSET,
   fieldRadiusAt,
 } from "./field-layer";
 import { LayersFilterContent } from "./layers-filter";
@@ -750,9 +752,12 @@ export default function MapaSensors({
       }
       // Landmark badge on every SIMA station (grey no-data ones included) —
       // hidden only while it's the selected station, whose DOM marker carries
-      // its own scaling badge. Fixed pixel offset: it sits on the disc's
-      // upper-right edge at the opening zoom, drifts a little in/out at the
-      // extremes, which is fine on ~15 spread stations.
+      // its own scaling badge. icon-size/icon-offset are zoom-interpolated
+      // (FIELD_BADGE_SIZE/FIELD_BADGE_OFFSET, field-layer.ts), tracking the
+      // same SIMA radius curve the circles themselves grow on — a flat value
+      // here was tuned once for a much smaller disc and never kept pace with
+      // FIELD_RADIUS growing since, ending up undersized and sitting nearer
+      // the centre than the edge.
       if (!m.hasImage(SIMA_BADGE_IMAGE)) {
         m.addImage(SIMA_BADGE_IMAGE, makeSimaBadge(), { pixelRatio: 2 });
       }
@@ -764,8 +769,8 @@ export default function MapaSensors({
           filter: ["==", ["get", "isSima"], true] as any,
           layout: {
             "icon-image": SIMA_BADGE_IMAGE,
-            "icon-size": 0.9,
-            "icon-offset": [8, -8],
+            "icon-size": FIELD_BADGE_SIZE as any,
+            "icon-offset": FIELD_BADGE_OFFSET as any,
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
             "symbol-sort-key": ["get", "sortKey"] as any,

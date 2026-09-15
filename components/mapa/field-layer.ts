@@ -140,6 +140,27 @@ export const FIELD_RADIUS = [
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, sima, citizen]) => [zoom, stopR(sima, citizen)]),
 ];
 
+// The SIMA badge (makeSimaBadge, a ~20px-core raster) was sized once, as a
+// flat icon-size/icon-offset, back when the SIMA radius topped out around 16
+// — it stayed flat through every later "bigger" pass on FIELD_RADIUS, so by
+// the time SIMA radius reached 25 the badge was sitting undersized, closer to
+// the disc's centre than its edge. These track the same ratio the fixed
+// values held at their original tuning point (badge diameter ≈ 1.12x SIMA
+// *radius*, offset ≈ 0.5x radius) across FIELD_RADIUS_STOPS' current zoom
+// range, so growing the field again later won't silently detune this too.
+const SIMA_RADIUS_AT = (zoom: number) => fieldRadiusAt(zoom, true);
+const badgeZoomRange = [FIELD_RADIUS_STOPS[0][0], FIELD_RADIUS_STOPS[FIELD_RADIUS_STOPS.length - 1][0]] as const;
+export const FIELD_BADGE_SIZE = [
+  "interpolate", ["linear"], ["zoom"],
+  badgeZoomRange[0], (SIMA_RADIUS_AT(badgeZoomRange[0]) * 1.12) / 20,
+  badgeZoomRange[1], (SIMA_RADIUS_AT(badgeZoomRange[1]) * 1.12) / 20,
+];
+export const FIELD_BADGE_OFFSET = [
+  "interpolate", ["linear"], ["zoom"],
+  badgeZoomRange[0], ["literal", [SIMA_RADIUS_AT(badgeZoomRange[0]) * 0.5, -SIMA_RADIUS_AT(badgeZoomRange[0]) * 0.5]],
+  badgeZoomRange[1], ["literal", [SIMA_RADIUS_AT(badgeZoomRange[1]) * 0.5, -SIMA_RADIUS_AT(badgeZoomRange[1]) * 0.5]],
+];
+
 // Every disc's number is on the moment it's on screen, same as the selected
 // DOM marker — no zoom-gated fade-in. A fade (off below zoom 9, in by 11) was
 // tried first to dodge a hypothetical wall-of-digits at the metro-wide opening
