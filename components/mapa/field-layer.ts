@@ -137,28 +137,29 @@ export const FIELD_RADIUS = [
 ];
 
 // The SIMA badge (makeSimaBadge, a ~20px-core raster) tracks the same radius
-// curve as the (now-unified, smaller) disc size. The 1.12x-radius / 0.5x-radius
-// ratio this was first given (the flat values' own ratio at their original
-// tuning point) turned out to be geometrically too tight regardless of scale:
-// with the badge's own radius (0.56x the disc radius) bigger than its offset
-// distance from centre (0.5*sqrt(2) = 0.707x radius), its inner edge reached
-// to within ~0.15x radius of the disc's exact centre — where the printed
-// number sits — and once discs shrank to match the citizen field the overlap
-// finally became visible (screenshot: badge sitting on top of the "30").
-// 0.7x radius / 0.62x radius (offset distance ≈0.88x radius, badge radius
-// ≈0.35x radius) leaves the number a clear ~0.5x-radius-wide berth, and sits
-// the badge nearer the disc's true edge — "breaking the edge" per the DOM
-// badge's own original design intent, not sitting well inside it.
-const badgeZoomRange = [FIELD_RADIUS_STOPS[0][0], FIELD_RADIUS_STOPS[FIELD_RADIUS_STOPS.length - 1][0]] as const;
+// curve as the (now-unified, smaller) disc size, ratio: badge radius ≈0.32x
+// disc radius, offset distance ≈0.92x disc radius — leaves the printed number
+// a clear ~0.6x-radius berth and sits the badge nearer the disc's true edge,
+// "breaking the edge" per the DOM badge's own original design intent rather
+// than sitting well inside it. Tuned against real screenshot crops across two
+// earlier passes (this ratio, and the 1.12x/0.5x it replaced, both read fine
+// there) before a THIRD screenshot at a different zoom showed the badge both
+// too small and still overlapping — because this was built as a straight
+// 2-stop line between zoom 8 and zoom 16, while FIELD_RADIUS itself is a
+// 4-stop piecewise curve with a different slope in each segment (8→11 grows
+// slower than 11→16). The two curves only agreed at their shared endpoints;
+// anywhere in between, the badge was scaled off a radius that didn't match
+// what was actually on screen. Built from every FIELD_RADIUS_STOPS entry now,
+// not just the first and last, so the ratio holds at every zoom, not two of
+// them — the same mistake FIELD_RADIUS/fieldRadiusAt were already factored
+// out to avoid (see the comment above), just repeated one level up.
 export const FIELD_BADGE_SIZE = [
   "interpolate", ["linear"], ["zoom"],
-  badgeZoomRange[0], (fieldRadiusAt(badgeZoomRange[0]) * 0.64) / 20,
-  badgeZoomRange[1], (fieldRadiusAt(badgeZoomRange[1]) * 0.64) / 20,
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, (radius * 0.64) / 20]),
 ];
 export const FIELD_BADGE_OFFSET = [
   "interpolate", ["linear"], ["zoom"],
-  badgeZoomRange[0], ["literal", [fieldRadiusAt(badgeZoomRange[0]) * 0.65, -fieldRadiusAt(badgeZoomRange[0]) * 0.65]],
-  badgeZoomRange[1], ["literal", [fieldRadiusAt(badgeZoomRange[1]) * 0.65, -fieldRadiusAt(badgeZoomRange[1]) * 0.65]],
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, ["literal", [radius * 0.65, -radius * 0.65]]]),
 ];
 
 // Every disc's number is on the moment it's on screen, same as the selected
