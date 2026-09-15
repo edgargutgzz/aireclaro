@@ -677,19 +677,14 @@ export default function MapaSensors({
         },
       });
       }
-      // Every disc's own PM2.5 reading, straight on its fill. text-allow-overlap
-      // was tried first (every visible disc carries a number, consistently)
-      // but in the basin's dense knots that meant every overlapping disc's
-      // full digit string rendered on top of its neighbours' — a blotchy
-      // smear, not readable numbers. Mapbox's own collision detection
-      // (allow-overlap/ignore-placement both false) is the standard fix: a
-      // disc that has no room for its label simply goes unlabelled — still
-      // coloured, still in the card and every aria-label — rather than
-      // printing garbled text. `symbol-sort-key` reuses the same
-      // provenance+latitude key the circle draw order uses, so which label
-      // wins a collision is still never a function of the reading. The
-      // selected station's label is hidden the same way its flat disc is:
-      // the DOM marker prints its own, larger number instead.
+      // Every disc's own PM2.5 reading, straight on its fill — unconditional,
+      // same as the selected DOM marker: no zoom fade, no collision-based
+      // hiding. Collision detection (allow-overlap/ignore-placement false)
+      // was tried to stop overlapping discs' digit strings from smearing
+      // together in the basin's dense knots, but it meant some discs went
+      // unlabelled, which read as broken/inconsistent rather than a fix.
+      // allow-overlap: true so every disc's number is always there — plain
+      // and predictable beats collision-avoidance cleverness here.
       if (!m.getLayer(FIELD_LABEL_LAYER)) {
         m.addLayer({
           id: FIELD_LABEL_LAYER,
@@ -699,15 +694,12 @@ export default function MapaSensors({
             "text-field": ["get", "label"] as any,
             "text-size": FIELD_LABEL_SIZE as any,
             "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
-            "text-allow-overlap": false,
-            "text-ignore-placement": false,
+            "text-allow-overlap": true,
+            "text-ignore-placement": true,
             "symbol-sort-key": ["get", "sortKey"] as any,
           },
           paint: {
             "text-color": ["get", "labelInk"] as any,
-            // The selected-hide is already folded into FIELD_LABEL_OPACITY's
-            // own stops (field-layer.ts) — wrapping it in another top-level
-            // `case` here is exactly the nesting Mapbox rejects.
             "text-opacity": FIELD_LABEL_OPACITY as any,
           },
         });

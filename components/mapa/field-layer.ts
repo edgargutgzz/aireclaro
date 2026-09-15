@@ -140,35 +140,25 @@ export const FIELD_RADIUS = [
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, sima, citizen]) => [zoom, stopR(sima, citizen)]),
 ];
 
-// The label only earns its keep once a disc is big enough to hold a 2-3 digit
-// number without the field turning into a wall of digits at the metro-wide
-// opening zoom (8) — the exact clutter that got the DOM version's every-marker
-// numbers reverted the same day they first shipped. Text-size tracks
-// FIELD_RADIUS loosely; opacity is the real gate, fully off below zoom 9 and
-// in by 11 — the opening flyTo settles at 11 (default station) or 10.5 (no
-// default), so the field is fully labelled by the time it comes to rest, not
-// just the one DOM marker.
+// Every disc's number is on the moment it's on screen, same as the selected
+// DOM marker — no zoom-gated fade-in. A fade (off below zoom 9, in by 11) was
+// tried first to dodge a hypothetical wall-of-digits at the metro-wide opening
+// zoom, but the opening flyTo passes through that zoom in under a second on
+// its way to resting at 11 — in practice the fade just read as the numbers
+// "loading in" bit by bit during the fly-in, which looked broken, not
+// deliberate. Simpler and consistent beats the theoretical clutter case.
 export const FIELD_LABEL_SIZE = [
   "interpolate", ["linear"], ["zoom"],
   9, 10,
   13.5, 14,
   16, 17,
 ];
-// Selected-station hide folded into each stop's *output*, not wrapped around
-// the interpolate — Mapbox rejects a top-level `case`/`*`/anything wrapping a
-// zoom `interpolate` ("zoom expression may only be used as input to a
-// top-level step or interpolate expression"), the same rule FIELD_RADIUS's
-// stopR already works around for the hover multiplier. Wrapping it the other
-// way round doesn't throw on addLayer — Mapbox just drops the whole property
-// and logs a console error — so a bad nesting here silently renders no text
-// at all instead of failing loudly.
-const stopOpacity = (opacity: number) => [
+// Only the selected station's own label is hidden (its DOM marker prints a
+// larger one instead) — a plain `case`, no zoom involved, so none of
+// FIELD_RADIUS's "zoom must be the top-level expression" nesting rules apply
+// here.
+export const FIELD_LABEL_OPACITY = [
   "case",
   ["boolean", ["feature-state", "selected"], false], 0,
-  opacity,
-];
-export const FIELD_LABEL_OPACITY = [
-  "interpolate", ["linear"], ["zoom"],
-  9, stopOpacity(0),
-  11, stopOpacity(1),
+  1,
 ];
