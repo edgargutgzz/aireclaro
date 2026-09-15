@@ -167,7 +167,15 @@ export const createMarker = (
   const dot = document.createElement("span");
   dot.className = "sensor-marker__dot";
   dot.style.borderRadius = "50%";
-  if (hasReading) dot.textContent = Math.round(pm25!).toString();
+  // A dedicated child, not dot.textContent directly: the SIMA badge below is
+  // also a child of dot, and .textContent replaces *every* child node —
+  // repainting the number that way silently deleted the badge on the first
+  // live-data refresh after creation (paintSelectedMarker in
+  // mapa-sensors.tsx does the same repaint, same reason).
+  const number = document.createElement("span");
+  number.className = "sensor-marker__number";
+  if (hasReading) number.textContent = Math.round(pm25!).toString();
+  dot.appendChild(number);
   // Handed to CSS so the stylesheet owns the rim, the fill alpha and the
   // printed number:
   //   --marker-fill   the mixed colour, painted by globals.css at 75% at rest

@@ -80,6 +80,11 @@ export default function MapaSensors({
   const activeSensorIdRef = useRef<number | null>(null);
   const activeColorRef = useRef<string>(PULSE_FALLBACK_COLOR);
   const selectedIdRef = useRef<number | null>(null);
+  // False until the opening camera settles (see revealLabels near the field
+  // layer setup) — gates the selected DOM marker's printed number so it
+  // doesn't appear on first paint while the field's GL numbers are still
+  // hidden during the flyTo. Both reveal in the same instant.
+  const labelsRevealedRef = useRef(false);
 
   // ---- Initial state from the URL (lib/map-url-state) ----------------------
   // Resolved once on mount. ?sensor= seeds the card selection and the opening
@@ -409,13 +414,19 @@ export default function MapaSensors({
       if (!sensor) return;
       const pm25 = readings.get(id) ?? null;
       const has = pm25 != null && pm25 > 0.4;
+      const showNumber = has && labelsRevealedRef.current;
       const dot = el.querySelector<HTMLElement>(".sensor-marker__dot");
       el.classList.toggle("sensor-marker--nodata", !has);
       if (dot) {
         dot.style.setProperty("--marker-fill", has ? getMarkerFill(pm25)! : "#9ca3af");
         dot.style.setProperty("--marker-edge", has ? getLevel(pm25 as number).ink : "#6b7280");
-        dot.textContent = has ? Math.round(pm25 as number).toString() : "";
-        if (has) {
+        // dot's own .textContent, not this: dot also holds the SIMA badge as
+        // a sibling element, and .textContent replaces every child node —
+        // this was silently deleting the badge on the first repaint after
+        // creation (see createMarker's comment, lib/air-quality.ts).
+        const number = dot.querySelector<HTMLElement>(".sensor-marker__number");
+        if (number) number.textContent = showNumber ? Math.round(pm25 as number).toString() : "";
+        if (showNumber) {
           const numberInk = getMarkerNumberInk(pm25 as number);
           dot.style.setProperty("--marker-number", numberInk);
           dot.style.setProperty(
@@ -722,11 +733,17 @@ export default function MapaSensors({
           },
         });
         const revealLabels = () => {
+          labelsRevealedRef.current = true;
           try {
             m.setLayoutProperty(FIELD_LABEL_LAYER, "visibility", "visible");
           } catch {
             // layer/map gone (unmount mid-timeout) — nothing to reveal
           }
+          // The selected DOM marker's own number is gated by the same ref
+          // (paintSelectedMarker) — without this it would have shown from
+          // the very first paint while the field's numbers were still
+          // hidden, appearing to lead the rest by several seconds.
+          paintSelectedMarker(frameReadingsRef.current);
         };
         if (prefersReducedMotion()) revealLabels();
         else window.setTimeout(revealLabels, OPENING_MOVE_MS);
@@ -818,7 +835,7 @@ export default function MapaSensors({
       m.off("click", FIELD_LAYER, onClick);
       m.off("zoom", resizeSelectedMarker);
     };
-  }, [mapLoaded, buildFieldData, updateField, syncActive, sensorById, resizeSelectedMarker]);
+  }, [mapLoaded, buildFieldData, updateField, syncActive, sensorById, resizeSelectedMarker, paintSelectedMarker]);
 
   // Push a frame to the field: a filter change (visibleSensors) or a live-data
   // refresh (frameReadings). One setData, no marker churn — and not syncActive,
