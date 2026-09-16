@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import DiasInsalubres from "@/components/datos/dias-insalubres";
+import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton";
 import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
+import CoberturaEstacionesSkeleton from "@/components/datos/cobertura-estaciones-skeleton";
 
 // DiasInsalubres reads a cached aggregate (see that component), but the
 // underlying query is occasionally slow/flaky (small Supabase instance,
@@ -20,9 +23,13 @@ export default function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pt-28">
-        <DiasInsalubres />
+        <Suspense fallback={<DiasInsalubresSkeleton />}>
+          <DiasInsalubres />
+        </Suspense>
         <div className="mt-16">
-          <CoberturaEstaciones />
+          <Suspense fallback={<CoberturaEstacionesSkeleton />}>
+            <CoberturaEstaciones />
+          </Suspense>
         </div>
       </div>
     </div>
