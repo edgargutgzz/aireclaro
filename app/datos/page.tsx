@@ -23,14 +23,20 @@ export default function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pt-28">
-        <Suspense fallback={<DiasInsalubresSkeleton />}>
-          <DiasInsalubres />
-        </Suspense>
-        <div className="mt-16">
-          <Suspense fallback={<CoberturaEstacionesSkeleton />}>
-            <CoberturaEstaciones />
-          </Suspense>
-        </div>
+        {/* Charts hidden temporarily, 2026-09-16 -- re-enable by restoring
+            the two <Suspense> blocks below. */}
+        {false && (
+          <>
+            <Suspense fallback={<DiasInsalubresSkeleton />}>
+              <DiasInsalubres />
+            </Suspense>
+            <div className="mt-16">
+              <Suspense fallback={<CoberturaEstacionesSkeleton />}>
+                <CoberturaEstaciones />
+              </Suspense>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
