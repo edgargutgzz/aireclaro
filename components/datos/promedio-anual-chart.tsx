@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { COLOR_INSALUBRE, COLOR_INSALUBRE_BORDER_OPACITY, COLOR_INSALUBRE_FILL_OPACITY, COLOR_SALUDABLE } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
@@ -185,6 +186,54 @@ interface StationBar {
   rows: TrimestreRow[];
 }
 
+interface SinDatosEntry {
+  sensorId: string;
+  nombre: string;
+  rows: TrimestreRow[];
+}
+
+// The T1-T4 breakdown -- shared by the bar's own tooltip and the "falta de
+// información" pills' tooltip, so a rim/spacing tweak lands on both instead
+// of drifting between two hand-copies.
+function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
+  const rowsByT = new Map(rows.map((r) => [r.trimestre, r]));
+  const validCount = rows.filter((r) => r.valido).length;
+
+  return (
+    <div className="grid gap-1.5">
+      <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
+        Trimestres ({validCount}/4 válidos · mín. 75% días)
+      </span>
+      {[1, 2, 3, 4].map((t) => {
+        const r = rowsByT.get(t);
+        return (
+          <div key={t} className="flex items-center justify-between gap-3 text-xs">
+            <span className="flex items-center gap-1.5 text-gray-600">
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: r?.valido ? COLOR_SALUDABLE : "#d1d5db" }}
+              />
+              T{t} ({TRIMESTRE_MESES[t]})
+            </span>
+            {r ? (
+              <span className="text-right">
+                {r.valido && (
+                  <span className="font-semibold text-gray-800">{Math.round(r.promedio!)} µg/m³</span>
+                )}
+                <span className="block text-[11px] text-gray-400">
+                  {r.dias_validos}/{r.dias_totales} días
+                </span>
+              </span>
+            ) : (
+              <span className="text-gray-400">Sin datos</span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function InfoTooltip({
   active,
   payload,
@@ -198,7 +247,6 @@ function InfoTooltip({
 }) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload as StationBar;
-  const rowsByT = new Map(row.rows.map((r) => [r.trimestre, r]));
   // A complete year's bar already cleared the >=3-of-4 "datos suficientes"
   // bar, so it reads as a genuine annual figure, not a partial range --
   // "Promedio anual 2025", not "Promedio T1-T3 (Ene-Sep) 2025".
@@ -214,36 +262,8 @@ function InfoTooltip({
         <span className="text-sm font-medium text-gray-400">µg/m³</span>
       </div>
       <span className="text-xs text-gray-500">Promedio {label} {year}</span>
-      <div className="grid gap-1.5 border-t border-gray-100 pt-2">
-        <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
-          Trimestres ({row.trimestresValidos.length}/4 válidos · mín. 75% días)
-        </span>
-        {[1, 2, 3, 4].map((t) => {
-          const r = rowsByT.get(t);
-          return (
-            <div key={t} className="flex items-center justify-between gap-3 text-xs">
-              <span className="flex items-center gap-1.5 text-gray-600">
-                <span
-                  className="h-1.5 w-1.5 rounded-full"
-                  style={{ backgroundColor: r?.valido ? COLOR_SALUDABLE : "#d1d5db" }}
-                />
-                T{t} ({TRIMESTRE_MESES[t]})
-              </span>
-              {r ? (
-                <span className="text-right">
-                  {r.valido && (
-                    <span className="font-semibold text-gray-800">{Math.round(r.promedio!)} µg/m³</span>
-                  )}
-                  <span className={`block text-[11px] ${r.valido ? "text-gray-400" : "text-gray-400"}`}>
-                    {r.dias_validos}/{r.dias_totales} días
-                  </span>
-                </span>
-              ) : (
-                <span className="text-gray-400">Sin datos</span>
-              )}
-            </div>
-          );
-        })}
+      <div className="border-t border-gray-100 pt-2">
+        <TrimestreBreakdown rows={row.rows} />
       </div>
     </div>
   );
@@ -279,7 +299,7 @@ export default function PromedioAnualChart({
 
     const validTrimestresGlobal = new Set<number>();
     const bars: StationBar[] = [];
-    const sinDatos: string[] = [];
+    const sinDatos: SinDatosEntry[] = [];
     // >=3 of 4 trimestres is the Metodología tab's own "datos suficientes"
     // bar for a finished year -- not a stricter 4/4.
     const minTrimestresRequeridos = isCompleteYear ? 3 : 1;
@@ -289,7 +309,7 @@ export default function PromedioAnualChart({
       const validRows = rows.filter((r) => r.valido);
 
       if (validRows.length < minTrimestresRequeridos) {
-        sinDatos.push(est.nombre);
+        sinDatos.push({ sensorId: est.sensorId, nombre: est.nombre, rows });
         continue;
       }
 
@@ -305,7 +325,7 @@ export default function PromedioAnualChart({
     }
 
     bars.sort((a, b) => b.promedio - a.promedio);
-    sinDatos.sort((a, b) => a.localeCompare(b, "es"));
+    sinDatos.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 
     return { bars, sinDatos, rangeLabel: trimestreLabel([...validTrimestresGlobal]) };
   }, [estaciones, trimestres, year, isCompleteYear]);
@@ -384,16 +404,27 @@ export default function PromedioAnualChart({
             <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
               Estaciones con falta de información
             </span>
-            <div className="flex flex-wrap gap-2">
-              {sinDatos.map((nombre) => (
-                <span
-                  key={nombre}
-                  className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-500"
-                >
-                  {nombre}
-                </span>
-              ))}
-            </div>
+            <TooltipProvider delayDuration={150}>
+              <div className="flex flex-wrap gap-2">
+                {sinDatos.map((est) => (
+                  <Tooltip key={est.sensorId}>
+                    <TooltipTrigger asChild>
+                      <span className="cursor-default rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-500">
+                        {est.nombre}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent className="w-64 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 text-gray-800 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
+                      <div className="grid gap-2">
+                        <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+                          {est.nombre}
+                        </span>
+                        <TrimestreBreakdown rows={est.rows} />
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
+            </TooltipProvider>
           </div>
         )}
       </div>
