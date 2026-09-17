@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Bar, BarChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Customized, ReferenceLine, XAxis, YAxis } from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -35,26 +35,23 @@ const STATION_COL_WIDTH = 130; // px, same horizontal-scroll pattern as MONTH_CO
 
 const TRIMESTRE_MESES: Record<number, string> = { 1: "Ene–Mar", 2: "Abr–Jun", 3: "Jul–Sep", 4: "Oct–Dic" };
 
-// A bordered white pill for a ReferenceLine's label, floating just above its
-// dashed line at the right edge -- Recharts' plain text label (position=
-// "insideTopRight") reads as loose text sitting on top of the bars; this
-// gives it its own surface so it's legible over a bar of the same muted
-// gray tone as the line itself.
+// A bordered white pill for a reference line's label, floating just above
+// the line at the right edge -- plain text sitting on top of the bars was
+// illegible over a bar of the same muted gray tone as the line itself.
 //
-// A real component (not a plain render-prop function), passed as a JSX
-// element to `label` so Recharts clones it with the reference line's own
-// viewBox -- needed because sizing the box off a per-character width guess
-// (Inter renders wider than a generic sans estimate assumes) ran the text
-// past the box's own border. getBBox() on the actual rendered <text> after
-// mount gives the true width instead; the first paint falls back to a
-// generous over-estimate so the box isn't zero-width for one frame.
-function ReferenceLineBadge({
-  value,
-  viewBox,
-}: {
-  value: string;
-  viewBox?: { x: number; y: number; width: number };
-}) {
+// Rendered via <Customized> (see ReferenceLinesOverlay below), not
+// ReferenceLine's own `label` prop: Recharts paints ReferenceLine's label in
+// an earlier layer than the bars, so a bar's own translucent fill painted on
+// top of it tinted the white box instead of the box sitting above the bar.
+// <Customized> is Recharts' dedicated top overlay layer, guaranteed to
+// paint last regardless of where the bars/lines/grid land.
+//
+// Box width comes from getBBox() on the actual rendered <text> after mount,
+// not a per-character guess -- Inter renders wider than a generic sans
+// estimate assumed, which ran the text past the box's own border. The first
+// paint falls back to a generous over-estimate so the box isn't zero-width
+// for one frame.
+function ReferenceLineBadge({ value, yLine, rightEdge }: { value: string; yLine: number; rightEdge: number }) {
   const textRef = useRef<SVGTextElement>(null);
   const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
 
@@ -62,14 +59,12 @@ function ReferenceLineBadge({
     if (textRef.current) setMeasuredWidth(textRef.current.getBBox().width);
   }, [value]);
 
-  if (!viewBox) return null;
-
   const PAD_X = 8;
   const HEIGHT = 20;
   const textWidth = measuredWidth ?? value.length * 7.5;
   const boxWidth = textWidth + PAD_X * 2;
-  const x = viewBox.x + viewBox.width - boxWidth - 4;
-  const y = viewBox.y - HEIGHT - 4;
+  const x = rightEdge - boxWidth - 4;
+  const y = yLine - HEIGHT - 4;
 
   return (
     <g>
@@ -86,6 +81,27 @@ function ReferenceLineBadge({
       >
         {value}
       </text>
+    </g>
+  );
+}
+
+// <Customized>'s render prop gets the chart's own internal state, including
+// the y-axis' d3 scale (to place a badge at an exact data value in pixels)
+// and `offset` (the plotting area's pixel box, for the right edge to
+// right-align against).
+function ReferenceLinesOverlay(props: any) {
+  const yAxis = Object.values(props.yAxisMap ?? {})[0] as { scale?: (v: number) => number } | undefined;
+  if (!yAxis?.scale || !props.offset) return null;
+  const rightEdge = props.offset.left + props.offset.width;
+
+  return (
+    <g>
+      <ReferenceLineBadge
+        value={`Norma Mexicana: ${NOM_ANUAL} µg/m³`}
+        yLine={yAxis.scale(NOM_ANUAL)}
+        rightEdge={rightEdge}
+      />
+      <ReferenceLineBadge value={`OMS: ${OMS_ANUAL} µg/m³`} yLine={yAxis.scale(OMS_ANUAL)} rightEdge={rightEdge} />
     </g>
   );
 }
@@ -390,18 +406,8 @@ export default function PromedioAnualChart({
                   cursor={{ fill: "rgba(229,231,235,0.3)" }}
                   content={<InfoTooltip year={year} isCompleteYear={isCompleteYear} />}
                 />
-                <ReferenceLine
-                  y={NOM_ANUAL}
-                  stroke="rgb(156,163,175)"
-                  strokeDasharray="4 4"
-                  label={<ReferenceLineBadge value={`Norma Mexicana: ${NOM_ANUAL} µg/m³`} /> as any}
-                />
-                <ReferenceLine
-                  y={OMS_ANUAL}
-                  stroke="rgb(156,163,175)"
-                  strokeDasharray="4 4"
-                  label={<ReferenceLineBadge value={`OMS: ${OMS_ANUAL} µg/m³`} /> as any}
-                />
+                <ReferenceLine y={NOM_ANUAL} stroke="rgb(156,163,175)" strokeDasharray="4 4" />
+                <ReferenceLine y={OMS_ANUAL} stroke="rgb(156,163,175)" strokeDasharray="4 4" />
                 <Bar
                   dataKey="promedio"
                   fill={COLOR_INSALUBRE}
@@ -411,6 +417,9 @@ export default function PromedioAnualChart({
                   strokeWidth={1.5}
                   radius={[4, 4, 0, 0]}
                 />
+                {/* Last child so it paints on top of the bars -- see
+                    ReferenceLinesOverlay's comment. */}
+                <Customized component={ReferenceLinesOverlay} />
               </BarChart>
             </ChartContainer>
           </div>
