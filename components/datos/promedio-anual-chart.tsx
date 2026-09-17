@@ -151,7 +151,9 @@ function InfoTooltip({ active, payload, year }: { active?: boolean; payload?: an
   if (!active || !payload?.length) return null;
   const row = payload[0].payload as StationBar;
   const rowsByT = new Map(row.rows.map((r) => [r.trimestre, r]));
-  const label = trimestreLabel(row.trimestresValidos);
+  // All 4 valid reads as a genuine annual figure, not a partial range --
+  // "Promedio anual 2025", not "Promedio T1-T4 (Ene-Dic) 2025".
+  const label = row.trimestresValidos.length === 4 ? "anual" : trimestreLabel(row.trimestresValidos);
 
   return (
     <div className="grid min-w-[15rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
@@ -209,6 +211,14 @@ export default function PromedioAnualChart({
   const [selectedYear, setSelectedYear] = useState<number | null>(years[years.length - 1] ?? null);
   const year = selectedYear !== null && years.includes(selectedYear) ? selectedYear : years[years.length - 1] ?? null;
 
+  // A year still in progress shows whatever trimesters have validated so far
+  // (labeled "T1-T2 (Ene-Jun)", etc.) -- but once a year is fully in the
+  // past, showing a station on 1-3 valid trimesters would present a partial
+  // figure as if it were the whole year's. A complete year only shows
+  // stations with all 4 valid; everything else drops to "falta de
+  // información" for that year, same as a station with zero data.
+  const isCompleteYear = year !== null && year < new Date().getFullYear();
+
   const { bars, sinDatos, rangeLabel } = useMemo(() => {
     const rowsByStation = new Map<string, TrimestreRow[]>();
     for (const t of trimestres) {
@@ -221,17 +231,18 @@ export default function PromedioAnualChart({
     const validTrimestresGlobal = new Set<number>();
     const bars: StationBar[] = [];
     const sinDatos: string[] = [];
+    const minTrimestresRequeridos = isCompleteYear ? 4 : 1;
 
     for (const est of estaciones) {
       const rows = rowsByStation.get(est.sensorId) ?? [];
       const validRows = rows.filter((r) => r.valido);
-      validRows.forEach((r) => validTrimestresGlobal.add(r.trimestre));
 
-      if (validRows.length === 0) {
+      if (validRows.length < minTrimestresRequeridos) {
         sinDatos.push(est.nombre);
         continue;
       }
 
+      validRows.forEach((r) => validTrimestresGlobal.add(r.trimestre));
       const promedio = validRows.reduce((sum, r) => sum + (r.promedio ?? 0), 0) / validRows.length;
       bars.push({
         sensorId: est.sensorId,
@@ -246,7 +257,7 @@ export default function PromedioAnualChart({
     sinDatos.sort((a, b) => a.localeCompare(b, "es"));
 
     return { bars, sinDatos, rangeLabel: trimestreLabel([...validTrimestresGlobal]) };
-  }, [estaciones, trimestres, year]);
+  }, [estaciones, trimestres, year, isCompleteYear]);
 
   const sobreLimite = bars.filter((b) => b.promedio > NOM_ANUAL).length;
 
@@ -254,16 +265,16 @@ export default function PromedioAnualChart({
     <ChartCard
       title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
       subtitle={
-        rangeLabel ? (
+        bars.length === 0 ? (
+          "PM2.5 · Sin datos suficientes todavía"
+        ) : (
           <>
-            PM2.5 · {rangeLabel} ·{" "}
+            PM2.5{!isCompleteYear && rangeLabel ? ` · ${rangeLabel}` : ""} ·{" "}
             <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
               {sobreLimite}
             </span>{" "}
             {sobreLimite === 1 ? "estación" : "estaciones"} sobre el límite anual
           </>
-        ) : (
-          "PM2.5 · Sin datos suficientes todavía"
         )
       }
       headerRight={<YearToggle years={years} year={year} onChange={setSelectedYear} />}
