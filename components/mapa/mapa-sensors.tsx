@@ -682,11 +682,20 @@ export default function MapaSensors({
           // opacity (the badge is the only network differentiator); no-data
           // SIMA discs still recede, since that's a data-state signal, not a
           // network one.
+          //
+          // A resting disc is fully opaque, not translucent: circle-sort-key
+          // already decides which disc wins an overlap (SIMA over citizen,
+          // then the southern one), so at any real overlap (a SIMA station
+          // sitting meters from a PurpleAir sensor happens more than once in
+          // this basin) a translucent top disc let the ones underneath bleed
+          // through and mix into a colour that matched no station's actual
+          // reading. Opaque makes the disc that wins the stack show its own
+          // true colour with nothing showing through it.
           "circle-opacity": [
             "case",
             ["boolean", ["feature-state", "selected"], false], 0,
             ["boolean", ["get", "nodata"], false], 0.5,
-            0.7,
+            1,
           ] as any,
           "circle-stroke-width": [
             "case",
