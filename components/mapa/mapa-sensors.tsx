@@ -683,19 +683,20 @@ export default function MapaSensors({
           // SIMA discs still recede, since that's a data-state signal, not a
           // network one.
           //
-          // A resting disc is fully opaque, not translucent: circle-sort-key
+          // A resting disc is nearly opaque, not the old 0.7: circle-sort-key
           // already decides which disc wins an overlap (SIMA over citizen,
-          // then the southern one), so at any real overlap (a SIMA station
-          // sitting meters from a PurpleAir sensor happens more than once in
-          // this basin) a translucent top disc let the ones underneath bleed
-          // through and mix into a colour that matched no station's actual
-          // reading. Opaque makes the disc that wins the stack show its own
-          // true colour with nothing showing through it.
+          // then the southern one), and at 0.7 a translucent top disc let the
+          // ones underneath bleed through and mix into a colour that matched
+          // no station's actual reading (a SIMA station sitting meters from a
+          // PurpleAir sensor happens more than once in this basin). 0.92 puts
+          // a little openness back — basemap roads still show a hint through
+          // an isolated disc — while two stacked discs at overlap still read
+          // as ~99% opaque (1 - 0.08²), so the muddy-mix problem stays fixed.
           "circle-opacity": [
             "case",
             ["boolean", ["feature-state", "selected"], false], 0,
             ["boolean", ["get", "nodata"], false], 0.5,
-            1,
+            0.92,
           ] as any,
           "circle-stroke-width": [
             "case",
