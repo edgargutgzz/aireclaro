@@ -223,10 +223,11 @@ export function InfoSection({
   );
 }
 
-// An InfoDialog whose body is a single-open accordion — the shared shape of the
-// Fuente and Contaminante popups. Owns its own open-section state (keyed by
-// section title); it resets on close because each popup only mounts this while
-// its flag is set. `sections` renders top-to-bottom, the first open by default.
+// An InfoDialog whose body is a single-open accordion — used by the Fuente
+// popup (its one caller since the Contaminante popup was removed 2026-09-03).
+// Owns its own open-section state (keyed by section title); it resets on
+// close because the popup only mounts this while its flag is set. `sections`
+// renders top-to-bottom, the first open by default.
 export function AccordionDialog({
   title,
   onClose,

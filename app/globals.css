@@ -40,10 +40,13 @@
 
   --radius: 0.75rem;                  /* 12px — the house button radius (§5) */
 
-  /* Categorical chart series (shadcn Chart reads these via chartConfig).
-     PROVISIONAL blue-anchored ramp — finalize with the `dataviz` skill when
-     the first /datos charts are built. Air-quality series pull their colours
-     from lib/air-quality.ts instead, set explicitly per chart. */
+  /* Categorical chart series — shadcn's Chart primitive can read these via
+     chartConfig, but neither /datos chart actually does: both set their
+     series colours explicitly (lib/air-quality.ts, lib/datos-colors.ts), so
+     these tokens are unused in practice. Only tailwind.config.ts's
+     bg-chart-1..5 mapping still points at them. Left in place should a
+     future chart want a generic categorical ramp rather than a
+     purpose-built one; revisit with the `dataviz` skill if so. */
   --chart-1: 221 83% 53%;            /* blue-600  */
   --chart-2: 189 94% 43%;            /* cyan-500  */
   --chart-3: 262 83% 58%;            /* violet-500 */
@@ -197,10 +200,12 @@
 
 /* Selected. Leads by *size* and the pulse: a disc sized in JS off the same
    FIELD_RADIUS stops the field uses (resizeSelectedMarker in
-   mapa-sensors.tsx, --dot-scale on top of that), an opaque fill where the
-   field rests translucent (75% SIMA, 65% citizen), a taller two-part lift,
-   its number bolder than the field's GL label, and the halo in the sensor's
-   own air-quality tone. No gloss, no fill-ring, no accent ring, no core. The
+   mapa-sensors.tsx, --dot-scale on top of that), an opaque fill (the field's
+   own resting discs are opaque too now — circle-opacity in mapa-sensors.tsx
+   — so this isn't a departure, just the same treatment on the DOM stand-in),
+   a taller two-part lift, its number bolder than the field's GL label, and
+   the halo in the sensor's own air-quality tone. No gloss, no fill-ring, no
+   accent ring, no core. The
    :hover selector is here so hovering the active marker does not knock it
    back down to the field's 1.12 hover scale. Font-size is NOT set here —
    resizeSelectedMarker writes it inline on __dot directly, proportional to
@@ -271,23 +276,12 @@
   height: 0.9em;
 }
 
-/* SIMA stations always sit above the citizen field where discs overlap: they
-   are the reference-grade instruments and should never be buried under a
-   community sensor in a knot. A resting z of 3 clears the citizen field (no
-   z-index, so 0) while staying under ACTIVE_MARKER_Z (6) and HOVER_MARKER_Z
-   (7) — both set inline by the map component and so beating this rule — so a
-   selected or hovered citizen disc still lifts over a SIMA one as before, and
-   3 < 10 keeps every marker below the floating panels. */
-.sensor-marker--sima {
-  z-index: 3;
-}
-
 /* A SIMA station with no reading for the hour on screen: kept on the map as a
-   quiet grey disc (fill vars set by paintFrame) rather than dropped, so the
-   network's shape stays legible. Recedes behind the live coloured field — a
-   flatter lift and a notch more transparency — but the Landmark badge still
-   marks it as a government station. Never applies to citizen sensors; those
-   drop out. */
+   quiet grey disc (fill vars set by paintSelectedMarker/updateField in
+   mapa-sensors.tsx) rather than dropped, so the network's shape stays
+   legible. Recedes behind the live coloured field — a flatter lift and a
+   notch more transparency — but the Landmark badge still marks it as a
+   government station. Never applies to citizen sensors; those drop out. */
 .sensor-marker--nodata .sensor-marker__dot {
   background: color-mix(in srgb, var(--marker-fill) 55%, transparent);
   box-shadow:

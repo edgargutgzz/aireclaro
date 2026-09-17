@@ -96,30 +96,6 @@ export const getMarkerFillHex = (pm25: number | null): string | null => {
   return mixColorInk(level.color, level.ink);
 };
 
-// Markers are siblings in one container (mapbox appends every custom element
-// straight into the canvas container) and so paint in DOM order. Which one wins
-// an overlap is therefore a sampling rule, and a sampling rule correlated with
-// the value on display biases the display: ordering by severity showed the
-// worst reading in every overlap and hid the rest, making the basin look worse
-// than the sensors say, with nothing on screen admitting that anything had been
-// hidden. Order comes from latitude instead — see the marker build effect in
-// mapa-sensors.tsx — which is mapbox's own convention for symbols
-// (symbol-z-order: viewport-y) precisely because it is independent of the data.
-// Markers are one size at every zoom, so the tie-break is live wherever discs
-// overlap.
-//
-// Only these lifts are value-independent and so allowed to override it: the
-// selected marker and the one under the pointer. The hover lift is what makes a
-// click land on the disc you are actually pointing at: every marker's hit box
-// is a square, so in a dense knot the squares overlap and, with all of them at
-// the same z, the one that wins the click is just whichever mapbox drew last,
-// not the one under the cursor. Raising the hovered marker above the field
-// resolves that to the visible dot. Kept tiny, because the map container opens
-// no stacking context and these compete directly with the floating panels at
-// z-10.
-export const ACTIVE_MARKER_Z = 6;
-export const HOVER_MARKER_Z = 7;
-
 // `label` becomes the marker's accessible name — without it the markers are
 // unreachable by keyboard and announce as nothing to a screen reader.
 //
