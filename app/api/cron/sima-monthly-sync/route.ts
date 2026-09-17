@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/utils/supabase/service";
 import { computeDiasInsalubresMensual, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { computeCoberturaDiaria } from "@/lib/cobertura-aggregate";
+import { computePromedioTrimestral } from "@/lib/promedio-anual-aggregate";
 
 // Pulls SINAICA's finalized (post-month-close) hourly readings (PM2.5 and
 // PM10 by default) for the 15 Monterrey metro SIMA stations into
@@ -240,6 +241,22 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // Same precompute pattern for "Promedio anual por estación" on /datos --
+  // one row per (sensor_id, ano, trimestre), small enough (stations * years *
+  // 4) to upsert in one shot, no chunking needed.
+  let promedioTrimestralError: string | undefined;
+  if (rowsWritten > 0) {
+    try {
+      const trimestres = await computePromedioTrimestral(supabase);
+      const { error } = await supabase
+        .from("sima_promedio_trimestral")
+        .upsert(trimestres, { onConflict: "sensor_id,ano,trimestre" });
+      if (error) promedioTrimestralError = error.message;
+    } catch (err) {
+      promedioTrimestralError = err instanceof Error ? err.message : String(err);
+    }
+  }
+
   return NextResponse.json({
     fechaInit,
     fechaFin,
@@ -249,5 +266,6 @@ export async function GET(request: NextRequest) {
     errors,
     diasInsalubresError,
     coberturaError,
+    promedioTrimestralError,
   });
 }

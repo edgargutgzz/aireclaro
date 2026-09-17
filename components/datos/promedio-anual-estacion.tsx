@@ -1,17 +1,37 @@
-import ChartCard from "@/components/datos/chart-card";
+import { createPublicClient } from "@/utils/supabase/public";
+import PromedioAnualChart from "@/components/datos/promedio-anual-chart";
 
-// Card shell only for now -- no data wired up yet. Follows the same
-// ChartCard shape as dias-insalubres-chart.tsx / cobertura-estaciones-chart.tsx
-// so it drops into the same visual rhythm once the real chart lands.
-export default function PromedioAnualEstacion() {
+// The monthly SINAICA sync cron (app/api/cron/sima-monthly-sync,
+// lib/promedio-anual-aggregate.ts) computes this and writes the small
+// precomputed result here -- this component just reads it, same division of
+// labor as dias-insalubres.tsx / cobertura-estaciones.tsx. Row count is tiny
+// (stations * years * 4 trimesters), no pagination needed.
+export default async function PromedioAnualEstacion() {
+  const supabase = createPublicClient();
+
+  const [{ data: estaciones, error: estacionesError }, { data: trimestres, error: trimestresError }] =
+    await Promise.all([
+      supabase
+        .from("sima_sensores")
+        .select("sensor_id, nombre_display")
+        .neq("sensor_id", "FIN")
+        .order("nombre_display"),
+      supabase
+        .from("sima_promedio_trimestral")
+        .select("sensor_id, ano, trimestre, dias_validos, dias_totales, valido, promedio"),
+    ]);
+
+  if (estacionesError) {
+    throw new Error(`Failed to load promedio anual: ${estacionesError.message}`);
+  }
+  if (trimestresError) {
+    throw new Error(`Failed to load promedio anual: ${trimestresError.message}`);
+  }
+
   return (
-    <ChartCard
-      title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
-      subtitle="Próximamente"
-    >
-      <div className="flex h-80 items-center justify-center px-5 pb-6 pt-6 text-sm text-gray-400 md:h-[32rem]">
-        Gráfico en construcción.
-      </div>
-    </ChartCard>
+    <PromedioAnualChart
+      estaciones={(estaciones ?? []).map((e) => ({ sensorId: e.sensor_id, nombre: e.nombre_display }))}
+      trimestres={trimestres ?? []}
+    />
   );
 }
