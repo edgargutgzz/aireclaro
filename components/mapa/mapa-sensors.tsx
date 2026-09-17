@@ -395,7 +395,18 @@ export default function MapaSensors({
             labelInk: hasReading ? getMarkerNumberInk(pm25 as number) : "#111827",
             isSima,
             nodata: !hasReading,
+            // Higher wins circle draw order (SIMA always on top). Symbol
+            // placement is the opposite convention -- with text-allow-overlap
+            // false, Mapbox gives *lower* symbol-sort-key priority in
+            // collision resolution. Reusing sortKey as-is for both meant a
+            // SIMA disc could draw on top of an overlapping citizen sensor
+            // (e.g. SIMA "SE" and a PurpleAir sensor both sit at Cerro de la
+            // Silla) while its label still lost the collision to the hidden
+            // sensor underneath -- the visible disc's own color, wearing a
+            // stranger's number. labelSortKey inverts it so the same feature
+            // that wins the disc also wins the label.
             sortKey: (isSima ? 1_000_000 : 0) - lat,
+            labelSortKey: -((isSima ? 1_000_000 : 0) - lat),
           },
         });
       }
@@ -727,7 +738,7 @@ export default function MapaSensors({
             "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
             "text-allow-overlap": false,
             "text-ignore-placement": false,
-            "symbol-sort-key": ["get", "sortKey"] as any,
+            "symbol-sort-key": ["get", "labelSortKey"] as any,
             visibility: "none",
           },
           paint: {
