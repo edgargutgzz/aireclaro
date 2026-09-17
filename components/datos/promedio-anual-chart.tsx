@@ -147,13 +147,24 @@ interface StationBar {
   rows: TrimestreRow[];
 }
 
-function InfoTooltip({ active, payload, year }: { active?: boolean; payload?: any[]; year: number | null }) {
+function InfoTooltip({
+  active,
+  payload,
+  year,
+  isCompleteYear,
+}: {
+  active?: boolean;
+  payload?: any[];
+  year: number | null;
+  isCompleteYear: boolean;
+}) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload as StationBar;
   const rowsByT = new Map(row.rows.map((r) => [r.trimestre, r]));
-  // All 4 valid reads as a genuine annual figure, not a partial range --
-  // "Promedio anual 2025", not "Promedio T1-T4 (Ene-Dic) 2025".
-  const label = row.trimestresValidos.length === 4 ? "anual" : trimestreLabel(row.trimestresValidos);
+  // A complete year's bar already cleared the >=3-of-4 "datos suficientes"
+  // bar, so it reads as a genuine annual figure, not a partial range --
+  // "Promedio anual 2025", not "Promedio T1-T3 (Ene-Sep) 2025".
+  const label = isCompleteYear ? "anual" : trimestreLabel(row.trimestresValidos);
 
   return (
     <div className="grid min-w-[15rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
@@ -231,7 +242,9 @@ export default function PromedioAnualChart({
     const validTrimestresGlobal = new Set<number>();
     const bars: StationBar[] = [];
     const sinDatos: string[] = [];
-    const minTrimestresRequeridos = isCompleteYear ? 4 : 1;
+    // >=3 of 4 trimestres is the Metodología tab's own "datos suficientes"
+    // bar for a finished year -- not a stricter 4/4.
+    const minTrimestresRequeridos = isCompleteYear ? 3 : 1;
 
     for (const est of estaciones) {
       const rows = rowsByStation.get(est.sensorId) ?? [];
@@ -298,7 +311,10 @@ export default function PromedioAnualChart({
                   allowDecimals={false}
                   tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
                 />
-                <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip year={year} />} />
+                <ChartTooltip
+                  cursor={{ fill: "rgba(229,231,235,0.3)" }}
+                  content={<InfoTooltip year={year} isCompleteYear={isCompleteYear} />}
+                />
                 <ReferenceLine
                   y={NOM_ANUAL}
                   stroke="rgb(156,163,175)"
