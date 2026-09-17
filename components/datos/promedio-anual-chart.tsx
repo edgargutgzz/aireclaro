@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Bar, BarChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
@@ -39,38 +39,55 @@ const TRIMESTRE_MESES: Record<number, string> = { 1: "Ene–Mar", 2: "Abr–Jun"
 // dashed line at the right edge -- Recharts' plain text label (position=
 // "insideTopRight") reads as loose text sitting on top of the bars; this
 // gives it its own surface so it's legible over a bar of the same muted
-// gray tone as the line itself. Returns a plain function (not a component)
-// because that's the render-prop shape Recharts' `label` prop calls
-// directly with the reference line's own viewBox, no JSX/hooks needed.
-// Width is estimated from character count (SVG text can't be measured
-// without a DOM ref) -- close enough for a short, fixed label, not meant to
-// be pixel-exact.
-function referenceLineBadge(value: string) {
-  const CHAR_WIDTH = 6.4;
+// gray tone as the line itself.
+//
+// A real component (not a plain render-prop function), passed as a JSX
+// element to `label` so Recharts clones it with the reference line's own
+// viewBox -- needed because sizing the box off a per-character width guess
+// (Inter renders wider than a generic sans estimate assumes) ran the text
+// past the box's own border. getBBox() on the actual rendered <text> after
+// mount gives the true width instead; the first paint falls back to a
+// generous over-estimate so the box isn't zero-width for one frame.
+function ReferenceLineBadge({
+  value,
+  viewBox,
+}: {
+  value: string;
+  viewBox?: { x: number; y: number; width: number };
+}) {
+  const textRef = useRef<SVGTextElement>(null);
+  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    if (textRef.current) setMeasuredWidth(textRef.current.getBBox().width);
+  }, [value]);
+
+  if (!viewBox) return null;
+
   const PAD_X = 8;
   const HEIGHT = 20;
-  return ({ viewBox }: { viewBox?: { x: number; y: number; width: number } }) => {
-    if (!viewBox) return null;
-    const boxWidth = value.length * CHAR_WIDTH + PAD_X * 2;
-    const x = viewBox.x + viewBox.width - boxWidth - 4;
-    const y = viewBox.y - HEIGHT - 4;
-    return (
-      <g>
-        <rect x={x} y={y} width={boxWidth} height={HEIGHT} rx={4} fill="#ffffff" stroke="rgb(209,213,219)" />
-        <text
-          x={x + boxWidth / 2}
-          y={y + HEIGHT / 2 + 1}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize={11}
-          fontWeight={500}
-          fill="rgb(75,85,99)"
-        >
-          {value}
-        </text>
-      </g>
-    );
-  };
+  const textWidth = measuredWidth ?? value.length * 7.5;
+  const boxWidth = textWidth + PAD_X * 2;
+  const x = viewBox.x + viewBox.width - boxWidth - 4;
+  const y = viewBox.y - HEIGHT - 4;
+
+  return (
+    <g>
+      <rect x={x} y={y} width={boxWidth} height={HEIGHT} rx={4} fill="#ffffff" stroke="rgb(209,213,219)" />
+      <text
+        ref={textRef}
+        x={x + boxWidth / 2}
+        y={y + HEIGHT / 2 + 1}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={11}
+        fontWeight={500}
+        fill="rgb(75,85,99)"
+      >
+        {value}
+      </text>
+    </g>
+  );
 }
 
 // "T1–T3 (Ene–Sep)" for a contiguous run starting at T1 (the common case --
@@ -216,11 +233,11 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
               T{t} ({TRIMESTRE_MESES[t]})
             </span>
             {r ? (
-              <span className="text-right">
+              <span className="flex items-baseline gap-2">
                 {r.valido && (
                   <span className="font-semibold text-gray-800">{Math.round(r.promedio!)} µg/m³</span>
                 )}
-                <span className="block text-[11px] text-gray-400">
+                <span className="text-[11px] text-gray-400">
                   {r.dias_validos}/{r.dias_totales} días
                 </span>
               </span>
@@ -253,7 +270,7 @@ function InfoTooltip({
   const label = isCompleteYear ? "anual" : trimestreLabel(row.trimestresValidos);
 
   return (
-    <div className="grid min-w-[15rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
+    <div className="grid min-w-[17rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
       <span className="text-xs font-medium uppercase tracking-wide text-gray-400">{row.nombre}</span>
       <div className="flex items-baseline gap-1.5">
         <span className="text-2xl font-bold leading-none" style={{ color: COLOR_INSALUBRE }}>
@@ -377,13 +394,13 @@ export default function PromedioAnualChart({
                   y={NOM_ANUAL}
                   stroke="rgb(156,163,175)"
                   strokeDasharray="4 4"
-                  label={referenceLineBadge(`Norma Mexicana: ${NOM_ANUAL} µg/m³`) as any}
+                  label={<ReferenceLineBadge value={`Norma Mexicana: ${NOM_ANUAL} µg/m³`} /> as any}
                 />
                 <ReferenceLine
                   y={OMS_ANUAL}
                   stroke="rgb(156,163,175)"
                   strokeDasharray="4 4"
-                  label={referenceLineBadge(`OMS: ${OMS_ANUAL} µg/m³`) as any}
+                  label={<ReferenceLineBadge value={`OMS: ${OMS_ANUAL} µg/m³`} /> as any}
                 />
                 <Bar
                   dataKey="promedio"
@@ -413,7 +430,7 @@ export default function PromedioAnualChart({
                         {est.nombre}
                       </span>
                     </TooltipTrigger>
-                    <TooltipContent className="w-64 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 text-gray-800 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
+                    <TooltipContent className="w-[17rem] rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 text-gray-800 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
                       <div className="grid gap-2">
                         <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
                           {est.nombre}
