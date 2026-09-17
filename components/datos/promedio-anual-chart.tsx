@@ -34,6 +34,44 @@ const STATION_COL_WIDTH = 130; // px, same horizontal-scroll pattern as MONTH_CO
 
 const TRIMESTRE_MESES: Record<number, string> = { 1: "Ene–Mar", 2: "Abr–Jun", 3: "Jul–Sep", 4: "Oct–Dic" };
 
+// A bordered white pill for a ReferenceLine's label, floating just above its
+// dashed line at the right edge -- Recharts' plain text label (position=
+// "insideTopRight") reads as loose text sitting on top of the bars; this
+// gives it its own surface so it's legible over a bar of the same muted
+// gray tone as the line itself. Returns a plain function (not a component)
+// because that's the render-prop shape Recharts' `label` prop calls
+// directly with the reference line's own viewBox, no JSX/hooks needed.
+// Width is estimated from character count (SVG text can't be measured
+// without a DOM ref) -- close enough for a short, fixed label, not meant to
+// be pixel-exact.
+function referenceLineBadge(value: string) {
+  const CHAR_WIDTH = 6.4;
+  const PAD_X = 8;
+  const HEIGHT = 20;
+  return ({ viewBox }: { viewBox?: { x: number; y: number; width: number } }) => {
+    if (!viewBox) return null;
+    const boxWidth = value.length * CHAR_WIDTH + PAD_X * 2;
+    const x = viewBox.x + viewBox.width - boxWidth - 4;
+    const y = viewBox.y - HEIGHT - 4;
+    return (
+      <g>
+        <rect x={x} y={y} width={boxWidth} height={HEIGHT} rx={4} fill="#ffffff" stroke="rgb(209,213,219)" />
+        <text
+          x={x + boxWidth / 2}
+          y={y + HEIGHT / 2 + 1}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={11}
+          fontWeight={500}
+          fill="rgb(75,85,99)"
+        >
+          {value}
+        </text>
+      </g>
+    );
+  };
+}
+
 // "T1–T3 (Ene–Sep)" for a contiguous run starting at T1 (the common case --
 // trimesters validate in order as the year progresses); a comma list for the
 // rare non-contiguous case (e.g. a mid-year outage skips one trimester but a
@@ -319,23 +357,13 @@ export default function PromedioAnualChart({
                   y={NOM_ANUAL}
                   stroke="rgb(156,163,175)"
                   strokeDasharray="4 4"
-                  label={{
-                    value: `Norma Mexicana: ${NOM_ANUAL} µg/m³`,
-                    position: "insideTopRight",
-                    fill: "rgb(107,114,128)",
-                    fontSize: 11,
-                  }}
+                  label={referenceLineBadge(`Norma Mexicana: ${NOM_ANUAL} µg/m³`) as any}
                 />
                 <ReferenceLine
                   y={OMS_ANUAL}
                   stroke="rgb(156,163,175)"
                   strokeDasharray="4 4"
-                  label={{
-                    value: `OMS: ${OMS_ANUAL} µg/m³`,
-                    position: "insideBottomRight",
-                    fill: "rgb(107,114,128)",
-                    fontSize: 11,
-                  }}
+                  label={referenceLineBadge(`OMS: ${OMS_ANUAL} µg/m³`) as any}
                 />
                 <Bar
                   dataKey="promedio"
