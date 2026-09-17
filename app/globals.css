@@ -158,18 +158,17 @@
   color: var(--marker-number, #111827);
   font-variant-numeric: tabular-nums;
   text-shadow: var(--marker-number-shadow, 0 1px 1px rgba(255, 255, 255, 0.4));
-  /* Fill comes in as a var so CSS owns the alpha: a resting disc (SIMA and
-     citizen alike, see the size note above) is held at 75% so where discs
-     pile up in the basin the overlap reads as denser colour instead of one
-     disc masking another. The selected disc (below) takes it back to solid.
+  /* No background here: this element is only ever the selected station's
+     DOM marker (createMarker adds --selected immediately on creation, see
+     mapa-sensors.tsx) — every resting disc is a GL circle in the field
+     layer instead, painted by Mapbox, not this stylesheet. The opaque fill
+     lives on the --selected rule below.
 
-     Discs are matte, no gloss, resting and selected alike. A highlight read
-     as candy once forty of them packed the basin; the rim + white ring +
-     double shadow already carry "object on the map", and every other floating
-     surface in the app (Capas panel, Actualizado chip, nav pills) is
-     shadow-sm + blur and nothing more. The selected disc separates by size,
-     an opaque fill, a taller lift and its pulse (below), not by a finish. */
-  background: color-mix(in srgb, var(--marker-fill) 75%, transparent);
+     Discs are matte, no gloss. A highlight read as candy once forty of them
+     packed the basin; the rim + white ring + double shadow already carry
+     "object on the map", and every other floating surface in the app (Capas
+     panel, Actualizado chip, nav pills) is shadow-sm + blur and nothing
+     more. */
   /* Rim then lift. The rim is two hairlines against the border box: the
      level's ink so a pale fill holds its edge on pale terrain, then a 2px
      white ring so the marker separates from whatever is under it. The white
