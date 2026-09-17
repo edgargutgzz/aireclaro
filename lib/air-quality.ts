@@ -17,18 +17,19 @@
 //
 // `numberInk` is the third digit-ink token: the flat colour the marker's
 // printed PM2.5 number takes straight on the mixed fill (getMarkerFillHex).
-// `#1f2937` (gray-800, not near-black) clears the house's own 3:1 floor for
-// large bold non-body text (see `ink` above) on every level's fill — the
-// tightest case is Muy mala's red at ~3.7:1, still comfortable margin — and
-// reads a step softer than pure near-black. Extremadamente mala's deep purple
-// still takes white; no ink survives that fill at a useful contrast.
+// `#283240` clears the house's own 3:1 floor for large bold non-body text
+// (see `ink` above) on every level's fill — the tightest case is Muy mala's
+// red at ~3.2:1, still a real margin — while reading lighter than gray-800
+// (#1f2937, ~3.7:1 on that same case), which read too close to near-black.
+// Extremadamente mala's deep purple still takes white; no ink survives that
+// fill at a useful contrast.
 // `bounds` is the level's PM2.5 span with no unit: the legend prints μg/m³
 // once in its header, not on every row.
 export const IMECA_LEVELS = [
-  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#00a400", numberInk: "#1f2937" },
-  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#ad8900", numberInk: "#1f2937" },
-  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#de6e00", numberInk: "#1f2937" },
-  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#ff0000", numberInk: "#1f2937" },
+  { limit: 15, label: "Buena", bounds: "0 – 15", color: "#00e400", ink: "#00a400", numberInk: "#283240" },
+  { limit: 25, label: "Aceptable", bounds: "15 – 25", color: "#ffff00", ink: "#ad8900", numberInk: "#283240" },
+  { limit: 79, label: "Mala", bounds: "25 – 79", color: "#ff7e00", ink: "#de6e00", numberInk: "#283240" },
+  { limit: 130, label: "Muy mala", bounds: "79 – 130", color: "#ff0000", ink: "#ff0000", numberInk: "#283240" },
   { limit: Infinity, label: "Extremadamente mala", bounds: "> 130", color: "#8f3f97", ink: "#8f3f97", numberInk: "#ffffff" },
 ] as const;
 
