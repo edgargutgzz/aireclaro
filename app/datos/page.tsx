@@ -28,16 +28,22 @@ export default function Datos() {
         <Suspense fallback={<DiasInsalubresSkeleton />}>
           <DiasInsalubres />
         </Suspense>
-        <div className="mt-16">
-          <Suspense fallback={<CoberturaEstacionesSkeleton />}>
-            <CoberturaEstaciones />
-          </Suspense>
-        </div>
-        <div className="mt-16">
-          <Suspense fallback={<PromedioAnualSkeleton />}>
-            <PromedioAnualEstacion />
-          </Suspense>
-        </div>
+        {/* Cobertura + promedio anual hidden temporarily, 2026-09-18 --
+            re-enable by restoring these two blocks. */}
+        {false && (
+          <>
+            <div className="mt-16">
+              <Suspense fallback={<CoberturaEstacionesSkeleton />}>
+                <CoberturaEstaciones />
+              </Suspense>
+            </div>
+            <div className="mt-16">
+              <Suspense fallback={<PromedioAnualSkeleton />}>
+                <PromedioAnualEstacion />
+              </Suspense>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
