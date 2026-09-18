@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_CUBIERTO_FILL_OPACITY, COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY, withOpacity } from "@/lib/datos-colors";
+import {
+  COLOR_CUBIERTO_FILL_OPACITY,
+  COLOR_SALUDABLE,
+  COLOR_SALUDABLE_BORDER_OPACITY,
+  withOpacity,
+} from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
+import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
 
 interface Estacion {
   sensorId: string;
@@ -28,8 +34,14 @@ const MONTH_ROW_HEIGHT = 18; // px
 // client's own lighter grid green -- unified back by explicit request. Fill
 // opacity is its own (higher) constant though, so the grid cells can read
 // more solid without also washing out días insalubres' bars.
-const COLOR_CUBIERTO_FILL = withOpacity(COLOR_SALUDABLE, COLOR_CUBIERTO_FILL_OPACITY);
-const COLOR_CUBIERTO_BORDER = withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_BORDER_OPACITY);
+const COLOR_CUBIERTO_FILL = withOpacity(
+  COLOR_SALUDABLE,
+  COLOR_CUBIERTO_FILL_OPACITY,
+);
+const COLOR_CUBIERTO_BORDER = withOpacity(
+  COLOR_SALUDABLE,
+  COLOR_SALUDABLE_BORDER_OPACITY,
+);
 // A plain gray fill (a data-quality gap, not a health-severity color) --
 // lighter than gray-300 by request, but not all the way to gray-200, which
 // sat almost invisibly on the station card's own bg-gray-50.
@@ -37,8 +49,21 @@ const COLOR_INSUFICIENTE = "#dbdfe3";
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
 // design -- labeling all 7 would be noisy at this cell size.
-const WEEKDAY_LETTER: Record<number, string> = { 0: "L", 2: "M", 4: "V", 6: "D" };
-const WEEKDAY_FULL = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+const WEEKDAY_LETTER: Record<number, string> = {
+  0: "L",
+  2: "M",
+  4: "V",
+  6: "D",
+};
+const WEEKDAY_FULL = [
+  "Lunes",
+  "Martes",
+  "Miércoles",
+  "Jueves",
+  "Viernes",
+  "Sábado",
+  "Domingo",
+];
 
 const tabs: InfoTab[] = [
   {
@@ -47,8 +72,8 @@ const tabs: InfoTab[] = [
     icon: ShieldCheck,
     body: (
       <>
-        Los datos de calidad del aire (PM2.5 µg/m³) provienen de las
-        estaciones de monitoreo del{" "}
+        Los datos de calidad del aire (PM2.5 µg/m³) provienen de las estaciones
+        de monitoreo del{" "}
         <a
           href="http://aire.nl.gob.mx"
           target="_blank"
@@ -67,8 +92,8 @@ const tabs: InfoTab[] = [
     icon: BookOpen,
     body: (
       <>
-        Para garantizar mayor certeza en la información, los datos se
-        analizan siguiendo los criterios establecidos por la{" "}
+        Para garantizar mayor certeza en la información, los datos se analizan
+        siguiendo los criterios establecidos por la{" "}
         <a
           href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
           target="_blank"
@@ -77,10 +102,10 @@ const tabs: InfoTab[] = [
         >
           NOM-025-SSA1-2021
         </a>
-        . Un día se contabiliza como &ldquo;con datos&rdquo; cuando al menos
-        el 75% de las horas del día contaron con una medición válida de
-        PM2.5, por lo que algunos días pueden no aparecer aunque la estación
-        haya operado parcialmente.
+        . Un día se contabiliza como &ldquo;con datos&rdquo; cuando al menos el
+        75% de las horas del día contaron con una medición válida de PM2.5, por
+        lo que algunos días pueden no aparecer aunque la estación haya operado
+        parcialmente.
       </>
     ),
   },
@@ -93,8 +118,8 @@ const tabs: InfoTab[] = [
         Las partículas PM2.5 son tan pequeñas que penetran profundo en los
         pulmones y llegan al torrente sanguíneo. La exposición prolongada se
         asocia con enfermedades respiratorias, cardiovasculares y daño
-        sistémico. Si quieres entender mejor cómo nos afecta, te compartimos
-        la siguiente{" "}
+        sistémico. Si quieres entender mejor cómo nos afecta, te compartimos la
+        siguiente{" "}
         <a
           href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
           target="_blank"
@@ -123,7 +148,11 @@ interface Cell {
 // data.
 function fullYearDates(year: number): string[] {
   const dates: string[] = [];
-  for (let d = new Date(Date.UTC(year, 0, 1)); d.getUTCFullYear() === year; d.setUTCDate(d.getUTCDate() + 1)) {
+  for (
+    let d = new Date(Date.UTC(year, 0, 1));
+    d.getUTCFullYear() === year;
+    d.setUTCDate(d.getUTCDate() + 1)
+  ) {
     dates.push(d.toISOString().slice(0, 10));
   }
   return dates;
@@ -134,7 +163,12 @@ function fullYearDates(year: number): string[] {
 // station) so all 16 station calendars stay aligned and the layout math
 // only runs once.
 function buildCalendarLayout(dates: string[]) {
-  if (dates.length === 0) return { cells: [] as Cell[], totalCols: 0, monthLabelForCol: new Map<number, string>() };
+  if (dates.length === 0)
+    return {
+      cells: [] as Cell[],
+      totalCols: 0,
+      monthLabelForCol: new Map<number, string>(),
+    };
 
   const first = new Date(`${dates[0]}T00:00:00Z`);
   const mondayOffset = (first.getUTCDay() + 6) % 7; // 0 = Monday
@@ -196,36 +230,19 @@ function EstacionCalendario({
   // Over realDates, not the full-year cells -- a day that hasn't happened
   // yet isn't a "día sin datos," it just hasn't occurred.
   const diasSinDatos = useMemo(
-    () => realDates.filter((fecha) => coberturaPorFecha.get(fecha) !== true).length,
+    () =>
+      realDates.filter((fecha) => coberturaPorFecha.get(fecha) !== true).length,
     [realDates, coberturaPorFecha],
   );
 
   const gridWidth = WEEKDAY_COL_WIDTH + totalCols * (CELL + GAP);
 
-  // Right-edge fade signals there's more to scroll to (the full-year grid is
-  // usually wider than the tile) -- without it, the grid just stops at
-  // whatever column fits, and nothing on screen says that's not the end of
-  // the data. Recomputed on scroll/resize and whenever the grid's own width
-  // changes (year switch).
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const update = () => setCanScrollRight(el.scrollWidth - el.clientWidth - el.scrollLeft > 1);
-    update();
-    el.addEventListener("scroll", update);
-    window.addEventListener("resize", update);
-    return () => {
-      el.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [gridWidth]);
-
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h4 className="text-sm font-semibold text-gray-800">{estacion.nombre}</h4>
+        <h4 className="text-sm font-semibold text-gray-800">
+          {estacion.nombre}
+        </h4>
         {diasSinDatos > 0 && (
           // Gray, not red -- red is reserved for health severity
           // (COLOR_INSALUBRE) elsewhere in /datos; a coverage gap is a
@@ -237,117 +254,136 @@ function EstacionCalendario({
         )}
       </div>
 
-      <div className="relative">
-        <div ref={scrollRef} className="overflow-x-auto">
+      <HorizontalScrollFade minWidth={gridWidth}>
+        <div
+          className="relative"
+          style={{ width: gridWidth }}
+          onMouseLeave={() => setTooltip(null)}
+          onMouseMove={(e) => {
+            const target = (e.target as HTMLElement).closest(
+              "[data-fecha]",
+            ) as HTMLElement | null;
+            if (!target) {
+              setTooltip(null);
+              return;
+            }
+            const fecha = target.dataset.fecha!;
+            const row = Number(target.dataset.row);
+            const cubiertoAttr = target.dataset.cubierto;
+            setTooltip({
+              fecha,
+              row,
+              cubierto:
+                cubiertoAttr === "true"
+                  ? true
+                  : cubiertoAttr === "false"
+                    ? false
+                    : undefined,
+              x: e.clientX,
+              y: e.clientY,
+            });
+          }}
+        >
           <div
-            className="relative"
-            style={{ width: gridWidth }}
-            onMouseLeave={() => setTooltip(null)}
-            onMouseMove={(e) => {
-              const target = (e.target as HTMLElement).closest("[data-fecha]") as HTMLElement | null;
-              if (!target) {
-                setTooltip(null);
-                return;
-              }
-              const fecha = target.dataset.fecha!;
-              const row = Number(target.dataset.row);
-              const cubiertoAttr = target.dataset.cubierto;
-              setTooltip({
-                fecha,
-                row,
-                cubierto: cubiertoAttr === "true" ? true : cubiertoAttr === "false" ? false : undefined,
-                x: e.clientX,
-                y: e.clientY,
-              });
+            style={{
+              height: MONTH_ROW_HEIGHT,
+              marginLeft: WEEKDAY_COL_WIDTH,
+              position: "relative",
             }}
           >
-            <div style={{ height: MONTH_ROW_HEIGHT, marginLeft: WEEKDAY_COL_WIDTH, position: "relative" }}>
-              {Array.from(monthLabelForCol.entries()).map(([col, label]) => (
-                <span
-                  key={col}
-                  className="absolute text-[10px] font-medium text-gray-400"
-                  style={{ left: col * (CELL + GAP) }}
+            {Array.from(monthLabelForCol.entries()).map(([col, label]) => (
+              <span
+                key={col}
+                className="absolute text-[10px] font-medium text-gray-400"
+                style={{ left: col * (CELL + GAP) }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex">
+            <div style={{ width: WEEKDAY_COL_WIDTH }}>
+              {Array.from({ length: 7 }, (_, row) => (
+                <div
+                  key={row}
+                  className="text-[10px] font-medium leading-none text-gray-400"
+                  style={{ height: CELL + GAP }}
                 >
-                  {label}
-                </span>
+                  {WEEKDAY_LETTER[row] ?? ""}
+                </div>
               ))}
             </div>
-
-            <div className="flex">
-              <div style={{ width: WEEKDAY_COL_WIDTH }}>
-                {Array.from({ length: 7 }, (_, row) => (
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: `repeat(${totalCols}, ${CELL}px)`,
+                gridTemplateRows: `repeat(7, ${CELL}px)`,
+                gap: GAP,
+              }}
+            >
+              {cells.map((c) => {
+                const cubierto = coberturaPorFecha.get(c.fecha);
+                return (
                   <div
-                    key={row}
-                    className="text-[10px] font-medium leading-none text-gray-400"
-                    style={{ height: CELL + GAP }}
-                  >
-                    {WEEKDAY_LETTER[row] ?? ""}
-                  </div>
-                ))}
-              </div>
-              <div
-                className="grid"
+                    key={c.fecha}
+                    data-fecha={c.fecha}
+                    data-row={c.row}
+                    data-cubierto={
+                      cubierto === undefined ? "" : String(cubierto)
+                    }
+                    className="rounded-[2px]"
+                    style={{
+                      gridColumn: c.col + 1,
+                      gridRow: c.row + 1,
+                      // Undefined (no row at all -- typically a future
+                      // date not yet synced) renders the same as false:
+                      // every cell is now a real calendar date (the grid
+                      // spans the full year), so there's no padding case
+                      // left that actually needs to stay invisible.
+                      backgroundColor: cubierto
+                        ? COLOR_CUBIERTO_FILL
+                        : COLOR_INSUFICIENTE,
+                      border: cubierto
+                        ? `1px solid ${COLOR_CUBIERTO_BORDER}`
+                        : undefined,
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </div>
+
+          {tooltip && (
+            <div
+              className="pointer-events-none fixed z-20 grid gap-1 rounded-xl border border-black/[0.06] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-[6px]"
+              style={{
+                left: tooltip.x,
+                top: tooltip.y,
+                transform: "translate(-30%, -115%)",
+              }}
+            >
+              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
+                {formatTooltipDate(tooltip.fecha, tooltip.row)}
+              </span>
+              <span
+                className="text-sm font-semibold"
                 style={{
-                  gridTemplateColumns: `repeat(${totalCols}, ${CELL}px)`,
-                  gridTemplateRows: `repeat(7, ${CELL}px)`,
-                  gap: GAP,
+                  color: tooltip.cubierto
+                    ? COLOR_SALUDABLE
+                    : "rgb(107,114,128)",
                 }}
               >
-                {cells.map((c) => {
-                  const cubierto = coberturaPorFecha.get(c.fecha);
-                  return (
-                    <div
-                      key={c.fecha}
-                      data-fecha={c.fecha}
-                      data-row={c.row}
-                      data-cubierto={cubierto === undefined ? "" : String(cubierto)}
-                      className="rounded-[2px]"
-                      style={{
-                        gridColumn: c.col + 1,
-                        gridRow: c.row + 1,
-                        // Undefined (no row at all -- typically a future
-                        // date not yet synced) renders the same as false:
-                        // every cell is now a real calendar date (the grid
-                        // spans the full year), so there's no padding case
-                        // left that actually needs to stay invisible.
-                        backgroundColor: cubierto ? COLOR_CUBIERTO_FILL : COLOR_INSUFICIENTE,
-                        border: cubierto ? `1px solid ${COLOR_CUBIERTO_BORDER}` : undefined,
-                      }}
-                    />
-                  );
-                })}
-              </div>
+                {tooltip.cubierto
+                  ? "Con datos"
+                  : tooltip.fecha > todayStr
+                    ? "Aún no ocurre"
+                    : "Datos insuficientes"}
+              </span>
             </div>
-
-            {tooltip && (
-              <div
-                className="pointer-events-none fixed z-20 grid gap-1 rounded-xl border border-black/[0.06] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-[6px]"
-                style={{ left: tooltip.x, top: tooltip.y, transform: "translate(-30%, -115%)" }}
-              >
-                <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
-                  {formatTooltipDate(tooltip.fecha, tooltip.row)}
-                </span>
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: tooltip.cubierto ? COLOR_SALUDABLE : "rgb(107,114,128)" }}
-                >
-                  {tooltip.cubierto
-                    ? "Con datos"
-                    : tooltip.fecha > todayStr
-                      ? "Aún no ocurre"
-                      : "Datos insuficientes"}
-                </span>
-              </div>
-            )}
-          </div>
+          )}
         </div>
-        {canScrollRight && (
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-r from-transparent to-white/70"
-          />
-        )}
-      </div>
+      </HorizontalScrollFade>
     </div>
   );
 }
@@ -364,24 +400,45 @@ export default function CoberturaEstacionesChart({
     const porEstacion = new Map<string, Map<string, boolean>>();
     for (const row of cobertura) {
       dateSet.add(row.fecha);
-      if (!porEstacion.has(row.sensor_id)) porEstacion.set(row.sensor_id, new Map());
+      if (!porEstacion.has(row.sensor_id))
+        porEstacion.set(row.sensor_id, new Map());
       porEstacion.get(row.sensor_id)!.set(row.fecha, row.cubierto);
     }
-    return { dates: Array.from(dateSet).sort(), coberturaPorEstacion: porEstacion };
+    return {
+      dates: Array.from(dateSet).sort(),
+      coberturaPorEstacion: porEstacion,
+    };
   }, [cobertura]);
 
-  const years = useMemo(() => [...new Set(allDates.map((d) => Number(d.slice(0, 4))))].sort(), [allDates]);
-  const [selectedYear, setSelectedYear] = useState<number | null>(years[years.length - 1] ?? null);
-  const year = selectedYear !== null && years.includes(selectedYear) ? selectedYear : years[years.length - 1] ?? null;
+  const years = useMemo(
+    () => [...new Set(allDates.map((d) => Number(d.slice(0, 4))))].sort(),
+    [allDates],
+  );
+  const [selectedYear, setSelectedYear] = useState<number | null>(
+    years[years.length - 1] ?? null,
+  );
+  const year =
+    selectedYear !== null && years.includes(selectedYear)
+      ? selectedYear
+      : years[years.length - 1] ?? null;
 
   // The grid shows every day of the year (Sep-Dic included, per días
   // insalubres), but the % stat below is computed only over days that
   // actually occurred -- a day that hasn't happened yet isn't a coverage
   // gap, and counting it would silently deflate the percentage the further
   // into the year you look.
-  const dates = useMemo(() => (year !== null ? fullYearDates(year) : []), [year]);
-  const realDates = useMemo(() => allDates.filter((d) => d.startsWith(String(year))), [allDates, year]);
-  const { cells, totalCols, monthLabelForCol } = useMemo(() => buildCalendarLayout(dates), [dates]);
+  const dates = useMemo(
+    () => (year !== null ? fullYearDates(year) : []),
+    [year],
+  );
+  const realDates = useMemo(
+    () => allDates.filter((d) => d.startsWith(String(year))),
+    [allDates, year],
+  );
+  const { cells, totalCols, monthLabelForCol } = useMemo(
+    () => buildCalendarLayout(dates),
+    [dates],
+  );
   // Client-evaluated once per mount -- good enough to tell a future date's
   // tooltip apart from a past date with a real coverage gap, no need for
   // this to stay live across a page left open past midnight.
@@ -396,7 +453,9 @@ export default function CoberturaEstacionesChart({
         if (porFecha?.get(fecha) === true) cubierto += 1;
       }
     }
-    return Math.round((cubierto / (realDates.length * estaciones.length)) * 100);
+    return Math.round(
+      (cubierto / (realDates.length * estaciones.length)) * 100,
+    );
   }, [realDates, estaciones, coberturaPorEstacion]);
 
   if (allDates.length === 0) {
@@ -418,7 +477,9 @@ export default function CoberturaEstacionesChart({
           de cobertura de PM2.5 en {year}
         </>
       }
-      headerRight={<YearToggle years={years} year={year} onChange={setSelectedYear} />}
+      headerRight={
+        <YearToggle years={years} year={year} onChange={setSelectedYear} />
+      }
     >
       {/* Same shell as días insalubres: symmetric pt-6/pb-6 around the
           content, legend on its own row above (right-aligned here -- no
@@ -428,12 +489,18 @@ export default function CoberturaEstacionesChart({
           <span className="flex items-center gap-1.5">
             <span
               className="h-2 w-2 rounded-[2px]"
-              style={{ backgroundColor: COLOR_CUBIERTO_FILL, border: `1px solid ${COLOR_CUBIERTO_BORDER}` }}
+              style={{
+                backgroundColor: COLOR_CUBIERTO_FILL,
+                border: `1px solid ${COLOR_CUBIERTO_BORDER}`,
+              }}
             />
             Con datos
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
+            <span
+              className="h-2 w-2 rounded-[2px]"
+              style={{ backgroundColor: COLOR_INSUFICIENTE }}
+            />
             Datos insuficientes
           </span>
         </div>
@@ -445,7 +512,9 @@ export default function CoberturaEstacionesChart({
               cells={cells}
               totalCols={totalCols}
               monthLabelForCol={monthLabelForCol}
-              coberturaPorFecha={coberturaPorEstacion.get(estacion.sensorId) ?? new Map()}
+              coberturaPorFecha={
+                coberturaPorEstacion.get(estacion.sensorId) ?? new Map()
+              }
               realDates={realDates}
               todayStr={todayStr}
             />
