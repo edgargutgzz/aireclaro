@@ -24,13 +24,14 @@ export interface MonthData {
 
 export const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
-// TEMPORARY: July 2026's finalized PM10 pull landed with an off-by-one day
-// offset (a variant of the drifting SINAICA lag). Hide it from the PM10
-// series until the ingestion is corrected and re-synced, then delete this.
-// PM2.5 was re-verified as correct, so it's no longer hidden.
+// Scaffolding for a targeted month/pollutant hide, kept even when empty --
+// re-verified 2026-09-18 that July 2026 PM10's suspected off-by-one day
+// offset isn't actually present (cross-checked PM10 vs the already-correct
+// PM2.5 across 5 stations; same-day alignment fit clearly best, not a ±1
+// day shift), so that hide was lifted.
 const HIDDEN_MONTHS: Record<"PM2.5" | "PM10", Set<string>> = {
   "PM2.5": new Set(),
-  PM10: new Set(["2026-07"]),
+  PM10: new Set(),
 };
 
 function aggregateByMonth(
