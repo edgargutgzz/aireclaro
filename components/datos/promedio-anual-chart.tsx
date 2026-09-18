@@ -1,14 +1,37 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Customized, ReferenceLine, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Customized,
+  ReferenceLine,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
-import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { COLOR_INSALUBRE, COLOR_INSALUBRE_BORDER_OPACITY, COLOR_INSALUBRE_FILL_OPACITY, COLOR_SALUDABLE } from "@/lib/datos-colors";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+} from "@/components/ui/chart";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  COLOR_INSALUBRE,
+  COLOR_INSALUBRE_BORDER_OPACITY,
+  COLOR_INSALUBRE_FILL_OPACITY,
+  COLOR_SALUDABLE,
+} from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
+import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
 
 interface Estacion {
   sensorId: string;
@@ -33,7 +56,12 @@ const OMS_ANUAL = 5;
 
 const STATION_COL_WIDTH = 130; // px, same horizontal-scroll pattern as MONTH_COL_WIDTH
 
-const TRIMESTRE_MESES: Record<number, string> = { 1: "Ene–Mar", 2: "Abr–Jun", 3: "Jul–Sep", 4: "Oct–Dic" };
+const TRIMESTRE_MESES: Record<number, string> = {
+  1: "Ene–Mar",
+  2: "Abr–Jun",
+  3: "Jul–Sep",
+  4: "Oct–Dic",
+};
 
 // A bordered white pill for a reference line's label, floating just above
 // the line at the right edge -- plain text sitting on top of the bars was
@@ -51,7 +79,15 @@ const TRIMESTRE_MESES: Record<number, string> = { 1: "Ene–Mar", 2: "Abr–Jun"
 // estimate assumed, which ran the text past the box's own border. The first
 // paint falls back to a generous over-estimate so the box isn't zero-width
 // for one frame.
-function ReferenceLineBadge({ value, yLine, rightEdge }: { value: string; yLine: number; rightEdge: number }) {
+function ReferenceLineBadge({
+  value,
+  yLine,
+  rightEdge,
+}: {
+  value: string;
+  yLine: number;
+  rightEdge: number;
+}) {
   const textRef = useRef<SVGTextElement>(null);
   const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
 
@@ -68,7 +104,15 @@ function ReferenceLineBadge({ value, yLine, rightEdge }: { value: string; yLine:
 
   return (
     <g>
-      <rect x={x} y={y} width={boxWidth} height={HEIGHT} rx={4} fill="#ffffff" stroke="rgb(209,213,219)" />
+      <rect
+        x={x}
+        y={y}
+        width={boxWidth}
+        height={HEIGHT}
+        rx={4}
+        fill="#ffffff"
+        stroke="rgb(209,213,219)"
+      />
       <text
         ref={textRef}
         x={x + boxWidth / 2}
@@ -90,7 +134,9 @@ function ReferenceLineBadge({ value, yLine, rightEdge }: { value: string; yLine:
 // and `offset` (the plotting area's pixel box, for the right edge to
 // right-align against).
 function ReferenceLinesOverlay(props: any) {
-  const yAxis = Object.values(props.yAxisMap ?? {})[0] as { scale?: (v: number) => number } | undefined;
+  const yAxis = Object.values(props.yAxisMap ?? {})[0] as
+    | { scale?: (v: number) => number }
+    | undefined;
   if (!yAxis?.scale || !props.offset) return null;
   const rightEdge = props.offset.left + props.offset.width;
 
@@ -101,7 +147,11 @@ function ReferenceLinesOverlay(props: any) {
         yLine={yAxis.scale(NOM_ANUAL)}
         rightEdge={rightEdge}
       />
-      <ReferenceLineBadge value={`OMS: ${OMS_ANUAL} µg/m³`} yLine={yAxis.scale(OMS_ANUAL)} rightEdge={rightEdge} />
+      <ReferenceLineBadge
+        value={`OMS: ${OMS_ANUAL} µg/m³`}
+        yLine={yAxis.scale(OMS_ANUAL)}
+        rightEdge={rightEdge}
+      />
     </g>
   );
 }
@@ -113,14 +163,17 @@ function ReferenceLinesOverlay(props: any) {
 function trimestreLabel(validos: number[]): string | null {
   if (validos.length === 0) return null;
   const sorted = [...validos].sort((a, b) => a - b);
-  const contiguoDesdeT1 = sorted[0] === 1 && sorted.every((n, i) => n === i + 1);
+  const contiguoDesdeT1 =
+    sorted[0] === 1 && sorted.every((n, i) => n === i + 1);
   if (!contiguoDesdeT1) return sorted.map((t) => `T${t}`).join(", ");
   const last = sorted[sorted.length - 1];
   if (last === 1) return `T1 (${TRIMESTRE_MESES[1]})`;
   return `T1–T${last} (Ene–${TRIMESTRE_MESES[last].split("–")[1]})`;
 }
 
-const chartConfig = { promedio: { label: "PM2.5", color: COLOR_INSALUBRE } } satisfies ChartConfig;
+const chartConfig = {
+  promedio: { label: "PM2.5", color: COLOR_INSALUBRE },
+} satisfies ChartConfig;
 
 const tabs: InfoTab[] = [
   {
@@ -129,8 +182,8 @@ const tabs: InfoTab[] = [
     icon: ShieldCheck,
     body: (
       <>
-        Los datos de calidad del aire (PM2.5 µg/m³) provienen de las
-        estaciones de monitoreo del{" "}
+        Los datos de calidad del aire (PM2.5 µg/m³) provienen de las estaciones
+        de monitoreo del{" "}
         <a
           href="http://aire.nl.gob.mx"
           target="_blank"
@@ -149,8 +202,8 @@ const tabs: InfoTab[] = [
     icon: Scale,
     body: (
       <>
-        Se clasifica la calidad del aire como saludable o insalubre con base
-        en el límite diario establecido por la{" "}
+        Se clasifica la calidad del aire como saludable o insalubre con base en
+        el límite diario establecido por la{" "}
         <a
           href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
           target="_blank"
@@ -169,8 +222,8 @@ const tabs: InfoTab[] = [
     icon: BookOpen,
     body: (
       <>
-        Para garantizar mayor certeza en la información, los datos se
-        analizan siguiendo los criterios establecidos por la{" "}
+        Para garantizar mayor certeza en la información, los datos se analizan
+        siguiendo los criterios establecidos por la{" "}
         <a
           href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
           target="_blank"
@@ -179,10 +232,9 @@ const tabs: InfoTab[] = [
         >
           NOM-025-SSA1-2021
         </a>
-        . La estación se considera con datos suficientes si al menos 3 de los
-        4 trimestres tienen cobertura. Un trimestre es válido cuando la
-        estación reportó mediciones en al menos el 75% de los días del
-        trimestre.
+        . La estación se considera con datos suficientes si al menos 3 de los 4
+        trimestres tienen cobertura. Un trimestre es válido cuando la estación
+        reportó mediciones en al menos el 75% de los días del trimestre.
       </>
     ),
   },
@@ -195,8 +247,8 @@ const tabs: InfoTab[] = [
         Las partículas PM2.5 son tan pequeñas que penetran profundo en los
         pulmones y llegan al torrente sanguíneo. La exposición prolongada se
         asocia con enfermedades respiratorias, cardiovasculares y daño
-        sistémico. Si quieres entender mejor cómo nos afecta, te compartimos
-        la siguiente{" "}
+        sistémico. Si quieres entender mejor cómo nos afecta, te compartimos la
+        siguiente{" "}
         <a
           href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
           target="_blank"
@@ -240,18 +292,25 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
       {[1, 2, 3, 4].map((t) => {
         const r = rowsByT.get(t);
         return (
-          <div key={t} className="flex items-center justify-between gap-3 text-xs">
+          <div
+            key={t}
+            className="flex items-center justify-between gap-3 text-xs"
+          >
             <span className="flex items-center gap-1.5 text-gray-600">
               <span
                 className="h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: r?.valido ? COLOR_SALUDABLE : "#d1d5db" }}
+                style={{
+                  backgroundColor: r?.valido ? COLOR_SALUDABLE : "#d1d5db",
+                }}
               />
               T{t} ({TRIMESTRE_MESES[t]})
             </span>
             {r ? (
               <span className="flex items-baseline gap-2">
                 {r.valido && (
-                  <span className="font-semibold text-gray-800">{Math.round(r.promedio!)} µg/m³</span>
+                  <span className="font-semibold text-gray-800">
+                    {Math.round(r.promedio!)} µg/m³
+                  </span>
                 )}
                 <span className="text-[11px] text-gray-400">
                   {r.dias_validos}/{r.dias_totales} días
@@ -283,18 +342,37 @@ function InfoTooltip({
   // A complete year's bar already cleared the >=3-of-4 "datos suficientes"
   // bar, so it reads as a genuine annual figure, not a partial range --
   // "Promedio anual 2025", not "Promedio T1-T3 (Ene-Sep) 2025".
-  const label = isCompleteYear ? "anual" : trimestreLabel(row.trimestresValidos);
+  const label = isCompleteYear
+    ? "anual"
+    : trimestreLabel(row.trimestresValidos);
 
   return (
-    <div className="grid min-w-[17rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
-      <span className="text-xs font-medium uppercase tracking-wide text-gray-400">{row.nombre}</span>
+    // Recharts anchors its tooltip wrapper at the cursor's own point and
+    // grows the content rightward from there by default -- fine for most
+    // bars, but a bar near the right edge of the (horizontally-scrolled)
+    // chart pushed the tooltip past the visible area. Shifting the content
+    // fully to the left of that anchor point (a plain CSS transform, not
+    // fighting Recharts' own positioning math) keeps it over already-visible
+    // chart area instead of growing into space that may not be in view.
+    <div
+      className="grid min-w-[17rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
+      style={{ transform: "translateX(calc(-100% - 12px))" }}
+    >
+      <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+        {row.nombre}
+      </span>
       <div className="flex items-baseline gap-1.5">
-        <span className="text-2xl font-bold leading-none" style={{ color: COLOR_INSALUBRE }}>
+        <span
+          className="text-2xl font-bold leading-none"
+          style={{ color: COLOR_INSALUBRE }}
+        >
           {Math.round(row.promedio)}
         </span>
         <span className="text-sm font-medium text-gray-400">µg/m³</span>
       </div>
-      <span className="text-xs text-gray-500">Promedio {label} {year}</span>
+      <span className="text-xs text-gray-500">
+        Promedio {label} {year}
+      </span>
       <div className="border-t border-gray-100 pt-2">
         <TrimestreBreakdown rows={row.rows} />
       </div>
@@ -309,9 +387,17 @@ export default function PromedioAnualChart({
   estaciones: Estacion[];
   trimestres: TrimestreRow[];
 }) {
-  const years = useMemo(() => [...new Set(trimestres.map((t) => t.ano))].sort(), [trimestres]);
-  const [selectedYear, setSelectedYear] = useState<number | null>(years[years.length - 1] ?? null);
-  const year = selectedYear !== null && years.includes(selectedYear) ? selectedYear : years[years.length - 1] ?? null;
+  const years = useMemo(
+    () => [...new Set(trimestres.map((t) => t.ano))].sort(),
+    [trimestres],
+  );
+  const [selectedYear, setSelectedYear] = useState<number | null>(
+    years[years.length - 1] ?? null,
+  );
+  const year =
+    selectedYear !== null && years.includes(selectedYear)
+      ? selectedYear
+      : years[years.length - 1] ?? null;
 
   // A year still in progress shows whatever trimesters have validated so far
   // (labeled "T1-T2 (Ene-Jun)", etc.) -- but once a year is fully in the
@@ -347,7 +433,9 @@ export default function PromedioAnualChart({
       }
 
       validRows.forEach((r) => validTrimestresGlobal.add(r.trimestre));
-      const promedio = validRows.reduce((sum, r) => sum + (r.promedio ?? 0), 0) / validRows.length;
+      const promedio =
+        validRows.reduce((sum, r) => sum + (r.promedio ?? 0), 0) /
+        validRows.length;
       bars.push({
         sensorId: est.sensorId,
         nombre: est.nombre,
@@ -360,7 +448,11 @@ export default function PromedioAnualChart({
     bars.sort((a, b) => b.promedio - a.promedio);
     sinDatos.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 
-    return { bars, sinDatos, rangeLabel: trimestreLabel([...validTrimestresGlobal]) };
+    return {
+      bars,
+      sinDatos,
+      rangeLabel: trimestreLabel([...validTrimestresGlobal]),
+    };
   }, [estaciones, trimestres, year, isCompleteYear]);
 
   const sobreLimite = bars.filter((b) => b.promedio > NOM_ANUAL).length;
@@ -377,53 +469,73 @@ export default function PromedioAnualChart({
             <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
               {sobreLimite}
             </span>{" "}
-            {sobreLimite === 1 ? "estación" : "estaciones"} sobre el límite anual
+            {sobreLimite === 1 ? "estación" : "estaciones"} sobre el límite
+            anual
           </>
         )
       }
-      headerRight={<YearToggle years={years} year={year} onChange={setSelectedYear} />}
+      headerRight={
+        <YearToggle years={years} year={year} onChange={setSelectedYear} />
+      }
     >
       <div className="px-5 pb-6 pt-6">
         <span className="mb-3 block text-xs text-gray-400">PM2.5 (µg/m³)</span>
-        <div className="overflow-x-auto">
-          <div style={{ minWidth: STATION_COL_WIDTH * Math.max(bars.length, 1) }}>
-            <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[32rem]">
-              <BarChart data={bars} barCategoryGap="25%" margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
-                <XAxis
-                  dataKey="nombre"
-                  tickLine={false}
-                  axisLine={false}
-                  tick={{ fontSize: 11, fontWeight: 500, fill: "rgb(75,85,99)" }}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  allowDecimals={false}
-                  tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
-                />
-                <ChartTooltip
-                  cursor={{ fill: "rgba(229,231,235,0.3)" }}
-                  content={<InfoTooltip year={year} isCompleteYear={isCompleteYear} />}
-                />
-                <ReferenceLine y={NOM_ANUAL} stroke="rgb(156,163,175)" strokeDasharray="4 4" />
-                <ReferenceLine y={OMS_ANUAL} stroke="rgb(156,163,175)" strokeDasharray="4 4" />
-                <Bar
-                  dataKey="promedio"
-                  fill={COLOR_INSALUBRE}
-                  fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
-                  stroke={COLOR_INSALUBRE}
-                  strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
-                  strokeWidth={1.5}
-                  radius={[4, 4, 0, 0]}
-                />
-                {/* Last child so it paints on top of the bars -- see
+        <HorizontalScrollFade
+          minWidth={STATION_COL_WIDTH * Math.max(bars.length, 1)}
+        >
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-80 w-full md:h-[32rem]"
+          >
+            <BarChart
+              data={bars}
+              barCategoryGap="25%"
+              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
+              <XAxis
+                dataKey="nombre"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 11, fontWeight: 500, fill: "rgb(75,85,99)" }}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                allowDecimals={false}
+                tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
+              />
+              <ChartTooltip
+                cursor={{ fill: "rgba(229,231,235,0.3)" }}
+                content={
+                  <InfoTooltip year={year} isCompleteYear={isCompleteYear} />
+                }
+              />
+              <ReferenceLine
+                y={NOM_ANUAL}
+                stroke="rgb(156,163,175)"
+                strokeDasharray="4 4"
+              />
+              <ReferenceLine
+                y={OMS_ANUAL}
+                stroke="rgb(156,163,175)"
+                strokeDasharray="4 4"
+              />
+              <Bar
+                dataKey="promedio"
+                fill={COLOR_INSALUBRE}
+                fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
+                stroke={COLOR_INSALUBRE}
+                strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
+                strokeWidth={1.5}
+                radius={[4, 4, 0, 0]}
+              />
+              {/* Last child so it paints on top of the bars -- see
                     ReferenceLinesOverlay's comment. */}
-                <Customized component={ReferenceLinesOverlay} />
-              </BarChart>
-            </ChartContainer>
-          </div>
-        </div>
+              <Customized component={ReferenceLinesOverlay} />
+            </BarChart>
+          </ChartContainer>
+        </HorizontalScrollFade>
 
         {sinDatos.length > 0 && (
           <div className="mt-5 grid gap-2">

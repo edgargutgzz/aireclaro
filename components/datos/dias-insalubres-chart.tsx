@@ -3,7 +3,11 @@
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
-import { ChartConfig, ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+} from "@/components/ui/chart";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -16,18 +20,42 @@ import {
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
+import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
 
 export type { MonthData, Pollutant };
 
-const MONTH_SHORT = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+const MONTH_SHORT = [
+  "Ene",
+  "Feb",
+  "Mar",
+  "Abr",
+  "May",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dic",
+];
 // Natural width per month category -- the chart never compresses narrower
 // than this (12 months * this = the scroll threshold), so bars stay a
 // consistent, readable width instead of shrinking as more months fill in
 // or the viewport narrows.
 const MONTH_COL_WIDTH = 110;
 const MONTH_FULL = [
-  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 // PM10 numbers don't yet reconcile with the client's own PM10 chart (23 vs
@@ -36,7 +64,10 @@ const MONTH_FULL = [
 // fetch/aggregation stays in place; flip this back on once it checks out.
 const SHOW_PM10_TAB = false;
 
-const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
+const POLLUTANT_LABEL: Record<Pollutant, string> = {
+  pm25: "PM2.5",
+  pm10: "PM10",
+};
 const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
   pm25: { antes: 33, desde: 25 },
   pm10: { antes: 60, desde: 50 },
@@ -53,7 +84,13 @@ const chartConfig = {
   saludables: { label: "Saludables", color: COLOR_SALUDABLE },
 } satisfies ChartConfig;
 
-function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
+function InfoTooltip({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: any[];
+}) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload as {
     mesNumero: number;
@@ -62,7 +99,10 @@ function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] })
     saludables: number;
     diasTotales: number;
   };
-  const pct = row.diasTotales > 0 ? Math.round((row.insalubres / row.diasTotales) * 100) : 0;
+  const pct =
+    row.diasTotales > 0
+      ? Math.round((row.insalubres / row.diasTotales) * 100)
+      : 0;
 
   return (
     <div className="grid min-w-[11rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
@@ -71,14 +111,20 @@ function InfoTooltip({ active, payload }: { active?: boolean; payload?: any[] })
       </span>
       <div className="flex gap-4">
         <div className="flex flex-col gap-0.5">
-          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_INSALUBRE }}>
+          <span
+            className="text-2xl font-bold leading-none"
+            style={{ color: COLOR_INSALUBRE }}
+          >
             {row.insalubres}
           </span>
           <span className="text-xs text-gray-500">insalubres</span>
         </div>
         <div className="w-px bg-gray-100" />
         <div className="flex flex-col gap-0.5">
-          <span className="text-2xl font-bold leading-none" style={{ color: COLOR_SALUDABLE }}>
+          <span
+            className="text-2xl font-bold leading-none"
+            style={{ color: COLOR_SALUDABLE }}
+          >
             {row.saludables}
           </span>
           <span className="text-xs text-gray-500">saludables</span>
@@ -142,8 +188,8 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       icon: BookOpen,
       body: (
         <>
-          Para garantizar mayor certeza en la información, los datos se
-          analizan siguiendo los criterios establecidos por la{" "}
+          Para garantizar mayor certeza en la información, los datos se analizan
+          siguiendo los criterios establecidos por la{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
@@ -152,10 +198,10 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          . Un día se contabiliza si al menos una estación reportó
-          mediciones, por lo que algunos meses pueden mostrar menos días de
-          los que corresponden. Si alguna estación registra un valor que
-          supera el límite, el día se clasifica como insalubre.
+          . Un día se contabiliza si al menos una estación reportó mediciones,
+          por lo que algunos meses pueden mostrar menos días de los que
+          corresponden. Si alguna estación registra un valor que supera el
+          límite, el día se clasifica como insalubre.
         </>
       ),
     },
@@ -168,16 +214,16 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           <>
             Las partículas PM10 penetran las vías respiratorias superiores y
             pueden alojarse en bronquios y pulmones. La exposición frecuente
-            irrita ojos, nariz y garganta, y agrava el asma, la bronquitis y
-            la EPOC.
+            irrita ojos, nariz y garganta, y agrava el asma, la bronquitis y la
+            EPOC.
           </>
         ) : (
           <>
-            Las partículas PM2.5 son tan pequeñas que penetran profundo en
-            los pulmones y llegan al torrente sanguíneo. La exposición
-            prolongada se asocia con enfermedades respiratorias,
-            cardiovasculares y daño sistémico. Si quieres entender mejor
-            cómo nos afecta, te compartimos la siguiente{" "}
+            Las partículas PM2.5 son tan pequeñas que penetran profundo en los
+            pulmones y llegan al torrente sanguíneo. La exposición prolongada se
+            asocia con enfermedades respiratorias, cardiovasculares y daño
+            sistémico. Si quieres entender mejor cómo nos afecta, te compartimos
+            la siguiente{" "}
             <a
               href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
               target="_blank"
@@ -193,17 +239,31 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
   ];
 }
 
-export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, MonthData[]> }) {
+export default function DiasInsalubresChart({
+  data,
+}: {
+  data: Record<Pollutant, MonthData[]>;
+}) {
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
   const activeData = data[pollutant];
 
-  const years = useMemo(() => [...new Set(activeData.map((d) => d.ano))].sort(), [activeData]);
-  const [selectedYear, setSelectedYear] = useState<number | null>(years[years.length - 1] ?? null);
+  const years = useMemo(
+    () => [...new Set(activeData.map((d) => d.ano))].sort(),
+    [activeData],
+  );
+  const [selectedYear, setSelectedYear] = useState<number | null>(
+    years[years.length - 1] ?? null,
+  );
 
-  const year = selectedYear !== null && years.includes(selectedYear) ? selectedYear : years[years.length - 1] ?? null;
+  const year =
+    selectedYear !== null && years.includes(selectedYear)
+      ? selectedYear
+      : years[years.length - 1] ?? null;
 
   const chartData = useMemo(() => {
-    const byMonth = new Map(activeData.filter((d) => d.ano === year).map((d) => [d.mesNumero, d]));
+    const byMonth = new Map(
+      activeData.filter((d) => d.ano === year).map((d) => [d.mesNumero, d]),
+    );
     return Array.from({ length: 12 }, (_, i) => {
       const mesNumero = i + 1;
       const row = byMonth.get(mesNumero);
@@ -242,7 +302,9 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
                   key={p}
                   onClick={() => setPollutant(p)}
                   className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                    pollutant === p ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                    pollutant === p
+                      ? "bg-white text-gray-800 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
                   {POLLUTANT_LABEL[p]}
@@ -267,11 +329,17 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
               since it expects Recharts to hand it a payload prop. */}
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: chartConfig.insalubres.color }} />
+              <span
+                className="h-2 w-2 rounded-[2px]"
+                style={{ backgroundColor: chartConfig.insalubres.color }}
+              />
               {chartConfig.insalubres.label}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: chartConfig.saludables.color }} />
+              <span
+                className="h-2 w-2 rounded-[2px]"
+                style={{ backgroundColor: chartConfig.saludables.color }}
+              />
               {chartConfig.saludables.label}
             </span>
           </div>
@@ -281,52 +349,56 @@ export default function DiasInsalubresChart({ data }: { data: Record<Pollutant, 
             fills the card when there's room, same as before, and scrolls
             horizontally instead of squeezing months together when there
             isn't (narrow viewports, or once more months have data). */}
-        <div className="overflow-x-auto">
-          <div style={{ minWidth: MONTH_COL_WIDTH * 12 }}>
-            <ChartContainer config={chartConfig} className="aspect-auto h-80 w-full md:h-[32rem]">
-              <BarChart data={chartData} barCategoryGap="20%">
-                <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
-                <XAxis
-                  dataKey="mesLabel"
-                  tickLine={false}
-                  axisLine={false}
-                  tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  allowDecimals={false}
-                  tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
-                />
-                <ChartTooltip cursor={{ fill: "rgba(229,231,235,0.3)" }} content={<InfoTooltip />} />
-                {/* No maxBarSize cap: the dataviz skill's 24px default read
+        <HorizontalScrollFade minWidth={MONTH_COL_WIDTH * 12}>
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-80 w-full md:h-[32rem]"
+          >
+            <BarChart data={chartData} barCategoryGap="20%">
+              <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
+              <XAxis
+                dataKey="mesLabel"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                allowDecimals={false}
+                tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
+              />
+              <ChartTooltip
+                cursor={{ fill: "rgba(229,231,235,0.3)" }}
+                content={<InfoTooltip />}
+              />
+              {/* No maxBarSize cap: the dataviz skill's 24px default read
                     too skinny on this chart's width, so bars fill the
                     barCategoryGap band instead -- a deliberate deviation,
                     not an oversight. */}
-                <Bar
-                  dataKey="insalubres"
-                  stackId="dias"
-                  fill={COLOR_INSALUBRE}
-                  fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
-                  stroke={COLOR_INSALUBRE}
-                  strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
-                  strokeWidth={1.5}
-                  radius={[0, 0, 4, 4]}
-                />
-                <Bar
-                  dataKey="saludables"
-                  stackId="dias"
-                  fill={COLOR_SALUDABLE}
-                  fillOpacity={COLOR_SALUDABLE_FILL_OPACITY}
-                  stroke={COLOR_SALUDABLE}
-                  strokeOpacity={COLOR_SALUDABLE_BORDER_OPACITY}
-                  strokeWidth={1.5}
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ChartContainer>
-          </div>
-        </div>
+              <Bar
+                dataKey="insalubres"
+                stackId="dias"
+                fill={COLOR_INSALUBRE}
+                fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
+                stroke={COLOR_INSALUBRE}
+                strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
+                strokeWidth={1.5}
+                radius={[0, 0, 4, 4]}
+              />
+              <Bar
+                dataKey="saludables"
+                stackId="dias"
+                fill={COLOR_SALUDABLE}
+                fillOpacity={COLOR_SALUDABLE_FILL_OPACITY}
+                stroke={COLOR_SALUDABLE}
+                strokeOpacity={COLOR_SALUDABLE_BORDER_OPACITY}
+                strokeWidth={1.5}
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ChartContainer>
+        </HorizontalScrollFade>
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
