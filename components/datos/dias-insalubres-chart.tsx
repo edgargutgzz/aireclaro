@@ -58,11 +58,9 @@ const MONTH_FULL = [
   "Diciembre",
 ];
 
-// PM10 numbers don't yet reconcile with the client's own PM10 chart (23 vs
-// 15 insalubre days for Aug 2026, traced to one station, NO3, that may or
-// may not be in their dataset) — hide the tab until that's resolved. The
-// fetch/aggregation stays in place; flip this back on once it checks out.
-const SHOW_PM10_TAB = false;
+// Was hidden pending a discrepancy check (23 vs 15 insalubre days for Aug
+// 2026, traced to station NO3) -- re-enabled 2026-09-18 on explicit request.
+const SHOW_PM10_TAB = true;
 
 const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
