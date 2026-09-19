@@ -1,7 +1,6 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import {
   Tooltip,
@@ -18,7 +17,11 @@ import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
-import { niceTicks, roundedRectPath } from "@/components/datos/svg-chart-utils";
+import {
+  niceTicks,
+  roundedRectPath,
+  tooltipPositionStyle,
+} from "@/components/datos/svg-chart-utils";
 
 interface Estacion {
   sensorId: string;
@@ -323,17 +326,13 @@ function TooltipCard({
     ? "anual"
     : trimestreLabel(bar.trimestresValidos);
 
-  // Centered on the bar by default; clamped to whichever side keeps it
-  // inside the chart's own (possibly horizontally-scrolled) width, instead
-  // of growing off the edge.
-  const overflowsRight = barCenterX + TOOLTIP_WIDTH / 2 > totalWidth;
-  const overflowsLeft = barCenterX - TOOLTIP_WIDTH / 2 < 0;
-  const bottom = CHART_HEIGHT - barTopY + 10;
-  const positionStyle: CSSProperties = overflowsRight
-    ? { right: totalWidth - barCenterX, bottom }
-    : overflowsLeft
-      ? { left: barCenterX, bottom }
-      : { left: barCenterX, bottom, transform: "translateX(-50%)" };
+  const positionStyle = tooltipPositionStyle(
+    barCenterX,
+    barTopY,
+    totalWidth,
+    CHART_HEIGHT,
+    TOOLTIP_WIDTH,
+  );
 
   return (
     <div

@@ -324,6 +324,11 @@ function EstacionCalendario({
             >
               {cells.map((c) => {
                 const cubierto = coberturaPorFecha.get(c.fecha);
+                const estadoLabel = cubierto
+                  ? "Con datos"
+                  : c.fecha > todayStr
+                    ? "Aún no ocurre"
+                    : "Datos insuficientes";
                 return (
                   <div
                     key={c.fecha}
@@ -333,6 +338,8 @@ function EstacionCalendario({
                       cubierto === undefined ? "" : String(cubierto)
                     }
                     className="rounded-[2px]"
+                    tabIndex={0}
+                    aria-label={`${formatTooltipDate(c.fecha, c.row)}: ${estadoLabel}`}
                     style={{
                       gridColumn: c.col + 1,
                       gridRow: c.row + 1,
@@ -347,7 +354,19 @@ function EstacionCalendario({
                       border: cubierto
                         ? `1px solid ${COLOR_CUBIERTO_BORDER}`
                         : undefined,
+                      outline: "none",
                     }}
+                    onFocus={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      setTooltip({
+                        fecha: c.fecha,
+                        row: c.row,
+                        cubierto,
+                        x: rect.left + rect.width / 2,
+                        y: rect.top,
+                      });
+                    }}
+                    onBlur={() => setTooltip(null)}
                   />
                 );
               })}

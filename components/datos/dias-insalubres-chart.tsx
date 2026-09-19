@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CSSProperties } from "react";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
@@ -14,7 +13,11 @@ import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
-import { niceTicks, roundedRectPath } from "@/components/datos/svg-chart-utils";
+import {
+  niceTicks,
+  roundedRectPath,
+  tooltipPositionStyle,
+} from "@/components/datos/svg-chart-utils";
 
 export type { MonthData, Pollutant };
 
@@ -220,14 +223,13 @@ function MonthTooltipCard({
       ? Math.round((month.insalubres / month.diasTotales) * 100)
       : 0;
 
-  const overflowsRight = barCenterX + TOOLTIP_WIDTH / 2 > totalWidth;
-  const overflowsLeft = barCenterX - TOOLTIP_WIDTH / 2 < 0;
-  const bottom = CHART_HEIGHT - barTopY + 10;
-  const positionStyle: CSSProperties = overflowsRight
-    ? { right: totalWidth - barCenterX, bottom }
-    : overflowsLeft
-      ? { left: barCenterX, bottom }
-      : { left: barCenterX, bottom, transform: "translateX(-50%)" };
+  const positionStyle = tooltipPositionStyle(
+    barCenterX,
+    barTopY,
+    totalWidth,
+    CHART_HEIGHT,
+    TOOLTIP_WIDTH,
+  );
 
   return (
     <div

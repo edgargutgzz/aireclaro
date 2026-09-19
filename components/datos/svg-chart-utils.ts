@@ -5,6 +5,29 @@
 // variable) that a shared chart *component* would be premature, but this
 // exact geometry math would otherwise be typed out twice.
 
+import type { CSSProperties } from "react";
+
+// Positions a tooltip card centered above a data point by default, clamped
+// to whichever side keeps it inside the chart's own (possibly
+// horizontally-scrolled) width instead of growing off the edge -- both
+// charts' tooltips need this exact clamping, differing only in their own
+// width constant.
+export function tooltipPositionStyle(
+  centerX: number,
+  topY: number,
+  totalWidth: number,
+  chartHeight: number,
+  tooltipWidth: number,
+  gap = 10,
+): CSSProperties {
+  const overflowsRight = centerX + tooltipWidth / 2 > totalWidth;
+  const overflowsLeft = centerX - tooltipWidth / 2 < 0;
+  const bottom = chartHeight - topY + gap;
+  if (overflowsRight) return { right: totalWidth - centerX, bottom };
+  if (overflowsLeft) return { left: centerX, bottom };
+  return { left: centerX, bottom, transform: "translateX(-50%)" };
+}
+
 // Standard "nice numbers" tick generation so a y-axis reads 0/5/10/... or
 // 0/10/20/..., never an arbitrary fraction -- the dataviz skill's "round to
 // clean numbers" rule.
