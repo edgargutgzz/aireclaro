@@ -1,21 +1,8 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Customized,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from "recharts";
+import type { CSSProperties } from "react";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@/components/ui/chart";
 import {
   Tooltip,
   TooltipContent,
@@ -24,7 +11,6 @@ import {
 } from "@/components/ui/tooltip";
 import {
   COLOR_INSALUBRE,
-  COLOR_INSALUBRE_BORDER_OPACITY,
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
 } from "@/lib/datos-colors";
@@ -63,99 +49,6 @@ const TRIMESTRE_MESES: Record<number, string> = {
   4: "Oct–Dic",
 };
 
-// A bordered white pill for a reference line's label, floating just above
-// the line at the right edge -- plain text sitting on top of the bars was
-// illegible over a bar of the same muted gray tone as the line itself.
-//
-// Rendered via <Customized> (see ReferenceLinesOverlay below), not
-// ReferenceLine's own `label` prop: Recharts paints ReferenceLine's label in
-// an earlier layer than the bars, so a bar's own translucent fill painted on
-// top of it tinted the white box instead of the box sitting above the bar.
-// <Customized> is Recharts' dedicated top overlay layer, guaranteed to
-// paint last regardless of where the bars/lines/grid land.
-//
-// Box width comes from getBBox() on the actual rendered <text> after mount,
-// not a per-character guess -- Inter renders wider than a generic sans
-// estimate assumed, which ran the text past the box's own border. The first
-// paint falls back to a generous over-estimate so the box isn't zero-width
-// for one frame.
-function ReferenceLineBadge({
-  value,
-  yLine,
-  rightEdge,
-}: {
-  value: string;
-  yLine: number;
-  rightEdge: number;
-}) {
-  const textRef = useRef<SVGTextElement>(null);
-  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
-
-  useLayoutEffect(() => {
-    if (textRef.current) setMeasuredWidth(textRef.current.getBBox().width);
-  }, [value]);
-
-  const PAD_X = 8;
-  const HEIGHT = 20;
-  const textWidth = measuredWidth ?? value.length * 7.5;
-  const boxWidth = textWidth + PAD_X * 2;
-  const x = rightEdge - boxWidth - 4;
-  const y = yLine - HEIGHT - 4;
-
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={boxWidth}
-        height={HEIGHT}
-        rx={4}
-        fill="#ffffff"
-        stroke="rgb(209,213,219)"
-      />
-      <text
-        ref={textRef}
-        x={x + boxWidth / 2}
-        y={y + HEIGHT / 2 + 1}
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={11}
-        fontWeight={500}
-        fill="rgb(75,85,99)"
-      >
-        {value}
-      </text>
-    </g>
-  );
-}
-
-// <Customized>'s render prop gets the chart's own internal state, including
-// the y-axis' d3 scale (to place a badge at an exact data value in pixels)
-// and `offset` (the plotting area's pixel box, for the right edge to
-// right-align against).
-function ReferenceLinesOverlay(props: any) {
-  const yAxis = Object.values(props.yAxisMap ?? {})[0] as
-    | { scale?: (v: number) => number }
-    | undefined;
-  if (!yAxis?.scale || !props.offset) return null;
-  const rightEdge = props.offset.left + props.offset.width;
-
-  return (
-    <g>
-      <ReferenceLineBadge
-        value={`Norma Mexicana: ${NOM_ANUAL} µg/m³`}
-        yLine={yAxis.scale(NOM_ANUAL)}
-        rightEdge={rightEdge}
-      />
-      <ReferenceLineBadge
-        value={`OMS: ${OMS_ANUAL} µg/m³`}
-        yLine={yAxis.scale(OMS_ANUAL)}
-        rightEdge={rightEdge}
-      />
-    </g>
-  );
-}
-
 // "T1–T3 (Ene–Sep)" for a contiguous run starting at T1 (the common case --
 // trimesters validate in order as the year progresses); a comma list for the
 // rare non-contiguous case (e.g. a mid-year outage skips one trimester but a
@@ -170,10 +63,6 @@ function trimestreLabel(validos: number[]): string | null {
   if (last === 1) return `T1 (${TRIMESTRE_MESES[1]})`;
   return `T1–T${last} (Ene–${TRIMESTRE_MESES[last].split("–")[1]})`;
 }
-
-const chartConfig = {
-  promedio: { label: "PM2.5", color: COLOR_INSALUBRE },
-} satisfies ChartConfig;
 
 const tabs: InfoTab[] = [
   {
@@ -326,47 +215,169 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
   );
 }
 
-function InfoTooltip({
-  active,
-  payload,
+// ---- Hand-rolled SVG bar chart -------------------------------------------
+// Built plain (no charting library) so it can match the site's own spacing,
+// color, and radius tokens exactly, and so hover/tooltip/z-order are our own
+// DOM/paint order rather than a library's internal layering -- see the
+// dataviz skill's mark specs: <=24px thin bars with the leftover band as
+// air, no border on the mark (a surface gap does the separating instead),
+// solid (never dashed) recessive gridlines, dashed lines reserved for the
+// two threshold references.
+
+const CHART_HEIGHT = 380;
+const PAD_TOP = 32; // headroom above the tallest bar + top reference badge
+const PAD_BOTTOM = 28; // station name labels
+const PAD_LEFT = 32; // y-axis tick labels
+const PAD_RIGHT = 8;
+const BAR_WIDTH = 24;
+const BAR_RADIUS = 4;
+const TOOLTIP_WIDTH = 272; // px, matches the tooltip card's own w-[17rem]
+
+// A rect with only its top two corners rounded, square at the baseline --
+// the mark spec's "4px rounded data-end, square at the baseline." A plain
+// SVG <rect rx> rounds all four corners, so this draws the path by hand.
+function roundedTopRectPath(
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+): string {
+  const radius = Math.max(0, Math.min(r, h, w / 2));
+  if (radius === 0) return `M${x},${y} h${w} v${h} h${-w} Z`;
+  return `M${x},${y + h} V${y + radius} Q${x},${y} ${x + radius},${y} H${x + w - radius} Q${x + w},${y} ${x + w},${y + radius} V${y + h} Z`;
+}
+
+// Standard "nice numbers" tick generation so the y-axis reads 0/5/10/... or
+// 0/10/20/..., never an arbitrary fraction -- matches the skill's "round to
+// clean numbers" rule.
+function niceTicks(maxValue: number, tickCount = 5): number[] {
+  if (maxValue <= 0) return [0];
+  const rawStep = maxValue / tickCount;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const norm = rawStep / magnitude;
+  const niceNorm = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+  const step = niceNorm * magnitude;
+  const ticks: number[] = [];
+  for (let v = 0; v <= maxValue + step * 0.001; v += step) {
+    ticks.push(Math.round(v * 100) / 100);
+  }
+  return ticks;
+}
+
+// A dashed threshold line with a measured-width white badge floating just
+// above it -- getBBox() on the actual rendered <text> after mount, not a
+// per-character guess (a guess ran text past the box's own border before).
+// Rendered as the LAST children of the chart's <svg> (see BarsChart), so it
+// paints on top of the bars simply by being later in the document -- no
+// library z-order workaround needed once you own the paint order yourself.
+function ReferenceLine({
+  value,
+  y,
+  left,
+  right,
+}: {
+  value: string;
+  y: number;
+  left: number;
+  right: number;
+}) {
+  const textRef = useRef<SVGTextElement>(null);
+  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    if (textRef.current) setMeasuredWidth(textRef.current.getBBox().width);
+  }, [value]);
+
+  const PAD_X = 8;
+  const HEIGHT = 20;
+  const textWidth = measuredWidth ?? value.length * 7.5;
+  const boxWidth = textWidth + PAD_X * 2;
+  const boxX = right - boxWidth - 4;
+  const boxY = y - HEIGHT - 4;
+
+  return (
+    <g>
+      <line
+        x1={left}
+        x2={right}
+        y1={y}
+        y2={y}
+        stroke="rgb(156,163,175)"
+        strokeWidth={1}
+        strokeDasharray="4 4"
+      />
+      <rect
+        x={boxX}
+        y={boxY}
+        width={boxWidth}
+        height={HEIGHT}
+        rx={4}
+        fill="#ffffff"
+        stroke="rgb(209,213,219)"
+      />
+      <text
+        ref={textRef}
+        x={boxX + boxWidth / 2}
+        y={boxY + HEIGHT / 2 + 1}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={11}
+        fontWeight={500}
+        fill="rgb(75,85,99)"
+      >
+        {value}
+      </text>
+    </g>
+  );
+}
+
+function TooltipCard({
+  bar,
   year,
   isCompleteYear,
+  totalWidth,
+  barCenterX,
+  barTopY,
 }: {
-  active?: boolean;
-  payload?: any[];
+  bar: StationBar;
   year: number | null;
   isCompleteYear: boolean;
+  totalWidth: number;
+  barCenterX: number;
+  barTopY: number;
 }) {
-  if (!active || !payload?.length) return null;
-  const row = payload[0].payload as StationBar;
   // A complete year's bar already cleared the >=3-of-4 "datos suficientes"
   // bar, so it reads as a genuine annual figure, not a partial range --
   // "Promedio anual 2025", not "Promedio T1-T3 (Ene-Sep) 2025".
-  const label = isCompleteYear
-    ? "anual"
-    : trimestreLabel(row.trimestresValidos);
+  const label = isCompleteYear ? "anual" : trimestreLabel(bar.trimestresValidos);
+
+  // Centered on the bar by default; clamped to whichever side keeps it
+  // inside the chart's own (possibly horizontally-scrolled) width, instead
+  // of growing off the edge.
+  const overflowsRight = barCenterX + TOOLTIP_WIDTH / 2 > totalWidth;
+  const overflowsLeft = barCenterX - TOOLTIP_WIDTH / 2 < 0;
+  const bottom = CHART_HEIGHT - barTopY + 10;
+  const positionStyle: CSSProperties = overflowsRight
+    ? { right: totalWidth - barCenterX, bottom }
+    : overflowsLeft
+      ? { left: barCenterX, bottom }
+      : { left: barCenterX, bottom, transform: "translateX(-50%)" };
 
   return (
-    // Recharts anchors its tooltip wrapper at the cursor's own point and
-    // grows the content rightward from there by default -- fine for most
-    // bars, but a bar near the right edge of the (horizontally-scrolled)
-    // chart pushed the tooltip past the visible area. Shifting the content
-    // fully to the left of that anchor point (a plain CSS transform, not
-    // fighting Recharts' own positioning math) keeps it over already-visible
-    // chart area instead of growing into space that may not be in view.
     <div
-      className="grid min-w-[17rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
-      style={{ transform: "translateX(calc(-100% - 12px))" }}
+      className="pointer-events-none absolute z-10 grid w-[17rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
+      style={positionStyle}
     >
       <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-        {row.nombre}
+        {bar.nombre}
       </span>
       <div className="flex items-baseline gap-1.5">
         <span
           className="text-2xl font-bold leading-none"
           style={{ color: COLOR_INSALUBRE }}
         >
-          {Math.round(row.promedio)}
+          {Math.round(bar.promedio)}
         </span>
         <span className="text-sm font-medium text-gray-400">µg/m³</span>
       </div>
@@ -374,11 +385,160 @@ function InfoTooltip({
         Promedio {label} {year}
       </span>
       <div className="border-t border-gray-100 pt-2">
-        <TrimestreBreakdown rows={row.rows} />
+        <TrimestreBreakdown rows={bar.rows} />
       </div>
     </div>
   );
 }
+
+function BarsChart({
+  bars,
+  year,
+  isCompleteYear,
+}: {
+  bars: StationBar[];
+  year: number | null;
+  isCompleteYear: boolean;
+}) {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
+  const totalWidth = STATION_COL_WIDTH * bars.length;
+  const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
+  const plotRight = totalWidth - PAD_RIGHT;
+
+  const rawMax = Math.max(NOM_ANUAL, OMS_ANUAL, ...bars.map((b) => b.promedio), 1);
+  const ticks = useMemo(() => niceTicks(rawMax * 1.08), [rawMax]);
+  const niceMax = ticks[ticks.length - 1];
+
+  const valueToY = (v: number) => PAD_TOP + plotHeight - (v / niceMax) * plotHeight;
+  const bandX = (i: number) => PAD_LEFT + i * STATION_COL_WIDTH;
+
+  const hovered = hoveredIdx !== null ? bars[hoveredIdx] : null;
+
+  const clearHover = (i: number) =>
+    setHoveredIdx((cur) => (cur === i ? null : cur));
+
+  return (
+    <div
+      className="relative"
+      style={{ width: totalWidth, height: CHART_HEIGHT }}
+    >
+      <svg
+        width={totalWidth}
+        height={CHART_HEIGHT}
+        role="img"
+        aria-label="Promedio anual de PM2.5 por estación"
+      >
+        {ticks.map((t) => {
+          const y = valueToY(t);
+          return (
+            <g key={t}>
+              <line
+                x1={PAD_LEFT}
+                x2={plotRight}
+                y1={y}
+                y2={y}
+                stroke="rgb(243,244,246)"
+                strokeWidth={1}
+              />
+              <text
+                x={PAD_LEFT - 8}
+                y={y}
+                textAnchor="end"
+                dominantBaseline="middle"
+                fontSize={12}
+                fontWeight={500}
+                fill="rgb(107,114,128)"
+              >
+                {t}
+              </text>
+            </g>
+          );
+        })}
+
+        {bars.map((b, i) => {
+          const x = bandX(i) + (STATION_COL_WIDTH - BAR_WIDTH) / 2;
+          const yTop = valueToY(b.promedio);
+          const h = PAD_TOP + plotHeight - yTop;
+          const isHovered = hoveredIdx === i;
+          return (
+            <g key={b.sensorId}>
+              <path
+                d={roundedTopRectPath(x, yTop, BAR_WIDTH, h, BAR_RADIUS)}
+                fill={COLOR_INSALUBRE}
+                fillOpacity={isHovered ? 0.85 : COLOR_INSALUBRE_FILL_OPACITY}
+                style={{ transition: "fill-opacity 120ms ease" }}
+              />
+              <text
+                x={bandX(i) + STATION_COL_WIDTH / 2}
+                y={CHART_HEIGHT - PAD_BOTTOM + 16}
+                textAnchor="middle"
+                fontSize={11}
+                fontWeight={500}
+                fill="rgb(75,85,99)"
+              >
+                {b.nombre}
+              </text>
+              {/* The hit target: the whole band, taller than the mark
+                  itself, per the skill's "hit target bigger than the mark." */}
+              <rect
+                x={bandX(i)}
+                y={PAD_TOP}
+                width={STATION_COL_WIDTH}
+                height={plotHeight}
+                fill="transparent"
+                tabIndex={0}
+                aria-label={`${b.nombre}: ${Math.round(b.promedio)} microgramos por metro cúbico`}
+                style={{ cursor: "pointer", outline: "none" }}
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => clearHover(i)}
+                onFocus={() => setHoveredIdx(i)}
+                onBlur={() => clearHover(i)}
+              />
+            </g>
+          );
+        })}
+
+        <ReferenceLine
+          value={`Norma Mexicana: ${NOM_ANUAL} µg/m³`}
+          y={valueToY(NOM_ANUAL)}
+          left={PAD_LEFT}
+          right={plotRight}
+        />
+        <ReferenceLine
+          value={`OMS: ${OMS_ANUAL} µg/m³`}
+          y={valueToY(OMS_ANUAL)}
+          left={PAD_LEFT}
+          right={plotRight}
+        />
+      </svg>
+
+      {/* Screen-reader equivalent of the bars -- the field's own hover/focus
+          affordance covers sighted keyboard users, but a plain list is the
+          reliable baseline for assistive tech either way. */}
+      <ul className="sr-only">
+        {bars.map((b) => (
+          <li key={b.sensorId}>
+            {b.nombre}: {Math.round(b.promedio)} µg/m³
+          </li>
+        ))}
+      </ul>
+
+      {hovered && hoveredIdx !== null && (
+        <TooltipCard
+          bar={hovered}
+          year={year}
+          isCompleteYear={isCompleteYear}
+          totalWidth={totalWidth}
+          barCenterX={bandX(hoveredIdx) + STATION_COL_WIDTH / 2}
+          barTopY={valueToY(hovered.promedio)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 
 export default function PromedioAnualChart({
   estaciones,
@@ -480,62 +640,18 @@ export default function PromedioAnualChart({
     >
       <div className="px-5 pb-6 pt-6">
         <span className="mb-3 block text-xs text-gray-400">PM2.5 (µg/m³)</span>
-        <HorizontalScrollFade
-          minWidth={STATION_COL_WIDTH * Math.max(bars.length, 1)}
-        >
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-80 w-full md:h-[32rem]"
+        {bars.length > 0 ? (
+          <HorizontalScrollFade minWidth={STATION_COL_WIDTH * bars.length}>
+            <BarsChart bars={bars} year={year} isCompleteYear={isCompleteYear} />
+          </HorizontalScrollFade>
+        ) : (
+          <div
+            className="flex items-center justify-center rounded-lg bg-gray-50 text-sm text-gray-400"
+            style={{ height: CHART_HEIGHT }}
           >
-            <BarChart
-              data={bars}
-              barCategoryGap="25%"
-              margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
-            >
-              <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
-              <XAxis
-                dataKey="nombre"
-                tickLine={false}
-                axisLine={false}
-                tick={{ fontSize: 11, fontWeight: 500, fill: "rgb(75,85,99)" }}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-                tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
-              />
-              <ChartTooltip
-                cursor={{ fill: "rgba(229,231,235,0.3)" }}
-                content={
-                  <InfoTooltip year={year} isCompleteYear={isCompleteYear} />
-                }
-              />
-              <ReferenceLine
-                y={NOM_ANUAL}
-                stroke="rgb(156,163,175)"
-                strokeDasharray="4 4"
-              />
-              <ReferenceLine
-                y={OMS_ANUAL}
-                stroke="rgb(156,163,175)"
-                strokeDasharray="4 4"
-              />
-              <Bar
-                dataKey="promedio"
-                fill={COLOR_INSALUBRE}
-                fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
-                stroke={COLOR_INSALUBRE}
-                strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
-                strokeWidth={1.5}
-                radius={[4, 4, 0, 0]}
-              />
-              {/* Last child so it paints on top of the bars -- see
-                    ReferenceLinesOverlay's comment. */}
-              <Customized component={ReferenceLinesOverlay} />
-            </BarChart>
-          </ChartContainer>
-        </HorizontalScrollFade>
+            Sin datos suficientes todavía
+          </div>
+        )}
 
         {sinDatos.length > 0 && (
           <div className="mt-5 grid gap-2">
