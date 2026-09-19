@@ -1,26 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import type { CSSProperties } from "react";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@/components/ui/chart";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
-  COLOR_INSALUBRE_BORDER_OPACITY,
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
-  COLOR_SALUDABLE_BORDER_OPACITY,
   COLOR_SALUDABLE_FILL_OPACITY,
 } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
+import { niceTicks, roundedRectPath } from "@/components/datos/svg-chart-utils";
 
 export type { MonthData, Pollutant };
 
@@ -77,63 +71,10 @@ const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
 // the CVD check still fails for this pair: a fixed stacking position
 // (insalubre always at the base), a persistent legend, and the exact
 // counts always in plain text (header stat + tooltip), never color alone.
-const chartConfig = {
+const LEGEND = {
   insalubres: { label: "Insalubres", color: COLOR_INSALUBRE },
   saludables: { label: "Saludables", color: COLOR_SALUDABLE },
-} satisfies ChartConfig;
-
-function InfoTooltip({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: any[];
-}) {
-  if (!active || !payload?.length) return null;
-  const row = payload[0].payload as {
-    mesNumero: number;
-    ano: number;
-    insalubres: number;
-    saludables: number;
-    diasTotales: number;
-  };
-  const pct =
-    row.diasTotales > 0
-      ? Math.round((row.insalubres / row.diasTotales) * 100)
-      : 0;
-
-  return (
-    <div className="grid min-w-[11rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
-      <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-        {MONTH_FULL[row.mesNumero - 1]} {row.ano}
-      </span>
-      <div className="flex gap-4">
-        <div className="flex flex-col gap-0.5">
-          <span
-            className="text-2xl font-bold leading-none"
-            style={{ color: COLOR_INSALUBRE }}
-          >
-            {row.insalubres}
-          </span>
-          <span className="text-xs text-gray-500">insalubres</span>
-        </div>
-        <div className="w-px bg-gray-100" />
-        <div className="flex flex-col gap-0.5">
-          <span
-            className="text-2xl font-bold leading-none"
-            style={{ color: COLOR_SALUDABLE }}
-          >
-            {row.saludables}
-          </span>
-          <span className="text-xs text-gray-500">saludables</span>
-        </div>
-      </div>
-      <div className="border-t border-gray-100 pt-2 text-xs text-gray-500">
-        {pct}% de días insalubres
-      </div>
-    </div>
-  );
-}
+};
 
 function infoTabs(pollutant: Pollutant): InfoTab[] {
   const label = POLLUTANT_LABEL[pollutant];
@@ -237,6 +178,251 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
   ];
 }
 
+interface MonthBar {
+  mesNumero: number;
+  ano: number;
+  mesLabel: string;
+  insalubres: number;
+  saludables: number;
+  diasTotales: number;
+}
+
+// ---- Hand-rolled SVG stacked bar chart -----------------------------------
+// No charting library -- see promedio-anual-chart.tsx's header comment for
+// why. Two stacked segments per month: per the dataviz skill, touching
+// segments get a 2px surface-color gap instead of a border, and only the
+// outer tip of the whole stack is rounded -- square everywhere the bar
+// meets the baseline or another segment.
+
+const CHART_HEIGHT = 380;
+const PAD_TOP = 20;
+const PAD_BOTTOM = 28;
+const PAD_LEFT = 32;
+const PAD_RIGHT = 8;
+const BAR_WIDTH = 24;
+const BAR_RADIUS = 4;
+const STACK_GAP = 2;
+const TOOLTIP_WIDTH = 176; // px, matches the tooltip card's own min-w-[11rem]
+
+function MonthTooltipCard({
+  month,
+  totalWidth,
+  barCenterX,
+  barTopY,
+}: {
+  month: MonthBar;
+  totalWidth: number;
+  barCenterX: number;
+  barTopY: number;
+}) {
+  const pct =
+    month.diasTotales > 0
+      ? Math.round((month.insalubres / month.diasTotales) * 100)
+      : 0;
+
+  const overflowsRight = barCenterX + TOOLTIP_WIDTH / 2 > totalWidth;
+  const overflowsLeft = barCenterX - TOOLTIP_WIDTH / 2 < 0;
+  const bottom = CHART_HEIGHT - barTopY + 10;
+  const positionStyle: CSSProperties = overflowsRight
+    ? { right: totalWidth - barCenterX, bottom }
+    : overflowsLeft
+      ? { left: barCenterX, bottom }
+      : { left: barCenterX, bottom, transform: "translateX(-50%)" };
+
+  return (
+    <div
+      className="pointer-events-none absolute z-10 grid w-[11rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
+      style={positionStyle}
+    >
+      <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+        {MONTH_FULL[month.mesNumero - 1]} {month.ano}
+      </span>
+      <div className="flex gap-4">
+        <div className="flex flex-col gap-0.5">
+          <span
+            className="text-2xl font-bold leading-none"
+            style={{ color: COLOR_INSALUBRE }}
+          >
+            {month.insalubres}
+          </span>
+          <span className="text-xs text-gray-500">insalubres</span>
+        </div>
+        <div className="w-px bg-gray-100" />
+        <div className="flex flex-col gap-0.5">
+          <span
+            className="text-2xl font-bold leading-none"
+            style={{ color: COLOR_SALUDABLE }}
+          >
+            {month.saludables}
+          </span>
+          <span className="text-xs text-gray-500">saludables</span>
+        </div>
+      </div>
+      <div className="border-t border-gray-100 pt-2 text-xs text-gray-500">
+        {pct}% de días insalubres
+      </div>
+    </div>
+  );
+}
+
+function StackedBarsChart({ months }: { months: MonthBar[] }) {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
+  const totalWidth = MONTH_COL_WIDTH * 12;
+  const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
+  const plotRight = totalWidth - PAD_RIGHT;
+
+  const rawMax = Math.max(1, ...months.map((m) => m.diasTotales));
+  const ticks = useMemo(() => niceTicks(rawMax * 1.08), [rawMax]);
+  const niceMax = ticks[ticks.length - 1];
+
+  const valueToHeight = (v: number) => (v / niceMax) * plotHeight;
+  const baseline = PAD_TOP + plotHeight;
+  const bandX = (i: number) => PAD_LEFT + i * MONTH_COL_WIDTH;
+
+  const hovered = hoveredIdx !== null ? months[hoveredIdx] : null;
+  const clearHover = (i: number) =>
+    setHoveredIdx((cur) => (cur === i ? null : cur));
+
+  return (
+    <div
+      className="relative"
+      style={{ width: totalWidth, height: CHART_HEIGHT }}
+    >
+      <svg
+        width={totalWidth}
+        height={CHART_HEIGHT}
+        role="img"
+        aria-label="Días insalubres y saludables por mes"
+      >
+        {ticks.map((t) => {
+          const y = baseline - valueToHeight(t);
+          return (
+            <g key={t}>
+              <line
+                x1={PAD_LEFT}
+                x2={plotRight}
+                y1={y}
+                y2={y}
+                stroke="rgb(243,244,246)"
+                strokeWidth={1}
+              />
+              <text
+                x={PAD_LEFT - 8}
+                y={y}
+                textAnchor="end"
+                dominantBaseline="middle"
+                fontSize={12}
+                fontWeight={500}
+                fill="rgb(107,114,128)"
+              >
+                {t}
+              </text>
+            </g>
+          );
+        })}
+
+        {months.map((m, i) => {
+          const x = bandX(i) + (MONTH_COL_WIDTH - BAR_WIDTH) / 2;
+          const isHovered = hoveredIdx === i;
+
+          const totalH = valueToHeight(m.insalubres + m.saludables);
+          const saludablesH =
+            m.saludables > 0 ? valueToHeight(m.saludables) : 0;
+          const gap = m.insalubres > 0 && m.saludables > 0 ? STACK_GAP : 0;
+          const insalubresH = Math.max(0, totalH - saludablesH - gap);
+
+          // Square everywhere a segment meets the baseline or its neighbor;
+          // rounded only at the true outer tip of the whole stack.
+          const insalubresIsTip = m.saludables === 0 && m.insalubres > 0;
+
+          return (
+            <g key={m.mesNumero}>
+              {insalubresH > 0 && (
+                <path
+                  d={roundedRectPath(
+                    x,
+                    baseline - insalubresH,
+                    BAR_WIDTH,
+                    insalubresH,
+                    insalubresIsTip ? { tl: BAR_RADIUS, tr: BAR_RADIUS } : {},
+                  )}
+                  fill={COLOR_INSALUBRE}
+                  fillOpacity={isHovered ? 0.85 : COLOR_INSALUBRE_FILL_OPACITY}
+                  style={{ transition: "fill-opacity 120ms ease" }}
+                />
+              )}
+              {saludablesH > 0 && (
+                <path
+                  d={roundedRectPath(
+                    x,
+                    baseline - totalH,
+                    BAR_WIDTH,
+                    saludablesH,
+                    { tl: BAR_RADIUS, tr: BAR_RADIUS },
+                  )}
+                  fill={COLOR_SALUDABLE}
+                  fillOpacity={isHovered ? 0.85 : COLOR_SALUDABLE_FILL_OPACITY}
+                  style={{ transition: "fill-opacity 120ms ease" }}
+                />
+              )}
+              <text
+                x={bandX(i) + MONTH_COL_WIDTH / 2}
+                y={CHART_HEIGHT - PAD_BOTTOM + 16}
+                textAnchor="middle"
+                fontSize={12}
+                fontWeight={500}
+                fill="rgb(75,85,99)"
+              >
+                {m.mesLabel}
+              </text>
+              {/* The hit target: the whole band, taller than the mark
+                  itself, per the skill's "hit target bigger than the mark." */}
+              <rect
+                x={bandX(i)}
+                y={PAD_TOP}
+                width={MONTH_COL_WIDTH}
+                height={plotHeight}
+                fill="transparent"
+                tabIndex={0}
+                aria-label={`${MONTH_FULL[m.mesNumero - 1]} ${m.ano}: ${m.insalubres} días insalubres, ${m.saludables} días saludables`}
+                style={{ cursor: "pointer", outline: "none" }}
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => clearHover(i)}
+                onFocus={() => setHoveredIdx(i)}
+                onBlur={() => clearHover(i)}
+              />
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* Screen-reader equivalent of the bars. */}
+      <ul className="sr-only">
+        {months.map((m) => (
+          <li key={m.mesNumero}>
+            {MONTH_FULL[m.mesNumero - 1]} {m.ano}: {m.insalubres} días
+            insalubres, {m.saludables} días saludables
+          </li>
+        ))}
+      </ul>
+
+      {hovered && hoveredIdx !== null && (
+        <MonthTooltipCard
+          month={hovered}
+          totalWidth={totalWidth}
+          barCenterX={bandX(hoveredIdx) + MONTH_COL_WIDTH / 2}
+          barTopY={
+            baseline - valueToHeight(hovered.insalubres + hovered.saludables)
+          }
+        />
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
 export default function DiasInsalubresChart({
   data,
 }: {
@@ -258,7 +444,7 @@ export default function DiasInsalubresChart({
       ? selectedYear
       : years[years.length - 1] ?? null;
 
-  const chartData = useMemo(() => {
+  const chartData = useMemo<MonthBar[]>(() => {
     const byMonth = new Map(
       activeData.filter((d) => d.ano === year).map((d) => [d.mesNumero, d]),
     );
@@ -272,7 +458,6 @@ export default function DiasInsalubresChart({
         insalubres: row?.diasInsalubres ?? 0,
         saludables: row ? row.diasTotales - row.diasInsalubres : 0,
         diasTotales: row?.diasTotales ?? 0,
-        sinDatos: !row,
       };
     });
   }, [activeData, year]);
@@ -315,87 +500,31 @@ export default function DiasInsalubresChart({
       }
     >
       <div className="px-5 pb-6 pt-6">
-        {/* Colors ported exactly from the client's own observatoriodelaire.com
-            chart -- one hex each (Tailwind red-500/green-500) at two
-            opacities (fill, border), not two distinct hexes. */}
         <div className="mb-3 flex items-center justify-between">
           <span className="text-xs text-gray-400">Días del mes</span>
-          {/* Legend moved up here, on the same line as the axis label,
-              instead of Recharts' default spot under the chart -- a small
-              hand-built swatch row (matching ChartLegendContent's own dot +
-              label recipe) rather than reusing that component itself,
-              since it expects Recharts to hand it a payload prop. */}
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
               <span
                 className="h-2 w-2 rounded-[2px]"
-                style={{ backgroundColor: chartConfig.insalubres.color }}
+                style={{ backgroundColor: LEGEND.insalubres.color }}
               />
-              {chartConfig.insalubres.label}
+              {LEGEND.insalubres.label}
             </span>
             <span className="flex items-center gap-1.5">
               <span
                 className="h-2 w-2 rounded-[2px]"
-                style={{ backgroundColor: chartConfig.saludables.color }}
+                style={{ backgroundColor: LEGEND.saludables.color }}
               />
-              {chartConfig.saludables.label}
+              {LEGEND.saludables.label}
             </span>
           </div>
         </div>
         {/* All 12 months render (Sep-Dic just come out empty), but the chart
             never compresses below MONTH_COL_WIDTH per month to fit -- it
-            fills the card when there's room, same as before, and scrolls
-            horizontally instead of squeezing months together when there
-            isn't (narrow viewports, or once more months have data). */}
+            scrolls horizontally instead of squeezing months together on a
+            narrow viewport. */}
         <HorizontalScrollFade minWidth={MONTH_COL_WIDTH * 12}>
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-80 w-full md:h-[32rem]"
-          >
-            <BarChart data={chartData} barCategoryGap="20%">
-              <CartesianGrid vertical={false} stroke="rgba(229,231,235,0.6)" />
-              <XAxis
-                dataKey="mesLabel"
-                tickLine={false}
-                axisLine={false}
-                tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
-              />
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-                tick={{ fontSize: 12, fontWeight: 500, fill: "rgb(75,85,99)" }}
-              />
-              <ChartTooltip
-                cursor={{ fill: "rgba(229,231,235,0.3)" }}
-                content={<InfoTooltip />}
-              />
-              {/* No maxBarSize cap: the dataviz skill's 24px default read
-                    too skinny on this chart's width, so bars fill the
-                    barCategoryGap band instead -- a deliberate deviation,
-                    not an oversight. */}
-              <Bar
-                dataKey="insalubres"
-                stackId="dias"
-                fill={COLOR_INSALUBRE}
-                fillOpacity={COLOR_INSALUBRE_FILL_OPACITY}
-                stroke={COLOR_INSALUBRE}
-                strokeOpacity={COLOR_INSALUBRE_BORDER_OPACITY}
-                strokeWidth={1.5}
-                radius={[0, 0, 4, 4]}
-              />
-              <Bar
-                dataKey="saludables"
-                stackId="dias"
-                fill={COLOR_SALUDABLE}
-                fillOpacity={COLOR_SALUDABLE_FILL_OPACITY}
-                stroke={COLOR_SALUDABLE}
-                strokeOpacity={COLOR_SALUDABLE_BORDER_OPACITY}
-                strokeWidth={1.5}
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ChartContainer>
+          <StackedBarsChart months={chartData} />
         </HorizontalScrollFade>
       </div>
 

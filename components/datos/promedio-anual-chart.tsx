@@ -18,6 +18,7 @@ import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
+import { niceTicks, roundedRectPath } from "@/components/datos/svg-chart-utils";
 
 interface Estacion {
   sensorId: string;
@@ -233,38 +234,6 @@ const BAR_WIDTH = 24;
 const BAR_RADIUS = 4;
 const TOOLTIP_WIDTH = 272; // px, matches the tooltip card's own w-[17rem]
 
-// A rect with only its top two corners rounded, square at the baseline --
-// the mark spec's "4px rounded data-end, square at the baseline." A plain
-// SVG <rect rx> rounds all four corners, so this draws the path by hand.
-function roundedTopRectPath(
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number,
-): string {
-  const radius = Math.max(0, Math.min(r, h, w / 2));
-  if (radius === 0) return `M${x},${y} h${w} v${h} h${-w} Z`;
-  return `M${x},${y + h} V${y + radius} Q${x},${y} ${x + radius},${y} H${x + w - radius} Q${x + w},${y} ${x + w},${y + radius} V${y + h} Z`;
-}
-
-// Standard "nice numbers" tick generation so the y-axis reads 0/5/10/... or
-// 0/10/20/..., never an arbitrary fraction -- matches the skill's "round to
-// clean numbers" rule.
-function niceTicks(maxValue: number, tickCount = 5): number[] {
-  if (maxValue <= 0) return [0];
-  const rawStep = maxValue / tickCount;
-  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
-  const norm = rawStep / magnitude;
-  const niceNorm = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
-  const step = niceNorm * magnitude;
-  const ticks: number[] = [];
-  for (let v = 0; v <= maxValue + step * 0.001; v += step) {
-    ticks.push(Math.round(v * 100) / 100);
-  }
-  return ticks;
-}
-
 // A dashed threshold line with a measured-width white badge floating just
 // above it -- getBBox() on the actual rendered <text> after mount, not a
 // per-character guess (a guess ran text past the box's own border before).
@@ -350,7 +319,9 @@ function TooltipCard({
   // A complete year's bar already cleared the >=3-of-4 "datos suficientes"
   // bar, so it reads as a genuine annual figure, not a partial range --
   // "Promedio anual 2025", not "Promedio T1-T3 (Ene-Sep) 2025".
-  const label = isCompleteYear ? "anual" : trimestreLabel(bar.trimestresValidos);
+  const label = isCompleteYear
+    ? "anual"
+    : trimestreLabel(bar.trimestresValidos);
 
   // Centered on the bar by default; clamped to whichever side keeps it
   // inside the chart's own (possibly horizontally-scrolled) width, instead
@@ -406,11 +377,17 @@ function BarsChart({
   const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
   const plotRight = totalWidth - PAD_RIGHT;
 
-  const rawMax = Math.max(NOM_ANUAL, OMS_ANUAL, ...bars.map((b) => b.promedio), 1);
+  const rawMax = Math.max(
+    NOM_ANUAL,
+    OMS_ANUAL,
+    ...bars.map((b) => b.promedio),
+    1,
+  );
   const ticks = useMemo(() => niceTicks(rawMax * 1.08), [rawMax]);
   const niceMax = ticks[ticks.length - 1];
 
-  const valueToY = (v: number) => PAD_TOP + plotHeight - (v / niceMax) * plotHeight;
+  const valueToY = (v: number) =>
+    PAD_TOP + plotHeight - (v / niceMax) * plotHeight;
   const bandX = (i: number) => PAD_LEFT + i * STATION_COL_WIDTH;
 
   const hovered = hoveredIdx !== null ? bars[hoveredIdx] : null;
@@ -464,7 +441,10 @@ function BarsChart({
           return (
             <g key={b.sensorId}>
               <path
-                d={roundedTopRectPath(x, yTop, BAR_WIDTH, h, BAR_RADIUS)}
+                d={roundedRectPath(x, yTop, BAR_WIDTH, h, {
+                  tl: BAR_RADIUS,
+                  tr: BAR_RADIUS,
+                })}
                 fill={COLOR_INSALUBRE}
                 fillOpacity={isHovered ? 0.85 : COLOR_INSALUBRE_FILL_OPACITY}
                 style={{ transition: "fill-opacity 120ms ease" }}
@@ -642,7 +622,11 @@ export default function PromedioAnualChart({
         <span className="mb-3 block text-xs text-gray-400">PM2.5 (µg/m³)</span>
         {bars.length > 0 ? (
           <HorizontalScrollFade minWidth={STATION_COL_WIDTH * bars.length}>
-            <BarsChart bars={bars} year={year} isCompleteYear={isCompleteYear} />
+            <BarsChart
+              bars={bars}
+              year={year}
+              isCompleteYear={isCompleteYear}
+            />
           </HorizontalScrollFade>
         ) : (
           <div
