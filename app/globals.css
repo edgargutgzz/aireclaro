@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+/* Tailwind v4: keep driving theme/content from the existing JS config
+   (tailwind.config.ts) rather than a CSS-native @theme block -- it's
+   already down to 3 colors + radius + 3 panel widths, small enough that
+   the bridge costs nothing and there's no reason to force a rewrite. */
+@config "../tailwind.config.ts";
 
 /* ── House CSS-variable tokens ──────────────────────────────────────────────
    HSL channel triplets consumed via `hsl(var(--x))` in tailwind.config.ts.

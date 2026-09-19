@@ -12,7 +12,7 @@ export function DialogLink({ href, children }: { href: string; children: React.R
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="rounded-sm font-medium text-gray-700 underline underline-offset-2 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+      className="rounded-xs font-medium text-gray-700 underline underline-offset-2 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
     >
       {children}
       <span className="sr-only"> (abre en una nueva pestaña)</span>

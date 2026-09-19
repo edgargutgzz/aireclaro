@@ -6,7 +6,7 @@ const config: Config = {
   // "class" rather than switched to Tailwind's default ("media") on
   // principle: nothing should start following the OS theme by surprise if a
   // `dark:` variant is ever typed by mistake.
-  darkMode: ["class"],
+  darkMode: "class",
   content: ["./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}"],
   theme: {
     extend: {
