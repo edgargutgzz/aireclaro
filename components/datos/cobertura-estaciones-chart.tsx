@@ -6,13 +6,13 @@ import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_CUBIERTO_FILL_OPACITY,
   COLOR_SALUDABLE,
-  COLOR_SALUDABLE_BORDER_OPACITY,
   withOpacity,
 } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
+import { tooltipPositionStyle } from "@/components/datos/svg-chart-utils";
 
 interface Estacion {
   sensorId: string;
@@ -37,10 +37,6 @@ const MONTH_ROW_HEIGHT = 18; // px
 const COLOR_CUBIERTO_FILL = withOpacity(
   COLOR_SALUDABLE,
   COLOR_CUBIERTO_FILL_OPACITY,
-);
-const COLOR_CUBIERTO_BORDER = withOpacity(
-  COLOR_SALUDABLE,
-  COLOR_SALUDABLE_BORDER_OPACITY,
 );
 // A plain gray fill (a data-quality gap, not a health-severity color) --
 // lighter than gray-300 by request, but not all the way to gray-200, which
@@ -204,9 +200,11 @@ interface Tooltip {
   fecha: string;
   row: number;
   cubierto: boolean | undefined;
-  x: number;
-  y: number;
+  centerX: number; // grid-local, not viewport -- see tooltipPositionStyle
+  topY: number;
 }
+
+const TOOLTIP_WIDTH = 208; // px, matches the tooltip card's own w-52
 
 function EstacionCalendario({
   estacion,
@@ -236,6 +234,23 @@ function EstacionCalendario({
   );
 
   const gridWidth = WEEKDAY_COL_WIDTH + totalCols * (CELL + GAP);
+  const gridHeight = MONTH_ROW_HEIGHT + 7 * (CELL + GAP);
+
+  // Anchored to the cell's own position in the grid, not the cursor --
+  // matches días insalubres/promedio anual's tooltips (both moved off
+  // cursor-chasing this session specifically because it can't clamp to the
+  // chart's own edges). Shared by mouse and keyboard focus so both trigger
+  // the identical tooltip.
+  const showTooltip = (c: Cell, cubierto: boolean | undefined) => {
+    setTooltip({
+      fecha: c.fecha,
+      row: c.row,
+      cubierto,
+      centerX: WEEKDAY_COL_WIDTH + c.col * (CELL + GAP) + CELL / 2,
+      topY: MONTH_ROW_HEIGHT + c.row * (CELL + GAP),
+    });
+  };
+  const hideTooltip = () => setTooltip(null);
 
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4">
@@ -255,35 +270,7 @@ function EstacionCalendario({
       </div>
 
       <HorizontalScrollFade minWidth={gridWidth}>
-        <div
-          className="relative"
-          style={{ width: gridWidth }}
-          onMouseLeave={() => setTooltip(null)}
-          onMouseMove={(e) => {
-            const target = (e.target as HTMLElement).closest(
-              "[data-fecha]",
-            ) as HTMLElement | null;
-            if (!target) {
-              setTooltip(null);
-              return;
-            }
-            const fecha = target.dataset.fecha!;
-            const row = Number(target.dataset.row);
-            const cubiertoAttr = target.dataset.cubierto;
-            setTooltip({
-              fecha,
-              row,
-              cubierto:
-                cubiertoAttr === "true"
-                  ? true
-                  : cubiertoAttr === "false"
-                    ? false
-                    : undefined,
-              x: e.clientX,
-              y: e.clientY,
-            });
-          }}
-        >
+        <div className="relative" style={{ width: gridWidth }}>
           <div
             style={{
               height: MONTH_ROW_HEIGHT,
@@ -332,11 +319,6 @@ function EstacionCalendario({
                 return (
                   <div
                     key={c.fecha}
-                    data-fecha={c.fecha}
-                    data-row={c.row}
-                    data-cubierto={
-                      cubierto === undefined ? "" : String(cubierto)
-                    }
                     className="rounded-[2px]"
                     tabIndex={0}
                     aria-label={`${formatTooltipDate(c.fecha, c.row)}: ${estadoLabel}`}
@@ -348,25 +330,19 @@ function EstacionCalendario({
                       // every cell is now a real calendar date (the grid
                       // spans the full year), so there's no padding case
                       // left that actually needs to stay invisible.
+                      // No border -- per the dataviz skill's mark spec (now
+                      // followed by the other two /datos charts too), the
+                      // 3px grid gap between cells is what separates them,
+                      // not a stroke.
                       backgroundColor: cubierto
                         ? COLOR_CUBIERTO_FILL
                         : COLOR_INSUFICIENTE,
-                      border: cubierto
-                        ? `1px solid ${COLOR_CUBIERTO_BORDER}`
-                        : undefined,
                       outline: "none",
                     }}
-                    onFocus={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      setTooltip({
-                        fecha: c.fecha,
-                        row: c.row,
-                        cubierto,
-                        x: rect.left + rect.width / 2,
-                        y: rect.top,
-                      });
-                    }}
-                    onBlur={() => setTooltip(null)}
+                    onMouseEnter={() => showTooltip(c, cubierto)}
+                    onMouseLeave={hideTooltip}
+                    onFocus={() => showTooltip(c, cubierto)}
+                    onBlur={hideTooltip}
                   />
                 );
               })}
@@ -375,12 +351,14 @@ function EstacionCalendario({
 
           {tooltip && (
             <div
-              className="pointer-events-none fixed z-20 grid gap-1 rounded-xl border border-black/[0.06] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-[6px]"
-              style={{
-                left: tooltip.x,
-                top: tooltip.y,
-                transform: "translate(-30%, -115%)",
-              }}
+              className="pointer-events-none absolute z-10 grid w-52 gap-1 rounded-xl border border-black/[0.06] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-[6px]"
+              style={tooltipPositionStyle(
+                tooltip.centerX,
+                tooltip.topY,
+                gridWidth,
+                gridHeight,
+                TOOLTIP_WIDTH,
+              )}
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
                 {formatTooltipDate(tooltip.fecha, tooltip.row)}
@@ -508,10 +486,7 @@ export default function CoberturaEstacionesChart({
           <span className="flex items-center gap-1.5">
             <span
               className="h-2 w-2 rounded-[2px]"
-              style={{
-                backgroundColor: COLOR_CUBIERTO_FILL,
-                border: `1px solid ${COLOR_CUBIERTO_BORDER}`,
-              }}
+              style={{ backgroundColor: COLOR_CUBIERTO_FILL }}
             />
             Con datos
           </span>
