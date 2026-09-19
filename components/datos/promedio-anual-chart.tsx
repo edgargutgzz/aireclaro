@@ -3,12 +3,6 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
@@ -216,6 +210,40 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
         );
       })}
     </div>
+  );
+}
+
+// A "falta de información" pill with a hover/focus tooltip breaking down why
+// -- was shadcn's Tooltip (Radix), replaced when shadcn was dropped
+// project-wide. Plain hover/focus state, same visual recipe. Opens above,
+// centered -- these pills sit low in the card with room above them, so no
+// edge-clamping needed the way the chart's own data-point tooltips do.
+function InfoPill({ nombre, rows }: { nombre: string; rows: TrimestreRow[] }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <span
+      className="relative inline-block"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={() => setOpen(false)}
+    >
+      <span
+        tabIndex={0}
+        className="cursor-default rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-500"
+      >
+        {nombre}
+      </span>
+      {open && (
+        <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 grid w-[17rem] -translate-x-1/2 gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 text-gray-800 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
+          <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+            {nombre}
+          </span>
+          <TrimestreBreakdown rows={rows} />
+        </div>
+      )}
+    </span>
   );
 }
 
@@ -641,27 +669,15 @@ export default function PromedioAnualChart({
             <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
               Estaciones con falta de información
             </span>
-            <TooltipProvider delayDuration={150}>
-              <div className="flex flex-wrap gap-2">
-                {sinDatos.map((est) => (
-                  <Tooltip key={est.sensorId}>
-                    <TooltipTrigger asChild>
-                      <span className="cursor-default rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-500">
-                        {est.nombre}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent className="w-[17rem] rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 text-gray-800 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
-                      <div className="grid gap-2">
-                        <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                          {est.nombre}
-                        </span>
-                        <TrimestreBreakdown rows={est.rows} />
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            </TooltipProvider>
+            <div className="flex flex-wrap gap-2">
+              {sinDatos.map((est) => (
+                <InfoPill
+                  key={est.sensorId}
+                  nombre={est.nombre}
+                  rows={est.rows}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>

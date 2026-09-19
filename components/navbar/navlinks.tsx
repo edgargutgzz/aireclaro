@@ -4,13 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Map, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
 
 // Shared pill-style nav links, used in both the mobile bottom bar and the
 // desktop SiteHeader. Renders <li> elements: both callers wrap this in a <ul>
-// inside a <nav>. The pill is the shadcn Button's `nav` variant/size (shape,
-// gray-600 resting ink, house focus ring, 20px icons); the state classes
-// below layer on top.
+// inside a <nav>. The state classes below layer on top of the base pill.
 //
 // A link can still be marked `pending: true` to list it without offering it —
 // it then renders as a plain <span> (out of the tab order, nothing pressable)
@@ -21,9 +18,13 @@ const links = [
   { name: "Datos", href: "/datos", icon: BarChart3, pending: false },
 ];
 
-// The base pill, straight from the Button variant — used as-is for the pending
-// span, and as the starting point for each live link.
-const navPill = buttonVariants({ variant: "nav", size: "nav" });
+// The base pill: was shadcn's Button `nav` variant/size (a plain flex row,
+// gray-600 resting ink, house focus ring, 20px icons), replaced when shadcn
+// was dropped project-wide -- this is the exact resolved class string that
+// variant/size combo produced (captured once via the actual cva/tailwind-
+// merge pipeline before removing the dependency, not retyped by hand).
+const navPill =
+  "items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 flex rounded-full border border-transparent text-gray-600 [&_svg]:size-5 mx-auto w-full max-w-[7.5rem] gap-2 px-2 py-3 md:mx-0 md:w-auto md:max-w-none md:justify-start md:px-5 md:py-2.5";
 
 // Current-page treatment, identical on both bars: a faint neutral wash a step
 // past the hover + darkest ink (`text-gray-900`, icon follows via currentColor)
@@ -72,24 +73,27 @@ export default function Navlinks() {
 
         return (
           <li key={link.name} className="flex-1 md:flex-initial">
-            {/* The pill is the link itself (Button asChild → the <a>), so the
-                focus ring and hit area match what you see. aria-current is the
-                only thing that tells assistive tech which page this is. */}
-            <Button
-              asChild
-              variant="nav"
-              size="nav"
+            {/* The pill classes go straight on the <Link>, so the focus ring
+                and hit area match what you see. aria-current is the only
+                thing that tells assistive tech which page this is. */}
+            <Link
+              href={link.href}
+              aria-current={isCurrent ? "page" : undefined}
               className={cn(
+                navPill,
                 isCurrent ? navCurrent : "hover:bg-black/[0.04]",
               )}
             >
-              <Link href={link.href} aria-current={isCurrent ? "page" : undefined}>
-                <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-                <span className={cn("text-sm", isCurrent ? "font-semibold" : "font-medium")}>
-                  {link.name}
-                </span>
-              </Link>
-            </Button>
+              <Icon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
+              <span
+                className={cn(
+                  "text-sm",
+                  isCurrent ? "font-semibold" : "font-medium",
+                )}
+              >
+                {link.name}
+              </span>
+            </Link>
           </li>
         );
       })}

@@ -1,13 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
 import { getPM25Color, roundPM25 } from "@/lib/air-quality";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 // Pilot: August 2026 only, PM2.5 only. Reads sima_promedios_diarios (a view
 // over sima_mediciones_finales that applies the >=18-valid-hour / 75%
@@ -28,20 +20,22 @@ function diasDeAgosto(): string[] {
 export default async function Pm25DailyTable() {
   const supabase = await createClient();
 
-  const [{ data: estaciones, error: estacionesError }, { data: promedios, error: promediosError }] =
-    await Promise.all([
-      supabase
-        .from("sima_sensores")
-        .select("sensor_id, nombre_display")
-        .neq("sensor_id", "FIN")
-        .order("nombre_display"),
-      supabase
-        .from("sima_promedios_diarios")
-        .select("sensor_id, fecha, promedio")
-        .eq("parametro", PARAM)
-        .gte("fecha", FECHA_INI)
-        .lt("fecha", FECHA_FIN),
-    ]);
+  const [
+    { data: estaciones, error: estacionesError },
+    { data: promedios, error: promediosError },
+  ] = await Promise.all([
+    supabase
+      .from("sima_sensores")
+      .select("sensor_id, nombre_display")
+      .neq("sensor_id", "FIN")
+      .order("nombre_display"),
+    supabase
+      .from("sima_promedios_diarios")
+      .select("sensor_id, fecha, promedio")
+      .eq("parametro", PARAM)
+      .gte("fecha", FECHA_INI)
+      .lt("fecha", FECHA_FIN),
+  ]);
 
   if (estacionesError || promediosError) {
     throw new Error(
@@ -56,49 +50,62 @@ export default async function Pm25DailyTable() {
 
   const dias = diasDeAgosto();
 
+  // Plain table -- was shadcn's Table primitive, replaced when shadcn was
+  // dropped project-wide. Classes below are the exact resolved output of the
+  // old primitive + this component's own className overrides (captured once
+  // via the actual cn()/tailwind-merge pipeline before removing the
+  // dependency, not retyped by hand), so the rendered result is unchanged.
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="sticky left-0 z-10 bg-white text-xs font-medium uppercase tracking-wide text-gray-400">
-              Día
-            </TableHead>
-            {(estaciones ?? []).map((estacion) => (
-              <TableHead
-                key={estacion.sensor_id}
-                className="whitespace-nowrap text-xs font-medium text-gray-500"
+      <div className="relative w-full overflow-auto">
+        <table className="w-full caption-bottom text-sm">
+          <thead className="[&_tr]:border-b">
+            <tr className="border-b transition-colors hover:bg-gray-50">
+              <th className="sticky left-0 z-10 h-10 bg-white px-2 text-left align-middle text-xs font-medium uppercase tracking-wide text-gray-400 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+                Día
+              </th>
+              {(estaciones ?? []).map((estacion) => (
+                <th
+                  key={estacion.sensor_id}
+                  className="h-10 whitespace-nowrap px-2 text-left align-middle text-xs font-medium text-gray-500 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
+                >
+                  {estacion.nombre_display}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="[&_tr:last-child]:border-0">
+            {dias.map((fecha) => (
+              <tr
+                key={fecha}
+                className="border-b border-t border-gray-100 transition-colors hover:bg-gray-50"
               >
-                {estacion.nombre_display}
-              </TableHead>
+                <td className="sticky left-0 z-10 bg-white p-2 align-middle text-sm font-medium text-gray-700 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+                  {fecha.slice(-2)}
+                </td>
+                {(estaciones ?? []).map((estacion) => {
+                  const promedio =
+                    porCelda.get(`${estacion.sensor_id}|${fecha}`) ?? null;
+                  const colorInfo = getPM25Color(promedio);
+                  return (
+                    <td
+                      key={estacion.sensor_id}
+                      className="p-2 align-middle text-sm font-medium [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
+                      style={colorInfo ? { color: colorInfo.text } : undefined}
+                    >
+                      {promedio !== null ? (
+                        roundPM25(promedio)
+                      ) : (
+                        <span className="text-gray-300">–</span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
             ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {dias.map((fecha) => (
-            <TableRow key={fecha} className="border-t border-gray-100">
-              <TableCell className="sticky left-0 z-10 bg-white text-sm font-medium text-gray-700">
-                {fecha.slice(-2)}
-              </TableCell>
-              {(estaciones ?? []).map((estacion) => {
-                const promedio = porCelda.get(`${estacion.sensor_id}|${fecha}`) ?? null;
-                const colorInfo = getPM25Color(promedio);
-                return (
-                  <TableCell
-                    key={estacion.sensor_id}
-                    className="text-sm font-medium"
-                    style={colorInfo ? { color: colorInfo.text } : undefined}
-                  >
-                    {promedio !== null ? roundPM25(promedio) : (
-                      <span className="text-gray-300">–</span>
-                    )}
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

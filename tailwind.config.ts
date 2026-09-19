@@ -1,70 +1,30 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config: Config = {
-  // The app is light-only (see .ai-style-guide.md §3). `darkMode: "class"` is
-  // set so shadcn component source that carries `dark:` variants stays inert
-  // rather than erroring — no `.dark` class is ever put on the tree.
+  // The app is light-only (see .ai-style-guide.md §3) -- no `.dark` class is
+  // ever put on the tree, so this setting is inert either way. Left as
+  // "class" rather than switched to Tailwind's default ("media") on
+  // principle: nothing should start following the OS theme by surprise if a
+  // `dark:` variant is ever typed by mistake.
   darkMode: ["class"],
-  content: [
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-  ],
+  content: ["./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}"],
   theme: {
     extend: {
       width: {
         // Floating map-overlay panel widths — named so they read as
         // intentional design decisions instead of one-off magic numbers.
-        'panel-md': '340px',
-        'panel-filters': '380px',
-        'panel-lg': '460px',
+        "panel-md": "340px",
+        "panel-filters": "380px",
+        "panel-lg": "460px",
       },
-      // shadcn/ui token bridge. The channel values live in app/globals.css as
-      // `--background: <h s l>` triplets; these map them onto Tailwind colour
-      // utilities (`bg-background`, `text-muted-foreground`, `border-border`…).
-      // The palette is tuned to the house language — warm grays, blue-600
-      // primary — not shadcn's stock stone. The air-quality scale is NOT here;
-      // it stays in lib/air-quality.ts.
+      // House CSS-variable tokens (app/globals.css). Was shadcn/ui's full
+      // token bridge (~20 colors); trimmed 2026-09-19 when shadcn was
+      // removed project-wide down to the three still actually consumed --
+      // see the comment in globals.css for what got cut and why.
       colors: {
         border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
-        },
       },
       borderRadius: {
         // Anchored to --radius (0.75rem / 12px = the house button radius,
@@ -74,23 +34,8 @@ const config: Config = {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+};
 
-export default config
+export default config;

@@ -29,12 +29,13 @@ proposing freely — they inform judgment, they don't replace it.
 3. **Then how it looks — consistency and order before aesthetics.** Reuse the
    same conventions, tokens, and components; consult `.ai-style-guide.md` when
    adding a **new component** or changing a **token** (a one-off tweak to an
-   existing component doesn't need a full read). Interactive primitives come
-   from **shadcn/ui** (`components/ui/`, added with
-   `pnpm dlx shadcn@2.10.0 add <name>` — pinned to 2.x, this repo is Tailwind
-   v3); don't hand-roll a control shadcn covers. Taste calls ("lighter /
-   stronger / nicer") come *after* consistency is in place, and are never a
-   reason to diverge from the system.
+   existing component doesn't need a full read). **No component library** —
+   shadcn/ui was removed 2026-09-19 (same reasoning as dropping Recharts:
+   less lock-in, direct control); a new interactive control is hand-built to
+   the style guide's tokens/recipes, or copied from the nearest existing
+   pattern. Taste calls ("lighter / stronger / nicer") come *after*
+   consistency is in place, and are never a reason to diverge from the
+   system.
 
 ## Commands
 
