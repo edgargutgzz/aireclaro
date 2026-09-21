@@ -126,7 +126,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
     },
     {
       id: "contaminante",
-      label: "Contaminante",
+      label: "Contaminantes",
       icon: Wind,
       body: (
         <div className="grid gap-3">
