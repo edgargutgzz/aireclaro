@@ -603,7 +603,7 @@ export default function DiasInsalubresChart({
     <ChartCard
       title="Días de aire insalubre en la Zona Metropolitana de Monterrey"
       subtitle={
-        <>
+        <div className="md:flex md:items-center md:gap-3">
           <div>
             <span className="font-semibold text-gray-800">
               {totalInsalubres}
@@ -611,7 +611,7 @@ export default function DiasInsalubresChart({
             días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
           </div>
           {priorYearDelta !== null && year !== null && (
-            <div className="mt-1 flex items-center gap-1 text-xs">
+            <div className="mt-1 flex items-center gap-1 text-sm md:mt-0">
               {priorYearDelta < 0 ? (
                 <ArrowDown className="h-3.5 w-3.5" style={{ color: COLOR_SALUDABLE }} />
               ) : priorYearDelta > 0 ? (
@@ -639,7 +639,7 @@ export default function DiasInsalubresChart({
               </span>
             </div>
           )}
-        </>
+        </div>
       }
       headerRight={
         <>
