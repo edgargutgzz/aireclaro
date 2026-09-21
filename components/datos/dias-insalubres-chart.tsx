@@ -574,7 +574,7 @@ export default function DiasInsalubresChart({
           <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
             {totalInsalubres}
           </span>{" "}
-          días insalubres de {POLLUTANT_LABEL[pollutant]} en {year}
+          días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
           {isPartialYear &&
             ` (hasta ${MONTH_FULL[chartData.length - 1].toLowerCase()})`}
         </>
