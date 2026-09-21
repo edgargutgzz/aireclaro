@@ -22,11 +22,11 @@ export default function DiasInsalubresSkeleton() {
             <SkeletonBlock className="h-3 w-20" />
           </div>
         </div>
-        {/* Matches StackedBarsChart's fixed CHART_HEIGHT (380px, same at
+        {/* Matches StackedBarsChart's fixed CHART_HEIGHT (460px, same at
             every breakpoint since the Recharts -> hand-rolled SVG rebuild) --
             a taller/shorter skeleton than the real chart is exactly the
             layout-jump this component exists to prevent. */}
-        <SkeletonBlock className="h-[380px] w-full rounded-lg" />
+        <SkeletonBlock className="h-[460px] w-full rounded-lg" />
       </div>
 
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">

@@ -201,12 +201,12 @@ interface MonthBar {
 // outer tip of the whole stack is rounded -- square everywhere the bar
 // meets the baseline or another segment.
 
-const CHART_HEIGHT = 380;
+const CHART_HEIGHT = 460;
 const PAD_TOP = 20;
 const PAD_BOTTOM = 28;
 const PAD_LEFT = 32;
 const PAD_RIGHT = 8;
-const BAR_WIDTH_MAX = 24;
+const BAR_WIDTH_MAX = 40;
 const BAR_WIDTH_MIN = 8;
 const BAR_RADIUS = 4;
 const STACK_GAP = 2;
@@ -283,14 +283,17 @@ function StackedBarsChart({
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
-  // Same ratio of bar to leftover "air" as the desktop-natural 24/110 at any
-  // column width, clamped so it never gets imperceptibly thin or (at MAX)
-  // ever exceeds the original fixed 24px.
+  // A fixed 10px of "air" reserved on each column regardless of width,
+  // clamped so the bar never gets imperceptibly thin on a narrow viewport
+  // or (at the widest columns) grows past BAR_WIDTH_MAX -- 2026-09-21: the
+  // 24px cap this used to clamp to read as lost in a 100px+ column once the
+  // chart stopped scrolling and started sizing to the card; bumped to 40,
+  // still a thin mark, just no longer mostly empty air.
   const barWidth = Math.min(
     BAR_WIDTH_MAX,
     Math.max(BAR_WIDTH_MIN, monthColWidth - 10),
   );
-  const totalWidth = monthColWidth * 12;
+  const totalWidth = monthColWidth * months.length;
   const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
   const plotRight = totalWidth - PAD_RIGHT;
 
@@ -453,29 +456,6 @@ export default function DiasInsalubresChart({
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
   const activeData = data[pollutant];
 
-  // Measures the card's own content width so all 12 months fit without a
-  // scroll in the common case -- unlike the other two /datos charts, this
-  // one always has exactly 12 categories, so it should size to the card
-  // rather than defaulting to HorizontalScrollFade's scroll. MONTH_COL_WIDTH_MAX
-  // (the original fixed value) is the initial/SSR render so there's no
-  // layout jump once the observer measures.
-  const measureRef = useRef<HTMLDivElement>(null);
-  const [monthColWidth, setMonthColWidth] = useState(MONTH_COL_WIDTH_MAX);
-  useEffect(() => {
-    const el = measureRef.current;
-    if (!el) return;
-    const update = () => {
-      const w = el.clientWidth;
-      setMonthColWidth(
-        Math.min(MONTH_COL_WIDTH_MAX, Math.max(MONTH_COL_WIDTH_MIN, w / 12)),
-      );
-    };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
   const years = useMemo(
     () => [...new Set(activeData.map((d) => d.ano))].sort(),
     [activeData],
@@ -489,11 +469,16 @@ export default function DiasInsalubresChart({
       ? selectedYear
       : years[years.length - 1] ?? null;
 
-  const chartData = useMemo<MonthBar[]>(() => {
+  // Builds all 12 months, then drops the trailing run that has no data --
+  // the current in-progress month plus whatever hasn't happened yet. Only
+  // trailing months are dropped (a real gap mid-year still renders as an
+  // empty column) so the chart doesn't reserve width for a stretch of the
+  // year that's simply in the future.
+  const { chartData, isPartialYear } = useMemo(() => {
     const byMonth = new Map(
       activeData.filter((d) => d.ano === year).map((d) => [d.mesNumero, d]),
     );
-    return Array.from({ length: 12 }, (_, i) => {
+    const full: MonthBar[] = Array.from({ length: 12 }, (_, i) => {
       const mesNumero = i + 1;
       const row = byMonth.get(mesNumero);
       return {
@@ -505,7 +490,43 @@ export default function DiasInsalubresChart({
         diasTotales: row?.diasTotales ?? 0,
       };
     });
+    let lastIdx = full.length - 1;
+    while (lastIdx > 0 && full[lastIdx].diasTotales === 0) lastIdx--;
+    return {
+      chartData: full.slice(0, lastIdx + 1),
+      isPartialYear: lastIdx < 11,
+    };
   }, [activeData, year]);
+
+  // Measures the card's own content width so the visible months fit without
+  // a scroll in the common case -- unlike the other two /datos charts, this
+  // one always has a small, fixed-or-shrinking category count (never more
+  // than 12), so it should size to the card rather than defaulting to
+  // HorizontalScrollFade's scroll. MONTH_COL_WIDTH_MAX (the original fixed
+  // value) is the initial/SSR render so there's no layout jump once the
+  // observer measures. Re-measures against the current month count too, not
+  // just on resize -- switching from a partial year (fewer columns) to a
+  // complete one changes how wide each column should be at the same width.
+  const monthCount = chartData.length;
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [monthColWidth, setMonthColWidth] = useState(MONTH_COL_WIDTH_MAX);
+  useEffect(() => {
+    const el = measureRef.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      setMonthColWidth(
+        Math.min(
+          MONTH_COL_WIDTH_MAX,
+          Math.max(MONTH_COL_WIDTH_MIN, w / monthCount),
+        ),
+      );
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [monthCount]);
 
   const totalInsalubres = chartData.reduce((sum, d) => sum + d.insalubres, 0);
   const tabs = infoTabs(pollutant);
@@ -519,26 +540,33 @@ export default function DiasInsalubresChart({
             {totalInsalubres}
           </span>{" "}
           días insalubres de {POLLUTANT_LABEL[pollutant]} en {year}
+          {isPartialYear &&
+            ` (hasta ${MONTH_FULL[chartData.length - 1].toLowerCase()})`}
         </>
       }
       headerRight={
         <>
           {SHOW_PM10_TAB && (
-            <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
-              {(["pm25", "pm10"] as const).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPollutant(p)}
-                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                    pollutant === p
-                      ? "bg-white text-gray-800 shadow-sm hover:shadow"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  {POLLUTANT_LABEL[p]}
-                </button>
-              ))}
-            </div>
+            <>
+              <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+                {(["pm25", "pm10"] as const).map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => setPollutant(p)}
+                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                      pollutant === p
+                        ? "bg-white text-gray-800 shadow-sm hover:shadow"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    {POLLUTANT_LABEL[p]}
+                  </button>
+                ))}
+              </div>
+              {/* Separates the pollutant toggle from the year toggle -- two
+                  independent choices, not one flat row of four options. */}
+              <div className="h-5 w-px bg-gray-200" />
+            </>
           )}
           <YearToggle years={years} year={year} onChange={setSelectedYear} />
         </>
@@ -564,12 +592,14 @@ export default function DiasInsalubresChart({
             </span>
           </div>
         </div>
-        {/* All 12 months render (Sep-Dic just come out empty). measureRef
-            sizes each month's column to fit this card's real width; only a
-            viewport narrower than MONTH_COL_WIDTH_MIN * 12 falls back to
+        {/* Trailing months with no data yet are dropped (see chartData) so
+            the chart doesn't reserve width for a stretch of the year that
+            hasn't happened. measureRef sizes each remaining month's column
+            to fit this card's real width; only a viewport narrower than
+            MONTH_COL_WIDTH_MIN * monthCount falls back to
             HorizontalScrollFade's scroll instead of compressing further. */}
         <div ref={measureRef} className="w-full">
-          <HorizontalScrollFade minWidth={monthColWidth * 12}>
+          <HorizontalScrollFade minWidth={monthColWidth * monthCount}>
             <StackedBarsChart months={chartData} monthColWidth={monthColWidth} />
           </HorizontalScrollFade>
         </div>
