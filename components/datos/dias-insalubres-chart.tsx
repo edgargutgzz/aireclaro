@@ -125,27 +125,6 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       ),
     },
     {
-      id: "contaminante",
-      label: "Contaminantes",
-      icon: Wind,
-      body: (
-        <div className="grid gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">
-              PM2.5
-            </p>
-            <p className="mt-1">{POLLUTANT_DEFINITION.pm25}</p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">
-              PM10
-            </p>
-            <p className="mt-1">{POLLUTANT_DEFINITION.pm10}</p>
-          </div>
-        </div>
-      ),
-    },
-    {
       id: "norma",
       label: "Norma mexicana",
       icon: Scale,
@@ -164,6 +143,27 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           . El límite fue de {antes} µg/m³ en 2025 y bajó a {desde} µg/m³ en
           2026.
         </>
+      ),
+    },
+    {
+      id: "contaminante",
+      label: "Contaminantes",
+      icon: Wind,
+      body: (
+        <div className="grid gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">
+              PM2.5
+            </p>
+            <p className="mt-1">{POLLUTANT_DEFINITION.pm25}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">
+              PM10
+            </p>
+            <p className="mt-1">{POLLUTANT_DEFINITION.pm10}</p>
+          </div>
+        </div>
       ),
     },
     {
