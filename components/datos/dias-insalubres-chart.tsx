@@ -573,7 +573,7 @@ export default function DiasInsalubresChart({
       }
     >
       <div className="px-5 pb-6 pt-6">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-6 flex items-center justify-between">
           <span className="text-xs text-gray-400">Días del mes</span>
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
