@@ -130,13 +130,13 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       icon: Scale,
       body: (
         <>
-          Se clasifica un día como insalubre si alguna estación supera el
-          límite diario, que bajó de {antes} µg/m³ en 2025 a{" "}
+          Se clasifica un día como insalubre si alguna estación de monitoreo
+          supera el límite diario, que bajó de {antes} µg/m³ en 2025 a{" "}
           {desde} µg/m³ en 2026; de lo contrario, se clasifica como
-          saludable. Un día se contabiliza si alguna estación
-          reportó mediciones suficientes para un promedio válido, por lo que
-          algunos meses muestran menos días de los que corresponden. Todo lo
-          anterior, con base en la Norma mexicana{" "}
+          saludable. Algunos meses pueden mostrar menos días de los que
+          corresponden, ya que un día se contabiliza solo si alguna estación
+          de monitoreo reportó mediciones suficientes para un promedio
+          válido. Todo lo anterior, con base en la Norma mexicana{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
