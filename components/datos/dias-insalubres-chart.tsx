@@ -136,7 +136,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           saludable. Un día se contabiliza si alguna estación
           reportó mediciones suficientes para un promedio válido, por lo que
           algunos meses muestran menos días de los que corresponden. Todo lo
-          anterior, con base en la{" "}
+          anterior, con base en la Norma mexicana{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
