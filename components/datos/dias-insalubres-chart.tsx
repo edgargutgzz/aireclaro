@@ -218,11 +218,13 @@ function MonthTooltipCard({
   totalWidth,
   barCenterX,
   barTopY,
+  barWidth,
 }: {
   month: MonthBar;
   totalWidth: number;
   barCenterX: number;
   barTopY: number;
+  barWidth: number;
 }) {
   const pct =
     month.diasTotales > 0
@@ -236,6 +238,8 @@ function MonthTooltipCard({
     CHART_HEIGHT,
     TOOLTIP_WIDTH,
     TOOLTIP_HEIGHT,
+    10,
+    barWidth / 2,
   );
 
   return (
@@ -440,6 +444,7 @@ function StackedBarsChart({
           barTopY={
             baseline - valueToHeight(hovered.insalubres + hovered.saludables)
           }
+          barWidth={barWidth}
         />
       )}
     </div>

@@ -362,6 +362,8 @@ function TooltipCard({
     CHART_HEIGHT,
     TOOLTIP_WIDTH,
     TOOLTIP_HEIGHT,
+    10,
+    BAR_WIDTH / 2,
   );
 
   return (

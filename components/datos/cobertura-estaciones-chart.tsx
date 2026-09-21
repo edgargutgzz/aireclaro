@@ -360,6 +360,8 @@ function EstacionCalendario({
                 gridHeight,
                 TOOLTIP_WIDTH,
                 TOOLTIP_HEIGHT,
+                10,
+                CELL / 2,
               )}
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">

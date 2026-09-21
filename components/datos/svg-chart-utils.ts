@@ -21,8 +21,12 @@ import type { CSSProperties } from "react";
 // visible one always gets promoted). So a tooltip anchored above a tall bar
 // (topY near the chart's own top edge) doesn't just look cramped if it pokes
 // above y=0, it gets silently clipped there, invisible above the fold with
-// no visual sign anything is missing. tooltipHeight lets this flip the
-// tooltip below the point instead whenever there isn't room above.
+// no visual sign anything is missing. tooltipHeight lets this catch that
+// case. Placing it directly below the point instead doesn't work either --
+// the mark itself occupies that whole band down to the baseline, so a
+// same-column "below" placement would just sit the tooltip on top of the
+// bar it's describing. Beside the mark, clear of its own width, is the only
+// spot with no overlap either way.
 export function tooltipPositionStyle(
   centerX: number,
   topY: number,
@@ -31,24 +35,36 @@ export function tooltipPositionStyle(
   tooltipWidth: number,
   tooltipHeight: number,
   gap = 10,
+  markHalfWidth = 16,
 ): CSSProperties {
-  const overflowsRight = centerX + tooltipWidth / 2 > totalWidth;
-  const overflowsLeft = centerX - tooltipWidth / 2 < 0;
-  const horizontal: CSSProperties = overflowsRight
-    ? { right: totalWidth - centerX }
-    : overflowsLeft
-      ? { left: centerX }
-      : { left: centerX, transform: "translateX(-50%)" };
   const roomAbove = topY - gap >= tooltipHeight;
-  const vertical: CSSProperties = roomAbove
-    ? { bottom: chartHeight - topY + gap }
-    : { top: topY + gap };
-  return { ...horizontal, ...vertical };
+  if (roomAbove) {
+    const overflowsRight = centerX + tooltipWidth / 2 > totalWidth;
+    const overflowsLeft = centerX - tooltipWidth / 2 < 0;
+    const horizontal: CSSProperties = overflowsRight
+      ? { right: totalWidth - centerX }
+      : overflowsLeft
+        ? { left: centerX }
+        : { left: centerX, transform: "translateX(-50%)" };
+    return { ...horizontal, bottom: chartHeight - topY + gap };
+  }
+  const sideGap = markHalfWidth + gap;
+  const fitsRight = centerX + sideGap + tooltipWidth <= totalWidth;
+  const horizontal: CSSProperties = fitsRight
+    ? { left: centerX + sideGap }
+    : { right: totalWidth - (centerX - sideGap) };
+  return { ...horizontal, top: Math.max(0, topY) };
 }
 
 // Standard "nice numbers" tick generation so a y-axis reads 0/5/10/... or
 // 0/10/20/..., never an arbitrary fraction -- the dataviz skill's "round to
-// clean numbers" rule.
+// clean numbers" rule. The top tick is always >= maxValue (Math.ceil, not
+// just stepping up toward it): a step search that stops as soon as the
+// *current* tick clears maxValue can still land short of it -- e.g.
+// maxValue=33.5 picks step=10, and stepping 0/10/20/30 stops at 30 because
+// 30<=33.5, even though 30 doesn't actually cover 33.5. Callers that scale a
+// bar's height off niceMax (the last tick) would then silently draw a bar
+// taller than the axis it's plotted against.
 export function niceTicks(maxValue: number, tickCount = 5): number[] {
   if (maxValue <= 0) return [0];
   const rawStep = maxValue / tickCount;
@@ -56,8 +72,9 @@ export function niceTicks(maxValue: number, tickCount = 5): number[] {
   const norm = rawStep / magnitude;
   const niceNorm = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
   const step = niceNorm * magnitude;
+  const topTick = Math.ceil(maxValue / step) * step;
   const ticks: number[] = [];
-  for (let v = 0; v <= maxValue + step * 0.001; v += step) {
+  for (let v = 0; v <= topTick + step * 0.001; v += step) {
     ticks.push(Math.round(v * 100) / 100);
   }
   return ticks;
