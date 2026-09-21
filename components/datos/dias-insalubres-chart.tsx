@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
+import { BookOpen, HeartPulse, Info, Scale, ShieldCheck } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -13,6 +13,7 @@ import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
+import { InfoDialog } from "@/components/mapa/info-dialog";
 import {
   niceTicks,
   roundedRectPath,
@@ -78,6 +79,16 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
   pm25: { antes: 33, desde: 25 },
   pm10: { antes: 60, desde: 50 },
+};
+// "What is this pollutant" -- the PM2.5 text is the map's own explainer
+// (components/mapa/air-quality-legend.tsx), reused verbatim rather than
+// retyped; PM10's is new, matched to the same tone/structure since the map
+// never needed one (it's PM2.5-only).
+const POLLUTANT_DEFINITION: Record<Pollutant, string> = {
+  pm25:
+    "Partículas en suspensión en el aire con un diámetro de 2.5 micrómetros o menos, unas 30 veces más delgadas que un cabello humano. Evaden las defensas de la nariz y la garganta, por lo que son las más peligrosas para la salud.",
+  pm10:
+    "Partículas en suspensión en el aire con un diámetro de 10 micrómetros o menos. Más grandes que PM2.5, quedan atrapadas principalmente en las vías respiratorias superiores (nariz, garganta, bronquios) en lugar de llegar a los pulmones.",
 };
 
 // Reserved status pair (good/bad), not a categorical hue set: red/green is
@@ -492,6 +503,7 @@ export default function DiasInsalubresChart({
   data: Record<Pollutant, MonthData[]>;
 }) {
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
+  const [showPollutantInfo, setShowPollutantInfo] = useState(false);
   const activeData = data[pollutant];
 
   const years = useMemo(
@@ -512,7 +524,7 @@ export default function DiasInsalubresChart({
   // trailing months are dropped (a real gap mid-year still renders as an
   // empty column) so the chart doesn't reserve width for a stretch of the
   // year that's simply in the future.
-  const { chartData, isPartialYear } = useMemo(() => {
+  const chartData = useMemo<MonthBar[]>(() => {
     const byMonth = new Map(
       activeData.filter((d) => d.ano === year).map((d) => [d.mesNumero, d]),
     );
@@ -530,10 +542,7 @@ export default function DiasInsalubresChart({
     });
     let lastIdx = full.length - 1;
     while (lastIdx > 0 && full[lastIdx].diasTotales === 0) lastIdx--;
-    return {
-      chartData: full.slice(0, lastIdx + 1),
-      isPartialYear: lastIdx < 11,
-    };
+    return full.slice(0, lastIdx + 1);
   }, [activeData, year]);
 
   // Measures the card's own content width so the visible months fit without
@@ -573,6 +582,7 @@ export default function DiasInsalubresChart({
   const tabs = infoTabs(pollutant);
 
   return (
+    <>
     <ChartCard
       title="Días de aire insalubre en la Zona Metropolitana de Monterrey"
       subtitle={
@@ -581,8 +591,6 @@ export default function DiasInsalubresChart({
             {totalInsalubres}
           </span>{" "}
           días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
-          {isPartialYear &&
-            ` (hasta ${MONTH_FULL[chartData.length - 1].toLowerCase()})`}
         </>
       }
       headerRight={
@@ -604,6 +612,17 @@ export default function DiasInsalubresChart({
                   </button>
                 ))}
               </div>
+              {/* "What is PM2.5/PM10" -- same icon-next-to-the-label pattern
+                  as the map's own legend (air-quality-legend.tsx), reusing
+                  its InfoDialog rather than a new "Contaminante:" label. */}
+              <button
+                type="button"
+                onClick={() => setShowPollutantInfo(true)}
+                className="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                aria-label={`Qué es ${POLLUTANT_LABEL[pollutant]}`}
+              >
+                <Info aria-hidden="true" className="h-4 w-4" />
+              </button>
               {/* Separates the pollutant toggle from the year toggle -- two
                   independent choices, not one flat row of four options. */}
               <div className="h-5 w-px bg-gray-200" />
@@ -652,5 +671,16 @@ export default function DiasInsalubresChart({
         <InfoTabs tabs={tabs} />
       </div>
     </ChartCard>
+    {showPollutantInfo && (
+      <InfoDialog
+        title={POLLUTANT_LABEL[pollutant]}
+        onClose={() => setShowPollutantInfo(false)}
+      >
+        <p className="text-sm leading-relaxed text-gray-600">
+          {POLLUTANT_DEFINITION[pollutant]}
+        </p>
+      </InfoDialog>
+    )}
+    </>
   );
 }

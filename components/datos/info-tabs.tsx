@@ -9,9 +9,11 @@ import { ChevronDown, type LucideIcon } from "lucide-react";
 // the old plain-border buttons). One component means one place to keep
 // them consistent, instead of trusting two files not to diverge.
 //
-// Deliberately monochrome (2026-09-13): these are a secondary "learn more"
-// row, not calls to action -- per-tab accent colors made them compete with
-// the chart above for attention. Icons stay for scannability, colors don't.
+// Icon color 2026-09-21: the brand purple sampled directly from the OCCAMM
+// logo (public/occamm-logo.png, #743479 -- the dominant purple pixel, not a
+// guess). Was plain gray-400 (2026-09-13, deliberately monochrome so
+// per-tab accent colors didn't compete with the chart above) -- explicit
+// user call to override that.
 export interface InfoTab {
   id: string;
   label: string;
@@ -41,7 +43,7 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
                   : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
-              <Icon className="h-3.5 w-3.5 text-gray-400" />
+              <Icon className="h-3.5 w-3.5 text-[#743479]" />
               {tab.label}
               <ChevronDown
                 className={`h-3.5 w-3.5 text-gray-400 transition-transform ${isActive ? "rotate-180" : ""}`}
