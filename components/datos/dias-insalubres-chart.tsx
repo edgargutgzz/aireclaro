@@ -132,7 +132,12 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
         <>
           Se clasifica la calidad del aire como insalubre o saludable con
           base en el límite diario, que bajó de {antes} µg/m³ en 2025 a{" "}
-          {desde} µg/m³ en 2026, establecido por la{" "}
+          {desde} µg/m³ en 2026. Si al menos una estación registra ese día
+          un valor que supera el límite, el día se clasifica como insalubre.
+          Un día se contabiliza si al menos una estación reportó mediciones
+          suficientes para un promedio diario válido, por lo que algunos
+          meses pueden mostrar menos días de los que corresponden. Todo esto
+          con base en la{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
@@ -141,11 +146,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          . Si al menos una estación registra ese día un valor que supera el
-          límite, el día se clasifica como insalubre. Un día se contabiliza
-          si al menos una estación reportó mediciones suficientes para un
-          promedio diario válido, por lo que algunos meses pueden mostrar
-          menos días de los que corresponden.
+          .
         </>
       ),
     },
