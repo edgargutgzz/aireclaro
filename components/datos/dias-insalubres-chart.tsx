@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
@@ -35,11 +35,15 @@ const MONTH_SHORT = [
   "Nov",
   "Dic",
 ];
-// Natural width per month category -- the chart never compresses narrower
-// than this (12 months * this = the scroll threshold), so bars stay a
-// consistent, readable width instead of shrinking as more months fill in
-// or the viewport narrows.
-const MONTH_COL_WIDTH = 110;
+// This chart always has exactly 12 categories (unlike the other two, whose
+// item count varies), so it should just fit the card instead of defaulting
+// to a scroll -- DiasInsalubresChart measures the available width and
+// shrinks each month's column down to fit. MAX is the desktop-natural width
+// this chart has always rendered at; MIN is the floor before a bar+gap stops
+// reading cleanly, below which it falls back to HorizontalScrollFade's
+// horizontal scroll instead of compressing further.
+const MONTH_COL_WIDTH_MAX = 110;
+const MONTH_COL_WIDTH_MIN = 30;
 const MONTH_FULL = [
   "Enero",
   "Febrero",
@@ -202,7 +206,8 @@ const PAD_TOP = 20;
 const PAD_BOTTOM = 28;
 const PAD_LEFT = 32;
 const PAD_RIGHT = 8;
-const BAR_WIDTH = 24;
+const BAR_WIDTH_MAX = 24;
+const BAR_WIDTH_MIN = 8;
 const BAR_RADIUS = 4;
 const STACK_GAP = 2;
 const TOOLTIP_WIDTH = 176; // px, matches the tooltip card's own min-w-[11rem]
@@ -269,10 +274,23 @@ function MonthTooltipCard({
   );
 }
 
-function StackedBarsChart({ months }: { months: MonthBar[] }) {
+function StackedBarsChart({
+  months,
+  monthColWidth,
+}: {
+  months: MonthBar[];
+  monthColWidth: number;
+}) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
-  const totalWidth = MONTH_COL_WIDTH * 12;
+  // Same ratio of bar to leftover "air" as the desktop-natural 24/110 at any
+  // column width, clamped so it never gets imperceptibly thin or (at MAX)
+  // ever exceeds the original fixed 24px.
+  const barWidth = Math.min(
+    BAR_WIDTH_MAX,
+    Math.max(BAR_WIDTH_MIN, monthColWidth - 10),
+  );
+  const totalWidth = monthColWidth * 12;
   const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
   const plotRight = totalWidth - PAD_RIGHT;
 
@@ -282,7 +300,7 @@ function StackedBarsChart({ months }: { months: MonthBar[] }) {
 
   const valueToHeight = (v: number) => (v / niceMax) * plotHeight;
   const baseline = PAD_TOP + plotHeight;
-  const bandX = (i: number) => PAD_LEFT + i * MONTH_COL_WIDTH;
+  const bandX = (i: number) => PAD_LEFT + i * monthColWidth;
 
   const hovered = hoveredIdx !== null ? months[hoveredIdx] : null;
   const clearHover = (i: number) =>
@@ -327,7 +345,7 @@ function StackedBarsChart({ months }: { months: MonthBar[] }) {
         })}
 
         {months.map((m, i) => {
-          const x = bandX(i) + (MONTH_COL_WIDTH - BAR_WIDTH) / 2;
+          const x = bandX(i) + (monthColWidth - barWidth) / 2;
           const isHovered = hoveredIdx === i;
 
           const totalH = valueToHeight(m.insalubres + m.saludables);
@@ -347,7 +365,7 @@ function StackedBarsChart({ months }: { months: MonthBar[] }) {
                   d={roundedRectPath(
                     x,
                     baseline - insalubresH,
-                    BAR_WIDTH,
+                    barWidth,
                     insalubresH,
                     insalubresIsTip ? { tl: BAR_RADIUS, tr: BAR_RADIUS } : {},
                   )}
@@ -361,7 +379,7 @@ function StackedBarsChart({ months }: { months: MonthBar[] }) {
                   d={roundedRectPath(
                     x,
                     baseline - totalH,
-                    BAR_WIDTH,
+                    barWidth,
                     saludablesH,
                     { tl: BAR_RADIUS, tr: BAR_RADIUS },
                   )}
@@ -371,7 +389,7 @@ function StackedBarsChart({ months }: { months: MonthBar[] }) {
                 />
               )}
               <text
-                x={bandX(i) + MONTH_COL_WIDTH / 2}
+                x={bandX(i) + monthColWidth / 2}
                 y={CHART_HEIGHT - PAD_BOTTOM + 16}
                 textAnchor="middle"
                 fontSize={12}
@@ -385,7 +403,7 @@ function StackedBarsChart({ months }: { months: MonthBar[] }) {
               <rect
                 x={bandX(i)}
                 y={PAD_TOP}
-                width={MONTH_COL_WIDTH}
+                width={monthColWidth}
                 height={plotHeight}
                 fill="transparent"
                 tabIndex={0}
@@ -415,7 +433,7 @@ function StackedBarsChart({ months }: { months: MonthBar[] }) {
         <MonthTooltipCard
           month={hovered}
           totalWidth={totalWidth}
-          barCenterX={bandX(hoveredIdx) + MONTH_COL_WIDTH / 2}
+          barCenterX={bandX(hoveredIdx) + monthColWidth / 2}
           barTopY={
             baseline - valueToHeight(hovered.insalubres + hovered.saludables)
           }
@@ -434,6 +452,29 @@ export default function DiasInsalubresChart({
 }) {
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
   const activeData = data[pollutant];
+
+  // Measures the card's own content width so all 12 months fit without a
+  // scroll in the common case -- unlike the other two /datos charts, this
+  // one always has exactly 12 categories, so it should size to the card
+  // rather than defaulting to HorizontalScrollFade's scroll. MONTH_COL_WIDTH_MAX
+  // (the original fixed value) is the initial/SSR render so there's no
+  // layout jump once the observer measures.
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [monthColWidth, setMonthColWidth] = useState(MONTH_COL_WIDTH_MAX);
+  useEffect(() => {
+    const el = measureRef.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      setMonthColWidth(
+        Math.min(MONTH_COL_WIDTH_MAX, Math.max(MONTH_COL_WIDTH_MIN, w / 12)),
+      );
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const years = useMemo(
     () => [...new Set(activeData.map((d) => d.ano))].sort(),
@@ -523,13 +564,15 @@ export default function DiasInsalubresChart({
             </span>
           </div>
         </div>
-        {/* All 12 months render (Sep-Dic just come out empty), but the chart
-            never compresses below MONTH_COL_WIDTH per month to fit -- it
-            scrolls horizontally instead of squeezing months together on a
-            narrow viewport. */}
-        <HorizontalScrollFade minWidth={MONTH_COL_WIDTH * 12}>
-          <StackedBarsChart months={chartData} />
-        </HorizontalScrollFade>
+        {/* All 12 months render (Sep-Dic just come out empty). measureRef
+            sizes each month's column to fit this card's real width; only a
+            viewport narrower than MONTH_COL_WIDTH_MIN * 12 falls back to
+            HorizontalScrollFade's scroll instead of compressing further. */}
+        <div ref={measureRef} className="w-full">
+          <HorizontalScrollFade minWidth={monthColWidth * 12}>
+            <StackedBarsChart months={chartData} monthColWidth={monthColWidth} />
+          </HorizontalScrollFade>
+        </div>
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
