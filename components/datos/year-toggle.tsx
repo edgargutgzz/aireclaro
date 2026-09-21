@@ -21,7 +21,9 @@ export default function YearToggle({
           key={y}
           onClick={() => onChange(y)}
           className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-            year === y ? "bg-white text-gray-800 shadow-sm" : "text-gray-500 hover:text-gray-700"
+            year === y
+              ? "bg-white text-gray-800 shadow-sm hover:shadow"
+              : "text-gray-500 hover:text-gray-700"
           }`}
         >
           {y}
