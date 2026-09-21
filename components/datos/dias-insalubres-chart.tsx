@@ -35,14 +35,22 @@ const MONTH_SHORT = [
   "Nov",
   "Dic",
 ];
-// This chart always has exactly 12 categories (unlike the other two, whose
-// item count varies), so it should just fit the card instead of defaulting
-// to a scroll -- DiasInsalubresChart measures the available width and
-// shrinks each month's column down to fit. MAX is the desktop-natural width
-// this chart has always rendered at; MIN is the floor before a bar+gap stops
-// reading cleanly, below which it falls back to HorizontalScrollFade's
-// horizontal scroll instead of compressing further.
-const MONTH_COL_WIDTH_MAX = 110;
+// This chart has at most 12 categories, often fewer once trailing months
+// with no data are trimmed (see chartData), so it should just fit the card
+// instead of defaulting to a scroll -- DiasInsalubresChart measures the
+// available width and sizes each remaining month's column to it. MIN is the
+// floor before a bar+gap stops reading cleanly, below which it falls back
+// to HorizontalScrollFade's horizontal scroll instead of compressing
+// further. MAX used to be 110 (the desktop-natural width from when this
+// chart always rendered 12 fixed columns) -- once trimming left as few as
+// ~8, that cap stopped the columns from actually filling the wider fair
+// share available to them, dumping the difference as one large blank
+// margin on the right instead of spreading it as breathing room between
+// bars. Raised well past anything 2-12 real columns would need on this
+// page's max-w-7xl width, so the cap only guards the genuine edge case (a
+// brand-new year with just one or two months in) from stretching a single
+// bar edge-to-edge.
+const MONTH_COL_WIDTH_MAX = 220;
 const MONTH_COL_WIDTH_MIN = 30;
 const MONTH_FULL = [
   "Enero",
