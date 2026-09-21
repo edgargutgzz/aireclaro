@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, HeartPulse, Info, Scale, ShieldCheck } from "lucide-react";
+import { BookOpen, HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -13,7 +13,6 @@ import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
-import { InfoDialog } from "@/components/mapa/info-dialog";
 import {
   niceTicks,
   roundedRectPath,
@@ -106,6 +105,12 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
   const label = POLLUTANT_LABEL[pollutant];
   const { antes, desde } = POLLUTANT_LIMITS[pollutant];
   return [
+    {
+      id: "que-es",
+      label: `Qué es ${label}`,
+      icon: Wind,
+      body: POLLUTANT_DEFINITION[pollutant],
+    },
     {
       id: "fuente",
       label: "Datos oficiales",
@@ -503,7 +508,6 @@ export default function DiasInsalubresChart({
   data: Record<Pollutant, MonthData[]>;
 }) {
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
-  const [showPollutantInfo, setShowPollutantInfo] = useState(false);
   const activeData = data[pollutant];
 
   const years = useMemo(
@@ -582,7 +586,6 @@ export default function DiasInsalubresChart({
   const tabs = infoTabs(pollutant);
 
   return (
-    <>
     <ChartCard
       title="Días de aire insalubre en la Zona Metropolitana de Monterrey"
       subtitle={
@@ -612,17 +615,6 @@ export default function DiasInsalubresChart({
                   </button>
                 ))}
               </div>
-              {/* "What is PM2.5/PM10" -- same icon-next-to-the-label pattern
-                  as the map's own legend (air-quality-legend.tsx), reusing
-                  its InfoDialog rather than a new "Contaminante:" label. */}
-              <button
-                type="button"
-                onClick={() => setShowPollutantInfo(true)}
-                className="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-                aria-label={`Qué es ${POLLUTANT_LABEL[pollutant]}`}
-              >
-                <Info aria-hidden="true" className="h-4 w-4" />
-              </button>
               {/* Separates the pollutant toggle from the year toggle -- two
                   independent choices, not one flat row of four options. */}
               <div className="h-5 w-px bg-gray-200" />
@@ -677,16 +669,5 @@ export default function DiasInsalubresChart({
         <InfoTabs tabs={tabs} />
       </div>
     </ChartCard>
-    {showPollutantInfo && (
-      <InfoDialog
-        title={POLLUTANT_LABEL[pollutant]}
-        onClose={() => setShowPollutantInfo(false)}
-      >
-        <p className="text-sm leading-relaxed text-gray-600">
-          {POLLUTANT_DEFINITION[pollutant]}
-        </p>
-      </InfoDialog>
-    )}
-    </>
   );
 }
