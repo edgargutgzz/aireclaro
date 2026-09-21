@@ -130,8 +130,8 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       icon: Scale,
       body: (
         <>
-          Se clasifica un día como insalubre si alguna estación supera, ese
-          día, el límite diario, que bajó de {antes} µg/m³ en 2025 a{" "}
+          Se clasifica un día como insalubre si alguna estación supera el
+          límite diario, que bajó de {antes} µg/m³ en 2025 a{" "}
           {desde} µg/m³ en 2026; de lo contrario, se clasifica como
           saludable. Un día se contabiliza si alguna estación
           reportó mediciones suficientes para un promedio válido, por lo que
