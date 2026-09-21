@@ -231,7 +231,7 @@ function InfoPill({ nombre, rows }: { nombre: string; rows: TrimestreRow[] }) {
     >
       <span
         tabIndex={0}
-        className="cursor-default rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-500"
+        className="cursor-help rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-500"
       >
         {nombre}
       </span>
