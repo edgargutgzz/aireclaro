@@ -151,7 +151,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       icon: Scale,
       body: (
         <>
-          Se clasifica la calidad del aire como saludable o insalubre con base
+          Se clasifica la calidad del aire como insalubre o saludable con base
           en el límite diario establecido por la{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
