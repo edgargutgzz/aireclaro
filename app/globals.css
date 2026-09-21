@@ -32,6 +32,14 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Browsers default a real <button> to cursor:default, not pointer -- only
+     <a href> gets the hand automatically. Every clickable button across the
+     app (map controls, /datos toggles and tabs) relied on that default
+     without ever opting in, so none of them showed the hand on hover. One
+     rule here instead of a cursor-pointer class on every button. */
+  button:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 /* The signature glass surface as one class, so the recipe is not retyped per
