@@ -213,13 +213,16 @@ const CHART_HEIGHT = 460;
 const PAD_TOP = 20;
 const PAD_BOTTOM = 28;
 const PAD_LEFT = 32;
-// Matches PAD_LEFT -- was 8px, but that only trims the gridline's own
-// extent, not the bars' own position (bandX runs off PAD_LEFT with nothing
-// symmetric subtracted on this side), so the last bar's actual clearance to
-// the card edge was just its column's small internal gap. 2026-09-21: user
-// flagged the last bar reading as crowded against the card edge.
-const PAD_RIGHT = 32;
-const BAR_WIDTH_MAX = 40;
+// Was 8px, but that only trimmed the gridline's own extent, not the bars'
+// own position (bandX runs off PAD_LEFT with nothing symmetric subtracted on
+// this side), so the last bar's actual clearance to the card edge was just
+// its column's small internal gap -- read as crowded. Tried matching
+// PAD_LEFT's 32 exactly, but PAD_LEFT earns its width (the axis tick
+// numbers need it); PAD_RIGHT has no such job. Also lowered further once
+// BAR_WIDTH_MAX went up (below) -- most of the leftover edge space was
+// actually the wide-column gap the bar-width formula reserves, not this.
+const PAD_RIGHT = 8;
+const BAR_WIDTH_MAX = 60;
 const BAR_WIDTH_MIN = 8;
 const BAR_RADIUS = 4;
 const STACK_GAP = 2;
@@ -302,10 +305,13 @@ function StackedBarsChart({
 
   // A fixed 10px of "air" reserved on each column regardless of width,
   // clamped so the bar never gets imperceptibly thin on a narrow viewport
-  // or (at the widest columns) grows past BAR_WIDTH_MAX -- 2026-09-21: the
-  // 24px cap this used to clamp to read as lost in a 100px+ column once the
-  // chart stopped scrolling and started sizing to the card; bumped to 40,
-  // still a thin mark, just no longer mostly empty air.
+  // or (at the widest columns) grows past BAR_WIDTH_MAX -- 2026-09-21: raised
+  // twice. First 24->40 (24px read as lost in a 100px+ column once the chart
+  // stopped scrolling and started sizing to the card). Then 40->60 once
+  // MONTH_COL_WIDTH_MAX went up too (a partial year's fewer columns get a
+  // wider fair share of the card): the gap this formula reserves around a
+  // width-capped bar was the actual source of the leftover edge margin, more
+  // than PAD_RIGHT itself.
   const barWidth = Math.min(
     BAR_WIDTH_MAX,
     Math.max(BAR_WIDTH_MIN, monthColWidth - 10),
@@ -568,7 +574,7 @@ export default function DiasInsalubresChart({
 
   return (
     <ChartCard
-      title="Días insalubres en la Zona Metropolitana de Monterrey"
+      title="Días de aire insalubre en la Zona Metropolitana de Monterrey"
       subtitle={
         <>
           <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
