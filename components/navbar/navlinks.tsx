@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 // mobile bar. See the pending branch below.
 const links = [
   { name: "Mapa", href: "/", icon: Map, pending: false },
-  { name: "Datos", href: "/datos", icon: BarChart3, pending: false },
+  { name: "Datos", href: "/datos", icon: BarChart3, pending: true },
 ];
 
 // The base pill: was shadcn's Button `nav` variant/size (a plain flex row,
