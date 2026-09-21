@@ -625,13 +625,14 @@ export default function DiasInsalubresChart({
       }
     >
       <div className="px-5 pb-6 pt-6">
-        {/* pr-3: the pill toggles above end in a rounded background with its
-            own px-3 padding past the "2026" glyph, while "Saludables" here is
-            bare text -- both rows' boxes already share the same right edge
-            (px-5 + justify-between on both), but a straight-edged numeral
-            glyph and a curved lowercase "s" don't read as level even when
-            their boxes are. This nudges the visible text left to match. */}
-        <div className="mb-6 flex items-center justify-between pr-3">
+        {/* Nudges the legend row's right edge left of the pills row above it
+            -- both rows' boxes share the same true right edge (px-5 +
+            justify-between on both), but a straight-edged numeral glyph
+            ("2026") and a curved lowercase "s" ("Saludables") don't read as
+            level even when their boxes are. pr-3 (12px) wasn't enough by
+            eye; pr-6 (24px) is the current answer -- revisit if it still
+            doesn't look right live. */}
+        <div className="mb-6 flex items-center justify-between pr-6">
           <span className="text-xs text-gray-400">Días del mes</span>
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
