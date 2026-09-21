@@ -628,14 +628,14 @@ export default function DiasInsalubresChart({
       }
     >
       <div className="px-5 pb-6 pt-6">
-        {/* Nudges the legend row's right edge left of the pills row above it
-            -- both rows' boxes share the same true right edge (px-5 +
-            justify-between on both), but a straight-edged numeral glyph
-            ("2026") and a curved lowercase "s" ("Saludables") don't read as
-            level even when their boxes are. pr-3 (12px) wasn't enough by
-            eye; pr-6 (24px) is the current answer -- revisit if it still
-            doesn't look right live. */}
-        <div className="mb-6 flex items-center justify-between pr-6">
+        {/* justify-between, no extra offset: this row and "Días del mes"
+            already share the same px-5 card padding, so their left/right
+            margins match by construction. (2026-09-21: pr-6 + a relative
+            right nudge were added here chasing alignment with the *pill
+            row above*, a different, unrelated row -- that pulled this row's
+            own right edge off its natural symmetric position and was the
+            actual cause of the left/right mismatch reported. Reverted.) */}
+        <div className="mb-6 flex items-center justify-between">
           <span className="text-xs text-gray-400">Días del mes</span>
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
@@ -645,12 +645,7 @@ export default function DiasInsalubresChart({
               />
               {LEGEND.insalubres.label}
             </span>
-            {/* relative + right: a visual nudge only, doesn't touch the flex
-                flow -- widening the gap instead would shift "Insalubres"
-                left (the group's own right edge is what's anchored to the
-                row, from the pill-row alignment work above), not move
-                "Saludables" itself. This moves just this one span. */}
-            <span className="relative right-[-20px] flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5">
               <span
                 className="h-2 w-2 rounded-[2px]"
                 style={{ backgroundColor: LEGEND.saludables.color }}
