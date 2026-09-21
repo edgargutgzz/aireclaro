@@ -131,7 +131,8 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       body: (
         <>
           Se clasifica la calidad del aire como insalubre o saludable con
-          base en el límite diario establecido por la{" "}
+          base en el límite diario, que bajó de {antes} µg/m³ en 2025 a{" "}
+          {desde} µg/m³ en 2026, establecido por la{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
@@ -140,7 +141,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          , que bajó de {antes} µg/m³ en 2025 a {desde} µg/m³ en 2026.
+          .
         </>
       ),
     },
