@@ -205,7 +205,12 @@ const CHART_HEIGHT = 460;
 const PAD_TOP = 20;
 const PAD_BOTTOM = 28;
 const PAD_LEFT = 32;
-const PAD_RIGHT = 8;
+// Matches PAD_LEFT -- was 8px, but that only trims the gridline's own
+// extent, not the bars' own position (bandX runs off PAD_LEFT with nothing
+// symmetric subtracted on this side), so the last bar's actual clearance to
+// the card edge was just its column's small internal gap. 2026-09-21: user
+// flagged the last bar reading as crowded against the card edge.
+const PAD_RIGHT = 32;
 const BAR_WIDTH_MAX = 40;
 const BAR_WIDTH_MIN = 8;
 const BAR_RADIUS = 4;
@@ -297,18 +302,24 @@ function StackedBarsChart({
     BAR_WIDTH_MAX,
     Math.max(BAR_WIDTH_MIN, monthColWidth - 10),
   );
-  const totalWidth = monthColWidth * months.length;
+  // bandX offsets every column by PAD_LEFT, so the total width has to
+  // reserve that same room on this side too, or the last column's right
+  // edge runs past totalWidth by PAD_LEFT and gets flush against (or
+  // clipped by) the SVG's own boundary -- the exact "last bar crowds the
+  // card edge" symptom this was reported as.
+  const totalWidth = PAD_LEFT + monthColWidth * months.length + PAD_RIGHT;
   const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
   const plotRight = totalWidth - PAD_RIGHT;
 
   const rawMax = Math.max(1, ...months.map((m) => m.diasTotales));
   // This chart's domain is always "days in a month" (max 31) -- a fixed 35
-  // gives clean headroom above the tallest possible bar without a "nice
-  // round number" search landing on an odd extra tick (40, with only a
-  // sliver of a bar ever reaching past 30). Only escapes 35 if the data
-  // itself ever needs to, which the fixed month-day domain shouldn't produce.
+  // gives clean headroom above the tallest possible bar, stepped by 5 so 35
+  // itself lands as a labeled gridline instead of being an invisible
+  // ceiling above the topmost "30" tick. Only escapes 35 (and this fixed
+  // step) if the data itself ever needs to, which the fixed month-day
+  // domain shouldn't produce.
   const ticks = useMemo(
-    () => (rawMax > 35 ? niceTicks(rawMax) : [0, 10, 20, 30]),
+    () => (rawMax > 35 ? niceTicks(rawMax) : [0, 5, 10, 15, 20, 25, 30, 35]),
     [rawMax],
   );
   const niceMax = rawMax > 35 ? ticks[ticks.length - 1] : 35;
@@ -527,11 +538,14 @@ export default function DiasInsalubresChart({
     const el = measureRef.current;
     if (!el) return;
     const update = () => {
-      const w = el.clientWidth;
+      // The chart reserves PAD_LEFT + PAD_RIGHT for the axis labels and the
+      // right-side margin (see StackedBarsChart's totalWidth) -- only what's
+      // left over is available to split across the columns.
+      const available = el.clientWidth - PAD_LEFT - PAD_RIGHT;
       setMonthColWidth(
         Math.min(
           MONTH_COL_WIDTH_MAX,
-          Math.max(MONTH_COL_WIDTH_MIN, w / monthCount),
+          Math.max(MONTH_COL_WIDTH_MIN, available / monthCount),
         ),
       );
     };
@@ -612,7 +626,9 @@ export default function DiasInsalubresChart({
             MONTH_COL_WIDTH_MIN * monthCount falls back to
             HorizontalScrollFade's scroll instead of compressing further. */}
         <div ref={measureRef} className="w-full">
-          <HorizontalScrollFade minWidth={monthColWidth * monthCount}>
+          <HorizontalScrollFade
+            minWidth={PAD_LEFT + monthColWidth * monthCount + PAD_RIGHT}
+          >
             <StackedBarsChart months={chartData} monthColWidth={monthColWidth} />
           </HorizontalScrollFade>
         </div>
