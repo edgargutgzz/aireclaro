@@ -650,7 +650,7 @@ export default function DiasInsalubresChart({
                 left (the group's own right edge is what's anchored to the
                 row, from the pill-row alignment work above), not move
                 "Saludables" itself. This moves just this one span. */}
-            <span className="relative right-[-8px] flex items-center gap-1.5">
+            <span className="relative right-[-20px] flex items-center gap-1.5">
               <span
                 className="h-2 w-2 rounded-[2px]"
                 style={{ backgroundColor: LEGEND.saludables.color }}
