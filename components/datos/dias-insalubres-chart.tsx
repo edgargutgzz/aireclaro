@@ -129,15 +129,19 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       label: "Contaminantes",
       icon: Wind,
       body: (
-        <div className="grid gap-3">
-          <p>
-            <span className="font-medium text-gray-700">PM2.5.</span>{" "}
-            {POLLUTANT_DEFINITION.pm25}
-          </p>
-          <p>
-            <span className="font-medium text-gray-700">PM10.</span>{" "}
-            {POLLUTANT_DEFINITION.pm10}
-          </p>
+        <div className="grid gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">
+              PM2.5
+            </p>
+            <p className="mt-1">{POLLUTANT_DEFINITION.pm25}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">
+              PM10
+            </p>
+            <p className="mt-1">{POLLUTANT_DEFINITION.pm10}</p>
+          </div>
         </div>
       ),
     },
