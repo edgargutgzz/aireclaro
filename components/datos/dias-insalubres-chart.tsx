@@ -182,10 +182,11 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          . Un día se contabiliza si al menos una estación reportó mediciones,
-          por lo que algunos meses pueden mostrar menos días de los que
-          corresponden. Si alguna estación registra un valor que supera el
-          límite, el día se clasifica como insalubre.
+          . Un día se contabiliza si al menos una estación reportó
+          mediciones suficientes para un promedio diario válido, por lo que
+          algunos meses pueden mostrar menos días de los que corresponden.
+          Si alguna estación registra un valor que supera el límite, el día
+          se clasifica como insalubre.
         </>
       ),
     },
