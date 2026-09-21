@@ -227,7 +227,10 @@ interface MonthBar {
 
 const CHART_HEIGHT = 460;
 const PAD_TOP = 20;
-const PAD_BOTTOM = 28;
+// Matches PAD_TOP -- was 28, the extra 8px reserved for the month labels
+// ("Ene", "Feb"...) drawn below the baseline. None of the twelve labels
+// have a descender (no j/p/q/g/y), so the shorter margin still clears them.
+const PAD_BOTTOM = 20;
 const PAD_LEFT = 32;
 // Was 8px, but that only trimmed the gridline's own extent, not the bars'
 // own position (bandX runs off PAD_LEFT with nothing symmetric subtracted on
