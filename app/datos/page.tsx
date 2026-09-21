@@ -25,24 +25,19 @@ export default function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pt-28">
-        {/* Charts hidden temporarily, 2026-09-19 -- user request. */}
-        {false && (
-          <>
-            <Suspense fallback={<DiasInsalubresSkeleton />}>
-              <DiasInsalubres />
-            </Suspense>
-            <div className="mt-16">
-              <Suspense fallback={<CoberturaEstacionesSkeleton />}>
-                <CoberturaEstaciones />
-              </Suspense>
-            </div>
-            <div className="mt-16">
-              <Suspense fallback={<PromedioAnualSkeleton />}>
-                <PromedioAnualEstacion />
-              </Suspense>
-            </div>
-          </>
-        )}
+        <Suspense fallback={<DiasInsalubresSkeleton />}>
+          <DiasInsalubres />
+        </Suspense>
+        <div className="mt-16">
+          <Suspense fallback={<CoberturaEstacionesSkeleton />}>
+            <CoberturaEstaciones />
+          </Suspense>
+        </div>
+        <div className="mt-16">
+          <Suspense fallback={<PromedioAnualSkeleton />}>
+            <PromedioAnualEstacion />
+          </Suspense>
+        </div>
       </div>
     </div>
   );
