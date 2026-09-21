@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
+import { HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -141,7 +141,9 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          .
+          . Un día se contabiliza si al menos una estación reportó
+          mediciones suficientes para un promedio diario válido, por lo que
+          algunos meses pueden mostrar menos días de los que corresponden.
         </>
       ),
     },
@@ -164,30 +166,6 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
             <p className="mt-1">{POLLUTANT_DEFINITION.pm10}</p>
           </div>
         </div>
-      ),
-    },
-    {
-      id: "metodologia",
-      label: "Metodología",
-      icon: BookOpen,
-      body: (
-        <>
-          Para garantizar mayor certeza en la información, los datos se analizan
-          siguiendo los criterios establecidos por la{" "}
-          <a
-            href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-          >
-            NOM-025-SSA1-2021
-          </a>
-          . Un día se contabiliza si al menos una estación reportó
-          mediciones suficientes para un promedio diario válido, por lo que
-          algunos meses pueden mostrar menos días de los que corresponden.
-          Si alguna estación registra un valor que supera el límite, el día
-          se clasifica como insalubre.
-        </>
       ),
     },
     {
