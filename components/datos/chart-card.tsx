@@ -26,7 +26,10 @@ export default function ChartCard({
       <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-medium text-gray-700">{title}</h3>
-          <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
+          {/* div, not p: a caller's subtitle can carry its own block-level
+              row (e.g. a year-over-year comparison line), which can't
+              legally nest inside a p. */}
+          <div className="mt-1 text-sm text-gray-500">{subtitle}</div>
         </div>
         {headerRight && <div className="flex items-center gap-2">{headerRight}</div>}
       </div>

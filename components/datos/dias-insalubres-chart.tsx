@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
+import { ArrowDown, ArrowUp, HeartPulse, Minus, Scale, ShieldCheck, Wind } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -130,13 +130,13 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       icon: Scale,
       body: (
         <>
-          Se clasifica la calidad del aire como insalubre o saludable según
-          el límite diario, que bajó de {antes} µg/m³ en 2025 a {desde}{" "}
-          µg/m³ en 2026. Si una estación lo supera ese día, el día se
-          clasifica como insalubre. Un día se contabiliza si alguna estación
+          Se clasifica un día como insalubre si alguna estación supera, ese
+          día, el límite diario, que bajó de {antes} µg/m³ en 2025 a{" "}
+          {desde} µg/m³ en 2026; de lo contrario, se clasifica como
+          saludable. Un día se contabiliza si alguna estación
           reportó mediciones suficientes para un promedio válido, por lo que
-          algunos meses muestran menos días de los que corresponden, con
-          base en la{" "}
+          algunos meses muestran menos días de los que corresponden. Todo lo
+          anterior, con base en la{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
@@ -581,6 +581,22 @@ export default function DiasInsalubresChart({
   }, [monthCount]);
 
   const totalInsalubres = chartData.reduce((sum, d) => sum + d.insalubres, 0);
+
+  // Year-over-year, same-period only -- comparing this year's running total
+  // against LAST year's full-year total would be comparing 8 months against
+  // 12, always favoring whichever year is incomplete. Requires the prior
+  // year to have every one of those same months (not just some), or there's
+  // nothing fair to compare against and the line is skipped entirely.
+  const priorYearDelta = useMemo(() => {
+    if (year === null) return null;
+    const priorRows = activeData.filter(
+      (d) => d.ano === year - 1 && d.mesNumero <= chartData.length,
+    );
+    if (priorRows.length < chartData.length) return null;
+    const priorTotal = priorRows.reduce((sum, d) => sum + d.diasInsalubres, 0);
+    return totalInsalubres - priorTotal;
+  }, [activeData, year, chartData.length, totalInsalubres]);
+
   const tabs = infoTabs(pollutant);
 
   return (
@@ -588,10 +604,41 @@ export default function DiasInsalubresChart({
       title="Días de aire insalubre en la Zona Metropolitana de Monterrey"
       subtitle={
         <>
-          <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
-            {totalInsalubres}
-          </span>{" "}
-          días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
+          <div>
+            <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
+              {totalInsalubres}
+            </span>{" "}
+            días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
+          </div>
+          {priorYearDelta !== null && year !== null && (
+            <div className="mt-1 flex items-center gap-1 text-xs">
+              {priorYearDelta < 0 ? (
+                <ArrowDown className="h-3.5 w-3.5" style={{ color: COLOR_SALUDABLE }} />
+              ) : priorYearDelta > 0 ? (
+                <ArrowUp className="h-3.5 w-3.5" style={{ color: COLOR_INSALUBRE }} />
+              ) : (
+                <Minus className="h-3.5 w-3.5 text-gray-400" />
+              )}
+              <span
+                className="font-medium"
+                style={{
+                  color:
+                    priorYearDelta < 0
+                      ? COLOR_SALUDABLE
+                      : priorYearDelta > 0
+                        ? COLOR_INSALUBRE
+                        : undefined,
+                }}
+              >
+                {priorYearDelta === 0
+                  ? "mismos días"
+                  : `${Math.abs(priorYearDelta)} día${Math.abs(priorYearDelta) === 1 ? "" : "s"} ${priorYearDelta < 0 ? "menos" : "más"}`}
+              </span>
+              <span className="text-gray-400">
+                que en el mismo periodo de {year - 1}
+              </span>
+            </div>
+          )}
         </>
       }
       headerRight={
