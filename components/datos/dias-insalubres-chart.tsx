@@ -302,8 +302,16 @@ function StackedBarsChart({
   const plotRight = totalWidth - PAD_RIGHT;
 
   const rawMax = Math.max(1, ...months.map((m) => m.diasTotales));
-  const ticks = useMemo(() => niceTicks(rawMax * 1.08), [rawMax]);
-  const niceMax = ticks[ticks.length - 1];
+  // This chart's domain is always "days in a month" (max 31) -- a fixed 35
+  // gives clean headroom above the tallest possible bar without a "nice
+  // round number" search landing on an odd extra tick (40, with only a
+  // sliver of a bar ever reaching past 30). Only escapes 35 if the data
+  // itself ever needs to, which the fixed month-day domain shouldn't produce.
+  const ticks = useMemo(
+    () => (rawMax > 35 ? niceTicks(rawMax) : [0, 10, 20, 30]),
+    [rawMax],
+  );
+  const niceMax = rawMax > 35 ? ticks[ticks.length - 1] : 35;
 
   const valueToHeight = (v: number) => (v / niceMax) * plotHeight;
   const baseline = PAD_TOP + plotHeight;
