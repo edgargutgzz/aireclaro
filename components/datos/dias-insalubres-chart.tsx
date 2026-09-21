@@ -102,23 +102,16 @@ const LEGEND = {
 };
 
 function infoTabs(pollutant: Pollutant): InfoTab[] {
-  const label = POLLUTANT_LABEL[pollutant];
   const { antes, desde } = POLLUTANT_LIMITS[pollutant];
   return [
-    {
-      id: "que-es",
-      label: `Qué es ${label}`,
-      icon: Wind,
-      body: POLLUTANT_DEFINITION[pollutant],
-    },
     {
       id: "fuente",
       label: "Datos oficiales",
       icon: ShieldCheck,
       body: (
         <>
-          Los datos de calidad del aire ({label} µg/m³) provienen de las
-          estaciones de monitoreo del{" "}
+          Los datos de calidad del aire provienen de las estaciones de
+          monitoreo del{" "}
           <a
             href="http://aire.nl.gob.mx"
             target="_blank"
@@ -129,6 +122,23 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           </a>{" "}
           de Nuevo León.
         </>
+      ),
+    },
+    {
+      id: "contaminante",
+      label: "Contaminante",
+      icon: Wind,
+      body: (
+        <div className="grid gap-3">
+          <p>
+            <span className="font-medium text-gray-700">PM2.5.</span>{" "}
+            {POLLUTANT_DEFINITION.pm25}
+          </p>
+          <p>
+            <span className="font-medium text-gray-700">PM10.</span>{" "}
+            {POLLUTANT_DEFINITION.pm10}
+          </p>
+        </div>
       ),
     },
     {

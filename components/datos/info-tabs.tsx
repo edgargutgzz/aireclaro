@@ -53,7 +53,9 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
       </div>
       {activeTab && (
         <div id={panelId} className="mt-3 rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
-          <p className="text-sm leading-relaxed text-gray-600">{tabs.find((t) => t.id === activeTab)?.body}</p>
+          {/* div, not p: a body can hold its own block-level markup (e.g. a
+              multi-paragraph tab), which can't legally nest inside a p. */}
+          <div className="text-sm leading-relaxed text-gray-600">{tabs.find((t) => t.id === activeTab)?.body}</div>
         </div>
       )}
     </div>
