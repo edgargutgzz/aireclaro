@@ -206,6 +206,7 @@ const BAR_WIDTH = 24;
 const BAR_RADIUS = 4;
 const STACK_GAP = 2;
 const TOOLTIP_WIDTH = 176; // px, matches the tooltip card's own min-w-[11rem]
+const TOOLTIP_HEIGHT = 155; // px, generous estimate of the card's rendered height
 
 function MonthTooltipCard({
   month,
@@ -229,6 +230,7 @@ function MonthTooltipCard({
     totalWidth,
     CHART_HEIGHT,
     TOOLTIP_WIDTH,
+    TOOLTIP_HEIGHT,
   );
 
   return (

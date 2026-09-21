@@ -12,20 +12,38 @@ import type { CSSProperties } from "react";
 // horizontally-scrolled) width instead of growing off the edge -- both
 // charts' tooltips need this exact clamping, differing only in their own
 // width constant.
+//
+// Vertical clamping matters here in a way it wouldn't in an ordinary
+// scrollable div: the chart sits inside HorizontalScrollFade's
+// overflow-x-auto container, and the CSS overflow spec forces that
+// container's overflow-y to `auto` the instant overflow-x is non-visible
+// (you cannot mix `auto` on one axis with `visible` on the other -- the
+// visible one always gets promoted). So a tooltip anchored above a tall bar
+// (topY near the chart's own top edge) doesn't just look cramped if it pokes
+// above y=0, it gets silently clipped there, invisible above the fold with
+// no visual sign anything is missing. tooltipHeight lets this flip the
+// tooltip below the point instead whenever there isn't room above.
 export function tooltipPositionStyle(
   centerX: number,
   topY: number,
   totalWidth: number,
   chartHeight: number,
   tooltipWidth: number,
+  tooltipHeight: number,
   gap = 10,
 ): CSSProperties {
   const overflowsRight = centerX + tooltipWidth / 2 > totalWidth;
   const overflowsLeft = centerX - tooltipWidth / 2 < 0;
-  const bottom = chartHeight - topY + gap;
-  if (overflowsRight) return { right: totalWidth - centerX, bottom };
-  if (overflowsLeft) return { left: centerX, bottom };
-  return { left: centerX, bottom, transform: "translateX(-50%)" };
+  const horizontal: CSSProperties = overflowsRight
+    ? { right: totalWidth - centerX }
+    : overflowsLeft
+      ? { left: centerX }
+      : { left: centerX, transform: "translateX(-50%)" };
+  const roomAbove = topY - gap >= tooltipHeight;
+  const vertical: CSSProperties = roomAbove
+    ? { bottom: chartHeight - topY + gap }
+    : { top: topY + gap };
+  return { ...horizontal, ...vertical };
 }
 
 // Standard "nice numbers" tick generation so a y-axis reads 0/5/10/... or

@@ -205,6 +205,7 @@ interface Tooltip {
 }
 
 const TOOLTIP_WIDTH = 208; // px, matches the tooltip card's own w-52
+const TOOLTIP_HEIGHT = 80; // px, generous estimate of the card's rendered height
 
 function EstacionCalendario({
   estacion,
@@ -358,6 +359,7 @@ function EstacionCalendario({
                 gridWidth,
                 gridHeight,
                 TOOLTIP_WIDTH,
+                TOOLTIP_HEIGHT,
               )}
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">

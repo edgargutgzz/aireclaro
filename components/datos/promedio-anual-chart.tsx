@@ -264,6 +264,7 @@ const PAD_RIGHT = 8;
 const BAR_WIDTH = 24;
 const BAR_RADIUS = 4;
 const TOOLTIP_WIDTH = 272; // px, matches the tooltip card's own w-[17rem]
+const TOOLTIP_HEIGHT = 260; // px, generous estimate (header/number/label + the 4-row trimester breakdown)
 
 // A dashed threshold line with a measured-width white badge floating just
 // above it -- getBBox() on the actual rendered <text> after mount, not a
@@ -360,6 +361,7 @@ function TooltipCard({
     totalWidth,
     CHART_HEIGHT,
     TOOLTIP_WIDTH,
+    TOOLTIP_HEIGHT,
   );
 
   return (
