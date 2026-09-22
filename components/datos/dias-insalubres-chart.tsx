@@ -605,7 +605,7 @@ export default function DiasInsalubresChart({
       subtitle={
         <div className="md:flex md:items-center md:gap-3">
           <div>
-            <span className="font-semibold text-gray-800">
+            <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
               {totalInsalubres}
             </span>{" "}
             días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
