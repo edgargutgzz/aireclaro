@@ -611,7 +611,13 @@ export default function DiasInsalubresChart({
             días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
           </div>
           {priorYearDelta !== null && year !== null && (
-            <div className="mt-1 flex items-center gap-1 text-sm md:mt-0">
+            <>
+              {/* Only between the two points, and only once they're on the
+                  same row (md:) -- stacked on mobile, a vertical rule
+                  between two stacked lines would just look like a stray
+                  mark. */}
+              <div className="hidden h-4 w-px bg-gray-200 md:block" />
+              <div className="mt-1 flex items-center gap-1 text-sm md:mt-0">
               {priorYearDelta < 0 ? (
                 <ArrowDown className="h-3.5 w-3.5" style={{ color: COLOR_SALUDABLE }} />
               ) : priorYearDelta > 0 ? (
@@ -638,6 +644,7 @@ export default function DiasInsalubresChart({
                 que en el mismo periodo de {year - 1}
               </span>
             </div>
+            </>
           )}
         </div>
       }
