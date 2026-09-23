@@ -24,7 +24,13 @@ export default function ChartCard({
     // a dialog, and stays opaque white on a gray-200 hairline.
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
       <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-2 pt-3 sm:flex-row sm:items-center sm:justify-between md:pb-3 md:pt-4">
-        <div>
+        {/* min-w-0: a flex item's default min-width is auto, not 0 -- without
+            this, a child with wide unwrapped content (a long title, or the
+            year-over-year comparison line) can force this whole item wider
+            than the row instead of wrapping, dragging the entire card into
+            horizontal overflow. Classic flexbox gotcha, not specific to any
+            one caller. */}
+        <div className="min-w-0">
           <h3 className="text-lg font-medium text-gray-700">{title}</h3>
           {/* div, not p: a caller's subtitle can carry its own block-level
               row (e.g. a year-over-year comparison line), which can't

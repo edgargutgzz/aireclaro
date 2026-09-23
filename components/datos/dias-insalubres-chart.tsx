@@ -617,7 +617,11 @@ export default function DiasInsalubresChart({
                   between two stacked lines would just look like a stray
                   mark. */}
               <div className="hidden h-4 w-px bg-gray-200 md:block" />
-              <div className="mt-1 flex items-center gap-1 text-sm md:mt-0">
+              {/* flex-wrap + whitespace-nowrap on each phrase: without both,
+                  a narrow viewport wrapped mid-phrase ("23 días" / "más"
+                  splitting across lines inside the same span) instead of
+                  moving the whole phrase down as one piece. */}
+              <div className="mt-1 flex flex-wrap items-center gap-x-1 gap-y-0 text-sm md:mt-0">
               {priorYearDelta < 0 ? (
                 <ArrowDown className="h-3.5 w-3.5" style={{ color: COLOR_SALUDABLE }} />
               ) : priorYearDelta > 0 ? (
@@ -626,6 +630,7 @@ export default function DiasInsalubresChart({
                 <Minus className="h-3.5 w-3.5" />
               )}
               <span
+                className="whitespace-nowrap"
                 style={{
                   color:
                     priorYearDelta < 0
