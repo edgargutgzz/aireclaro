@@ -162,8 +162,8 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       body: (
         <>
           La exposición a PM2.5 y PM10 es dañina para la salud. A corto
-          plazo, irritan oídos, ojos, nariz y garganta, y agravan el asma,
-          la bronquitis y la EPOC; a largo plazo, se asocian con
+          plazo, irritan oídos, ojos, nariz y garganta, y agravan el asma y
+          la bronquitis; a largo plazo, se asocian con
           enfermedades cardiovasculares, respiratorias y cerebrovasculares,
           además de una menor esperanza de vida. Si quieres entender mejor
           cómo nos afecta, te compartimos la
