@@ -162,18 +162,30 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       body:
         pollutant === "pm10" ? (
           <>
-            Las partículas PM10 penetran las vías respiratorias superiores y
-            pueden alojarse en bronquios y pulmones. La exposición frecuente
-            irrita ojos, nariz y garganta, y agrava el asma, la bronquitis y la
-            EPOC.
+            La exposición a PM2.5 y PM10 es dañina para la salud. Las
+            partículas PM10 penetran las vías respiratorias superiores y
+            pueden alojarse en bronquios y pulmones; la exposición frecuente
+            irrita ojos, nariz y garganta, y agrava el asma, la bronquitis y
+            la EPOC. Si quieres entender mejor cómo nos afecta, te
+            compartimos la siguiente{" "}
+            <a
+              href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+            >
+              infografía
+            </a>
+            .
           </>
         ) : (
           <>
-            Las partículas PM2.5 son tan pequeñas que penetran profundo en los
-            pulmones y llegan al torrente sanguíneo. La exposición prolongada se
-            asocia con enfermedades respiratorias, cardiovasculares y daño
-            sistémico. Si quieres entender mejor cómo nos afecta, te compartimos
-            la siguiente{" "}
+            La exposición a PM2.5 y PM10 es dañina para la salud. Las
+            partículas PM2.5 son tan pequeñas que penetran profundo en los
+            pulmones y llegan al torrente sanguíneo; la exposición prolongada
+            se asocia con enfermedades respiratorias, cardiovasculares y daño
+            sistémico. Si quieres entender mejor cómo nos afecta, te
+            compartimos la siguiente{" "}
             <a
               href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
               target="_blank"
