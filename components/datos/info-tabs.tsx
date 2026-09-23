@@ -26,12 +26,13 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
 
   return (
     <div>
-      {/* grid grid-cols-2 on mobile: flex-wrap left-aligns each row, so an
-          odd pill count (or long labels crowding two onto a row) left a
-          ragged, unevenly-wide gap on the trailing row -- a 2-up grid keeps
-          every row's split even instead. Reverts to the natural flex-wrap
-          row from sm: up, where everything already fits on one line. */}
-      <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+      {/* One full-width pill per row on mobile -- plenty of room per label,
+          so none of them wrap (the 2-up grid tried before this needed
+          min-h-11 to paper over uneven wrapping between rows; one per row
+          sidesteps the problem instead of compensating for it). Reverts to
+          the natural flex-wrap row from sm: up, where everything already
+          fits on one line. */}
+      <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-wrap">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -41,14 +42,16 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
               onClick={() => setActiveTab(isActive ? null : tab.id)}
               aria-expanded={isActive}
               aria-controls={panelId}
-              className={`flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl border px-3 py-1.5 text-center text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 sm:inline-flex sm:min-h-0 sm:w-auto sm:justify-start ${
+              className={`flex w-full items-center justify-between gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 sm:inline-flex sm:w-auto sm:justify-start ${
                 isActive
                   ? "border-gray-300 bg-gray-50 text-gray-800 hover:bg-gray-100"
                   : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
-              <Icon className="h-3.5 w-3.5 text-gray-400" />
-              {tab.label}
+              <span className="flex items-center gap-1.5">
+                <Icon className="h-3.5 w-3.5 text-gray-400" />
+                {tab.label}
+              </span>
               <ChevronDown
                 className={`h-3.5 w-3.5 text-gray-400 transition-transform ${isActive ? "rotate-180" : ""}`}
               />

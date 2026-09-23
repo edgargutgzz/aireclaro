@@ -683,7 +683,7 @@ export default function DiasInsalubresChart({
         </>
       }
     >
-      <div className="px-5 pb-6 pt-4 md:pt-6">
+      <div className="px-5 pb-6 pt-5 md:pt-6">
         {/* justify-between, no extra offset: this row and "Días del mes"
             already share the same px-5 card padding, so their left/right
             margins match by construction. (2026-09-21: pr-6 + a relative
@@ -691,7 +691,7 @@ export default function DiasInsalubresChart({
             row above*, a different, unrelated row -- that pulled this row's
             own right edge off its natural symmetric position and was the
             actual cause of the left/right mismatch reported. Reverted.) */}
-        <div className="mb-3 flex items-center justify-between md:mb-6">
+        <div className="mb-4 flex items-center justify-between md:mb-6">
           <span className="text-xs text-gray-400">Días del mes</span>
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">

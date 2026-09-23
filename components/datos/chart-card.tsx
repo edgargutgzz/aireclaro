@@ -23,7 +23,7 @@ export default function ChartCard({
     // floating chrome over the map; a chart card is a reading surface, like
     // a dialog, and stays opaque white on a gray-200 hairline.
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-2 pt-3 sm:flex-row sm:items-center sm:justify-between md:pb-3 md:pt-4">
+      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
         {/* min-w-0: a flex item's default min-width is auto, not 0 -- without
             this, a child with wide unwrapped content (a long title, or the
             year-over-year comparison line) can force this whole item wider
