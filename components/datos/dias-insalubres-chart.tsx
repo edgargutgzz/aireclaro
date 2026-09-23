@@ -79,16 +79,6 @@ const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
   pm25: { antes: 33, desde: 25 },
   pm10: { antes: 60, desde: 50 },
 };
-// "What is this pollutant" -- the PM2.5 text is the map's own explainer
-// (components/mapa/air-quality-legend.tsx), reused verbatim rather than
-// retyped; PM10's is new, matched to the same tone/structure since the map
-// never needed one (it's PM2.5-only).
-const POLLUTANT_DEFINITION: Record<Pollutant, string> = {
-  pm25:
-    "Partículas en suspensión en el aire con un diámetro de 2.5 micrómetros o menos, unas 30 veces más delgadas que un cabello humano. Evaden las defensas de la nariz y la garganta, por lo que son las más peligrosas para la salud.",
-  pm10:
-    "Partículas en suspensión en el aire con un diámetro de 10 micrómetros o menos. Más grandes que PM2.5, quedan atrapadas principalmente en las vías respiratorias superiores (nariz, garganta, bronquios) en lugar de llegar a los pulmones.",
-};
 
 // Reserved status pair (good/bad), not a categorical hue set: red/green is
 // kept by explicit user call over the dataviz skill's own passing blue/red
@@ -154,20 +144,15 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       label: "Contaminantes",
       icon: Wind,
       body: (
-        <div className="grid gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">
-              PM2.5
-            </p>
-            <p className="mt-1">{POLLUTANT_DEFINITION.pm25}</p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">
-              PM10
-            </p>
-            <p className="mt-1">{POLLUTANT_DEFINITION.pm10}</p>
-          </div>
-        </div>
+        <>
+          PM2.5 y PM10 son partículas en suspensión en el aire, de hasta 2.5
+          y 10 micrómetros de diámetro respectivamente (las PM2.5, unas 30
+          veces más delgadas que un cabello humano). Mientras el PM10 queda
+          atrapado principalmente en las vías respiratorias superiores
+          (nariz, garganta, bronquios), el PM2.5 evade esas defensas y
+          penetra más profundo, por lo que es el más peligroso para la
+          salud.
+        </>
       ),
     },
     {
