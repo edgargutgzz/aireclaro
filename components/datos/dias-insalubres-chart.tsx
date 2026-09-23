@@ -617,20 +617,18 @@ export default function DiasInsalubresChart({
               <div className="hidden h-4 w-px bg-gray-200 md:block" />
               <div className="mt-1 flex items-center gap-1 text-sm md:mt-0">
               {priorYearDelta < 0 ? (
-                <ArrowDown className="h-3.5 w-3.5" style={{ color: COLOR_SALUDABLE }} />
+                <ArrowDown className="h-3.5 w-3.5" />
               ) : priorYearDelta > 0 ? (
-                <ArrowUp className="h-3.5 w-3.5" style={{ color: COLOR_INSALUBRE }} />
+                <ArrowUp className="h-3.5 w-3.5" />
               ) : (
-                <Minus className="h-3.5 w-3.5 text-gray-400" />
+                <Minus className="h-3.5 w-3.5" />
               )}
               <span>
                 {priorYearDelta === 0
                   ? "mismos días"
                   : `${Math.abs(priorYearDelta)} día${Math.abs(priorYearDelta) === 1 ? "" : "s"} ${priorYearDelta < 0 ? "menos" : "más"}`}
               </span>
-              <span className="text-gray-400">
-                que en el mismo periodo de {year - 1}
-              </span>
+              <span>que en el mismo periodo de {year - 1}</span>
             </div>
             </>
           )}
