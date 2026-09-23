@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function Datos() {
   return (
     <div className="min-h-screen">
-      <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pt-28">
+      <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8 lg:pt-12">
         <Suspense fallback={<DiasInsalubresSkeleton />}>
           <DiasInsalubres />
         </Suspense>
