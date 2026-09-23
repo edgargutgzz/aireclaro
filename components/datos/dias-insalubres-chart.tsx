@@ -628,11 +628,11 @@ export default function DiasInsalubresChart({
                   mid-phrase if it lands right at the wrap point. */}
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
               {priorYearDelta < 0 ? (
-                <ArrowDown className="inline h-3.5 w-3.5 align-text-bottom" style={{ color: COLOR_SALUDABLE }} />
+                <ArrowDown className="inline h-3.5 w-3.5 align-middle" style={{ color: COLOR_SALUDABLE }} />
               ) : priorYearDelta > 0 ? (
-                <ArrowUp className="inline h-3.5 w-3.5 align-text-bottom" style={{ color: COLOR_INSALUBRE }} />
+                <ArrowUp className="inline h-3.5 w-3.5 align-middle" style={{ color: COLOR_INSALUBRE }} />
               ) : (
-                <Minus className="inline h-3.5 w-3.5 align-text-bottom" />
+                <Minus className="inline h-3.5 w-3.5 align-middle" />
               )}{" "}
               <span
                 className="whitespace-nowrap"

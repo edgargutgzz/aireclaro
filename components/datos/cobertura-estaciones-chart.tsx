@@ -532,13 +532,13 @@ export default function CoberturaEstacionesChart({
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
                 {priorYearPctDelta > 0 ? (
                   <ArrowUp
-                    className="inline h-3.5 w-3.5 align-text-bottom"
+                    className="inline h-3.5 w-3.5 align-middle"
                     style={{ color: COLOR_SALUDABLE }}
                   />
                 ) : priorYearPctDelta < 0 ? (
-                  <ArrowDown className="inline h-3.5 w-3.5 align-text-bottom text-gray-400" />
+                  <ArrowDown className="inline h-3.5 w-3.5 align-middle text-gray-400" />
                 ) : (
-                  <Minus className="inline h-3.5 w-3.5 align-text-bottom" />
+                  <Minus className="inline h-3.5 w-3.5 align-middle" />
                 )}{" "}
                 <span
                   className="whitespace-nowrap"
