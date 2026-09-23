@@ -23,7 +23,7 @@ export default function ChartCard({
     // floating chrome over the map; a chart card is a reading surface, like
     // a dialog, and stays opaque white on a gray-200 hairline.
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pt-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-2 pt-3 sm:flex-row sm:items-center sm:justify-between md:pb-3 md:pt-4">
         <div>
           <h3 className="text-lg font-medium text-gray-700">{title}</h3>
           {/* div, not p: a caller's subtitle can carry its own block-level

@@ -199,7 +199,13 @@ interface MonthBar {
 // outer tip of the whole stack is rounded -- square everywhere the bar
 // meets the baseline or another segment.
 
-const CHART_HEIGHT = 460;
+// Mobile gets a shorter chart -- 460px fixed regardless of viewport meant
+// scrolling *through* the chart itself on a narrow phone just to reach the
+// bottom bars and month labels, on top of the header's own height. Paddings
+// stay the same fixed px at both sizes (still legible at 320); only the
+// plot area shrinks.
+const CHART_HEIGHT_DESKTOP = 460;
+const CHART_HEIGHT_MOBILE = 320;
 const PAD_TOP = 20;
 // Matches PAD_TOP -- was 28, the extra 8px reserved for the month labels
 // ("Ene", "Feb"...) drawn below the baseline. None of the twelve labels
@@ -225,12 +231,14 @@ const TOOLTIP_HEIGHT = 155; // px, generous estimate of the card's rendered heig
 function MonthTooltipCard({
   month,
   totalWidth,
+  chartHeight,
   barCenterX,
   barTopY,
   barWidth,
 }: {
   month: MonthBar;
   totalWidth: number;
+  chartHeight: number;
   barCenterX: number;
   barTopY: number;
   barWidth: number;
@@ -244,7 +252,7 @@ function MonthTooltipCard({
     barCenterX,
     barTopY,
     totalWidth,
-    CHART_HEIGHT,
+    chartHeight,
     TOOLTIP_WIDTH,
     TOOLTIP_HEIGHT,
     10,
@@ -290,9 +298,11 @@ function MonthTooltipCard({
 function StackedBarsChart({
   months,
   monthColWidth,
+  chartHeight,
 }: {
   months: MonthBar[];
   monthColWidth: number;
+  chartHeight: number;
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
@@ -315,7 +325,7 @@ function StackedBarsChart({
   // clipped by) the SVG's own boundary -- the exact "last bar crowds the
   // card edge" symptom this was reported as.
   const totalWidth = PAD_LEFT + monthColWidth * months.length + PAD_RIGHT;
-  const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
+  const plotHeight = chartHeight - PAD_TOP - PAD_BOTTOM;
   const plotRight = totalWidth - PAD_RIGHT;
 
   const rawMax = Math.max(1, ...months.map((m) => m.diasTotales));
@@ -342,11 +352,11 @@ function StackedBarsChart({
   return (
     <div
       className="relative"
-      style={{ width: totalWidth, height: CHART_HEIGHT }}
+      style={{ width: totalWidth, height: chartHeight }}
     >
       <svg
         width={totalWidth}
-        height={CHART_HEIGHT}
+        height={chartHeight}
         role="img"
         aria-label="Días insalubres y saludables por mes"
       >
@@ -423,7 +433,7 @@ function StackedBarsChart({
               )}
               <text
                 x={bandX(i) + monthColWidth / 2}
-                y={CHART_HEIGHT - PAD_BOTTOM + 16}
+                y={chartHeight - PAD_BOTTOM + 16}
                 textAnchor="middle"
                 fontSize={12}
                 fontWeight={500}
@@ -466,6 +476,7 @@ function StackedBarsChart({
         <MonthTooltipCard
           month={hovered}
           totalWidth={totalWidth}
+          chartHeight={chartHeight}
           barCenterX={bandX(hoveredIdx) + monthColWidth / 2}
           barTopY={
             baseline - valueToHeight(hovered.insalubres + hovered.saludables)
@@ -559,6 +570,18 @@ export default function DiasInsalubresChart({
     return () => ro.disconnect();
   }, [monthCount]);
 
+  // Shorter plot on mobile (see CHART_HEIGHT_MOBILE) -- matches Tailwind's
+  // own md: breakpoint so this switches at the same width every other
+  // responsive rule on the page does.
+  const [chartHeight, setChartHeight] = useState(CHART_HEIGHT_DESKTOP);
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 768px)");
+    const update = () => setChartHeight(mql.matches ? CHART_HEIGHT_DESKTOP : CHART_HEIGHT_MOBILE);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
   const totalInsalubres = chartData.reduce((sum, d) => sum + d.insalubres, 0);
 
   // Year-over-year, same-period only -- comparing this year's running total
@@ -650,7 +673,7 @@ export default function DiasInsalubresChart({
         </>
       }
     >
-      <div className="px-5 pb-6 pt-6">
+      <div className="px-5 pb-6 pt-4 md:pt-6">
         {/* justify-between, no extra offset: this row and "Días del mes"
             already share the same px-5 card padding, so their left/right
             margins match by construction. (2026-09-21: pr-6 + a relative
@@ -658,7 +681,7 @@ export default function DiasInsalubresChart({
             row above*, a different, unrelated row -- that pulled this row's
             own right edge off its natural symmetric position and was the
             actual cause of the left/right mismatch reported. Reverted.) */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-between md:mb-6">
           <span className="text-xs text-gray-400">Días del mes</span>
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
@@ -687,7 +710,11 @@ export default function DiasInsalubresChart({
           <HorizontalScrollFade
             minWidth={PAD_LEFT + monthColWidth * monthCount + PAD_RIGHT}
           >
-            <StackedBarsChart months={chartData} monthColWidth={monthColWidth} />
+            <StackedBarsChart
+              months={chartData}
+              monthColWidth={monthColWidth}
+              chartHeight={chartHeight}
+            />
           </HorizontalScrollFade>
         </div>
       </div>
