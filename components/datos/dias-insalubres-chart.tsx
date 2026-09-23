@@ -617,18 +617,23 @@ export default function DiasInsalubresChart({
                   between two stacked lines would just look like a stray
                   mark. */}
               <div className="hidden h-4 w-px bg-gray-200 md:block" />
-              {/* flex-wrap + whitespace-nowrap on each phrase: without both,
-                  a narrow viewport wrapped mid-phrase ("23 días" / "más"
-                  splitting across lines inside the same span) instead of
-                  moving the whole phrase down as one piece. */}
-              <div className="mt-1 flex flex-wrap items-center gap-x-1 gap-y-0 text-sm md:mt-0">
+              {/* Plain inline text flow, not flex-wrap: flex-wrap treats
+                  each wrapped line as its own flex row, so a line that
+                  wraps starts flush at the container's edge instead of
+                  reading as a continuation -- looked like two disconnected,
+                  misaligned lines rather than one wrapped phrase. Ordinary
+                  text wrapping (the icon as an inline glyph before it)
+                  doesn't have that seam. whitespace-nowrap keeps the short
+                  delta phrase ("23 días más") from itself breaking
+                  mid-phrase if it lands right at the wrap point. */}
+              <p className="mt-1 text-sm md:mt-0">
               {priorYearDelta < 0 ? (
-                <ArrowDown className="h-3.5 w-3.5" style={{ color: COLOR_SALUDABLE }} />
+                <ArrowDown className="inline h-3.5 w-3.5 align-text-bottom" style={{ color: COLOR_SALUDABLE }} />
               ) : priorYearDelta > 0 ? (
-                <ArrowUp className="h-3.5 w-3.5" style={{ color: COLOR_INSALUBRE }} />
+                <ArrowUp className="inline h-3.5 w-3.5 align-text-bottom" style={{ color: COLOR_INSALUBRE }} />
               ) : (
-                <Minus className="h-3.5 w-3.5" />
-              )}
+                <Minus className="inline h-3.5 w-3.5 align-text-bottom" />
+              )}{" "}
               <span
                 className="whitespace-nowrap"
                 style={{
@@ -643,9 +648,9 @@ export default function DiasInsalubresChart({
                 {priorYearDelta === 0
                   ? "mismos días"
                   : `${Math.abs(priorYearDelta)} día${Math.abs(priorYearDelta) === 1 ? "" : "s"} ${priorYearDelta < 0 ? "menos" : "más"}`}
-              </span>
-              <span>que en el mismo periodo de {year - 1}</span>
-            </div>
+              </span>{" "}
+              que en el mismo periodo de {year - 1}
+            </p>
             </>
           )}
         </div>
