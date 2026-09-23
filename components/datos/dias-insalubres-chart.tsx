@@ -161,13 +161,11 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       icon: HeartPulse,
       body: (
         <>
-          La exposición a PM2.5 y PM10 es dañina para la salud. El PM10 se
-          aloja en las vías respiratorias superiores e irrita ojos, nariz y
-          garganta, agravando el asma, la bronquitis y la EPOC, mientras que
-          el PM2.5 penetra más profundo, llega al torrente sanguíneo y se
-          asocia con enfermedades respiratorias, cardiovasculares y daño
-          sistémico. Si quieres entender mejor cómo nos afecta, te
-          compartimos la siguiente{" "}
+          La exposición a PM2.5 y PM10 es dañina para la salud: irritan
+          ojos, nariz y garganta, agravan el asma, la bronquitis y la EPOC, y
+          se asocian con enfermedades cardiovasculares y daño sistémico. Si
+          quieres entender mejor cómo nos afecta, te compartimos la
+          siguiente{" "}
           <a
             href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
             target="_blank"
