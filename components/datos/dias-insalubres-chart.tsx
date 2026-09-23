@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, HeartPulse, Minus, Scale, ShieldCheck, Wind } from "lucide-react";
+import { ArrowDown, ArrowUp, BookOpen, HeartPulse, Minus, ShieldCheck, Wind } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -127,7 +127,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
     {
       id: "norma",
       label: "Metodología",
-      icon: Scale,
+      icon: BookOpen,
       body: (
         <>
           Se clasifica un día como insalubre si alguna estación de monitoreo
@@ -136,7 +136,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           saludable. Algunos meses pueden mostrar menos días de los que
           corresponden, ya que un día se contabiliza solo si alguna estación
           de monitoreo reportó mediciones suficientes. Todo lo anterior, con
-          base en la Norma Mexicana{" "}
+          base en la Norma Oficial Mexicana:{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
