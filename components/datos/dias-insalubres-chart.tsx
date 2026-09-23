@@ -159,44 +159,26 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
       id: "salud",
       label: "Impacto en salud",
       icon: HeartPulse,
-      body:
-        pollutant === "pm10" ? (
-          <>
-            La exposición a PM2.5 y PM10 es dañina para la salud. Las
-            partículas PM10 penetran las vías respiratorias superiores y
-            pueden alojarse en bronquios y pulmones; la exposición frecuente
-            irrita ojos, nariz y garganta, y agrava el asma, la bronquitis y
-            la EPOC. Si quieres entender mejor cómo nos afecta, te
-            compartimos la siguiente{" "}
-            <a
-              href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-            >
-              infografía
-            </a>
-            .
-          </>
-        ) : (
-          <>
-            La exposición a PM2.5 y PM10 es dañina para la salud. Las
-            partículas PM2.5 son tan pequeñas que penetran profundo en los
-            pulmones y llegan al torrente sanguíneo; la exposición prolongada
-            se asocia con enfermedades respiratorias, cardiovasculares y daño
-            sistémico. Si quieres entender mejor cómo nos afecta, te
-            compartimos la siguiente{" "}
-            <a
-              href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-            >
-              infografía
-            </a>
-            .
-          </>
-        ),
+      body: (
+        <>
+          La exposición a PM2.5 y PM10 es dañina para la salud. El PM10 se
+          aloja en las vías respiratorias superiores e irrita ojos, nariz y
+          garganta, agravando el asma, la bronquitis y la EPOC, mientras que
+          el PM2.5 penetra más profundo, llega al torrente sanguíneo y se
+          asocia con enfermedades respiratorias, cardiovasculares y daño
+          sistémico. Si quieres entender mejor cómo nos afecta, te
+          compartimos la siguiente{" "}
+          <a
+            href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            infografía
+          </a>
+          .
+        </>
+      ),
     },
   ];
 }
