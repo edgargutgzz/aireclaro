@@ -617,6 +617,12 @@ export default function DiasInsalubresChart({
                   between two stacked lines would just look like a stray
                   mark. */}
               <div className="hidden h-4 w-px bg-gray-200 md:block" />
+              {/* Mobile-only: a thin horizontal rule signals these are two
+                  separate data points (the headline count, and this
+                  comparison), not one continuous sentence -- desktop
+                  already gets that signal from the vertical rule above once
+                  they're side by side, so this stays hidden from md: up. */}
+              <div className="mt-2 h-px w-full bg-gray-200 md:hidden" />
               {/* Plain inline text flow, not flex-wrap: flex-wrap treats
                   each wrapped line as its own flex row, so a line that
                   wraps starts flush at the container's edge instead of
@@ -626,7 +632,7 @@ export default function DiasInsalubresChart({
                   doesn't have that seam. whitespace-nowrap keeps the short
                   delta phrase ("23 días más") from itself breaking
                   mid-phrase if it lands right at the wrap point. */}
-              <p className="mt-1 text-sm md:mt-0">
+              <p className="mt-2 text-sm md:mt-0">
               {priorYearDelta < 0 ? (
                 <ArrowDown className="inline h-3.5 w-3.5 align-text-bottom" style={{ color: COLOR_SALUDABLE }} />
               ) : priorYearDelta > 0 ? (
