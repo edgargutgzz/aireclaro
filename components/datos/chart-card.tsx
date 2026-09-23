@@ -35,7 +35,7 @@ export default function ChartCard({
           {/* div, not p: a caller's subtitle can carry its own block-level
               row (e.g. a year-over-year comparison line), which can't
               legally nest inside a p. */}
-          <div className="mt-1 text-sm text-gray-500">{subtitle}</div>
+          <div className="mt-1 text-xs text-gray-500 md:text-sm">{subtitle}</div>
         </div>
         {headerRight && <div className="flex items-center gap-2">{headerRight}</div>}
       </div>

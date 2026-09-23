@@ -632,7 +632,7 @@ export default function DiasInsalubresChart({
                   doesn't have that seam. whitespace-nowrap keeps the short
                   delta phrase ("23 días más") from itself breaking
                   mid-phrase if it lands right at the wrap point. */}
-              <p className="mt-2 text-sm md:mt-0">
+              <p className="mt-2 text-xs md:mt-0 md:text-sm">
               {priorYearDelta < 0 ? (
                 <ArrowDown className="inline h-3.5 w-3.5 align-text-bottom" style={{ color: COLOR_SALUDABLE }} />
               ) : priorYearDelta > 0 ? (
