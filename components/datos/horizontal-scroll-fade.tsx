@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 // Shared by every /datos chart wide enough to need horizontal scroll (días
 // insalubres' 12 months, promedio anual's up-to-15 stations): the row can
@@ -13,14 +13,28 @@ import { useEffect, useRef, useState } from "react";
 // resizing the window re-checks), not shown as a static decoration.
 export default function HorizontalScrollFade({
   minWidth,
+  centerOn,
   children,
 }: {
   minWidth: number;
+  // Content-local x (px) to bring to the horizontal center on mount, and
+  // again whenever it changes (e.g. cobertura's year toggle moving "today"'s
+  // column) -- undefined means "leave it at the start," the old default.
+  // Doesn't fight manual scrolling: only runs when this value itself
+  // changes, not on every render.
+  centerOn?: number;
   children: React.ReactNode;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollLeft =
+      centerOn !== undefined ? Math.max(0, centerOn - el.clientWidth / 2) : 0;
+  }, [centerOn]);
 
   useEffect(() => {
     const el = scrollRef.current;

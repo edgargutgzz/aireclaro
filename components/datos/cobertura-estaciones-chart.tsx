@@ -1,7 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  BookOpen,
+  HeartPulse,
+  Minus,
+  ShieldCheck,
+} from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_CUBIERTO_FILL_OPACITY,
@@ -216,6 +223,7 @@ function EstacionCalendario({
   coberturaPorFecha,
   realDates,
   todayStr,
+  centerOn,
 }: {
   estacion: Estacion;
   cells: Cell[];
@@ -224,6 +232,7 @@ function EstacionCalendario({
   coberturaPorFecha: Map<string, boolean>;
   realDates: string[];
   todayStr: string;
+  centerOn?: number;
 }) {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
 
@@ -271,7 +280,7 @@ function EstacionCalendario({
         )}
       </div>
 
-      <HorizontalScrollFade minWidth={gridWidth}>
+      <HorizontalScrollFade minWidth={gridWidth} centerOn={centerOn}>
         <div className="relative" style={{ width: gridWidth }}>
           <div
             style={{
@@ -446,6 +455,18 @@ export default function CoberturaEstacionesChart({
   // this to stay live across a page left open past midnight.
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
+  // Scroll each station's year-long grid to the current month on load,
+  // instead of leaving it parked at January -- only meaningful on the year
+  // that actually contains today; a past year just opens at its start, the
+  // old default. Shared across all stations since the grid layout (cells,
+  // totalCols) is already identical for every one of them.
+  const centerOnCol = useMemo(() => {
+    if (year !== Number(todayStr.slice(0, 4))) return undefined;
+    const todayCell = cells.find((c) => c.fecha === todayStr);
+    if (!todayCell) return undefined;
+    return WEEKDAY_COL_WIDTH + todayCell.col * (CELL + GAP) + CELL / 2;
+  }, [cells, year, todayStr]);
+
   const pctCobertura = useMemo(() => {
     if (realDates.length === 0 || estaciones.length === 0) return 0;
     let cubierto = 0;
@@ -460,6 +481,32 @@ export default function CoberturaEstacionesChart({
     );
   }, [realDates, estaciones, coberturaPorEstacion]);
 
+  // Same-period-last-year comparison, mirroring días insalubres' subtitle
+  // line: not full-year vs. partial-year, the same calendar window (Jan 1
+  // through the last synced date's month-day) in both years. Null if the
+  // prior year doesn't have a synced row for every date in that window --
+  // e.g. right after the cron starts, or the one-off Feb 29 in a leap-year
+  // window when the prior year isn't a leap year.
+  const priorYearPctDelta = useMemo(() => {
+    if (year === null || realDates.length === 0) return null;
+    const windowEnd = realDates[realDates.length - 1].slice(5); // "MM-DD"
+    const priorDates = allDates.filter(
+      (d) => d.startsWith(String(year - 1)) && d.slice(5) <= windowEnd,
+    );
+    if (priorDates.length < realDates.length) return null;
+    let cubierto = 0;
+    for (const estacion of estaciones) {
+      const porFecha = coberturaPorEstacion.get(estacion.sensorId);
+      for (const fecha of priorDates) {
+        if (porFecha?.get(fecha) === true) cubierto += 1;
+      }
+    }
+    const priorPct = Math.round(
+      (cubierto / (priorDates.length * estaciones.length)) * 100,
+    );
+    return pctCobertura - priorPct;
+  }, [allDates, year, realDates, estaciones, coberturaPorEstacion, pctCobertura]);
+
   if (allDates.length === 0) {
     return (
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 py-12 text-center text-sm text-gray-500">
@@ -472,12 +519,42 @@ export default function CoberturaEstacionesChart({
     <ChartCard
       title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
       subtitle={
-        <>
-          <span className="font-semibold" style={{ color: COLOR_SALUDABLE }}>
-            {pctCobertura}%
-          </span>{" "}
-          de cobertura de PM2.5 en {year}
-        </>
+        <div className="md:flex md:items-center md:gap-3">
+          <div>
+            <span className="font-semibold" style={{ color: COLOR_SALUDABLE }}>
+              {pctCobertura}%
+            </span>{" "}
+            de cobertura de PM2.5 en {year}
+          </div>
+          {priorYearPctDelta !== null && year !== null && (
+            <>
+              <div className="hidden h-4 w-px bg-gray-200 md:block" />
+              <p className="mt-2 text-xs md:mt-0 md:text-sm">
+                {priorYearPctDelta > 0 ? (
+                  <ArrowUp
+                    className="inline h-3.5 w-3.5 align-text-bottom"
+                    style={{ color: COLOR_SALUDABLE }}
+                  />
+                ) : priorYearPctDelta < 0 ? (
+                  <ArrowDown className="inline h-3.5 w-3.5 align-text-bottom text-gray-400" />
+                ) : (
+                  <Minus className="inline h-3.5 w-3.5 align-text-bottom" />
+                )}{" "}
+                <span
+                  className="whitespace-nowrap"
+                  style={{
+                    color: priorYearPctDelta > 0 ? COLOR_SALUDABLE : undefined,
+                  }}
+                >
+                  {priorYearPctDelta === 0
+                    ? "misma cobertura"
+                    : `${Math.abs(priorYearPctDelta)} punto${Math.abs(priorYearPctDelta) === 1 ? "" : "s"} porcentual${Math.abs(priorYearPctDelta) === 1 ? "" : "es"} ${priorYearPctDelta > 0 ? "más" : "menos"}`}
+                </span>{" "}
+                que en el mismo periodo de {year - 1}
+              </p>
+            </>
+          )}
+        </div>
       }
       headerRight={
         <YearToggle years={years} year={year} onChange={setSelectedYear} />
@@ -517,6 +594,7 @@ export default function CoberturaEstacionesChart({
               }
               realDates={realDates}
               todayStr={todayStr}
+              centerOn={centerOnCol}
             />
           ))}
         </div>
