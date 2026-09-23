@@ -68,8 +68,8 @@ const tabs: InfoTab[] = [
     icon: ShieldCheck,
     body: (
       <>
-        Los datos de calidad del aire (PM2.5 µg/m³) provienen de las estaciones
-        de monitoreo del{" "}
+        Los datos de calidad del aire provienen de las estaciones de
+        monitoreo del{" "}
         <a
           href="http://aire.nl.gob.mx"
           target="_blank"
@@ -88,8 +88,11 @@ const tabs: InfoTab[] = [
     icon: BookOpen,
     body: (
       <>
-        Para garantizar mayor certeza en la información, los datos se analizan
-        siguiendo los criterios establecidos por la{" "}
+        Un día se contabiliza como &ldquo;con datos&rdquo; cuando alguna
+        estación de monitoreo registró al menos el 75% de las horas del día
+        con una medición válida de PM2.5; de lo contrario, no cuenta, aunque
+        la estación haya operado parcialmente. Todo esto, con base en la
+        Norma Oficial Mexicana:{" "}
         <a
           href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
           target="_blank"
@@ -98,10 +101,7 @@ const tabs: InfoTab[] = [
         >
           NOM-025-SSA1-2021
         </a>
-        . Un día se contabiliza como &ldquo;con datos&rdquo; cuando al menos el
-        75% de las horas del día contaron con una medición válida de PM2.5, por
-        lo que algunos días pueden no aparecer aunque la estación haya operado
-        parcialmente.
+        .
       </>
     ),
   },
@@ -112,10 +112,11 @@ const tabs: InfoTab[] = [
     body: (
       <>
         Las partículas PM2.5 son tan pequeñas que penetran profundo en los
-        pulmones y llegan al torrente sanguíneo. La exposición prolongada se
-        asocia con enfermedades respiratorias, cardiovasculares y daño
-        sistémico. Si quieres entender mejor cómo nos afecta, te compartimos la
-        siguiente{" "}
+        pulmones y llegan al torrente sanguíneo. A corto plazo, pueden irritar
+        ojos, nariz y garganta; a largo plazo, se asocian con enfermedades
+        cardiovasculares, respiratorias y cerebrovasculares, además de una
+        menor esperanza de vida. Si quieres entender mejor cómo nos afecta, te
+        compartimos la siguiente{" "}
         <a
           href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
           target="_blank"
@@ -482,11 +483,12 @@ export default function CoberturaEstacionesChart({
         <YearToggle years={years} year={year} onChange={setSelectedYear} />
       }
     >
-      {/* Same shell as días insalubres: symmetric pt-6/pb-6 around the
-          content, legend on its own row above (right-aligned here -- no
-          "Días del mes"-equivalent label to pair it with on the left). */}
-      <div className="px-5 pb-6 pt-6">
-        <div className="mb-3 flex items-center justify-end gap-4 text-xs text-gray-500">
+      {/* Same shell as días insalubres: legend on its own row above
+          (right-aligned here -- no "Días del mes"-equivalent label to pair
+          it with on the left). pt/mb match días insalubres' own mobile
+          easing (2026-09-22, "crowded" feedback). */}
+      <div className="px-5 pb-6 pt-5 md:pt-6">
+        <div className="mb-4 flex items-center justify-end gap-4 text-xs text-gray-500 md:mb-6">
           <span className="flex items-center gap-1.5">
             <span
               className="h-2 w-2 rounded-[2px]"
