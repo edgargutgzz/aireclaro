@@ -135,8 +135,8 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           {desde} µg/m³ en 2026; de lo contrario, se clasifica como
           saludable. Algunos meses pueden mostrar menos días de los que
           corresponden, ya que un día se contabiliza solo si alguna estación
-          de monitoreo reportó mediciones suficientes para un promedio
-          válido. Todo lo anterior, con base en la Norma mexicana{" "}
+          de monitoreo reportó mediciones suficientes. Todo lo anterior, con
+          base en la Norma Mexicana{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
