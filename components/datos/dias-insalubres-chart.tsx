@@ -126,7 +126,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
     },
     {
       id: "norma",
-      label: "Norma mexicana",
+      label: "Metodología",
       icon: Scale,
       body: (
         <>
