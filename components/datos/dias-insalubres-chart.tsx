@@ -162,7 +162,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           la bronquitis; a largo plazo, se asocian con
           enfermedades cardiovasculares, respiratorias y cerebrovasculares,
           además de una menor esperanza de vida. Si quieres entender mejor
-          cómo nos afecta, te compartimos la
+          cómo nos afecta, puedes consultar la
           siguiente{" "}
           <a
             href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
@@ -594,6 +594,7 @@ export default function DiasInsalubresChart({
     const priorTotal = priorRows.reduce((sum, d) => sum + d.diasInsalubres, 0);
     return totalInsalubres - priorTotal;
   }, [activeData, year, chartData.length, totalInsalubres]);
+  const hasPriorYearDelta = priorYearDelta !== null && year !== null;
 
   const tabs = infoTabs(pollutant);
 
@@ -606,8 +607,16 @@ export default function DiasInsalubresChart({
             <span>{totalInsalubres}</span>{" "}
             días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
           </div>
-          {priorYearDelta !== null && year !== null && (
-            <>
+          {/* Always mounted (never conditionally rendered), just hidden
+              via `invisible` when there's no prior-year comparison --
+              conditionally mounting/unmounting this whole block made the
+              header's height jump depending on which year was selected.
+              `visibility:hidden` still reserves the same layout space, so
+              the header stays the same size either way. `contents` on the
+              wrapper shares that one invisible toggle across both the
+              divider and the paragraph without adding an extra box to the
+              md:flex row. */}
+          <div className={`contents ${hasPriorYearDelta ? "" : "invisible"}`}>
               {/* Only between the two points, and only once they're on the
                   same row (md:) -- stacked on mobile, a vertical rule
                   between two stacked lines would just look like a stray
@@ -634,28 +643,27 @@ export default function DiasInsalubresChart({
                 className="inline-flex items-center gap-1 whitespace-nowrap"
                 style={{
                   color:
-                    priorYearDelta < 0
+                    priorYearDelta !== null && priorYearDelta < 0
                       ? COLOR_SALUDABLE
-                      : priorYearDelta > 0
+                      : priorYearDelta !== null && priorYearDelta > 0
                         ? COLOR_INSALUBRE
                         : undefined,
                 }}
               >
-                {priorYearDelta < 0 ? (
+                {priorYearDelta !== null && priorYearDelta < 0 ? (
                   <ArrowDown className="h-3.5 w-3.5" />
-                ) : priorYearDelta > 0 ? (
+                ) : priorYearDelta !== null && priorYearDelta > 0 ? (
                   <ArrowUp className="h-3.5 w-3.5" />
                 ) : (
                   <Minus className="h-3.5 w-3.5" />
                 )}
-                {priorYearDelta === 0
+                {priorYearDelta === null || priorYearDelta === 0
                   ? "mismos días"
                   : `${Math.abs(priorYearDelta)} día${Math.abs(priorYearDelta) === 1 ? "" : "s"} ${priorYearDelta < 0 ? "menos" : "más"}`}
               </span>{" "}
-              que en el mismo periodo de {year - 1}
+              que en el mismo periodo de {(year ?? 0) - 1}
             </p>
-            </>
-          )}
+          </div>
         </div>
       }
       headerRight={
