@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { getLimitForDate, getLimitForDatePM10 } from "@/lib/pm25-limits";
 
 // Shared by the monthly sync cron (which computes this and writes the small
-// result into dias_insalubres_mensual) -- NOT by the /datos page, which just
+// result into sima_insalubres_mensual) -- NOT by the /datos page, which just
 // reads that table directly. See app/api/cron/sima-monthly-sync/route.ts.
 //
 // Reads sima_promedios_diarios (already applies the >=18-valid-hour / 75%

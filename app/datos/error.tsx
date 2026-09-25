@@ -1,6 +1,6 @@
 "use client";
 
-// Catches a failed dias_insalubres_mensual read (rare -- it's a trivial
+// Catches a failed sima_insalubres_mensual read (rare -- it's a trivial
 // table select, see components/datos/dias-insalubres.tsx) so a visitor sees
 // a plain message instead of Next's generic crash page.
 export default function DatosError({ reset }: { reset: () => void }) {

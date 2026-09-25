@@ -10,7 +10,7 @@ import DiasInsalubresChart from "@/components/datos/dias-insalubres-chart";
 export default async function DiasInsalubres() {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .from("dias_insalubres_mensual")
+    .from("sima_insalubres_mensual")
     .select("ano, mes, parametro, dias_insalubres, dias_totales")
     .order("ano", { ascending: true })
     .order("mes", { ascending: true });

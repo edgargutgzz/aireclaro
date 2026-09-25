@@ -188,7 +188,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // /datos reads a precomputed month-level rollup (dias_insalubres_mensual)
+  // /datos reads a precomputed month-level rollup (sima_insalubres_mensual)
   // instead of the ~15k-row sima_promedios_diarios view directly -- that
   // view recomputes its full aggregation on every call, which is fine for
   // one monthly cron run but was never meant to be hit on every page view
@@ -210,7 +210,7 @@ export async function GET(request: NextRequest) {
           })),
       );
       const { error } = await supabase
-        .from("dias_insalubres_mensual")
+        .from("sima_insalubres_mensual")
         .upsert(upsertRows, { onConflict: "ano,mes,parametro" });
       if (error) diasInsalubresError = error.message;
     } catch (err) {
