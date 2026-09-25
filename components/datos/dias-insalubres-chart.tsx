@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, BookOpen, HeartPulse, Minus, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -632,15 +632,8 @@ export default function DiasInsalubresChart({
                   delta phrase ("23 días más") from itself breaking
                   mid-phrase if it lands right at the wrap point. */}
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
-              {/* inline-flex, not vertical-align: vertical-align centers
-                  against the surrounding text's font metrics (x-height),
-                  which is only an approximation of the icon's actual
-                  rendered box -- looked off by a couple px on a real
-                  device. A real flex box centers by actual height instead.
-                  whitespace-nowrap keeps this atomic, so it wraps as one
-                  unit rather than breaking the icon from its number. */}
               <span
-                className="inline-flex items-center gap-1 whitespace-nowrap"
+                className="whitespace-nowrap"
                 style={{
                   color:
                     priorYearDelta !== null && priorYearDelta < 0
@@ -650,13 +643,6 @@ export default function DiasInsalubresChart({
                         : undefined,
                 }}
               >
-                {priorYearDelta !== null && priorYearDelta < 0 ? (
-                  <ArrowDown className="h-3.5 w-3.5" />
-                ) : priorYearDelta !== null && priorYearDelta > 0 ? (
-                  <ArrowUp className="h-3.5 w-3.5" />
-                ) : (
-                  <Minus className="h-3.5 w-3.5" />
-                )}
                 {priorYearDelta === null || priorYearDelta === 0
                   ? "mismos días"
                   : `${Math.abs(priorYearDelta)} día${Math.abs(priorYearDelta) === 1 ? "" : "s"} ${priorYearDelta < 0 ? "menos" : "más"}`}
