@@ -530,22 +530,22 @@ export default function CoberturaEstacionesChart({
             <>
               <div className="hidden h-4 w-px bg-gray-200 md:block" />
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
-                {priorYearPctDelta > 0 ? (
-                  <ArrowUp
-                    className="inline h-3.5 w-3.5 align-middle"
-                    style={{ color: COLOR_SALUDABLE }}
-                  />
-                ) : priorYearPctDelta < 0 ? (
-                  <ArrowDown className="inline h-3.5 w-3.5 align-middle text-gray-400" />
-                ) : (
-                  <Minus className="inline h-3.5 w-3.5 align-middle" />
-                )}{" "}
+                {/* inline-flex, not vertical-align: see días insalubres'
+                    identical comment -- centers by actual box height
+                    instead of approximating off font metrics. */}
                 <span
-                  className="whitespace-nowrap"
+                  className="inline-flex items-center gap-1 whitespace-nowrap"
                   style={{
                     color: priorYearPctDelta > 0 ? COLOR_SALUDABLE : undefined,
                   }}
                 >
+                  {priorYearPctDelta > 0 ? (
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  ) : priorYearPctDelta < 0 ? (
+                    <ArrowDown className="h-3.5 w-3.5 text-gray-400" />
+                  ) : (
+                    <Minus className="h-3.5 w-3.5" />
+                  )}
                   {priorYearPctDelta === 0
                     ? "misma cobertura"
                     : `${Math.abs(priorYearPctDelta)} punto${Math.abs(priorYearPctDelta) === 1 ? "" : "s"} porcentual${Math.abs(priorYearPctDelta) === 1 ? "" : "es"} ${priorYearPctDelta > 0 ? "más" : "menos"}`}
