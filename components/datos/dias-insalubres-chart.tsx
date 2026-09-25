@@ -147,11 +147,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
         <>
           PM2.5 y PM10 son partículas en suspensión en el aire, de hasta 2.5
           y 10 micrómetros de diámetro respectivamente (las PM2.5, unas 30
-          veces más delgadas que un cabello humano). Mientras el PM10 queda
-          atrapado principalmente en las vías respiratorias superiores
-          (nariz, garganta, bronquios), el PM2.5 evade esas defensas y
-          penetra más profundo, por lo que es el más peligroso para la
-          salud.
+          veces más delgadas que un cabello humano).
         </>
       ),
     },
