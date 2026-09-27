@@ -754,18 +754,6 @@ export default function DiasInsalubresChart({
             )}
           </div>
         </div>
-        {/* Discoverability for the click-to-drill-down: a tooltip on hover
-            doesn't help here since it only appears after the thing it's
-            meant to announce has already been found, and doesn't exist at
-            all for touch. A short static line does the job for every input
-            method, so it's the only affordance beyond the cursor:pointer
-            already on each clickable bar. Hidden once inside the calendar
-            view -- "Volver a los meses" is that view's own affordance. */}
-        {!drilledMonth && (
-          <p className="-mt-2 mb-4 text-xs text-gray-400 md:mb-6">
-            Haz clic en un mes para ver el detalle por día
-          </p>
-        )}
         {drilledMonth ? (
           <DiasInsalubresMonthDetail
             ano={drilledMonth.ano}
