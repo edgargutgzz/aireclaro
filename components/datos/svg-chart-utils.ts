@@ -53,7 +53,15 @@ export function tooltipPositionStyle(
   const horizontal: CSSProperties = fitsRight
     ? { left: centerX + sideGap }
     : { right: totalWidth - (centerX - sideGap) };
-  return { ...horizontal, top: Math.max(0, topY) };
+  // Clamped on both edges, not just the top: a mark near the *bottom* of a
+  // short container (e.g. cobertura's per-station mini-calendars, ~120px
+  // tall) otherwise pushed the tooltip's own bottom past chartHeight,
+  // silently clipped by the ancestor scroll container's forced
+  // overflow-y:auto (see this file's header comment) instead of visibly
+  // overflowing -- the tooltip's second line just vanished with no sign
+  // anything was missing (2026-09-27 feedback, cobertura's date tooltip).
+  const top = Math.min(Math.max(0, topY), Math.max(0, chartHeight - tooltipHeight));
+  return { ...horizontal, top };
 }
 
 // Standard "nice numbers" tick generation so a y-axis reads 0/5/10/... or
