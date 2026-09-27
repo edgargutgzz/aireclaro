@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import {
   fetchMonthDayDetail,
@@ -90,6 +90,26 @@ const ESTADO_COLOR: Record<DayStatus["estado"], string> = {
   "sin-datos": COLOR_SIN_DATOS,
 };
 
+// A "sin-datos" day covers two different things -- a real gap (a past day
+// no station reported) and a day that just hasn't happened yet -- but read
+// identically at COLOR_SIN_DATOS' full strength, same as cobertura's grid
+// did before it split "Datos insuficientes" from "Aún no ocurre"
+// (2026-09-27 feedback, asking for the same distinction here). Faded to
+// 40% instead of a second solid color: still visibly separate from a real
+// gap, subtle enough not to read as its own new legend category.
+const FUTURE_FILL_OPACITY = 0.4;
+const FUTURE_TEXT_COLOR = "rgb(163,169,175)";
+
+function isFuture(fecha: string, todayStr: string) {
+  return fecha > todayStr;
+}
+
+function dayLabel(day: DayStatus, todayStr: string) {
+  return day.estado === "sin-datos" && isFuture(day.fecha, todayStr)
+    ? "Aún no ocurre"
+    : ESTADO_LABEL[day.estado];
+}
+
 export default function DiasInsalubresMonthDetail({
   ano,
   mesNumero,
@@ -114,6 +134,11 @@ export default function DiasInsalubresMonthDetail({
   // real report -- reproduction attempts all succeeded, so this was a
   // one-off blip, but a dead end regardless while it lasted).
   const [retryKey, setRetryKey] = useState(0);
+
+  // Client-evaluated once per mount, same as cobertura's own todayStr --
+  // good enough to tell a future date apart from a real gap, no need to
+  // stay live across a page left open past midnight.
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   const measureRef = useRef<HTMLDivElement>(null);
   const [cell, setCell] = useState(CELL_MAX);
@@ -205,22 +230,30 @@ export default function DiasInsalubresMonthDetail({
               gap: GAP,
             }}
           >
-            {cells.map((c) => (
+            {cells.map((c) => {
+              const futuro =
+                c.day.estado === "sin-datos" && isFuture(c.day.fecha, todayStr);
+              return (
               <div
                 key={c.day.fecha}
                 className="flex items-center justify-center rounded-lg text-sm font-medium"
                 tabIndex={0}
-                aria-label={`${WEEKDAY_FULL[c.row]} ${c.day.dia} de ${MONTH_FULL[mesNumero - 1]}: ${ESTADO_LABEL[c.day.estado]}`}
+                aria-label={`${WEEKDAY_FULL[c.row]} ${c.day.dia} de ${MONTH_FULL[mesNumero - 1]}: ${dayLabel(c.day, todayStr)}`}
                 style={{
                   gridColumn: c.col + 1,
                   gridRow: c.row + 1,
                   backgroundColor:
                     c.day.estado === "sin-datos"
-                      ? COLOR_SIN_DATOS
+                      ? withOpacity(COLOR_SIN_DATOS, futuro ? FUTURE_FILL_OPACITY : 1)
                       : c.day.estado === "insalubre"
                         ? withOpacity(COLOR_INSALUBRE, COLOR_INSALUBRE_FILL_OPACITY)
                         : withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY),
-                  color: c.day.estado === "sin-datos" ? "rgb(107,114,128)" : "white",
+                  color:
+                    c.day.estado === "sin-datos"
+                      ? futuro
+                        ? FUTURE_TEXT_COLOR
+                        : "rgb(107,114,128)"
+                      : "white",
                   // No onClick here -- unlike the bar chart's month cells,
                   // a day cell only ever shows its hover tooltip, so a
                   // pointer cursor would falsely promise a click does
@@ -239,7 +272,8 @@ export default function DiasInsalubresMonthDetail({
               >
                 {c.day.dia}
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {tooltip && (
@@ -262,9 +296,15 @@ export default function DiasInsalubresMonthDetail({
               </span>
               <span
                 className="text-sm font-semibold"
-                style={{ color: ESTADO_COLOR[tooltip.day.estado] }}
+                style={{
+                  color:
+                    tooltip.day.estado === "sin-datos" &&
+                    isFuture(tooltip.day.fecha, todayStr)
+                      ? FUTURE_TEXT_COLOR
+                      : ESTADO_COLOR[tooltip.day.estado],
+                }}
               >
-                {ESTADO_LABEL[tooltip.day.estado]}
+                {dayLabel(tooltip.day, todayStr)}
               </span>
             </div>
           )}

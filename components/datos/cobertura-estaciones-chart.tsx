@@ -3,11 +3,7 @@
 import { useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
-import {
-  COLOR_CUBIERTO_FILL_OPACITY,
-  COLOR_SALUDABLE,
-  withOpacity,
-} from "@/lib/datos-colors";
+import { COLOR_CUBIERTO_FILL_OPACITY, withOpacity } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -31,18 +27,29 @@ const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
-// Same Tailwind green as días insalubres' bars (COLOR_SALUDABLE), not the
-// client's own lighter grid green -- unified back by explicit request. Fill
+// Was the same green as días insalubres' "saludable" -- switched to blue
+// (Tailwind blue-500) so "has data" (a coverage/data-quality reading)
+// doesn't get skimmed as "good air quality" (a health reading), which
+// green means everywhere else on this page (2026-09-27 feedback). Fill
 // opacity is its own (higher) constant though, so the grid cells can read
 // more solid without also washing out días insalubres' bars.
+const COLOR_CUBIERTO = "#3b82f6"; // Tailwind blue-500
 const COLOR_CUBIERTO_FILL = withOpacity(
-  COLOR_SALUDABLE,
+  COLOR_CUBIERTO,
   COLOR_CUBIERTO_FILL_OPACITY,
 );
 // A plain gray fill (a data-quality gap, not a health-severity color) --
 // lighter than gray-300 by request, but not all the way to gray-200, which
 // sat almost invisibly on the station card's own bg-gray-50.
 const COLOR_INSUFICIENTE = "#dbdfe3";
+// COLOR_INSUFICIENTE covers two different things -- a real gap (a past day
+// no station reported) and a day that just hasn't happened yet -- and the
+// tooltip already says which ("Datos insuficientes" vs. "Aún no ocurre"),
+// but the cell itself read identically either way. Faded to 40% for a
+// future date instead of a second solid color: still visibly its own
+// thing, subtle enough not to need a new legend swatch (2026-09-27
+// feedback).
+const FUTURE_FILL_OPACITY = 0.4;
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
 // design -- labeling all 7 would be noisy at this cell size.
@@ -342,7 +349,10 @@ function EstacionCalendario({
                       // not a stroke.
                       backgroundColor: cubierto
                         ? COLOR_CUBIERTO_FILL
-                        : COLOR_INSUFICIENTE,
+                        : withOpacity(
+                            COLOR_INSUFICIENTE,
+                            c.fecha > todayStr ? FUTURE_FILL_OPACITY : 1,
+                          ),
                       outline: "none",
                     }}
                     onMouseEnter={() => showTooltip(c, cubierto)}
@@ -376,8 +386,10 @@ function EstacionCalendario({
                 className="text-sm font-semibold"
                 style={{
                   color: tooltip.cubierto
-                    ? COLOR_SALUDABLE
-                    : "rgb(107,114,128)",
+                    ? COLOR_CUBIERTO
+                    : tooltip.fecha > todayStr
+                      ? "rgb(163,169,175)"
+                      : "rgb(107,114,128)",
                 }}
               >
                 {tooltip.cubierto
@@ -528,7 +540,7 @@ export default function CoberturaEstacionesChart({
                 <span
                   className="whitespace-nowrap"
                   style={{
-                    color: priorYearPctDelta > 0 ? COLOR_SALUDABLE : undefined,
+                    color: priorYearPctDelta > 0 ? COLOR_CUBIERTO : undefined,
                   }}
                 >
                   {priorYearPctDelta === 0
