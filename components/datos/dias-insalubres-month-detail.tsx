@@ -15,6 +15,7 @@ import {
   withOpacity,
 } from "@/lib/datos-colors";
 import { tooltipPositionStyle } from "@/components/datos/svg-chart-utils";
+import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 
 const MONTH_FULL = [
   "Enero",
@@ -103,6 +104,7 @@ export default function DiasInsalubresMonthDetail({
   const [days, setDays] = useState<DayStatus[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<Cell | null>(null);
+  useDismissTooltip(tooltip !== null, () => setTooltip(null));
 
   const measureRef = useRef<HTMLDivElement>(null);
   const [cell, setCell] = useState(CELL_MAX);
@@ -204,7 +206,11 @@ export default function DiasInsalubresMonthDetail({
                         ? withOpacity(COLOR_INSALUBRE, COLOR_INSALUBRE_FILL_OPACITY)
                         : withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY),
                   color: c.day.estado === "sin-datos" ? "rgb(107,114,128)" : "white",
-                  cursor: "pointer",
+                  // No onClick here -- unlike the bar chart's month cells,
+                  // a day cell only ever shows its hover tooltip, so a
+                  // pointer cursor would falsely promise a click does
+                  // something (2026-09-27 feedback).
+                  cursor: "default",
                   outline: "none",
                 }}
                 onMouseEnter={() => setTooltip(c)}

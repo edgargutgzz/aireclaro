@@ -16,6 +16,7 @@ import {
   roundedRectPath,
   tooltipPositionStyle,
 } from "@/components/datos/svg-chart-utils";
+import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 
 interface Estacion {
   sensorId: string;
@@ -220,6 +221,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
 // edge-clamping needed the way the chart's own data-point tooltips do.
 function InfoPill({ nombre, rows }: { nombre: string; rows: TrimestreRow[] }) {
   const [open, setOpen] = useState(false);
+  useDismissTooltip(open, () => setOpen(false));
 
   return (
     <span
@@ -403,6 +405,7 @@ function BarsChart({
   isCompleteYear: boolean;
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  useDismissTooltip(hoveredIdx !== null, () => setHoveredIdx(null));
 
   const totalWidth = STATION_COL_WIDTH * bars.length;
   const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
@@ -500,7 +503,10 @@ function BarsChart({
                 fill="transparent"
                 tabIndex={0}
                 aria-label={`${b.nombre}: ${Math.round(b.promedio)} microgramos por metro cúbico`}
-                style={{ cursor: "pointer", outline: "none" }}
+                // Hover tooltip only, no click action here (2026-09-27
+                // feedback -- a pointer cursor should only ever mean a
+                // click does something).
+                style={{ cursor: "default", outline: "none" }}
                 onMouseEnter={() => setHoveredIdx(i)}
                 onMouseLeave={() => clearHover(i)}
                 onFocus={() => setHoveredIdx(i)}

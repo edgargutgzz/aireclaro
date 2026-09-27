@@ -20,6 +20,7 @@ import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
 import { tooltipPositionStyle } from "@/components/datos/svg-chart-utils";
+import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 
 interface Estacion {
   sensorId: string;
@@ -262,6 +263,7 @@ function EstacionCalendario({
     });
   };
   const hideTooltip = () => setTooltip(null);
+  useDismissTooltip(tooltip !== null, hideTooltip);
 
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4">

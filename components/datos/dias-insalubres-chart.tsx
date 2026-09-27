@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, ChevronRight, HeartPulse, ShieldCheck, Wind } from "lucide-react";
+import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -289,7 +290,7 @@ function MonthTooltipCard({
         {pct}% de días insalubres
       </div>
       {month.diasTotales > 0 && (
-        <div className="flex items-center gap-0.5 text-xs font-medium text-gray-500">
+        <div className="flex items-center gap-0.5 border-t border-gray-100 pt-2 text-xs font-medium text-gray-500">
           Ver detalle por día
           <ChevronRight className="h-3.5 w-3.5" />
         </div>
@@ -310,6 +311,7 @@ function StackedBarsChart({
   onSelectMonth: (month: MonthBar) => void;
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  useDismissTooltip(hoveredIdx !== null, () => setHoveredIdx(null));
 
   // A fixed 10px of "air" reserved on each column regardless of width,
   // clamped so the bar never gets imperceptibly thin on a narrow viewport
