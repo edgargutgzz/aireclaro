@@ -47,13 +47,16 @@ const WEEKDAY_FULL = [
 const COLOR_SIN_DATOS = "#dbdfe3";
 
 // Responsive, not fixed: at the card's real narrow-mobile width (~390px,
-// minus the page's own side padding and the card's px-5), 7 fixed 44px
-// cells plus their gaps silently overflowed the card and got clipped by
-// its own overflow-hidden -- no page-level scrollbar to hint at it, so it
-// just looked like Sunday's column vanished. Sized to the measured
-// container instead, same approach the bar chart above already uses for
-// its own month columns.
-const CELL_MAX = 44;
+// minus the page's own side padding and the card's px-5), 7 fixed cells
+// plus their gaps silently overflowed the card and got clipped by its own
+// overflow-hidden -- no page-level scrollbar to hint at it, so it just
+// looked like Sunday's column vanished. Sized to the measured container
+// instead, same approach the bar chart above already uses for its own
+// month columns. CELL_MAX is a taste call, not a hard constraint like
+// CELL_MIN: 44 read as a small calendar stranded in a lot of dead space on
+// a wide desktop card (2026-09-26 feedback); 72 fills noticeably more of
+// it while the day numbers stay a normal size, not oversized blocks.
+const CELL_MAX = 72;
 const CELL_MIN = 32;
 const GAP = 6;
 const WEEKDAY_ROW_HEIGHT = 20;

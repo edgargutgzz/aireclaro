@@ -572,16 +572,24 @@ export default function DiasInsalubresChart({
   // just on resize -- switching from a partial year (fewer columns) to a
   // complete one changes how wide each column should be at the same width.
   const monthCount = chartData.length;
-  const measureRef = useRef<HTMLDivElement>(null);
+  // A callback ref, not a plain useRef: this div unmounts when drilling
+  // into a month's calendar and a brand-new one mounts on the way back
+  // (the ternary below swaps branches, not just content) -- a plain
+  // useRef's identity never changes, so an effect keyed on it wouldn't
+  // rerun and the observer would silently keep watching a detached node,
+  // freezing monthColWidth at whatever it read during that detach (a real
+  // regression: reported as "so much unused white space" after visiting a
+  // month's calendar and coming back). Keying the effect on the node
+  // itself instead means every fresh mount gets its own fresh measurement.
+  const [measureNode, setMeasureNode] = useState<HTMLDivElement | null>(null);
   const [monthColWidth, setMonthColWidth] = useState(MONTH_COL_WIDTH_MAX);
   useEffect(() => {
-    const el = measureRef.current;
-    if (!el) return;
+    if (!measureNode) return;
     const update = () => {
       // The chart reserves PAD_LEFT + PAD_RIGHT for the axis labels and the
       // right-side margin (see StackedBarsChart's totalWidth) -- only what's
       // left over is available to split across the columns.
-      const available = el.clientWidth - PAD_LEFT - PAD_RIGHT;
+      const available = measureNode.clientWidth - PAD_LEFT - PAD_RIGHT;
       setMonthColWidth(
         Math.min(
           MONTH_COL_WIDTH_MAX,
@@ -591,9 +599,9 @@ export default function DiasInsalubresChart({
     };
     update();
     const ro = new ResizeObserver(update);
-    ro.observe(el);
+    ro.observe(measureNode);
     return () => ro.disconnect();
-  }, [monthCount]);
+  }, [measureNode, monthCount]);
 
   // Shorter plot on mobile (see CHART_HEIGHT_MOBILE) -- matches Tailwind's
   // own md: breakpoint so this switches at the same width every other
@@ -760,7 +768,7 @@ export default function DiasInsalubresChart({
              to fit this card's real width; only a viewport narrower than
              MONTH_COL_WIDTH_MIN * monthCount falls back to
              HorizontalScrollFade's scroll instead of compressing further. */
-          <div ref={measureRef} className="w-full">
+          <div ref={setMeasureNode} className="w-full">
             <HorizontalScrollFade
               minWidth={PAD_LEFT + monthColWidth * monthCount + PAD_RIGHT}
             >
