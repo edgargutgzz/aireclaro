@@ -140,18 +140,6 @@ export default function DiasInsalubresMonthDetail({
   const gridWidth = 7 * (cell + GAP) - GAP;
   const gridHeight = WEEKDAY_ROW_HEIGHT + totalRows * (cell + GAP) - GAP;
 
-  // Same three-way split the bar chart's own hover tooltip already shows
-  // per month -- surfaced here as a persistent panel instead, since the
-  // calendar grid alone left a card this wide with a lot of empty space
-  // next to it (2026-09-27 feedback) that centering only relocated rather
-  // than used for anything.
-  const insalubresCount = days?.filter((d) => d.estado === "insalubre").length ?? 0;
-  const saludablesCount = days?.filter((d) => d.estado === "saludable").length ?? 0;
-  const sinDatosCount = days?.filter((d) => d.estado === "sin-datos").length ?? 0;
-  const diasConDatos = insalubresCount + saludablesCount;
-  const pctInsalubre =
-    diasConDatos > 0 ? Math.round((insalubresCount / diasConDatos) * 100) : 0;
-
   return (
     <div ref={measureRef} className="w-full">
       <button
@@ -180,115 +168,81 @@ export default function DiasInsalubresMonthDetail({
       )}
 
       {!error && days && (
-        <div className="flex flex-col items-start gap-8 md:flex-row">
-          <div className="relative" style={{ width: gridWidth }}>
-            <div className="flex" style={{ height: WEEKDAY_ROW_HEIGHT }}>
-              {WEEKDAY_SHORT.map((w) => (
-                <div
-                  key={w}
-                  className="text-center text-[11px] font-medium text-gray-400"
-                  style={{ width: cell + GAP }}
-                >
-                  {w}
-                </div>
-              ))}
-            </div>
-            <div
-              className="grid"
-              style={{
-                gridTemplateColumns: `repeat(7, ${cell}px)`,
-                gridTemplateRows: `repeat(${totalRows}, ${cell}px)`,
-                gap: GAP,
-              }}
-            >
-              {cells.map((c) => (
-                <div
-                  key={c.day.fecha}
-                  className="flex items-center justify-center rounded-lg text-sm font-medium"
-                  tabIndex={0}
-                  aria-label={`${WEEKDAY_FULL[c.row]} ${c.day.dia} de ${MONTH_FULL[mesNumero - 1]}: ${ESTADO_LABEL[c.day.estado]}`}
-                  style={{
-                    gridColumn: c.col + 1,
-                    gridRow: c.row + 1,
-                    backgroundColor:
-                      c.day.estado === "sin-datos"
-                        ? COLOR_SIN_DATOS
-                        : c.day.estado === "insalubre"
-                          ? withOpacity(COLOR_INSALUBRE, COLOR_INSALUBRE_FILL_OPACITY)
-                          : withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY),
-                    color: c.day.estado === "sin-datos" ? "rgb(107,114,128)" : "white",
-                    cursor: "pointer",
-                    outline: "none",
-                  }}
-                  onMouseEnter={() => setTooltip(c)}
-                  onMouseLeave={() => setTooltip((cur) => (cur === c ? null : cur))}
-                  onFocus={() => setTooltip(c)}
-                  onBlur={() => setTooltip((cur) => (cur === c ? null : cur))}
-                >
-                  {c.day.dia}
-                </div>
-              ))}
-            </div>
-
-            {tooltip && (
+        <div className="relative" style={{ width: gridWidth }}>
+          <div className="flex" style={{ height: WEEKDAY_ROW_HEIGHT }}>
+            {WEEKDAY_SHORT.map((w) => (
               <div
-                className="pointer-events-none absolute z-10 grid w-[11rem] gap-1 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
-                style={tooltipPositionStyle(
-                  tooltip.col * (cell + GAP) + cell / 2,
-                  WEEKDAY_ROW_HEIGHT + tooltip.row * (cell + GAP),
-                  gridWidth,
-                  gridHeight,
-                  TOOLTIP_WIDTH,
-                  TOOLTIP_HEIGHT,
-                  10,
-                  cell / 2,
-                )}
+                key={w}
+                className="text-center text-[11px] font-medium text-gray-400"
+                style={{ width: cell + GAP }}
               >
-                <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
-                  {WEEKDAY_FULL[tooltip.row]} {tooltip.day.dia} de{" "}
-                  {MONTH_FULL[mesNumero - 1]}
-                </span>
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: ESTADO_COLOR[tooltip.day.estado] }}
-                >
-                  {ESTADO_LABEL[tooltip.day.estado]}
-                </span>
+                {w}
               </div>
-            )}
+            ))}
+          </div>
+          <div
+            className="grid"
+            style={{
+              gridTemplateColumns: `repeat(7, ${cell}px)`,
+              gridTemplateRows: `repeat(${totalRows}, ${cell}px)`,
+              gap: GAP,
+            }}
+          >
+            {cells.map((c) => (
+              <div
+                key={c.day.fecha}
+                className="flex items-center justify-center rounded-lg text-sm font-medium"
+                tabIndex={0}
+                aria-label={`${WEEKDAY_FULL[c.row]} ${c.day.dia} de ${MONTH_FULL[mesNumero - 1]}: ${ESTADO_LABEL[c.day.estado]}`}
+                style={{
+                  gridColumn: c.col + 1,
+                  gridRow: c.row + 1,
+                  backgroundColor:
+                    c.day.estado === "sin-datos"
+                      ? COLOR_SIN_DATOS
+                      : c.day.estado === "insalubre"
+                        ? withOpacity(COLOR_INSALUBRE, COLOR_INSALUBRE_FILL_OPACITY)
+                        : withOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY),
+                  color: c.day.estado === "sin-datos" ? "rgb(107,114,128)" : "white",
+                  cursor: "pointer",
+                  outline: "none",
+                }}
+                onMouseEnter={() => setTooltip(c)}
+                onMouseLeave={() => setTooltip((cur) => (cur === c ? null : cur))}
+                onFocus={() => setTooltip(c)}
+                onBlur={() => setTooltip((cur) => (cur === c ? null : cur))}
+              >
+                {c.day.dia}
+              </div>
+            ))}
           </div>
 
-          <div className="grid w-full gap-3 rounded-xl border border-gray-100 bg-gray-50/60 px-5 py-4 md:w-56">
-            <div className="flex gap-4">
-              <div className="flex flex-col gap-0.5">
-                <span
-                  className="text-2xl font-bold leading-none"
-                  style={{ color: COLOR_INSALUBRE }}
-                >
-                  {insalubresCount}
-                </span>
-                <span className="text-xs text-gray-500">insalubres</span>
-              </div>
-              <div className="w-px bg-gray-200" />
-              <div className="flex flex-col gap-0.5">
-                <span
-                  className="text-2xl font-bold leading-none"
-                  style={{ color: COLOR_SALUDABLE }}
-                >
-                  {saludablesCount}
-                </span>
-                <span className="text-xs text-gray-500">saludables</span>
-              </div>
+          {tooltip && (
+            <div
+              className="pointer-events-none absolute z-10 grid w-[11rem] gap-1 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
+              style={tooltipPositionStyle(
+                tooltip.col * (cell + GAP) + cell / 2,
+                WEEKDAY_ROW_HEIGHT + tooltip.row * (cell + GAP),
+                gridWidth,
+                gridHeight,
+                TOOLTIP_WIDTH,
+                TOOLTIP_HEIGHT,
+                10,
+                cell / 2,
+              )}
+            >
+              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
+                {WEEKDAY_FULL[tooltip.row]} {tooltip.day.dia} de{" "}
+                {MONTH_FULL[mesNumero - 1]}
+              </span>
+              <span
+                className="text-sm font-semibold"
+                style={{ color: ESTADO_COLOR[tooltip.day.estado] }}
+              >
+                {ESTADO_LABEL[tooltip.day.estado]}
+              </span>
             </div>
-            {sinDatosCount > 0 && (
-              <div className="border-t border-gray-200 pt-2 text-xs text-gray-500">
-                {sinDatosCount} días sin datos
-              </div>
-            )}
-            <div className="border-t border-gray-200 pt-2 text-xs text-gray-500">
-              {pctInsalubre}% de días insalubres
-            </div>
-          </div>
+          )}
         </div>
       )}
     </div>
