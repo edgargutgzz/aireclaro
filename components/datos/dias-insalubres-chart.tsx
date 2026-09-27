@@ -288,6 +288,11 @@ function MonthTooltipCard({
       <div className="border-t border-gray-100 pt-2 text-xs text-gray-500">
         {pct}% de días insalubres
       </div>
+      {month.diasTotales > 0 && (
+        <div className="text-xs font-medium text-gray-400">
+          Haz clic para ver más
+        </div>
+      )}
     </div>
   );
 }
