@@ -534,7 +534,8 @@ export default function CoberturaEstacionesChart({
                   {priorYearPctDelta === 0
                     ? "misma cobertura"
                     : `${Math.abs(priorYearPctDelta)}% ${priorYearPctDelta > 0 ? "mayor" : "menor"} cobertura`}
-                </span>
+                </span>{" "}
+                que en el mismo periodo de {year - 1}
               </p>
             </>
           )}
