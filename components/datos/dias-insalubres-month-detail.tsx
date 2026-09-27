@@ -214,9 +214,13 @@ export default function DiasInsalubresMonthDetail({
                   outline: "none",
                 }}
                 onMouseEnter={() => setTooltip(c)}
-                onMouseLeave={() => setTooltip((cur) => (cur === c ? null : cur))}
+                onMouseLeave={() =>
+                  setTooltip((cur) => (cur?.day.fecha === c.day.fecha ? null : cur))
+                }
                 onFocus={() => setTooltip(c)}
-                onBlur={() => setTooltip((cur) => (cur === c ? null : cur))}
+                onBlur={() =>
+                  setTooltip((cur) => (cur?.day.fecha === c.day.fecha ? null : cur))
+                }
               >
                 {c.day.dia}
               </div>

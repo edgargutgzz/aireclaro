@@ -1,14 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  BookOpen,
-  HeartPulse,
-  Minus,
-  ShieldCheck,
-} from "lucide-react";
+import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_CUBIERTO_FILL_OPACITY,
@@ -523,31 +516,18 @@ export default function CoberturaEstacionesChart({
       subtitle={
         <div className="md:flex md:items-center md:gap-3">
           <div>
-            <span className="font-semibold" style={{ color: COLOR_SALUDABLE }}>
-              {pctCobertura}%
-            </span>{" "}
-            de cobertura de PM2.5 en {year}
+            <span>{pctCobertura}%</span> de cobertura de PM2.5 en {year}
           </div>
           {priorYearPctDelta !== null && year !== null && (
             <>
               <div className="hidden h-4 w-px bg-gray-200 md:block" />
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
-                {/* inline-flex, not vertical-align: see días insalubres'
-                    identical comment -- centers by actual box height
-                    instead of approximating off font metrics. */}
                 <span
-                  className="inline-flex items-center gap-1 whitespace-nowrap"
+                  className="whitespace-nowrap"
                   style={{
                     color: priorYearPctDelta > 0 ? COLOR_SALUDABLE : undefined,
                   }}
                 >
-                  {priorYearPctDelta > 0 ? (
-                    <ArrowUp className="h-3.5 w-3.5" />
-                  ) : priorYearPctDelta < 0 ? (
-                    <ArrowDown className="h-3.5 w-3.5 text-gray-400" />
-                  ) : (
-                    <Minus className="h-3.5 w-3.5" />
-                  )}
                   {priorYearPctDelta === 0
                     ? "misma cobertura"
                     : `${Math.abs(priorYearPctDelta)} punto${Math.abs(priorYearPctDelta) === 1 ? "" : "s"} porcentual${Math.abs(priorYearPctDelta) === 1 ? "" : "es"} ${priorYearPctDelta > 0 ? "más" : "menos"}`}
