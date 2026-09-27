@@ -3,7 +3,11 @@
 import { useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_CUBIERTO_FILL_OPACITY, withOpacity } from "@/lib/datos-colors";
+import {
+  COLOR_CUBIERTO_FILL_OPACITY,
+  COLOR_SALUDABLE,
+  withOpacity,
+} from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -324,9 +328,10 @@ function EstacionCalendario({
             >
               {cells.map((c) => {
                 const cubierto = coberturaPorFecha.get(c.fecha);
+                const esFuturo = !cubierto && c.fecha > todayStr;
                 const estadoLabel = cubierto
                   ? "Con datos"
-                  : c.fecha > todayStr
+                  : esFuturo
                     ? "Aún no ocurre"
                     : "Datos insuficientes";
                 return (
@@ -351,13 +356,23 @@ function EstacionCalendario({
                         ? COLOR_CUBIERTO_FILL
                         : withOpacity(
                             COLOR_INSUFICIENTE,
-                            c.fecha > todayStr ? FUTURE_FILL_OPACITY : 1,
+                            esFuturo ? FUTURE_FILL_OPACITY : 1,
                           ),
                       outline: "none",
+                      // Still keyboard-reachable (the aria-label already
+                      // says "Aún no ocurre" for a screen reader), but no
+                      // visual tooltip either way -- a date that hasn't
+                      // happened yet isn't worth a hover/focus popover
+                      // (2026-09-27 feedback).
+                      cursor: esFuturo ? "default" : undefined,
                     }}
-                    onMouseEnter={() => showTooltip(c, cubierto)}
+                    onMouseEnter={() => {
+                      if (!esFuturo) showTooltip(c, cubierto);
+                    }}
                     onMouseLeave={hideTooltip}
-                    onFocus={() => showTooltip(c, cubierto)}
+                    onFocus={() => {
+                      if (!esFuturo) showTooltip(c, cubierto);
+                    }}
                     onBlur={hideTooltip}
                   />
                 );
@@ -536,11 +551,13 @@ export default function CoberturaEstacionesChart({
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
                 {/* "%" here reads as a point delta (pctCobertura's own
                     unit), not a relative change -- flagged 2026-09-27,
-                    kept as requested. */}
+                    kept as requested. Stays green (not COLOR_CUBIERTO's
+                    blue, unlike the grid/tooltip above) -- explicit
+                    request to leave this one line's color alone. */}
                 <span
                   className="whitespace-nowrap"
                   style={{
-                    color: priorYearPctDelta > 0 ? COLOR_CUBIERTO : undefined,
+                    color: priorYearPctDelta > 0 ? COLOR_SALUDABLE : undefined,
                   }}
                 >
                   {priorYearPctDelta === 0
