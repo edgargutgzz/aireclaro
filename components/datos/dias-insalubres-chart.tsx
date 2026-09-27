@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, ChevronRight, HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
@@ -289,8 +289,9 @@ function MonthTooltipCard({
         {pct}% de días insalubres
       </div>
       {month.diasTotales > 0 && (
-        <div className="text-xs font-medium text-gray-400">
-          Haz clic para ver más
+        <div className="flex items-center gap-0.5 text-xs font-medium text-gray-500">
+          Ver detalle por día
+          <ChevronRight className="h-3.5 w-3.5" />
         </div>
       )}
     </div>
