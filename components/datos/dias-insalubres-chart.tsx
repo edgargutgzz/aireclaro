@@ -13,6 +13,7 @@ import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
+import DiasInsalubresMonthDetail from "@/components/datos/dias-insalubres-month-detail";
 import {
   niceTicks,
   roundedRectPath,
@@ -295,10 +296,12 @@ function StackedBarsChart({
   months,
   monthColWidth,
   chartHeight,
+  onSelectMonth,
 }: {
   months: MonthBar[];
   monthColWidth: number;
   chartHeight: number;
+  onSelectMonth: (month: MonthBar) => void;
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
@@ -438,7 +441,11 @@ function StackedBarsChart({
                 {m.mesLabel}
               </text>
               {/* The hit target: the whole band, taller than the mark
-                  itself, per the skill's "hit target bigger than the mark." */}
+                  itself, per the skill's "hit target bigger than the mark."
+                  Also doubles as the click target for the month drill-down
+                  -- a month with no data yet (diasTotales === 0) has nothing
+                  to show a calendar of, so it's excluded there rather than
+                  opening an empty view. */}
               <rect
                 x={bandX(i)}
                 y={PAD_TOP}
@@ -446,12 +453,25 @@ function StackedBarsChart({
                 height={plotHeight}
                 fill="transparent"
                 tabIndex={0}
-                aria-label={`${MONTH_FULL[m.mesNumero - 1]} ${m.ano}: ${m.insalubres} días insalubres, ${m.saludables} días saludables`}
-                style={{ cursor: "pointer", outline: "none" }}
+                role={m.diasTotales > 0 ? "button" : undefined}
+                aria-label={`${MONTH_FULL[m.mesNumero - 1]} ${m.ano}: ${m.insalubres} días insalubres, ${m.saludables} días saludables${m.diasTotales > 0 ? ". Ver detalle por día" : ""}`}
+                style={{
+                  cursor: m.diasTotales > 0 ? "pointer" : "default",
+                  outline: "none",
+                }}
                 onMouseEnter={() => setHoveredIdx(i)}
                 onMouseLeave={() => clearHover(i)}
                 onFocus={() => setHoveredIdx(i)}
                 onBlur={() => clearHover(i)}
+                onClick={() => {
+                  if (m.diasTotales > 0) onSelectMonth(m);
+                }}
+                onKeyDown={(e) => {
+                  if (m.diasTotales > 0 && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    onSelectMonth(m);
+                  }
+                }}
               />
             </g>
           );
@@ -493,6 +513,11 @@ export default function DiasInsalubresChart({
 }) {
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
   const activeData = data[pollutant];
+  // Which month's bar was clicked, if any -- swaps the bar chart for a
+  // day-by-day calendar of that month (see DiasInsalubresMonthDetail).
+  // Cleared whenever the pollutant or year changes out from under it, so a
+  // toggle click can't leave a stale month's detail showing.
+  const [drilledMonth, setDrilledMonth] = useState<MonthBar | null>(null);
 
   const years = useMemo(
     () => [...new Set(activeData.map((d) => d.ano))].sort(),
@@ -506,6 +531,10 @@ export default function DiasInsalubresChart({
     selectedYear !== null && years.includes(selectedYear)
       ? selectedYear
       : years[years.length - 1] ?? null;
+
+  useEffect(() => {
+    setDrilledMonth(null);
+  }, [pollutant, year]);
 
   // Builds all 12 months, then drops the trailing run that has no data --
   // the current in-progress month plus whatever hasn't happened yet. Only
@@ -705,25 +734,45 @@ export default function DiasInsalubresChart({
               />
               {LEGEND.saludables.label}
             </span>
+            {/* Only the calendar drill-down can show an actual "no data"
+                day -- the bar chart above already drops trailing empty
+                months rather than rendering them, so this swatch would be
+                dead weight in that view. */}
+            {drilledMonth && (
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-[2px] bg-[#dbdfe3]" />
+                Sin datos
+              </span>
+            )}
           </div>
         </div>
-        {/* Trailing months with no data yet are dropped (see chartData) so
-            the chart doesn't reserve width for a stretch of the year that
-            hasn't happened. measureRef sizes each remaining month's column
-            to fit this card's real width; only a viewport narrower than
-            MONTH_COL_WIDTH_MIN * monthCount falls back to
-            HorizontalScrollFade's scroll instead of compressing further. */}
-        <div ref={measureRef} className="w-full">
-          <HorizontalScrollFade
-            minWidth={PAD_LEFT + monthColWidth * monthCount + PAD_RIGHT}
-          >
-            <StackedBarsChart
-              months={chartData}
-              monthColWidth={monthColWidth}
-              chartHeight={chartHeight}
-            />
-          </HorizontalScrollFade>
-        </div>
+        {drilledMonth ? (
+          <DiasInsalubresMonthDetail
+            ano={drilledMonth.ano}
+            mesNumero={drilledMonth.mesNumero}
+            pollutant={pollutant}
+            onBack={() => setDrilledMonth(null)}
+          />
+        ) : (
+          /* Trailing months with no data yet are dropped (see chartData) so
+             the chart doesn't reserve width for a stretch of the year that
+             hasn't happened. measureRef sizes each remaining month's column
+             to fit this card's real width; only a viewport narrower than
+             MONTH_COL_WIDTH_MIN * monthCount falls back to
+             HorizontalScrollFade's scroll instead of compressing further. */
+          <div ref={measureRef} className="w-full">
+            <HorizontalScrollFade
+              minWidth={PAD_LEFT + monthColWidth * monthCount + PAD_RIGHT}
+            >
+              <StackedBarsChart
+                months={chartData}
+                monthColWidth={monthColWidth}
+                chartHeight={chartHeight}
+                onSelectMonth={setDrilledMonth}
+              />
+            </HorizontalScrollFade>
+          </div>
+        )}
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
