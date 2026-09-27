@@ -106,6 +106,15 @@ export default function DiasInsalubresMonthDetail({
   const [tooltip, setTooltip] = useState<Cell | null>(null);
   useDismissTooltip(tooltip !== null, () => setTooltip(null));
 
+  // A failed fetch (transient network error, cold connection, etc.) had no
+  // in-place recovery -- the only way out was clicking back to the month
+  // list and re-entering, which happens to remount this component and
+  // retrigger the effect below. retryKey does that same retrigger
+  // explicitly, from a button, without leaving the calendar (2026-09-27,
+  // real report -- reproduction attempts all succeeded, so this was a
+  // one-off blip, but a dead end regardless while it lasted).
+  const [retryKey, setRetryKey] = useState(0);
+
   const measureRef = useRef<HTMLDivElement>(null);
   const [cell, setCell] = useState(CELL_MAX);
   useEffect(() => {
@@ -135,7 +144,7 @@ export default function DiasInsalubresMonthDetail({
     return () => {
       cancelled = true;
     };
-  }, [ano, mesNumero, pollutant]);
+  }, [ano, mesNumero, pollutant, retryKey]);
 
   const cells = days ? buildLayout(ano, mesNumero, days) : [];
   const totalRows = cells.length > 0 ? Math.max(...cells.map((c) => c.row)) + 1 : 0;
@@ -158,7 +167,13 @@ export default function DiasInsalubresMonthDetail({
 
       {error && (
         <p className="text-sm text-gray-500">
-          No se pudo cargar el detalle de este mes.
+          No se pudo cargar el detalle de este mes.{" "}
+          <button
+            onClick={() => setRetryKey((k) => k + 1)}
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            Reintentar
+          </button>
         </p>
       )}
 
