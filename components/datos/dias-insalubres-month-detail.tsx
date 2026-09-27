@@ -52,11 +52,15 @@ const COLOR_SIN_DATOS = "#dbdfe3";
 // overflow-hidden -- no page-level scrollbar to hint at it, so it just
 // looked like Sunday's column vanished. Sized to the measured container
 // instead, same approach the bar chart above already uses for its own
-// month columns. CELL_MAX is a taste call, not a hard constraint like
-// CELL_MIN: 44 read as a small calendar stranded in a lot of dead space on
-// a wide desktop card (2026-09-26 feedback); 72 fills noticeably more of
-// it while the day numbers stay a normal size, not oversized blocks.
-const CELL_MAX = 72;
+// month columns.
+//
+// CELL_MAX briefly went to 72 to fill more of a wide desktop card, but a
+// left-aligned grid narrower than the card just relocated the dead space
+// instead of removing it -- it all piled up on the right (2026-09-26
+// follow-up feedback). Back to 44; the grid is centered in its container
+// below instead of stretched, so the leftover space reads as balanced
+// margins around a normal-sized calendar, not a stranded block.
+const CELL_MAX = 44;
 const CELL_MIN = 32;
 const GAP = 6;
 const WEEKDAY_ROW_HEIGHT = 20;
@@ -162,13 +166,13 @@ export default function DiasInsalubresMonthDetail({
 
       {!error && !days && (
         <div
-          className="w-full animate-pulse rounded-xl bg-gray-100"
+          className="mx-auto w-full animate-pulse rounded-xl bg-gray-100"
           style={{ maxWidth: gridWidth, height: 280 }}
         />
       )}
 
       {!error && days && (
-        <div className="relative" style={{ width: gridWidth }}>
+        <div className="relative mx-auto" style={{ width: gridWidth }}>
           <div className="flex" style={{ height: WEEKDAY_ROW_HEIGHT }}>
             {WEEKDAY_SHORT.map((w) => (
               <div
