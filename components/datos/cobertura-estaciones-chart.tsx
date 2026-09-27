@@ -522,6 +522,9 @@ export default function CoberturaEstacionesChart({
             <>
               <div className="hidden h-4 w-px bg-gray-200 md:block" />
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
+                {/* "%" here reads as a point delta (pctCobertura's own
+                    unit), not a relative change -- flagged 2026-09-27,
+                    kept as requested. */}
                 <span
                   className="whitespace-nowrap"
                   style={{
@@ -530,9 +533,8 @@ export default function CoberturaEstacionesChart({
                 >
                   {priorYearPctDelta === 0
                     ? "misma cobertura"
-                    : `${Math.abs(priorYearPctDelta)} punto${Math.abs(priorYearPctDelta) === 1 ? "" : "s"} porcentual${Math.abs(priorYearPctDelta) === 1 ? "" : "es"} ${priorYearPctDelta > 0 ? "más" : "menos"}`}
-                </span>{" "}
-                que en el mismo periodo de {year - 1}
+                    : `${Math.abs(priorYearPctDelta)}% ${priorYearPctDelta > 0 ? "mayor" : "menor"} cobertura`}
+                </span>
               </p>
             </>
           )}
