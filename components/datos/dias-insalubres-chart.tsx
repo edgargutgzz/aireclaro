@@ -733,8 +733,16 @@ export default function DiasInsalubresChart({
             row above*, a different, unrelated row -- that pulled this row's
             own right edge off its natural symmetric position and was the
             actual cause of the left/right mismatch reported. Reverted.) */}
-        <div className="mb-4 flex items-center justify-between md:mb-6">
-          <span className="text-xs text-gray-400">Días del mes</span>
+        <div
+          className={`mb-4 flex items-center md:mb-6 ${drilledMonth ? "justify-end" : "justify-between"}`}
+        >
+          {/* Labels the bar chart's x-axis -- once drilled into a specific
+              month, "Enero 2025" (the calendar's own heading) already
+              says that, so this would just be a stray leftover label
+              (2026-09-27 feedback). */}
+          {!drilledMonth && (
+            <span className="text-xs text-gray-400">Días del mes</span>
+          )}
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1.5">
               <span
