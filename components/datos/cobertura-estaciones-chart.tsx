@@ -121,11 +121,13 @@ function tabs(pollutant: Pollutant): InfoTab[] {
       icon: BookOpen,
       body: (
         <>
-          Un día se contabiliza como &ldquo;con datos&rdquo; cuando alguna
+          Un día se contabiliza como &ldquo;Con datos&rdquo; cuando alguna
           estación de monitoreo registró al menos el 75% de las horas del día
           con una medición válida de {POLLUTANT_LABEL[pollutant]}; de lo
-          contrario, no cuenta, aunque la estación haya operado parcialmente.
-          Todo esto, con base en la Norma Oficial Mexicana:{" "}
+          contrario, no cuenta. Esto no siempre significa que la estación
+          falló: un día sin datos también puede ser uno que todavía no
+          ocurre o que aún no se sincroniza en nuestra base de datos. Todo
+          esto, con base en la Norma Oficial Mexicana:{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
