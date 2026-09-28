@@ -46,14 +46,12 @@ const COLOR_CUBIERTO_FILL = withOpacity(
 // lighter than gray-300 by request, but not all the way to gray-200, which
 // sat almost invisibly on the station card's own bg-gray-50.
 const COLOR_INSUFICIENTE = "#dbdfe3";
-// COLOR_INSUFICIENTE covers two different things -- a real gap (a past day
-// no station reported) and a day that just hasn't happened yet -- and the
-// tooltip already says which ("Datos insuficientes" vs. "Aún no ocurre"),
-// but the cell itself read identically either way. Faded to 40% for a
-// future date instead of a second solid color: still visibly its own
-// thing, subtle enough not to need a new legend swatch (2026-09-27
-// feedback).
-const FUTURE_FILL_OPACITY = 0.4;
+// Faded to 40% rather than solid: a real gap (a station short on valid
+// hours) and "we haven't synced this date yet" (future, or just past our
+// monthly cron's cutoff) can't be told apart from this table alone, so
+// every non-covered cell gets the same subdued treatment instead of
+// picking a label that might be wrong (2026-09-27 feedback).
+const NO_DATA_FILL_OPACITY = 0.4;
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
 // design -- labeling all 7 would be noisy at this cell size.
@@ -227,7 +225,6 @@ function EstacionCalendario({
   monthLabelForCol,
   coberturaPorFecha,
   realDates,
-  todayStr,
   centerOn,
 }: {
   estacion: Estacion;
@@ -236,7 +233,6 @@ function EstacionCalendario({
   monthLabelForCol: Map<number, string>;
   coberturaPorFecha: Map<string, boolean>;
   realDates: string[];
-  todayStr: string;
   centerOn?: number;
 }) {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
@@ -328,50 +324,40 @@ function EstacionCalendario({
             >
               {cells.map((c) => {
                 const cubierto = coberturaPorFecha.get(c.fecha);
-                const esFuturo = !cubierto && c.fecha > todayStr;
-                const estadoLabel = cubierto
-                  ? "Con datos"
-                  : esFuturo
-                    ? "Aún no ocurre"
-                    : "Datos insuficientes";
                 return (
                   <div
                     key={c.fecha}
                     className="rounded-[2px]"
                     tabIndex={0}
-                    aria-label={`${formatTooltipDate(c.fecha, c.row)}: ${estadoLabel}`}
+                    aria-label={`${formatTooltipDate(c.fecha, c.row)}: ${cubierto ? "Con datos" : "Sin datos"}`}
                     style={{
                       gridColumn: c.col + 1,
                       gridRow: c.row + 1,
-                      // Undefined (no row at all -- typically a future
-                      // date not yet synced) renders the same as false:
-                      // every cell is now a real calendar date (the grid
-                      // spans the full year), so there's no padding case
-                      // left that actually needs to stay invisible.
-                      // No border -- per the dataviz skill's mark spec (now
-                      // followed by the other two /datos charts too), the
-                      // 3px grid gap between cells is what separates them,
-                      // not a stroke.
+                      // Undefined (no row at all -- a future date, or a
+                      // past one our monthly sync hasn't reached yet) reads
+                      // identically to a real "station didn't report
+                      // enough valid hours" gap -- calling the sync-lag
+                      // case "Datos insuficientes" would be asserting
+                      // something about the station that isn't actually
+                      // true (2026-09-27 feedback), and there's no reliable
+                      // way to tell the two apart from this table alone.
+                      // One uniform faded fill, no tooltip, for every
+                      // non-covered cell -- simplest thing that's never
+                      // wrong. No border -- per the dataviz skill's mark
+                      // spec (now followed by the other two /datos charts
+                      // too), the 3px grid gap is what separates cells, not
+                      // a stroke.
                       backgroundColor: cubierto
                         ? COLOR_CUBIERTO_FILL
-                        : withOpacity(
-                            COLOR_INSUFICIENTE,
-                            esFuturo ? FUTURE_FILL_OPACITY : 1,
-                          ),
+                        : withOpacity(COLOR_INSUFICIENTE, NO_DATA_FILL_OPACITY),
                       outline: "none",
-                      // Still keyboard-reachable (the aria-label already
-                      // says "Aún no ocurre" for a screen reader), but no
-                      // visual tooltip either way -- a date that hasn't
-                      // happened yet isn't worth a hover/focus popover
-                      // (2026-09-27 feedback).
-                      cursor: esFuturo ? "default" : undefined,
                     }}
                     onMouseEnter={() => {
-                      if (!esFuturo) showTooltip(c, cubierto);
+                      if (cubierto) showTooltip(c, cubierto);
                     }}
                     onMouseLeave={hideTooltip}
                     onFocus={() => {
-                      if (!esFuturo) showTooltip(c, cubierto);
+                      if (cubierto) showTooltip(c, cubierto);
                     }}
                     onBlur={hideTooltip}
                   />
@@ -397,21 +383,11 @@ function EstacionCalendario({
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
                 {formatTooltipDate(tooltip.fecha, tooltip.row)}
               </span>
-              <span
-                className="text-sm font-semibold"
-                style={{
-                  color: tooltip.cubierto
-                    ? COLOR_CUBIERTO
-                    : tooltip.fecha > todayStr
-                      ? "rgb(163,169,175)"
-                      : "rgb(107,114,128)",
-                }}
-              >
-                {tooltip.cubierto
-                  ? "Con datos"
-                  : tooltip.fecha > todayStr
-                    ? "Aún no ocurre"
-                    : "Datos insuficientes"}
+              {/* Only ever set for a covered date -- see the grid cell's
+                  own onMouseEnter/onFocus, which now skip calling
+                  showTooltip entirely for anything else. */}
+              <span className="text-sm font-semibold" style={{ color: COLOR_CUBIERTO }}>
+                Con datos
               </span>
             </div>
           )}
@@ -590,9 +566,11 @@ export default function CoberturaEstacionesChart({
           <span className="flex items-center gap-1.5">
             <span
               className="h-2 w-2 rounded-[2px]"
-              style={{ backgroundColor: COLOR_INSUFICIENTE }}
+              style={{
+                backgroundColor: withOpacity(COLOR_INSUFICIENTE, NO_DATA_FILL_OPACITY),
+              }}
             />
-            Datos insuficientes
+            Sin datos
           </span>
         </div>
         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
@@ -607,7 +585,6 @@ export default function CoberturaEstacionesChart({
                 coberturaPorEstacion.get(estacion.sensorId) ?? new Map()
               }
               realDates={realDates}
-              todayStr={todayStr}
               centerOn={centerOnCol}
             />
           ))}
