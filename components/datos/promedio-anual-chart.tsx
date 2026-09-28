@@ -2,6 +2,8 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
+import type { Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { getLimitAnualPM10 } from "@/lib/pm25-limits";
 import {
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
@@ -27,17 +29,26 @@ interface TrimestreRow {
   sensor_id: string;
   ano: number;
   trimestre: number;
+  parametro: "PM2.5" | "PM10";
   dias_validos: number;
   dias_totales: number;
   valido: boolean;
   promedio: number | null;
 }
 
-// NOM-025-SSA1-2021's annual PM2.5 limit and the WHO annual guideline --
-// both flat constants, not derived from lib/pm25-limits.ts, which only holds
-// the (different) daily limits días insalubres uses.
-const NOM_ANUAL = 10;
-const OMS_ANUAL = 5;
+const POLLUTANT_LABEL: Record<Pollutant, string> = {
+  pm25: "PM2.5",
+  pm10: "PM10",
+};
+
+// NOM-025-SSA1-2021's annual limits and the WHO annual guidelines.
+// PM2.5's own annual limit is flat at 10 µg/m³ across every "Año 1/3/5"
+// phase-in bracket (Tabla 1), so it's a plain constant here same as before.
+// PM10's isn't flat (36 -> 28 -> 20) -- see lib/pm25-limits.ts's
+// getLimitAnualPM10 for that phase-in, applied per the selected year.
+const NOM_ANUAL_PM25 = 10;
+const OMS_ANUAL_PM25 = 5;
+const OMS_ANUAL_PM10 = 15; // WHO 2021 guidelines (down from 20 in 2005)
 
 // Measured/clamped the same way días insalubres sizes its month columns
 // (2026-09-28 feedback: chart 3's bars read as "thin" and out of place next
@@ -66,105 +77,130 @@ const TRIMESTRE_MESES: Record<number, string> = {
   4: "Oct–Dic",
 };
 
-const tabs: InfoTab[] = [
-  {
-    id: "fuente",
-    label: "Datos oficiales",
-    icon: ShieldCheck,
-    body: (
-      <>
-        Los datos de calidad del aire (PM2.5 µg/m³) provienen de las estaciones
-        de monitoreo del{" "}
-        <a
-          href="http://aire.nl.gob.mx"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          Sistema Integral de Monitoreo Ambiental (SIMA)
-        </a>{" "}
-        de Nuevo León.
-      </>
-    ),
-  },
-  {
-    id: "norma",
-    label: "Norma Mexicana",
-    icon: Scale,
-    body: (
-      <>
-        Se clasifica la calidad del aire como saludable o insalubre con base en
-        el límite diario establecido por la{" "}
-        <a
-          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          NOM-025-SSA1-2021
-        </a>
-        . El límite anual de PM2.5 es de {NOM_ANUAL} µg/m³.
-      </>
-    ),
-  },
-  {
-    id: "metodologia",
-    label: "Metodología",
-    icon: BookOpen,
-    body: (
-      <>
-        Para garantizar mayor certeza en la información, los datos se analizan
-        siguiendo los criterios establecidos por la{" "}
-        <a
-          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          NOM-025-SSA1-2021
-        </a>
-        . La estación se considera con datos suficientes si al menos 3 de los 4
-        trimestres tienen cobertura. Un trimestre es válido cuando la estación
-        reportó mediciones en al menos el 75% de los días del trimestre.
-      </>
-    ),
-  },
-  {
-    id: "contaminante",
-    label: "Contaminantes",
-    icon: Wind,
-    body: (
-      <>
-        PM2.5 y PM10 son partículas en suspensión en el aire, de hasta 2.5
-        y 10 micrómetros de diámetro respectivamente (las PM2.5, unas 30
-        veces más delgadas que un cabello humano).
-      </>
-    ),
-  },
-  {
-    id: "salud",
-    label: "Impacto en salud",
-    icon: HeartPulse,
-    body: (
-      <>
-        Las partículas PM2.5 son tan pequeñas que penetran profundo en los
-        pulmones y llegan al torrente sanguíneo. La exposición prolongada se
-        asocia con enfermedades respiratorias, cardiovasculares y daño
-        sistémico. Si quieres entender mejor cómo nos afecta, te compartimos la
-        siguiente{" "}
-        <a
-          href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          infografía
-        </a>
-        .
-      </>
-    ),
-  },
-];
+// A function of pollutant now (2026-09-28: was a flat constant array,
+// PM2.5-only) -- "fuente" and "salud" only needed pluralizing since they
+// were already pollutant-general in spirit, but "norma" genuinely differs:
+// PM10's annual limit isn't a single number, it phases in (see
+// getLimitAnualPM10), so its own sentence has to say that explicitly rather
+// than plugging a number into the same PM2.5 template.
+function tabs(pollutant: Pollutant, nomAnual: number): InfoTab[] {
+  return [
+    {
+      id: "fuente",
+      label: "Datos oficiales",
+      icon: ShieldCheck,
+      body: (
+        <>
+          Los datos de calidad del aire provienen de las estaciones de
+          monitoreo del{" "}
+          <a
+            href="http://aire.nl.gob.mx"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            Sistema Integral de Monitoreo Ambiental (SIMA)
+          </a>{" "}
+          de Nuevo León.
+        </>
+      ),
+    },
+    {
+      id: "norma",
+      label: "Norma Mexicana",
+      icon: Scale,
+      body:
+        pollutant === "pm25" ? (
+          <>
+            Se determina si una estación cumple con el límite anual
+            establecido por la{" "}
+            <a
+              href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+            >
+              NOM-025-SSA1-2021
+            </a>
+            . El límite anual de PM2.5 es de {nomAnual} µg/m³.
+          </>
+        ) : (
+          <>
+            Se determina si una estación cumple con el límite anual
+            establecido por la{" "}
+            <a
+              href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+            >
+              NOM-025-SSA1-2021
+            </a>
+            . El límite anual de PM10 bajó de 28 µg/m³ en 2025 a 20 µg/m³ en
+            2026.
+          </>
+        ),
+    },
+    {
+      id: "metodologia",
+      label: "Metodología",
+      icon: BookOpen,
+      body: (
+        <>
+          Para garantizar mayor certeza en la información, los datos se
+          analizan siguiendo los criterios establecidos por la{" "}
+          <a
+            href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            NOM-025-SSA1-2021
+          </a>
+          . La estación se considera con datos suficientes si al menos 3 de
+          los 4 trimestres tienen cobertura. Un trimestre es válido cuando la
+          estación reportó mediciones en al menos el 75% de los días del
+          trimestre.
+        </>
+      ),
+    },
+    {
+      id: "contaminante",
+      label: "Contaminantes",
+      icon: Wind,
+      body: (
+        <>
+          PM2.5 y PM10 son partículas en suspensión en el aire, de hasta 2.5
+          y 10 micrómetros de diámetro respectivamente (las PM2.5, unas 30
+          veces más delgadas que un cabello humano).
+        </>
+      ),
+    },
+    {
+      id: "salud",
+      label: "Impacto en salud",
+      icon: HeartPulse,
+      body: (
+        <>
+          Las partículas PM2.5 y PM10 son tan pequeñas que penetran profundo
+          en los pulmones y llegan al torrente sanguíneo. La exposición
+          prolongada se asocia con enfermedades respiratorias,
+          cardiovasculares y daño sistémico. Si quieres entender mejor cómo
+          nos afecta, te compartimos la siguiente{" "}
+          <a
+            href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            infografía
+          </a>
+          .
+        </>
+      ),
+    },
+  ];
+}
 
 interface StationBar {
   sensorId: string;
@@ -407,10 +443,16 @@ function TooltipCard({
 function BarsChart({
   bars,
   year,
+  pollutant,
+  nomAnual,
+  omsAnual,
   stationColWidth,
 }: {
   bars: StationBar[];
   year: number | null;
+  pollutant: Pollutant;
+  nomAnual: number;
+  omsAnual: number;
   stationColWidth: number;
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
@@ -426,8 +468,8 @@ function BarsChart({
   const plotRight = totalWidth - PAD_RIGHT;
 
   const rawMax = Math.max(
-    NOM_ANUAL,
-    OMS_ANUAL,
+    nomAnual,
+    omsAnual,
     ...bars.map((b) => b.promedio),
     1,
   );
@@ -452,7 +494,7 @@ function BarsChart({
         width={totalWidth}
         height={CHART_HEIGHT}
         role="img"
-        aria-label="Promedio anual de PM2.5 por estación"
+        aria-label={`Promedio anual de ${POLLUTANT_LABEL[pollutant]} por estación`}
       >
         {ticks.map((t) => {
           const y = valueToY(t);
@@ -531,14 +573,14 @@ function BarsChart({
         })}
 
         <ReferenceLine
-          value={`Norma Mexicana: ${NOM_ANUAL} µg/m³`}
-          y={valueToY(NOM_ANUAL)}
+          value={`Norma Mexicana: ${nomAnual} µg/m³`}
+          y={valueToY(nomAnual)}
           left={PAD_LEFT}
           right={plotRight}
         />
         <ReferenceLine
-          value={`OMS: ${OMS_ANUAL} µg/m³`}
-          y={valueToY(OMS_ANUAL)}
+          value={`OMS: ${omsAnual} µg/m³`}
+          y={valueToY(omsAnual)}
           left={PAD_LEFT}
           right={plotRight}
         />
@@ -577,9 +619,21 @@ export default function PromedioAnualChart({
   estaciones: Estacion[];
   trimestres: TrimestreRow[];
 }) {
+  const [pollutant, setPollutant] = useState<Pollutant>("pm25");
+  const parametro = pollutant === "pm25" ? "PM2.5" : "PM10";
+
+  // Filtered by pollutant first, same as días insalubres/cobertura -- data
+  // coverage can genuinely differ between PM2.5 and PM10 at a given station,
+  // so the year list (and everything downstream) is scoped to whichever
+  // pollutant is selected, not the union of both.
+  const trimestresPollutant = useMemo(
+    () => trimestres.filter((t) => t.parametro === parametro),
+    [trimestres, parametro],
+  );
+
   const years = useMemo(
-    () => [...new Set(trimestres.map((t) => t.ano))].sort(),
-    [trimestres],
+    () => [...new Set(trimestresPollutant.map((t) => t.ano))].sort(),
+    [trimestresPollutant],
   );
   const [selectedYear, setSelectedYear] = useState<number | null>(
     years[years.length - 1] ?? null,
@@ -604,7 +658,7 @@ export default function PromedioAnualChart({
     if (!isCompleteYear) return { bars: [] as StationBar[], sinDatos: [] as SinDatosEntry[] };
 
     const rowsByStation = new Map<string, TrimestreRow[]>();
-    for (const t of trimestres) {
+    for (const t of trimestresPollutant) {
       if (t.ano !== year) continue;
       const lista = rowsByStation.get(t.sensor_id) ?? [];
       lista.push(t);
@@ -656,9 +710,12 @@ export default function PromedioAnualChart({
     sinDatos.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 
     return { bars, sinDatos };
-  }, [estaciones, trimestres, year, isCompleteYear]);
+  }, [estaciones, trimestresPollutant, year, isCompleteYear]);
 
-  const sobreLimite = bars.filter((b) => b.promedio > NOM_ANUAL).length;
+  const nomAnual =
+    pollutant === "pm25" ? NOM_ANUAL_PM25 : getLimitAnualPM10(year ?? new Date().getFullYear());
+  const omsAnual = pollutant === "pm25" ? OMS_ANUAL_PM25 : OMS_ANUAL_PM10;
+  const sobreLimite = bars.filter((b) => b.promedio > nomAnual).length;
 
   // Measures the card's own content width so a spotty year (few stations
   // qualifying as bars) spreads them out to fill the card instead of leaving
@@ -689,12 +746,12 @@ export default function PromedioAnualChart({
       title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
       subtitle={
         !isCompleteYear ? (
-          `PM2.5 · Datos disponibles al finalizar ${year}`
+          `${POLLUTANT_LABEL[pollutant]} · Datos disponibles al finalizar ${year}`
         ) : bars.length === 0 ? (
-          "PM2.5 · Sin datos suficientes todavía"
+          `${POLLUTANT_LABEL[pollutant]} · Sin datos suficientes todavía`
         ) : (
           <>
-            PM2.5 ·{" "}
+            {POLLUTANT_LABEL[pollutant]} ·{" "}
             <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
               {sobreLimite}
             </span>{" "}
@@ -704,7 +761,28 @@ export default function PromedioAnualChart({
         )
       }
       headerRight={
-        <YearToggle years={years} year={year} onChange={setSelectedYear} />
+        <>
+          <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+            {(["pm25", "pm10"] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPollutant(p)}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                  pollutant === p
+                    ? "bg-white text-gray-800 shadow-sm hover:shadow"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {POLLUTANT_LABEL[p]}
+              </button>
+            ))}
+          </div>
+          {/* Separates the pollutant toggle from the year toggle -- two
+              independent choices, not one flat row (same recipe días
+              insalubres/cobertura already use). */}
+          <div className="h-5 w-px bg-gray-200" />
+          <YearToggle years={years} year={year} onChange={setSelectedYear} />
+        </>
       }
     >
       <div className="px-5 pb-6 pt-5 md:pt-6">
@@ -721,7 +799,9 @@ export default function PromedioAnualChart({
           </div>
         ) : (
           <>
-            <span className="mb-3 block text-xs text-gray-400">PM2.5 (µg/m³)</span>
+            <span className="mb-3 block text-xs text-gray-400">
+              {POLLUTANT_LABEL[pollutant]} (µg/m³)
+            </span>
             {bars.length > 0 ? (
               <div ref={setMeasureNode} className="w-full">
                 <HorizontalScrollFade
@@ -730,6 +810,9 @@ export default function PromedioAnualChart({
                   <BarsChart
                     bars={bars}
                     year={year}
+                    pollutant={pollutant}
+                    nomAnual={nomAnual}
+                    omsAnual={omsAnual}
                     stationColWidth={stationColWidth}
                   />
                 </HorizontalScrollFade>
@@ -764,7 +847,7 @@ export default function PromedioAnualChart({
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
-        <InfoTabs tabs={tabs} />
+        <InfoTabs tabs={tabs(pollutant, nomAnual)} />
       </div>
     </ChartCard>
   );

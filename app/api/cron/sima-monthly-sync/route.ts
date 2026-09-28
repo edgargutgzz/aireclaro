@@ -243,15 +243,16 @@ export async function GET(request: NextRequest) {
   }
 
   // Same precompute pattern for "Promedio anual por estación" on /datos --
-  // one row per (sensor_id, ano, trimestre), small enough (stations * years *
-  // 4) to upsert in one shot, no chunking needed.
+  // one row per (sensor_id, ano, trimestre, parametro), small enough
+  // (stations * years * 4 * 2 pollutants) to upsert in one shot, no
+  // chunking needed.
   let promedioTrimestralError: string | undefined;
   if (rowsWritten > 0) {
     try {
       const trimestres = await computePromedioTrimestral(supabase);
       const { error } = await supabase
         .from("sima_promedio_trimestral")
-        .upsert(trimestres, { onConflict: "sensor_id,ano,trimestre" });
+        .upsert(trimestres, { onConflict: "sensor_id,ano,trimestre,parametro" });
       if (error) promedioTrimestralError = error.message;
     } catch (err) {
       promedioTrimestralError = err instanceof Error ? err.message : String(err);

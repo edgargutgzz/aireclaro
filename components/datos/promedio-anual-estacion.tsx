@@ -18,7 +18,7 @@ export default async function PromedioAnualEstacion() {
         .order("nombre_display"),
       supabase
         .from("sima_promedio_trimestral")
-        .select("sensor_id, ano, trimestre, dias_validos, dias_totales, valido, promedio"),
+        .select("sensor_id, ano, trimestre, parametro, dias_validos, dias_totales, valido, promedio"),
     ]);
 
   if (estacionesError) {

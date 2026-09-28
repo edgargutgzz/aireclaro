@@ -17,12 +17,16 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // promedio-anual-chart.tsx) without ever re-deriving it from daily rows.
 //
 // Saltillo (FIN) excluded, per project convention -- it isn't part of this
-// metro area. PM2.5 only for now, per explicit scope.
+// metro area. Both pollutants (2026-09-28: was PM2.5-only) -- the reference
+// thresholds this chart draws differ per pollutant (see lib/pm25-limits.ts's
+// getLimitAnualPM10), but the trimester/day math itself is identical either
+// way, so `parametro` is just carried through, not branched on here.
 
 export interface TrimestreRow {
   sensor_id: string;
   ano: number;
   trimestre: number; // 1-4
+  parametro: "PM2.5" | "PM10";
   dias_validos: number;
   dias_totales: number;
   valido: boolean;
@@ -53,12 +57,13 @@ function daysInTrimestre(ano: number, trimestre: number): number {
 function baseQuery(supabase: SupabaseClient) {
   return supabase
     .from("sima_promedios_diarios")
-    .select("sensor_id, fecha, promedio", { count: "exact" })
-    .eq("parametro", "PM2.5")
+    .select("sensor_id, fecha, promedio, parametro", { count: "exact" })
+    .in("parametro", ["PM2.5", "PM10"])
     .neq("sensor_id", "FIN")
     .not("promedio", "is", null)
     .order("fecha", { ascending: true })
-    .order("sensor_id", { ascending: true });
+    .order("sensor_id", { ascending: true })
+    .order("parametro", { ascending: true });
 }
 
 // Same paginate-in-small-concurrent-batches shape as
@@ -70,7 +75,7 @@ const BATCH_SIZE = 4;
 
 async function fetchAllValidDays(supabase: SupabaseClient) {
   const pageSize = 1000;
-  type Row = { sensor_id: string; fecha: string; promedio: number };
+  type Row = { sensor_id: string; fecha: string; promedio: number; parametro: "PM2.5" | "PM10" };
 
   const first = await baseQuery(supabase).range(0, pageSize - 1);
   if (first.error) {
@@ -101,38 +106,38 @@ async function fetchAllValidDays(supabase: SupabaseClient) {
 export async function computePromedioTrimestral(supabase: SupabaseClient): Promise<TrimestreRow[]> {
   const rows = await fetchAllValidDays(supabase);
 
-  // (sensor_id, ano, trimestre) -> that trimester's valid daily averages,
-  // pooled directly -- no month-level grouping step, per the norm text
-  // above.
+  // (sensor_id, ano, trimestre, parametro) -> that trimester's valid daily
+  // averages, pooled directly -- no month-level grouping step, per the norm
+  // text above.
   const porTrimestre = new Map<string, number[]>();
   for (const row of rows) {
     const ano = Number(row.fecha.slice(0, 4));
     const mes = Number(row.fecha.slice(5, 7));
     const trimestre = Math.ceil(mes / 3);
-    const key = `${row.sensor_id}|${ano}|${trimestre}`;
+    const key = `${row.sensor_id}|${ano}|${trimestre}|${row.parametro}`;
     const lista = porTrimestre.get(key) ?? [];
     lista.push(row.promedio);
     porTrimestre.set(key, lista);
   }
 
-  // Every (sensor, year) that shows up anywhere in the data -- a sensor with
-  // zero valid days all year simply won't appear here, and the chart treats
-  // "no trimester rows at all" the same as "0/4 válidos" (falta de
-  // información), so there's no need to enumerate every known sensor here.
-  const sensorYears = new Set<string>();
+  // Every (sensor, year, parametro) that shows up anywhere in the data -- a
+  // sensor with zero valid days all year simply won't appear here, and the
+  // chart treats "no trimester rows at all" the same as "0/4 válidos" (falta
+  // de información), so there's no need to enumerate every known sensor here.
+  const sensorYearParams = new Set<string>();
   for (const key of porTrimestre.keys()) {
-    const [sensorId, ano] = key.split("|");
-    sensorYears.add(`${sensorId}|${ano}`);
+    const [sensorId, ano, , parametro] = key.split("|");
+    sensorYearParams.add(`${sensorId}|${ano}|${parametro}`);
   }
 
   const out: TrimestreRow[] = [];
-  for (const sensorYear of sensorYears) {
-    const [sensorId, anoStr] = sensorYear.split("|");
+  for (const syp of sensorYearParams) {
+    const [sensorId, anoStr, parametro] = syp.split("|") as [string, string, "PM2.5" | "PM10"];
     const ano = Number(anoStr);
 
     for (const trimestre of [1, 2, 3, 4]) {
       const diasTotales = daysInTrimestre(ano, trimestre);
-      const valores = porTrimestre.get(`${sensorId}|${ano}|${trimestre}`) ?? [];
+      const valores = porTrimestre.get(`${sensorId}|${ano}|${trimestre}|${parametro}`) ?? [];
       const diasValidos = valores.length;
       const valido = diasValidos / diasTotales >= 0.75;
       // Non-null whenever there's at least one valid day, independent of
@@ -150,6 +155,7 @@ export async function computePromedioTrimestral(supabase: SupabaseClient): Promi
         sensor_id: sensorId,
         ano,
         trimestre,
+        parametro,
         dias_validos: diasValidos,
         dias_totales: diasTotales,
         valido,
