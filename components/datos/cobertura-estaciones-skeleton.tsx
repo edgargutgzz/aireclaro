@@ -1,9 +1,10 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
 // Mirrors CoberturaEstacionesChart's shell (header, legend, station-tile
-// list, info-tabs row). Only a handful of tiles are stubbed out -- the real
-// list has 16, but the skeleton just needs to read as "a list is loading,"
-// not reproduce every row.
+// list, info-tabs row). 5 tiles, matching the real chart's own
+// STATIONS_COLLAPSED_COUNT default (15 stations total, expandable) --
+// not a coincidence, keeps the skeleton's height honest for the state
+// most visitors actually land on.
 //
 // One column at every width (2026-09-27 feedback: this had drifted from
 // the real chart's own lg:grid-cols-2 -> single-column change and was
@@ -43,7 +44,7 @@ export default function CoberturaEstacionesSkeleton() {
           <SkeletonBlock className="h-3 w-28" />
         </div>
         <div className="grid grid-cols-1 gap-y-5">
-          {Array.from({ length: 4 }, (_, i) => (
+          {Array.from({ length: 5 }, (_, i) => (
             <EstacionTileSkeleton key={i} />
           ))}
         </div>
