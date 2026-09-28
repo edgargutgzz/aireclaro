@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import DatosHeader from "@/components/datos/datos-header";
+import DatosHeaderSkeleton from "@/components/datos/datos-header-skeleton";
 import DiasInsalubres from "@/components/datos/dias-insalubres";
 import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton";
 import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
@@ -25,6 +27,11 @@ export default function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8 lg:pt-12">
+        <div className="mb-8">
+          <Suspense fallback={<DatosHeaderSkeleton />}>
+            <DatosHeader />
+          </Suspense>
+        </div>
         <Suspense fallback={<DiasInsalubresSkeleton />}>
           <DiasInsalubres />
         </Suspense>
