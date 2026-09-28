@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
+import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import { MONTHS_ES, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_CUBIERTO_FILL_OPACITY,
@@ -135,6 +135,18 @@ function tabs(pollutant: Pollutant): InfoTab[] {
             NOM-025-SSA1-2021
           </a>
           .
+        </>
+      ),
+    },
+    {
+      id: "contaminante",
+      label: "Contaminantes",
+      icon: Wind,
+      body: (
+        <>
+          PM2.5 y PM10 son partículas en suspensión en el aire, de hasta 2.5
+          y 10 micrómetros de diámetro respectivamente (las PM2.5, unas 30
+          veces más delgadas que un cabello humano).
         </>
       ),
     },
