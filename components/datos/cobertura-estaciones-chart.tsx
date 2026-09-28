@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
-import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
+import { MONTHS_ES, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_CUBIERTO_FILL_OPACITY,
   COLOR_INSALUBRE,
@@ -24,8 +24,14 @@ interface Estacion {
 interface CoberturaDia {
   sensor_id: string;
   fecha: string;
+  parametro: "PM2.5" | "PM10";
   cubierto: boolean;
 }
+
+const POLLUTANT_LABEL: Record<Pollutant, string> = {
+  pm25: "PM2.5",
+  pm10: "PM10",
+};
 
 // Sized to the measured card width, same approach días insalubres' bar
 // chart and calendar already use for their own columns/cells -- fixed at
@@ -84,75 +90,77 @@ const WEEKDAY_FULL = [
   "Domingo",
 ];
 
-const tabs: InfoTab[] = [
-  {
-    id: "fuente",
-    label: "Datos oficiales",
-    icon: ShieldCheck,
-    body: (
-      <>
-        Los datos de calidad del aire provienen de las estaciones de
-        monitoreo del{" "}
-        <a
-          href="http://aire.nl.gob.mx"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          Sistema Integral de Monitoreo Ambiental (SIMA)
-        </a>{" "}
-        de Nuevo León.
-      </>
-    ),
-  },
-  {
-    id: "metodologia",
-    label: "Metodología",
-    icon: BookOpen,
-    body: (
-      <>
-        Un día se contabiliza como &ldquo;con datos&rdquo; cuando alguna
-        estación de monitoreo registró al menos el 75% de las horas del día
-        con una medición válida de PM2.5; de lo contrario, no cuenta, aunque
-        la estación haya operado parcialmente. Todo esto, con base en la
-        Norma Oficial Mexicana:{" "}
-        <a
-          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          NOM-025-SSA1-2021
-        </a>
-        .
-      </>
-    ),
-  },
-  {
-    id: "salud",
-    label: "Impacto en salud",
-    icon: HeartPulse,
-    body: (
-      <>
-        Las partículas PM2.5 son tan pequeñas que penetran profundo en los
-        pulmones y llegan al torrente sanguíneo. A corto plazo, pueden irritar
-        ojos, nariz y garganta; a largo plazo, se asocian con enfermedades
-        cardiovasculares, respiratorias y cerebrovasculares, además de una
-        menor esperanza de vida. Si quieres entender mejor cómo nos afecta, te
-        compartimos la siguiente{" "}
-        <a
-          href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          infografía
-        </a>
-        .
-      </>
-    ),
-  },
-];
+function tabs(pollutant: Pollutant): InfoTab[] {
+  return [
+    {
+      id: "fuente",
+      label: "Datos oficiales",
+      icon: ShieldCheck,
+      body: (
+        <>
+          Los datos de calidad del aire provienen de las estaciones de
+          monitoreo del{" "}
+          <a
+            href="http://aire.nl.gob.mx"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            Sistema Integral de Monitoreo Ambiental (SIMA)
+          </a>{" "}
+          de Nuevo León.
+        </>
+      ),
+    },
+    {
+      id: "metodologia",
+      label: "Metodología",
+      icon: BookOpen,
+      body: (
+        <>
+          Un día se contabiliza como &ldquo;con datos&rdquo; cuando alguna
+          estación de monitoreo registró al menos el 75% de las horas del día
+          con una medición válida de {POLLUTANT_LABEL[pollutant]}; de lo
+          contrario, no cuenta, aunque la estación haya operado parcialmente.
+          Todo esto, con base en la Norma Oficial Mexicana:{" "}
+          <a
+            href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            NOM-025-SSA1-2021
+          </a>
+          .
+        </>
+      ),
+    },
+    {
+      id: "salud",
+      label: "Impacto en salud",
+      icon: HeartPulse,
+      body: (
+        <>
+          La exposición a PM2.5 y PM10 es dañina para la salud. A corto
+          plazo, irritan oídos, ojos, nariz y garganta, y agravan el asma y
+          la bronquitis; a largo plazo, se asocian con enfermedades
+          cardiovasculares, respiratorias y cerebrovasculares, además de una
+          menor esperanza de vida. Si quieres entender mejor cómo nos afecta,
+          puedes consultar la siguiente{" "}
+          <a
+            href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          >
+            infografía
+          </a>
+          .
+        </>
+      ),
+    },
+  ];
+}
 
 interface Cell {
   fecha: string;
@@ -240,6 +248,7 @@ function EstacionCalendario({
   realDates,
   priorDates,
   year,
+  pollutant,
   centerOn,
   cell: CELL,
 }: {
@@ -251,6 +260,7 @@ function EstacionCalendario({
   realDates: string[];
   priorDates: string[];
   year: number;
+  pollutant: Pollutant;
   centerOn?: number;
   cell: number;
 }) {
@@ -311,7 +321,9 @@ function EstacionCalendario({
           {estacion.nombre}
         </h4>
         <div className="flex flex-col gap-1 text-right text-xs text-gray-500">
-          <div>{pctEstacion}% de cobertura de PM2.5 en {year}</div>
+          <div>
+            {pctEstacion}% de cobertura de {POLLUTANT_LABEL[pollutant]} en {year}
+          </div>
           {deltaEstacion !== null && (
             <div>
               <span
@@ -467,10 +479,14 @@ export default function CoberturaEstacionesChart({
   estaciones: Estacion[];
   cobertura: CoberturaDia[];
 }) {
+  const [pollutant, setPollutant] = useState<Pollutant>("pm25");
+  const parametro = pollutant === "pm25" ? "PM2.5" : "PM10";
+
   const { dates: allDates, coberturaPorEstacion } = useMemo(() => {
     const dateSet = new Set<string>();
     const porEstacion = new Map<string, Map<string, boolean>>();
     for (const row of cobertura) {
+      if (row.parametro !== parametro) continue;
       dateSet.add(row.fecha);
       if (!porEstacion.has(row.sensor_id))
         porEstacion.set(row.sensor_id, new Map());
@@ -480,7 +496,7 @@ export default function CoberturaEstacionesChart({
       dates: Array.from(dateSet).sort(),
       coberturaPorEstacion: porEstacion,
     };
-  }, [cobertura]);
+  }, [cobertura, parametro]);
 
   const years = useMemo(
     () => [...new Set(allDates.map((d) => Number(d.slice(0, 4))))].sort(),
@@ -616,7 +632,8 @@ export default function CoberturaEstacionesChart({
       subtitle={
         <div className="md:flex md:items-center md:gap-3">
           <div>
-            <span>{pctCobertura}%</span> de cobertura de PM2.5 en {year}
+            <span>{pctCobertura}%</span> de cobertura de{" "}
+            {POLLUTANT_LABEL[pollutant]} en {year}
           </div>
           {priorYearPctDelta !== null && year !== null && (
             <>
@@ -650,7 +667,27 @@ export default function CoberturaEstacionesChart({
         </div>
       }
       headerRight={
-        <YearToggle years={years} year={year} onChange={setSelectedYear} />
+        <>
+          <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+            {(["pm25", "pm10"] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPollutant(p)}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                  pollutant === p
+                    ? "bg-white text-gray-800 shadow-sm hover:shadow"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {POLLUTANT_LABEL[p]}
+              </button>
+            ))}
+          </div>
+          {/* Separates the pollutant toggle from the year toggle -- two
+              independent choices, not one flat row of four options. */}
+          <div className="h-5 w-px bg-gray-200" />
+          <YearToggle years={years} year={year} onChange={setSelectedYear} />
+        </>
       }
     >
       {/* Same shell as días insalubres: legend on its own row above
@@ -689,6 +726,7 @@ export default function CoberturaEstacionesChart({
                 realDates={realDates}
                 priorDates={priorDates}
                 year={year}
+                pollutant={pollutant}
                 centerOn={centerOnCol}
                 cell={cell}
               />
@@ -698,7 +736,7 @@ export default function CoberturaEstacionesChart({
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
-        <InfoTabs tabs={tabs} />
+        <InfoTabs tabs={tabs(pollutant)} />
       </div>
     </ChartCard>
   );

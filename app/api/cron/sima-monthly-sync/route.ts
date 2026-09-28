@@ -219,8 +219,9 @@ export async function GET(request: NextRequest) {
   }
 
   // Same precompute pattern for the "Cobertura de estaciones" grid on
-  // /datos -- one row per (sensor_id, fecha), chunked because the full
-  // history is already well past a single upsert's comfortable row count.
+  // /datos -- one row per (sensor_id, fecha, parametro), chunked because the
+  // full history is already well past a single upsert's comfortable row
+  // count.
   let coberturaError: string | undefined;
   if (rowsWritten > 0) {
     try {
@@ -230,7 +231,7 @@ export async function GET(request: NextRequest) {
         const chunk = cobertura.slice(i, i + chunkSize);
         const { error } = await supabase
           .from("sima_cobertura_diaria")
-          .upsert(chunk, { onConflict: "sensor_id,fecha" });
+          .upsert(chunk, { onConflict: "sensor_id,fecha,parametro" });
         if (error) {
           coberturaError = error.message;
           break;

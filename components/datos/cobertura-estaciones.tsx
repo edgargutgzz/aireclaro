@@ -8,13 +8,18 @@ import CoberturaEstacionesChart from "@/components/datos/cobertura-estaciones-ch
 // because the full history is already well past PostgREST's 1000-row cap.
 async function fetchAllCobertura(supabase: ReturnType<typeof createPublicClient>) {
   const pageSize = 1000;
-  type Row = { sensor_id: string; fecha: string; cubierto: boolean };
+  type Row = {
+    sensor_id: string;
+    fecha: string;
+    parametro: "PM2.5" | "PM10";
+    cubierto: boolean;
+  };
   const rows: Row[] = [];
   let from = 0;
   while (true) {
     const { data, error } = await supabase
       .from("sima_cobertura_diaria")
-      .select("sensor_id, fecha, cubierto")
+      .select("sensor_id, fecha, parametro, cubierto")
       .order("fecha", { ascending: true })
       .order("sensor_id", { ascending: true })
       .range(from, from + pageSize - 1);

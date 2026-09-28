@@ -1,35 +1,42 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Shared by the monthly sync cron, same as lib/dias-insalubres-aggregate.ts.
-// Reads sima_promedios_diarios for PM2.5 -- that view emits one row per
-// (sensor_id, fecha) for the *entire* ingested range, with promedio NULL
-// when the >=18-valid-hour / 75% completeness rule wasn't met (a real row,
-// not a missing one -- see project memory). So "cubierto" is simply
-// "promedio is not null", no separate threshold logic needed here.
+// Reads sima_promedios_diarios for both pollutants -- that view emits one row
+// per (sensor_id, fecha, parametro) for the *entire* ingested range, with
+// promedio NULL when the >=18-valid-hour / 75% completeness rule wasn't met
+// (a real row, not a missing one -- see project memory). So "cubierto" is
+// simply "promedio is not null", no separate threshold logic needed here.
 // Saltillo (FIN) excluded, per project convention, it isn't part of this
 // metro area.
 
 export interface CoberturaDia {
   sensor_id: string;
   fecha: string;
+  parametro: "PM2.5" | "PM10";
   cubierto: boolean;
 }
 
 function baseQuery(supabase: SupabaseClient) {
   return supabase
     .from("sima_promedios_diarios")
-    .select("sensor_id, fecha, promedio", { count: "exact" })
-    .eq("parametro", "PM2.5")
+    .select("sensor_id, fecha, promedio, parametro", { count: "exact" })
+    .in("parametro", ["PM2.5", "PM10"])
     .neq("sensor_id", "FIN")
     .order("fecha", { ascending: true })
-    .order("sensor_id", { ascending: true });
+    .order("sensor_id", { ascending: true })
+    .order("parametro", { ascending: true });
 }
 
 const BATCH_SIZE = 4;
 
 export async function computeCoberturaDiaria(supabase: SupabaseClient): Promise<CoberturaDia[]> {
   const pageSize = 1000;
-  type Row = { sensor_id: string; fecha: string; promedio: number | null };
+  type Row = {
+    sensor_id: string;
+    fecha: string;
+    promedio: number | null;
+    parametro: "PM2.5" | "PM10";
+  };
 
   const first = await baseQuery(supabase).range(0, pageSize - 1);
   if (first.error) {
@@ -55,5 +62,10 @@ export async function computeCoberturaDiaria(supabase: SupabaseClient): Promise<
     }
   }
 
-  return rows.map((r) => ({ sensor_id: r.sensor_id, fecha: r.fecha, cubierto: r.promedio !== null }));
+  return rows.map((r) => ({
+    sensor_id: r.sensor_id,
+    fecha: r.fecha,
+    parametro: r.parametro,
+    cubierto: r.promedio !== null,
+  }));
 }
