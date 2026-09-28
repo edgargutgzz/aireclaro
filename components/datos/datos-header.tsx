@@ -27,14 +27,12 @@ const MONTHS_FULL_ES = [
 // for parts back.
 const CRON_DAY = 6;
 
-// Each run pulls one full closed calendar month, not a rolling/partial
-// window -- the point this whole field exists to make (2026-09-28 feedback:
-// a bare "next update: Oct 6" date doesn't say a WHOLE month lands that day).
-// The month it pulls is always the one right before its own run month (see
-// previousMonth() in the cron itself), so addedMonth is derived from
-// targetMonth here rather than from the stamp above -- correct even if a
-// run were ever missed and the stamp fell more than one month behind.
-function nextUpdate(): { dateLabel: string; addedMonthLabel: string } {
+// A day count ("en 9 días"), not a calendar date -- simpler to parse at a
+// glance than making the reader do "how far is Oct 6" math themselves
+// (2026-09-28 feedback). addedMonth is derived from the run-day math
+// (targetMonth - 1), not from the stamp below, so it's still correct even
+// if a run were ever missed and the stamp fell more than one month behind.
+function nextUpdate(): { addedMonthLabel: string; daysUntil: number } {
   const [y, m, d] = monterreyNaiveNow().slice(0, 10).split("-").map(Number);
   let targetYear = y;
   let targetMonth = m;
@@ -51,25 +49,24 @@ function nextUpdate(): { dateLabel: string; addedMonthLabel: string } {
     addedMonth = 12;
     addedYear -= 1;
   }
+  const todayUTC = Date.UTC(y, m - 1, d);
+  const targetUTC = Date.UTC(targetYear, targetMonth - 1, CRON_DAY);
   return {
-    // No year on the date half -- the month half already carries it, and
-    // repeating "de 2026" twice in one clause read as stiff.
-    dateLabel: `el ${CRON_DAY} de ${MONTHS_FULL_ES[targetMonth - 1]}`,
-    addedMonthLabel: `todo ${MONTHS_FULL_ES[addedMonth - 1]} de ${addedYear}`,
+    addedMonthLabel: `${MONTHS_FULL_ES[addedMonth - 1]} de ${addedYear}`,
+    daysUntil: Math.round((targetUTC - todayUTC) / 86_400_000),
   };
 }
 
-// A two-stat strip -- "datos hasta" and "próxima actualización" -- shared by
-// every /datos chart. Previously one run-on sentence mixed both ideas
-// ("se actualiza cada mes... datos hasta agosto") in a single clause, which
-// read as confusing (2026-09-27 feedback). Split into labeled pairs instead,
-// the same pattern Our World in Data uses for its own "Last updated / Next
-// expected update" fields -- two answers, two fields, side by side rather
-// than one sentence trying to carry both. Reads the same precomputed rollup
-// días insalubres does (sima_insalubres_mensual) rather than adding a new
-// query path: whatever month that table's latest PM2.5 row belongs to IS
-// the month every /datos chart is current through, since the same monthly
-// cron writes all three at once.
+// Two short sentences, shared by every /datos chart -- what's on screen now,
+// and what lands next. Went through a couple of shapes: first one run-on
+// sentence mixing both ideas (confusing), then a label/value stat pair with
+// an exact date (didn't say a WHOLE month arrives that day). Settled on
+// plain sentences with a day-count instead of a date -- reads closer to how
+// the client would actually say it out loud (2026-09-28 feedback). Reads the
+// same precomputed rollup días insalubres does (sima_insalubres_mensual)
+// rather than adding a new query path: whatever month that table's latest
+// PM2.5 row belongs to IS the month every /datos chart is current through,
+// since the same monthly cron writes all three at once.
 export default async function DatosHeader() {
   const supabase = createPublicClient();
   const { data, error } = await supabase
@@ -87,7 +84,8 @@ export default async function DatosHeader() {
   if (error || !data) return null;
 
   const stamp = `${MONTHS_FULL_ES[data.mes - 1]} de ${data.ano}`;
-  const { dateLabel, addedMonthLabel } = nextUpdate();
+  const { addedMonthLabel, daysUntil } = nextUpdate();
+  const daysLabel = `${daysUntil} día${daysUntil === 1 ? "" : "s"}`;
 
   return (
     // White + border-gray-200, same shell ChartCard uses below -- the
@@ -106,22 +104,21 @@ export default async function DatosHeader() {
           own two-stat line (md:flex md:items-center md:gap-3, a hairline
           divider that only appears once both stats share a row) -- one
           shared row shape across the page instead of a bespoke one just for
-          this banner. */}
-      {/* One text size throughout, weight/color doing the contrast instead
-          of a size jump -- the label-at-text-xs + value-at-bold-text-sm
-          version read as uneven/cluttered, especially with two bold values
-          side by side (2026-09-28 feedback). */}
+          this banner. One text size throughout, weight/color doing the
+          contrast instead of a size jump. */}
       <div className="text-sm md:flex md:items-center md:gap-3">
         <div>
-          <span className="text-gray-500">Datos hasta </span>
+          <span className="text-gray-500">Datos actualizados hasta </span>
           <span className="font-medium text-gray-800">{stamp}</span>
+          <span className="text-gray-500">.</span>
         </div>
         <div className="hidden h-4 w-px bg-gray-200 md:block" />
         <div className="mt-1 md:mt-0">
-          <span className="text-gray-500">Próxima actualización: </span>
-          <span className="font-medium text-gray-800">
-            {addedMonthLabel}, {dateLabel}
-          </span>
+          <span className="text-gray-500">Los datos de </span>
+          <span className="font-medium text-gray-800">{addedMonthLabel}</span>
+          <span className="text-gray-500"> estarán disponibles en </span>
+          <span className="font-medium text-gray-800">{daysLabel}</span>
+          <span className="text-gray-500">.</span>
         </div>
       </div>
     </div>
