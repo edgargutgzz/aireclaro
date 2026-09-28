@@ -116,9 +116,7 @@ export default async function DatosHeader() {
         <div className="mt-1 md:mt-0">
           <span className="text-gray-500">Los datos de </span>
           <span className="font-medium text-gray-800">{addedMonthLabel}</span>
-          <span className="text-gray-500"> estarán disponibles en </span>
-          <span className="font-medium text-gray-800">{daysLabel}</span>
-          <span className="text-gray-500">.</span>
+          <span className="text-gray-500"> estarán disponibles en {daysLabel}.</span>
         </div>
       </div>
     </div>
