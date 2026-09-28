@@ -310,7 +310,7 @@ function EstacionCalendario({
         <h4 className="text-sm font-semibold text-gray-800">
           {estacion.nombre}
         </h4>
-        <div className="text-right text-xs text-gray-500">
+        <div className="flex flex-col gap-1 text-right text-xs text-gray-500">
           <div>{pctEstacion}% de cobertura de PM2.5 en {year}</div>
           {deltaEstacion !== null && (
             <div>

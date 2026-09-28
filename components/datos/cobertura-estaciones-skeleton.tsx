@@ -1,17 +1,27 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
 // Mirrors CoberturaEstacionesChart's shell (header, legend, station-tile
-// grid, info-tabs row). Only a handful of tiles are stubbed out -- the real
-// grid has 15, but the skeleton just needs to read as "a grid is loading,"
+// list, info-tabs row). Only a handful of tiles are stubbed out -- the real
+// list has 16, but the skeleton just needs to read as "a list is loading,"
 // not reproduce every row.
+//
+// One column at every width (2026-09-27 feedback: this had drifted from
+// the real chart's own lg:grid-cols-2 -> single-column change and was
+// still showing two stations per row). The two skeleton blocks below are
+// each responsive themselves, not just the grid -- the header block is
+// *taller* on mobile (the two-line subtitle wraps under the station name
+// there) while the calendar block is *shorter* (smaller cells), the
+// opposite direction from most other /datos skeletons, so both need their
+// own breakpoint value rather than one shared one. Heights measured
+// directly against the real rendered card at 390px/1280px.
 function EstacionTileSkeleton() {
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
         <SkeletonBlock className="h-4 w-28" />
-        <SkeletonBlock className="h-5 w-20 rounded-full" />
+        <SkeletonBlock className="h-16 w-40 md:h-8 md:w-56" />
       </div>
-      <SkeletonBlock className="h-24 w-full rounded-lg" />
+      <SkeletonBlock className="h-20 w-full rounded-lg md:h-[137px]" />
     </div>
   );
 }
@@ -32,8 +42,8 @@ export default function CoberturaEstacionesSkeleton() {
           <SkeletonBlock className="h-3 w-20" />
           <SkeletonBlock className="h-3 w-28" />
         </div>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-          {Array.from({ length: 6 }, (_, i) => (
+        <div className="grid grid-cols-1 gap-y-5">
+          {Array.from({ length: 4 }, (_, i) => (
             <EstacionTileSkeleton key={i} />
           ))}
         </div>
