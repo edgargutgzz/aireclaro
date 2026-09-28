@@ -45,12 +45,22 @@ export default async function DatosHeader() {
   const stamp = `${MONTHS_FULL_ES[data.mes - 1]} de ${data.ano}`;
 
   return (
-    <div className="flex items-start gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-sm leading-relaxed text-gray-600">
-      <RefreshCw className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" aria-hidden />
+    // White + border-gray-200, same shell ChartCard uses below -- the
+    // earlier bg-gray-50/border-gray-100 version sat on the page's own
+    // gray-50 background (app/globals.css --background) and read as almost
+    // invisible (2026-09-27 feedback: "too hidden"). The icon chip uses the
+    // same blue cobertura's grid already spends on "has data" (COLOR_CUBIERTO,
+    // cobertura-estaciones-chart.tsx), not a new arbitrary accent, so it
+    // catches the eye without introducing a color the page hasn't already
+    // taught the reader to associate with data currency.
+    <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-4 text-sm leading-relaxed text-gray-600">
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-blue-50">
+        <RefreshCw className="h-4 w-4 text-blue-500" aria-hidden />
+      </div>
       <p>
         Los datos se actualizan cada mes, una semana después de que este
         termina.{" "}
-        <span className="font-medium text-gray-800">Datos hasta {stamp}.</span>
+        <span className="font-semibold text-gray-900">Datos hasta {stamp}.</span>
       </p>
     </div>
   );
