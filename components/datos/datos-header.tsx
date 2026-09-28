@@ -88,15 +88,19 @@ export default async function DatosHeader() {
           divider that only appears once both stats share a row) -- one
           shared row shape across the page instead of a bespoke one just for
           this banner. */}
+      {/* One text size throughout, weight/color doing the contrast instead
+          of a size jump -- the label-at-text-xs + value-at-bold-text-sm
+          version read as uneven/cluttered, especially with two bold values
+          side by side (2026-09-28 feedback). */}
       <div className="text-sm md:flex md:items-center md:gap-3">
         <div>
-          <span className="text-xs text-gray-400">Datos hasta </span>
-          <span className="font-semibold text-gray-900">{stamp}</span>
+          <span className="text-gray-500">Datos hasta </span>
+          <span className="font-medium text-gray-800">{stamp}</span>
         </div>
         <div className="hidden h-4 w-px bg-gray-200 md:block" />
         <div className="mt-1 md:mt-0">
-          <span className="text-xs text-gray-400">Próxima actualización: </span>
-          <span className="font-medium text-gray-700">{nextUpdateLabel()}</span>
+          <span className="text-gray-500">Próxima actualización: </span>
+          <span className="font-medium text-gray-800">{nextUpdateLabel()}</span>
         </div>
       </div>
     </div>
