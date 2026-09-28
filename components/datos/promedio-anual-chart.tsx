@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
 import {
   COLOR_INSALUBRE,
@@ -39,7 +39,18 @@ interface TrimestreRow {
 const NOM_ANUAL = 10;
 const OMS_ANUAL = 5;
 
-const STATION_COL_WIDTH = 130; // px, same horizontal-scroll pattern as MONTH_COL_WIDTH
+// Measured/clamped the same way días insalubres sizes its month columns
+// (2026-09-28 feedback: chart 3's bars read as "thin" and out of place next
+// to chart 1's) -- but station names are long and variable ("Garcia: Valle
+// de Lincoln", 24 chars) unlike días insalubres' fixed 3-letter month
+// abbreviations, so the floor stays at today's fixed width instead of days
+// insalubres' much lower 30px: shrinking further would start overlapping
+// labels for a dataset this can't safely compress the way short month
+// labels can. MAX only ever matters when few stations qualify as bars (a
+// spotty year) -- it lets those columns spread out to fill the card instead
+// of leaving a blank margin, same reasoning as días insalubres' own MAX.
+const STATION_COL_WIDTH_MIN = 130;
+const STATION_COL_WIDTH_MAX = 220;
 
 const TRIMESTRE_MESES: Record<number, string> = {
   1: "Ene–Mar",
@@ -411,15 +422,22 @@ function BarsChart({
   bars,
   year,
   isCompleteYear,
+  stationColWidth,
 }: {
   bars: StationBar[];
   year: number | null;
   isCompleteYear: boolean;
+  stationColWidth: number;
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   useDismissTooltip(hoveredIdx !== null, () => setHoveredIdx(null));
 
-  const totalWidth = STATION_COL_WIDTH * bars.length;
+  // +PAD_LEFT/+PAD_RIGHT: bandX below offsets every column by PAD_LEFT, so
+  // the declared width has to reserve that same room or the last column's
+  // right edge runs past totalWidth and gets clipped by the SVG's own
+  // boundary -- días insalubres' own "last bar crowds the card edge" fix,
+  // missing here until 2026-09-28.
+  const totalWidth = PAD_LEFT + stationColWidth * bars.length + PAD_RIGHT;
   const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
   const plotRight = totalWidth - PAD_RIGHT;
 
@@ -434,7 +452,7 @@ function BarsChart({
 
   const valueToY = (v: number) =>
     PAD_TOP + plotHeight - (v / niceMax) * plotHeight;
-  const bandX = (i: number) => PAD_LEFT + i * STATION_COL_WIDTH;
+  const bandX = (i: number) => PAD_LEFT + i * stationColWidth;
 
   const hovered = hoveredIdx !== null ? bars[hoveredIdx] : null;
 
@@ -480,7 +498,7 @@ function BarsChart({
         })}
 
         {bars.map((b, i) => {
-          const x = bandX(i) + (STATION_COL_WIDTH - BAR_WIDTH) / 2;
+          const x = bandX(i) + (stationColWidth - BAR_WIDTH) / 2;
           const yTop = valueToY(b.promedio);
           const h = PAD_TOP + plotHeight - yTop;
           const isHovered = hoveredIdx === i;
@@ -496,7 +514,7 @@ function BarsChart({
                 style={{ transition: "fill-opacity 120ms ease" }}
               />
               <text
-                x={bandX(i) + STATION_COL_WIDTH / 2}
+                x={bandX(i) + stationColWidth / 2}
                 y={CHART_HEIGHT - PAD_BOTTOM + 16}
                 textAnchor="middle"
                 fontSize={11}
@@ -510,7 +528,7 @@ function BarsChart({
               <rect
                 x={bandX(i)}
                 y={PAD_TOP}
-                width={STATION_COL_WIDTH}
+                width={stationColWidth}
                 height={plotHeight}
                 fill="transparent"
                 tabIndex={0}
@@ -559,7 +577,7 @@ function BarsChart({
           year={year}
           isCompleteYear={isCompleteYear}
           totalWidth={totalWidth}
-          barCenterX={bandX(hoveredIdx) + STATION_COL_WIDTH / 2}
+          barCenterX={bandX(hoveredIdx) + stationColWidth / 2}
           barTopY={valueToY(hovered.promedio)}
         />
       )}
@@ -646,6 +664,30 @@ export default function PromedioAnualChart({
 
   const sobreLimite = bars.filter((b) => b.promedio > NOM_ANUAL).length;
 
+  // Measures the card's own content width so a spotty year (few stations
+  // qualifying as bars) spreads them out to fill the card instead of leaving
+  // a blank margin -- same pattern días insalubres uses for its month
+  // columns, clamped to a much higher floor here (see STATION_COL_WIDTH_MIN)
+  // since these labels are full station names, not 3-letter abbreviations.
+  const [measureNode, setMeasureNode] = useState<HTMLDivElement | null>(null);
+  const [stationColWidth, setStationColWidth] = useState(STATION_COL_WIDTH_MIN);
+  useEffect(() => {
+    if (!measureNode || bars.length === 0) return;
+    const update = () => {
+      const available = measureNode.clientWidth - PAD_LEFT - PAD_RIGHT;
+      setStationColWidth(
+        Math.min(
+          STATION_COL_WIDTH_MAX,
+          Math.max(STATION_COL_WIDTH_MIN, available / bars.length),
+        ),
+      );
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(measureNode);
+    return () => ro.disconnect();
+  }, [measureNode, bars.length]);
+
   return (
     <ChartCard
       title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
@@ -670,13 +712,18 @@ export default function PromedioAnualChart({
       <div className="px-5 pb-6 pt-5 md:pt-6">
         <span className="mb-3 block text-xs text-gray-400">PM2.5 (µg/m³)</span>
         {bars.length > 0 ? (
-          <HorizontalScrollFade minWidth={STATION_COL_WIDTH * bars.length}>
-            <BarsChart
-              bars={bars}
-              year={year}
-              isCompleteYear={isCompleteYear}
-            />
-          </HorizontalScrollFade>
+          <div ref={setMeasureNode} className="w-full">
+            <HorizontalScrollFade
+              minWidth={PAD_LEFT + stationColWidth * bars.length + PAD_RIGHT}
+            >
+              <BarsChart
+                bars={bars}
+                year={year}
+                isCompleteYear={isCompleteYear}
+                stationColWidth={stationColWidth}
+              />
+            </HorizontalScrollFade>
+          </div>
         ) : (
           <div
             className="flex items-center justify-center rounded-lg bg-gray-50 text-sm text-gray-400"
