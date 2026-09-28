@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, HeartPulse, Scale, ShieldCheck } from "lucide-react";
+import { BookOpen, HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
 import {
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
@@ -123,6 +123,18 @@ const tabs: InfoTab[] = [
         . La estación se considera con datos suficientes si al menos 3 de los 4
         trimestres tienen cobertura. Un trimestre es válido cuando la estación
         reportó mediciones en al menos el 75% de los días del trimestre.
+      </>
+    ),
+  },
+  {
+    id: "contaminante",
+    label: "Contaminantes",
+    icon: Wind,
+    body: (
+      <>
+        PM2.5 y PM10 son partículas en suspensión en el aire, de hasta 2.5
+        y 10 micrómetros de diámetro respectivamente (las PM2.5, unas 30
+        veces más delgadas que un cabello humano).
       </>
     ),
   },
@@ -655,7 +667,7 @@ export default function PromedioAnualChart({
         <YearToggle years={years} year={year} onChange={setSelectedYear} />
       }
     >
-      <div className="px-5 pb-6 pt-6">
+      <div className="px-5 pb-6 pt-5 md:pt-6">
         <span className="mb-3 block text-xs text-gray-400">PM2.5 (µg/m³)</span>
         {bars.length > 0 ? (
           <HorizontalScrollFade minWidth={STATION_COL_WIDTH * bars.length}>

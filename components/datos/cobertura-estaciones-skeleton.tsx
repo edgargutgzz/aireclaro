@@ -37,7 +37,7 @@ export default function CoberturaEstacionesSkeleton() {
         <SkeletonBlock className="h-8 w-24 rounded-xl" />
       </div>
 
-      <div className="px-5 pb-6 pt-6">
+      <div className="px-5 pb-6 pt-5 md:pt-6">
         <div className="mb-3 flex items-center justify-end gap-4">
           <SkeletonBlock className="h-3 w-20" />
           <SkeletonBlock className="h-3 w-28" />
@@ -49,7 +49,11 @@ export default function CoberturaEstacionesSkeleton() {
         </div>
       </div>
 
+      {/* 4 pills -- matches the chart's own fuente/metodologia/contaminante/
+          salud tabs (Contaminantes added 2026-09-28, this skeleton wasn't
+          updated at the time). */}
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
+        <SkeletonBlock className="h-7 w-32 rounded-xl" />
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
         <SkeletonBlock className="h-7 w-28 rounded-xl" />
         <SkeletonBlock className="h-7 w-36 rounded-xl" />

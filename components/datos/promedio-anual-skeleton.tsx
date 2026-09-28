@@ -14,7 +14,7 @@ export default function PromedioAnualSkeleton() {
         <SkeletonBlock className="h-8 w-24 rounded-xl" />
       </div>
 
-      <div className="px-5 pb-6 pt-6">
+      <div className="px-5 pb-6 pt-5 md:pt-6">
         <SkeletonBlock className="mb-3 h-3 w-24" />
         {/* Matches BarsChart's fixed CHART_HEIGHT (380px, same at every
             breakpoint since the Recharts -> hand-rolled SVG rebuild) -- a
@@ -31,6 +31,7 @@ export default function PromedioAnualSkeleton() {
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
+        <SkeletonBlock className="h-7 w-28 rounded-xl" />
         <SkeletonBlock className="h-7 w-28 rounded-xl" />
         <SkeletonBlock className="h-7 w-36 rounded-xl" />
       </div>

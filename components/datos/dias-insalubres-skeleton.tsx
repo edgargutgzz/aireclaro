@@ -14,7 +14,7 @@ export default function DiasInsalubresSkeleton() {
         <SkeletonBlock className="h-8 w-24 rounded-xl" />
       </div>
 
-      <div className="px-5 pb-6 pt-6">
+      <div className="px-5 pb-6 pt-5 md:pt-6">
         <div className="mb-3 flex items-center justify-between">
           <SkeletonBlock className="h-3 w-20" />
           <div className="flex items-center gap-4">
