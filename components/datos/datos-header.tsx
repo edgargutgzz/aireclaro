@@ -44,14 +44,15 @@ function nextUpdate(): { addedMonthLabel: string; daysUntil: number } {
     }
   }
   let addedMonth = targetMonth - 1;
-  if (addedMonth < 1) addedMonth = 12;
+  let addedYear = targetYear;
+  if (addedMonth < 1) {
+    addedMonth = 12;
+    addedYear -= 1;
+  }
   const todayUTC = Date.UTC(y, m - 1, d);
   const targetUTC = Date.UTC(targetYear, targetMonth - 1, CRON_DAY);
   return {
-    // No year here -- the sentence right before it already says "de 2026",
-    // so repeating "de {year}" a few words later just reads clunky
-    // (2026-09-28 feedback).
-    addedMonthLabel: MONTHS_FULL_ES[addedMonth - 1],
+    addedMonthLabel: `${MONTHS_FULL_ES[addedMonth - 1]} de ${addedYear}`,
     daysUntil: Math.round((targetUTC - todayUTC) / 86_400_000),
   };
 }
