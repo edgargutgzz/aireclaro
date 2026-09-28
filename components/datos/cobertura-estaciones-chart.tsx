@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import {
@@ -26,7 +26,15 @@ interface CoberturaDia {
   cubierto: boolean;
 }
 
-const CELL = 11; // px, square size including its own edge
+// Sized to the measured card width, same approach días insalubres' bar
+// chart and calendar already use for their own columns/cells -- fixed at
+// 11px was tuned for the old two-station-per-row layout (each card about
+// half this width); once every station got the card's full width, that
+// left most of a year's 53-column grid sitting in unused space (2026-09-27
+// feedback). CELL_MAX is a taste ceiling, not a hard constraint like
+// CELL_MIN.
+const CELL_MAX = 20;
+const CELL_MIN = 6;
 const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
@@ -226,7 +234,10 @@ function EstacionCalendario({
   monthLabelForCol,
   coberturaPorFecha,
   realDates,
+  priorDates,
+  year,
   centerOn,
+  cell: CELL,
 }: {
   estacion: Estacion;
   cells: Cell[];
@@ -234,21 +245,40 @@ function EstacionCalendario({
   monthLabelForCol: Map<number, string>;
   coberturaPorFecha: Map<string, boolean>;
   realDates: string[];
+  priorDates: string[];
+  year: number;
   centerOn?: number;
+  cell: number;
 }) {
   const [tooltip, setTooltip] = useState<Tooltip | null>(null);
 
-  // Over realDates, not the full-year cells -- a day that hasn't happened
-  // yet isn't a "día sin datos," it just hasn't occurred.
-  const diasSinDatos = useMemo(
-    () =>
-      realDates.filter((fecha) => coberturaPorFecha.get(fecha) !== true).length,
-    [realDates, coberturaPorFecha],
-  );
+  // Same two-line subtitle pattern as the chart's own header (84%
+  // de cobertura... / 29% mayor cobertura...), scoped to this one station
+  // instead of the metro-wide average -- replaces the earlier "X días sin
+  // datos" pill (2026-09-27 feedback: communicate the same thing per
+  // station as the chart already does overall, not a different metric).
   const pctEstacion =
     realDates.length > 0
-      ? Math.round(((realDates.length - diasSinDatos) / realDates.length) * 100)
+      ? Math.round(
+          (realDates.filter((f) => coberturaPorFecha.get(f) === true).length /
+            realDates.length) *
+            100,
+        )
       : 0;
+  // priorDates is already [] when the prior year doesn't have a full
+  // matching window (see the chart-level priorYearPctDelta) -- same
+  // null-if-not-comparable rule, just evaluated against this station's own
+  // coverage instead of the metro average.
+  const priorPctEstacion =
+    priorDates.length > 0
+      ? Math.round(
+          (priorDates.filter((f) => coberturaPorFecha.get(f) === true).length /
+            priorDates.length) *
+            100,
+        )
+      : null;
+  const deltaEstacion =
+    priorPctEstacion !== null ? pctEstacion - priorPctEstacion : null;
 
   const gridWidth = WEEKDAY_COL_WIDTH + totalCols * (CELL + GAP);
   const gridHeight = MONTH_ROW_HEIGHT + 7 * (CELL + GAP);
@@ -276,18 +306,19 @@ function EstacionCalendario({
         <h4 className="text-sm font-semibold text-gray-800">
           {estacion.nombre}
         </h4>
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-xs font-medium text-gray-500">
-            {pctEstacion}% de cobertura disponible
-          </span>
-          {diasSinDatos > 0 && (
-            // Gray, not red -- red is reserved for health severity
-            // (COLOR_INSALUBRE) elsewhere in /datos; a coverage gap is a
-            // data-quality issue, the same distinction COLOR_INSUFICIENTE
-            // already draws for the grid cells themselves.
-            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-              {diasSinDatos} días sin datos
-            </span>
+        <div className="text-right text-xs text-gray-500">
+          <div>{pctEstacion}% de cobertura de PM2.5 en {year}</div>
+          {deltaEstacion !== null && (
+            <div>
+              <span
+                style={{ color: deltaEstacion > 0 ? COLOR_SALUDABLE : undefined }}
+              >
+                {deltaEstacion === 0
+                  ? "misma cobertura"
+                  : `${Math.abs(deltaEstacion)}% ${deltaEstacion > 0 ? "mayor" : "menor"} cobertura`}
+              </span>{" "}
+              que en el mismo periodo de {year - 1}
+            </div>
           )}
         </div>
       </div>
@@ -474,6 +505,25 @@ export default function CoberturaEstacionesChart({
   // this to stay live across a page left open past midnight.
   const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
+  // Sized to the measured card width -- every station shares one cell size
+  // (they're all the same width now that it's one per row), measured once
+  // here rather than separately per card.
+  const [measureNode, setMeasureNode] = useState<HTMLDivElement | null>(null);
+  const [cell, setCell] = useState(CELL_MAX);
+  useEffect(() => {
+    if (!measureNode) return;
+    const update = () => {
+      const available = measureNode.clientWidth - WEEKDAY_COL_WIDTH;
+      setCell(
+        Math.min(CELL_MAX, Math.max(CELL_MIN, available / totalCols - GAP)),
+      );
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(measureNode);
+    return () => ro.disconnect();
+  }, [measureNode, totalCols]);
+
   // Scroll each station's year-long grid to the current month on load,
   // instead of leaving it parked at January -- only meaningful on the year
   // that actually contains today; a past year just opens at its start, the
@@ -483,8 +533,8 @@ export default function CoberturaEstacionesChart({
     if (year !== Number(todayStr.slice(0, 4))) return undefined;
     const todayCell = cells.find((c) => c.fecha === todayStr);
     if (!todayCell) return undefined;
-    return WEEKDAY_COL_WIDTH + todayCell.col * (CELL + GAP) + CELL / 2;
-  }, [cells, year, todayStr]);
+    return WEEKDAY_COL_WIDTH + todayCell.col * (cell + GAP) + cell / 2;
+  }, [cells, year, todayStr, cell]);
 
   const pctCobertura = useMemo(() => {
     if (realDates.length === 0 || estaciones.length === 0) return 0;
@@ -500,19 +550,26 @@ export default function CoberturaEstacionesChart({
     );
   }, [realDates, estaciones, coberturaPorEstacion]);
 
-  // Same-period-last-year comparison, mirroring días insalubres' subtitle
-  // line: not full-year vs. partial-year, the same calendar window (Jan 1
-  // through the last synced date's month-day) in both years. Null if the
-  // prior year doesn't have a synced row for every date in that window --
-  // e.g. right after the cron starts, or the one-off Feb 29 in a leap-year
-  // window when the prior year isn't a leap year.
-  const priorYearPctDelta = useMemo(() => {
-    if (year === null || realDates.length === 0) return null;
+  // Same calendar window (Jan 1 through the last synced date's month-day)
+  // in the prior year, not full-year vs. partial-year -- shared by the
+  // chart-level delta below and each station's own (EstacionCalendario
+  // does the identical per-station math with the same dates). Empty when
+  // the prior year doesn't have a synced row for every date in that window
+  // -- e.g. right after the cron starts, or the one-off Feb 29 in a
+  // leap-year window when the prior year isn't a leap year.
+  const priorDates = useMemo(() => {
+    if (year === null || realDates.length === 0) return [];
     const windowEnd = realDates[realDates.length - 1].slice(5); // "MM-DD"
-    const priorDates = allDates.filter(
+    const pd = allDates.filter(
       (d) => d.startsWith(String(year - 1)) && d.slice(5) <= windowEnd,
     );
-    if (priorDates.length < realDates.length) return null;
+    return pd.length >= realDates.length ? pd : [];
+  }, [allDates, year, realDates]);
+
+  // Same-period-last-year comparison, mirroring días insalubres' subtitle
+  // line.
+  const priorYearPctDelta = useMemo(() => {
+    if (priorDates.length === 0) return null;
     let cubierto = 0;
     for (const estacion of estaciones) {
       const porFecha = coberturaPorEstacion.get(estacion.sensorId);
@@ -524,7 +581,7 @@ export default function CoberturaEstacionesChart({
       (cubierto / (priorDates.length * estaciones.length)) * 100,
     );
     return pctCobertura - priorPct;
-  }, [allDates, year, realDates, estaciones, coberturaPorEstacion, pctCobertura]);
+  }, [priorDates, estaciones, coberturaPorEstacion, pctCobertura]);
 
   if (allDates.length === 0) {
     return (
@@ -592,22 +649,27 @@ export default function CoberturaEstacionesChart({
             Datos insuficientes
           </span>
         </div>
-        <div className="grid grid-cols-1 gap-y-5">
-          {estaciones.map((estacion) => (
-            <EstacionCalendario
-              key={estacion.sensorId}
-              estacion={estacion}
-              cells={cells}
-              totalCols={totalCols}
-              monthLabelForCol={monthLabelForCol}
-              coberturaPorFecha={
-                coberturaPorEstacion.get(estacion.sensorId) ?? new Map()
-              }
-              realDates={realDates}
-              centerOn={centerOnCol}
-            />
-          ))}
-        </div>
+        {year !== null && (
+          <div ref={setMeasureNode} className="grid grid-cols-1 gap-y-5">
+            {estaciones.map((estacion) => (
+              <EstacionCalendario
+                key={estacion.sensorId}
+                estacion={estacion}
+                cells={cells}
+                totalCols={totalCols}
+                monthLabelForCol={monthLabelForCol}
+                coberturaPorFecha={
+                  coberturaPorEstacion.get(estacion.sensorId) ?? new Map()
+                }
+                realDates={realDates}
+                priorDates={priorDates}
+                year={year}
+                centerOn={centerOnCol}
+                cell={cell}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
