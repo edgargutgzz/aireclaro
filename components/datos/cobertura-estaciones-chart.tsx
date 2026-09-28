@@ -245,6 +245,10 @@ function EstacionCalendario({
       realDates.filter((fecha) => coberturaPorFecha.get(fecha) !== true).length,
     [realDates, coberturaPorFecha],
   );
+  const pctEstacion =
+    realDates.length > 0
+      ? Math.round(((realDates.length - diasSinDatos) / realDates.length) * 100)
+      : 0;
 
   const gridWidth = WEEKDAY_COL_WIDTH + totalCols * (CELL + GAP);
   const gridHeight = MONTH_ROW_HEIGHT + 7 * (CELL + GAP);
@@ -272,15 +276,20 @@ function EstacionCalendario({
         <h4 className="text-sm font-semibold text-gray-800">
           {estacion.nombre}
         </h4>
-        {diasSinDatos > 0 && (
-          // Gray, not red -- red is reserved for health severity
-          // (COLOR_INSALUBRE) elsewhere in /datos; a coverage gap is a
-          // data-quality issue, the same distinction COLOR_INSUFICIENTE
-          // already draws for the grid cells themselves.
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-            {diasSinDatos} días sin datos
+        <div className="flex flex-col items-end gap-1">
+          <span className="text-xs font-medium text-gray-500">
+            {pctEstacion}% de datos disponibles
           </span>
-        )}
+          {diasSinDatos > 0 && (
+            // Gray, not red -- red is reserved for health severity
+            // (COLOR_INSALUBRE) elsewhere in /datos; a coverage gap is a
+            // data-quality issue, the same distinction COLOR_INSUFICIENTE
+            // already draws for the grid cells themselves.
+            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+              {diasSinDatos} días sin datos
+            </span>
+          )}
+        </div>
       </div>
 
       <HorizontalScrollFade minWidth={gridWidth} centerOn={centerOn}>
