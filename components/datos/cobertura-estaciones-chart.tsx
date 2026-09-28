@@ -278,7 +278,7 @@ function EstacionCalendario({
         </h4>
         <div className="flex flex-col items-end gap-1">
           <span className="text-xs font-medium text-gray-500">
-            {pctEstacion}% de datos disponibles
+            {pctEstacion}% de cobertura disponible
           </span>
           {diasSinDatos > 0 && (
             // Gray, not red -- red is reserved for health severity
