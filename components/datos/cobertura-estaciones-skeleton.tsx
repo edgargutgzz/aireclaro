@@ -17,9 +17,9 @@ import SkeletonBlock from "@/components/datos/skeleton-block";
 function EstacionTileSkeleton() {
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <SkeletonBlock className="h-4 w-28" />
-        <SkeletonBlock className="h-16 w-40 md:h-8 md:w-56" />
+        <SkeletonBlock className="h-[68px] w-40 md:h-9 md:w-56" />
       </div>
       <SkeletonBlock className="h-20 w-full rounded-lg md:h-[137px]" />
     </div>

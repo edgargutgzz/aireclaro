@@ -306,7 +306,7 @@ function EstacionCalendario({
 
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <h4 className="text-sm font-semibold text-gray-800">
           {estacion.nombre}
         </h4>
