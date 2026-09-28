@@ -48,9 +48,16 @@ const OMS_ANUAL = 5;
 // labels for a dataset this can't safely compress the way short month
 // labels can. MAX only ever matters when few stations qualify as bars (a
 // spotty year) -- it lets those columns spread out to fill the card instead
-// of leaving a blank margin, same reasoning as días insalubres' own MAX.
+// of leaving a blank margin. First tried días insalubres' own 220 (2026-09-28)
+// but that chart almost always has close to its full 12 months showing, so
+// 220 is rarely even reached there; this chart's realistic bar count is
+// often low (today: 4 of 15 stations clear the >=3-valid-trimesters gate
+// for 2025), so 220 left most of the card empty -- the exact "does not
+// expand to full width" bug reported (2026-09-28 follow-up, real
+// screenshot). 300 actually fills a handful of qualifying stations across
+// the card's real width instead of stopping short.
 const STATION_COL_WIDTH_MIN = 130;
-const STATION_COL_WIDTH_MAX = 220;
+const STATION_COL_WIDTH_MAX = 300;
 
 const TRIMESTRE_MESES: Record<number, string> = {
   1: "Ene–Mar",
@@ -58,21 +65,6 @@ const TRIMESTRE_MESES: Record<number, string> = {
   3: "Jul–Sep",
   4: "Oct–Dic",
 };
-
-// "T1–T3 (Ene–Sep)" for a contiguous run starting at T1 (the common case --
-// trimesters validate in order as the year progresses); a comma list for the
-// rare non-contiguous case (e.g. a mid-year outage skips one trimester but a
-// later one still clears 75%) rather than a misleading range.
-function trimestreLabel(validos: number[]): string | null {
-  if (validos.length === 0) return null;
-  const sorted = [...validos].sort((a, b) => a - b);
-  const contiguoDesdeT1 =
-    sorted[0] === 1 && sorted.every((n, i) => n === i + 1);
-  if (!contiguoDesdeT1) return sorted.map((t) => `T${t}`).join(", ");
-  const last = sorted[sorted.length - 1];
-  if (last === 1) return `T1 (${TRIMESTRE_MESES[1]})`;
-  return `T1–T${last} (Ene–${TRIMESTRE_MESES[last].split("–")[1]})`;
-}
 
 const tabs: InfoTab[] = [
   {
@@ -178,7 +170,6 @@ interface StationBar {
   sensorId: string;
   nombre: string;
   promedio: number;
-  trimestresValidos: number[];
   rows: TrimestreRow[];
 }
 
@@ -365,25 +356,16 @@ function ReferenceLine({
 function TooltipCard({
   bar,
   year,
-  isCompleteYear,
   totalWidth,
   barCenterX,
   barTopY,
 }: {
   bar: StationBar;
   year: number | null;
-  isCompleteYear: boolean;
   totalWidth: number;
   barCenterX: number;
   barTopY: number;
 }) {
-  // A complete year's bar already cleared the >=3-of-4 "datos suficientes"
-  // bar, so it reads as a genuine annual figure, not a partial range --
-  // "Promedio anual 2025", not "Promedio T1-T3 (Ene-Sep) 2025".
-  const label = isCompleteYear
-    ? "anual"
-    : trimestreLabel(bar.trimestresValidos);
-
   const positionStyle = tooltipPositionStyle(
     barCenterX,
     barTopY,
@@ -413,7 +395,7 @@ function TooltipCard({
         <span className="text-sm font-medium text-gray-400">µg/m³</span>
       </div>
       <span className="text-xs text-gray-500">
-        Promedio {label} {year}
+        Promedio anual {year}
       </span>
       <div className="border-t border-gray-100 pt-2">
         <TrimestreBreakdown rows={bar.rows} />
@@ -425,12 +407,10 @@ function TooltipCard({
 function BarsChart({
   bars,
   year,
-  isCompleteYear,
   stationColWidth,
 }: {
   bars: StationBar[];
   year: number | null;
-  isCompleteYear: boolean;
   stationColWidth: number;
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
@@ -579,7 +559,6 @@ function BarsChart({
         <TooltipCard
           bar={hovered}
           year={year}
-          isCompleteYear={isCompleteYear}
           totalWidth={totalWidth}
           barCenterX={bandX(hoveredIdx) + stationColWidth / 2}
           barTopY={valueToY(hovered.promedio)}
@@ -610,15 +589,20 @@ export default function PromedioAnualChart({
       ? selectedYear
       : years[years.length - 1] ?? null;
 
-  // A year still in progress shows whatever trimesters have validated so far
-  // (labeled "T1-T2 (Ene-Jun)", etc.) -- but once a year is fully in the
-  // past, showing a station on 1-3 valid trimesters would present a partial
-  // figure as if it were the whole year's. A complete year only shows
-  // stations with all 4 valid; everything else drops to "falta de
-  // información" for that year, same as a station with zero data.
+  // NOM-025-SSA1-2021's own "valor anual" is only ever a full calendar year
+  // (§3.11: "concentración... calculada en un año calendario") -- it has no
+  // concept of a partial-year figure at all. A year still in progress used
+  // to show whatever trimesters had validated so far as a "T1-T2 (Ene-Jun)"
+  // partial bar, but that isn't a figure the norm defines, and reads as more
+  // authoritative than it is. Now an in-progress year shows nothing (see the
+  // body render below) rather than a number that isn't really the norm's
+  // "annual" value (2026-09-28 feedback).
   const isCompleteYear = year !== null && year < new Date().getFullYear();
 
-  const { bars, sinDatos, rangeLabel } = useMemo(() => {
+  const { bars, sinDatos } = useMemo(() => {
+    // Nothing to compute for an in-progress year -- see isCompleteYear above.
+    if (!isCompleteYear) return { bars: [] as StationBar[], sinDatos: [] as SinDatosEntry[] };
+
     const rowsByStation = new Map<string, TrimestreRow[]>();
     for (const t of trimestres) {
       if (t.ano !== year) continue;
@@ -627,23 +611,20 @@ export default function PromedioAnualChart({
       rowsByStation.set(t.sensor_id, lista);
     }
 
-    const validTrimestresGlobal = new Set<number>();
     const bars: StationBar[] = [];
     const sinDatos: SinDatosEntry[] = [];
-    // >=3 of 4 trimestres is the Metodología tab's own "datos suficientes"
-    // bar for a finished year -- not a stricter 4/4.
-    const minTrimestresRequeridos = isCompleteYear ? 3 : 1;
+    // NOM-025's own "datos suficientes" bar for a finished year -- not a
+    // stricter 4/4.
+    const MIN_TRIMESTRES_REQUERIDOS = 3;
 
     for (const est of estaciones) {
       const rows = rowsByStation.get(est.sensorId) ?? [];
       const validRows = rows.filter((r) => r.valido);
 
-      if (validRows.length < minTrimestresRequeridos) {
+      if (validRows.length < MIN_TRIMESTRES_REQUERIDOS) {
         sinDatos.push({ sensorId: est.sensorId, nombre: est.nombre, rows });
         continue;
       }
-
-      validRows.forEach((r) => validTrimestresGlobal.add(r.trimestre));
 
       // Pooled day-level mean over the WHOLE year's valid records, not an
       // average of trimester averages, and not restricted to only the
@@ -667,7 +648,6 @@ export default function PromedioAnualChart({
         sensorId: est.sensorId,
         nombre: est.nombre,
         promedio,
-        trimestresValidos: validRows.map((r) => r.trimestre),
         rows,
       });
     }
@@ -675,11 +655,7 @@ export default function PromedioAnualChart({
     bars.sort((a, b) => b.promedio - a.promedio);
     sinDatos.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
 
-    return {
-      bars,
-      sinDatos,
-      rangeLabel: trimestreLabel([...validTrimestresGlobal]),
-    };
+    return { bars, sinDatos };
   }, [estaciones, trimestres, year, isCompleteYear]);
 
   const sobreLimite = bars.filter((b) => b.promedio > NOM_ANUAL).length;
@@ -712,11 +688,13 @@ export default function PromedioAnualChart({
     <ChartCard
       title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
       subtitle={
-        bars.length === 0 ? (
+        !isCompleteYear ? (
+          `PM2.5 · Datos disponibles al finalizar ${year}`
+        ) : bars.length === 0 ? (
           "PM2.5 · Sin datos suficientes todavía"
         ) : (
           <>
-            PM2.5{!isCompleteYear && rangeLabel ? ` · ${rangeLabel}` : ""} ·{" "}
+            PM2.5 ·{" "}
             <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
               {sobreLimite}
             </span>{" "}
@@ -730,44 +708,58 @@ export default function PromedioAnualChart({
       }
     >
       <div className="px-5 pb-6 pt-5 md:pt-6">
-        <span className="mb-3 block text-xs text-gray-400">PM2.5 (µg/m³)</span>
-        {bars.length > 0 ? (
-          <div ref={setMeasureNode} className="w-full">
-            <HorizontalScrollFade
-              minWidth={PAD_LEFT + stationColWidth * bars.length + PAD_RIGHT}
-            >
-              <BarsChart
-                bars={bars}
-                year={year}
-                isCompleteYear={isCompleteYear}
-                stationColWidth={stationColWidth}
-              />
-            </HorizontalScrollFade>
-          </div>
-        ) : (
+        {!isCompleteYear ? (
+          // No partial-year figure -- see isCompleteYear's own comment
+          // above. A single centered message instead of the axis label +
+          // chart + falta-de-información pills this card shows once the
+          // year is actually over.
           <div
-            className="flex items-center justify-center rounded-lg bg-gray-50 text-sm text-gray-400"
+            className="flex items-center justify-center rounded-lg bg-gray-50 text-center text-sm text-gray-400"
             style={{ height: CHART_HEIGHT }}
           >
-            Sin datos suficientes todavía
+            Los datos de {year} estarán disponibles cuando termine el año.
           </div>
-        )}
+        ) : (
+          <>
+            <span className="mb-3 block text-xs text-gray-400">PM2.5 (µg/m³)</span>
+            {bars.length > 0 ? (
+              <div ref={setMeasureNode} className="w-full">
+                <HorizontalScrollFade
+                  minWidth={PAD_LEFT + stationColWidth * bars.length + PAD_RIGHT}
+                >
+                  <BarsChart
+                    bars={bars}
+                    year={year}
+                    stationColWidth={stationColWidth}
+                  />
+                </HorizontalScrollFade>
+              </div>
+            ) : (
+              <div
+                className="flex items-center justify-center rounded-lg bg-gray-50 text-sm text-gray-400"
+                style={{ height: CHART_HEIGHT }}
+              >
+                Sin datos suficientes todavía
+              </div>
+            )}
 
-        {sinDatos.length > 0 && (
-          <div className="mt-5 grid gap-2">
-            <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
-              Estaciones con falta de información
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {sinDatos.map((est) => (
-                <InfoPill
-                  key={est.sensorId}
-                  nombre={est.nombre}
-                  rows={est.rows}
-                />
-              ))}
-            </div>
-          </div>
+            {sinDatos.length > 0 && (
+              <div className="mt-5 grid gap-2">
+                <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
+                  Estaciones con falta de información
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {sinDatos.map((est) => (
+                    <InfoPill
+                      key={est.sensorId}
+                      nombre={est.nombre}
+                      rows={est.rows}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
