@@ -27,7 +27,14 @@ const MONTHS_FULL_ES = [
 // for parts back.
 const CRON_DAY = 6;
 
-function nextUpdateLabel(): string {
+// Each run pulls one full closed calendar month, not a rolling/partial
+// window -- the point this whole field exists to make (2026-09-28 feedback:
+// a bare "next update: Oct 6" date doesn't say a WHOLE month lands that day).
+// The month it pulls is always the one right before its own run month (see
+// previousMonth() in the cron itself), so addedMonth is derived from
+// targetMonth here rather than from the stamp above -- correct even if a
+// run were ever missed and the stamp fell more than one month behind.
+function nextUpdate(): { dateLabel: string; addedMonthLabel: string } {
   const [y, m, d] = monterreyNaiveNow().slice(0, 10).split("-").map(Number);
   let targetYear = y;
   let targetMonth = m;
@@ -38,7 +45,18 @@ function nextUpdateLabel(): string {
       targetYear += 1;
     }
   }
-  return `${CRON_DAY} de ${MONTHS_FULL_ES[targetMonth - 1]} de ${targetYear}`;
+  let addedMonth = targetMonth - 1;
+  let addedYear = targetYear;
+  if (addedMonth < 1) {
+    addedMonth = 12;
+    addedYear -= 1;
+  }
+  return {
+    // No year on the date half -- the month half already carries it, and
+    // repeating "de 2026" twice in one clause read as stiff.
+    dateLabel: `el ${CRON_DAY} de ${MONTHS_FULL_ES[targetMonth - 1]}`,
+    addedMonthLabel: `todo ${MONTHS_FULL_ES[addedMonth - 1]} de ${addedYear}`,
+  };
 }
 
 // A two-stat strip -- "datos hasta" and "próxima actualización" -- shared by
@@ -69,6 +87,7 @@ export default async function DatosHeader() {
   if (error || !data) return null;
 
   const stamp = `${MONTHS_FULL_ES[data.mes - 1]} de ${data.ano}`;
+  const { dateLabel, addedMonthLabel } = nextUpdate();
 
   return (
     // White + border-gray-200, same shell ChartCard uses below -- the
@@ -100,7 +119,9 @@ export default async function DatosHeader() {
         <div className="hidden h-4 w-px bg-gray-200 md:block" />
         <div className="mt-1 md:mt-0">
           <span className="text-gray-500">Próxima actualización: </span>
-          <span className="font-medium text-gray-800">{nextUpdateLabel()}</span>
+          <span className="font-medium text-gray-800">
+            {addedMonthLabel}, {dateLabel}
+          </span>
         </div>
       </div>
     </div>
