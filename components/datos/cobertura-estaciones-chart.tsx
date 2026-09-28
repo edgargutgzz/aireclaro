@@ -583,7 +583,7 @@ export default function CoberturaEstacionesChart({
             Datos insuficientes
           </span>
         </div>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-y-5">
           {estaciones.map((estacion) => (
             <EstacionCalendario
               key={estacion.sensorId}
