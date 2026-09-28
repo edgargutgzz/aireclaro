@@ -52,7 +52,7 @@ function nextUpdate(): { addedMonthLabel: string; daysUntil: number } {
   const todayUTC = Date.UTC(y, m - 1, d);
   const targetUTC = Date.UTC(targetYear, targetMonth - 1, CRON_DAY);
   return {
-    addedMonthLabel: `${MONTHS_FULL_ES[addedMonth - 1]} de ${addedYear}`,
+    addedMonthLabel: `${MONTHS_FULL_ES[addedMonth - 1]} ${addedYear}`,
     daysUntil: Math.round((targetUTC - todayUTC) / 86_400_000),
   };
 }
@@ -83,7 +83,7 @@ export default async function DatosHeader() {
   // the charts below, which already handle their own empty states.
   if (error || !data) return null;
 
-  const stamp = `${MONTHS_FULL_ES[data.mes - 1]} de ${data.ano}`;
+  const stamp = `${MONTHS_FULL_ES[data.mes - 1]} ${data.ano}`;
   const { addedMonthLabel, daysUntil } = nextUpdate();
   const daysLabel = `${daysUntil} día${daysUntil === 1 ? "" : "s"}`;
 
