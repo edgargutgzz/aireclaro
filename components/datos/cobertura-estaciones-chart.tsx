@@ -46,11 +46,12 @@ const COLOR_CUBIERTO_FILL = withOpacity(
 // lighter than gray-300 by request, but not all the way to gray-200, which
 // sat almost invisibly on the station card's own bg-gray-50.
 const COLOR_INSUFICIENTE = "#dbdfe3";
-// Faded to 40% rather than solid: a real gap (a station short on valid
-// hours) and "we haven't synced this date yet" (future, or just past our
-// monthly cron's cutoff) can't be told apart from this table alone, so
-// every non-covered cell gets the same subdued treatment instead of
-// picking a label that might be wrong (2026-09-27 feedback).
+// Applied only to a date with no synced row at all (future, or just past
+// the monthly cron's cutoff) -- a real gap (a row that exists with
+// cubierto=false) stays solid, since that IS a known fact about the
+// station, unlike a date we simply haven't synced yet (2026-09-27
+// feedback: an earlier version faded both alike and dropped the real
+// gaps' tooltip along with it).
 const NO_DATA_FILL_OPACITY = 0.4;
 
 // Only every other row gets a letter (L, M, V, D), matching the reference
@@ -323,41 +324,48 @@ function EstacionCalendario({
               }}
             >
               {cells.map((c) => {
+                // sima_cobertura_diaria has a row -- true or false -- for
+                // every date it has actually synced; a date with no row at
+                // all (undefined) is one we have no answer for yet (future,
+                // or just past the monthly cron's cutoff), not a fact about
+                // the station. Reading undefined as "no valid hours" would
+                // assert something we don't actually know (2026-09-27
+                // feedback: an earlier version of this fix went too far and
+                // dropped the real, known gaps' tooltip along with it).
                 const cubierto = coberturaPorFecha.get(c.fecha);
+                const sabemos = cubierto !== undefined;
+                const estadoLabel = cubierto
+                  ? "Con datos"
+                  : sabemos
+                    ? "Datos insuficientes"
+                    : "Sin datos";
                 return (
                   <div
                     key={c.fecha}
                     className="rounded-[2px]"
                     tabIndex={0}
-                    aria-label={`${formatTooltipDate(c.fecha, c.row)}: ${cubierto ? "Con datos" : "Sin datos"}`}
+                    aria-label={`${formatTooltipDate(c.fecha, c.row)}: ${estadoLabel}`}
                     style={{
                       gridColumn: c.col + 1,
                       gridRow: c.row + 1,
-                      // Undefined (no row at all -- a future date, or a
-                      // past one our monthly sync hasn't reached yet) reads
-                      // identically to a real "station didn't report
-                      // enough valid hours" gap -- calling the sync-lag
-                      // case "Datos insuficientes" would be asserting
-                      // something about the station that isn't actually
-                      // true (2026-09-27 feedback), and there's no reliable
-                      // way to tell the two apart from this table alone.
-                      // One uniform faded fill, no tooltip, for every
-                      // non-covered cell -- simplest thing that's never
-                      // wrong. No border -- per the dataviz skill's mark
-                      // spec (now followed by the other two /datos charts
-                      // too), the 3px grid gap is what separates cells, not
-                      // a stroke.
+                      // No border -- per the dataviz skill's mark spec (now
+                      // followed by the other two /datos charts too), the
+                      // 3px grid gap between cells is what separates them,
+                      // not a stroke.
                       backgroundColor: cubierto
                         ? COLOR_CUBIERTO_FILL
-                        : withOpacity(COLOR_INSUFICIENTE, NO_DATA_FILL_OPACITY),
+                        : withOpacity(
+                            COLOR_INSUFICIENTE,
+                            sabemos ? 1 : NO_DATA_FILL_OPACITY,
+                          ),
                       outline: "none",
                     }}
                     onMouseEnter={() => {
-                      if (cubierto) showTooltip(c, cubierto);
+                      if (sabemos) showTooltip(c, cubierto);
                     }}
                     onMouseLeave={hideTooltip}
                     onFocus={() => {
-                      if (cubierto) showTooltip(c, cubierto);
+                      if (sabemos) showTooltip(c, cubierto);
                     }}
                     onBlur={hideTooltip}
                   />
@@ -383,11 +391,15 @@ function EstacionCalendario({
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
                 {formatTooltipDate(tooltip.fecha, tooltip.row)}
               </span>
-              {/* Only ever set for a covered date -- see the grid cell's
-                  own onMouseEnter/onFocus, which now skip calling
-                  showTooltip entirely for anything else. */}
-              <span className="text-sm font-semibold" style={{ color: COLOR_CUBIERTO }}>
-                Con datos
+              {/* Never set for a date we have no synced row for at all --
+                  see the grid cell's own onMouseEnter/onFocus -- so
+                  tooltip.cubierto is only ever a real true/false here, both
+                  backed by an actual sima_cobertura_diaria row. */}
+              <span
+                className="text-sm font-semibold"
+                style={{ color: tooltip.cubierto ? COLOR_CUBIERTO : "rgb(107,114,128)" }}
+              >
+                {tooltip.cubierto ? "Con datos" : "Datos insuficientes"}
               </span>
             </div>
           )}
@@ -566,11 +578,9 @@ export default function CoberturaEstacionesChart({
           <span className="flex items-center gap-1.5">
             <span
               className="h-2 w-2 rounded-[2px]"
-              style={{
-                backgroundColor: withOpacity(COLOR_INSUFICIENTE, NO_DATA_FILL_OPACITY),
-              }}
+              style={{ backgroundColor: COLOR_INSUFICIENTE }}
             />
-            Sin datos
+            Datos insuficientes
           </span>
         </div>
         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
