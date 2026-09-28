@@ -473,7 +473,15 @@ function BarsChart({
     ...bars.map((b) => b.promedio),
     1,
   );
-  const ticks = useMemo(() => niceTicks(rawMax * 1.08), [rawMax]);
+  // No headroom multiplier -- niceTicks already rounds up to the next clean
+  // step above the data, which is its own bit of breathing room (e.g. a 56
+  // max bar rounds up to a 60 top tick). A flat *1.08 on top of that pushed
+  // values just past one rounding boundary into the NEXT one entirely (56 *
+  // 1.08 = 60.5, which rounds up to 80 instead of 60) -- a much bigger, more
+  // visible gap than intended, reported as "reduce the size of the y axis"
+  // (2026-09-28, real screenshot: PM10 bars topping out around 56 against an
+  // 80 axis).
+  const ticks = useMemo(() => niceTicks(rawMax), [rawMax]);
   const niceMax = ticks[ticks.length - 1];
 
   const valueToY = (v: number) =>
