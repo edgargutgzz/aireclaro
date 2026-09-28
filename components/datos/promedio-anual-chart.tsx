@@ -276,17 +276,21 @@ function InfoPill({ nombre, rows }: { nombre: string; rows: TrimestreRow[] }) {
 // Built plain (no charting library) so it can match the site's own spacing,
 // color, and radius tokens exactly, and so hover/tooltip/z-order are our own
 // DOM/paint order rather than a library's internal layering -- see the
-// dataviz skill's mark specs: <=24px thin bars with the leftover band as
-// air, no border on the mark (a surface gap does the separating instead),
-// solid (never dashed) recessive gridlines, dashed lines reserved for the
-// two threshold references.
+// dataviz skill's mark specs: no border on the mark (a surface gap does the
+// separating instead), solid (never dashed) recessive gridlines, dashed
+// lines reserved for the two threshold references.
 
 const CHART_HEIGHT = 380;
 const PAD_TOP = 32; // headroom above the tallest bar + top reference badge
 const PAD_BOTTOM = 28; // station name labels
 const PAD_LEFT = 32; // y-axis tick labels
 const PAD_RIGHT = 8;
-const BAR_WIDTH = 24;
+// The dataviz skill's own mark spec caps this at 24px -- días insalubres'
+// bars already run to 60px (that chart is the validated, already-shipped
+// reference point), and a bare 24px bar next to that chart's own bars read
+// as too thin/out of place (2026-09-28 feedback). Matching chart 1 wins
+// here over the general spec, by explicit call.
+const BAR_WIDTH = 60;
 const BAR_RADIUS = 4;
 const TOOLTIP_WIDTH = 272; // px, matches the tooltip card's own w-[17rem]
 const TOOLTIP_HEIGHT = 260; // px, generous estimate (header/number/label + the 4-row trimester breakdown)
