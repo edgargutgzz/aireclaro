@@ -21,6 +21,24 @@ export interface DayStatus {
   estado: "insalubre" | "saludable" | "sin-datos";
 }
 
+// The first click of a session reliably costs ~3.3s while every later one
+// costs ~150-270ms (measured 2026-09-28). Only ~0.5s of that is the cold
+// connection itself -- a tiny precomputed table costs 610ms cold vs 93ms
+// warm on the same fresh process. The remaining ~2.6s is this view
+// recomputing its aggregation against cold, not-yet-cached pages. That cold
+// path is what intermittently fails outright, which is why a manual
+// "Reintentar" a moment later always works: by then the pages are warm.
+//
+// So: retry transparently instead of dead-ending the first click on a
+// button. Backoff is deliberately short -- the point isn't to wait out a
+// long outage, it's that attempt 2 runs against the cache attempt 1 just
+// warmed. The manual Reintentar stays as the last resort for a real outage.
+const RETRY_DELAYS_MS = [400, 1200];
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function fetchMonthDayDetail(
   ano: number,
   mesNumero: number,
@@ -34,17 +52,30 @@ export async function fetchMonthDayDetail(
   const end = `${ano}-${mm}-${String(daysInMonth).padStart(2, "0")}`;
 
   const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("sima_promedios_diarios")
-    .select("sensor_id, fecha, promedio")
-    .eq("parametro", parametro)
-    .neq("sensor_id", "FIN")
-    .gte("fecha", start)
-    .lte("fecha", end)
-    .not("promedio", "is", null);
 
-  if (error) {
-    throw new Error(`Failed to load day detail: ${error.message}`);
+  type Row = { sensor_id: string; fecha: string; promedio: number | null };
+  let data: Row[] | null = null;
+  let lastError = "";
+
+  for (let attempt = 0; ; attempt++) {
+    const result = await supabase
+      .from("sima_promedios_diarios")
+      .select("sensor_id, fecha, promedio")
+      .eq("parametro", parametro)
+      .neq("sensor_id", "FIN")
+      .gte("fecha", start)
+      .lte("fecha", end)
+      .not("promedio", "is", null);
+
+    if (!result.error) {
+      data = (result.data ?? []) as Row[];
+      break;
+    }
+    lastError = result.error.message;
+    if (attempt >= RETRY_DELAYS_MS.length) {
+      throw new Error(`Failed to load day detail: ${lastError}`);
+    }
+    await sleep(RETRY_DELAYS_MS[attempt]);
   }
 
   const porDia = new Map<string, number[]>();
