@@ -456,7 +456,7 @@ function EstacionCalendario({
 
           {tooltip && (
             <div
-              className="pointer-events-none absolute z-10 grid w-52 gap-1 rounded-xl border border-black/[0.06] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.12)] backdrop-blur-[6px]"
+              className="pointer-events-none absolute z-10 grid w-52 gap-1 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
               style={tooltipPositionStyle(
                 tooltip.centerX,
                 tooltip.topY,
