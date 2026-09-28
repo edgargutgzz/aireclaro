@@ -644,9 +644,25 @@ export default function PromedioAnualChart({
       }
 
       validRows.forEach((r) => validTrimestresGlobal.add(r.trimestre));
+
+      // Pooled day-level mean over the WHOLE year's valid records, not an
+      // average of trimester averages, and not restricted to only the
+      // individually-valid trimesters -- NOM-025-SSA1-2021 §4.2.2: once the
+      // year clears its >=3-of-4 valid-trimesters gate, "el cálculo
+      // incluirá a todos los registros del año." Weighting by each
+      // trimester's own dias_validos (rather than a flat mean across the 4
+      // rows) reproduces that single pooled mean exactly, since each row's
+      // own `promedio` is already a pooled mean over just that trimester's
+      // valid days (see lib/promedio-anual-aggregate.ts) -- multiplying back
+      // by dias_validos recovers each trimester's sum, and summing those
+      // sums before dividing is the same arithmetic as pooling every valid
+      // day directly. 2026-09-28: replaces the old "mean of monthly means,
+      // then mean of valid trimesters" chain, which didn't match the norm's
+      // text and wasn't specified anywhere in it.
+      const diasValidosTotal = rows.reduce((sum, r) => sum + r.dias_validos, 0);
       const promedio =
-        validRows.reduce((sum, r) => sum + (r.promedio ?? 0), 0) /
-        validRows.length;
+        rows.reduce((sum, r) => sum + (r.promedio ?? 0) * r.dias_validos, 0) /
+        diasValidosTotal;
       bars.push({
         sensorId: est.sensorId,
         nombre: est.nombre,

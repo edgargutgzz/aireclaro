@@ -3,20 +3,18 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // Shared by the monthly sync cron, same pattern as lib/dias-insalubres-aggregate.ts
 // and lib/cobertura-aggregate.ts. Reads sima_promedios_diarios (already applies
 // the >=18-valid-hour / 75% completeness rule per station/day) and rolls valid
-// days up into months, then trimesters, following the client's own published
-// methodology for this exact chart (observatoriodelaire.com/datos, Metodología
-// tab, NOM-025-SSA1-2021): a trimester is valid when the station reported
-// measurements on >=75% of THAT TRIMESTER'S OWN calendar days -- a direct
-// day-count check on the trimester, not built from month validity.
-//
-// The monthly step exists for the VALUE, not the validity gate: `promedio` is
-// the mean of only the trimester's individually-valid months' own averages
-// (each month needs >=75% of that month's days on its own), so one bad month
-// inside an otherwise-valid trimester doesn't drag the average down with data
-// that didn't clear the same bar everything else has to. A trimester that
-// clears its own 75% can never have zero individually-valid months among its
-// 3 (the weighted average of three ratios all below 0.75 can't reach 0.75
-// itself), so `promedio` is always defined whenever `valido` is true.
+// days up into trimesters, following NOM-025-SSA1-2021 §4.2.2/§4.2.3.2 directly
+// (verified against the published norm text, DOF 27/10/2021, 2026-09-28 --
+// not the client's paraphrase of it): a trimester is valid when the station
+// reported on >=75% of THAT TRIMESTER'S OWN calendar days, and a year is
+// evaluable once >=3 of its 4 trimesters clear that bar. The reported value
+// is a single pooled mean over every valid daily average in the qualifying
+// year -- "el cálculo incluirá a todos los registros del año" -- not an
+// average of monthly or trimestral averages. There is no month-level step
+// and no "trimester value" in the norm at all; `promedio` below is simply
+// that same pooled mean, scoped to one trimester, so a caller can recombine
+// trimesters into the year's pooled mean by weighting on dias_validos (see
+// promedio-anual-chart.tsx) without ever re-deriving it from daily rows.
 //
 // Saltillo (FIN) excluded, per project convention -- it isn't part of this
 // metro area. PM2.5 only for now, per explicit scope.
@@ -43,6 +41,13 @@ const TRIMESTRE_MESES: Record<number, number[]> = {
 // pipeline which works off SINAICA's fecha strings directly).
 function daysInMonth(ano: number, mes: number): number {
   return new Date(Date.UTC(ano, mes, 0)).getUTCDate();
+}
+
+function daysInTrimestre(ano: number, trimestre: number): number {
+  return TRIMESTRE_MESES[trimestre].reduce(
+    (sum, mes) => sum + daysInMonth(ano, mes),
+    0,
+  );
 }
 
 function baseQuery(supabase: SupabaseClient) {
@@ -96,15 +101,18 @@ async function fetchAllValidDays(supabase: SupabaseClient) {
 export async function computePromedioTrimestral(supabase: SupabaseClient): Promise<TrimestreRow[]> {
   const rows = await fetchAllValidDays(supabase);
 
-  // (sensor_id, ano, mes) -> that month's valid daily averages.
-  const porMes = new Map<string, number[]>();
+  // (sensor_id, ano, trimestre) -> that trimester's valid daily averages,
+  // pooled directly -- no month-level grouping step, per the norm text
+  // above.
+  const porTrimestre = new Map<string, number[]>();
   for (const row of rows) {
     const ano = Number(row.fecha.slice(0, 4));
     const mes = Number(row.fecha.slice(5, 7));
-    const key = `${row.sensor_id}|${ano}|${mes}`;
-    const lista = porMes.get(key) ?? [];
+    const trimestre = Math.ceil(mes / 3);
+    const key = `${row.sensor_id}|${ano}|${trimestre}`;
+    const lista = porTrimestre.get(key) ?? [];
     lista.push(row.promedio);
-    porMes.set(key, lista);
+    porTrimestre.set(key, lista);
   }
 
   // Every (sensor, year) that shows up anywhere in the data -- a sensor with
@@ -112,7 +120,7 @@ export async function computePromedioTrimestral(supabase: SupabaseClient): Promi
   // "no trimester rows at all" the same as "0/4 válidos" (falta de
   // información), so there's no need to enumerate every known sensor here.
   const sensorYears = new Set<string>();
-  for (const key of porMes.keys()) {
+  for (const key of porTrimestre.keys()) {
     const [sensorId, ano] = key.split("|");
     sensorYears.add(`${sensorId}|${ano}`);
   }
@@ -123,24 +131,20 @@ export async function computePromedioTrimestral(supabase: SupabaseClient): Promi
     const ano = Number(anoStr);
 
     for (const trimestre of [1, 2, 3, 4]) {
-      let diasValidos = 0;
-      let diasTotales = 0;
-      const promediosMensualesValidos: number[] = [];
-
-      for (const mes of TRIMESTRE_MESES[trimestre]) {
-        const totalMes = daysInMonth(ano, mes);
-        diasTotales += totalMes;
-        const valores = porMes.get(`${sensorId}|${ano}|${mes}`) ?? [];
-        diasValidos += valores.length;
-        if (valores.length / totalMes >= 0.75) {
-          promediosMensualesValidos.push(valores.reduce((a, b) => a + b, 0) / valores.length);
-        }
-      }
-
+      const diasTotales = daysInTrimestre(ano, trimestre);
+      const valores = porTrimestre.get(`${sensorId}|${ano}|${trimestre}`) ?? [];
+      const diasValidos = valores.length;
       const valido = diasValidos / diasTotales >= 0.75;
-      const promedio = valido
-        ? promediosMensualesValidos.reduce((a, b) => a + b, 0) / promediosMensualesValidos.length
-        : null;
+      // Non-null whenever there's at least one valid day, independent of
+      // `valido` -- a trimester that misses its own 75% bar can still
+      // contribute its valid days to the year's pooled mean once the YEAR
+      // overall clears >=3/4 trimesters (see promedio-anual-chart.tsx); its
+      // own promedio has to be available for that recombination even though
+      // this one trimester alone isn't "valid."
+      const promedio =
+        diasValidos > 0
+          ? valores.reduce((a, b) => a + b, 0) / diasValidos
+          : null;
 
       out.push({
         sensor_id: sensorId,
