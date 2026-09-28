@@ -72,11 +72,14 @@ const COLOR_INSUFICIENTE = "#dbdfe3";
 // gaps' tooltip along with it).
 const NO_DATA_FILL_OPACITY = 0.4;
 
-// Only every other row gets a letter (L, M, V, D), matching the reference
-// design -- labeling all 7 would be noisy at this cell size.
+// Only every other row gets a label, matching the reference design --
+// labeling all 7 would be noisy at this cell size. Row 2 is Miércoles, not
+// Martes -- "M" alone reads as the latter by reflex, so it's "Mi" instead
+// (2026-09-27 feedback), the one two-letter label among otherwise single
+// letters.
 const WEEKDAY_LETTER: Record<number, string> = {
   0: "L",
-  2: "M",
+  2: "Mi",
   4: "V",
   6: "D",
 };
@@ -324,25 +327,27 @@ function EstacionCalendario({
           <div>
             {pctEstacion}% de cobertura de {POLLUTANT_LABEL[pollutant]} en {year}
           </div>
-          {deltaEstacion !== null && (
-            <div>
-              <span
-                style={{
-                  color:
-                    deltaEstacion > 0
-                      ? COLOR_SALUDABLE
-                      : deltaEstacion < 0
-                        ? COLOR_INSALUBRE
-                        : undefined,
-                }}
-              >
-                {deltaEstacion === 0
-                  ? "Misma cobertura"
-                  : `${Math.abs(deltaEstacion)}% ${deltaEstacion > 0 ? "mayor" : "menor"} cobertura`}
-              </span>{" "}
-              que en el mismo periodo de {year - 1}
-            </div>
-          )}
+          {/* Always mounted, hidden via `invisible` when there's no
+              prior-year comparison for this station -- same fix as the
+              chart's own header just above, same reason (2026-09-27
+              feedback: switching years "looks wonky"). */}
+          <div className={deltaEstacion !== null ? "" : "invisible"}>
+            <span
+              style={{
+                color:
+                  (deltaEstacion ?? 0) > 0
+                    ? COLOR_SALUDABLE
+                    : (deltaEstacion ?? 0) < 0
+                      ? COLOR_INSALUBRE
+                      : undefined,
+              }}
+            >
+              {deltaEstacion === 0
+                ? "Misma cobertura"
+                : `${Math.abs(deltaEstacion ?? 0)}% ${(deltaEstacion ?? 0) > 0 ? "mayor" : "menor"} cobertura`}
+            </span>{" "}
+            que en el mismo periodo de {year - 1}
+          </div>
         </div>
       </div>
 
@@ -635,35 +640,39 @@ export default function CoberturaEstacionesChart({
             <span>{pctCobertura}%</span> de cobertura de{" "}
             {POLLUTANT_LABEL[pollutant]} en {year}
           </div>
-          {priorYearPctDelta !== null && year !== null && (
-            <>
-              <div className="hidden h-4 w-px bg-gray-200 md:block" />
-              <p className="mt-2 text-xs md:mt-0 md:text-sm">
-                {/* "%" here reads as a point delta (pctCobertura's own
-                    unit), not a relative change -- flagged 2026-09-27,
-                    kept as requested. Green/red (not COLOR_CUBIERTO's blue,
-                    unlike the grid/tooltip above) mirrors días insalubres'
-                    own comparison line -- more coverage is the good
-                    direction here, same green/red-for-bad convention. */}
-                <span
-                  className="whitespace-nowrap"
-                  style={{
-                    color:
-                      priorYearPctDelta > 0
-                        ? COLOR_SALUDABLE
-                        : priorYearPctDelta < 0
-                          ? COLOR_INSALUBRE
-                          : undefined,
-                  }}
-                >
-                  {priorYearPctDelta === 0
-                    ? "Misma cobertura"
-                    : `${Math.abs(priorYearPctDelta)}% ${priorYearPctDelta > 0 ? "mayor" : "menor"} cobertura`}
-                </span>{" "}
-                que en el mismo periodo de {year - 1}
-              </p>
-            </>
-          )}
+          {/* Always mounted, just hidden via `invisible` when there's no
+              prior-year comparison (2025 has no 2024 data to compare
+              against) -- conditionally mounting this whole block made the
+              header's height jump depending on which year was selected,
+              the same bug días insalubres' own header already fixed
+              (2026-09-27 feedback: switching years "looks wonky"). */}
+          <div className={`contents ${priorYearPctDelta !== null ? "" : "invisible"}`}>
+            <div className="hidden h-4 w-px bg-gray-200 md:block" />
+            <p className="mt-2 text-xs md:mt-0 md:text-sm">
+              {/* "%" here reads as a point delta (pctCobertura's own
+                  unit), not a relative change -- flagged 2026-09-27,
+                  kept as requested. Green/red (not COLOR_CUBIERTO's blue,
+                  unlike the grid/tooltip above) mirrors días insalubres'
+                  own comparison line -- more coverage is the good
+                  direction here, same green/red-for-bad convention. */}
+              <span
+                className="whitespace-nowrap"
+                style={{
+                  color:
+                    (priorYearPctDelta ?? 0) > 0
+                      ? COLOR_SALUDABLE
+                      : (priorYearPctDelta ?? 0) < 0
+                        ? COLOR_INSALUBRE
+                        : undefined,
+                }}
+              >
+                {priorYearPctDelta === 0
+                  ? "Misma cobertura"
+                  : `${Math.abs(priorYearPctDelta ?? 0)}% ${(priorYearPctDelta ?? 0) > 0 ? "mayor" : "menor"} cobertura`}
+              </span>{" "}
+              que en el mismo periodo de {(year ?? 1) - 1}
+            </p>
+          </div>
         </div>
       }
       headerRight={
