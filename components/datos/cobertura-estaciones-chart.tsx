@@ -5,6 +5,7 @@ import { BookOpen, HeartPulse, ShieldCheck } from "lucide-react";
 import { MONTHS_ES } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_CUBIERTO_FILL_OPACITY,
+  COLOR_INSALUBRE,
   COLOR_SALUDABLE,
   withOpacity,
 } from "@/lib/datos-colors";
@@ -32,8 +33,11 @@ interface CoberturaDia {
 // half this width); once every station got the card's full width, that
 // left most of a year's 53-column grid sitting in unused space (2026-09-27
 // feedback). CELL_MAX is a taste ceiling, not a hard constraint like
-// CELL_MIN.
-const CELL_MAX = 20;
+// CELL_MIN -- first tried 20, which read as too big/blocky for a
+// 53-column-wide grid once it actually hit that ceiling on a real desktop
+// (2026-09-27 follow-up feedback); 14 fills noticeably more of the card
+// than the original fixed 11 without reading as oversized.
+const CELL_MAX = 14;
 const CELL_MIN = 6;
 const GAP = 3;
 const WEEKDAY_COL_WIDTH = 16; // px
@@ -311,10 +315,17 @@ function EstacionCalendario({
           {deltaEstacion !== null && (
             <div>
               <span
-                style={{ color: deltaEstacion > 0 ? COLOR_SALUDABLE : undefined }}
+                style={{
+                  color:
+                    deltaEstacion > 0
+                      ? COLOR_SALUDABLE
+                      : deltaEstacion < 0
+                        ? COLOR_INSALUBRE
+                        : undefined,
+                }}
               >
                 {deltaEstacion === 0
-                  ? "misma cobertura"
+                  ? "Misma cobertura"
                   : `${Math.abs(deltaEstacion)}% ${deltaEstacion > 0 ? "mayor" : "menor"} cobertura`}
               </span>{" "}
               que en el mismo periodo de {year - 1}
@@ -507,13 +518,21 @@ export default function CoberturaEstacionesChart({
 
   // Sized to the measured card width -- every station shares one cell size
   // (they're all the same width now that it's one per row), measured once
-  // here rather than separately per card.
+  // here rather than separately per card. measureNode is the *outer* wrapper
+  // around every station card, not each card's own inner content box, so its
+  // clientWidth still includes each card's own p-4 (16px each side) -- left
+  // out of `available`, the computed cell came out ~32px too generous,
+  // overflowing the padded content area and forcing an unwanted horizontal
+  // scroll instead of fitting the whole year (2026-09-27 feedback, real
+  // laptop screenshot).
+  const CARD_PADDING_X = 32; // px, p-4 on both sides of each station card
   const [measureNode, setMeasureNode] = useState<HTMLDivElement | null>(null);
   const [cell, setCell] = useState(CELL_MAX);
   useEffect(() => {
     if (!measureNode) return;
     const update = () => {
-      const available = measureNode.clientWidth - WEEKDAY_COL_WIDTH;
+      const available =
+        measureNode.clientWidth - CARD_PADDING_X - WEEKDAY_COL_WIDTH;
       setCell(
         Math.min(CELL_MAX, Math.max(CELL_MIN, available / totalCols - GAP)),
       );
@@ -605,17 +624,23 @@ export default function CoberturaEstacionesChart({
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
                 {/* "%" here reads as a point delta (pctCobertura's own
                     unit), not a relative change -- flagged 2026-09-27,
-                    kept as requested. Stays green (not COLOR_CUBIERTO's
-                    blue, unlike the grid/tooltip above) -- explicit
-                    request to leave this one line's color alone. */}
+                    kept as requested. Green/red (not COLOR_CUBIERTO's blue,
+                    unlike the grid/tooltip above) mirrors días insalubres'
+                    own comparison line -- more coverage is the good
+                    direction here, same green/red-for-bad convention. */}
                 <span
                   className="whitespace-nowrap"
                   style={{
-                    color: priorYearPctDelta > 0 ? COLOR_SALUDABLE : undefined,
+                    color:
+                      priorYearPctDelta > 0
+                        ? COLOR_SALUDABLE
+                        : priorYearPctDelta < 0
+                          ? COLOR_INSALUBRE
+                          : undefined,
                   }}
                 >
                   {priorYearPctDelta === 0
-                    ? "misma cobertura"
+                    ? "Misma cobertura"
                     : `${Math.abs(priorYearPctDelta)}% ${priorYearPctDelta > 0 ? "mayor" : "menor"} cobertura`}
                 </span>{" "}
                 que en el mismo periodo de {year - 1}
