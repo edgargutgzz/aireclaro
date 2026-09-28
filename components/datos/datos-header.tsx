@@ -48,14 +48,14 @@ export default async function DatosHeader() {
     // White + border-gray-200, same shell ChartCard uses below -- the
     // earlier bg-gray-50/border-gray-100 version sat on the page's own
     // gray-50 background (app/globals.css --background) and read as almost
-    // invisible (2026-09-27 feedback: "too hidden"). The icon chip uses the
-    // same blue cobertura's grid already spends on "has data" (COLOR_CUBIERTO,
-    // cobertura-estaciones-chart.tsx), not a new arbitrary accent, so it
-    // catches the eye without introducing a color the page hasn't already
-    // taught the reader to associate with data currency.
+    // invisible (2026-09-27 feedback: "too hidden"). The circle chip alone
+    // (not the color) is what gives it a visual anchor -- blue was tried
+    // first (cobertura's own "has data" blue) but read as a data-currency
+    // claim rather than a neutral status line, so this stays gray/monochrome
+    // like info-tabs' own icons (2026-09-27 feedback).
     <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-4 text-sm leading-relaxed text-gray-600">
-      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-blue-50">
-        <RefreshCw className="h-4 w-4 text-blue-500" aria-hidden />
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100">
+        <RefreshCw className="h-4 w-4 text-gray-500" aria-hidden />
       </div>
       <p>
         Los datos se actualizan cada mes, una semana después de que este
