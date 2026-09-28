@@ -124,8 +124,8 @@ function tabs(pollutant: Pollutant): InfoTab[] {
           Un día se contabiliza como &ldquo;Con datos&rdquo; cuando alguna
           estación de monitoreo registró al menos el 75% de las horas del día
           con una medición válida de {POLLUTANT_LABEL[pollutant]}; de lo
-          contrario, no cuenta. Todo lo anterior, con base en la Norma
-          Oficial Mexicana:{" "}
+          contrario, se contabiliza como &ldquo;Datos insuficientes&rdquo;.
+          Todo lo anterior, con base en la Norma Oficial Mexicana:{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
@@ -487,17 +487,6 @@ export default function CoberturaEstacionesChart({
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
   const parametro = pollutant === "pm25" ? "PM2.5" : "PM10";
 
-  // 15 full-year grids is a lot of scroll before ever reaching the
-  // info-tabs row -- collapsed to the first 5 by default, expandable on
-  // request (2026-09-27 feedback). Already alphabetical (see the
-  // "estaciones" query's own .order("nombre_display")), so which 5 show
-  // isn't a curation choice.
-  const STATIONS_COLLAPSED_COUNT = 5;
-  const [showAllStations, setShowAllStations] = useState(false);
-  const visibleEstaciones = showAllStations
-    ? estaciones
-    : estaciones.slice(0, STATIONS_COLLAPSED_COUNT);
-
   const { dates: allDates, coberturaPorEstacion } = useMemo(() => {
     const dateSet = new Set<string>();
     const porEstacion = new Map<string, Map<string, boolean>>();
@@ -733,7 +722,7 @@ export default function CoberturaEstacionesChart({
         </div>
         {year !== null && (
           <div ref={setMeasureNode} className="grid grid-cols-1 gap-y-5">
-            {visibleEstaciones.map((estacion) => (
+            {estaciones.map((estacion) => (
               <EstacionCalendario
                 key={estacion.sensorId}
                 estacion={estacion}
@@ -751,18 +740,6 @@ export default function CoberturaEstacionesChart({
                 cell={cell}
               />
             ))}
-          </div>
-        )}
-        {estaciones.length > STATIONS_COLLAPSED_COUNT && (
-          <div className="mt-5 flex justify-center">
-            <button
-              onClick={() => setShowAllStations((v) => !v)}
-              className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-            >
-              {showAllStations
-                ? "Ver menos estaciones"
-                : `Ver las ${estaciones.length - STATIONS_COLLAPSED_COUNT} estaciones restantes`}
-            </button>
           </div>
         )}
       </div>
