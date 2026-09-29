@@ -803,7 +803,7 @@ export default function PromedioAnualChart({
             className="flex items-center justify-center rounded-lg bg-gray-50 text-center text-sm text-gray-400"
             style={{ height: CHART_HEIGHT }}
           >
-            Los datos de {year} estarán disponibles cuando termine el año.
+            El promedio anual de {year} estará disponible cuando termine el año.
           </div>
         ) : (
           <>
