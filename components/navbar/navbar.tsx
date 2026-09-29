@@ -9,12 +9,14 @@ import { ChevronDown, Map, BarChart3 } from "lucide-react";
 // observatoriodelaire.com's navbar (components/navbar.tsx there), markup and
 // styling unchanged. Its rendered height is restated as --header-h in
 // globals.css (the map sizes itself against it), so a change here that moves
-// the bar's height must update that var too. Differences: the two react-icons glyphs are
-// inlined as their exact SVGs (no new dependency), the logo carries its real
-// aspect ratio (150x28, not 150x150, so the bar can't flash 150px tall before
-// the image loads), the Observatory-only pages
-// link out to observatoriodelaire.com for now, and the two pills point at this
-// app's own /datos and /mapa in the same tab.
+// the bar's height must update that var too.
+//
+// Differences from the original: the two react-icons glyphs are inlined as
+// their exact SVGs (no new dependency); the logo carries its real aspect ratio
+// (150x28, not 150x150, so the bar can't flash 150px tall before the image
+// loads); Proyectos, Explorar datos and Explorar mapa are this app's own pages,
+// in the same tab; the other Observatory pages link out to
+// observatoriodelaire.com for now.
 const OBSERVATORIO = "https://www.observatoriodelaire.com";
 
 // react-icons FiMenu
@@ -122,7 +124,7 @@ export default function Navbar() {
         >
           {/* Proyectos */}
           <Link
-            href={`${OBSERVATORIO}/proyectos`}
+            href="/proyectos"
             className="block hover:text-gray-500"
             onClick={handleLinkClick}
           >

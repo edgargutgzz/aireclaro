@@ -1,14 +1,12 @@
 import type { MetadataRoute } from "next";
 
+const BASE = "https://aireclaro.com";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    {
-      url: "https://aireclaro.com/mapa",
-      changeFrequency: "hourly",
-      priority: 1,
-    },
-    // Only the map is indexed (the homepage is blank for now). /datos is a live nav link but still a
-    // placeholder; /acerca and /aviso-privacidad were removed pending a
-    // rebuild. Nothing else to advertise yet.
+    { url: `${BASE}/`, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${BASE}/mapa`, changeFrequency: "hourly", priority: 1 },
+    { url: `${BASE}/datos`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/proyectos`, changeFrequency: "monthly", priority: 0.5 },
   ];
 }
