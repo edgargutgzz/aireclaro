@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import PageShell from "@/components/observatorio/page-shell";
 
 // Ported from observatoriodelaire.com/recursos: same copy, documents and card
 // grid. Each card opens its PDF in a new tab. The PDF and cover share a file
@@ -130,16 +131,11 @@ const RECURSOS: Recurso[] = [
 
 export default function Recursos() {
   return (
-    <div className="mx-auto max-w-7xl px-6 pb-32 pt-16 lg:px-8 lg:pb-48 lg:pt-40">
-      <div className="flex flex-col text-center">
-        <h1 className="text-md md:text-lg">Recursos</h1>
-        <p className="pt-4 text-2xl font-bold md:px-20 md:pt-6 md:text-4xl md:leading-tight">
-          Descarga los documentos e investigaciones que hemos recopilado para
-          entender la calidad del aire en la ciudad.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 gap-12 pt-32 md:gap-y-20 md:pt-56 lg:grid-cols-3 lg:gap-x-8">
+    <PageShell
+      title="Recursos"
+      lead="Descarga los documentos e investigaciones que hemos recopilado para entender la calidad del aire en la ciudad."
+    >
+      <div className="grid grid-cols-1 gap-12 md:gap-y-20 lg:grid-cols-3 lg:gap-x-8">
         {RECURSOS.map((recurso) => (
           <a
             key={recurso.file}
@@ -173,6 +169,6 @@ export default function Recursos() {
           </a>
         ))}
       </div>
-    </div>
+    </PageShell>
   );
 }

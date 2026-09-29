@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import PageShell from "@/components/observatorio/page-shell";
 import Link from "next/link";
 import { editoriales, formatEditorialDate, type Editorial } from "./data";
 
@@ -74,20 +75,15 @@ function EditorialCard({ editorial }: { editorial: Editorial }) {
 
 export default function Editoriales() {
   return (
-    <div className="mx-auto max-w-7xl px-6 pb-32 pt-16 lg:px-8 lg:pb-48 lg:pt-40">
-      <div className="flex flex-col text-center">
-        <h1 className="text-md md:text-lg">Editoriales</h1>
-        <p className="pt-4 text-2xl font-bold md:px-20 md:pt-6 md:text-4xl md:leading-tight">
-          Explora nuestras publicaciones y artículos sobre la calidad del aire
-          en la ciudad.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 gap-12 pt-32 md:gap-y-20 md:pt-56 lg:grid-cols-3 lg:gap-x-8">
+    <PageShell
+      title="Editoriales"
+      lead="Explora nuestras publicaciones y artículos sobre la calidad del aire en la ciudad."
+    >
+      <div className="grid grid-cols-1 gap-12 md:gap-y-20 lg:grid-cols-3 lg:gap-x-8">
         {editoriales.map((editorial) => (
           <EditorialCard key={editorial.slug} editorial={editorial} />
         ))}
       </div>
-    </div>
+    </PageShell>
   );
 }

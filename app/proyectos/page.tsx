@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import FeatureCard from "@/components/observatorio/feature-card";
+import PageShell from "@/components/observatorio/page-shell";
 import Link from "next/link";
 import { SquareArrowOutUpRight, Youtube } from "lucide-react";
 
@@ -104,54 +105,34 @@ function ProjectButton({ href, label, video }: ProjectLink) {
 
 export default function Proyectos() {
   return (
-    <div className="mx-auto max-w-7xl px-6 pb-32 pt-16 lg:px-8 lg:pb-48 lg:pt-40">
-      <div className="flex flex-col text-center">
-        <h1 className="text-md md:text-lg">Proyectos</h1>
-        <p className="pt-4 text-2xl font-bold md:px-20 md:pt-6 md:text-4xl md:leading-tight">
-          Conoce los proyectos en los que estamos trabajando para mejorar la
-          calidad del aire en Nuevo León.
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-28 pt-32 md:gap-48 md:pt-56">
+    <PageShell
+      title="Proyectos"
+      lead="Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en Nuevo León."
+    >
+      <div className="flex flex-col gap-28 md:gap-48">
         {PROJECTS.map((project) => (
-          <article
+          <FeatureCard
             key={project.title}
-            className="flex flex-col rounded-lg bg-white p-4 shadow-lg md:flex-row md:p-0"
+            title={project.title}
+            description={project.description}
+            image={project.image}
+            imageAlt={project.title}
           >
-            <div className="md:w-1/2">
-              <Image
-                src={project.image}
-                alt={project.title}
-                width={1080}
-                height={1080}
-                sizes="(min-width: 1280px) 616px, (min-width: 768px) 50vw, 100vw"
-                className="w-full rounded-lg"
-              />
-            </div>
-            <div className="flex flex-col justify-center md:w-1/2 md:px-12">
-              <h2 className="pt-6 text-2xl font-semibold md:text-3xl">
-                {project.title}
-              </h2>
-              <p className="pt-2 text-base md:pt-4 md:text-lg">
-                {project.description}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-6 md:pt-12">
+              <p className="whitespace-nowrap rounded-lg bg-blue-100 px-2 py-1 text-sm">
+                {project.tag}
               </p>
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-6 md:pt-12">
-                <p className="whitespace-nowrap rounded-lg bg-blue-100 px-2 py-1 text-sm">
-                  {project.tag}
-                </p>
-                {project.links.length > 0 && (
-                  <div className="flex gap-2">
-                    {project.links.map((link) => (
-                      <ProjectButton key={link.href} {...link} />
-                    ))}
-                  </div>
-                )}
-              </div>
+              {project.links.length > 0 && (
+                <div className="flex gap-2">
+                  {project.links.map((link) => (
+                    <ProjectButton key={link.href} {...link} />
+                  ))}
+                </div>
+              )}
             </div>
-          </article>
+          </FeatureCard>
         ))}
       </div>
-    </div>
+    </PageShell>
   );
 }
