@@ -984,7 +984,7 @@ export default function MapaSensors({
     return () => window.removeEventListener("keydown", onKey);
   }, [selectedSensor, isDesktop, closeCard]);
 
-  // 5.5rem of peek showing above the nav: the grabber and the summary row (the
+  // 5.5rem of peek showing at the bottom of the screen: the grabber and the summary row (the
   // default sensor name + its reading). Freshness floats at the top of the map,
   // so it adds nothing here.
   const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5.5rem))';
@@ -1028,7 +1028,7 @@ export default function MapaSensors({
       {sheetState === 'peek' && (
         <div
           className="fixed right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
-          style={{ bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
         >
           <button
             onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
@@ -1090,7 +1090,7 @@ export default function MapaSensors({
              overflow and scroll here. The desktop panel body is a plain block
              for the same reason. */
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5"
-          style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <LayersFilterContent
             showOtros={showOtros}
@@ -1138,7 +1138,7 @@ export default function MapaSensors({
         <div
           /* Plain block, not a flex column — see the Capas sheet body above. */
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5"
-          style={{ paddingBottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 2rem)' }}
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <ScaleBar />
           <LegendDetail className="mt-4 border-t border-gray-100 pt-4" />
@@ -1290,7 +1290,7 @@ export default function MapaSensors({
       <div
         className={`fixed left-0 right-0 z-[40] rounded-t-3xl flex flex-col md:hidden overflow-hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 ${sheetState === 'peek' ? 'bg-white/80 backdrop-blur-md border-t border-white/60' : 'bg-white'}`}
         style={{
-          bottom: 'calc(3.5rem + env(safe-area-inset-bottom, 0px))',
+          bottom: 'env(safe-area-inset-bottom, 0px)',
           height: '62dvh',
           transform: subj ? sheetTransform : 'translateY(100%)',
           transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',

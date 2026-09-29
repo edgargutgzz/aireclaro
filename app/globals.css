@@ -333,22 +333,19 @@
   }
 }
 
-/* The header's height, in one place. It used to be written as a mobile and a
-   desktop literal across three files: the bar itself in two components, and the
-   map's h-[calc(100svh-Npx)] restating both so it could fill what was left. The
-   media query lives here so callers need no md: variant at all.
-
-   Mobile is 52px, still under the Material 56: the bar holds only a ~22px logo,
-   and 44px left it with barely 11px of air on each side. 52 gives the wordmark
-   room to breathe while still handing space back to the map (h-below-header
-   derives from this var, so nothing else changes). Desktop stays 72. */
+/* The navbar's rendered height, in one place; the map fills what's left
+   (h-below-header). The bar is copied from observatoriodelaire.com and sizes to
+   its content, so these restate it: py-6 (48px) plus the tallest item. Below lg
+   that's the 28px menu button, which sits on an inline line box that rounds it
+   up to 34px (82px); at lg the 38px "Explorar" pills (86px). Measured in
+   Chromium, not just derived. Change the navbar's height and these follow. */
 :root {
-  --header-h: 52px;
+  --header-h: 82px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   :root {
-    --header-h: 72px;
+    --header-h: 86px;
   }
 }
 
