@@ -11,6 +11,20 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 // arrow buttons and reads as "there's more" without claiming how much.
 // Fades in/out with the actual scroll position (ResizeObserver too, so
 // resizing the window re-checks), not shown as a static decoration.
+//
+// PEEK_WIDTH (2026-09-28 feedback: "not the biggest fan" of the fade
+// alone) reserves a fixed sliver of the viewport so a genuinely partial
+// bar/column is always visible at rest when there IS more to scroll --
+// without it, whether a partial mark happens to show at the natural edge
+// is just whatever the real column width vs. viewport width coincidentally
+// works out to (often barely-cropped, reading as "that's just how wide the
+// last one is" rather than "there's more"). Only applied when scroll is
+// actually needed (comparing minWidth against the WRAPPER's own natural
+// width, measured before any narrowing) -- a chart with few enough
+// categories to fit outright is untouched, never forced into an
+// unnecessary scroll just to make room for a peek it doesn't need.
+const PEEK_WIDTH = 40; // px
+
 export default function HorizontalScrollFade({
   minWidth,
   centerOn,
@@ -25,9 +39,11 @@ export default function HorizontalScrollFade({
   centerOn?: number;
   children: React.ReactNode;
 }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [needsScroll, setNeedsScroll] = useState(false);
 
   useLayoutEffect(() => {
     const el = scrollRef.current;
@@ -37,16 +53,22 @@ export default function HorizontalScrollFade({
   }, [centerOn]);
 
   useEffect(() => {
+    const wrapper = wrapperRef.current;
     const el = scrollRef.current;
-    if (!el) return;
+    if (!wrapper || !el) return;
     const update = () => {
+      // wrapper's own clientWidth is never narrowed by PEEK_WIDTH (that
+      // style only ever lands on the scroll element, a child of this one),
+      // so it's always the true, natural available space to compare
+      // minWidth against.
+      setNeedsScroll(minWidth > wrapper.clientWidth);
       setCanScrollLeft(el.scrollLeft > 1);
       setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
     };
     update();
     el.addEventListener("scroll", update, { passive: true });
     const ro = new ResizeObserver(update);
-    ro.observe(el);
+    ro.observe(wrapper);
     return () => {
       el.removeEventListener("scroll", update);
       ro.disconnect();
@@ -54,8 +76,12 @@ export default function HorizontalScrollFade({
   }, [minWidth]);
 
   return (
-    <div className="relative">
-      <div ref={scrollRef} className="overflow-x-auto">
+    <div ref={wrapperRef} className="relative">
+      <div
+        ref={scrollRef}
+        className="overflow-x-auto"
+        style={needsScroll ? { width: `calc(100% - ${PEEK_WIDTH}px)` } : undefined}
+      >
         <div style={{ minWidth }}>{children}</div>
       </div>
       <div
