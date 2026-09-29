@@ -42,6 +42,11 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm10: "PM10",
 };
 
+// Hidden pending a rework of how excluded stations are presented
+// (2026-09-28 request) -- sinDatos itself is still computed either way, so
+// flipping this back to true needs no other change.
+const SHOW_FALTA_DE_INFORMACION = false;
+
 // NOM-025-SSA1-2021's annual limits and the WHO annual guidelines.
 // PM2.5's own annual limit is flat at 10 µg/m³ across every "Año 1/3/5"
 // phase-in bracket (Tabla 1), so it's a plain constant here same as before.
@@ -911,7 +916,7 @@ export default function PromedioAnualChart({
               </div>
             )}
 
-            {sinDatos.length > 0 && (
+            {SHOW_FALTA_DE_INFORMACION && sinDatos.length > 0 && (
               <div className="mt-5 grid gap-2">
                 <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
                   Estaciones con falta de información
