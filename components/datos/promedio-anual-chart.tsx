@@ -6,10 +6,12 @@ import type { Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { getLimitAnualPM10 } from "@/lib/pm25-limits";
 import {
   COLOR_CUBIERTO,
+  COLOR_CUBIERTO_FILL_OPACITY,
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
   COLOR_SALUDABLE_FILL_OPACITY,
+  withOpacity,
 } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
@@ -224,12 +226,17 @@ interface StationBar {
 // per trimester, painted blue (valid) or gray (not), left to right in
 // calendar order. Blue, not green -- this is a data-COMPLETENESS reading
 // (validity), not a health-quality one, same reasoning as cobertura's own
-// "has data" blue (see COLOR_CUBIERTO in lib/datos-colors.ts). The header
-// states the X/4 count on its own now (the "mín. 75% días" rule dropped
-// 2026-09-28 -- already explained in the Metodología tab, redundant here),
-// so the bar itself carries no text -- reads as "how much of the year
-// cleared the bar," matching the bar-chart visual language the rest of the
-// page already uses instead of a row of isolated dots.
+// "has data" blue (see COLOR_CUBIERTO in lib/datos-colors.ts). At
+// COLOR_CUBIERTO_FILL_OPACITY, not full strength -- matching the hex alone
+// wasn't enough: cobertura's own "Con datos" cells render that blue at 68%
+// over white, a visibly softer shade than this bar's original full-strength
+// fill (2026-09-28 feedback, after checking the actual rendered colors
+// side by side, not just the shared token). The header states the X/4
+// count on its own now (the "mín. 75% días" rule dropped 2026-09-28 --
+// already explained in the Metodología tab, redundant here), so the bar
+// itself carries no text -- reads as "how much of the year cleared the
+// bar," matching the bar-chart visual language the rest of the page
+// already uses instead of a row of isolated dots.
 // `overflow-hidden rounded-full` on the flex container (not on each
 // section) rounds only the two true outer ends, per the dataviz skill's
 // own "rounded only at the outer tip, square where a mark meets its
@@ -237,6 +244,8 @@ interface StationBar {
 // `gap-0.5` between sections exposes the tooltip's own white background as
 // a thin surface-color seam, the same "gap instead of a border" separator
 // convention as every other stacked mark on /datos.
+const COLOR_CUBIERTO_FILL = withOpacity(COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY);
+
 function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
   const rowsByT = new Map(rows.map((r) => [r.trimestre, r]));
   const validCount = rows.filter((r) => r.valido).length;
@@ -254,7 +263,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
               key={t}
               className="flex-1"
               style={{
-                backgroundColor: r?.valido ? COLOR_CUBIERTO : "#d1d5db",
+                backgroundColor: r?.valido ? COLOR_CUBIERTO_FILL : "#d1d5db",
               }}
             />
           );
