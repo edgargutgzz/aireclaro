@@ -14,12 +14,12 @@ const inter = Inter({ subsets: ["latin"], display: "swap" });
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Aire Claro — Calidad del Aire en Monterrey",
-    template: "%s | Aire Claro",
+    default: "Observatorio del Aire, calidad del aire en Monterrey",
+    template: "%s | Observatorio del Aire",
   },
   appleWebApp: {
     capable: true,
-    title: "Aire Claro",
+    title: "Observatorio del Aire",
     statusBarStyle: "default",
   },
   icons: {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     "monitoreo aire Monterrey",
   ],
   openGraph: {
-    title: "Aire Claro — Calidad del Aire en Monterrey",
+    title: "Observatorio del Aire, calidad del aire en Monterrey",
     description:
       "Monitorea en tiempo real la calidad del aire (PM2.5) en Monterrey y Zona Metropolitana. Datos de estaciones SIMA y sensores ciudadanos PurpleAir.",
     url: "/",
@@ -49,19 +49,19 @@ export const metadata: Metadata = {
         url: "/aireclaro-logo-fb.png",
         width: 1200,
         height: 630,
-        alt: "Aire Claro — Calidad del Aire en Monterrey",
+        alt: "Observatorio del Aire, calidad del aire en Monterrey",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aire Claro — Calidad del Aire en Monterrey",
+    title: "Observatorio del Aire, calidad del aire en Monterrey",
     description:
       "Monitorea en tiempo real la calidad del aire (PM2.5) en Monterrey y Zona Metropolitana.",
     images: [
       {
         url: "/aireclaro-logo-fb.png",
-        alt: "Aire Claro — Calidad del Aire en Monterrey",
+        alt: "Observatorio del Aire, calidad del aire en Monterrey",
       },
     ],
   },

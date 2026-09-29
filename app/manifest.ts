@@ -2,8 +2,8 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Aire Claro",
-    short_name: "Aire Claro",
+    name: "Observatorio del Aire",
+    short_name: "Observatorio del Aire",
     description:
       "Calidad del aire en tiempo real en Monterrey y Zona Metropolitana",
     start_url: "/mapa",
