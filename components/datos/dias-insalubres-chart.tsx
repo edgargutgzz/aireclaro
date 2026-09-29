@@ -650,7 +650,7 @@ export default function DiasInsalubresChart({
         <div className="md:flex md:items-center md:gap-3">
           <div>
             <span>{totalInsalubres}</span>{" "}
-            días de aire insalubre por {POLLUTANT_LABEL[pollutant]} en {year}
+            días sobre la norma por {POLLUTANT_LABEL[pollutant]} en {year}
           </div>
           {/* Always mounted (never conditionally rendered), just hidden
               via `invisible` when there's no prior-year comparison --
