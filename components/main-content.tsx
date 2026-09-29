@@ -17,12 +17,10 @@ export default function MainContent({ children }: { children: React.ReactNode })
   return (
     <main ref={ref} className="w-full flex-grow overflow-y-auto bg-gray-50">
       {children}
-      {/* Same footer as observatoriodelaire.com, everywhere except the map */}
-      {!hideFooter && (
-        <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
-          <Footer />
-        </div>
-      )}
+      {/* Same footer as observatoriodelaire.com, everywhere except the map.
+          No bottom-bar clearance needed: only the map has the mobile bottom
+          bar, and it has no footer. */}
+      {!hideFooter && <Footer />}
     </main>
   );
 }

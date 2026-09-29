@@ -1,10 +1,18 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import Navlinks from "@/components/navbar/navlinks";
+import ObservatorioNavbar from "@/components/navbar/observatorio-navbar";
 import SiteHeader from "@/components/navbar/site-header";
 import Logo from "@/components/navbar/logo";
 
 export default function Navbar() {
+  // Every page but the map wears the observatoriodelaire.com navbar. The map
+  // keeps the app chrome below: its mobile panels are positioned against the
+  // 56px bottom bar and the header height.
+  const pathname = usePathname();
+  if (pathname !== "/mapa") return <ObservatorioNavbar />;
+
   return (
     <>
       {/* Mobile top bar — logo only, in normal document flow; nav links stay in the bottom bar */}
