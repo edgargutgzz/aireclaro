@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import type { Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { getLimitAnualPM10 } from "@/lib/pm25-limits";
 import {
@@ -103,49 +103,29 @@ function tabs(pollutant: Pollutant, nomAnual: number): InfoTab[] {
       ),
     },
     {
-      id: "norma",
-      label: "Norma Mexicana",
-      icon: Scale,
-      body:
-        pollutant === "pm25" ? (
-          <>
-            Se determina si una estación cumple con el límite anual
-            establecido por la{" "}
-            <a
-              href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-            >
-              NOM-025-SSA1-2021
-            </a>
-            . El límite anual de PM2.5 es de {nomAnual} µg/m³.
-          </>
-        ) : (
-          <>
-            Se determina si una estación cumple con el límite anual
-            establecido por la{" "}
-            <a
-              href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-            >
-              NOM-025-SSA1-2021
-            </a>
-            . El límite anual de PM10 bajó de 28 µg/m³ en 2025 a 20 µg/m³ en
-            2026.
-          </>
-        ),
-    },
-    {
+      // One merged tab, not two -- días insalubres and cobertura each have
+      // a single "Metodología" tab that states its rule and closes with the
+      // same NOM citation sentence; chart 3 had split that same shape into
+      // a separate "Norma Mexicana" (the limit value) and "Metodología"
+      // (the trimester rule) tab (2026-09-28 request: match how 1 and 2
+      // already word this panel, one tab).
       id: "metodologia",
       label: "Metodología",
       icon: BookOpen,
       body: (
         <>
-          Para garantizar mayor certeza en la información, los datos se
-          analizan siguiendo los criterios establecidos por la{" "}
+          La estación se considera con datos suficientes si al menos 3 de
+          los 4 trimestres tienen cobertura; un trimestre es válido cuando
+          la estación reportó mediciones en al menos el 75% de sus días.{" "}
+          {pollutant === "pm25" ? (
+            <>El límite anual de PM2.5 es de {nomAnual} µg/m³.</>
+          ) : (
+            <>
+              El límite anual de PM10 bajó de 28 µg/m³ en 2025 a 20 µg/m³ en
+              2026.
+            </>
+          )}{" "}
+          Todo lo anterior, con base en la Norma Oficial Mexicana:{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
@@ -154,10 +134,7 @@ function tabs(pollutant: Pollutant, nomAnual: number): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          . La estación se considera con datos suficientes si al menos 3 de
-          los 4 trimestres tienen cobertura. Un trimestre es válido cuando la
-          estación reportó mediciones en al menos el 75% de los días del
-          trimestre.
+          .
         </>
       ),
     },

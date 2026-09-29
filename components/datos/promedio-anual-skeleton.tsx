@@ -39,10 +39,12 @@ export default function PromedioAnualSkeleton() {
             header's own SkeletonBlock already covers. */}
       </div>
 
+      {/* 4 pills now, matching días insalubres/cobertura's own tab count --
+          "Norma Mexicana" and "Metodología" merged into one tab (2026-09-28
+          request), same shape as chart 1/2's own single Metodología tab. */}
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
-        <SkeletonBlock className="h-7 w-28 rounded-xl" />
         <SkeletonBlock className="h-7 w-28 rounded-xl" />
         <SkeletonBlock className="h-7 w-36 rounded-xl" />
       </div>
