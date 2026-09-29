@@ -1,7 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/public";
+import { cachedMapData } from "./cache";
 
-export default async function PurpleAirSensors() {
-  const supabase = await createClient();
+async function fetchPurpleAirSensors() {
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("purpleair_sensores")
     .select()
@@ -30,3 +31,5 @@ export default async function PurpleAirSensors() {
 
   return data || [];
 }
+
+export default cachedMapData(fetchPurpleAirSensors, "purpleair-sensors");

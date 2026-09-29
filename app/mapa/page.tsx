@@ -8,8 +8,6 @@ import { fetchWithFallback } from "@/utils/fetch";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 
-export const revalidate = 120; // 2 minutes
-
 const BASE_TITLE = "Mapa de Calidad del Aire en Monterrey en Tiempo Real";
 const BASE_DESCRIPTION =
   "Consulta el mapa interactivo de calidad del aire (PM2.5) en Monterrey y Zona Metropolitana. Datos en tiempo real de estaciones SIMA y sensores ciudadanos PurpleAir.";
@@ -17,8 +15,9 @@ const BASE_DESCRIPTION =
 // A bare visit gets the map's own metadata. A shared ?sensor= link gets a
 // title, description and unfurl card built from that station's latest reading,
 // so it travels as "<estación> — Mala · 48 μg/m³ PM2.5" instead of a generic
-// preview. Reading searchParams makes this render dynamic, but Supabase already
-// does (it reads cookies), so there's no static caching to give up.
+// preview. Reading searchParams makes this render dynamic; the four map
+// datasets themselves are cached across requests (components/data/cache.ts),
+// so a dynamic render is only the render, not four database round-trips.
 export async function generateMetadata({
   searchParams,
 }: {

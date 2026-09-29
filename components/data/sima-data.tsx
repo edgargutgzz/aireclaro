@@ -1,7 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/public";
+import { cachedMapData } from "./cache";
 
-export default async function SimaData() {
-  const supabase = await createClient();
+async function fetchSimaData() {
+  const supabase = createPublicClient();
   // A row-count limit(30) here used to silently drop any station that lagged
   // behind the other ~15 -- with roughly one row per station per ingestion
   // cycle, that limit is barely more than one full cycle of headroom, so one
@@ -37,3 +38,5 @@ export default async function SimaData() {
 
   return Object.values(latestReadings);
 }
+
+export default cachedMapData(fetchSimaData, "sima-data");

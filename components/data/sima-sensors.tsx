@@ -1,7 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/public";
+import { cachedMapData } from "./cache";
 
-export default async function SimaSensors() {
-  const supabase = await createClient();
+async function fetchSimaSensors() {
+  const supabase = createPublicClient();
   const { data, error } = await supabase.from("sima_sensores").select("id, sensor_id, nombre, nombre_display, municipio, estado, lat, lon");
 
   if (error) {
@@ -11,3 +12,5 @@ export default async function SimaSensors() {
 
   return data || [];
 }
+
+export default cachedMapData(fetchSimaSensors, "sima-sensors");

@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/public";
 
 export type SensorSnapshot = {
   sensorId: number;
@@ -21,7 +21,7 @@ export type SensorSnapshot = {
 export async function getSensorSnapshot(
   sensorId: number,
 ): Promise<SensorSnapshot | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const sima = await supabase
     .from("sima_sensores")
@@ -67,7 +67,7 @@ export async function getSensorSnapshot(
 }
 
 async function latestReading(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: ReturnType<typeof createPublicClient>,
   table: "sima_mediciones" | "purpleair_mediciones",
   sensorId: number,
 ) {

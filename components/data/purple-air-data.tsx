@@ -1,7 +1,8 @@
-import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/public";
+import { cachedMapData } from "./cache";
 
-export default async function PurpleAirData() {
-  const supabase = await createClient();
+async function fetchPurpleAirData() {
+  const supabase = createPublicClient();
 
   const { data, error } = await supabase
     .from("purpleair_mediciones")
@@ -29,3 +30,5 @@ export default async function PurpleAirData() {
 
   return Object.values(latestReadings);
 }
+
+export default cachedMapData(fetchPurpleAirData, "purpleair-data");

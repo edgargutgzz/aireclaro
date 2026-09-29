@@ -1,9 +1,9 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
-// Anon-key client with no cookie/session handling. Unlike utils/supabase/server.ts,
-// this doesn't call cookies() from next/headers, so it's safe to use inside
-// unstable_cache (which forbids reading cookies mid-execution) or any other
-// context outside a request. Only for tables with open-read RLS.
+// The app's client for public reads: anon key, no cookie or session handling
+// (the site has no logins). Never touching next/headers `cookies()` keeps
+// routes cacheable and makes it safe inside unstable_cache. Only for tables
+// with open-read RLS; the cron's writes use utils/supabase/service.ts.
 export function createPublicClient() {
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

@@ -7,7 +7,9 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SITE_URL } from "@/lib/site";
 
-const inter = Inter({ subsets: ["latin", "latin-ext"], display: "swap" });
+// Latin only: it covers all of Spanish (áéíóúñü¿¡); latin-ext was a whole
+// extra font file no page text uses.
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
