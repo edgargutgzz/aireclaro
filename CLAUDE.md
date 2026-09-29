@@ -47,7 +47,12 @@ pnpm exec tsc --noEmit   # the type gate
 
 **`pnpm lint` is broken in this repo** — the gate is `tsc --noEmit` then
 `pnpm build`. No test suite. `pnpm build` always logs one
-`DYNAMIC_SERVER_USAGE` warning on `/` — that one is expected (cookies).
+`DYNAMIC_SERVER_USAGE` warning on `/mapa` — that one is expected (cookies).
+
+**`node_modules` is a symlink to `node_modules.nosync`** so iCloud (the repo
+lives in `~/Documents`) doesn't evict files and break the build. Never
+`rm -rf node_modules` and reinstall: that replaces the symlink with a real,
+synced folder. Clear `node_modules.nosync/` instead.
 
 ## This repo's workflow
 
