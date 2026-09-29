@@ -8,6 +8,7 @@ import {
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
+  COLOR_SALUDABLE_FILL_OPACITY,
 } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
@@ -392,16 +393,25 @@ function ReferenceLine({
 function TooltipCard({
   bar,
   year,
+  nomAnual,
   totalWidth,
   barCenterX,
   barTopY,
 }: {
   bar: StationBar;
   year: number | null;
+  nomAnual: number;
   totalWidth: number;
   barCenterX: number;
   barTopY: number;
 }) {
+  // Same red/green split as the bar itself -- previously always red
+  // regardless of whether this station cleared the limit (2026-09-28
+  // feedback: the chart didn't visually distinguish "over" from "under" at
+  // all, only the subtitle's count and the dashed line's position did).
+  const sobreLimite = bar.promedio > nomAnual;
+  const color = sobreLimite ? COLOR_INSALUBRE : COLOR_SALUDABLE;
+
   const positionStyle = tooltipPositionStyle(
     barCenterX,
     barTopY,
@@ -422,10 +432,7 @@ function TooltipCard({
         {bar.nombre}
       </span>
       <div className="flex items-baseline gap-1.5">
-        <span
-          className="text-2xl font-bold leading-none"
-          style={{ color: COLOR_INSALUBRE }}
-        >
+        <span className="text-2xl font-bold leading-none" style={{ color }}>
           {Math.round(bar.promedio)}
         </span>
         <span className="text-sm font-medium text-gray-400">µg/m³</span>
@@ -536,6 +543,17 @@ function BarsChart({
           const yTop = valueToY(b.promedio);
           const h = PAD_TOP + plotHeight - yTop;
           const isHovered = hoveredIdx === i;
+          // Red/green by whether this station's own figure clears the
+          // limit -- reuses días insalubres' own health-outcome colors
+          // rather than a flat red for every bar (2026-09-28 feedback: a
+          // uniformly red chart couldn't visually show which stations were
+          // actually over the limit, only the subtitle's count and the
+          // dashed line's position could).
+          const sobreLimite = b.promedio > nomAnual;
+          const barColor = sobreLimite ? COLOR_INSALUBRE : COLOR_SALUDABLE;
+          const barOpacity = sobreLimite
+            ? COLOR_INSALUBRE_FILL_OPACITY
+            : COLOR_SALUDABLE_FILL_OPACITY;
           return (
             <g key={b.sensorId}>
               <path
@@ -543,8 +561,8 @@ function BarsChart({
                   tl: BAR_RADIUS,
                   tr: BAR_RADIUS,
                 })}
-                fill={COLOR_INSALUBRE}
-                fillOpacity={isHovered ? 0.85 : COLOR_INSALUBRE_FILL_OPACITY}
+                fill={barColor}
+                fillOpacity={isHovered ? 0.85 : barOpacity}
                 style={{ transition: "fill-opacity 120ms ease" }}
               />
               <text
@@ -566,7 +584,7 @@ function BarsChart({
                 height={plotHeight}
                 fill="transparent"
                 tabIndex={0}
-                aria-label={`${b.nombre}: ${Math.round(b.promedio)} microgramos por metro cúbico`}
+                aria-label={`${b.nombre}: ${Math.round(b.promedio)} microgramos por metro cúbico, ${sobreLimite ? "sobre" : "dentro de"} el límite anual`}
                 // Hover tooltip only, no click action here (2026-09-27
                 // feedback -- a pointer cursor should only ever mean a
                 // click does something).
@@ -600,7 +618,8 @@ function BarsChart({
       <ul className="sr-only">
         {bars.map((b) => (
           <li key={b.sensorId}>
-            {b.nombre}: {Math.round(b.promedio)} µg/m³
+            {b.nombre}: {Math.round(b.promedio)} µg/m³ (
+            {b.promedio > nomAnual ? "sobre" : "dentro de"} el límite anual)
           </li>
         ))}
       </ul>
@@ -609,6 +628,7 @@ function BarsChart({
         <TooltipCard
           bar={hovered}
           year={year}
+          nomAnual={nomAnual}
           totalWidth={totalWidth}
           barCenterX={bandX(hoveredIdx) + stationColWidth / 2}
           barTopY={valueToY(hovered.promedio)}
@@ -752,19 +772,23 @@ export default function PromedioAnualChart({
   return (
     <ChartCard
       title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
+      // Leads with the headline number, plain (no bold/color) -- matches
+      // días insalubres ("{totalInsalubres} días de aire insalubre por
+      // PM2.5 en 2026") and cobertura ("{pctCobertura}% de cobertura de
+      // PM2.5 en 2026"): number first, pollutant + year folded into the
+      // trailing clause, not a leading "PM2.5 ·" label (2026-09-28
+      // feedback). Color is reserved for the bars/tooltip's own
+      // over/under-limit distinction now, not this headline count.
       subtitle={
         !isCompleteYear ? (
-          `${POLLUTANT_LABEL[pollutant]} · Datos disponibles al finalizar ${year}`
+          `Datos de ${POLLUTANT_LABEL[pollutant]} disponibles al finalizar ${year}`
         ) : bars.length === 0 ? (
-          `${POLLUTANT_LABEL[pollutant]} · Sin datos suficientes todavía`
+          `Sin datos suficientes de ${POLLUTANT_LABEL[pollutant]} todavía`
         ) : (
           <>
-            {POLLUTANT_LABEL[pollutant]} ·{" "}
-            <span className="font-semibold" style={{ color: COLOR_INSALUBRE }}>
-              {sobreLimite}
-            </span>{" "}
+            <span>{sobreLimite}</span>{" "}
             {sobreLimite === 1 ? "estación" : "estaciones"} sobre el límite
-            anual
+            anual de {POLLUTANT_LABEL[pollutant]} en {year}
           </>
         )
       }
@@ -807,9 +831,34 @@ export default function PromedioAnualChart({
           </div>
         ) : (
           <>
-            <span className="mb-3 block text-xs text-gray-400">
-              {POLLUTANT_LABEL[pollutant]} (µg/m³)
-            </span>
+            {/* Same shell días insalubres uses for its own axis-label +
+                legend row (mb-4 flex items-center justify-between md:mb-6,
+                h-2 w-2 rounded-[2px] swatches) -- this chart had no legend
+                at all until 2026-09-28, despite already using color to mean
+                something (previously a flat red on every bar, which didn't
+                actually distinguish over/under the limit; see the bar
+                color logic in BarsChart). */}
+            <div className="mb-4 flex items-center justify-between md:mb-6">
+              <span className="text-xs text-gray-400">
+                {POLLUTANT_LABEL[pollutant]} (µg/m³)
+              </span>
+              <div className="flex items-center gap-4 text-xs text-gray-500">
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className="h-2 w-2 rounded-[2px]"
+                    style={{ backgroundColor: COLOR_SALUDABLE }}
+                  />
+                  Dentro del límite
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className="h-2 w-2 rounded-[2px]"
+                    style={{ backgroundColor: COLOR_INSALUBRE }}
+                  />
+                  Sobre el límite
+                </span>
+              </div>
+            </div>
             {bars.length > 0 ? (
               <div ref={setMeasureNode} className="w-full">
                 <HorizontalScrollFade
