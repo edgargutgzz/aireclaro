@@ -38,7 +38,11 @@ export default function CoberturaEstacionesSkeleton() {
       </div>
 
       <div className="px-5 pb-6 pt-5 md:pt-6">
-        <div className="mb-3 flex items-center justify-end gap-4">
+        {/* mb-4 md:mb-6, matching the real legend row exactly -- was mb-3
+            with no responsive step, a real every-load layout shift right at
+            this row (2026-09-28 audit, same drift found on días insalubres'
+            own skeleton). */}
+        <div className="mb-4 flex items-center justify-end gap-4 md:mb-6">
           <SkeletonBlock className="h-3 w-20" />
           <SkeletonBlock className="h-3 w-28" />
         </div>

@@ -15,7 +15,11 @@ export default function DiasInsalubresSkeleton() {
       </div>
 
       <div className="px-5 pb-6 pt-5 md:pt-6">
-        <div className="mb-3 flex items-center justify-between">
+        {/* mb-4 md:mb-6, matching the real legend row exactly -- was mb-3
+            with no responsive step (predates that row's own 2026-09-22
+            mobile-easing pass), a real, small, every-load layout shift right
+            at this row once the real content swapped in (2026-09-28 audit). */}
+        <div className="mb-4 flex items-center justify-between md:mb-6">
           <SkeletonBlock className="h-3 w-20" />
           <div className="flex items-center gap-4">
             <SkeletonBlock className="h-3 w-20" />

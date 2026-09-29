@@ -1,8 +1,8 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
-// Mirrors ChartCard's shell + PromedioAnualChart's layout (header, bar area,
-// falta-de-información pills, info-tabs row) so the page doesn't jump around
-// once the real data streams in behind this Suspense fallback.
+// Mirrors ChartCard's shell + PromedioAnualChart's layout (header, legend
+// row, bar area, info-tabs row) so the page doesn't jump around once the
+// real data streams in behind this Suspense fallback.
 export default function PromedioAnualSkeleton() {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
@@ -15,18 +15,28 @@ export default function PromedioAnualSkeleton() {
       </div>
 
       <div className="px-5 pb-6 pt-5 md:pt-6">
-        <SkeletonBlock className="mb-3 h-3 w-24" />
+        {/* Matches the real legend row's own shape (axis label left, two
+            swatches right, mb-4 md:mb-6) -- this was still just a single
+            bare block (the pre-legend placeholder) from before the chart
+            got a real legend row (2026-09-28 audit: never updated when that
+            row was added earlier the same day). */}
+        <div className="mb-4 flex items-center justify-between md:mb-6">
+          <SkeletonBlock className="h-3 w-20" />
+          <div className="flex items-center gap-4">
+            <SkeletonBlock className="h-3 w-24" />
+            <SkeletonBlock className="h-3 w-24" />
+          </div>
+        </div>
         {/* Matches BarsChart's CHART_HEIGHT_MOBILE/DESKTOP (320/460,
             2026-09-28 -- was a flat 380px at every breakpoint until this
             chart got the same responsive height días insalubres' own chart
             already had) -- a taller/shorter skeleton than the real chart is
             exactly the layout-jump this component exists to prevent. */}
         <SkeletonBlock className="h-[320px] w-full rounded-lg md:h-[460px]" />
-        <div className="mt-5 flex flex-wrap gap-2">
-          <SkeletonBlock className="h-6 w-24 rounded-full" />
-          <SkeletonBlock className="h-6 w-20 rounded-full" />
-          <SkeletonBlock className="h-6 w-28 rounded-full" />
-        </div>
+        {/* No falta-de-información pill placeholders -- that section is
+            hidden in the real chart (SHOW_FALTA_DE_INFORMACION = false,
+            2026-09-28), so reserving space for it here would itself be the
+            layout-jump this component exists to prevent. */}
       </div>
 
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
