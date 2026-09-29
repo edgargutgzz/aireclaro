@@ -88,9 +88,13 @@ const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
 // the CVD check still fails for this pair: a fixed stacking position
 // (insalubre always at the base), a persistent legend, and the exact
 // counts always in plain text (header stat + tooltip), never color alone.
+// Labels read "sobre/dentro de la norma" now (2026-09-28, matching the
+// title's own "sobre la norma" framing and chart 3's identical wording) --
+// the keys stay insalubres/saludables since they're just object keys tied
+// to the underlying day classification, not user-facing text.
 const LEGEND = {
-  insalubres: { label: "Insalubres", color: COLOR_INSALUBRE },
-  saludables: { label: "Saludables", color: COLOR_SALUDABLE },
+  insalubres: { label: "Sobre la norma", color: COLOR_INSALUBRE },
+  saludables: { label: "Dentro de la norma", color: COLOR_SALUDABLE },
 };
 
 function infoTabs(pollutant: Pollutant): InfoTab[] {
