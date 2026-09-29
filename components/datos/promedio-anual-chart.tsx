@@ -208,6 +208,21 @@ function tabs(pollutant: Pollutant, nomAnual: number): InfoTab[] {
   ];
 }
 
+// Prefers the latest COMPLETE year as the default/fallback selection, not
+// simply the latest year on record -- días insalubres/cobertura always have
+// a meaningful current-year view, but this chart shows no bars at all for
+// an in-progress year (NOM-025 only defines a full-calendar-year figure;
+// see isCompleteYear below), so defaulting to "whatever year exists" would
+// load straight into that empty placeholder every time (2026-09-28
+// request: "we still don't have enough data for 2026"). Falls back to the
+// latest year overall only if every year on record is somehow incomplete
+// (a brand-new deploy with no closed year yet).
+function latestCompleteOrLatestYear(years: number[]): number | null {
+  const currentYear = new Date().getFullYear();
+  const complete = years.filter((y) => y < currentYear);
+  return complete[complete.length - 1] ?? years[years.length - 1] ?? null;
+}
+
 interface StationBar {
   sensorId: string;
   nombre: string;
@@ -681,12 +696,12 @@ export default function PromedioAnualChart({
     [trimestresPollutant],
   );
   const [selectedYear, setSelectedYear] = useState<number | null>(
-    years[years.length - 1] ?? null,
+    latestCompleteOrLatestYear(years),
   );
   const year =
     selectedYear !== null && years.includes(selectedYear)
       ? selectedYear
-      : years[years.length - 1] ?? null;
+      : latestCompleteOrLatestYear(years);
 
   // NOM-025-SSA1-2021's own "valor anual" is only ever a full calendar year
   // (§3.11: "concentración... calculada en un año calendario") -- it has no
