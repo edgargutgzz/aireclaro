@@ -7,8 +7,8 @@ import Footer from "@/components/footer/footer";
 export default function MainContent({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
-  // No footer on the map or on /datos.
-  const hideFooter = pathname === "/" || pathname === "/datos";
+  // No footer on the map.
+  const hideFooter = pathname === "/";
 
   useLayoutEffect(() => {
     ref.current?.scrollTo(0, 0);
@@ -17,7 +17,7 @@ export default function MainContent({ children }: { children: React.ReactNode })
   return (
     <main ref={ref} className="w-full flex-grow overflow-y-auto bg-gray-50">
       {children}
-      {/* Same footer as observatoriodelaire.com, everywhere except the map and /datos */}
+      {/* Same footer as observatoriodelaire.com, everywhere except the map */}
       {!hideFooter && (
         <div className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
           <Footer />
