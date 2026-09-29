@@ -786,8 +786,16 @@ export default function PromedioAnualChart({
           `Sin datos suficientes de ${POLLUTANT_LABEL[pollutant]} todavía`
         ) : (
           <>
-            <span>{sobreLimite}</span>{" "}
-            {sobreLimite === 1 ? "estación" : "estaciones"} sobre el límite
+            {/* "de {bars.length}", not "de 15" -- the other stations
+                aren't "sin datos" the way días insalubres' calendar cells
+                can mean; they're excluded from `bars` for lacking a valid
+                annual figure at all (>=3/4 trimesters), which is a
+                different fact than "within the limit." Denominating
+                against all 15 would silently claim those excluded
+                stations comply, which the data doesn't actually say
+                (2026-09-28 feedback/decision). */}
+            <span>{sobreLimite}</span> de {bars.length}{" "}
+            {bars.length === 1 ? "estación" : "estaciones"} sobre el límite
             anual de {POLLUTANT_LABEL[pollutant]} en {year}
           </>
         )
