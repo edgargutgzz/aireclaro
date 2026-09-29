@@ -431,15 +431,19 @@ function TooltipCard({
       <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
         {bar.nombre}
       </span>
-      <div className="flex items-baseline gap-1.5">
-        <span className="text-2xl font-bold leading-none" style={{ color }}>
-          {Math.round(bar.promedio)}
-        </span>
-        <span className="text-sm font-medium text-gray-400">µg/m³</span>
+      {/* Number + its own caption in one tight flex-col (gap-0.5), same
+          coupling as días insalubres' number+label pairs -- previously a
+          loose sibling at the outer gap-2, which read as a new line rather
+          than a caption for the number above it (2026-09-28 feedback). */}
+      <div className="flex flex-col gap-0.5">
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-2xl font-bold leading-none" style={{ color }}>
+            {Math.round(bar.promedio)}
+          </span>
+          <span className="text-sm font-medium text-gray-400">µg/m³</span>
+        </div>
+        <span className="text-xs text-gray-500">Promedio anual {year}</span>
       </div>
-      <span className="text-xs text-gray-500">
-        Promedio anual {year}
-      </span>
       <div className="border-t border-gray-100 pt-2">
         <TrimestreBreakdown rows={bar.rows} />
       </div>
