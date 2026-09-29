@@ -369,7 +369,6 @@ function ReferenceLine({
 
 function TooltipCard({
   bar,
-  year,
   pollutant,
   nomAnual,
   totalWidth,
@@ -378,7 +377,6 @@ function TooltipCard({
   barTopY,
 }: {
   bar: StationBar;
-  year: number | null;
   pollutant: Pollutant;
   nomAnual: number;
   totalWidth: number;
@@ -429,7 +427,7 @@ function TooltipCard({
             {POLLUTANT_LABEL[pollutant]} µg/m³
           </span>
         </div>
-        <span className="text-xs text-gray-500">Promedio anual ({year})</span>
+        <span className="text-xs text-gray-500">Promedio anual</span>
       </div>
       <div className="border-t border-gray-100 pt-2">
         <TrimestreBreakdown rows={bar.rows} />
@@ -440,7 +438,6 @@ function TooltipCard({
 
 function BarsChart({
   bars,
-  year,
   pollutant,
   nomAnual,
   omsAnual,
@@ -448,7 +445,6 @@ function BarsChart({
   chartHeight,
 }: {
   bars: StationBar[];
-  year: number | null;
   pollutant: Pollutant;
   nomAnual: number;
   omsAnual: number;
@@ -625,7 +621,6 @@ function BarsChart({
       {hovered && hoveredIdx !== null && (
         <TooltipCard
           bar={hovered}
-          year={year}
           pollutant={pollutant}
           nomAnual={nomAnual}
           totalWidth={totalWidth}
@@ -922,7 +917,6 @@ export default function PromedioAnualChart({
             >
               <BarsChart
                 bars={bars}
-                year={year}
                 pollutant={pollutant}
                 nomAnual={nomAnual}
                 omsAnual={omsAnual}
