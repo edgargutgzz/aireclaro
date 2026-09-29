@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { editoriales } from "@/app/editoriales/data";
-
-const BASE = "https://aireclaro.com";
+import { SITE_URL as BASE } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

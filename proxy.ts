@@ -1,9 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-// The map used to be the homepage, and the outside world still points at `/`:
-// partner sites embed https://www.aireclaro.com in an iframe (e.g.
-// sanpedroparques.mx/calidad-del-aire), and every shared map link is
-// `/?sensor=…` / `?src=…` / `?hide=…`. Both keep landing on the map.
+// The site lives at www.observatoriodelaire.com. aireclaro.com is the old
+// domain, still attached to this project only to send people over: every path
+// carries across as-is, except the bare domain, which lands on the map
+// (that's what people know aireclaro.com for). That includes partner iframes
+// of https://www.aireclaro.com (e.g. sanpedroparques.mx/calidad-del-aire),
+// which now render www.observatoriodelaire.com/mapa.
+const CANONICAL_ORIGIN = "https://www.observatoriodelaire.com";
+const LEGACY_HOSTS = new Set(["aireclaro.com", "www.aireclaro.com"]);
+
+// On the canonical host, `/` is the homepage, but two kinds of request for it
+// still mean the map: shared map links (`/?sensor=…` / `?src=…` / `?hide=…`)
+// and iframe embeds of the bare domain.
 const MAP_PARAMS = ["sensor", "src", "hide"];
 
 // Fallback for browsers that don't send Sec-Fetch-Dest (Safari < 16.4):
@@ -24,7 +32,15 @@ function isEmbedded(req: NextRequest) {
 }
 
 export function proxy(req: NextRequest) {
-  const { searchParams } = req.nextUrl;
+  const { pathname, search, searchParams } = req.nextUrl;
+  const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
+
+  if (LEGACY_HOSTS.has(host)) {
+    const path = pathname === "/" ? "/mapa" : pathname;
+    return NextResponse.redirect(`${CANONICAL_ORIGIN}${path}${search}`, 308);
+  }
+
+  if (pathname !== "/") return NextResponse.next();
   const hasMapState = MAP_PARAMS.some((p) => searchParams.has(p));
   if (!hasMapState && !isEmbedded(req)) return NextResponse.next();
 
@@ -33,4 +49,6 @@ export function proxy(req: NextRequest) {
   return NextResponse.redirect(url, 307);
 }
 
-export const config = { matcher: "/" };
+// Every path (the legacy domain redirects wholesale) except Next's build
+// assets, which are only ever requested by a page already on this host.
+export const config = { matcher: "/((?!_next/static|_next/image).*)" };

@@ -5,11 +5,12 @@ import Navbar from "@/components/navbar/navbar";
 import MainContent from "@/components/main-content";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SITE_URL } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin", "latin-ext"], display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://aireclaro.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Aire Claro — Calidad del Aire en Monterrey",
     template: "%s | Aire Claro",
@@ -38,12 +39,12 @@ export const metadata: Metadata = {
     title: "Aire Claro — Calidad del Aire en Monterrey",
     description:
       "Monitorea en tiempo real la calidad del aire (PM2.5) en Monterrey y Zona Metropolitana. Datos de estaciones SIMA y sensores ciudadanos PurpleAir.",
-    url: "https://aireclaro.com",
+    url: "/",
     type: "website",
     locale: "es_MX",
     images: [
       {
-        url: "https://aireclaro.com/aireclaro-logo-fb.png",
+        url: "/aireclaro-logo-fb.png",
         width: 1200,
         height: 630,
         alt: "Aire Claro — Calidad del Aire en Monterrey",
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
       "Monitorea en tiempo real la calidad del aire (PM2.5) en Monterrey y Zona Metropolitana.",
     images: [
       {
-        url: "https://aireclaro.com/aireclaro-logo-fb.png",
+        url: "/aireclaro-logo-fb.png",
         alt: "Aire Claro — Calidad del Aire en Monterrey",
       },
     ],
@@ -68,8 +69,8 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Observatorio Ciudadano de la Calidad del Aire (OCCAMM)",
-  url: "https://aireclaro.com",
-  logo: "https://aireclaro.com/aireclaro-logo.png",
+  url: SITE_URL,
+  logo: `${SITE_URL}/aireclaro-logo.png`,
   description:
     "Organización de la sociedad civil dedicada a monitorear y mejorar la calidad del aire en Nuevo León.",
   address: {
@@ -84,7 +85,6 @@ const organizationSchema = {
     email: "contacto@observatoriodelaire.com",
     contactType: "customer support",
   },
-  sameAs: ["https://observatoriodelaire.com"],
 };
 
 export default function RootLayout({
