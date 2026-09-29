@@ -16,11 +16,12 @@ export default function PromedioAnualSkeleton() {
 
       <div className="px-5 pb-6 pt-5 md:pt-6">
         <SkeletonBlock className="mb-3 h-3 w-24" />
-        {/* Matches BarsChart's fixed CHART_HEIGHT (380px, same at every
-            breakpoint since the Recharts -> hand-rolled SVG rebuild) -- a
-            taller/shorter skeleton than the real chart is exactly the
-            layout-jump this component exists to prevent. */}
-        <SkeletonBlock className="h-[380px] w-full rounded-lg" />
+        {/* Matches BarsChart's CHART_HEIGHT_MOBILE/DESKTOP (320/460,
+            2026-09-28 -- was a flat 380px at every breakpoint until this
+            chart got the same responsive height días insalubres' own chart
+            already had) -- a taller/shorter skeleton than the real chart is
+            exactly the layout-jump this component exists to prevent. */}
+        <SkeletonBlock className="h-[320px] w-full rounded-lg md:h-[460px]" />
         <div className="mt-5 flex flex-wrap gap-2">
           <SkeletonBlock className="h-6 w-24 rounded-full" />
           <SkeletonBlock className="h-6 w-20 rounded-full" />

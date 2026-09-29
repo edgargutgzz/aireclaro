@@ -336,7 +336,15 @@ function InfoPill({ nombre, rows }: { nombre: string; rows: TrimestreRow[] }) {
 // separating instead), solid (never dashed) recessive gridlines, dashed
 // lines reserved for the two threshold references.
 
-const CHART_HEIGHT = 380;
+// Días insalubres' own chart is 460px desktop / 320px mobile (added
+// 2026-09-22 for that chart specifically); this chart never got that same
+// pass and stayed at a flat 380 from before the responsive split existed
+// anywhere on /datos -- its bars read shorter than días insalubres' own
+// bars as a result, not from any width/gutter difference (2026-09-28
+// feedback: "it's about the height of the chart compared to chart 1").
+// Matching those exact two values now, same breakpoint.
+const CHART_HEIGHT_DESKTOP = 460;
+const CHART_HEIGHT_MOBILE = 320;
 const PAD_TOP = 32; // headroom above the tallest bar + top reference badge
 const PAD_BOTTOM = 28; // station name labels
 const PAD_LEFT = 32; // y-axis tick labels
@@ -423,6 +431,7 @@ function TooltipCard({
   year,
   nomAnual,
   totalWidth,
+  chartHeight,
   barCenterX,
   barTopY,
 }: {
@@ -430,6 +439,7 @@ function TooltipCard({
   year: number | null;
   nomAnual: number;
   totalWidth: number;
+  chartHeight: number;
   barCenterX: number;
   barTopY: number;
 }) {
@@ -444,7 +454,7 @@ function TooltipCard({
     barCenterX,
     barTopY,
     totalWidth,
-    CHART_HEIGHT,
+    chartHeight,
     TOOLTIP_WIDTH,
     TOOLTIP_HEIGHT,
     10,
@@ -486,6 +496,7 @@ function BarsChart({
   nomAnual,
   omsAnual,
   stationColWidth,
+  chartHeight,
 }: {
   bars: StationBar[];
   year: number | null;
@@ -493,6 +504,7 @@ function BarsChart({
   nomAnual: number;
   omsAnual: number;
   stationColWidth: number;
+  chartHeight: number;
 }) {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   useDismissTooltip(hoveredIdx !== null, () => setHoveredIdx(null));
@@ -503,7 +515,7 @@ function BarsChart({
   // boundary -- días insalubres' own "last bar crowds the card edge" fix,
   // missing here until 2026-09-28.
   const totalWidth = PAD_LEFT + stationColWidth * bars.length + PAD_RIGHT;
-  const plotHeight = CHART_HEIGHT - PAD_TOP - PAD_BOTTOM;
+  const plotHeight = chartHeight - PAD_TOP - PAD_BOTTOM;
   const plotRight = totalWidth - PAD_RIGHT;
 
   const rawMax = Math.max(
@@ -535,11 +547,11 @@ function BarsChart({
   return (
     <div
       className="relative"
-      style={{ width: totalWidth, height: CHART_HEIGHT }}
+      style={{ width: totalWidth, height: chartHeight }}
     >
       <svg
         width={totalWidth}
-        height={CHART_HEIGHT}
+        height={chartHeight}
         role="img"
         aria-label={`Promedio anual de ${POLLUTANT_LABEL[pollutant]} por estación`}
       >
@@ -599,7 +611,7 @@ function BarsChart({
               />
               <text
                 x={bandX(i) + stationColWidth / 2}
-                y={CHART_HEIGHT - PAD_BOTTOM + 16}
+                y={chartHeight - PAD_BOTTOM + 16}
                 textAnchor="middle"
                 fontSize={11}
                 fontWeight={500}
@@ -662,6 +674,7 @@ function BarsChart({
           year={year}
           nomAnual={nomAnual}
           totalWidth={totalWidth}
+          chartHeight={chartHeight}
           barCenterX={bandX(hoveredIdx) + stationColWidth / 2}
           barTopY={valueToY(hovered.promedio)}
         />
@@ -809,6 +822,19 @@ export default function PromedioAnualChart({
     return () => ro.disconnect();
   }, [measureNode, bars.length]);
 
+  // Shorter plot on mobile -- same values/breakpoint as días insalubres'
+  // own chartHeight (matches Tailwind's md: breakpoint so this switches at
+  // the same width every other responsive rule on the page does).
+  const [chartHeight, setChartHeight] = useState(CHART_HEIGHT_DESKTOP);
+  useEffect(() => {
+    const mql = window.matchMedia("(min-width: 768px)");
+    const update = () =>
+      setChartHeight(mql.matches ? CHART_HEIGHT_DESKTOP : CHART_HEIGHT_MOBILE);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
   return (
     <ChartCard
       title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
@@ -873,7 +899,7 @@ export default function PromedioAnualChart({
           // year is actually over.
           <div
             className="flex items-center justify-center rounded-lg bg-gray-50 text-center text-sm text-gray-400"
-            style={{ height: CHART_HEIGHT }}
+            style={{ height: chartHeight }}
           >
             El promedio anual de {year} estará disponible cuando termine el año.
           </div>
@@ -919,13 +945,14 @@ export default function PromedioAnualChart({
                     nomAnual={nomAnual}
                     omsAnual={omsAnual}
                     stationColWidth={stationColWidth}
+                    chartHeight={chartHeight}
                   />
                 </HorizontalScrollFade>
               </div>
             ) : (
               <div
                 className="flex items-center justify-center rounded-lg bg-gray-50 text-sm text-gray-400"
-                style={{ height: CHART_HEIGHT }}
+                style={{ height: chartHeight }}
               >
                 Sin datos suficientes todavía
               </div>
