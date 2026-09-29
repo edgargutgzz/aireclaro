@@ -445,6 +445,25 @@ function TooltipCard({
   );
 }
 
+// Truncates the station-name label to whatever fits its own column, not a
+// flat character count -- a year where every station qualifies (2025 PM10:
+// all 15) pushes stationColWidth down toward STATION_COL_WIDTH_MIN (130px),
+// and the longest real names ("Garcia: Valle de Lincoln," 24 chars)
+// visually crowd into neighboring columns there, even though those same
+// names fit without truncating once a spottier year gives each bar a wider
+// column (2026-09-28 feedback: "I don't know if there's a better way" for
+// the 15-bar case). AVG_CHAR_WIDTH is a rough estimate for this label's own
+// fontSize/weight (12px, 500) -- good enough for a truncation decision,
+// not pixel-exact; the untruncated name is always still in the tooltip,
+// aria-label, and sr-only list, so nothing is actually lost, just not
+// shown twice at the axis.
+const AVG_CHAR_WIDTH = 7; // px
+function truncateStationLabel(name: string, columnWidth: number): string {
+  const maxChars = Math.floor(columnWidth / AVG_CHAR_WIDTH);
+  if (name.length <= maxChars) return name;
+  return `${name.slice(0, Math.max(1, maxChars - 1))}…`;
+}
+
 function BarsChart({
   bars,
   pollutant,
@@ -564,10 +583,10 @@ function BarsChart({
                 style={{ transition: "fill-opacity 120ms ease" }}
               />
               {/* fontSize 12, matching días insalubres' own month labels --
-                  was 11 with no stated reason (2026-09-28 audit); station
-                  columns never shrink below STATION_COL_WIDTH_MIN=130px, so
-                  the extra pixel doesn't meaningfully raise overflow risk
-                  even for the longest names ("Garcia: Valle de Lincoln"). */}
+                  was 11 with no stated reason (2026-09-28 audit). Truncated
+                  to fit stationColWidth (see truncateStationLabel) -- the
+                  full name is still in the tooltip, aria-label, and
+                  sr-only list below. */}
               <text
                 x={bandX(i) + stationColWidth / 2}
                 y={chartHeight - PAD_BOTTOM + 16}
@@ -576,7 +595,7 @@ function BarsChart({
                 fontWeight={500}
                 fill="rgb(75,85,99)"
               >
-                {b.nombre}
+                {truncateStationLabel(b.nombre, stationColWidth)}
               </text>
               {/* The hit target: the whole band, taller than the mark
                   itself, per the skill's "hit target bigger than the mark." */}
