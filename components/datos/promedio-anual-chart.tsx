@@ -482,6 +482,17 @@ function BarsChart({
     PAD_TOP + plotHeight - (v / niceMax) * plotHeight;
   const bandX = (i: number) => PAD_LEFT + i * stationColWidth;
 
+  // Hit target sized to the bar plus a fixed comfortable margin, not the
+  // full column -- stationColWidth can stretch well past the bar's own
+  // 60px to fill the card on a spotty year (see STATION_COL_WIDTH_MAX), and
+  // a hit target spanning the whole column meant hovering ANYWHERE between
+  // two bars always landed on one or the other, with no neutral gap
+  // (2026-09-28 feedback: "I'm always selecting one of the two"). Capped at
+  // stationColWidth so it never exceeds the column itself when columns are
+  // narrow (many bars, or STATION_COL_WIDTH_MIN).
+  const HIT_TARGET_PAD = 20; // px, each side
+  const hitWidth = Math.min(stationColWidth, BAR_WIDTH + HIT_TARGET_PAD * 2);
+
   const hovered = hoveredIdx !== null ? bars[hoveredIdx] : null;
 
   const clearHover = (i: number) =>
@@ -567,12 +578,14 @@ function BarsChart({
               >
                 {b.nombre}
               </text>
-              {/* The hit target: the whole band, taller than the mark
-                  itself, per the skill's "hit target bigger than the mark." */}
+              {/* The hit target: bar-width + a fixed margin (see hitWidth
+                  above), taller than the mark itself, per the skill's "hit
+                  target bigger than the mark" -- bounded, not the whole
+                  column. */}
               <rect
-                x={bandX(i)}
+                x={bandX(i) + (stationColWidth - hitWidth) / 2}
                 y={PAD_TOP}
-                width={stationColWidth}
+                width={hitWidth}
                 height={plotHeight}
                 fill="transparent"
                 tabIndex={0}
