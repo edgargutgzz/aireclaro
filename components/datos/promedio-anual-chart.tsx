@@ -75,12 +75,12 @@ const STATION_COL_WIDTH_MIN = 130;
 const STATION_COL_WIDTH_MAX = 300;
 
 // A function of pollutant now (2026-09-28: was a flat constant array,
-// PM2.5-only) -- "fuente" and "salud" only needed pluralizing since they
-// were already pollutant-general in spirit, but "norma" genuinely differs:
-// PM10's annual limit isn't a single number, it phases in (see
-// getLimitAnualPM10), so its own sentence has to say that explicitly rather
-// than plugging a number into the same PM2.5 template.
-function tabs(pollutant: Pollutant, nomAnual: number): InfoTab[] {
+// PM2.5-only) -- "fuente" and "salud" only needed pluralizing, already
+// pollutant-general in spirit. Metodología itself no longer states the
+// actual limit value (that sentence was dropped 2026-09-28 -- the chart's
+// own dashed reference line already shows it), so it no longer branches
+// per pollutant either.
+function tabs(pollutant: Pollutant): InfoTab[] {
   return [
     {
       id: "fuente",
@@ -114,18 +114,11 @@ function tabs(pollutant: Pollutant, nomAnual: number): InfoTab[] {
       icon: BookOpen,
       body: (
         <>
-          La estación se considera con datos suficientes si al menos 3 de
-          los 4 trimestres tienen cobertura; un trimestre es válido cuando
-          la estación reportó mediciones en al menos el 75% de sus días.{" "}
-          {pollutant === "pm25" ? (
-            <>El límite anual de PM2.5 es de {nomAnual} µg/m³.</>
-          ) : (
-            <>
-              El límite anual de PM10 bajó de 28 µg/m³ en 2025 a 20 µg/m³ en
-              2026.
-            </>
-          )}{" "}
-          Todo lo anterior, con base en la Norma Oficial Mexicana:{" "}
+          La estación se considera con datos suficientes para presentar su
+          promedio anual si al menos tres de los cuatro trimestres son
+          válidos; un trimestre es válido cuando la estación reportó
+          mediciones en al menos el 75% de sus días. Todo lo anterior, con
+          base en la Norma Oficial Mexicana:{" "}
           <a
             href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
             target="_blank"
@@ -941,7 +934,7 @@ export default function PromedioAnualChart({
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">
-        <InfoTabs tabs={tabs(pollutant, nomAnual)} />
+        <InfoTabs tabs={tabs(pollutant)} />
       </div>
     </ChartCard>
   );
