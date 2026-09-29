@@ -273,6 +273,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
 function InfoPill({ nombre, rows }: { nombre: string; rows: TrimestreRow[] }) {
   const [open, setOpen] = useState(false);
   useDismissTooltip(open, () => setOpen(false));
+  const validCount = rows.filter((r) => r.valido).length;
 
   return (
     <span
@@ -282,11 +283,18 @@ function InfoPill({ nombre, rows }: { nombre: string; rows: TrimestreRow[] }) {
       onFocus={() => setOpen(true)}
       onBlur={() => setOpen(false)}
     >
+      {/* The X/4 count sits on the pill itself now, not just inside the
+          hover tooltip -- with a whole year of stations sometimes mostly
+          falling into this row (2025 PM2.5: 11 of 15), the headline "how
+          close did this station get" fact shouldn't require hovering each
+          one individually to learn (2026-09-28 feedback). The tooltip
+          still carries the full per-trimester breakdown for anyone who
+          wants it. */}
       <span
         tabIndex={0}
         className="cursor-help rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-500"
       >
-        {nombre}
+        {nombre} · {validCount}/4
       </span>
       {open && (
         <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 grid w-[17rem] -translate-x-1/2 gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 text-gray-800 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
@@ -739,7 +747,15 @@ export default function PromedioAnualChart({
     }
 
     bars.sort((a, b) => b.promedio - a.promedio);
-    sinDatos.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+    // Closest-to-qualifying first (most valid trimesters), alphabetical as
+    // the tiebreak -- surfaces the stations nearest the 3/4 bar before the
+    // ones with essentially no data at all (2026-09-28 feedback).
+    const validCount = (est: SinDatosEntry) =>
+      est.rows.filter((r) => r.valido).length;
+    sinDatos.sort(
+      (a, b) =>
+        validCount(b) - validCount(a) || a.nombre.localeCompare(b.nombre, "es"),
+    );
 
     return { bars, sinDatos };
   }, [estaciones, trimestresPollutant, year, isCompleteYear]);
