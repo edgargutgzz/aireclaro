@@ -46,8 +46,10 @@ pnpm exec tsc --noEmit   # the type gate
 ```
 
 **`pnpm lint` is broken in this repo** — the gate is `tsc --noEmit` then
-`pnpm build`. No test suite. A clean build logs no warnings (the old
-cookies-driven `DYNAMIC_SERVER_USAGE` warning is gone since 2026-09-29).
+`pnpm build`. No test suite. A clean build logs no app warnings, only
+dependency noise (Node's `punycode` deprecation, a stale
+`baseline-browser-mapping` notice). The old cookies-driven
+`DYNAMIC_SERVER_USAGE` warning is gone since 2026-09-29.
 
 **`node_modules` is a symlink to `node_modules.nosync`** so iCloud (the repo
 lives in `~/Documents`) doesn't evict files and break the build. Never
