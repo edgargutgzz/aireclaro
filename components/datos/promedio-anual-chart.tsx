@@ -609,11 +609,16 @@ function BarsChart({
                 fillOpacity={isHovered ? 0.85 : barOpacity}
                 style={{ transition: "fill-opacity 120ms ease" }}
               />
+              {/* fontSize 12, matching días insalubres' own month labels --
+                  was 11 with no stated reason (2026-09-28 audit); station
+                  columns never shrink below STATION_COL_WIDTH_MIN=130px, so
+                  the extra pixel doesn't meaningfully raise overflow risk
+                  even for the longest names ("Garcia: Valle de Lincoln"). */}
               <text
                 x={bandX(i) + stationColWidth / 2}
                 y={chartHeight - PAD_BOTTOM + 16}
                 textAnchor="middle"
-                fontSize={11}
+                fontSize={12}
                 fontWeight={500}
                 fill="rgb(75,85,99)"
               >
@@ -834,6 +839,19 @@ export default function PromedioAnualChart({
     mql.addEventListener("change", update);
     return () => mql.removeEventListener("change", update);
   }, []);
+
+  // Same guard cobertura already has for a genuinely empty table (a brand-
+  // new deploy, or local dev against an empty database) -- without it,
+  // `year` is null here and every "en {year}" sentence below would print
+  // the literal word "null" (2026-09-28 audit: not a live issue today,
+  // since real data exists).
+  if (years.length === 0) {
+    return (
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 py-12 text-center text-sm text-gray-500">
+        Sin datos de promedio anual por el momento.
+      </div>
+    );
+  }
 
   return (
     <ChartCard
