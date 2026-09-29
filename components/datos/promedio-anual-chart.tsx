@@ -300,7 +300,13 @@ const PAD_RIGHT = 8;
 const BAR_WIDTH = 60;
 const BAR_RADIUS = 4;
 const TOOLTIP_WIDTH = 272; // px, matches the tooltip card's own w-[17rem]
-const TOOLTIP_HEIGHT = 260; // px, generous estimate (header/number/label + the 4-row trimester breakdown)
+// Generous estimate (header/number/pollutant+limit captions/4-row trimester
+// breakdown). Was 260 -- bumped for the pollutant name + explicit "Sobre/
+// Dentro del límite" line added under the number (2026-09-28): removing the
+// per-trimester µg/m³ figures earlier the same day didn't free up space to
+// offset this, since those sat inline with the day count, not on their own
+// line.
+const TOOLTIP_HEIGHT = 280;
 
 // A dashed threshold line with a measured-width white badge floating just
 // above it -- getBBox() on the actual rendered <text> after mount, not a
@@ -372,6 +378,7 @@ function ReferenceLine({
 function TooltipCard({
   bar,
   year,
+  pollutant,
   nomAnual,
   totalWidth,
   chartHeight,
@@ -380,6 +387,7 @@ function TooltipCard({
 }: {
   bar: StationBar;
   year: number | null;
+  pollutant: Pollutant;
   nomAnual: number;
   totalWidth: number;
   chartHeight: number;
@@ -423,7 +431,22 @@ function TooltipCard({
           </span>
           <span className="text-sm font-medium text-gray-400">µg/m³</span>
         </div>
-        <span className="text-xs text-gray-500">Promedio anual {year}</span>
+        {/* Pollutant folded into this same caption (2026-09-28 feedback) --
+            this data gets forwarded as a standalone screenshot (a board
+            deck, not necessarily the live page with the toggle visible),
+            so an isolated tooltip capture needs to say which pollutant on
+            its own. */}
+        <span className="text-xs text-gray-500">
+          Promedio anual de {POLLUTANT_LABEL[pollutant]} {year}
+        </span>
+        {/* Explicit text, not just the number's own color -- "never color
+            alone" is already the rule everywhere else on /datos (días
+            insalubres' legend, its persistent counts in plain text); this
+            tooltip was the one place color carried the over/under-limit
+            meaning by itself (2026-09-28 feedback). */}
+        <span className="text-xs font-medium" style={{ color }}>
+          {sobreLimite ? "Sobre el límite" : "Dentro del límite"}
+        </span>
       </div>
       <div className="border-t border-gray-100 pt-2">
         <TrimestreBreakdown rows={bar.rows} />
@@ -620,6 +643,7 @@ function BarsChart({
         <TooltipCard
           bar={hovered}
           year={year}
+          pollutant={pollutant}
           nomAnual={nomAnual}
           totalWidth={totalWidth}
           chartHeight={chartHeight}
