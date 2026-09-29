@@ -42,11 +42,6 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm10: "PM10",
 };
 
-// Hidden pending a rework of how excluded stations are presented
-// (2026-09-28 request) -- sinDatos itself is still computed either way, so
-// flipping this back to true needs no other change.
-const SHOW_FALTA_DE_INFORMACION = false;
-
 // NOM-025-SSA1-2021's annual limits and the WHO annual guidelines.
 // PM2.5's own annual limit is flat at 10 µg/m³ across every "Año 1/3/5"
 // phase-in bracket (Tabla 1), so it's a plain constant here same as before.
@@ -230,15 +225,7 @@ interface StationBar {
   rows: TrimestreRow[];
 }
 
-interface SinDatosEntry {
-  sensorId: string;
-  nombre: string;
-  rows: TrimestreRow[];
-}
-
-// The T1-T4 breakdown -- shared by the bar's own tooltip and the "falta de
-// información" pills' tooltip, so a rim/spacing tweak lands on both instead
-// of drifting between two hand-copies.
+// The T1-T4 breakdown shown in the bar's own hover tooltip.
 function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
   const rowsByT = new Map(rows.map((r) => [r.trimestre, r]));
   const validCount = rows.filter((r) => r.valido).length;
@@ -282,49 +269,6 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
         );
       })}
     </div>
-  );
-}
-
-// A "falta de información" pill with a hover/focus tooltip breaking down why
-// -- was shadcn's Tooltip (Radix), replaced when shadcn was dropped
-// project-wide. Plain hover/focus state, same visual recipe. Opens above,
-// centered -- these pills sit low in the card with room above them, so no
-// edge-clamping needed the way the chart's own data-point tooltips do.
-function InfoPill({ nombre, rows }: { nombre: string; rows: TrimestreRow[] }) {
-  const [open, setOpen] = useState(false);
-  useDismissTooltip(open, () => setOpen(false));
-  const validCount = rows.filter((r) => r.valido).length;
-
-  return (
-    <span
-      className="relative inline-block"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={() => setOpen(false)}
-    >
-      {/* The X/4 count sits on the pill itself now, not just inside the
-          hover tooltip -- with a whole year of stations sometimes mostly
-          falling into this row (2025 PM2.5: 11 of 15), the headline "how
-          close did this station get" fact shouldn't require hovering each
-          one individually to learn (2026-09-28 feedback). The tooltip
-          still carries the full per-trimester breakdown for anyone who
-          wants it. */}
-      <span
-        tabIndex={0}
-        className="cursor-help rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-500"
-      >
-        {nombre} · {validCount}/4
-      </span>
-      {open && (
-        <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 grid w-[17rem] -translate-x-1/2 gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 text-gray-800 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]">
-          <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-            {nombre}
-          </span>
-          <TrimestreBreakdown rows={rows} />
-        </div>
-      )}
-    </span>
   );
 }
 
@@ -731,9 +675,9 @@ export default function PromedioAnualChart({
   // "annual" value (2026-09-28 feedback).
   const isCompleteYear = year !== null && year < new Date().getFullYear();
 
-  const { bars, sinDatos } = useMemo(() => {
+  const { bars, sinDatosCount } = useMemo(() => {
     // Nothing to compute for an in-progress year -- see isCompleteYear above.
-    if (!isCompleteYear) return { bars: [] as StationBar[], sinDatos: [] as SinDatosEntry[] };
+    if (!isCompleteYear) return { bars: [] as StationBar[], sinDatosCount: 0 };
 
     const rowsByStation = new Map<string, TrimestreRow[]>();
     for (const t of trimestresPollutant) {
@@ -744,7 +688,11 @@ export default function PromedioAnualChart({
     }
 
     const bars: StationBar[] = [];
-    const sinDatos: SinDatosEntry[] = [];
+    // Just a count now -- the per-station "falta de información" pill list
+    // (name + hover breakdown) was simplified away (2026-09-28 request): a
+    // second subtitle line stating how many stations lack it replaces the
+    // detail those pills used to carry.
+    let sinDatosCount = 0;
     // NOM-025's own "datos suficientes" bar for a finished year -- not a
     // stricter 4/4.
     const MIN_TRIMESTRES_REQUERIDOS = 3;
@@ -754,7 +702,7 @@ export default function PromedioAnualChart({
       const validRows = rows.filter((r) => r.valido);
 
       if (validRows.length < MIN_TRIMESTRES_REQUERIDOS) {
-        sinDatos.push({ sensorId: est.sensorId, nombre: est.nombre, rows });
+        sinDatosCount += 1;
         continue;
       }
 
@@ -785,17 +733,8 @@ export default function PromedioAnualChart({
     }
 
     bars.sort((a, b) => b.promedio - a.promedio);
-    // Closest-to-qualifying first (most valid trimesters), alphabetical as
-    // the tiebreak -- surfaces the stations nearest the 3/4 bar before the
-    // ones with essentially no data at all (2026-09-28 feedback).
-    const validCount = (est: SinDatosEntry) =>
-      est.rows.filter((r) => r.valido).length;
-    sinDatos.sort(
-      (a, b) =>
-        validCount(b) - validCount(a) || a.nombre.localeCompare(b.nombre, "es"),
-    );
 
-    return { bars, sinDatos };
+    return { bars, sinDatosCount };
   }, [estaciones, trimestresPollutant, year, isCompleteYear]);
 
   const nomAnual =
@@ -869,19 +808,37 @@ export default function PromedioAnualChart({
         ) : bars.length === 0 ? (
           `Sin datos suficientes de ${POLLUTANT_LABEL[pollutant]} todavía`
         ) : (
-          <>
-            {/* "de {bars.length}", not "de 15" -- the other stations
-                aren't "sin datos" the way días insalubres' calendar cells
-                can mean; they're excluded from `bars` for lacking a valid
-                annual figure at all (>=3/4 trimesters), which is a
-                different fact than "within the limit." Denominating
-                against all 15 would silently claim those excluded
-                stations comply, which the data doesn't actually say
-                (2026-09-28 feedback/decision). */}
-            <span>{sobreLimite}</span> de {bars.length}{" "}
-            {bars.length === 1 ? "estación" : "estaciones"} sobre el límite
-            anual de {POLLUTANT_LABEL[pollutant]} en {year}
-          </>
+          // Same two-line subtitle shell días insalubres/cobertura use for
+          // their own secondary stat (md:flex md:items-center md:gap-3, a
+          // divider that only shows once both lines share a row, `contents`
+          // + `invisible` rather than unmounting so the header doesn't jump
+          // height switching between a pollutant/year with excluded
+          // stations and one without). Second line replaces the old
+          // per-station "falta de información" pill row (2026-09-28
+          // request: simplify to a plain count).
+          <div className="md:flex md:items-center md:gap-3">
+            <div>
+              {/* "de {bars.length}", not "de 15" -- the other stations
+                  aren't "sin datos" the way días insalubres' calendar cells
+                  can mean; they're excluded from `bars` for lacking a valid
+                  annual figure at all (>=3/4 trimesters), which is a
+                  different fact than "within the limit." Denominating
+                  against all 15 would silently claim those excluded
+                  stations comply, which the data doesn't actually say
+                  (2026-09-28 feedback/decision). */}
+              <span>{sobreLimite}</span> de {bars.length}{" "}
+              {bars.length === 1 ? "estación" : "estaciones"} sobre el límite
+              anual de {POLLUTANT_LABEL[pollutant]} en {year}
+            </div>
+            <div className={`contents ${sinDatosCount > 0 ? "" : "invisible"}`}>
+              <div className="hidden h-4 w-px bg-gray-200 md:block" />
+              <p className="mt-2 text-xs md:mt-0 md:text-sm">
+                <span>{sinDatosCount}</span>{" "}
+                {sinDatosCount === 1 ? "estación" : "estaciones"} sin datos
+                suficientes
+              </p>
+            </div>
+          </div>
         )
       }
       headerRight={
@@ -973,23 +930,6 @@ export default function PromedioAnualChart({
                 style={{ height: chartHeight }}
               >
                 Sin datos suficientes todavía
-              </div>
-            )}
-
-            {SHOW_FALTA_DE_INFORMACION && sinDatos.length > 0 && (
-              <div className="mt-5 grid gap-2">
-                <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
-                  Estaciones con falta de información
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {sinDatos.map((est) => (
-                    <InfoPill
-                      key={est.sensorId}
-                      nombre={est.nombre}
-                      rows={est.rows}
-                    />
-                  ))}
-                </div>
               </div>
             )}
           </>

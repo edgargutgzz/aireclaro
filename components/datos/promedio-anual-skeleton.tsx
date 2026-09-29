@@ -33,10 +33,10 @@ export default function PromedioAnualSkeleton() {
             already had) -- a taller/shorter skeleton than the real chart is
             exactly the layout-jump this component exists to prevent. */}
         <SkeletonBlock className="h-[320px] w-full rounded-lg md:h-[460px]" />
-        {/* No falta-de-información pill placeholders -- that section is
-            hidden in the real chart (SHOW_FALTA_DE_INFORMACION = false,
-            2026-09-28), so reserving space for it here would itself be the
-            layout-jump this component exists to prevent. */}
+        {/* No falta-de-información pill row placeholder -- that per-station
+            pill list was removed entirely (2026-09-28 request), replaced by
+            a plain count folded into the header subtitle above, which the
+            header's own SkeletonBlock already covers. */}
       </div>
 
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
