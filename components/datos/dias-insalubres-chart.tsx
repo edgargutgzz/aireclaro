@@ -171,7 +171,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           cómo nos afecta, puedes consultar la
           siguiente{" "}
           <a
-            href="https://www.observatoriodelaire.com/infografias/infografia_salud.pdf"
+            href="/infografias/infografia_salud.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"

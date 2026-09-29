@@ -1368,7 +1368,7 @@ export default function MapaSensors({
         <InfoDialog title="Red OCCAMM" onClose={() => setShowOccammInfo(false)}>
           <p className="text-sm leading-relaxed text-gray-600">
             Red de sensores del{" "}
-            <DialogLink href="https://observatoriodelaire.com">
+            <DialogLink href="/quienes-somos">
               Observatorio Ciudadano de la Calidad del Aire
             </DialogLink>
             , una organización de la sociedad civil dedicada a mejorar la

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import FeatureCard from "@/components/observatorio/feature-card";
+import LinkButton, { type LinkButtonProps } from "@/components/observatorio/link-button";
 import PageShell from "@/components/observatorio/page-shell";
-import Link from "next/link";
-import { SquareArrowOutUpRight, Youtube } from "lucide-react";
 
 // Ported from observatoriodelaire.com/proyectos: same copy, images and card
 // layout. The six hand-copied cards are one data list here, and the links are
-// styled directly instead of wrapping a <button> (invalid inside an <a>).
+// styled directly (LinkButton) instead of wrapping a <button>, invalid in an <a>.
 
 export const metadata: Metadata = {
   title: "Proyectos",
@@ -14,14 +13,12 @@ export const metadata: Metadata = {
     "Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en Nuevo León.",
 };
 
-type ProjectLink = { href: string; label: string; video?: boolean };
-
 type Project = {
   title: string;
   description: string;
   tag: string;
   image: string;
-  links: ProjectLink[];
+  links: LinkButtonProps[];
 };
 
 const PROJECTS: Project[] = [
@@ -40,7 +37,7 @@ const PROJECTS: Project[] = [
     tag: "Monitoreo Ambiental",
     image: "/proyectos/adopta-sensor.webp",
     links: [
-      { href: "https://www.observatoriodelaire.com/adopta-sensor", label: "Visitar" },
+      { href: "/adopta-sensor", label: "Visitar" },
     ],
   },
   {
@@ -82,27 +79,6 @@ const PROJECTS: Project[] = [
   },
 ];
 
-// The Observatory site's secondary button (gray-100 fill), built to the style
-// guide's secondary-button recipe and house focus ring.
-const buttonClass =
-  "flex items-center rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
-
-function ProjectButton({ href, label, video }: ProjectLink) {
-  const external = href.startsWith("http");
-  return (
-    <Link
-      href={href}
-      className={buttonClass}
-      {...(external && { target: "_blank", rel: "noopener noreferrer" })}
-    >
-      {video && <Youtube className="mr-2 h-4 w-4 text-red-500" aria-hidden />}
-      {label}
-      {!video && <SquareArrowOutUpRight className="ml-2 h-4 w-4" aria-hidden />}
-      {external && <span className="sr-only"> (abre en una nueva pestaña)</span>}
-    </Link>
-  );
-}
-
 export default function Proyectos() {
   return (
     <PageShell
@@ -125,7 +101,7 @@ export default function Proyectos() {
               {project.links.length > 0 && (
                 <div className="flex gap-2">
                   {project.links.map((link) => (
-                    <ProjectButton key={link.href} {...link} />
+                    <LinkButton key={link.href} {...link} />
                   ))}
                 </div>
               )}

@@ -1,24 +1,27 @@
 import Image from "next/image";
 
-// The Observatory's image-beside-text card (Proyectos, Quiénes somos): a square
-// image on the left half at md+, heading and body on the right, stacked on
-// mobile. `children` is an optional footer row under the body.
+// The Observatory's image-beside-text card (Proyectos, Quiénes somos, Adopta un
+// sensor): a square image on one half at md+ (left by default, `imageSide`
+// "right" swaps it), heading and body on the other; stacked image-first on
+// mobile either way. `children` is an optional footer row under the body.
 export default function FeatureCard({
   title,
   description,
   image,
   imageAlt,
+  imageSide = "left",
   children,
 }: {
   title: string;
   description: string;
   image: string;
   imageAlt: string;
+  imageSide?: "left" | "right";
   children?: React.ReactNode;
 }) {
   return (
     <article className="flex flex-col rounded-lg bg-white p-4 shadow-lg md:flex-row md:p-0">
-      <div className="md:w-1/2">
+      <div className={imageSide === "right" ? "md:order-last md:w-1/2" : "md:w-1/2"}>
         <Image
           src={image}
           alt={imageAlt}
