@@ -140,3 +140,87 @@ export async function computeDiasInsalubresMensual(
     pm10: aggregateByMonth(pm10Rows, getLimitForDatePM10),
   };
 }
+
+// Reads the small precomputed table the monthly cron writes
+// (computeDiasInsalubresMensual above, run there, not per page view) --
+// shared by the /datos page's server component and the share-card image
+// route (app/api/og/dias-insalubres) so neither can drift from the other's
+// numbers.
+export async function fetchDiasInsalubresMensual(
+  supabase: SupabaseClient,
+): Promise<Record<Pollutant, MonthData[]>> {
+  const { data, error } = await supabase
+    .from("sima_insalubres_mensual")
+    .select("ano, mes, parametro, dias_insalubres, dias_totales")
+    .order("ano", { ascending: true })
+    .order("mes", { ascending: true });
+
+  if (error) {
+    throw new Error(`Failed to load días insalubres: ${error.message}`);
+  }
+
+  const toMonthData = (parametro: "PM2.5" | "PM10"): MonthData[] =>
+    (data ?? [])
+      .filter((r) => r.parametro === parametro)
+      .map((r) => ({
+        ano: r.ano,
+        mesNumero: r.mes,
+        mes: MONTHS_ES[r.mes - 1],
+        diasInsalubres: r.dias_insalubres,
+        diasTotales: r.dias_totales,
+      }));
+
+  return {
+    pm25: toMonthData("PM2.5"),
+    pm10: toMonthData("PM10"),
+  };
+}
+
+export interface YearSummary {
+  total: number;
+  // How many of the year's 12 months are actually counted -- trailing
+  // months with no data (in progress / not yet happened) are dropped, same
+  // rule the bar chart itself uses, so a "same period" comparison against
+  // the prior year lines up with what the chart visibly shows.
+  monthsUsed: number;
+  lastMonthLabel: string;
+  // Year-over-year, same-period only: null when the prior year doesn't have
+  // every one of those same months, since there'd be nothing fair to
+  // compare (a partial year against a complete one always favors the
+  // partial one).
+  priorYearDelta: number | null;
+}
+
+export function summarizeYear(data: MonthData[], year: number): YearSummary {
+  const byMonth = new Map(
+    data.filter((d) => d.ano === year).map((d) => [d.mesNumero, d]),
+  );
+  const full: MonthData[] = Array.from({ length: 12 }, (_, i) => {
+    const mesNumero = i + 1;
+    return (
+      byMonth.get(mesNumero) ?? {
+        ano: year,
+        mesNumero,
+        mes: MONTHS_ES[i],
+        diasInsalubres: 0,
+        diasTotales: 0,
+      }
+    );
+  });
+  let lastIdx = full.length - 1;
+  while (lastIdx > 0 && full[lastIdx].diasTotales === 0) lastIdx--;
+  const trimmed = full.slice(0, lastIdx + 1);
+
+  const total = trimmed.reduce((sum, d) => sum + d.diasInsalubres, 0);
+  const monthsUsed = trimmed.length;
+
+  const priorRows = data.filter(
+    (d) => d.ano === year - 1 && d.mesNumero <= monthsUsed,
+  );
+  const priorYearDelta =
+    priorRows.length >= monthsUsed
+      ? total - priorRows.reduce((sum, d) => sum + d.diasInsalubres, 0)
+      : null;
+
+  return { total, monthsUsed, lastMonthLabel: MONTHS_ES[monthsUsed - 1], priorYearDelta };
+}

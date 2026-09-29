@@ -1,26 +1,16 @@
 import { ImageResponse } from "next/og";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
+import { loadGoogleFont } from "@/lib/og-font";
 
 // The unfurl card behind a shared ?sensor= link. Short-lived on purpose: it
 // carries a live reading, so a day-long CDN cache would show a stale number.
 const CACHE = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
 
-// Google Fonts' CSS2 endpoint, hit with no browser User-Agent, serves a
-// truetype URL — not the woff2 Satori can't parse. Subset to the glyphs this
-// card can actually print so the fetch stays tiny.
+// Subset to the glyphs this card can actually print so the font fetch stays
+// tiny (see lib/og-font.ts).
 const GLYPHS =
   "Aire Claro abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - aireclaro.com Actualizado Buena Aceptable Mala Muy Extremadamente Sin lectura reciente PM2.5 μg/m³ Zona Metropolitana de Monterrey Nuevo León";
-
-async function loadFont(weight: 400 | 600 | 700): Promise<ArrayBuffer> {
-  const url = `https://fonts.googleapis.com/css2?family=Inter:wght@${weight}&text=${encodeURIComponent(GLYPHS)}`;
-  const css = await (await fetch(url)).text();
-  const src = css.match(/src:\s*url\((.+?)\)\s*format\('(?:opentype|truetype)'\)/)?.[1];
-  if (!src) throw new Error(`OG font ${weight}: no ttf src in CSS`);
-  const res = await fetch(src);
-  if (!res.ok) throw new Error(`OG font ${weight}: ${res.status}`);
-  return res.arrayBuffer();
-}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -45,7 +35,11 @@ export async function GET(request: Request) {
     headers: { "cache-control": CACHE },
   };
   try {
-    const [f400, f600, f700] = await Promise.all([loadFont(400), loadFont(600), loadFont(700)]);
+    const [f400, f600, f700] = await Promise.all([
+      loadGoogleFont(400, GLYPHS),
+      loadGoogleFont(600, GLYPHS),
+      loadGoogleFont(700, GLYPHS),
+    ]);
     options.fonts = [
       { name: "Inter", data: f400, weight: 400, style: "normal" },
       { name: "Inter", data: f600, weight: 600, style: "normal" },

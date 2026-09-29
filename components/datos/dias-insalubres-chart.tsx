@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, ChevronRight, HeartPulse, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, ChevronRight, HeartPulse, Share2, ShieldCheck, Wind } from "lucide-react";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
-import type { MonthData, Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
@@ -627,22 +627,16 @@ export default function DiasInsalubresChart({
     return () => mql.removeEventListener("change", update);
   }, []);
 
-  const totalInsalubres = chartData.reduce((sum, d) => sum + d.insalubres, 0);
-
-  // Year-over-year, same-period only -- comparing this year's running total
-  // against LAST year's full-year total would be comparing 8 months against
-  // 12, always favoring whichever year is incomplete. Requires the prior
-  // year to have every one of those same months (not just some), or there's
-  // nothing fair to compare against and the line is skipped entirely.
-  const priorYearDelta = useMemo(() => {
-    if (year === null) return null;
-    const priorRows = activeData.filter(
-      (d) => d.ano === year - 1 && d.mesNumero <= chartData.length,
-    );
-    if (priorRows.length < chartData.length) return null;
-    const priorTotal = priorRows.reduce((sum, d) => sum + d.diasInsalubres, 0);
-    return totalInsalubres - priorTotal;
-  }, [activeData, year, chartData.length, totalInsalubres]);
+  // Same trimming/comparison rule as chartData above, factored out to
+  // lib/dias-insalubres-aggregate.ts so the share-card image route
+  // (app/api/og/dias-insalubres) computes the identical number instead of
+  // risking drift from a second hand-copied version of this logic.
+  const yearSummary = useMemo(
+    () => (year !== null ? summarizeYear(activeData, year) : null),
+    [activeData, year],
+  );
+  const totalInsalubres = yearSummary?.total ?? 0;
+  const priorYearDelta = yearSummary?.priorYearDelta ?? null;
   const hasPriorYearDelta = priorYearDelta !== null && year !== null;
 
   const tabs = infoTabs(pollutant);
@@ -740,6 +734,25 @@ export default function DiasInsalubresChart({
             </>
           )}
           <YearToggle years={years} year={year} onChange={setSelectedYear} />
+          {year !== null && (
+            <>
+              <div className="h-5 w-px bg-gray-200" />
+              {/* Icon button recipe (style guide) -- a same-origin <a
+                  download> triggers a save instead of a navigation, no
+                  client-side fetch/blob dance needed. Always the current
+                  year+pollutant headline total, independent of whether a
+                  specific month is drilled into below. */}
+              <a
+                href={`/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}`}
+                download={`aire-claro-dias-insalubres-${pollutant}-${year}.png`}
+                className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                aria-label="Descargar imagen para compartir"
+                title="Descargar imagen para compartir"
+              >
+                <Share2 className="h-4 w-4" />
+              </a>
+            </>
+          )}
         </>
       }
     >
