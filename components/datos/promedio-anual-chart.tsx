@@ -225,7 +225,13 @@ interface StationBar {
   rows: TrimestreRow[];
 }
 
-// The T1-T4 breakdown shown in the bar's own hover tooltip.
+// The T1-T4 breakdown shown in the bar's own hover tooltip -- pass/fail per
+// trimester only, no per-trimester µg/m³ figure (2026-09-28 request: the
+// annual bar isn't an average of these four numbers, it's a pooled mean
+// over every valid day across the year -- showing four µg/m³ values next
+// to it invited readers to mentally re-average them and wonder why that
+// didn't match the bar, so drop the number and keep only what actually
+// gates validity: pass/fail and the day count behind it).
 function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
   const rowsByT = new Map(rows.map((r) => [r.trimestre, r]));
   const validCount = rows.filter((r) => r.valido).length;
@@ -252,15 +258,8 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
               T{t} ({TRIMESTRE_MESES[t]})
             </span>
             {r ? (
-              <span className="flex items-baseline gap-2">
-                {r.valido && (
-                  <span className="font-semibold text-gray-800">
-                    {Math.round(r.promedio!)} µg/m³
-                  </span>
-                )}
-                <span className="text-[11px] text-gray-400">
-                  {r.dias_validos}/{r.dias_totales} días
-                </span>
+              <span className="text-[11px] text-gray-400">
+                {r.dias_validos}/{r.dias_totales} días
               </span>
             ) : (
               <span className="text-gray-400">Sin datos</span>
