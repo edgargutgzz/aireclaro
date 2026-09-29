@@ -645,7 +645,7 @@ export default function DiasInsalubresChart({
 
   return (
     <ChartCard
-      title="Días de aire insalubre en la Zona Metropolitana de Monterrey"
+      title="Días sobre la norma en la Zona Metropolitana de Monterrey"
       subtitle={
         <div className="md:flex md:items-center md:gap-3">
           <div>
