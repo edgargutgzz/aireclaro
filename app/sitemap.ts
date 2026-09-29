@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/proyectos`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/infografias`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/editoriales`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE}/recursos`, changeFrequency: "monthly", priority: 0.6 },
     // Article pages exist only for editorials with written content.
     ...editoriales
       .filter((editorial) => editorial.content)

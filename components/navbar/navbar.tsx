@@ -14,9 +14,9 @@ import { ChevronDown, Map, BarChart3 } from "lucide-react";
 // Differences from the original: the two react-icons glyphs are inlined as
 // their exact SVGs (no new dependency); the logo carries its real aspect ratio
 // (150x28, not 150x150, so the bar can't flash 150px tall before the image
-// loads); Proyectos, Infografías, Editoriales, Explorar datos and Explorar
-// mapa are this app's own pages, in the same tab; the other Observatory pages
-// link out to observatoriodelaire.com for now.
+// loads); Proyectos, the three Publicaciones pages, Explorar datos and
+// Explorar mapa are this app's own pages, in the same tab; the Observatorio
+// pages (Quiénes somos, Equipo) link out to observatoriodelaire.com for now.
 const OBSERVATORIO = "https://www.observatoriodelaire.com";
 
 // react-icons FiMenu
@@ -161,7 +161,7 @@ export default function Navbar() {
                   Editoriales
                 </Link>
                 <Link
-                  href={`${OBSERVATORIO}/recursos`}
+                  href="/recursos"
                   className="block hover:text-gray-500"
                   onClick={handleLinkClick}
                 >
