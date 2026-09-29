@@ -218,15 +218,20 @@ interface StationBar {
   rows: TrimestreRow[];
 }
 
-// The T1-T4 breakdown shown in the bar's own hover tooltip -- one compact
-// row of pass/fail dots, not four separate rows (2026-09-28 request:
-// "still think we can better up this part" -- the header already states
-// the X/4 count, so four more rows each just repeating a dot + restating
-// "passed" was redundant in the common case where all four already match
-// the header; a single row keeps which-specific-quarter visibility for a
-// partial station without the bulk). No day-count figures either, same
-// reasoning as the µg/m³ figures dropped earlier the same day -- the
-// header's "mín. 75% días" already states the rule once.
+// The T1-T4 breakdown shown in the bar's own hover tooltip -- one segmented
+// bar, not four dots (2026-09-28 request): four equal-width sections, one
+// per trimester, painted green (valid) or gray (not), left to right in
+// calendar order. The header already states the X/4 count and the 75%-days
+// rule, so the bar itself carries no text -- reads as "how much of the
+// year cleared the bar," matching the bar-chart visual language the rest
+// of the page already uses instead of a row of isolated dots.
+// `overflow-hidden rounded-full` on the flex container (not on each
+// section) rounds only the two true outer ends, per the dataviz skill's
+// own "rounded only at the outer tip, square where a mark meets its
+// neighbor" rule already used elsewhere in this file's real bars; the
+// `gap-0.5` between sections exposes the tooltip's own white background as
+// a thin surface-color seam, the same "gap instead of a border" separator
+// convention as every other stacked mark on /datos.
 function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
   const rowsByT = new Map(rows.map((r) => [r.trimestre, r]));
   const validCount = rows.filter((r) => r.valido).length;
@@ -236,19 +241,17 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
       <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
         Trimestres ({validCount}/4 válidos · mín. 75% días)
       </span>
-      <div className="flex items-center gap-3 text-xs text-gray-600">
+      <div className="flex h-1.5 gap-0.5 overflow-hidden rounded-full">
         {[1, 2, 3, 4].map((t) => {
           const r = rowsByT.get(t);
           return (
-            <span key={t} className="flex items-center gap-1.5">
-              <span
-                className="h-1.5 w-1.5 rounded-full"
-                style={{
-                  backgroundColor: r?.valido ? COLOR_SALUDABLE : "#d1d5db",
-                }}
-              />
-              T{t}
-            </span>
+            <div
+              key={t}
+              className="flex-1"
+              style={{
+                backgroundColor: r?.valido ? COLOR_SALUDABLE : "#d1d5db",
+              }}
+            />
           );
         })}
       </div>
@@ -404,25 +407,24 @@ function TooltipCard({
       <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
         {bar.nombre}
       </span>
-      {/* Number + its own caption in one tight flex-col (gap-0.5), same
-          coupling as días insalubres' number+label pairs -- previously a
-          loose sibling at the outer gap-2, which read as a new line rather
-          than a caption for the number above it (2026-09-28 feedback). */}
-      <div className="flex flex-col gap-0.5">
+      {/* Number + its own caption, gap-1.5 (not the tighter gap-0.5 tried
+          earlier the same day) -- read as too crowded against the number
+          above it (2026-09-28 feedback). Pollutant moved onto the number's
+          own line instead of the caption below it -- was missing entirely
+          there, and this data gets forwarded as a standalone screenshot (a
+          board deck, not necessarily the live page with the toggle
+          visible), so the number itself needs to say which pollutant on
+          its own, not just the chart's own axis label above it. */}
+      <div className="flex flex-col gap-1.5">
         <div className="flex items-baseline gap-1.5">
           <span className="text-2xl font-bold leading-none" style={{ color }}>
             {Math.round(bar.promedio)}
           </span>
-          <span className="text-sm font-medium text-gray-400">µg/m³</span>
+          <span className="text-sm font-medium text-gray-400">
+            µg/m³ {POLLUTANT_LABEL[pollutant]}
+          </span>
         </div>
-        {/* Pollutant folded into this same caption (2026-09-28 feedback) --
-            this data gets forwarded as a standalone screenshot (a board
-            deck, not necessarily the live page with the toggle visible),
-            so an isolated tooltip capture needs to say which pollutant on
-            its own. */}
-        <span className="text-xs text-gray-500">
-          Promedio anual de {POLLUTANT_LABEL[pollutant]} {year}
-        </span>
+        <span className="text-xs text-gray-500">Promedio anual {year}</span>
       </div>
       <div className="border-t border-gray-100 pt-2">
         <TrimestreBreakdown rows={bar.rows} />
