@@ -866,72 +866,71 @@ export default function PromedioAnualChart({
       }
     >
       <div className="px-5 pb-6 pt-5 md:pt-6">
+        {/* Always rendered now, regardless of isCompleteYear/bars.length --
+            same shell días insalubres uses for its own axis-label + legend
+            row (mb-4 flex items-center justify-between md:mb-6, h-2 w-2
+            rounded-[2px] swatches). Previously only shown alongside real
+            bars, so switching to/from an in-progress year (or a complete
+            year with zero qualifying stations) also removed this whole
+            row -- on top of the chart-area itself already matching height
+            via chartHeight in every branch, losing this row's own height
+            was the rest of the "feels less fluid switching years" gap
+            (2026-09-28 feedback). */}
+        <div className="mb-4 flex items-center justify-between md:mb-6">
+          <span className="text-xs text-gray-400">
+            {POLLUTANT_LABEL[pollutant]} (µg/m³)
+          </span>
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <span
+                className="h-2 w-2 rounded-[2px]"
+                style={{ backgroundColor: COLOR_SALUDABLE }}
+              />
+              Dentro del límite
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span
+                className="h-2 w-2 rounded-[2px]"
+                style={{ backgroundColor: COLOR_INSALUBRE }}
+              />
+              Sobre el límite
+            </span>
+          </div>
+        </div>
         {!isCompleteYear ? (
           // No partial-year figure -- see isCompleteYear's own comment
-          // above. A single centered message instead of the axis label +
-          // chart + falta-de-información pills this card shows once the
-          // year is actually over.
+          // above. A single centered message instead of the chart itself,
+          // same chartHeight as the real bars so the card's total height
+          // doesn't change switching to/from a year that has data.
           <div
             className="flex items-center justify-center rounded-lg bg-gray-50 text-center text-sm text-gray-400"
             style={{ height: chartHeight }}
           >
             El promedio anual de {year} estará disponible cuando termine el año.
           </div>
+        ) : bars.length > 0 ? (
+          <div ref={setMeasureNode} className="w-full">
+            <HorizontalScrollFade
+              minWidth={PAD_LEFT + stationColWidth * bars.length + PAD_RIGHT}
+            >
+              <BarsChart
+                bars={bars}
+                year={year}
+                pollutant={pollutant}
+                nomAnual={nomAnual}
+                omsAnual={omsAnual}
+                stationColWidth={stationColWidth}
+                chartHeight={chartHeight}
+              />
+            </HorizontalScrollFade>
+          </div>
         ) : (
-          <>
-            {/* Same shell días insalubres uses for its own axis-label +
-                legend row (mb-4 flex items-center justify-between md:mb-6,
-                h-2 w-2 rounded-[2px] swatches) -- this chart had no legend
-                at all until 2026-09-28, despite already using color to mean
-                something (previously a flat red on every bar, which didn't
-                actually distinguish over/under the limit; see the bar
-                color logic in BarsChart). */}
-            <div className="mb-4 flex items-center justify-between md:mb-6">
-              <span className="text-xs text-gray-400">
-                {POLLUTANT_LABEL[pollutant]} (µg/m³)
-              </span>
-              <div className="flex items-center gap-4 text-xs text-gray-500">
-                <span className="flex items-center gap-1.5">
-                  <span
-                    className="h-2 w-2 rounded-[2px]"
-                    style={{ backgroundColor: COLOR_SALUDABLE }}
-                  />
-                  Dentro del límite
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span
-                    className="h-2 w-2 rounded-[2px]"
-                    style={{ backgroundColor: COLOR_INSALUBRE }}
-                  />
-                  Sobre el límite
-                </span>
-              </div>
-            </div>
-            {bars.length > 0 ? (
-              <div ref={setMeasureNode} className="w-full">
-                <HorizontalScrollFade
-                  minWidth={PAD_LEFT + stationColWidth * bars.length + PAD_RIGHT}
-                >
-                  <BarsChart
-                    bars={bars}
-                    year={year}
-                    pollutant={pollutant}
-                    nomAnual={nomAnual}
-                    omsAnual={omsAnual}
-                    stationColWidth={stationColWidth}
-                    chartHeight={chartHeight}
-                  />
-                </HorizontalScrollFade>
-              </div>
-            ) : (
-              <div
-                className="flex items-center justify-center rounded-lg bg-gray-50 text-sm text-gray-400"
-                style={{ height: chartHeight }}
-              >
-                Sin datos suficientes todavía
-              </div>
-            )}
-          </>
+          <div
+            className="flex items-center justify-center rounded-lg bg-gray-50 text-sm text-gray-400"
+            style={{ height: chartHeight }}
+          >
+            Sin datos suficientes todavía
+          </div>
         )}
       </div>
 
