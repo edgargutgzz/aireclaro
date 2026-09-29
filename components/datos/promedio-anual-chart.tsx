@@ -71,13 +71,6 @@ const OMS_ANUAL_PM10 = 15; // WHO 2021 guidelines (down from 20 in 2005)
 const STATION_COL_WIDTH_MIN = 130;
 const STATION_COL_WIDTH_MAX = 300;
 
-const TRIMESTRE_MESES: Record<number, string> = {
-  1: "Ene–Mar",
-  2: "Abr–Jun",
-  3: "Jul–Sep",
-  4: "Oct–Dic",
-};
-
 // A function of pollutant now (2026-09-28: was a flat constant array,
 // PM2.5-only) -- "fuente" and "salud" only needed pluralizing since they
 // were already pollutant-general in spirit, but "norma" genuinely differs:
@@ -225,13 +218,15 @@ interface StationBar {
   rows: TrimestreRow[];
 }
 
-// The T1-T4 breakdown shown in the bar's own hover tooltip -- pass/fail per
-// trimester only, no per-trimester µg/m³ figure (2026-09-28 request: the
-// annual bar isn't an average of these four numbers, it's a pooled mean
-// over every valid day across the year -- showing four µg/m³ values next
-// to it invited readers to mentally re-average them and wonder why that
-// didn't match the bar, so drop the number and keep only what actually
-// gates validity: pass/fail and the day count behind it).
+// The T1-T4 breakdown shown in the bar's own hover tooltip -- one compact
+// row of pass/fail dots, not four separate rows (2026-09-28 request:
+// "still think we can better up this part" -- the header already states
+// the X/4 count, so four more rows each just repeating a dot + restating
+// "passed" was redundant in the common case where all four already match
+// the header; a single row keeps which-specific-quarter visibility for a
+// partial station without the bulk). No day-count figures either, same
+// reasoning as the µg/m³ figures dropped earlier the same day -- the
+// header's "mín. 75% días" already states the rule once.
 function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
   const rowsByT = new Map(rows.map((r) => [r.trimestre, r]));
   const validCount = rows.filter((r) => r.valido).length;
@@ -241,32 +236,22 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
       <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
         Trimestres ({validCount}/4 válidos · mín. 75% días)
       </span>
-      {[1, 2, 3, 4].map((t) => {
-        const r = rowsByT.get(t);
-        return (
-          <div
-            key={t}
-            className="flex items-center justify-between gap-3 text-xs"
-          >
-            <span className="flex items-center gap-1.5 text-gray-600">
+      <div className="flex items-center gap-3 text-xs text-gray-600">
+        {[1, 2, 3, 4].map((t) => {
+          const r = rowsByT.get(t);
+          return (
+            <span key={t} className="flex items-center gap-1.5">
               <span
                 className="h-1.5 w-1.5 rounded-full"
                 style={{
                   backgroundColor: r?.valido ? COLOR_SALUDABLE : "#d1d5db",
                 }}
               />
-              T{t} ({TRIMESTRE_MESES[t]})
+              T{t}
             </span>
-            {r ? (
-              <span className="text-[11px] text-gray-400">
-                {r.dias_validos}/{r.dias_totales} días
-              </span>
-            ) : (
-              <span className="text-gray-400">Sin datos</span>
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -300,13 +285,12 @@ const PAD_RIGHT = 8;
 const BAR_WIDTH = 60;
 const BAR_RADIUS = 4;
 const TOOLTIP_WIDTH = 272; // px, matches the tooltip card's own w-[17rem]
-// Generous estimate (header/number/pollutant+limit captions/4-row trimester
-// breakdown). Was 260 -- bumped for the pollutant name + explicit "Sobre/
-// Dentro del límite" line added under the number (2026-09-28): removing the
-// per-trimester µg/m³ figures earlier the same day didn't free up space to
-// offset this, since those sat inline with the day count, not on their own
-// line.
-const TOOLTIP_HEIGHT = 280;
+// Generous estimate (header/number+pollutant caption/one-row trimester
+// dot strip). Dropped from 280 -- the "Sobre/Dentro del límite" caption
+// line was removed again same day, and the trimester breakdown collapsed
+// from 4 rows to a single row of dots (2026-09-28), a real reduction this
+// time, not offset by anything added elsewhere.
+const TOOLTIP_HEIGHT = 180;
 
 // A dashed threshold line with a measured-width white badge floating just
 // above it -- getBBox() on the actual rendered <text> after mount, not a
@@ -438,14 +422,6 @@ function TooltipCard({
             its own. */}
         <span className="text-xs text-gray-500">
           Promedio anual de {POLLUTANT_LABEL[pollutant]} {year}
-        </span>
-        {/* Explicit text, not just the number's own color -- "never color
-            alone" is already the rule everywhere else on /datos (días
-            insalubres' legend, its persistent counts in plain text); this
-            tooltip was the one place color carried the over/under-limit
-            meaning by itself (2026-09-28 feedback). */}
-        <span className="text-xs font-medium" style={{ color }}>
-          {sobreLimite ? "Sobre el límite" : "Dentro del límite"}
         </span>
       </div>
       <div className="border-t border-gray-100 pt-2">
