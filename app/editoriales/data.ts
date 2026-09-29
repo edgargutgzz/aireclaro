@@ -1,0 +1,2000 @@
+import React from "react";
+
+export interface Editorial {
+  // Existing fields from current implementation
+  title: string;
+  image: string;
+  imageAlt: string;
+  author: string;
+  authorProfile: string;
+  authorProfileAlt: string;
+  newspaper: string;
+  date: string;
+
+  // New fields
+  slug: string; // URL-friendly version of the title
+  content?: React.ReactNode; // Rich text content using JSX, made optional with ?
+  pdfLink?: string; // New optional field
+}
+
+// Helper function to create slugs
+export function slugify(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-");
+}
+
+// Helper function to get article by slug
+export function getArticleBySlug(slug: string): Editorial | undefined {
+  return editoriales.find((editorial) => editorial.slug === slug);
+}
+
+// `date` is written "Mon D, YYYY" with the month abbreviated in English or
+// Spanish depending on the entry ("Aug 30, 2026", "Ene 11, 2026"). Shown
+// uniformly in Spanish: "30 ago 2026". Anything unparseable is shown as-is.
+const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const EN_MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+export function formatEditorialDate(date: string): string {
+  const match = /^([A-Za-z]{3})\w*\.? (\d{1,2}), (\d{4})$/.exec(date.trim());
+  if (!match) return date;
+  const mon = match[1].toLowerCase();
+  const i = MONTHS.indexOf(mon) >= 0 ? MONTHS.indexOf(mon) : EN_MONTHS.indexOf(mon);
+  if (i < 0) return date;
+  return `${Number(match[2])} ${MONTHS[i]} ${match[3]}`;
+}
+
+export const editoriales: Editorial[] = [
+  {
+    title: "Monterrey apesta",
+    slug: "monterrey-apesta",
+    image: "/editoriales/30ago2026.webp",
+    imageAlt: "Monterrey apesta",
+    author: "Uriel Chavarría",
+    authorProfile: "/equipo/uriel.webp",
+    authorProfileAlt: "Uriel Chavarría",
+    newspaper: "📰 El Norte",
+    date: "Aug 30, 2026",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        React.createElement("em", null, "–¿Quién nos mata con esta pestilencia?"),
+        React.createElement("br", null),
+        React.createElement("em", null, "–Fuenteovejuna refinada, señor."),
+        React.createElement("br", null),
+        React.createElement("em", null, "Adaptación libre de Lope de Vega"),
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La Zona Metropolitana de Monterrey nuevamente apesta; un hedor ha vuelto a invadirnos. Sin embargo, la repugnancia del aroma es lo de menos. Lo alarmante es el impacto en la salud: respirar ese aire fétido implica inhalar partículas venenosas. Haya olor o no, la pestilencia es solo el síntoma intermitente de una contaminación que nos asfixia de forma continua.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Aquí la tragedia evoca al clásico de Lope de Vega: un pueblo unido bajo un pacto para encubrir un delito respondiendo: "Fuenteovejuna, señor". En NL vivimos la versión invertida de ese pacto. Cuando el ciudadano exige saber quién es legalmente responsable, el coro oficial contesta: "Nadie, señor".',
+      ),
+      React.createElement(
+        "p",
+        null,
+        'En respuesta a la crisis de entre la lista de sospechosos comunes, se declaró que el origen es, otra vez, la refinería de Cadereyta. ¿Será? Ante esto, el Secretario de Medio Ambiente estatal viajó a CDMX para pedir al Gobierno federal que "audite de emergencia" los procesos de la refinería. Sin embargo, existe controversia entre expertos ambientales.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Por un lado, algunos conceden todavía un voto de confianza a las prometidas acciones estructurales gubernamentales en la refinería; otros no creemos en la simulación. La realidad es que las promesas de gasolina menos contaminante son ya un mito urbano y la quema de combustóleo pesado no ha disminuido.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Paralelamente, frente al alarmante repunte en los niveles de ozono, no se busca obligar a los emisores a reducir sus precursores químicos. Al contrario, se planea sustituir las alertas ambientales por "pronósticos informativos" flexibilizando los límites de ozono. El nuevo esquema exige que el ozono o las partículas PM10 aumenten en 4 en lugar de 2 estaciones durante más horas.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Se prefiere apagar el termómetro regulatorio para dictaminar que ya no hay fiebre. Además, se planea diluir la realidad aumentando el número de estaciones de monitoreo, elevando el requisito de sensores afectados haciendo más difícil disparar una alerta.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Por otra parte, es de recordar que durante el Mundial de Futbol 2026 nuestros cielos lucieron sospechosamente limpios, desatando una fuerte polémica.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Mientras algunos sectores argumentaban que las lluvias y la inestabilidad atmosférica del momento habían limpiado el aire, en las calles y entre diversos analistas corría un secreto a voces: la sospecha de que las chimeneas de la refinería habían sido "apagadas" o reguladas para maquillar la ciudad ante el mundo.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La estadística oficial no refirió disminución en la producción de la refinería ese mes; en contraparte, semanas después hubo lluvias que no disiparon en absoluto la contaminación.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Asimismo, queda claro que toda la estrategia de comunicación oficial huele a rancio y reciclaje. En 2021 nos juraron que una inversión de mil 570 millones de pesos reduciría el 90 por ciento de la contaminación; en 2023 duplicaron la apuesta con 3 mil 500 millones bajo la promesa de emisión cero, y a inicios de este año la nueva dirección de Pemex repitió el mismo guion de modernización tecnológica.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Nos han vendido de todo. Apenas la semana pasada, se anunció la validación final del tan aplazado Inventario de Emisiones Atmosféricas con datos obtenidos en el 2023. Esperamos con ansia un diagnóstico correcto.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En conclusión, es imperativo reconocer que el principal problema camina en nuestros propios zapatos: nosotros, los ciudadanos, somos los culpables de nuestra desgracia. Nuestra inacción, apatía y la cobarde comodidad de solo quejarnos entre nosotros es lo que le permite al Gobierno federal seguir con esta burla.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Nos jactamos de ser una sociedad trabajadora, líder y despierta, pero ante el aire que respiran nuestros hijos nos comportamos como seres sumisos y domesticados. Los destellos de dignidad del pasado –las marchas ciudadanas y los colectivos alzando la voz– se han diluido. Hemos decidido que es más fácil creer ciegamente que exigir el cierre o la modernización real de la planta. Volvemos a perdonar con una ingenuidad que da vergüenza, creyendo que "esta vez sí van a cambiar".',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Al otorgarles el beneficio de la duda cada vez que la Ciudad apesta a químicos, firmamos nuestra propia sentencia. Mientras sigamos prefiriendo la amnesia voluntaria por encima del costo de la verdadera exigencia social, seremos los arquitectos de nuestro calvario.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Seguiremos siendo aquel maestro ciego y engañado de una película en la que el Gobierno nos pide buscar a un "Simitrio" invisible, mientras nosotros, por pura cobardía, dejamos que el verdadero culpable nos siga matando lentamente.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        React.createElement("em", null, "El autor es médico y consejero del Observatorio Ciudadano de la Calidad del Aire."),
+      ),
+    ),
+  },
+  {
+    title: "Un estadio Azteca de combustóleo",
+    slug: "un-estadio-azteca-de-combustoleo",
+    image: "/editoriales/12jul2026.webp",
+    imageAlt: "Un estadio Azteca de combustóleo",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 El Norte",
+    date: "Jul 12, 2026",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement("p", null, "La metástasis es la propagación de células cancerosas desde su lugar de origen (tumor) hacia otras partes del cuerpo. Estas células viajan a través del torrente sanguíneo o el sistema linfático y pueden formar nuevos tumores en otras zonas."),
+      React.createElement("p", null, "Algo similar ocurre si pensamos en la Refinería de Cadereyta. Sabemos que es una de las principales fuentes de contaminación atmosférica en la Zona Metropolitana de Monterrey, no sólo porque de su operación proviene más del 90 por ciento de las emisiones de dióxido de azufre y parte del material particulado, sino también porque en ella se refina gran parte de los combustibles que se distribuyen en la metrópoli, como la gasolina, el diésel o el combustóleo. Estos derivados del petróleo alimentan hoy en día los procesos productivos que cobran factura a la salud pública a través de nuestra dieta inhalable."),
+      React.createElement("p", null, "Llama la atención el aumento de la producción que se ha registrado este año en dicha Refinería. Recordemos que existe una correlación entre su producción y los niveles de PM2.5 respirable. Los óxidos de azufre son precursores de este contaminante que impacta negativamente en la salud."),
+      React.createElement("p", null, "Hace unos días El Norte publicó en primera plana el aumento récord de producción de combustóleo en el periodo de enero a mayo de todos los años desde 2004. Tan sólo en mayo del 2026 se produjeron en promedio 37 mil barriles diarios de combustóleo, de los 171 mil barriles de producción total diaria que, por cierto, va en aumento."),
+      React.createElement("p", null, "Los barriles son la unidad de medida estándar para cuantificar la producción y el almacenamiento de hidrocarburos líquidos y sus derivados. Cada barril equivale a 159 litros."),
+      React.createElement("p", null, "El combustóleo que se produce en la refinería de Cadereyta es un residuo altamente contaminante con elevado contenido de azufre. Irónicamente, la actual Norma Oficial Mexicana que establece los criterios de calidad de los petrolíferos en México, (NOM-016-CRE-2016) permite su uso como combustible en la Zona Metropolitana de Monterrey, en teoría con un máximo de 2 por ciento de azufre en masa. Caso distinto a la Zona Metropolitana del Valle de México, donde está prohibido su uso, con justas razones."),
+      React.createElement("p", null, "El contenido de azufre en este residuo es el principal motivo por el que dejó de utilizarse en las embarcaciones a partir del 2020. Hoy en día la Organización Marítima Internacional prohíbe a estos vehículos usar combustibles con un contenido de azufre mayor al 0.5 por ciento."),
+      React.createElement("p", null, "Si localmente no se producía tanto desde hace más de veinte años (2003), de acuerdo con los registros públicos del Sistema de Información Energética de la Secretaría de Energía, es lógico que emerja la duda. ¿Dónde podría estar terminando ese combustóleo, si ya no hay mercado marítimo que lo consuma?"),
+      React.createElement("p", null, "Para darnos una idea clara del tamaño del problema, pensemos en el estadio Azteca. En este recinto caben aproximadamente mil millones de litros. En números rápidos, si cada barril de combustóleo equivale a 159 litros y el promedio de producción diaria de enero a mayo de 2026 se estima en 35 mil barriles, hagamos la multiplicación por los días transcurridos en ese periodo (151)."),
+      React.createElement("p", null, "Tan sólo en el 2026, la cantidad de combustóleo producido en Cadereyta casi llenaría el estadio Azteca, el más grande de nuestro país."),
+      React.createElement("p", null, "Poco más de 840 millones de litros de combustóleo que este año, en un escenario \"favorable\", terminarían como materia prima en un proceso donde el azufre contenido sea secuestrado. Y que en un escenario desfavorable terminarían quemándose para producir energía no sólo en la misma Refinería, sino en otros puntos de nuestra metrópoli, donde casi 6 millones de habitantes inhalan a diario cerca de 11 mil litros de aire."),
+      React.createElement("p", null, "Generalmente la metástasis no se cura, pero es tratable. Lo más importante es frenar su avance. Sin embargo, en situaciones específicas como tumores aislados, existe la posibilidad de lograr una curación completa. Una manera de frenar el avance de la metástasis que hoy sufre nuestra metrópoli es vetar los combustibles altamente contaminantes, mejorar la calidad de los refinados y asegurar su sustitución por otras fuentes de energía. Un tratamiento necesario para, eventualmente, extirpar el tumor que hoy amenaza la salud pública."),
+    ),
+  },
+  {
+    title: "Naranja incómodo",
+    slug: "naranja-incomodo",
+    image: "/editoriales/15abr2026.webp",
+    imageAlt: "Naranja incómodo",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 ABC Noticias",
+    date: "Apr 15, 2026",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "El universo flotante de gases y partículas en el que estamos inmersos hoy en día en la Zona Metropolitana de Monterrey está definiendo nuestro presente y nuestro futuro. El aire que inhalamos nos da vida o nos da riesgo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "No hay órgano que se salve de este infortunio atmosférico que inflama y oxida.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Por fortuna, un respetable equipo de científicos de la UNAM y especialistas locales construyen el inventario y la modelación de emisiones atmosféricas contaminantes que impactan nuestra la salud. El Índice Mexicano de Calidad del Aire y Riesgos a la Salud (ICARS) se actualizó en enero de este año, y también los límites máximos permisibles establecidos en la norma de salud mexicana sobre material particulado. Los estándares mexicanos se hacen menos permisivos para cuidar a la población, y la regulación sobre las emisiones de la industria y de la calidad de los combustibles que recibimos ya está en proceso de cambio.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Además, el Programa de Respuesta a Contingencias Atmosféricas de la Zona Metropolitana de Monterrey se encuentra en revisión jurídica para publicarse oficialmente con umbrales más protectores después de más de 18 meses desde la primera audiencia pública que solicitamos las organizaciones de la sociedad civil a la Secretaría de Medio Ambiente estatal. Al mismo tiempo, se adaptan los nuevos equipos de medición de PM2.5 en las 15 estaciones de monitoreo atmosférico del SIMA que existen en Nuevo León, algo inédito.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "También la Secretaría de Salud Federal pilotea el Sistema de Vigilancia en Salud Ambiental, donde se incluye la contaminación atmosférica como uno de los determinantes ambientales más importantes para la prevención en salud. Con ello, la información de las estaciones de monitoreo atmosférico y de ciertos hospitales y centros de salud de nuestra metrópoli que registran consultas, ingresos hospitalarios y decesos relacionados con la contaminación del aire, se utilizará para desarrollar intervenciones locales para prevenir estos impactos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "A pesar de los avances tan relevantes, aún encontramos retos y resistencias. Ante un contexto de mucha desinformación, y donde Nuevo León es el estado mexicano con mayor número de búsquedas sobre alertas ambientales en los últimos meses (Google Trends,2026), nuestro valioso Sistema de Monitoreo apenas ha incorporado el ICARS vigente. El nuevo límite de este Índice establecido en la NOM-172-SEMARNAT-2023 entró en vigor el 1 de enero del 2026. Tres meses durante los cuales una persona sana o susceptible pudo confiarse y salir a ejercitarse en un falso amarillo, cuando en realidad pudo evitar su exposición a una mala calidad del aire de haber contado con la información correcta.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Y es que el nuevo límite del rango de calidad del aire Aceptable a Mala ahora es más estricto, es decir, lo que anteriormente fue un amarillo aceptable, hoy ya es un naranja incómodo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Además, la evaluación oficial del SIMA, que informa el número de días que sobrepasan el límite diario permisible de partículas (DSN) durante enero y febrero del 2026 en la ZMM, sigue utilizando como referencia los límites antiguos más laxos (valor del año 3) de la norma de salud mexicana (NOM-025-SSA1-2021) para evaluar la calidad del aire.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En el OCCAMM realizamos un análisis público sobre el número de DSN actuales de PM2.5 en la ZMM durante enero, febrero y marzo, resultando en 19, 17 y 7 respectivamente. Es decir 43 de los primeros 90 días transcurridos del 2026 hemos superado el límite diario saludable de 25 microgramos por metro cúbico establecido en la norma de salud (año 5), por lo menos en una estación de monitoreo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La capacidad de la autoridad para informar puede marcar la diferencia en la prevención de enfermedades y mortalidad relacionadas con la contaminación del aire. Si esto no sucede, se desaprovecha también una oportunidad excepcional de abrazar las externalidades positivas que los nuevos estándares de calidad del aire nos dan, por ejemplo, para reducir los costos en salud, acelerar la profesionalización de una Comisión Ambiental Metropolitana basada en ciencia y cooperación, y la actualización de las regulaciones pendientes que hoy nublan nuestra esperanza de vida.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Al vaivén entre verdes y morados, practiquemos la comprensión profunda y la apropiación de las herramientas disponibles que hoy nos empoderan para decidir mejor y accionar en colectividad.",
+      ),
+    ),
+  },
+  {
+    title: "Respirar a ciegas",
+    slug: "respirar-a-ciegas",
+    image: "/editoriales/08mar2026.webp",
+    imageAlt: "Respirar a ciegas",
+    author: "Ana Cristina García Luna",
+    authorProfile: "/equipo/ana.webp",
+    authorProfileAlt: "Ana Cristina García Luna",
+    newspaper: "📰 El Norte",
+    date: "Mar 8, 2026",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "En el Área Metropolitana de Monterrey estamos acostumbrados a mirar el cielo con sospecha. Hay días en que la bruma gris se instala sobre la Ciudad como una sombra persistente, recordándonos que el aire que respiramos no siempre es tan limpio como debería. Sin embargo, el problema de la calidad del aire no solo se refleja en el color del horizonte, sino también en algo más preocupante: la falta de información suficiente para saber con certeza qué estamos respirando.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Respirar es el acto más básico de la vida. Lo hacemos unas 20 mil veces al día sin pensarlo. Pero en una ciudad donde la contaminación es un problema crónico, esa aparente normalidad debería inquietarnos mucho más de lo que lo hace.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Pensemos en algo cotidiano: los alimentos. Hoy revisamos etiquetas, buscamos ingredientes más naturales y evitamos productos que puedan afectar nuestra salud. Hemos aprendido a cuestionar lo que comemos. Pero hay una contradicción evidente: si cuidamos la calidad de lo que ingerimos, ¿por qué aceptamos con tanta pasividad la calidad del aire que respiramos?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Un reciente análisis del Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey revela una realidad que debería encender alarmas. Utilizando la única fuente pública de datos históricos disponible (plataforma del Sistema Nacional de Información de la Calidad del Aire del Instituto Nacional de Ecología y Cambio Climático), se encontró que durante 2025 al menos diez estaciones de monitoreo no tuvieron información suficiente para calcular un promedio anual confiable de partículas PM2.5.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Las estaciones con datos insuficientes se encuentran en Apodaca, Cadereyta, Escobedo, García, Guadalupe, Misión San Juan, Pesquería, San Bernabé, San Pedro y Santa Catarina. Dicho de otra forma: gran parte del territorio metropolitano quedó sin un diagnóstico claro sobre uno de los contaminantes más peligrosos para la salud.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Las partículas PM2.5 son microscópicas, invisibles, pero profundamente dañinas. Pueden penetrar en los pulmones y llegar al torrente sanguíneo, aumentando el riesgo de enfermedades respiratorias, cardiovasculares y muerte prematura. No estamos hablando de una molestia ambiental: estamos hablando de salud pública.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Lo más preocupante es que la falta de datos no significa que el problema no exista; significa que simplemente no lo estamos viendo con claridad. Es como si aceptáramos comprar alimentos sin etiqueta, sin fecha de caducidad y sin saber qué contienen, para luego servirlos a nuestra familia con total normalidad.",
+      ),
+      React.createElement("p", null, "Nadie haría eso en su cocina. Pero eso es exactamente lo que ocurre con el aire."),
+      React.createElement(
+        "p",
+        null,
+        "Las estaciones que sí contaron con información suficiente (Juárez, Obispado, Monterrey Sur [ITESM], San Nicolás y UANL) muestran concentraciones preocupantes. Juárez registró un promedio anual cercano a 22.6 microgramos por metro cúbico, mientras que San Nicolás superó los 21. El promedio de las estaciones analizadas ronda las 18.8 microgramos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Para dimensionar estas cifras hay que recordar que las recomendaciones de la OMS son mucho más estrictas. Es decir, incluso con datos incompletos, todo apunta a que el aire que respiramos está lejos de ser saludable.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "A esto se suma otro problema que revela una preocupante falta de urgencia institucional. Desde el 1 de enero entró en vigor en México el nuevo Índice de Aire y Salud, un semáforo actualizado y más estricto que busca comunicar mejor los riesgos a la población. Sin embargo, el Estado todavía no lo aplica plenamente.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La paradoja es evidente: mientras la ciencia avanza para proteger mejor a las personas, la información que recibe la ciudadanía sigue rezagada.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Pero el problema de la calidad del aire no es únicamente técnico o administrativo. Es también un asunto moral.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Cada día miles de niñas y niños salen a jugar, caminan a la escuela o practican deporte respirando el aire de esta Ciudad. Ellos no deciden dónde se instalan las industrias, cómo se regula el transporte o qué tan estrictas son las políticas ambientales. Sin embargo, sus pulmones son los primeros en resentir las consecuencias.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Y eso debería obligarnos a hacernos una pregunta incómoda: ",
+        React.createElement("em", null, "¿qué tan normal hemos llegado a considerar lo que no debería serlo?"),
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Hablar de desarrollo, competitividad o crecimiento económico pierde sentido si no somos capaces de garantizar algo tan básico como aire limpio para las nuevas generaciones.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Porque al final, el verdadero problema no es solo la contaminación. El problema es que hemos aprendido a convivir con ella. Y a veces, lo más peligroso no es el aire sucio. Es la costumbre de respirar sin preguntar qué hay en él.",
+      ),
+      React.createElement("p", null, React.createElement("em", null, "La autora es arquitecta, urbanista e investigadora.")),
+    ),
+  },
+  {
+    title: "El año cambia, la deuda urbana no",
+    slug: "el-ano-cambia-la-deuda-urbana-no",
+    image: "/editoriales/11ene2026.webp",
+    imageAlt: "El año cambia, la deuda urbana no",
+    author: "Ana Cristina García Luna",
+    authorProfile: "/equipo/ana.webp",
+    authorProfileAlt: "Ana Cristina García Luna",
+    newspaper: "📰 El Norte",
+    date: "Ene 11, 2026",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "Al iniciar, cada año llega cargado de promesas simbólicas. En las ciudades, sin embargo, el cambio no ocurre al ritmo del calendario. Las urbes no se transforman con deseos ni discursos, sino con decisiones (o con su ausencia) que se acumulan durante décadas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Como urbanista, empecé este año con una sensación ambivalente: agradecimiento por seguir habitando ciudades que aún sostienen la vida colectiva, y preocupación por constatar que muchas de ellas parecen diseñadas más para resistir que para ofrecer una vida digna.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La historia urbana es clara: las ciudades nacieron como pactos sociales. Desde las primeras concentraciones humanas hasta las metrópolis contemporáneas, la ciudad fue una respuesta colectiva a la necesidad de protección, intercambio, cultura y convivencia.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Pero también sabemos que cuando ese pacto se rompe, la ciudad se convierte en un espacio de exclusión, enfermedad y conflicto. Hoy atravesamos una nueva crisis silenciosa: la calidad de vida urbana.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Sería injusto, no obstante, quedarnos sólo en el diagnóstico crítico. También existen motivos para agradecer, incluso a escala local. En el Área Metropolitana de Monterrey, proyectos como la recuperación del Paseo Santa Lucía, los esfuerzos por reactivar el centro urbano y la implementación de iniciativas como los circuitos gratuitos de transporte público en San Pedro, evidencian intentos por mejorar la habitabilidad urbana.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Sin embargo, estos avances siguen siendo parciales y territorialmente concentrados, reflejo de una metrópoli fragmentada, donde las mejoras no siempre dialogan entre municipios ni construyen un sistema urbano integrado. Aun así, confirman que la ciudad no es un destino inevitable, sino un proyecto político y urbano que sigue en disputa.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Valorar el hecho de vivir en ciudades implica reconocer su potencial como espacios de diversidad y encuentro.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La ciudad es, por definición, el lugar del otro. Desde una perspectiva ideológica de ciudades humanas y para todas las personas, esta diversidad no es un problema a gestionar, sino un valor a proteger.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Una ciudad verdaderamente humana no sólo se debe medir por su crecimiento económico o su imagen internacional, sino por su capacidad de ofrecer oportunidades reales y condiciones de vida dignas a infancias, personas mayores, migrantes, trabajadores informales y personas con discapacidad.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Aquí emerge un concepto clave: la dignidad urbana. No basta con construir infraestructura si ésta no es accesible, segura y significativa para quienes la usan.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La dignidad urbana se expresa en el derecho a una vivienda adecuada, pero también en el derecho al tiempo, al descanso, al cuidado y al espacio público. Se manifiesta en la posibilidad de desplazarse sin agotamiento, respirar aire limpio, acceder a servicios básicos sin humillación y participar en las decisiones que afectan el propio entorno.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El 2026 nos encuentra en un punto de inflexión. El cambio climático ya no es una amenaza futura, sino una condición presente que redefine la planificación urbana. Las ciudades concentran riesgos, pero también recursos y capacidades.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La pregunta central no es si las ciudades cambiarán, sino para quién lo harán. ¿Serán espacios cada vez más excluyentes o territorios resilientes y solidarios? ¿Apostarán por soluciones tecnológicas sin justicia social o por una transformación estructural basada en la equidad?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El futuro de las ciudades no se juega únicamente en megaproyectos o rankings internacionales, sino en decisiones cotidianas: cómo se diseña una vereda, dónde se ubica una escuela, qué usos se permiten en un barrio, quién participa en la planificación.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La escala cotidiana es profundamente política. Allí se define si una ciudad cuida o desgasta, si integra o expulsa.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Agradecer la ciudad implica reconocer a quienes la sostienen día a día: trabajadores, comunidades, técnicos y funcionarios que, muchas veces en condiciones adversas, mantienen su funcionamiento.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Pero la gratitud no puede convertirse en complacencia. La crítica es una forma de cuidado. Criticar la ciudad es negarse a aceptar como natural lo que es resultado de decisiones humanas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Este 2026 debería ser una invitación a recuperar una pregunta esencial: ¿para qué y para quién construimos ciudad?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "A las autoridades urbanas les corresponde asumir que planificar es gobernar el futuro, no sólo administrar el presente. A la ciudadanía, no renunciar a su derecho a la ciudad.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Si logramos volver a poner en el centro la vida, la dignidad y el habitar colectivo, entonces el año que comenzó no será sólo un cambio de fecha, sino una oportunidad real de transformación urbana.",
+      ),
+    ),
+  },
+  {
+    title: "El costo invisible de la indiferencia",
+    slug: "el-costo-invisible-de-la-indiferencia",
+    image: "/editoriales/23nov2025.webp",
+    imageAlt: "El costo invisible de la indiferencia",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Nov 23, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "En las ciudades modernas, la basura no es solamente la acumulación de plásticos, metales, papeles, desechos domésticos y escombro. Más persistente y dañina es esa que no percibimos con los ojos, pero que se instala cotidianamente en nuestro aire, agua y vida: la basura molecular. Las grandes urbes, como la Zona Metropolitana de Monterrey, han evolucionado en su infraestructura, oferta cultural, servicios de salud y mercado laboral, pero siguen hipotecando el bienestar de su ciudadanía en aras de un desarrollo mal planeado.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La contaminación atmosférica, esa forma insidiosa de basura molecular, representa un reto estructural agravado por la omnipresencia de fuentes fijas emisoras, es decir instalaciones industriales, de las cuales la refinería de Cadereyta se erige como la más evidente. También proviene de fuentes móviles como los 3 millones de vehículos privados y públicos que transitan a diario en la ciudad. Recientes estudios gubernamentales y académicos coinciden: la refinería es responsable de casi el 90% del dióxido de azufre (SO2) emitido por el sector industrial metropolitano y de aproximadamente el 20% de las partículas PM2.5 y PM10 totales. Las cifras no son menores: el aire de Monterrey se mantiene entre los más contaminados del país, un lastre documentado por centros de investigación, organizaciones de la sociedad civil y autoridades, quienes recomiendan la urgente reubicación o cierre de industrias pesadas e instalaciones de refinación y generación de energía altamente contaminantes. En particular aquellas que no estén dispuestas a invertir en tecnología para la reducción de emisiones. Las secuelas por la mala calidad del aire en la salud pública son conocidas. La inhalación crónica de partículas finas como las PM2.5 afecta a pulmones, corazón y cerebro, incrementando riesgos de salud en infancias y adultos mayores.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "¿Es socialmente justificado mantener la operación de una refinería que, además de obsoleta y financieramente inviable, deteriora el ambiente y merma la salud pública? Pemex reporta pérdidas anuales cercanas a los 2 mil millones de pesos en Cadereyta. En el balance nacional, la refinación suma más de 71 mil millones en números rojos en un solo año. No hablamos solo de ambiente, estamos ante un barril sin fondo que consume recursos públicos provenientes de nuestros impuestos y deuda pública, y afecta el bienestar de la población.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El argumento de la autosuficiencia energética pierde sentido ante la poca atención a los retos operativos y tecnológicos del proceso de refinación en Cadereyta, que genera un exceso de combustóleo, un residuo contaminante cuyo mercado como fuente de energía ha desaparecido gradualmente. Este año la refinería de Cadereyta promedia una producción de 27 mil barriles diarios de combustóleo, casi un 20% de los 140 mil barriles de producción diaria de refinación de ésta.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "México, reacio a cerrar sus refinerías más antiguas, ignora el precedente de los ejemplos en Estados Unidos, Europa y Asia, que en las últimas décadas han bajado la cortina de cuando menos 12 refinerías, ante la inviabilidad económica de éstas y las exigencias sociales por un aire más limpio en las localidades cercanas a ellas. El cierre de la refinería de Azcapotzalco, en 1991, es testimonio de los beneficios en calidad de vida y aire más respirable para la Ciudad de México —experiencia que la comunidad local celebró sin reservas en su momento.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Hoy, mantener la refinería de Cadereyta operando de esta manera es un acto de negligencia pública. No podemos seguir hipotecando el bienestar futuro de los regiomontanos en nombre de una soberanía energética anacrónica y costosa. Existen alternativas viables para reubicar, reconvertir o clausurar estas instalaciones, pero ello demanda voluntad política, transparencia y una coordinación y colaboración estrechas entre federación, estado, academia y sociedad civil.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Reubicar la refinería de Cadereyta, o modernizar sus procesos bajo los estándares más altos es posible y es una decisión ineludible y urgente. La salud pública y ambiental no son negociables ni diferibles. Cada día de inacción produce externalidades negativas que pagaremos todos con nuestra salud y una menor calidad y expectativa de vida.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Es tiempo de que Nuevo León lidere, con visión y valentía, el próximo capítulo de modernización energética en México. Sólo así resolveremos, en toda su dimensión, la deuda histórica que estamos acumulando para con las siguientes generaciones.",
+      ),
+    ),
+  },
+  {
+    title: "La gota que derramó el vaso",
+    slug: "la-gota-que-derrano-el-vaso",
+    image: "/editoriales/26oct2025.webp",
+    imageAlt: "La gota que derramó el vaso",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 El Norte",
+    date: "Oct 26, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "La ciencia avanza con cada respiro. Conforme pasa el tiempo, sabemos más sobre los efectos de la contaminación del aire en la salud humana.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Nuestros corazones, pulmones y cerebros reciben en cada inhalación una dosis de los gases y partículas que emitimos con nuestras decisiones, estemos donde estemos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Lo que respiramos es consecuencia de lo que hacemos y dejamos de hacer. Ningún órgano se salva, y ningún ser humano es inmune, aunque algunos sufren más que otros estos impactos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "De la forma que alimentamos nuestra atmósfera, alimentamos nuestros pulmones. Nuestros órganos terminan siendo los filtros de las mezclas dañinas que provocamos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La evidencia más reciente del Instituto de Métricas y Evaluación de la Salud (IHME), con sede en la Facultad de Medicina de la Universidad de Washington, reveló hace unos días una estimación local del impacto crónico de la contaminación atmosférica en la mortalidad y en la reducción de la esperanza de vida durante el año 2023. Este ejercicio se realiza cada año para impulsar a las ciudades a mejorar sus políticas públicas y reducir esta amenaza flotante que, por cierto, ya es el quinto factor general de riesgo para la salud de la población de Nuevo León. Incluso tres lugares arriba del tabaco fumado.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Si aún nos preguntamos por qué es el principal riesgo ambiental que impacta en la carga de enfermedad, la respuesta es sencilla: lo que respiramos es un riesgo, y ese riesgo aumenta conforme lo hace nuestra exposición a los contaminantes suspendidos en el aire. El efecto más severo es la muerte prematura, es decir, "antes de tiempo". Pero hay efectos que "no se sienten", y que irán apareciendo con la acumulación de nuestra dosis en el tiempo. Esto merma nuestro desarrollo y nuestra calidad de vida, aunque hoy no nos demos cuenta.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El IHME estimó 3,084 vidas perdidas en Nuevo León durante el 2023, de las cuáles poco más del 98 por ciento están relacionadas a las partículas finas (PM2.5), y menos del 2 por ciento al ozono troposférico.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Esta estimación es un promedio que considera sólo el efecto crónico. Probablemente subestimada, pues no considera los efectos de la exposición a corto plazo. Sin embargo, existe evidencia local de que por cada aumento de 10 microgramos por metro cúbico de PM2.5 en el corto plazo, hay un incremento del 11.16 por ciento en el riesgo de mortalidad respiratoria en niños menores de 5 años, así como 6.63 por ciento en adultos mayores de 65 años.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Lo anterior es razón suficiente por lo cual las organizaciones de la sociedad civil en Nuevo León nos hemos movilizado para contar con un mejor Programa de Respuesta a Contingencias Atmosféricas, que aún sigue en el horno.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Entre los principales hallazgos recientes está el gran impacto que las partículas finas tienen en la salud cerebral, pues éstas pueden translocarse al cerebro directamente a través del nervio olfatorio, además de su facilidad de penetrar al torrente sanguíneo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Una de cada tres muertes por Alzheimer en nuestro estado se asoció a respirar PM2.5. Además, del total de la mortalidad local por enfermedad isquémica del corazón, casi el 20 por ciento se atribuyó a respirar estas mismas partículas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En cuanto a la mortalidad por Enfermedad Pulmonar Obstructiva Crónica (EPOC), diabetes, accidentes cerebrovasculares, cánceres, desórdenes en las primeras cuatro semanas de nacidos de los bebés y las infecciones en las vías respiratorias bajas, se estimaron entre el 17 y el 14 por ciento, respectivamente.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Estas enfermedades son la causa de muerte, pero lo que respiran quienes las padecen es la gota que derrama el vaso. Es allí donde están las soluciones.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Por ejemplo, si cumpliéramos con el promedio anual de PM2.5 recomendado por la Organización Mundial de la Salud (5 microgramos por metro cúbico) podríamos ganar 1.5 años de vida como habitantes de la Zona Metropolitana de Monterrey, de acuerdo con la última estimación 2023 de la Universidad de Chicago en su Índice de Calidad del Aire y Vida.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La buena noticia es que esto es evitable, pero sólo lograremos salvar vidas, aumentar la esperanza de vida y la calidad de vida de los habitantes de esta cuenca atmosférica si trabajamos todos por reducir la contaminación del aire, lejos de discursos y castigos, sino con el ejemplo proactivo y el ojo vigilante de la sociedad informada.",
+      ),
+    ),
+  },
+  {
+    title: "Soberanía hídrica",
+    slug: "soberania-hidrica",
+    image: "/editoriales/05oct2025.webp",
+    imageAlt: "Soberanía hídrica",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Oct 05, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "El abasto de agua en la zona metropolitana de Monterrey es sin duda el mayor desafío ambiental y social que enfrentamos cada primavera y verano. Para abordar la seguridad hídrica de Monterrey -más allá de diagnósticos, buenos deseos y ajustes menores-, hay que entender primero que se trata de un reto sistémico, con implicaciones regionales, transfronterizas, intergubernamentales y transgeneracionales.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La disponibilidad de agua para todos en calidad y suficiencia no es cuestión de huracanes oportunos o fugas resueltas. El enfoque fragmentado sólo perpetúa el ciclo de la solución provisional y la improvisación.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La seguridad hídrica de nuestra zona metropolitana exige una gestión integral a partir de una visión de escala regional, con infraestructura de almacenamiento, tratamiento y distribución funcional y bien mantenida, acuerdos institucionales claros, gobernanza transparente y efectiva y una buena articulación entre sociedad civil, academia, comunidades rurales, empresariado y autoridades de los tres niveles.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Esta colaboración estrecha es una necesidad estructural. Si los recursos naturales y los servicios ecosistémicos que nos brindan nuestros territorios y paisajes se administran aislados de las necesidades y capacidades del principal centro urbano del Estado, el sistema entero perderá resiliencia ante las cada vez más frecuentes crisis climáticas y tensiones geopolíticas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'En Monterrey, las cifras cuentan una historia inquietante. El constante crecimiento industrial y poblacional presiona las fuentes de este recurso. El "agua no contabilizada", más de una tercera parte del suministro, es el resultado de fugas y fallas en la medición del consumo. No sólo se agotan los acuíferos y presas; también la paciencia ciudadana, y los acuerdos de abastecimiento y gestión.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El Cuchillo, Cerro Prieto y la Marte R. Gómez cargan sobre sus embalses los escurrimientos de las preciadas lluvias de verano y otoño, invitando a una aritmética básica para determinar su equivalencia en días de abasto asegurado para los millones de personas que vivimos en esta Ciudad.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Esta certidumbre desaparece cuando nos damos cuenta de que las transferencias de agua a Estados Unidos, comprometidas en los acuerdos internacionales, no dejan mucho margen de maniobra. Es así como surge el fantasma del trasvase y el tira y afloja entre Federación y Estados entre lo que dictan los tratados con nuestro vecino del norte y lo que permiten los ciclos hidrológicos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La Comisión Internacional de Límites y Aguas (CILA) está a cargo de las decisiones técnicas, la resolución de conflictos y controversias, y la operación de infraestructura hidráulica transfronteriza.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El Tratado de 1944 con Estados Unidos es la piedra angular de la gestión bi-nacional. Marca los ritmos y destinos del agua que fluye por los ríos Colorado, Tijuana y Bravo. Establece las reglas, obligatorias para ambos países, para el uso del recurso hídrico binacional, ya que compartimos cuencas hídricas y acuíferos trans-fronterizos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Para el caso particular de nuestra región noreste, la reciente firma, en noviembre de 2024, del Acta 331, permite al Gobierno federal usar aguas captadas en la cuenca del Río San Juan y almacenadas en la presa El Cuchillo, para cumplir con las obligaciones internacionales.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Dado que esta cuenca es estratégica para el abastecimiento de agua potable a la zona metropolitana de Monterrey, su inclusión para resolver compromisos internacionales compromete la resiliencia hídrica de la ZMM. El cumplimiento de nuestros acuerdos internacionales en materia de agua depende de la diplomacia, la precipitación, la captura de agua en los embalses y nuestros niveles de consumo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Sólo un manejo integral del territorio y el recurso hídrico permitirá navegar entre la escasez y la sobreexplotación y entre los acuerdos internacionales y el derecho ciudadano al agua.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La complejidad de este reto socioambiental invita a considerar cuando menos tres acciones inaplazables.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La primera es promover una mesa regional de seguridad hídrica que integre actores estatales, federales e internacionales con representación académica y ciudadana. Traducir actas y tratados en proyectos concretos con seguimiento técnico y civil que resulten en soluciones medibles.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La segunda es generar un conocimiento profundo y detallado del ciclo hídrico que determina la disponibilidad de agua tanto superficial como subterránea para abastecer las necesidades de las principales ciudades del noreste. Entender la conformación geofísica de los acuíferos, sus zonas de recarga, sus flujos regionales.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La tercera es articular mecanismos robustos de autosuficiencia financiera para el manejo responsable de los territorios críticos para la resiliencia hídrica de la región, combinando su gestión con otros instrumentos de política pública como áreas protegidas federales y estatales.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La seguridad hídrica es una tarea continua, replanteamiento constante, monitoreo y ajustes. Sólo desde el ejercicio compartido y colaborativo se puede aspirar a que, cuando toque abrir la llave, fluyan vida, certezas y soluciones para todos los regiomontanos y alcancemos una verdadera soberanía hídrica.",
+      ),
+    ),
+  },
+  {
+    title: "Respiramos lo que hacemos",
+    slug: "respiramos-lo-que-hacemos",
+    image: "/editoriales/07sep2025.webp",
+    imageAlt: "Respiramos lo que hacemos",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 Consejo Cívico",
+    date: "Sep 07, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "En el marco del Día Mundial del Aire limpio por un cielo azul, que se conmemora cada 7 de septiembre desde el año 2020 gracias a la Asamblea General de las Naciones Unidas, me atrevo a hacerte esta íntima pregunta: ¿a quién le confiarías el aire que respiras?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Con la lista de factores que influyen en lo que día a día ingresamos a nuestros pulmones, la respuesta puede parecer complicada. Pero veamos cómo resolverla con 3 ingredientes clave:",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Como no somos dioses ni superhumanos, no podemos controlar la topografía, ni la meteorología, que influyen en la cantidad de contaminantes atmosféricos a los que estamos expuestos. Pero como simples y pensantes seres humanos con miles de años de evolución, sí podemos actuar con la mano en la cintura y ayudarnos a reducir las emisiones que liberan todas las actividades que realizamos tú, yo, la alcaldesa, el dueño de empresa, el estudiante o mi abuelita. Desde los escapes de los vehículos que circulan en esta ciudad, las chimeneas industriales, las cocinas de los restaurantes, los polvos de las actividades de construcción o pavimentación, los compuestos evaporativos de la gasolina, el azufre emitido por la quema de diésel que utiliza el transporte, o cualquier quema a cielo abierto.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Todo lo anterior depende única y exclusivamente de nuestra empatía e intervención. Así que, como primer paso, se requiere romper el desinterés social y la resistencia al cambio, aceptar que tenemos un problema donde nadie es inmune y donde todos tenemos responsabilidades: una genuina voluntad para solucionarlo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El segundo ingrediente, pero no menos importante, es la gestión: contar con el conocimiento y el recurso, que permitan el despliegue de tropas de los mejores científicos, médicos y técnicos para implementar y operar soluciones basadas en ciencia con una visión de cuenca atmosférica, y el único interés de proteger la salud junto a los tomadores de decisiones de todos los sectores, como el gobierno, el transporte y la industria.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'En la región metropolitana de Nuevo León hay una particularidad que no siempre es visible. Estamos dentro de una cuenca atmosférica compartida con el estado vecino de Coahuila, donde la topografía y las condiciones meteorológicas definen cierta dispersión o acumulación del aire que respiramos, creando un patrón de circulación común. Es similar al concepto de cuenca hidrográfica que recolecta agua; así, una cuenca atmosférica "recolecta" y transporta aire y todo lo que este contiene. Por ello, los contaminantes que liberamos quedan atrapados por los vientos locales y por la geografía circundante, no desaparecen. Esto hace imprescindible un esfuerzo federal serio y continuo para la institucionalización de la coordinación regional, pues, por increíble que parezca, parte de Coahuila y Nuevo León somos un solo pulmón.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Una tercera pieza son los impactos en salud. Me gusta decir que el tiempo revela todo, y esto incluye la evidencia de que estamos (o no) accionando para resolver la crisis de salud pública que representa la contaminación atmosférica en nuestra ciudad, la cual se estima está cobrando al menos 1,700 vidas y 2,500 millones de dólares de pérdida cada año que pasa. Por ejemplo: los impactos en la mortalidad, morbilidad, o ingresos hospitalarios relacionados con la contaminación del aire son indicadores claros, y hoy en día estamos estancados.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "No nos dejemos engañar, no hay varitas mágicas ni saltos cuánticos desesperados, los cambios reales son sostenidos y progresivos. Tampoco hay escapatoria: donde quiera que estemos, tú, yo, gobernantes, estudiantes, trabajadores, empresarios, investigadores, deportistas, profesores… todos los habitantes de esta cuenca compartida respiramos y tenemos decisiones que tomar cada día desde donde nos encontramos. Detrás de cualquier institución hay personas al mando, inhalando y exhalando.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Sí podemos ser empáticos, innovar, informarnos, predicar con el ejemplo y exigir colectiva y respetuosamente a los tomadores de decisiones para cambiar el escenario actual, apalancándonos de nuestro círculo de influencia.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Ya no estamos para simulaciones y esfuerzos aislados con intereses particulares o individualistas. Tenemos más de 30 años midiendo la calidad del aire en esta ciudad. No hay mejor momento para la acción coordinada.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La voluntad colectiva es cada vez mayor. Es hora de poner estos 3 ingredientes en el plato para actuar juntos, sin un interés mayor que la salud de nuestra comunidad.",
+      ),
+    ),
+  },
+  {
+    title: "Última llamada",
+    slug: "ultima-llamada",
+    image: "/editoriales/08jul2025.webp",
+    imageAlt: "Última llamada",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Jul 08, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "Monterrey, motor económico del norte de México, está en una encrucijada. Su crecimiento, legado industrial y expansión demográfica, han traído progreso, pero también han resultado en un impacto ambiental y social sin precedentes. Hoy, la Zona Metropolitana de Monterrey enfrenta un gran desafío: reconciliar su historia y capacidad económica con un futuro sostenible.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El pasado de nuestra ciudad está marcado por momentos que han moldeado el entorno natural.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La apertura de Fundidora Monterrey en 1903 fue uno de los primeros hitos del auge industrial de la región. Durante décadas, esta siderúrgica fue símbolo de modernidad, pero también una fuente importante de emisiones contaminantes a la atmósfera. Su cierre en 1986 trajo un respiro, aunque las cicatrices ambientales permanecen.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La canalización del Río Santa Catarina en 1953, y la decisión de privilegiar el transporte en automóvil con la ampliación constante de vialidades, coartó la oportunidad de capitalizar los miles de hectáreas de cauce natural que fueron sacrificadas con fines inmobiliarios. Espacios, que en su momento pudieron ser áreas y corredores verdes fueron transformados en una decisión, en la que ganaron unos pocos, y la ciudad perdió mucho.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La Refinería de Cadereyta, inaugurada en 1979, es otro capítulo importante. Aunque ha sido un actor en el suministro energético de la región y del país, su operación, dada su mal planeada ubicación, contribuye con la mayoría de las emisiones de dióxido de azufre, uno de los muchos contaminantes atmosféricos que afectan la ciudad. Su impacto es severo y recurrente y algunos expertos sugieren su reubicación como la única medida viable para proteger la salud pública.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El cierre de las pedreras de Las Mitras y el Topo Chico en 1983 fue un paso importante, pero insuficiente. Seguimos perdiendo cobertura vegetal en los paisajes que rodean a nuestra ciudad y los efectos del cambio climático actúan como un amplificador de estos problemas. Las altas temperaturas, las sequías y los incendios intensifican y agravan los episodios críticos de contaminación y calor extremo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Monterrey encarna las promesas y los desafíos de las grandes ciudades. Por un lado, ofrece empleo, infraestructura y acceso a cultura, educación y servicios esenciales. Por otro lado, conlleva impactos significativos en nuestra calidad de vida: congestión vehicular, desigualdad social, inseguridad, escasez de agua, fragmentación del hábitat y una calidad del aire que pone en riesgo nuestra salud.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Para enfrentar esta crisis, Monterrey debe aprender de experiencias internacionales de colaboración multisectorial y pensamiento sistémico, involucrando a todos los sectores de la sociedad.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Lo ambiental, social, político y económico están íntimamente vinculados. Resolver nuestro retos ambientales y sociales requiere una cabal comprensión de estos sistemas y los puntos clave de intervención.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Hasta ahora, la ciudadanía ha sido muy tolerante, absorbiendo como externalidades ambientales, sociales y económicas, el impacto de malas decisiones que, en el mejor de los casos, son por falta de conocimiento, capacidad e interés. Sin embargo, hay un camino. La sociedad regiomontana, apoyada por la sociedad civil organizada, y en colaboración con el gobierno, puede unirse en una sola voz, y desarrollar una visión compartida. Una en que los principales retos de la zona metropolitana sean resueltos asumiendo una visión de largo plazo. Veamos algunas oportunidades.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Una mejor calidad del aire bajo el liderazgo de una agencia ambiental regional independiente o comisión técnica público privada, con potestad, capacidad de decisión y presupuesto, desvinculada de intereses políticos, partidistas y económicos, y centrada en favorecer la salud pública regiomontana.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Áreas verdes y corredores biológicos suficientes, aprovechando el Santa Catarina, un río urbano, canalizado en 1953 y cada vez más degradado, cuyo abandono divide y desconecta a la ciudad. Un territorio que podría recuperarse como parque metropolitano para el disfrute responsable de los ciudadanos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Una movilidad de bajo impacto, inteligente, privilegiando el transporte público y complementada con estrategias de proximidad en nuestro desarrollo urbano futuro.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Y un gran esmero en el cuidado de nuestros paisajes naturales y las áreas protegidas del noreste, vitales para el ciclo hídrico y la recarga de acuíferos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Monterrey tiene todos los ingredientes para liderar una transformación ambiental. Una sociedad civil activa, instituciones académicas reconocidas y un sector empresarial innovador y pujante. Con voluntad política, colaboración, y una visión de largo plazo por parte de las autoridades, hemos de lograrlo.",
+      ),
+      React.createElement("p", null, "Es la última llamada."),
+    ),
+  },
+  {
+    title: "Terrenos verdes en venta",
+    slug: "terrenos-verdes-en-venta",
+    image: "/editoriales/06jun2025.webp",
+    imageAlt: "Terrenos verdes en venta",
+    author: "Ana Cristina García Luna",
+    authorProfile: "/equipo/ana.webp",
+    authorProfileAlt: "Ana Cristina García Luna",
+    newspaper: "📰 El Norte",
+    date: "Jun 06, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "La reciente intención del municipio de Santa Catarina de comercializar con terrenos clasificados como áreas de cesión municipal, entre las que hay áreas verdes, ha encendido una alarma que trasciende lo municipal con afectaciones en lo metropolitano.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Las áreas de cesión municipal tienen por objetivo ofrecer zonas verdes, parques, equipamiento público o vías para uso de bien público.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En sentido estricto, la decisión municipal es legal, pero profundamente contradictoria con la agenda de sostenibilidad, justicia espacial y resiliencia urbana que tanto se promueve en el discurso público.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Este caso amerita una reflexión crítica no sólo sobre el hecho en sí, sino sobre el marco institucional que lo permite.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La ley, en su forma vigente, autoriza la venta de predios municipales bajo ciertas condiciones. Este acto administrativo, revestido de legalidad, abre una pregunta urgente: ¿lo legal es siempre lo legítimo?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "¿Una ley que facilita la desaparición progresiva de las áreas verdes en una metrópoli marcada por la desigualdad ambiental, las islas de calor, la creciente contaminación y la vulnerabilidad hídrica, no debe ser revisada a fondo?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El urbanismo, cuando se entiende en su dimensión más amplia (social, ecológica y cultural), nos invita a pensar el territorio no como una suma de parcelas disponibles para transacción, sino como un entramado de sistemas vitales que sostienen el habitar colectivo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En ese sentido, las áreas verdes urbanas no son simples vacíos residuales ni activos monetizables, sino infraestructuras esenciales para la vida.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Son espacios de equilibrio térmico, de captación de agua, de resguardo de biodiversidad, de salud comunitaria. En pocas palabras: son pulmones y refugios de una Ciudad cada vez más sometida al estrés climático.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El caso de Santa Catarina no es una excepción, sino una muestra más de cómo los vacíos y ambigüedades legales pueden ser aprovechados para privatizar lo público, para redefinir lo común como mercancía.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "No se trata aquí de señalar culpables individuales, sino de identificar una lógica sistémica que sigue favoreciendo el crecimiento urbano a costa del bienestar urbano y social.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "¿Qué visión de ciudad subyace en estas decisiones? Una que prioriza la rentabilidad inmediata, sacrificando los beneficios ecosistémicos de largo plazo. Una que sigue tratando el suelo como un recurso inagotable, ignorando los límites ecológicos. Una que, en el fondo, desarticula cualquier intento de construir una metrópoli verdaderamente resiliente y equitativa.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Si la ley permite esto, es tiempo de actualizarla de acuerdo con las necesidades de la metrópoli.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La planeación urbana contemporánea exige marcos normativos que protejan activamente las áreas verdes, por todos los servicios ambientales que nos proveen, y no que sean espacios para la especulación.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Requiere procesos participativos vinculantes, criterios de soluciones basadas en la naturaleza y sociales para el manejo del suelo, y sobre todo, un cambio de paradigma: dejar de ver a la Ciudad como un negocio y empezar a tratarla como un ecosistema complejo que merece equilibrios y cuidados.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El derecho a la ciudad, que implica acceso equitativo a los servicios, al espacio público y a un entorno saludable, no puede sostenerse si vendemos lo poco que nos puede brindar en cuanto a oportunidades de mitigar los efectos del cambio climático causados por la excesiva urbanización. ¿Qué mensaje damos a las generaciones futuras cuando les arrebatamos sombra, suelo fértil y espacios de encuentro?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Santa Catarina hoy nos ofrece una oportunidad para reflexionar colectivamente: no sólo sobre la importancia de las áreas verdes, sino sobre la necesidad de una legislación urbana y ambiental que esté a la altura de la crisis climática y de los desafíos metropolitanos del siglo 21.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "No se trata sólo de frenar una venta, sino de activar una conciencia. Porque en cada terreno verde que desaparece, también se desvanece más la posibilidad de una ciudad justa, viva y verdaderamente habitable.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Colaboró León G. Staines-Díaz, investigador afiliado al ITESM Monterrey.",
+      ),
+    ),
+  },
+  {
+    title: "Apocalipsis regio",
+    slug: "apocalipsis-regio",
+    image: "/editoriales/18may2025.webp",
+    imageAlt: "Apocalipsis regio",
+    author: "Uriel Chavarría",
+    authorProfile: "/equipo/uriel.webp",
+    authorProfileAlt: "Uriel Chavarría",
+    newspaper: "📰 El Norte",
+    date: "May 18, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "El Apocalipsis no es una profecía lejana. En Monterrey, sus jinetes cabalgan hoy sobre los cuatro elementos: aire, tierra, agua y fuego. Sus garras son visibles y su embate, una amenaza inmediata para nuestra supervivencia. Los jinetes son cabalgados también por la negligencia empresarial y la ineficacia gubernamental.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'AIRE. El primer jinete en la Biblia monta un caballo negro como el humo de la refinería que huele a "huevo podrido". Al seguir operando, recuerda el problema que los amparos y excusas burocráticas mantienen intocable. La incapacidad o falta de voluntad para hacer cumplir la ley nos condena a seguir respirando veneno.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Una gasolina digna a partir de la norma NOM 016-CRE-2016 sigue pendiente y la refinería está en los ojos de la investigación del Instituto Nacional de Ecología (INECC), de la cual aguardamos resultados.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "TIERRA. El caballo del segundo jinete es amarillo. La compañía Zinc Nacional produce óxido de zinc que se torna pálido con el aire. Para hacerlo requiere reciclar zinc a partir de desechos industriales. En una investigación se encontró plomo y arsénico en el subsuelo de escuelas donde niños juegan.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Seguir operando a cambio de una multa de 80 millones de pesos es una bofetada a los vecinos y una burla a la justicia ambiental. Este tipo de "sanciones" son vistas por las empresas como un costo operativo menor, no como un incentivo real para dejar de envenenar nuestro suelo.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        'AGUA. El tercer jinete monta un caballo rojo. La empresa Ternium tuvo una fuga de agua ácida y cloruro ferroso que tiñó de rojo el arroyo de la Talaverna. Tras envenenar 10 km, recibió una multa que es "peccata minuta" para su tesorería y una licencia tácita para continuar con la actividad contaminante. La lección parece ser que el medio ambiente y la salud pública tienen un precio bajo en Monterrey.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Ahora aparece otro derrame de la compañía Pigmentos y Óxidos que llegó al arroyo Topo Chico. La mancha azul alcanzó 6.2 km. La compañía declaró: "Es solo agüita de colorcito azul con nula toxicidad"(sic). Culpan del problema a Agua y Drenaje y "la bolita" sigue de un lado a otro.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "FUEGO. El cuarto jinete monta un caballo blanco. Es fácil señalar a las industrias, pero debemos mirarnos al espejo. Somos el cuarto jinete, no solo por la huella insostenible de nuestro aforo vehicular, sino por la paralizante apatía que nos impide reaccionar. El fuego que consumirá nuestro futuro es, en parte, el que nosotros mismos avivamos con nuestras decisiones (como el uso masivo del automóvil) y con nuestra incapacidad para organizarnos y exigir un cambio real a los responsables.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Como si la situación no fuera lo bastante distópica, nos es anunciado un segundo piso en Morones Prieto. La justificación oficial se basa en una "Manifestación de Impacto Ambiental" que desafía la lógica: construir más infraestructura para autos supuestamente disminuirá la contaminación. Es una política que consolida una ciudad diseñada para vehículos, no para personas, y que ignora la evidencia científica sobre movilidad sostenible.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Vemos el apocalipsis desarrollarse y nuestra respuesta es el silencio o la resignación. Por otra parte, observamos pasivamente cómo se tratan de solucionar estos problemas con múltiples comisiones, fiscalías y un largo etcétera de respuestas que el tiempo ha demostrado no efectivas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La razón podría ser que son dirigidas por la autoridad y no se consideran entes autónomos con personas científicas calificadas, asistidas por la participación y el poder de la decisión ciudadana.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Si estos ejemplos parecieran extremos, no olvidemos que en conjunto son solo destellos de un universo de daño que todas las formas de contaminación están haciendo a nuestra salud. La evidencia dicta que la expectativa de vida disminuye, lo cual es un eufemismo para decir que simplemente moriremos más pronto.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Toda esta alegoría de los jinetes no es una casualidad curiosa, sino una muestra de que nuestra ciudad se destruye por todos lados.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El fuego del cuarto jinete no tiene por qué ser solo destrucción; tiene el potencial también de ser la chispa de la transformación de la unión ciudadana. Necesitamos hacer que ocurra lo siguiente: mejorar regulaciones, invertir en transporte público, fomentar prácticas industriales limpias con educación ambiental y con la participación ciudadana organizada.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La pregunta no es si moriremos, sino si despertaremos a tiempo para pelear por nuestra supervivencia. No esperemos que alguien más lo haga por nosotros. ¿Qué, maldita sea, estamos esperando?",
+      ),
+    ),
+  },
+  {
+    title: "¿Mutualismo o parasitismo?",
+    slug: "mutualismo-o-parasitismo",
+    image: "/editoriales/02may2025.webp",
+    imageAlt: "¿Mutualismo o parasitismo?",
+    author: "Selene Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene Guajardo",
+    newspaper: "📰 El Norte",
+    date: "May 02, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "Más del siete por ciento de la mortalidad durante las primeras cuatro semanas de los bebés nacidos vivos en Nuevo León se atribuyó a la exposición crónica a material particulado fino en exteriores en el año 2021.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Algunas de las causas de estas muertes fueron: parto prematuro, encefalopatía, septicemia, y anemia hemolítica. La exposición de las mamás y sus bebés a las PM2.5 de esta ciudad conduce a que esos desórdenes se agraven.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Es nuestra responsabilidad y de mucha ayuda seguir las recomendaciones que podemos tomar como individuos para disminuir la dosis de PM2.5 que entra a nuestro organismo, sin embargo, no podemos hacerlo solos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La Secretaría de Salud puede y debe ayudarnos a hacerlo, asumiendo que es de su interés que la población tenga una vida digna y saludable, y que sobrevivamos como seres humanos.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En la biología existe un término llamado mutualismo, un tipo de simbiosis, que consiste en una interacción dependiente entre dos individuos que los beneficia a ambos. Existen otros tipos de simbiosis más rudos y desafortunados, como el parasitismo. Lo bello del mutualismo es que beneficia la estabilidad estructural a través de la colaboración.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Por ejemplo, un tipo de polinizador como el colibrí necesita alimentarse del néctar de las flores, pero al hacerlo también colecta y dispersa el polen de las plantas, ayudándolas a llegar a nuevos espacios. El polinizador come y la planta se esparce. Eso es mutualismo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En nuestra ciudad requerimos que la Secretaría de Salud sea un colibrí.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Acciones como el establecimiento de un Sistema de Vigilancia en Salud Pública de calidad del aire son necesarias para proteger a los habitantes porque están hechos para recoger información de calidad del aire y cruzarla continuamente con información de enfermedades y mortalidad en diversas áreas de la ciudad en el corto, mediano y largo plazo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La información que se obtiene permite cuantificar los impactos de la calidad del aire sobre la salud, lo que sirve para orientar las acciones de promoción, prevención y control, y también las políticas públicas que van trazando o modificando nuestra ciudad.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Además, estos sistemas de vigilancia permiten transparentar la información para fortalecer acciones que reduzcan los efectos negativos de esa exposición a la contaminación del aire en la salud de la población. Un claro ejemplo es la mortalidad evitable de los bebés que, en sus primeros respiros, se fueron. ¡Es evitable!",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Las desigualdades comienzan en el aire que respiramos. El diseño de nuestra ciudad condiciona nuestra salud, e incluso la calidad de persona que podemos ser. Así también, la calidad de personas que somos condiciona nuestro entorno. Este ciclo se autoalimenta y nos llama a cuestionar el modelo de desarrollo de la Zona Metropolitana de Monterrey. ¿Mutualismo o parasitismo?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La ciudad que queremos, saludable y diversa, es posible. Pero va a requerir que busquemos construirla todos los días a través mutualismo, de nuestros actos y de nuestro involucramiento en los temas públicos, para que también los tomadores de decisiones detrás de instituciones como la Secretaría de Salud, actúen lo más rápido posible.",
+      ),
+    ),
+  },
+  {
+    title: "Monterrey, entre 50 millones de voces por el aire limpio",
+    slug: "monterrey-entre-50-millones-de-voces-por-el-aire-limpio",
+    image: "/editoriales/30abr2025.webp",
+    imageAlt: "Monterrey, entre 50 millones de voces por el aire limpio",
+    author: "Selene Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene Guajardo",
+    newspaper: "📰 ABC Noticias",
+    date: "Abr 30, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "Durante la última semana de marzo de este 2025 se llevó a cabo la Segunda Conferencia Global de Contaminación del Aire y Salud en Cartagena, Colombia. Este evento, impulsado por la Organización Mundial de la Salud y su brazo de América Latina y el Caribe, la Organización Panamericana de la Salud, logró reunir a más de 700 delegados de aproximadamente 70 países, especialistas de la salud, organizaciones de la sociedad civil, líderes comunitarios y artistas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Espacios de fortalecimiento como estos son una oportunidad para visibilizar los retos y también las soluciones que enfrentan las diferentes regiones del mundo frente a la contaminación del aire, un impacto ambiental que cobra alrededor de 370,000 vidas al año tan sólo en la región de América Latina y el Caribe.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "A través de la divulgación científica, el diálogo constructivo y el arte, los asistentes a la conferencia asumieron compromisos para abordar la problemática de contaminación del aire y salvaguardar la salud.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Los gobiernos de al menos 18 países del mundo se comprometieron a reducir en un 50% la mortalidad asociada a la contaminación atmosférica para el año 2040.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Además, países como China presentaron avances significativos en el control de la contaminación atmosférica, un caso inspirador en el que han logrado disminuir hasta un 30% los niveles de partículas respirables en 10 años.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Lo anterior gracias a su decidida implementación de políticas de transición energética, transporte eléctrico y planificación urbana.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En este encuentro, el Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey, A.C. participó en dos espacios diferentes de intercambio con otras ciudades, uno de ellos para analizar las desigualdades que enfrentan las diferentes comunidades que habitan los territorios de la región de América Latina y el Caribe.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En el caso de Nuevo León, la situación que vivimos ante la falta de un Sistema Integrado de Transporte Público, necesario para reducir el uso de combustibles y las emisiones al aire a gran escala, fue protagonista de la conversación.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Esta situación nos expone no sólo a externalidades negativas como la pérdida de tiempo de calidad o el estrés, sino también a la exposición a contaminantes atmosféricos como el material particulado o los óxidos de nitrógeno.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Otro caso particular de vulnerabilidad presentado en el evento subrayó la importancia de atender la problemática en zonas con alta actividad industrial que tienen niveles más permisivos de emisión de partículas, como es el caso de García, Salinas Victoria y Cadereyta, municipios que actualmente se excluyen en las normas mexicanas, de por sí laxas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Un segundo foro abordó la relevancia de contar con pronósticos de calidad del aire asertivos para la prevención de los impactos negativos de la contaminación del aire en la salud de la población, sobre todo como una parte claramente integrada en los programas de alertas y contingencias atmosféricas en las ciudades que concentran un gran número de habitantes, como el caso de Monterrey.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Un ingrediente base en este encuentro fue la participación de casi 50 millones de profesionales del sector salud, llamando a los gobiernos de todo el mundo a frenar la contaminación del aire para prevenir enfermedades y salvar vidas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Países como Vietnam enlistaron entre sus compromisos incluir la estrecha relación entre la calidad del aire y la salud pública en la currícula de médicos en formación para prepararlos para abordar esta realidad.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "México, por su parte, a través de la Secretaría de Medio Ambiente y Recursos Naturales y de la Secretaría de Salud, se comprometió a fortalecer y ampliar la capacidad del monitoreo de calidad del aire y a mejorar el cumplimiento del índice de calidad del aire y salud en todos los estados.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Igualmente mejorar la regulación de las emisiones provenientes de la industria, impulsar los programas de alerta temprana y establecer un sistema de vigilancia epidemiológica específicamente de calidad del aire, incluyendo otros factores ambientales que inciden sobre la salud humana, como el suelo y el agua.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "De particular relevancia fue reconocer la importancia del desarrollo de políticas intersectoriales entre medio ambiente, energía y desarrollo urbano.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Hoy la ciencia y el conocimiento son tan claros como deberían ser nuestros cielos. La inacción ya no es opción. Es tiempo de convertirnos en firmes "terminators" de la contaminación atmosférica, actuando con la determinación y la premura que el bienestar de nuestras comunidades exige.',
+      ),
+    ),
+  },
+  {
+    title: "Huevo podrido",
+    slug: "huevo-podrido",
+    image: "/editoriales/06abr2025.webp",
+    imageAlt: "Huevo podrido",
+    author: "Uriel Chavarría",
+    authorProfile: "/equipo/uriel.webp",
+    authorProfileAlt: "Uriel Chavarría",
+    newspaper: "📰 El Norte",
+    date: "Abr 06, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        '¿A qué huele Monterrey? He preguntado esto a Gemini y contestó: "En Monterrey, el olor predominante suele ser de gas o azufre. Esto se debe principalmente a las emisiones de la refinería de Pemex ubicada en Cadereyta. Los vientos pueden transportar estos olores hacia Monterrey".',
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "En la escuela la maestra pregunta a Pepito: ¿por qué huele a huevo podrido en Monterrey? Pues muy fácil, cuando pasamos por Cadereyta huele a eso; algunos días el olor es similar pero menos intenso en Monterrey, por lo tanto el olor debe venir de ahí.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "¿Es tan difícil tener sentido común? Los olores a dióxido de azufre y mercaptano han continuado en Monterrey. Esto es solamente una pizca del abanico de la contaminación cada vez peor que respiramos. Hace un año, la sociedad civil inició un movimiento contra la refinería. Se prometieron cosas que no se han cumplido. Si la refinería fuera persona sería muy afortunada, pues ha sido defendida a capa y espada.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        'Esta semana se abordó el tema en la mañanera. Cuando se hizo la pregunta de si la refinería era responsable del olor en Monterrey la respuesta inmediata fue: "no necesariamente".',
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "En otro día, se declaró que no se tomarían medidas hasta que se hiciera una investigación con la creación de un inventario. Se dijo en tal ocasión que tenemos sistemas rudimentarios de vigilancia ambiental. Se nos hizo ver como cavernícolas.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        'Quienes vivimos aqui tomamos esto como, "por lo pronto siganse muriendo". Si no se vive y se sufre aquí, al menos necesitamos empatía. ¿Qué no se presentó el Pigeca hace dos años? Lo olvidaba, la refinería no participó en tal programa. Otra piedra al zapato.',
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Hay medidas que no requieren de un inventario. Tenemos años esperando que la gasolina sea al menos de calidad similar a la de CDMX. ¿Qué pasos se han hecho para dejar de quemar combustóleo en la refinería? ¿Por qué al mismo tiempo se impide que se pueda ir a inspeccionar la refinería por medio de amparos?",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Por supuesto que hay contaminación por otras industrias y por fuentes móviles. Todo se debe abordar, pero es muy dramático que algo que pertenece al Gobierno sea probablemente la mayor fuente de contaminación metropolitana.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Llegan los polvos de Texas y a nivel estatal inmediatamente se declara que no es parte del mismo problema. Una semana después huele a huevo podrido y ahí ya no se declara nada. Asimismo, se dice que no hay más enfermedades respiratorias de salud por la contaminación. Los neumólogos ya no sabemos qué decir a los pacientes que no sea que cambien de ciudad.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Se crea la Comisión Ambiental Metropolitana (CAMe) y es presidida por el mismo Estado cuando todos los especialistas y organizaciones ambientales claman porque sea un instrumento verdaderamente técnico y autónomo.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "A la luz de estos hechos y siguiendo la más elemental lógica pregunto: ¿eso es estar de nuestro lado? ¿Hay en verdad un verdadero compromiso de todas las partes de ayudarnos?",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Sin embargo, una luz de esperanza se eleva con la visita e investigación del Instituto Nacional de Ecología y Cambio Climático (INECC). Son investigadores de la UNAM reconocidos que esperamos sean escuchados en sus hallazgos. Ojalá los resultados sean transparentes para nuestros especialistas y expertos locales. Es su última oportunidad.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "¿Qué hacer por lo pronto? Se está creando un manual de respuesta a contingencias. Ojalá algún día no tengamos necesidad de contingencias. A la luz de la evidencia, el uso de cubrebocas es una espada de dos filos. Requiere condiciones muy específicas para ser totalmente efectivo, como una N95 muy bien sellada. Por otra parte da una sensación de falsa seguridad especialmente si se usa otro tipo de cubrebocas ocasionando que la gente se confíe y permanezca más tiempo a la intemperie cuando hay contaminación.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "El interior de los domicilios, aunque no es perfecto, es mejor que estar en el exterior para actividades como ejercicio. Mención especial merecen las escuelas, en las cuales los niños idealmente deben permanecer en el interior durante alta contaminación.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Tras años de esta situación, quizás sea tiempo de replantear nuestra postura. ¿Hemos sido crédulos y apáticos? ¿Qué parte de responsabilidad nos corresponde como ciudadanos al no haber exigido un cambio? ¿Ha llegado el momento de explorar alternativas reales? Los invito a reflexionar.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        'Recordemos que la sociedad civil unida puede lograr lo que quiera. No podemos aceptar como normal el "olor a Cadereyta y Monterrey". La ciudad es la herencia de nuestros padres y el futuro de nuestros hijos. No pertenece a quienes contaminan y nos asfixian. Es hora de ejercer nuestro derecho a la ciudad con firmeza, sin concesiones. ¡Despertemos de una vez!',
+      ),
+    ),
+  },
+  {
+    title: "Monterrey: respirar entre cenizas",
+    slug: "monterrey-respirar-entre-cenizas",
+    image: "/editoriales/09mar2025.webp",
+    imageAlt: "Monterrey: respirar entre cenizas",
+    author: "Ana Cristina García Luna",
+    authorProfile: "/equipo/ana.webp",
+    authorProfileAlt: "Ana Cristina García Luna",
+    newspaper: "📰 El Norte",
+    date: "Mar 09, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "El aire de Monterrey es una sentencia invisible que cargamos en los pulmones. No se ve, no se toca, pero se siente con cada respiración pesada, con cada tos insistente, con cada diagnóstico de enfermedad respiratoria.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Monterrey es una ciudad que avanza, pero su aire retrocede. Respiramos una mezcla densa de partículas, óxidos y cenizas urbanas, como si estuviéramos inmersos en una nube tóxica que no se disipa. Nos acostumbramos al ardor en los ojos, a la garganta irritada, al respiro entrecortado. Nos resignamos a vivir bajo un cielo que no es cielo, sino un velo gris de contaminación.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Los pulmones de nuestros niños son los primeros en pagar el precio. Como esponjas frágiles, absorben cada partícula suspendida en el aire, alterando su desarrollo, debilitando su capacidad de defensa, haciéndolos más propensos a infecciones y enfermedades crónicas. En los adultos, el daño es progresivo, silencioso, acumulativo: hipertensión, afecciones cardiovasculares, cáncer. Monterrey no solo es una ciudad de industrias y progreso; es también una ciudad de inhaladores, de hospitales saturados, de vidas condicionadas por lo que respiramos.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "La Organización Mundial de la Salud (OMS) ha advertido que la contaminación del aire es el mayor riesgo ambiental para la salud humana. Según sus estudios, la exposición prolongada a contaminantes como el material particulado fino (PM2.5) puede reducir la esperanza de vida, provocar enfermedades respiratorias graves e incrementar la incidencia de accidentes cerebrovasculares y cáncer de pulmón. No es solo un problema de calidad ambiental, sino de supervivencia.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Lo más alarmante es que, en un mundo postpandemia, hemos aprendido el peso de la vulnerabilidad sanitaria. La mala calidad del aire no es solo un problema ambiental; es una crisis de salud pública que nos hace débiles ante cualquier amenaza epidemiológica. Si nuestro sistema respiratorio está comprometido, ¿cómo podemos enfrentar futuras crisis sanitarias?",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "No podemos seguir esperando soluciones que nunca llegan. Es momento de exigir medidas drásticas, de repensar el modelo urbano, de integrar la calidad del aire como un eje prioritario en la toma de decisiones. Fomentar ciudades resilientes.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "El modelo de ciudad que seguimos replicando ha demostrado ser insostenible. Un crecimiento desordenado y una urbanización basada en el automóvil nos han llevado a depender de infraestructuras que promueven la contaminación y fragmentan los espacios urbanos. Necesitamos transitar hacia ciudades compactas, con redes de movilidad sustentable, pulmones verdes bien distribuidos y políticas ambientales estrictas. Es imperativo que las decisiones urbanas prioricen la salud de sus habitantes en lugar del beneficio económico inmediato de la industria y el desarrollo sin regulación.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Monterrey tiene la oportunidad de reinventarse, de liderar una transformación hacia un modelo de ciudad resiliente que respete a quienes la habitan. Pero para ello, necesitamos voluntad política y compromiso ciudadano. No basta con exigir; debemos involucrarnos, proponer, impulsar cambios tangibles que nos devuelvan la posibilidad de respirar sin miedo.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Ahora, la pregunta es para ti: ¿eres consciente del costo que ya has pagado por el aire que respiras? Cada tos que ignoraste, cada dolor de cabeza inexplicable, cada noche de insomnio por la contaminación, cada diagnóstico médico que quizás aún no ha llegado, pero que inevitablemente te alcanzará. La calidad del aire no es un problema lejano ni ajeno; es una cuenta regresiva que tarde o temprano cobrará su precio en nuestra salud y calidad de vida. Definitivamente, la indiferencia ya no es una opción.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Todos tenemos una responsabilidad en esta crisis. No es solo tarea del Gobierno, las empresas o los urbanistas; es un esfuerzo colectivo que requiere cambios en nuestra manera de habitar la ciudad, en nuestra movilidad, en nuestras exigencias como ciudadanos. Exigir aire limpio es exigir vida.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        'Porque al final del día, respirar no debería ser un lujo. "Quiero que mi hija corra sin miedo a enfermarse, que aspire profundo sin que su pecho duela, que su aire sea un derecho, no una amenaza".',
+      ),
+    ),
+  },
+  {
+    title: "La salud en el aire",
+    slug: "la-salud-en-el-aire",
+    image: "/editoriales/07mar2025.webp",
+    imageAlt: "La salud en el aire",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Mar 07, 2025",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "La Ciudad de las Montañas enfrenta una crisis silenciosa y letal.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "En 2023 la Zona Metropolitana de Monterrey (ZMM) experimentó 213 días (58% del año) con niveles de partículas menores a 10 micras (PM10) por encima de los estándares diarios de salud mexicanos.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Las partículas menores a 2.5 micras (PM2.5) sobrepasaron la norma durante 83 días (23%) ese mismo año. No son solo cifras; son periodos en los que nuestros pulmones, especialmente los de nuestros niños y adultos mayores, se vieron forzados a filtrar un cóctel tóxico de partículas y compuestos químicos.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "La realidad es alarmante: la concentración promedio anual de PM2.5 en la ZMM es entre 4 y 5 veces superior al valor recomendado por la Organización Mundial de la Salud.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "La contaminación en Monterrey es un reto sistémico, es decir, un desafío complejo y multifactorial.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Por un lado, tenemos la refinería de Cadereyta y las termoeléctricas, fuentes de energía que alimentan nuestra economía, responsables de buena parte de las emisiones de dióxido de azufre en la ciudad.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Por otro, el elevado número de vehículos privados, públicos y de carga que, ante la ausencia de un sistema de transporte público funcional, contribuyen significativamente a la polución con óxidos de nitrógeno y partículas.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "A esto se suma una industria pujante, motor de nuestra economía, pero también fuente importante de contaminación.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Igualmente, un crecimiento urbano que ha olvidado la importancia de los ecosistemas, paisajes, y espacios verdes que nos rodean, la peculiar topografía de una ciudad asentada entre montañas y las condiciones meteorológicas, tan particulares de nuestra ciudad en los meses de invierno, que frecuentemente generan inversiones térmicas.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Frente a esta realidad compleja y asfixiante, la sociedad civil de la ZMM ha decidido no quedarse de brazos cruzados. La reciente formación de la Alianza del Aire Nuevo León es un testimonio de esta lucha por el aire limpio en la cual el conocimiento debe ser nuestro guía.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "El Observatorio Ciudadano de la Calidad del Aire del Area Metropolitana de Monterrey (OCCAMM juega u n papel clave en la recopilación y análisis de datos sobre la calidad del aire y sus impactos en la salud humana.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Sus esfuerzos nos permiten entender no solo la magnitud del problema, sino también su dinámica temporal y espacial para diseñar estrategias efectivas tanto para mitigar las emisiones antropogénicas a largo plazo, como para contar con planes de contingencia que protejan a los habitantes ante episodios severos de contaminación como el vivido el pasado 4 de marzo, justo dos días después de que fuera instalada oficialmente la Comisión Ambiental Metropolitana.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Mejorar la calidad del aire en Monterrey no es una tarea que pueda abordarse de manera aislada. La complejidad de este desafío requiere una respuesta colaborativa, multisectorial y de largo aliento. Precisa diversidad de pensamiento, pero sobre todo de tres elementos, sin los cuales las propuestas quedarán en buenas intenciones. Estos son voluntad política, financiamiento suficiente y estable, y propuestas basadas en la mejor ciencia y conocimiento. Lo anterior apuntalado por un mecanismo ágil y efectivo de gobernanza, representativo de todos los sectores.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Como ciudadanos responsables debemos mantenernos informados y al tanto de la calidad del aire en nuestra localidad. Participar en organizaciones y movimientos ciudadanos, hacer oír nuestra voz en materia de mitigación de la contaminación y derecho a la salud, y adoptar las prácticas sostenibles de vida que estén a nuestro alcance.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Monterrey tiene todos los ingredientes; una sociedad civil activa e informada, instituciones académicas de primer nivel, y un sector empresarial comprometido e innovador. Solo nos falta dar el paso decisivo incorporando espacios colaborativos con representación plural.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "La instalación de la Comisión Ambiental Metropolitana, bajo el liderazgo de la Semarnat, como una estructura plural, transparente, y con financiamiento adecuado, es un paso en la dirección correcta.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "Esto siempre y cuando esta comisión sea presidida por una persona experta, independiente del gobierno estatal, y opere como un organismo de coordinación técnica, sin vicios ni intereses políticos, con una mayoría de miembros representando la academia y la sociedad civil.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "El camino hacia una ZMM con aire limpio es largo, pero no imposible. Ejemplos de ciudades en México y otros países han demostrado que, con voluntad política, innovación tecnológica y, sobre todo, participación ciudadana, es posible sanar el deterioro atmosférico.",
+      ),
+
+      React.createElement(
+        "p",
+        null,
+        "La calidad del aire que respiraremos mañana depende de las acciones que tomemos hoy. No cometamos los mismos errores del pasado, este reto no se resolverá solo. El futuro de nuestra ciudad, y la salud de todos, está literalmente en el aire.",
+      ),
+    ),
+  },
+  {
+    title: "NL no puede respirar",
+    slug: "nl-no-puede-respirar",
+    image: "/editoriales/16feb2025.webp",
+    imageAlt: "NL no puede respirar",
+    author: "Uriel Chavarría",
+    authorProfile: "/equipo/uriel.webp",
+    authorProfileAlt: "Uriel Chavarría",
+    newspaper: "📰 El Norte",
+    date: "Feb 16, 2025",
+    pdfLink: "/editoriales/16feb2025.pdf",
+  },
+  {
+    title: "Por debajo de la alfombra...",
+    slug: "por-debajo-de-la-alfombra",
+    image: "/editoriales/19ene2025.webp",
+    imageAlt: "Por debajo de la alfombra...",
+    author: "Uriel Chavarría",
+    authorProfile: "/equipo/uriel.webp",
+    authorProfileAlt: "Uriel Chavarría",
+    newspaper: "📰 El Norte",
+    date: "Ene 19, 2025",
+    pdfLink: "/editoriales/19ene2025.pdf",
+  },
+  {
+    title: "Un 2025 para movilizarnos",
+    slug: "un-2025-para-movilizarnos",
+    image: "/editoriales/12ene2025.webp",
+    imageAlt: "Un 2025 para movilizarnos",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 El Norte",
+    date: "Ene 12, 2025",
+    pdfLink: "/editoriales/12ene2025.pdf",
+  },
+  {
+    title: "Impuestos verdes y buen gobierno",
+    slug: "impuestos-verdes-y-buen-gobierno",
+    image: "/editoriales/15dic2024.webp",
+    imageAlt: "Impuestos verdes y buen gobierno",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Dic 15, 2024",
+    pdfLink: "/editoriales/15dic2024.pdf",
+  },
+  {
+    title: "Días limpios, ciudades humanas",
+    slug: "dias-limpios-ciudades-humanas",
+    image: "/editoriales/22nov2024.webp",
+    imageAlt: "Días limpios, ciudades humanas",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Nov 22, 2024",
+    pdfLink: "/editoriales/22nov2024.pdf",
+  },
+  {
+    title: "Días sobre la norma, una verdad incómoda",
+    slug: "dias-sobre-la-norma-una-verdad-incomoda",
+    image: "/editoriales/03nov2024.webp",
+    imageAlt: "Días sobre la norma, una verdad incómoda",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 El Norte",
+    date: "Nov 3, 2024",
+    pdfLink: "/editoriales/03nov2024.pdf",
+  },
+  {
+    title: "Colaborar para prosperar",
+    slug: "colaborar-para-prosperar",
+    image: "/editoriales/01nov2024.webp",
+    imageAlt: "Colaborar para prosperar",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Nov 1, 2024",
+    pdfLink: "/editoriales/01nov2024.pdf",
+  },
+  {
+    title: "Octubre de cambios y marrones",
+    slug: "octubre-de-cambios-y-marrones",
+    image: "/editoriales/10oct2024.webp",
+    imageAlt: "Octubre de cambios y marrones",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 ABC Noticias",
+    date: "Oct 10, 2024",
+    pdfLink: "/editoriales/10oct2024.pdf",
+  },
+  {
+    title: "La docena de una ciudad razonable",
+    slug: "la-docena-de-una-ciudad-razonable",
+    image: "/editoriales/03sep2024.webp",
+    imageAlt: "La docena de una ciudad razonable",
+    author: "Gabriel Todd",
+    authorProfile: "/equipo/gabriel.webp",
+    authorProfileAlt: "Gabriel Todd",
+    newspaper: "📰 ABC Noticias",
+    date: "Sep 3, 2024",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        'En los próximos 20 años el 80 por ciento de la población mundial vivirá en ciudades y, como diría Rubén Pesci, mi maestro y urbanista argentino, "la sustentabilidad del planeta dependerá de lo que hagamos y dejemos de hacer en las ciudades".',
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Más allá de que la felicidad y la realidad son asuntos personales, colectivamente si contaminamos o no, si generamos empleos o no y hasta si podemos crear las condiciones para convivir en armonía o no, en gran parte será el resultado de nuestra experiencia en las ciudades. Aquí te dejo 12 paquetes temáticos como un mínimo para aspirar, en mi opinión, a tener "ciudades razonables".',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "1. Tecnología para la seguridad y gestión del tráfico.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Se debe aprovechar la Inteligencia Artificial (IA), la información en los celulares y las nuevas tecnologías para mejorar la seguridad pública y la gestión del tráfico. Hay que implementar sistemas inteligentes de semáforos que se adapten al flujo vehicular mediante uso de la información de Google y en otras plataformas que permitan a los ciudadanos ayudar a la autoridad y compartir o rentar opciones de movilidad, así como reportar, proponer y fotografiar incidencias en tiempo real. Esto podría ser un gran paso hacia una movilidad más fluida y segura.",
+      ),
+      React.createElement("p", null, "2. Escuchar, comunicar y transparentar."),
+      React.createElement(
+        "p",
+        null,
+        "La confianza en las autoridades es uno de los puntos más sensibles de todo gobierno y se puede construir escuchando sin defenderse o sin querer tener la razón y transparentando al mismo tiempo la información. La gente no cree ya en discursos vacíos ni en fotografías o videos prometedores, y se debe establecer por ello una comunicación de ida y vuelta, no sólo de ida. Trabajar todos la salud mental será un reto en este proceso para no tomarse nada personal.",
+      ),
+      React.createElement("p", null, "3. Colaboración ciudadana real."),
+      React.createElement(
+        "p",
+        null,
+        'La participación ciudadana debe avanzar para ser una colaboración cotidiana, es decir, debe resolver algún problema concreto, aunque no sea estratégico, pero lo que no debe ser es una pérdida de tiempo o una sesión psiquiátrica. Delegar tareas concretas con asesoría en juntas de vecinos para la remodelación de parques, banquetas y hasta para realizar pequeñas obras pendientes u organizar eventos comunitarios, permitirá a los ciudadanos estar ocupados y "dejar de grillar" para sentirse activos en la mejora de su entorno inmediato, y aportar recursos adicionales para enfrentar los problemas que son de todos, no del gobernante.',
+      ),
+      React.createElement("p", null, "4. Control del espacio público."),
+      React.createElement(
+        "p",
+        null,
+        "Racionalizar el uso de calles y espacios públicos es esencial para tratar de descongestionar y recuperar espacios para la convivencia. Esto incluye establecer normas que eviten, por ejemplo, el estacionamiento gratuito irracional de la vía pública y fomentar la innovación del espacio privado y otras medidas que mencioné en mi artículo pasado sobre la congestión.",
+      ),
+      React.createElement("p", null, "5. Conexión y arborización de aceras."),
+      React.createElement(
+        "p",
+        null,
+        "Las aceras son la célula del espacio público. Para promover la micro movilidad y la convivencia, Monterrey debe conectar y ampliar sus aceras, además de arborizarlas. Este enfoque no solo mejorará la imagen urbana, sino que también fomentará su uso al ser seguras y parcialmente sombreadas, creando idealmente micro parques lineales.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "6. Incentivos fiscales para la proximidad urbana.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Fomentar la cercanía en la vida urbana va más allá de planes de desarrollo urbano y debe incluir los incentivos fiscales como estrategia. Vivir y trabajar en la misma zona debe ser premiado tanto para la fuente de empleo como al contratado, conscientes todos de que vivimos en un país libre pero que debemos bajar los costos sociales.",
+      ),
+      React.createElement("p", null, "7. Limpieza de cables y fachadas."),
+      React.createElement(
+        "p",
+        null,
+        "Los cables que vemos en la calle, o son de energía eléctrica o son de telecomunicaciones. Estos últimos son los de la maraña horrible de cables y se vuelven peligrosos. En cada hilo de fibra óptica caben más de 100 empresas por lo que se debe establecer una micro zanja común municipal para este servicio, y las cableras deben pagar por su uso en lugar de que cada quien meta innecesariamente su fibra. Hay que eliminar este exceso de la fachada urbana de nuestra ciudad.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "8. Calidad del aire y transporte público.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Nuestra ciudad sufre de estos problemas como otras ciudades y cuenta al menos con un Observatorio de la Calidad del Aire de origen ciudadano para tratar de coadyuvar en el tema. Mientras, las autoridades, en un proyecto titánico, llevan a cabo un difícil proceso de modernización del transporte de pronóstico reservado en el corto plazo con la esperanza de un futuro mejor. Ojalá se puedan alinear pronto los astros en estos temas porque son fundamentales.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "9. Innovación social y leyes horizontales.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Fomentar la innovación social a través de un marco legal que promueva la libertad y la responsabilidad es vital. Menos gobierno y más sociedad, por un lado, o contar con dictadores ilustrados con salud mental y liderazgo real son los "genuinos extremos" de aspiración para el colectivo. Salvo honrosas excepciones, pienso que el liderazgo de muchos en varios temas será más efectivo que el gobernante unilateral que causa problemas naturales de abuso de poder. Cómo nadie está iluminado de la consciencia, apostemos por delegar horizontalmente y no concentrar verticalmente',
+      ),
+      React.createElement("p", null, "10. Servicio civil de carrera."),
+      React.createElement(
+        "p",
+        null,
+        "Para asegurar que los mejores talentos administren la ciudad, es fundamental contar con un servicio civil de carrera que promueva la profesionalización en la gestión pública, garantizando que los puestos sean ocupados por personas capacitadas con adecuada salud mental experimentadas y comprometidas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "11. Reciclar lotes abandonados e innovar en la recolección de la basura.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La ciudad podría implementar proyectos innovadores de densificación de baja altura para transformar lotes abandonados o construcciones subutilizadas en espacios comunitarios, jardines urbanos o centros culturales que beneficien a la población. Nada más el centro del Área Metropolitana de Monterrey tiene 20 por ciento de propiedades en abandono. Ponerle además precio e información a la basura nos puede motivar a todos a usar o vender la basura. Con pequeños ajustes legales, esto se puede lograr.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "12. Atención a migrantes y animales abandonados.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Una ciudad razonable debe ser inclusiva y consciente de la realidad de los migrantes que en todas las épocas de la historia se mueven según las circunstancias. Hoy no es la excepción y se pueden integrar programas de empleo temporal, combinados con el punto anterior de las construcciones sub-utilizadas. Pueden hasta sembrar y vender legumbres si le metemos corazón al asunto.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        'Por otra parte, en México existen 27 millones de animales en situación de calle, lo cual representa un grave problema de salud pública y de urbanidad. Por este tipo de temas necesitamos de la sociedad civil para resolverlos y hay que dar "dientes" y sentido común a la ley para apoyar, por ejemplo, a los miles de voluntarios rescatistas de perros y gatos que hoy están solos en la tarea sin apoyo económico.',
+      ),
+      React.createElement("p", null, "En síntesis"),
+      React.createElement(
+        "p",
+        null,
+        'La ciudad razonable es por último también una ciudad donde se conversa y se generan acuerdos para el progreso individual y colectivo. Habrá que ir a terapia o hacernos una limpia energética para sacudirnos el egoísmo, la violencia y polarización de las ideas que acompañan estos tiempos"líquidos", como diría el filósofo Bauman. No hay que tenerle miedo al cambio porque es la constante de la vida y hoy en día particularmente la velocidad de cambio rebasa nuestra capacidad de adaptación, así que todo pasará si nos hacemos responsables de nuestras emociones y nuestra percepción.',
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Y es que necesitamos de tu atención enfocada en crear una ciudad razonable.",
+      ),
+    ),
+  },
+  {
+    title: "Zonas de Bajas Emisiones",
+    slug: "zonas-de-bajas-emisiones",
+    image: "/editoriales/30ago2024.webp",
+    imageAlt: "Zonas de Bajas Emisiones",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 ABC Noticias",
+    date: "Ago 30, 2024",
+    pdfLink: "/editoriales/30ago2024.pdf",
+  },
+  {
+    title: "El espejismo de la abundancia",
+    slug: "el-espejismo-de-la-abundancia",
+    image: "/editoriales/29sep2024.webp",
+    imageAlt: "El espejismo de la abundancia",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Sep 29, 2024",
+    pdfLink: "/editoriales/29sep2024.pdf",
+  },
+  {
+    title: "Corredores verdes",
+    slug: "corredores-verdes",
+    image: "/editoriales/09ago2024.webp",
+    imageAlt: "Corredores verdes",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Ago 9, 2024",
+    pdfLink: "/editoriales/09ago2024.pdf",
+  },
+  {
+    title: "Combustibles fósiles",
+    slug: "combustibles-fosiles",
+    image: "/editoriales/22jul2024.webp",
+    imageAlt: "Combustibles fósiles",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 ABC Noticias",
+    date: "Jul 22, 2024",
+    pdfLink: "/editoriales/22jul2024.pdf",
+  },
+  {
+    title: "Todo lo que sube tiene que bajar",
+    slug: "todo-lo-que-sube-tiene-que-bajar",
+    image: "/editoriales/25jun2024.webp",
+    imageAlt: "Todo lo que sube tiene que bajar",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 ABC Noticias",
+    date: "Jun 25, 2024",
+    pdfLink: "/editoriales/25jun2024.pdf",
+  },
+  {
+    title: "El aire limpio nos dejaría vivir más",
+    slug: "el-aire-limpio-nos-dejaria-vivir-mas",
+    image: "/editoriales/04jun2024.webp",
+    imageAlt: "El aire limpio nos dejaría vivir más",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 ABC Noticias",
+    date: "Jun 4, 2024",
+    pdfLink: "/editoriales/04jun2024.pdf",
+  },
+  {
+    title: "Aire limpio, corazón contento",
+    slug: "aire-limpio-corazon-contento",
+    image: "/editoriales/16may2024.webp",
+    imageAlt: "Aire limpio, corazón contento",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 ABC Noticias",
+    date: "May 16, 2024",
+    pdfLink: "/editoriales/16may2024.pdf",
+  },
+  {
+    title: "Vacíos y tolerancia",
+    slug: "vacios-y-tolerancia",
+    image: "/editoriales/15mar2024.webp",
+    imageAlt: "Vacíos y tolerancia",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Mar 15, 2024",
+    pdfLink: "/editoriales/15mar2024.pdf",
+  },
+  {
+    title: "Ozono: mejor arriba que abajo",
+    slug: "ozono-mejor-arriba-que-abajo",
+    image: "/editoriales/12mar2024.webp",
+    imageAlt: "Ozono: mejor arriba que abajo",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 El Norte",
+    date: "Mar 12, 2024",
+    pdfLink: "/editoriales/12mar2024.pdf",
+  },
+  {
+    title: "Nuevo León y el viejo fantasma",
+    slug: "nuevo-leon-y-el-viejo-fantasma",
+    image: "/editoriales/03mar2024.webp",
+    imageAlt: "Nuevo León y el viejo fantasma",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 El Norte",
+    date: "Mar 3, 2024",
+    pdfLink: "/editoriales/03mar2024.pdf",
+  },
+  {
+    title: "¡Gracias, refinería!",
+    slug: "gracias-refineria",
+    image: "/editoriales/26ene2024.webp",
+    imageAlt: "¡Gracias, refinería!",
+    author: "Uriel Chavarría",
+    authorProfile: "/equipo/uriel.webp",
+    authorProfileAlt: "Uriel Chavarría",
+    newspaper: "📰 El Norte",
+    date: "Ene 26, 2024",
+    pdfLink: "/editoriales/26ene2024.pdf",
+  },
+  {
+    title: "Una Agencia del Aire",
+    slug: "una-agencia-del-aire",
+    image: "/editoriales/15ene2024.webp",
+    imageAlt: "Una Agencia del Aire",
+    author: "Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/lorenzo.webp",
+    authorProfileAlt: "Lorenzo J. de Rosenzweig",
+    newspaper: "📰 El Norte",
+    date: "Ene 15, 2024",
+    pdfLink: "/editoriales/15ene2024.pdf",
+  },
+  {
+    title: "Lo que se respira no se juzga",
+    slug: "lo-que-se-respira-no-se-juzga",
+    image: "/editoriales/27oct2023.webp",
+    imageAlt: "Lo que se respira no se juzga",
+    author: "Uriel Chavarría",
+    authorProfile: "/equipo/uriel.webp",
+    authorProfileAlt: "Uriel Chavarría",
+    newspaper: "📰 El Norte",
+    date: "Oct 27, 2023",
+    pdfLink: "/editoriales/27oct2023.pdf",
+  },
+  {
+    title: "Observatorios ciudadanos",
+    slug: "observatorios-ciudadanos",
+    image: "/editoriales/19sep2023.webp",
+    imageAlt: "Observatorios ciudadanos y buen gobierno",
+    author: "Selene M. Guajardo y Lorenzo J. de Rosenzweig",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 Este País",
+    date: "Sep 19, 2023",
+    pdfLink:
+      "https://estepais.com/ambiente/observatorios-ciudadanos-buen-gobierno/?sfnsn=scwspwa",
+  },
+  {
+    title: "¿Refinar o respirar?",
+    slug: "refinar-o-respirar",
+    image: "/editoriales/09jun2023.webp",
+    imageAlt: "¿Refinar o respirar?",
+    author: "Selene M. Guajardo",
+    authorProfile: "/equipo/selene.webp",
+    authorProfileAlt: "Selene M. Guajardo",
+    newspaper: "📰 El Norte",
+    date: "Jun 9, 2023",
+    pdfLink: "/editoriales/09jun2023.pdf",
+  },
+  {
+    title: "Tengo un sueño para Monterrey",
+    slug: "tengo-un-sueno-para-monterrey",
+    image: "/editoriales/25feb2023.webp",
+    imageAlt: "Tengo un sueño para Monterrey",
+    author: "Alberto E. Garza Santos",
+    authorProfile: "/equipo/alberto.webp",
+    authorProfileAlt: "Alberto E. Garza Santos",
+    newspaper: "📰 El Norte",
+    date: "Feb 25, 2023",
+    pdfLink: "/editoriales/25feb2023.pdf",
+  },
+  {
+    title: "Pirotecnia",
+    slug: "pirotecnia",
+    image: "/editoriales/29dic2019.webp",
+    imageAlt: "Pirotecnia",
+    author: "Uriel Chavarría",
+    authorProfile: "/equipo/uriel.webp",
+    authorProfileAlt: "Uriel Chavarría",
+    newspaper: "📰 El Norte",
+    date: "Dec 29, 2019",
+    pdfLink: "/editoriales/29dic2019.pdf",
+  },
+];

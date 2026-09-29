@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { editoriales } from "@/app/editoriales/data";
 
 const BASE = "https://aireclaro.com";
 
@@ -9,5 +10,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/datos`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/proyectos`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/infografias`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE}/editoriales`, changeFrequency: "monthly", priority: 0.6 },
+    // Article pages exist only for editorials with written content.
+    ...editoriales
+      .filter((editorial) => editorial.content)
+      .map((editorial) => ({
+        url: `${BASE}/editoriales/${editorial.slug}`,
+        changeFrequency: "yearly" as const,
+        priority: 0.4,
+      })),
   ];
 }

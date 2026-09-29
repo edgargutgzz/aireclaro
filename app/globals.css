@@ -5,6 +5,9 @@
    the bridge costs nothing and there's no reason to force a rewrite. */
 @config "../tailwind.config.ts";
 
+/* `prose` for long-form text (the editorial article pages). */
+@plugin "@tailwindcss/typography";
+
 /* ── House CSS-variable tokens ──────────────────────────────────────────────
    HSL channel triplets consumed via `hsl(var(--x))` in tailwind.config.ts.
    The app is light-only (.ai-style-guide.md §3): there is a `:root` block
