@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import { MONTHS_ES, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
+  COLOR_CUBIERTO,
   COLOR_CUBIERTO_FILL_OPACITY,
   COLOR_INSALUBRE,
   COLOR_SALUDABLE,
@@ -50,12 +51,13 @@ const WEEKDAY_COL_WIDTH = 16; // px
 const MONTH_ROW_HEIGHT = 18; // px
 
 // Was the same green as días insalubres' "saludable" -- switched to blue
-// (Tailwind blue-500) so "has data" (a coverage/data-quality reading)
-// doesn't get skimmed as "good air quality" (a health reading), which
-// green means everywhere else on this page (2026-09-27 feedback). Fill
-// opacity is its own (higher) constant though, so the grid cells can read
-// more solid without also washing out días insalubres' bars.
-const COLOR_CUBIERTO = "#3b82f6"; // Tailwind blue-500
+// so "has data" (a coverage/data-quality reading) doesn't get skimmed as
+// "good air quality" (a health reading), which green means everywhere else
+// on this page (2026-09-27 feedback). COLOR_CUBIERTO itself moved to
+// lib/datos-colors.ts (2026-09-28) once promedio anual's own trimester bar
+// needed the identical color. Fill opacity stays its own (higher) local
+// constant though, so the grid cells can read more solid without also
+// washing out días insalubres' bars.
 const COLOR_CUBIERTO_FILL = withOpacity(
   COLOR_CUBIERTO,
   COLOR_CUBIERTO_FILL_OPACITY,

@@ -19,6 +19,13 @@
 // stroke), so only the fill opacities remain.
 export const COLOR_SALUDABLE = "#22c55e"; // Tailwind green-500
 export const COLOR_SALUDABLE_FILL_OPACITY = 0.55;
+// Blue, not green, for a data-COMPLETENESS reading (coverage/validity) --
+// so it doesn't get skimmed as "good air quality," which green means
+// everywhere else on /datos. Originally cobertura-only (its "Con datos"
+// grid cells); promoted here 2026-09-28 once promedio anual's own
+// trimester-validity bar needed the identical color and shouldn't
+// re-declare the literal hex a second time.
+export const COLOR_CUBIERTO = "#3b82f6"; // Tailwind blue-500
 // Cobertura's grid cells read as flatter/smaller shapes than días insalubres'
 // bars, so they want a more solid fill -- kept separate from
 // COLOR_SALUDABLE_FILL_OPACITY on purpose so a bump here doesn't also

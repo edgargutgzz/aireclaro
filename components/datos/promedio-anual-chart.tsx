@@ -5,6 +5,7 @@ import { BookOpen, HeartPulse, Scale, ShieldCheck, Wind } from "lucide-react";
 import type { Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { getLimitAnualPM10 } from "@/lib/pm25-limits";
 import {
+  COLOR_CUBIERTO,
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
@@ -220,11 +221,15 @@ interface StationBar {
 
 // The T1-T4 breakdown shown in the bar's own hover tooltip -- one segmented
 // bar, not four dots (2026-09-28 request): four equal-width sections, one
-// per trimester, painted green (valid) or gray (not), left to right in
-// calendar order. The header already states the X/4 count and the 75%-days
-// rule, so the bar itself carries no text -- reads as "how much of the
-// year cleared the bar," matching the bar-chart visual language the rest
-// of the page already uses instead of a row of isolated dots.
+// per trimester, painted blue (valid) or gray (not), left to right in
+// calendar order. Blue, not green -- this is a data-COMPLETENESS reading
+// (validity), not a health-quality one, same reasoning as cobertura's own
+// "has data" blue (see COLOR_CUBIERTO in lib/datos-colors.ts). The header
+// states the X/4 count on its own now (the "mín. 75% días" rule dropped
+// 2026-09-28 -- already explained in the Metodología tab, redundant here),
+// so the bar itself carries no text -- reads as "how much of the year
+// cleared the bar," matching the bar-chart visual language the rest of the
+// page already uses instead of a row of isolated dots.
 // `overflow-hidden rounded-full` on the flex container (not on each
 // section) rounds only the two true outer ends, per the dataviz skill's
 // own "rounded only at the outer tip, square where a mark meets its
@@ -239,7 +244,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
   return (
     <div className="grid gap-1.5">
       <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
-        Trimestres ({validCount}/4 válidos · mín. 75% días)
+        Trimestres ({validCount}/4 válidos)
       </span>
       <div className="flex h-1.5 gap-0.5 overflow-hidden rounded-full">
         {[1, 2, 3, 4].map((t) => {
@@ -249,7 +254,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
               key={t}
               className="flex-1"
               style={{
-                backgroundColor: r?.valido ? COLOR_SALUDABLE : "#d1d5db",
+                backgroundColor: r?.valido ? COLOR_CUBIERTO : "#d1d5db",
               }}
             />
           );
@@ -421,10 +426,10 @@ function TooltipCard({
             {Math.round(bar.promedio)}
           </span>
           <span className="text-sm font-medium text-gray-400">
-            µg/m³ {POLLUTANT_LABEL[pollutant]}
+            {POLLUTANT_LABEL[pollutant]} µg/m³
           </span>
         </div>
-        <span className="text-xs text-gray-500">Promedio anual {year}</span>
+        <span className="text-xs text-gray-500">Promedio anual ({year})</span>
       </div>
       <div className="border-t border-gray-100 pt-2">
         <TrimestreBreakdown rows={bar.rows} />
