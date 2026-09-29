@@ -54,7 +54,9 @@ dependency noise (Node's `punycode` deprecation, a stale
 **`node_modules` is a symlink to `node_modules.nosync`** so iCloud (the repo
 lives in `~/Documents`) doesn't evict files and break the build. Never
 `rm -rf node_modules` and reinstall: that replaces the symlink with a real,
-synced folder. Clear `node_modules.nosync/` instead.
+synced folder. Clear `node_modules.nosync/` instead. If a package import
+suddenly can't be resolved (an emptied folder, left over from earlier iCloud
+eviction), `pnpm install --force` rewrites every package in place.
 
 ## This repo's workflow
 
