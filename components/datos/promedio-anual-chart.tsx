@@ -242,7 +242,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
   const validCount = rows.filter((r) => r.valido).length;
 
   return (
-    <div className="grid gap-1.5">
+    <div className="grid gap-2.5">
       <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
         Trimestres ({validCount}/4 válidos)
       </span>
