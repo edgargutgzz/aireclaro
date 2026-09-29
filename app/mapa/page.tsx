@@ -1,0 +1,97 @@
+import type { Metadata } from "next";
+import MapaSensors from "@/components/mapa/mapa-sensors-loader";
+import PurpleAirSensors from "@/components/data/purple-air-sensors";
+import PurpleAirData from "@/components/data/purple-air-data";
+import SimaSensors from "@/components/data/sima-sensors";
+import SimaData from "@/components/data/sima-data";
+import { fetchWithFallback } from "@/utils/fetch";
+import { getSensorSnapshot } from "@/lib/sensor-snapshot";
+import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
+
+export const revalidate = 120; // 2 minutes
+
+const BASE_TITLE = "Mapa de Calidad del Aire en Monterrey en Tiempo Real";
+const BASE_DESCRIPTION =
+  "Consulta el mapa interactivo de calidad del aire (PM2.5) en Monterrey y Zona Metropolitana. Datos en tiempo real de estaciones SIMA y sensores ciudadanos PurpleAir.";
+
+// A bare visit gets the map's own metadata. A shared ?sensor= link gets a
+// title, description and unfurl card built from that station's latest reading,
+// so it travels as "<estación> — Mala · 48 μg/m³ PM2.5" instead of a generic
+// preview. Reading searchParams makes this render dynamic, but Supabase already
+// does (it reads cookies), so there's no static caching to give up.
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ sensor?: string | string[] }>;
+}): Promise<Metadata> {
+  const base: Metadata = { title: BASE_TITLE, description: BASE_DESCRIPTION };
+
+  const raw = (await searchParams).sensor;
+  const sensorParam = Array.isArray(raw) ? raw[0] : raw;
+  if (!sensorParam || !/^\d+$/.test(sensorParam)) return base;
+
+  const snapshot = await getSensorSnapshot(Number(sensorParam)).catch(() => null);
+  if (!snapshot) return base;
+
+  const quality = getQualityInfo(snapshot.pm25);
+  const pm = snapshot.pm25 != null ? roundPM25(snapshot.pm25) : null;
+  const where = snapshot.municipio ? `${snapshot.name}, ${snapshot.municipio}` : snapshot.name;
+
+  const title =
+    quality && pm
+      ? `${snapshot.name} — ${quality.label} · ${pm} μg/m³ PM2.5`
+      : `${snapshot.name} — Calidad del aire`;
+  const description =
+    quality && pm
+      ? `Calidad del aire ${quality.label.toLowerCase()}, ${pm} μg/m³ de PM2.5, en ${where}. Lectura en tiempo real de Aire Claro.`
+      : `Lectura de calidad del aire en tiempo real para ${where} en Aire Claro.`;
+
+  const ogImage = `/api/og?sensor=${snapshot.sensorId}`;
+  const pageUrl = `/mapa?sensor=${snapshot.sensorId}`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      type: "website",
+      locale: "es_MX",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
+
+export default async function Mapa() {
+  // Critical data - retry on failure (both PurpleAir AND SIMA)
+  const [purpleAirSensors, purpleAirData, simaSensors, simaData] =
+    await Promise.all([
+      fetchWithFallback(PurpleAirSensors, []),
+      fetchWithFallback(PurpleAirData, []),
+      fetchWithFallback(SimaSensors, []),
+      fetchWithFallback(SimaData, []),
+    ]);
+
+  // Tag sensors
+  const taggedPurpleAirSensors = purpleAirSensors.map((sensor) => ({
+    ...sensor,
+    source: "purpleAir",
+  }));
+
+  const taggedSimaSensors = simaSensors.map((sensor) => ({
+    ...sensor,
+    source: "sima",
+  }));
+
+  const sensors = [...taggedPurpleAirSensors, ...taggedSimaSensors];
+  const data = [...purpleAirData, ...simaData];
+
+  return <MapaSensors sensors={sensors} data={data} />;
+}

@@ -70,7 +70,7 @@ interactive piece is hand-built to the house tokens (`.ai-style-guide.md`).
 
 | Doc | Contents |
 |---|---|
-| [`docs/architecture.md`](docs/architecture.md) | data model, ingestion boundary, home-page data flow, API routes, the URL-state model |
+| [`docs/architecture.md`](docs/architecture.md) | data model, ingestion boundary, routing (`/` vs `/mapa`), map data flow, API routes, the URL-state model |
 | [`docs/methodology.md`](docs/methodology.md) | how readings are presented, data sources and their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license & citation status |
 | [`.ai-style-guide.md`](.ai-style-guide.md) | the visual contract for the UI |
 | [`CLAUDE.md`](CLAUDE.md) | working guidance for AI coding agents |

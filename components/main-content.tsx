@@ -8,7 +8,7 @@ export default function MainContent({ children }: { children: React.ReactNode })
   const ref = useRef<HTMLElement>(null);
   const pathname = usePathname();
   // No footer on the map.
-  const hideFooter = pathname === "/";
+  const hideFooter = pathname === "/mapa";
 
   useLayoutEffect(() => {
     ref.current?.scrollTo(0, 0);

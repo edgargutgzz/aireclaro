@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 // with a standing "not yet" cue: a "Próx." badge on desktop, a bare dot on the
 // mobile bar. See the pending branch below.
 const links = [
-  { name: "Mapa", href: "/", icon: Map, pending: false },
+  { name: "Mapa", href: "/mapa", icon: Map, pending: false },
   { name: "Datos", href: "/datos", icon: BarChart3, pending: false },
 ];
 
