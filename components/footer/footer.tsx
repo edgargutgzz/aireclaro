@@ -12,7 +12,7 @@ const socialLinks = [
 ];
 
 const socialLinkClass =
-  "flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-md";
+  "flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
 export default function Footer() {
   return (
@@ -23,10 +23,11 @@ export default function Footer() {
           <Link
             href="https://maps.app.goo.gl/uYj6u7VH1BzvbFJfA"
             target="_blank"
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm text-gray-500 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             Blvd. Antonio L. Rodríguez 2100, Rincón de Santa María, 64650,
             Monterrey, N.L.
+            <span className="sr-only"> (abre en una nueva pestaña)</span>
           </Link>
           <p className="text-sm text-gray-500">
             contacto@observatoriodelaire.com
@@ -35,7 +36,13 @@ export default function Footer() {
 
         <div className="flex items-center gap-3">
           {socialLinks.map(({ href, label, Icon, size }) => (
-            <Link key={label} href={href} target="_blank" aria-label={label} className={socialLinkClass}>
+            <Link
+              key={label}
+              href={href}
+              target="_blank"
+              aria-label={`${label} (abre en una nueva pestaña)`}
+              className={socialLinkClass}
+            >
               <Icon size={size} />
             </Link>
           ))}
@@ -49,9 +56,10 @@ export default function Footer() {
         <Link
           href="https://datacomun.com"
           target="_blank"
-          className="self-start flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-sm transition-all hover:border-gray-300 hover:shadow-md whitespace-nowrap"
+          className="self-start flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-sm transition-all hover:border-gray-300 hover:shadow-md whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           {"Desarrollado por "}<span className="font-medium" style={{ marginLeft: "-2px" }}><span style={{ color: "#0f172a" }}>data</span><span className="datacomun-comun">comun</span></span>
+          <span className="sr-only"> (abre en una nueva pestaña)</span>
         </Link>
       </div>
       </div>
