@@ -198,7 +198,7 @@ export async function GET(request: Request) {
                 line up text of very different sizes, so every piece is
                 bottom-aligned at lineHeight 1 and the small text is lifted
                 by baseLift() onto the big number's baseline. */}
-            <div style={{ display: "flex", flexDirection: "column", gap: tx(44), marginTop: tx(88) }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: tx(44), marginTop: tx(52) }}>
               <div style={{ display: "flex", fontSize: tx(24), fontWeight: 600, color: "#6b7280" }}>
                 <div style={{ display: "flex", width: tx(170) }} />
                 {years.map((y) => (
