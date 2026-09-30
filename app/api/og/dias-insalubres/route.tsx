@@ -24,7 +24,7 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 };
 
 const GLYPHS =
-  "Aire Claro abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - aireclaro.com/datos días sobre la norma en el mismo periodo de más menos mismos Generado Zona Metropolitana Monterrey Un día se clasifica si alguna estación monitoreo del SIMA supera límite diario establecido por la NOM-025-SSA1-2021 No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com/datos días sobre la norma en el mismo periodo de más menos mismos Generado Zona Metropolitana Monterrey Un día se clasifica si alguna estación monitoreo del SIMA supera límite diario establecido por la NOM-025-SSA1-2021 No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -105,7 +105,7 @@ export async function GET(request: Request) {
           <div
             style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#111827", letterSpacing: -0.5 }}
           >
-            Aire Claro
+            Observatorio del Aire
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
@@ -141,7 +141,7 @@ export async function GET(request: Request) {
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontSize: 22 }}>
               <div style={{ display: "flex", color: "#9ca3af" }}>Generado el {generatedOn}</div>
-              <div style={{ display: "flex", fontWeight: 600, color: "#6b7280" }}>aireclaro.com/datos</div>
+              <div style={{ display: "flex", fontWeight: 600, color: "#6b7280" }}>observatoriodelaire.com/datos</div>
             </div>
           </div>
         </div>
