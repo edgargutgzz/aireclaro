@@ -3,10 +3,10 @@ import { createPublicClient } from "@/utils/supabase/public";
 import {
   fetchDiasInsalubresMensual,
   MONTHS_ES_FULL,
-  summarizeYear,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE } from "@/lib/datos-colors";
+import { COLOR_YEAR_CURRENT, COLOR_YEAR_PAST } from "@/lib/datos-colors";
+import { LIMITE_ACTUAL_PM10, LIMITE_ACTUAL_PM25 } from "@/lib/pm25-limits";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
@@ -14,20 +14,27 @@ import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 // The branded stat card behind the días insalubres chart's download menu
 // (components/datos/download-image-menu.tsx) -- one size per destination
 // (?format=, see lib/share-image-formats.ts), not the 1200x630 landscape unfurl card
-// app/api/og/route.tsx renders for a shared sensor link. Summarizes the
-// requested year+pollutant via the same summarizeYear() the chart itself
-// uses, so the number on the downloaded image can never drift from the
-// number shown on screen. Static per year+pollutant (only the monthly cron
-// changes it), so this caches far longer than the live-reading sensor card.
+// app/api/og/route.tsx renders for a shared sensor link.
+//
+// The message is the monthly update: the latest month with data in the
+// requested year vs. the same month a year earlier, both counted against
+// today's limit (dias_insalubres_limite_actual) -- the same numbers as the
+// chart's comparison view, so the image can't drift from the page. Static
+// per year+pollutant (only the monthly cron changes it), so this caches far
+// longer than the live-reading sensor card.
 const CACHE = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
 const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
   pm10: "PM10",
 };
+const LIMITE_ACTUAL: Record<Pollutant, number> = {
+  pm25: LIMITE_ACTUAL_PM25,
+  pm10: LIMITE_ACTUAL_PM10,
+};
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron frente a con medición Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Más Menos Los mismos que el límite ambos años Límite µg/m³ con medición Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -72,41 +79,57 @@ export async function GET(request: Request) {
     return messageCard(options, px(32), "Falta el año.");
   }
 
-  let sharePct: number;
-  let context: string[];
-  let compareText: string | null;
-  let compareColor: string | undefined;
+  type YearPoint = { ano: number; dias: number; totales: number };
+  let mes: number;
+  let current: YearPoint;
+  let prior: YearPoint | null;
   try {
     const supabase = createPublicClient();
-    const data = await fetchDiasInsalubresMensual(supabase);
-    const summary = summarizeYear(data[pollutant], year);
-    if (summary.sharePct === null) {
+    const rows = (await fetchDiasInsalubresMensual(supabase))[pollutant];
+    // The latest month the monthly cron has processed for this year (the
+    // data decides, never the calendar).
+    const latest = rows
+      .filter((r) => r.ano === year && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null)
+      .sort((x, y) => y.mesNumero - x.mesNumero)[0];
+    if (!latest) {
       return messageCard(options, px(32), "Aún no hay datos para este año.");
     }
-    sharePct = summary.sharePct;
-    // The months the figure covers, from the data itself (the last month the
-    // monthly cron has processed), never the calendar: "Enero a agosto de
-    // 2026", or "Enero de 2026" in the first month.
-    const last = MONTHS_ES_FULL[summary.monthsUsed - 1].toLowerCase();
-    const period = summary.monthsUsed === 1 ? `Enero de ${year}` : `Enero a ${last} de ${year}`;
-    context = [
-      "Zona Metropolitana de Monterrey",
-      period,
-      `${summary.total} de ${summary.totalDays} días con medición`,
-    ];
-    // No year-over-year line for now: NOM-025's daily limit tightened on
-    // 2025-12-27 (lib/pm25-limits.ts), so the stored counts judge 2025 by the
-    // old limit and 2026 by the new one, which reverses the real trend (see
-    // 2026-09-30 recount). Comes back once both years are counted against
-    // the same limit.
-    compareColor = undefined;
-    compareText = null;
+    mes = latest.mesNumero;
+    current = { ano: year, dias: latest.diasInsalubresLimiteActual as number, totales: latest.diasTotales };
+    const before = rows.find(
+      (r) => r.ano === year - 1 && r.mesNumero === mes && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null,
+    );
+    prior = before
+      ? { ano: year - 1, dias: before.diasInsalubresLimiteActual as number, totales: before.diasTotales }
+      : null;
   } catch {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
 
-  // Always two set lines: one line would wrap at the larger formats' scale.
-  const headlineLines = ["de los días superaron", `la norma de ${POLLUTANT_LABEL[pollutant]}`];
+  const mesNombre = MONTHS_ES_FULL[mes - 1];
+  const mesMin = mesNombre.toLowerCase();
+  const eyebrow = `${mesNombre} de ${year} · ${POLLUTANT_LABEL[pollutant]}`;
+  // The verdict, always two set lines. "Más/menos días sobre el límite",
+  // not "respiramos mejor/peor": a day counts when any one station exceeded
+  // the limit, which says that much and no more.
+  const headlineLines = prior
+    ? [
+        current.dias > prior.dias
+          ? "Más días sobre el límite"
+          : current.dias < prior.dias
+            ? "Menos días sobre el límite"
+            : "Los mismos días sobre el límite",
+        `que en ${mesMin} de ${prior.ano}`,
+      ]
+    : [`${current.dias} días sobre el límite`, `en ${mesMin} de ${year}`];
+  const points = prior ? [prior, current] : [current];
+  const context = [
+    "Zona Metropolitana de Monterrey",
+    `Límite de ${POLLUTANT_LABEL[pollutant]}: ${LIMITE_ACTUAL[pollutant]} µg/m³${prior ? " en ambos años" : ""}`,
+  ];
+  // Headline and numbers scale with the format but are capped where the
+  // longest verdict ("Los mismos días sobre el límite") must stay on one line.
+  const hx = (n: number) => px(n * Math.min(format.content, 1.45));
 
   return new ImageResponse(
     (
@@ -134,19 +157,19 @@ export async function GET(request: Request) {
           )}
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
-            <div style={{ display: "flex", fontSize: cx(220), fontWeight: 700, color: COLOR_INSALUBRE, lineHeight: 1 }}>
-              {sharePct}%
+            {/* Logo (who says it) -> month + verdict + the two numbers (the
+                finding) -> where / which limit -> footer (source). */}
+            <div style={{ display: "flex", fontSize: hx(26), fontWeight: 600, color: "#6b7280", marginBottom: cx(12) }}>
+              {eyebrow}
             </div>
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                fontSize: cx(40),
-                fontWeight: 600,
+                fontSize: hx(46),
+                fontWeight: 700,
                 color: "#111827",
-                lineHeight: 1.2,
-                marginTop: cx(8),
-                marginBottom: cx(16),
+                lineHeight: 1.15,
               }}
             >
               {headlineLines.map((line) => (
@@ -155,23 +178,40 @@ export async function GET(request: Request) {
                 </div>
               ))}
             </div>
-            {compareText && (
-              <div
-                style={{
-                  display: "flex",
-                  // Capped at 1.45x: the comparison ("frente a NN% en el mismo
-                  // periodo de YYYY") still fits one line.
-                  fontSize: px(28 * Math.min(format.content, 1.45)),
-                  fontWeight: 600,
-                  color: compareColor ?? "#6b7280",
-                }}
-              >
-                {compareText}
-              </div>
-            )}
-            {/* Context after the message, quieter: logo (who says it) ->
-                number + headline + comparison (the finding) -> where/when
-                -> footer (source). */}
+
+            {/* Past year gray, current year blue: the same colors as the
+                chart's comparison view. */}
+            <div style={{ display: "flex", gap: cx(72), marginTop: cx(48) }}>
+              {points.map((pt) => {
+                const isCurrent = pt.ano === year;
+                return (
+                  <div key={pt.ano} style={{ display: "flex", flexDirection: "column" }}>
+                    <div style={{ display: "flex", fontSize: cx(26), fontWeight: 600, color: "#6b7280" }}>
+                      {mesNombre} {pt.ano}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "baseline",
+                        gap: cx(12),
+                        color: isCurrent ? COLOR_YEAR_CURRENT : COLOR_YEAR_PAST,
+                      }}
+                    >
+                      <div style={{ display: "flex", fontSize: cx(150), fontWeight: 700, lineHeight: 1.05 }}>
+                        {pt.dias}
+                      </div>
+                      <div style={{ display: "flex", fontSize: cx(34), fontWeight: 600 }}>
+                        {pt.dias === 1 ? "día" : "días"}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", fontSize: cx(22), color: "#9ca3af" }}>
+                      de {pt.totales} con medición
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
             <div
               style={{
                 display: "flex",
@@ -179,7 +219,7 @@ export async function GET(request: Request) {
                 fontSize: cx(24),
                 lineHeight: 1.4,
                 color: "#6b7280",
-                marginTop: cx(36),
+                marginTop: cx(44),
               }}
             >
               {context.map((line) => (
