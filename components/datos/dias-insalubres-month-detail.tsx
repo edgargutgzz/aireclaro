@@ -6,7 +6,7 @@ import {
   fetchMonthDayDetail,
   type DayStatus,
 } from "@/lib/dias-insalubres-day-detail";
-import type { Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { MONTHS_ES_FULL, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
@@ -17,20 +17,6 @@ import {
 import { tooltipPositionStyle } from "@/components/datos/svg-chart-utils";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 
-const MONTH_FULL = [
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
-];
 const WEEKDAY_SHORT = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const WEEKDAY_FULL = [
   "Lunes",
@@ -188,7 +174,7 @@ export default function DiasInsalubresMonthDetail({
       </button>
 
       <h4 className="mb-4 text-sm font-medium text-gray-700">
-        {MONTH_FULL[mesNumero - 1]} {ano}
+        {MONTHS_ES_FULL[mesNumero - 1]} {ano}
       </h4>
 
       {error && (
@@ -239,7 +225,7 @@ export default function DiasInsalubresMonthDetail({
                 key={c.day.fecha}
                 className="flex items-center justify-center rounded-lg text-sm font-medium"
                 tabIndex={0}
-                aria-label={`${WEEKDAY_FULL[c.row]} ${c.day.dia} de ${MONTH_FULL[mesNumero - 1]}: ${dayLabel(c.day, todayStr)}`}
+                aria-label={`${WEEKDAY_FULL[c.row]} ${c.day.dia} de ${MONTHS_ES_FULL[mesNumero - 1]}: ${dayLabel(c.day, todayStr)}`}
                 style={{
                   gridColumn: c.col + 1,
                   gridRow: c.row + 1,
@@ -293,7 +279,7 @@ export default function DiasInsalubresMonthDetail({
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
                 {WEEKDAY_FULL[tooltip.row]} {tooltip.day.dia} de{" "}
-                {MONTH_FULL[mesNumero - 1]}
+                {MONTHS_ES_FULL[mesNumero - 1]}
               </span>
               <span
                 className="text-sm font-semibold"

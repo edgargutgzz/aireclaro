@@ -1,23 +1,8 @@
 import { RefreshCw } from "lucide-react";
 import { createPublicClient } from "@/utils/supabase/public";
 import { monterreyNaiveNow } from "@/lib/monterrey-time";
+import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
 
-// Full names (not lib/dias-insalubres-aggregate.ts's abbreviated MONTHS_ES)
-// -- this reads as a sentence ("hasta agosto de 2026"), not a chart label.
-const MONTHS_FULL_ES = [
-  "enero",
-  "febrero",
-  "marzo",
-  "abril",
-  "mayo",
-  "junio",
-  "julio",
-  "agosto",
-  "septiembre",
-  "octubre",
-  "noviembre",
-  "diciembre",
-];
 
 // The monthly cron (app/api/cron/sima-monthly-sync, vercel.json's "0 8 6 * *")
 // runs the 6th of every month and pulls the month that just closed -- keep
@@ -52,7 +37,7 @@ function nextUpdate(): { addedMonthLabel: string; daysUntil: number } {
   const todayUTC = Date.UTC(y, m - 1, d);
   const targetUTC = Date.UTC(targetYear, targetMonth - 1, CRON_DAY);
   return {
-    addedMonthLabel: `${MONTHS_FULL_ES[addedMonth - 1]} ${addedYear}`,
+    addedMonthLabel: `${MONTHS_ES_FULL[addedMonth - 1].toLowerCase()} ${addedYear}`,
     daysUntil: Math.round((targetUTC - todayUTC) / 86_400_000),
   };
 }
@@ -83,7 +68,7 @@ export default async function DatosHeader() {
   // the charts below, which already handle their own empty states.
   if (error || !data) return null;
 
-  const stamp = `${MONTHS_FULL_ES[data.mes - 1]} ${data.ano}`;
+  const stamp = `${MONTHS_ES_FULL[data.mes - 1].toLowerCase()} ${data.ano}`;
   const { addedMonthLabel, daysUntil } = nextUpdate();
   const daysLabel = `${daysUntil} día${daysUntil === 1 ? "" : "s"}`;
 

@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { createPublicClient } from "@/utils/supabase/public";
 import {
   fetchDiasInsalubresMensual,
+  MONTHS_ES_FULL,
   summarizeYear,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
@@ -72,6 +73,7 @@ export async function GET(request: Request) {
   }
 
   let total: number;
+  let period: string;
   let deltaText: string | null;
   let deltaColor: string | undefined;
   try {
@@ -79,6 +81,11 @@ export async function GET(request: Request) {
     const data = await fetchDiasInsalubresMensual(supabase);
     const summary = summarizeYear(data[pollutant], year);
     total = summary.total;
+    // The months the number covers, from the data itself (the last month the
+    // monthly cron has processed), never the calendar: "Enero a agosto de
+    // 2026", or "Enero de 2026" in the first month.
+    const last = MONTHS_ES_FULL[summary.monthsUsed - 1].toLowerCase();
+    period = summary.monthsUsed === 1 ? `Enero de ${year}` : `Enero a ${last} de ${year}`;
     deltaColor =
       summary.priorYearDelta === null || summary.priorYearDelta === 0
         ? undefined
@@ -95,7 +102,7 @@ export async function GET(request: Request) {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
 
-  const headline = [`días sobre la norma`, `de ${POLLUTANT_LABEL[pollutant]} en ${year}`];
+  const headline = [`días sobre la norma`, `de ${POLLUTANT_LABEL[pollutant]}`];
   const headlineLines = format.splitHeadline ? headline : [headline.join(" ")];
 
   return new ImageResponse(
@@ -124,8 +131,9 @@ export async function GET(request: Request) {
           )}
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
-            <div style={{ display: "flex", fontSize: cx(30), fontWeight: 500, color: "#6b7280", marginBottom: cx(20) }}>
-              Zona Metropolitana de Monterrey
+            <div style={{ display: "flex", flexDirection: "column", fontSize: cx(30), marginBottom: cx(20) }}>
+              <div style={{ display: "flex", color: "#6b7280" }}>Zona Metropolitana de Monterrey</div>
+              <div style={{ display: "flex", fontWeight: 600, color: "#374151" }}>{period}</div>
             </div>
             <div style={{ display: "flex", fontSize: cx(220), fontWeight: 700, color: COLOR_INSALUBRE, lineHeight: 1 }}>
               {total}

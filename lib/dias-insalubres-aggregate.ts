@@ -23,6 +23,22 @@ export interface MonthData {
 }
 
 export const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+// Full names, capitalized (lowercase them mid-sentence). Shared by the chart,
+// its month calendar, the /datos header stamp, and the download image.
+export const MONTHS_ES_FULL = [
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
+];
 
 // Scaffolding for a targeted month/pollutant hide, kept even when empty --
 // re-verified 2026-09-18 that July 2026 PM10's suspected off-by-one day

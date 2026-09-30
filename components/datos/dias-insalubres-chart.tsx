@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, ChevronRight, HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
-import { summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { MONTHS_ES_FULL, summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
@@ -55,20 +55,6 @@ const MONTH_SHORT = [
 // bar edge-to-edge.
 const MONTH_COL_WIDTH_MAX = 220;
 const MONTH_COL_WIDTH_MIN = 30;
-const MONTH_FULL = [
-  "Enero",
-  "Febrero",
-  "Marzo",
-  "Abril",
-  "Mayo",
-  "Junio",
-  "Julio",
-  "Agosto",
-  "Septiembre",
-  "Octubre",
-  "Noviembre",
-  "Diciembre",
-];
 
 // Was hidden pending a discrepancy check (23 vs 15 insalubre days for Aug
 // 2026, traced to station NO3) -- re-enabled 2026-09-18 on explicit request.
@@ -268,7 +254,7 @@ function MonthTooltipCard({
       style={positionStyle}
     >
       <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
-        {MONTH_FULL[month.mesNumero - 1]} {month.ano}
+        {MONTHS_ES_FULL[month.mesNumero - 1]} {month.ano}
       </span>
       <div className="flex gap-4">
         <div className="flex flex-col gap-0.5">
@@ -467,7 +453,7 @@ function StackedBarsChart({
                 fill="transparent"
                 tabIndex={0}
                 role={m.diasTotales > 0 ? "button" : undefined}
-                aria-label={`${MONTH_FULL[m.mesNumero - 1]} ${m.ano}: ${m.insalubres} días insalubres, ${m.saludables} días saludables${m.diasTotales > 0 ? ". Ver detalle por día" : ""}`}
+                aria-label={`${MONTHS_ES_FULL[m.mesNumero - 1]} ${m.ano}: ${m.insalubres} días insalubres, ${m.saludables} días saludables${m.diasTotales > 0 ? ". Ver detalle por día" : ""}`}
                 style={{
                   cursor: m.diasTotales > 0 ? "pointer" : "default",
                   outline: "none",
@@ -495,7 +481,7 @@ function StackedBarsChart({
       <ul className="sr-only">
         {months.map((m) => (
           <li key={m.mesNumero}>
-            {MONTH_FULL[m.mesNumero - 1]} {m.ano}: {m.insalubres} días
+            {MONTHS_ES_FULL[m.mesNumero - 1]} {m.ano}: {m.insalubres} días
             insalubres, {m.saludables} días saludables
           </li>
         ))}
