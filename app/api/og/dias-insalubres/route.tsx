@@ -227,11 +227,6 @@ export async function GET(request: Request) {
                 </div>
               ))}
             </div>
-            {/* The source of the rule, named: marks the image as the
-                observatory's, without explaining the method. */}
-            <div style={{ display: "flex", fontSize: tx(22), color: "#9ca3af", marginTop: tx(36) }}>
-              Con base en la NOM-025-SSA1-2021
-            </div>
           </div>
 
           <div
