@@ -45,10 +45,10 @@ export const BRAND_PURPLE = "#743479";
 // Year-comparison lines on /datos: focus + context by color only. A year
 // can't borrow a color that already means something: red/green = sobre /
 // dentro de la norma, blue = data coverage here (COLOR_CUBIERTO), the
-// orange/yellow family = air-quality levels on the map. The current year
-// takes the logo's purple (BRAND_PURPLE); past years recede to light gray
-// (Tailwind gray-300).
-export const COLOR_YEAR_CURRENT = BRAND_PURPLE;
+// orange/yellow family = air-quality levels on the map. The current year is
+// Tailwind violet-500 -- the same Tailwind 500 family as the bars' red and
+// green; past years recede to light gray (Tailwind gray-300).
+export const COLOR_YEAR_CURRENT = "#8b5cf6"; // Tailwind violet-500
 export const COLOR_YEAR_PAST = "#d1d5db"; // Tailwind gray-300
 
 export function withOpacity(hex: string, opacity: number): string {
