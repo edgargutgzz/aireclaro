@@ -30,7 +30,7 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Más Menos Los mismos que el sobre la norma frente PM2.5 PM10 Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Respiramos más menos los mismos que el sobre la norma frente PM2.5 PM10 Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -121,10 +121,10 @@ export async function GET(request: Request) {
     : agree
       ? [
           signs[0] > 0
-            ? "Más días sobre la norma"
+            ? "Respiramos más días sobre la norma"
             : signs[0] < 0
-              ? "Menos días sobre la norma"
-              : "Los mismos días sobre la norma",
+              ? "Respiramos menos días sobre la norma"
+              : "Respiramos los mismos días sobre la norma",
           `que en ${mesMin} de ${year - 1}`,
         ]
       : ["Días sobre la norma", `${mesMin} de ${year} frente a ${year - 1}`];
@@ -134,8 +134,8 @@ export async function GET(request: Request) {
   // reference.
   const verdictColor = COLOR_INSALUBRE;
   const years = hasPrior ? [year - 1, year] : [year];
-  // Headline capped where the longest verdict ("Los mismos días sobre la
-  // norma") stays on one line; the pollutant table capped where its
+  // Headline capped where the longest verdict ("Respiramos los mismos días
+  // sobre la norma") stays on one line; the pollutant table capped where its
   // three columns still fit the story's width.
   const hx = (n: number) => px(n * Math.min(format.content, 1));
   const tx = (n: number) => px(n * Math.min(format.content, 1.2));
@@ -175,7 +175,7 @@ export async function GET(request: Request) {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                fontSize: hx(46),
+                fontSize: hx(40),
                 fontWeight: 700,
                 color: "#111827",
                 lineHeight: 1.15,
