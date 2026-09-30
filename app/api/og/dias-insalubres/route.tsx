@@ -27,7 +27,7 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 };
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de más menos mismos Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron frente a con medición Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -72,38 +72,38 @@ export async function GET(request: Request) {
     return messageCard(options, px(32), "Falta el año.");
   }
 
-  let total: number;
-  let period: string;
-  let deltaText: string | null;
-  let deltaColor: string | undefined;
+  let sharePct: number;
+  let context: string[];
+  let compareText: string | null;
+  let compareColor: string | undefined;
   try {
     const supabase = createPublicClient();
     const data = await fetchDiasInsalubresMensual(supabase);
     const summary = summarizeYear(data[pollutant], year);
-    total = summary.total;
-    // The months the number covers, from the data itself (the last month the
+    if (summary.sharePct === null) {
+      return messageCard(options, px(32), "Aún no hay datos para este año.");
+    }
+    sharePct = summary.sharePct;
+    // The months the figure covers, from the data itself (the last month the
     // monthly cron has processed), never the calendar: "Enero a agosto de
     // 2026", or "Enero de 2026" in the first month.
     const last = MONTHS_ES_FULL[summary.monthsUsed - 1].toLowerCase();
-    period = summary.monthsUsed === 1 ? `Enero de ${year}` : `Enero a ${last} de ${year}`;
-    deltaColor =
-      summary.priorYearDelta === null || summary.priorYearDelta === 0
-        ? undefined
-        : summary.priorYearDelta < 0
-          ? COLOR_SALUDABLE
-          : COLOR_INSALUBRE;
-    deltaText =
-      summary.priorYearDelta === null
-        ? null
-        : summary.priorYearDelta === 0
-          ? `mismos días que en el mismo periodo de ${year - 1}`
-          : `${Math.abs(summary.priorYearDelta)} día${Math.abs(summary.priorYearDelta) === 1 ? "" : "s"} ${summary.priorYearDelta < 0 ? "menos" : "más"} que en el mismo periodo de ${year - 1}`;
+    const period = summary.monthsUsed === 1 ? `Enero de ${year}` : `Enero a ${last} de ${year}`;
+    context = [
+      "Zona Metropolitana de Monterrey",
+      period,
+      `${summary.total} de ${summary.totalDays} días con medición`,
+    ];
+    const prior = summary.priorSharePct;
+    compareColor =
+      prior === null || prior === sharePct ? undefined : sharePct > prior ? COLOR_INSALUBRE : COLOR_SALUDABLE;
+    compareText = prior === null ? null : `frente a ${prior}% en el mismo periodo de ${year - 1}`;
   } catch {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
 
-  const headline = [`días sobre la norma`, `de ${POLLUTANT_LABEL[pollutant]}`];
-  const headlineLines = format.splitHeadline ? headline : [headline.join(" ")];
+  // Always two set lines: one line would wrap at the larger formats' scale.
+  const headlineLines = ["de los días superaron", `la norma de ${POLLUTANT_LABEL[pollutant]}`];
 
   return new ImageResponse(
     (
@@ -132,7 +132,7 @@ export async function GET(request: Request) {
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
             <div style={{ display: "flex", fontSize: cx(220), fontWeight: 700, color: COLOR_INSALUBRE, lineHeight: 1 }}>
-              {total}
+              {sharePct}%
             </div>
             <div
               style={{
@@ -152,18 +152,18 @@ export async function GET(request: Request) {
                 </div>
               ))}
             </div>
-            {deltaText && (
+            {compareText && (
               <div
                 style={{
                   display: "flex",
-                  // Capped at 1.45x: the longest comparison ("N días más que
-                  // en el mismo periodo de YYYY") still fits one line.
+                  // Capped at 1.45x: the comparison ("frente a NN% en el mismo
+                  // periodo de YYYY") still fits one line.
                   fontSize: px(28 * Math.min(format.content, 1.45)),
                   fontWeight: 600,
-                  color: deltaColor ?? "#6b7280",
+                  color: compareColor ?? "#6b7280",
                 }}
               >
-                {deltaText}
+                {compareText}
               </div>
             )}
             {/* Context after the message, quieter: logo (who says it) ->
@@ -179,8 +179,11 @@ export async function GET(request: Request) {
                 marginTop: cx(36),
               }}
             >
-              <div style={{ display: "flex" }}>Zona Metropolitana de Monterrey</div>
-              <div style={{ display: "flex" }}>{period}</div>
+              {context.map((line) => (
+                <div key={line} style={{ display: "flex" }}>
+                  {line}
+                </div>
+              ))}
             </div>
           </div>
 

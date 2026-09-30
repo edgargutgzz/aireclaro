@@ -205,6 +205,15 @@ export interface YearSummary {
   // compare (a partial year against a complete one always favors the
   // partial one).
   priorYearDelta: number | null;
+  // Days with a valid reading in those same months (the denominator), and
+  // the share of them over the norm as a whole percent. The share is what
+  // the download image leads with: unlike the running total it doesn't grow
+  // just because another month passed, and it corrects for coverage gaps.
+  totalDays: number;
+  sharePct: number | null;
+  // Prior year's share over the same months; null under the same rule as
+  // priorYearDelta.
+  priorSharePct: number | null;
 }
 
 export function summarizeYear(data: MonthData[], year: number): YearSummary {
@@ -228,15 +237,25 @@ export function summarizeYear(data: MonthData[], year: number): YearSummary {
   const trimmed = full.slice(0, lastIdx + 1);
 
   const total = trimmed.reduce((sum, d) => sum + d.diasInsalubres, 0);
+  const totalDays = trimmed.reduce((sum, d) => sum + d.diasTotales, 0);
   const monthsUsed = trimmed.length;
+  const pct = (over: number, days: number) => (days > 0 ? Math.round((over / days) * 100) : null);
 
   const priorRows = data.filter(
     (d) => d.ano === year - 1 && d.mesNumero <= monthsUsed,
   );
-  const priorYearDelta =
-    priorRows.length >= monthsUsed
-      ? total - priorRows.reduce((sum, d) => sum + d.diasInsalubres, 0)
-      : null;
+  const priorComplete = priorRows.length >= monthsUsed;
+  const priorTotal = priorRows.reduce((sum, d) => sum + d.diasInsalubres, 0);
+  const priorDays = priorRows.reduce((sum, d) => sum + d.diasTotales, 0);
+  const priorYearDelta = priorComplete ? total - priorTotal : null;
 
-  return { total, monthsUsed, lastMonthLabel: MONTHS_ES[monthsUsed - 1], priorYearDelta };
+  return {
+    total,
+    monthsUsed,
+    lastMonthLabel: MONTHS_ES[monthsUsed - 1],
+    priorYearDelta,
+    totalDays,
+    sharePct: pct(total, totalDays),
+    priorSharePct: priorComplete ? pct(priorTotal, priorDays) : null,
+  };
 }

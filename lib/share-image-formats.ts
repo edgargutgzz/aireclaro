@@ -14,10 +14,6 @@ export interface ShareFormatSpec {
   /** Extra scale on the central stat block (number + headline), so taller
    *  formats fill their canvas instead of leaving it mostly empty. */
   content: number;
-  /** Break the headline into two set lines ("días sobre la norma" / "de
-   *  PM2.5 en 2026") where the scaled-up type would otherwise wrap and
-   *  strand the year alone on a line. */
-  splitHeadline?: boolean;
   /** Scale on the brand frame (logo + footer). >1 where the image fills a
    *  phone screen and the default frame reads as fine print. */
   chrome: number;
@@ -35,8 +31,8 @@ export const SHARE_FORMATS: Record<ShareFormat, ShareFormatSpec> = {
   // ~34px off each side, inside the 80px side padding. content 1.2 is the
   // most before the one-line headline wraps.
   "instagram-post": { width: 1080, height: 1350, padTop: 72, padBottom: 72, content: 1.2, chrome: 1 },
-  // Stories (9:16), seen full-screen on a phone: bigger stat, headline set
-  // on two lines, bigger brand frame, footer stacked. Instagram's own UI
+  // Stories (9:16), seen full-screen on a phone: bigger stat, bigger brand
+  // frame, footer stacked. Instagram's own UI
   // covers roughly the top and bottom ~250px, so logo and footer sit inside
   // that safe zone.
   "instagram-story": {
@@ -45,7 +41,6 @@ export const SHARE_FORMATS: Record<ShareFormat, ShareFormatSpec> = {
     padTop: 250,
     padBottom: 250,
     content: 1.7,
-    splitHeadline: true,
     chrome: 1.4,
     stackFooter: true,
   },
