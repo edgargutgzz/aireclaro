@@ -107,7 +107,7 @@ export async function GET(request: Request) {
 
   const mesNombre = MONTHS_ES_FULL[mes - 1];
   const mesMin = mesNombre.toLowerCase();
-  const eyebrow = `${mesNombre} de ${year}`;
+  const eyebrow = `${mesNombre} ${year}`;
   const hasPrior = rowsOut.every((r) => r.prior !== null);
   // The verdict, always two set lines, in the observatory's own measured
   // terms ("días sobre la norma", not colloquial "aire contaminado"): the
