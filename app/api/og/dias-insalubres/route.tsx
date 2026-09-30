@@ -139,6 +139,11 @@ export async function GET(request: Request) {
   // three columns still fit the story's width.
   const hx = (n: number) => px(n * Math.min(format.content, 1));
   const tx = (n: number) => px(n * Math.min(format.content, 1.2));
+  // At lineHeight 1, Inter's baseline sits ~0.135em above the bottom of the
+  // line box. Bottom-aligned text of size `small` next to size `big` needs
+  // this much bottom padding to share `big`'s baseline.
+  const NUMBER_SIZE = 110;
+  const baseLift = (big: number, small: number) => tx(0.135 * (big - small));
 
   return new ImageResponse(
     (
@@ -189,8 +194,11 @@ export async function GET(request: Request) {
             </div>
 
             {/* One row per pollutant: last year (gray reference), this
-                year (always red). */}
-            <div style={{ display: "flex", flexDirection: "column", gap: tx(20), marginTop: tx(52) }}>
+                year (always red). Satori's alignItems:"baseline" doesn't
+                line up text of very different sizes, so every piece is
+                bottom-aligned at lineHeight 1 and the small text is lifted
+                by baseLift() onto the big number's baseline. */}
+            <div style={{ display: "flex", flexDirection: "column", gap: tx(44), marginTop: tx(52) }}>
               <div style={{ display: "flex", fontSize: tx(24), fontWeight: 600, color: "#6b7280" }}>
                 <div style={{ display: "flex", width: tx(170) }} />
                 {years.map((y) => (
@@ -200,8 +208,18 @@ export async function GET(request: Request) {
                 ))}
               </div>
               {rowsOut.map((r) => (
-                <div key={r.pollutant} style={{ display: "flex", alignItems: "baseline" }}>
-                  <div style={{ display: "flex", width: tx(170), fontSize: tx(30), fontWeight: 700, color: "#374151" }}>
+                <div key={r.pollutant} style={{ display: "flex", alignItems: "flex-end" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      width: tx(170),
+                      fontSize: tx(30),
+                      fontWeight: 700,
+                      lineHeight: 1,
+                      color: "#374151",
+                      paddingBottom: baseLift(NUMBER_SIZE, 30),
+                    }}
+                  >
                     {POLLUTANT_LABEL[r.pollutant]}
                   </div>
                   {years.map((y) => {
@@ -211,14 +229,24 @@ export async function GET(request: Request) {
                         key={y}
                         style={{
                           display: "flex",
-                          alignItems: "baseline",
+                          alignItems: "flex-end",
                           gap: tx(10),
                           width: tx(270),
                           color: y === year ? verdictColor : COLOR_YEAR_PAST,
                         }}
                       >
-                        <div style={{ display: "flex", fontSize: tx(110), fontWeight: 700, lineHeight: 1 }}>{v}</div>
-                        <div style={{ display: "flex", fontSize: tx(28), fontWeight: 600 }}>
+                        <div style={{ display: "flex", fontSize: tx(NUMBER_SIZE), fontWeight: 700, lineHeight: 1 }}>
+                          {v}
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            fontSize: tx(28),
+                            fontWeight: 600,
+                            lineHeight: 1,
+                            paddingBottom: baseLift(NUMBER_SIZE, 28),
+                          }}
+                        >
                           {v === 1 ? "día" : "días"}
                         </div>
                       </div>
