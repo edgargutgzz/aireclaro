@@ -929,8 +929,10 @@ export default function DiasInsalubresChart({
         compare ? (
           // The one limit every line is counted against, per pollutant.
           <div>
-            Límite de {POLLUTANT_LABEL[pollutant]}: {POLLUTANT_LIMITS[pollutant].desde} µg/m³ en todos los
-            años
+            {/* "ambos" while there are two years; "todos los" once a third
+                arrives. */}
+            Límite diario: {POLLUTANT_LIMITS[pollutant].desde} µg/m³ en{" "}
+            {years.length === 2 ? "ambos años" : "todos los años"}
           </div>
         ) : (
           // Each year stands alone against the norm in force that year; no
