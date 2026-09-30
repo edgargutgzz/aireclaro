@@ -13,19 +13,18 @@ import type { ShareFormat } from "@/lib/share-image-formats";
 interface Option {
   format: ShareFormat;
   label: string;
-  hint: string;
 }
 
 const GROUPS: { title: string | null; options: Option[] }[] = [
-  { title: null, options: [{ format: "whatsapp", label: "WhatsApp", hint: "Imagen cuadrada" }] },
+  { title: null, options: [{ format: "whatsapp", label: "WhatsApp" }] },
   {
     title: "Instagram",
     options: [
-      { format: "instagram-post", label: "Post", hint: "Vertical, para el feed" },
-      { format: "instagram-story", label: "Story", hint: "Pantalla completa" },
+      { format: "instagram-post", label: "Post" },
+      { format: "instagram-story", label: "Story" },
     ],
   },
-  { title: null, options: [{ format: "facebook-post", label: "Facebook", hint: "Publicación vertical" }] },
+  { title: "Facebook", options: [{ format: "facebook-post", label: "Post" }] },
 ];
 
 export default function DownloadImageMenu({
@@ -106,11 +105,8 @@ export default function DownloadImageMenu({
                     group.title ? "pl-6" : "pl-3"
                   }`}
                 >
-                  <span className="flex flex-col">
-                    <span className={`text-sm ${group.title ? "text-gray-700" : "font-semibold text-gray-800"}`}>
-                      {o.label}
-                    </span>
-                    <span className="text-xs text-gray-400">{o.hint}</span>
+                  <span className={`text-sm ${group.title ? "text-gray-700" : "font-semibold text-gray-800"}`}>
+                    {o.label}
                   </span>
                   <ArrowDownToLine
                     aria-hidden
