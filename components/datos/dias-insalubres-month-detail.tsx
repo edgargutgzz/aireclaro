@@ -79,9 +79,10 @@ function buildLayout(ano: number, mesNumero: number, days: DayStatus[]): Cell[] 
   });
 }
 
+// Same wording as the monthly chart's legend (dias-insalubres-chart.tsx).
 const ESTADO_LABEL: Record<DayStatus["estado"], string> = {
-  insalubre: "Insalubre",
-  saludable: "Saludable",
+  insalubre: "Sobre la norma",
+  saludable: "Dentro de la norma",
   "sin-datos": "Sin datos",
 };
 const ESTADO_COLOR: Record<DayStatus["estado"], string> = {
