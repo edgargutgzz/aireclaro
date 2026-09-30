@@ -7,7 +7,7 @@ import {
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
-import { loadOgLogo, OG_LOGO_RATIO } from "@/lib/og-logo";
+import { loadOgLogo, OG_LOGO_HEIGHT, OG_LOGO_WIDTH } from "@/lib/og-logo";
 
 // The branded stat card behind the días insalubres chart's "Compartir"
 // button (components/datos/dias-insalubres-chart.tsx) -- a square image
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "72px 80px" }}>
           {logo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={logo} width={Math.round(64 * OG_LOGO_RATIO)} height={64} alt="" />
+            <img src={logo} width={OG_LOGO_WIDTH} height={OG_LOGO_HEIGHT} alt="" />
           ) : (
             <div
               style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#111827", letterSpacing: -0.5 }}

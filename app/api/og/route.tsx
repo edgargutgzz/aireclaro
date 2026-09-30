@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 import { loadGoogleFont } from "@/lib/og-font";
-import { loadOgLogo, OG_LOGO_RATIO } from "@/lib/og-logo";
+import { loadOgLogo, OG_LOGO_HEIGHT, OG_LOGO_WIDTH } from "@/lib/og-logo";
 
 // The unfurl card behind a shared ?sensor= link. Short-lived on purpose: it
 // carries a live reading, so a day-long CDN cache would show a stale number.
@@ -67,7 +67,7 @@ export async function GET(request: Request) {
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "72px 80px" }}>
           {logo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={logo} width={Math.round(52 * OG_LOGO_RATIO)} height={52} alt="" />
+            <img src={logo} width={OG_LOGO_WIDTH} height={OG_LOGO_HEIGHT} alt="" />
           ) : (
             <div
               style={{
