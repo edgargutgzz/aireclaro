@@ -7,7 +7,7 @@ import {
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
-import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO_HEIGHT, OG_LOGO_WIDTH } from "@/lib/og-logo";
+import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO_LARGE } from "@/lib/og-logo";
 
 // The branded stat card behind the días insalubres chart's "Compartir"
 // button (components/datos/dias-insalubres-chart.tsx) -- a square image
@@ -27,6 +27,13 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 const GLYPHS =
   "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de más menos mismos Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
+// 1600x1600: WhatsApp's standard-quality photo send caps the long edge at
+// 1600px, so this is the largest square it passes through without resizing
+// (square also shows uncropped in the chat). The layout below is written at a
+// 1080 design scale; px() scales every measurement up.
+const SIZE = 1600;
+const px = (n: number) => Math.round((n * SIZE) / 1080);
+
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
 export async function GET(request: Request) {
@@ -36,11 +43,11 @@ export async function GET(request: Request) {
   const pollutant: Pollutant = searchParams.get("pollutant") === "pm10" ? "pm10" : "pm25";
 
   const options: ImageOptions = {
-    width: 1080,
-    height: 1080,
+    width: SIZE,
+    height: SIZE,
     headers: { "cache-control": CACHE },
   };
-  const logo = await loadOgLogo(request.url);
+  const logo = await loadOgLogo(request.url, OG_LOGO_LARGE);
   try {
     const [f400, f600, f700] = await Promise.all([
       loadGoogleFont(400, GLYPHS),
@@ -96,40 +103,40 @@ export async function GET(request: Request) {
           fontFamily: "Inter",
         }}
       >
-        <div style={{ height: 14, background: OG_BRAND_BLUE }} />
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "72px 80px" }}>
+        <div style={{ height: px(14), background: OG_BRAND_BLUE }} />
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: `${px(72)}px ${px(80)}px` }}>
           {logo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={logo} width={OG_LOGO_WIDTH} height={OG_LOGO_HEIGHT} alt="" />
+            <img src={logo} width={OG_LOGO_LARGE.width} height={OG_LOGO_LARGE.height} alt="" />
           ) : (
             <div
-              style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#111827", letterSpacing: -0.5 }}
+              style={{ display: "flex", fontSize: px(30), fontWeight: 700, color: "#111827", letterSpacing: px(-0.5) }}
             >
               Observatorio del Aire
             </div>
           )}
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
-            <div style={{ display: "flex", fontSize: 30, fontWeight: 500, color: "#6b7280", marginBottom: 20 }}>
+            <div style={{ display: "flex", fontSize: px(30), fontWeight: 500, color: "#6b7280", marginBottom: px(20) }}>
               Zona Metropolitana de Monterrey
             </div>
-            <div style={{ display: "flex", fontSize: 220, fontWeight: 700, color: COLOR_INSALUBRE, lineHeight: 1 }}>
+            <div style={{ display: "flex", fontSize: px(220), fontWeight: 700, color: COLOR_INSALUBRE, lineHeight: 1 }}>
               {total}
             </div>
             <div
               style={{
                 display: "flex",
-                fontSize: 40,
+                fontSize: px(40),
                 fontWeight: 600,
                 color: "#111827",
-                marginTop: 8,
-                marginBottom: 16,
+                marginTop: px(8),
+                marginBottom: px(16),
               }}
             >
               días sobre la norma de {POLLUTANT_LABEL[pollutant]} en {year}
             </div>
             {deltaText && (
-              <div style={{ display: "flex", fontSize: 28, fontWeight: 600, color: deltaColor ?? "#6b7280" }}>
+              <div style={{ display: "flex", fontSize: px(28), fontWeight: 600, color: deltaColor ?? "#6b7280" }}>
                 {deltaText}
               </div>
             )}
@@ -139,14 +146,14 @@ export async function GET(request: Request) {
             style={{
               display: "flex",
               flexDirection: "column",
-              marginTop: 40,
-              paddingTop: 32,
-              borderTop: "2px solid #e5e7eb",
+              marginTop: px(40),
+              paddingTop: px(32),
+              borderTop: `${px(2)}px solid #e5e7eb`,
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontSize: 20 }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <div style={{ display: "flex", fontSize: 18, color: "#9ca3af" }}>Fuente</div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontSize: px(20) }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: px(4) }}>
+                <div style={{ display: "flex", fontSize: px(18), color: "#9ca3af" }}>Fuente</div>
                 <div style={{ display: "flex", color: "#6b7280" }}>Sistema Integral de Monitoreo Ambiental (SIMA) de Nuevo León</div>
               </div>
               <div style={{ display: "flex", flexShrink: 0, fontWeight: 600, color: "#6b7280" }}>observatoriodelaire.com</div>
@@ -171,7 +178,7 @@ function messageCard(options: ImageOptions, message: string) {
           height: "100%",
           background: "#ffffff",
           fontFamily: "Inter",
-          fontSize: 32,
+          fontSize: px(32),
           color: "#6b7280",
         }}
       >

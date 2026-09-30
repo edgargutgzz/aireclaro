@@ -3,16 +3,24 @@
 // own public/ and inlined as a data URI, so a failed fetch returns null and
 // the card falls back to a text brand line instead of 500ing the image.
 //
-// public/og/occamm-logo.png is pre-shrunk (Lanczos, from
-// public/navbar/occamm-logo.png) to exactly OG_LOGO_WIDTH x OG_LOGO_HEIGHT:
-// the renderer's own downscale of the 1633px original came out pixelated.
-// Draw it at exactly this size; regenerate the file to change it.
-export const OG_LOGO_WIDTH = 238;
-export const OG_LOGO_HEIGHT = 44;
+// Each file is pre-shrunk (Lanczos, from public/navbar/occamm-logo.png) to
+// exactly the size it's drawn at: the renderer's own downscale of the 1633px
+// original came out pixelated. Draw each at exactly its width x height;
+// regenerate the file to change it.
+export interface OgLogo {
+  src: string;
+  width: number;
+  height: number;
+}
 
-export async function loadOgLogo(requestUrl: string): Promise<string | null> {
+// The 1200x630 sensor unfurl card.
+export const OG_LOGO: OgLogo = { src: "/og/occamm-logo.png", width: 238, height: 44 };
+// The 1600x1600 días insalubres download (same 44px at its 1080 design scale).
+export const OG_LOGO_LARGE: OgLogo = { src: "/og/occamm-logo-65.png", width: 351, height: 65 };
+
+export async function loadOgLogo(requestUrl: string, logo: OgLogo = OG_LOGO): Promise<string | null> {
   try {
-    const res = await fetch(new URL("/og/occamm-logo.png", requestUrl));
+    const res = await fetch(new URL(logo.src, requestUrl));
     if (!res.ok) return null;
     const bytes = Buffer.from(await res.arrayBuffer()).toString("base64");
     return `data:image/png;base64,${bytes}`;
