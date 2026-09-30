@@ -30,7 +30,7 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Respiramos más menos los mismos que el sobre la norma frente PM2.5 PM10 Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Se registraron más menos los mismos que el sobre la norma frente PM2.5 PM10 Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -121,10 +121,10 @@ export async function GET(request: Request) {
     : agree
       ? [
           signs[0] > 0
-            ? "Respiramos más días sobre la norma"
+            ? "Se registraron más días sobre la norma"
             : signs[0] < 0
-              ? "Respiramos menos días sobre la norma"
-              : "Respiramos los mismos días sobre la norma",
+              ? "Se registraron menos días sobre la norma"
+              : "Se registraron los mismos días sobre la norma",
           `que en ${mesMin} de ${year - 1}`,
         ]
       : ["Días sobre la norma", `${mesMin} de ${year} frente a ${year - 1}`];
