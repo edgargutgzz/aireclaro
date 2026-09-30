@@ -7,11 +7,12 @@ import {
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
-import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO_LARGE } from "@/lib/og-logo";
+import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO, OG_LOGO_LARGE } from "@/lib/og-logo";
+import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 
-// The branded stat card behind the días insalubres chart's "Compartir"
-// button (components/datos/dias-insalubres-chart.tsx) -- a square image
-// sized for Instagram/WhatsApp, not the 1200x630 landscape unfurl card
+// The branded stat card behind the días insalubres chart's download menu
+// (components/datos/download-image-menu.tsx) -- one size per destination
+// (?format=, see lib/share-image-formats.ts), not the 1200x630 landscape unfurl card
 // app/api/og/route.tsx renders for a shared sensor link. Summarizes the
 // requested year+pollutant via the same summarizeYear() the chart itself
 // uses, so the number on the downloaded image can never drift from the
@@ -27,13 +28,6 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 const GLYPHS =
   "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de más menos mismos Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
-// 1600x1600: WhatsApp's standard-quality photo send caps the long edge at
-// 1600px, so this is the largest square it passes through without resizing
-// (square also shows uncropped in the chat). The layout below is written at a
-// 1080 design scale; px() scales every measurement up.
-const SIZE = 1600;
-const px = (n: number) => Math.round((n * SIZE) / 1080);
-
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
 export async function GET(request: Request) {
@@ -41,13 +35,19 @@ export async function GET(request: Request) {
   const yearParam = searchParams.get("year");
   const year = yearParam && /^\d{4}$/.test(yearParam) ? Number(yearParam) : null;
   const pollutant: Pollutant = searchParams.get("pollutant") === "pm10" ? "pm10" : "pm25";
+  const formatParam = searchParams.get("format");
+  const format = SHARE_FORMATS[isShareFormat(formatParam) ? formatParam : "whatsapp"];
+  // The layout below is written at a 1080-wide design scale; px() scales
+  // every measurement to this format's width.
+  const px = (n: number) => Math.round((n * format.width) / 1080);
+  const logoAsset = format.width > 1080 ? OG_LOGO_LARGE : OG_LOGO;
 
   const options: ImageOptions = {
-    width: SIZE,
-    height: SIZE,
+    width: format.width,
+    height: format.height,
     headers: { "cache-control": CACHE },
   };
-  const logo = await loadOgLogo(request.url, OG_LOGO_LARGE);
+  const logo = await loadOgLogo(request.url, logoAsset);
   try {
     const [f400, f600, f700] = await Promise.all([
       loadGoogleFont(400, GLYPHS),
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
   }
 
   if (year === null) {
-    return messageCard(options, "Falta el año.");
+    return messageCard(options, px(32), "Falta el año.");
   }
 
   let total: number;
@@ -88,7 +88,7 @@ export async function GET(request: Request) {
           ? `mismos días que en el mismo periodo de ${year - 1}`
           : `${Math.abs(summary.priorYearDelta)} día${Math.abs(summary.priorYearDelta) === 1 ? "" : "s"} ${summary.priorYearDelta < 0 ? "menos" : "más"} que en el mismo periodo de ${year - 1}`;
   } catch {
-    return messageCard(options, "No se pudo generar la imagen.");
+    return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
 
   return new ImageResponse(
@@ -104,10 +104,10 @@ export async function GET(request: Request) {
         }}
       >
         <div style={{ height: px(14), background: OG_BRAND_BLUE }} />
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: `${px(72)}px ${px(80)}px` }}>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: `${px(format.padTop)}px ${px(80)}px ${px(format.padBottom)}px` }}>
           {logo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={logo} width={OG_LOGO_LARGE.width} height={OG_LOGO_LARGE.height} alt="" />
+            <img src={logo} width={logoAsset.width} height={logoAsset.height} alt="" />
           ) : (
             <div
               style={{ display: "flex", fontSize: px(30), fontWeight: 700, color: "#111827", letterSpacing: px(-0.5) }}
@@ -166,7 +166,7 @@ export async function GET(request: Request) {
   );
 }
 
-function messageCard(options: ImageOptions, message: string) {
+function messageCard(options: ImageOptions, fontSize: number, message: string) {
   return new ImageResponse(
     (
       <div
@@ -178,7 +178,7 @@ function messageCard(options: ImageOptions, message: string) {
           height: "100%",
           background: "#ffffff",
           fontFamily: "Inter",
-          fontSize: px(32),
+          fontSize,
           color: "#6b7280",
         }}
       >
