@@ -6,7 +6,7 @@ import {
   summarizeYear,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
+import { COLOR_INSALUBRE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
@@ -94,10 +94,13 @@ export async function GET(request: Request) {
       period,
       `${summary.total} de ${summary.totalDays} días con medición`,
     ];
-    const prior = summary.priorSharePct;
-    compareColor =
-      prior === null || prior === sharePct ? undefined : sharePct > prior ? COLOR_INSALUBRE : COLOR_SALUDABLE;
-    compareText = prior === null ? null : `frente a ${prior}% en el mismo periodo de ${year - 1}`;
+    // No year-over-year line for now: NOM-025's daily limit tightened on
+    // 2025-12-27 (lib/pm25-limits.ts), so the stored counts judge 2025 by the
+    // old limit and 2026 by the new one, which reverses the real trend (see
+    // 2026-09-30 recount). Comes back once both years are counted against
+    // the same limit.
+    compareColor = undefined;
+    compareText = null;
   } catch {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
