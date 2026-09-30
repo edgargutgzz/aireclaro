@@ -1029,7 +1029,7 @@ export default function DiasInsalubresChart({
             actual cause of the left/right mismatch reported. Reverted.) */}
         {compare ? (
           <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 md:mb-6">
-            <span className="text-xs text-gray-400">Días sobre el límite</span>
+            <span className="text-xs text-gray-400">Días sobre la norma</span>
             <div className="flex items-center gap-4 text-xs text-gray-500">
               {yearLines.map((l) => (
                 <span key={l.ano} className="flex items-center gap-1.5">
