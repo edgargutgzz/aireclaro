@@ -40,7 +40,7 @@ const PAST_NUMBER_COLOR = "#9ca3af";
 
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Se registraron más menos los mismos que el sobre la norma frente PM2.5 PM10 Partículas finas gruesas Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Se registraron más menos los mismos que el sobre la norma frente PM2.5 PM10 Partículas finas gruesas Días en que las partículas en el aire superaron el límite para proteger la salud. Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -204,6 +204,20 @@ export async function GET(request: Request) {
                   {line}
                 </div>
               ))}
+            </div>
+            {/* The headline's technical term, translated for a reader who
+                doesn't know what the norm protects. */}
+            <div
+              style={{
+                display: "flex",
+                fontSize: hx(26),
+                lineHeight: 1.35,
+                color: "#6b7280",
+                marginTop: hx(16),
+                maxWidth: px(820),
+              }}
+            >
+              Días en que las partículas en el aire superaron el límite para proteger la salud.
             </div>
 
             {/* One row per pollutant: last year (gray reference), this
