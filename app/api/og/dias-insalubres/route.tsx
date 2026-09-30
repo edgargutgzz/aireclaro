@@ -5,7 +5,7 @@ import {
   MONTHS_ES_FULL,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE, COLOR_YEAR_PAST } from "@/lib/datos-colors";
+import { COLOR_INSALUBRE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
@@ -27,10 +27,20 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
   pm10: "PM10",
 };
+// For a reader who doesn't know what PM2.5 / PM10 are.
+const POLLUTANT_DESCRIPTOR: Record<Pollutant, string> = {
+  pm25: "Partículas finas",
+  pm10: "Partículas gruesas",
+};
+// Last year's numbers: gray-400, a step darker than the chart lines'
+// gray-300 -- as a big numeral on a phone (and after WhatsApp's
+// compression) gray-300 all but disappears, and it's the reference that
+// gives this year's number its meaning.
+const PAST_NUMBER_COLOR = "#9ca3af";
 
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Se registraron más menos los mismos que el sobre la norma frente PM2.5 PM10 Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Se registraron más menos los mismos que el sobre la norma frente PM2.5 PM10 Partículas finas gruesas Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -142,7 +152,8 @@ export async function GET(request: Request) {
   // At lineHeight 1, Inter's baseline sits ~0.135em above the bottom of the
   // line box. Bottom-aligned text of size `small` next to size `big` needs
   // this much bottom padding to share `big`'s baseline.
-  const NUMBER_SIZE = 110;
+  const NUMBER_SIZE = 150;
+  const LABEL_COL = 250;
   const baseLift = (big: number, small: number) => tx(0.135 * (big - small));
 
   return new ImageResponse(
@@ -194,15 +205,17 @@ export async function GET(request: Request) {
             </div>
 
             {/* One row per pollutant: last year (gray reference), this
-                year (always red). Satori's alignItems:"baseline" doesn't
-                line up text of very different sizes, so every piece is
-                bottom-aligned at lineHeight 1 and the small text is lifted
-                by baseLift() onto the big number's baseline. */}
+                year (always red), bare numbers (the headline already says
+                "días"). The two number columns share the full width.
+                Satori's alignItems:"baseline" doesn't line up text of very
+                different sizes, so each row is bottom-aligned at lineHeight
+                1 and the small text is lifted by baseLift() onto the big
+                number's baseline. */}
             <div style={{ display: "flex", flexDirection: "column", gap: tx(44), marginTop: tx(52) }}>
               <div style={{ display: "flex", fontSize: tx(24), fontWeight: 600, color: "#6b7280" }}>
-                <div style={{ display: "flex", width: tx(170) }} />
+                <div style={{ display: "flex", width: tx(LABEL_COL) }} />
                 {years.map((y) => (
-                  <div key={y} style={{ display: "flex", width: tx(270) }}>
+                  <div key={y} style={{ display: "flex", flex: 1 }}>
                     {mesNombre} {y}
                   </div>
                 ))}
@@ -212,46 +225,35 @@ export async function GET(request: Request) {
                   <div
                     style={{
                       display: "flex",
-                      width: tx(170),
-                      fontSize: tx(30),
-                      fontWeight: 700,
+                      flexDirection: "column",
+                      width: tx(LABEL_COL),
                       lineHeight: 1,
-                      color: "#374151",
-                      paddingBottom: baseLift(NUMBER_SIZE, 30),
+                      gap: tx(8),
+                      paddingBottom: baseLift(NUMBER_SIZE, 22),
                     }}
                   >
-                    {POLLUTANT_LABEL[r.pollutant]}
+                    <div style={{ display: "flex", fontSize: tx(30), fontWeight: 700, color: "#374151" }}>
+                      {POLLUTANT_LABEL[r.pollutant]}
+                    </div>
+                    <div style={{ display: "flex", fontSize: tx(22), color: "#9ca3af" }}>
+                      {POLLUTANT_DESCRIPTOR[r.pollutant]}
+                    </div>
                   </div>
-                  {years.map((y) => {
-                    const v = y === year ? r.current : (r.prior as number);
-                    return (
-                      <div
-                        key={y}
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-end",
-                          gap: tx(10),
-                          width: tx(270),
-                          color: y === year ? verdictColor : COLOR_YEAR_PAST,
-                        }}
-                      >
-                        <div style={{ display: "flex", fontSize: tx(NUMBER_SIZE), fontWeight: 700, lineHeight: 1 }}>
-                          {v}
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            fontSize: tx(28),
-                            fontWeight: 600,
-                            lineHeight: 1,
-                            paddingBottom: baseLift(NUMBER_SIZE, 28),
-                          }}
-                        >
-                          {v === 1 ? "día" : "días"}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {years.map((y) => (
+                    <div
+                      key={y}
+                      style={{
+                        display: "flex",
+                        flex: 1,
+                        fontSize: tx(NUMBER_SIZE),
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        color: y === year ? verdictColor : PAST_NUMBER_COLOR,
+                      }}
+                    >
+                      {y === year ? r.current : (r.prior as number)}
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
