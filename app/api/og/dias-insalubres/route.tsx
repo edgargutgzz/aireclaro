@@ -117,7 +117,6 @@ export async function GET(request: Request) {
 
   const mesNombre = MONTHS_ES_FULL[mes - 1];
   const mesMin = mesNombre.toLowerCase();
-  const eyebrow = `${mesNombre} ${year}`;
   const hasPrior = rowsOut.every((r) => r.prior !== null);
   // The verdict, always two set lines, in the observatory's own measured
   // terms ("días sobre la norma", not colloquial "aire contaminado"): the
@@ -152,7 +151,7 @@ export async function GET(request: Request) {
   // At lineHeight 1, Inter's baseline sits ~0.135em above the bottom of the
   // line box. Bottom-aligned text of size `small` next to size `big` needs
   // this much bottom padding to share `big`'s baseline.
-  const NUMBER_SIZE = 150;
+  const NUMBER_SIZE = 115;
   const LABEL_COL = 250;
   const baseLift = (big: number, small: number) => tx(0.135 * (big - small));
 
@@ -184,16 +183,14 @@ export async function GET(request: Request) {
           <div
             style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", paddingTop: px(56) }}
           >
-            {/* Logo (who says it) -> month + verdict + both pollutants'
-                numbers (the finding) -> footer (source). */}
-            <div style={{ display: "flex", fontSize: hx(26), fontWeight: 600, color: "#6b7280", marginBottom: cx(12) }}>
-              {eyebrow}
-            </div>
+            {/* Logo (who says it) -> verdict + its plain-language gloss
+                (what they say) -> both pollutants' numbers (the evidence)
+                -> footer (source). */}
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                fontSize: hx(40),
+                fontSize: hx(47),
                 fontWeight: 700,
                 color: "#111827",
                 lineHeight: 1.15,
@@ -210,11 +207,13 @@ export async function GET(request: Request) {
             <div
               style={{
                 display: "flex",
-                fontSize: hx(22),
+                fontSize: hx(26),
                 lineHeight: 1.35,
                 color: "#6b7280",
-                marginTop: hx(16),
-                maxWidth: px(820),
+                marginTop: hx(20),
+                // Breaks the sentence evenly ('...superaron el límite' / 'para
+                // proteger la salud.') instead of stranding one word.
+                maxWidth: px(760),
               }}
             >
               Días en que las partículas en el aire superaron el límite para proteger la salud.
