@@ -181,7 +181,9 @@ export async function GET(request: Request) {
             </div>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", paddingTop: px(56) }}
+          >
             {/* Logo (who says it) -> month + verdict + both pollutants'
                 numbers (the finding) -> footer (source). */}
             <div style={{ display: "flex", fontSize: hx(26), fontWeight: 600, color: "#6b7280", marginBottom: cx(12) }}>
