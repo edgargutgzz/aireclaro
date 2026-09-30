@@ -16,7 +16,7 @@ interface Option {
 }
 
 const GROUPS: { title: string | null; options: Option[] }[] = [
-  { title: null, options: [{ format: "whatsapp", label: "WhatsApp" }] },
+  { title: "WhatsApp", options: [{ format: "whatsapp", label: "Mensaje" }] },
   {
     title: "Instagram",
     options: [
