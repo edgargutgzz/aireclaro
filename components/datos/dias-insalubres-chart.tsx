@@ -623,8 +623,6 @@ export default function DiasInsalubresChart({
     [activeData, year],
   );
   const totalInsalubres = yearSummary?.total ?? 0;
-  const priorYearDelta = yearSummary?.priorYearDelta ?? null;
-  const hasPriorYearDelta = priorYearDelta !== null && year !== null;
 
   const tabs = infoTabs(pollutant);
 
@@ -646,54 +644,13 @@ export default function DiasInsalubresChart({
     <ChartCard
       title="Días sobre la norma de partículas en la Zona Metropolitana de Monterrey"
       subtitle={
-        <div className="md:flex md:items-center md:gap-3">
-          <div>
-            <span>{totalInsalubres}</span>{" "}
-            días sobre la norma por {POLLUTANT_LABEL[pollutant]} en {year}
-          </div>
-          {/* Always mounted (never conditionally rendered), just hidden
-              via `invisible` when there's no prior-year comparison --
-              conditionally mounting/unmounting this whole block made the
-              header's height jump depending on which year was selected.
-              `visibility:hidden` still reserves the same layout space, so
-              the header stays the same size either way. `contents` on the
-              wrapper shares that one invisible toggle across both the
-              divider and the paragraph without adding an extra box to the
-              md:flex row. */}
-          <div className={`contents ${hasPriorYearDelta ? "" : "invisible"}`}>
-              {/* Only between the two points, and only once they're on the
-                  same row (md:) -- stacked on mobile, a vertical rule
-                  between two stacked lines would just look like a stray
-                  mark. */}
-              <div className="hidden h-4 w-px bg-gray-200 md:block" />
-              {/* Plain inline text flow, not flex-wrap: flex-wrap treats
-                  each wrapped line as its own flex row, so a line that
-                  wraps starts flush at the container's edge instead of
-                  reading as a continuation -- looked like two disconnected,
-                  misaligned lines rather than one wrapped phrase. Ordinary
-                  text wrapping (the icon as an inline glyph before it)
-                  doesn't have that seam. whitespace-nowrap keeps the short
-                  delta phrase ("23 días más") from itself breaking
-                  mid-phrase if it lands right at the wrap point. */}
-              <p className="mt-2 text-xs md:mt-0 md:text-sm">
-              <span
-                className="whitespace-nowrap"
-                style={{
-                  color:
-                    priorYearDelta !== null && priorYearDelta < 0
-                      ? COLOR_SALUDABLE
-                      : priorYearDelta !== null && priorYearDelta > 0
-                        ? COLOR_INSALUBRE
-                        : undefined,
-                }}
-              >
-                {priorYearDelta === null || priorYearDelta === 0
-                  ? "mismos días"
-                  : `${Math.abs(priorYearDelta)} día${Math.abs(priorYearDelta) === 1 ? "" : "s"} ${priorYearDelta < 0 ? "menos" : "más"}`}
-              </span>{" "}
-              que en el mismo periodo de {(year ?? 0) - 1}
-            </p>
-          </div>
+        // Each year stands alone against the norm in force that year; no
+        // year-over-year line here (NOM-025 tightened on 2025-12-27, so a
+        // cross-year comparison is a separate question, to be shown
+        // elsewhere, labeled).
+        <div>
+          <span style={{ color: COLOR_INSALUBRE }}>{totalInsalubres}</span> días sobre la norma por{" "}
+          {POLLUTANT_LABEL[pollutant]} en {year}
         </div>
       }
       headerRight={
