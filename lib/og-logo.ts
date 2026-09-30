@@ -13,10 +13,24 @@ export interface OgLogo {
   height: number;
 }
 
-// The 1200x630 sensor unfurl card.
-export const OG_LOGO: OgLogo = { src: "/og/occamm-logo.png", width: 238, height: 44 };
-// The 1600x1600 días insalubres download (same 44px at its 1080 design scale).
-export const OG_LOGO_LARGE: OgLogo = { src: "/og/occamm-logo-65.png", width: 351, height: 65 };
+// Pre-shrunk files, by drawn height. The 1200x630 sensor unfurl and the
+// 1080-wide download formats use 44; the 1600-wide ones 65 (= 44 at their
+// scale); the Instagram story's larger brand frame 62.
+const LOGO_FILES: Record<number, OgLogo> = {
+  44: { src: "/og/occamm-logo.png", width: 238, height: 44 },
+  62: { src: "/og/occamm-logo-62.png", width: 335, height: 62 },
+  65: { src: "/og/occamm-logo-65.png", width: 351, height: 65 },
+};
+
+export const OG_LOGO = LOGO_FILES[44];
+
+/** The logo file drawn at exactly `height` px. Throws on a height with no
+ *  pre-shrunk file (add one rather than let the renderer rescale). */
+export function ogLogoAt(height: number): OgLogo {
+  const logo = LOGO_FILES[height];
+  if (!logo) throw new Error(`No pre-shrunk OG logo at ${height}px`);
+  return logo;
+}
 
 export async function loadOgLogo(requestUrl: string, logo: OgLogo = OG_LOGO): Promise<string | null> {
   try {

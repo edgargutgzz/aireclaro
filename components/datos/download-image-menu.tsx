@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ImageDown } from "lucide-react";
+import { Send } from "lucide-react";
 import type { ShareFormat } from "@/lib/share-image-formats";
 
 // The días insalubres chart's image download: asks where the image is going
@@ -25,6 +25,7 @@ const GROUPS: { title: string | null; options: Option[] }[] = [
       { format: "instagram-story", label: "Historia", hint: "Pantalla completa" },
     ],
   },
+  { title: null, options: [{ format: "facebook-post", label: "Facebook", hint: "Publicación vertical" }] },
 ];
 
 export default function DownloadImageMenu({
@@ -76,7 +77,7 @@ export default function DownloadImageMenu({
         title="Descargar imagen"
         className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
-        <ImageDown className="h-3.5 w-3.5" />
+        <Send className="h-3.5 w-3.5" />
       </button>
 
       {open && (
@@ -88,8 +89,8 @@ export default function DownloadImageMenu({
           <p className="px-3 pb-1 pt-2 text-xs font-medium text-gray-400">
             ¿Dónde lo vas a compartir?
           </p>
-          {GROUPS.map((group) => (
-            <div key={group.title ?? "top"} className={group.title ? "mt-1 border-t border-gray-100 pt-1" : ""}>
+          {GROUPS.map((group, i) => (
+            <div key={group.options[0].format} className={i > 0 ? "mt-1 border-t border-gray-100 pt-1" : ""}>
               {group.title && (
                 <p className="px-3 pb-0.5 pt-2 text-sm font-semibold text-gray-800">{group.title}</p>
               )}

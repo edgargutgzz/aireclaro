@@ -7,7 +7,7 @@ import {
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
-import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO, OG_LOGO_LARGE } from "@/lib/og-logo";
+import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 
 // The branded stat card behind the días insalubres chart's download menu
@@ -42,7 +42,9 @@ export async function GET(request: Request) {
   const px = (n: number) => Math.round((n * format.width) / 1080);
   // The central stat block also takes the format's own content scale.
   const cx = (n: number) => px(n * format.content);
-  const logoAsset = format.width > 1080 ? OG_LOGO_LARGE : OG_LOGO;
+  // The brand frame (logo + footer) takes the format's chrome scale.
+  const fx = (n: number) => px(n * format.chrome);
+  const logoAsset = ogLogoAt(fx(44));
 
   const options: ImageOptions = {
     width: format.width,
@@ -115,7 +117,7 @@ export async function GET(request: Request) {
             <img src={logo} width={logoAsset.width} height={logoAsset.height} alt="" />
           ) : (
             <div
-              style={{ display: "flex", fontSize: px(30), fontWeight: 700, color: "#111827", letterSpacing: px(-0.5) }}
+              style={{ display: "flex", fontSize: fx(30), fontWeight: 700, color: "#111827", letterSpacing: px(-0.5) }}
             >
               Observatorio del Aire
             </div>
@@ -147,7 +149,16 @@ export async function GET(request: Request) {
               ))}
             </div>
             {deltaText && (
-              <div style={{ display: "flex", fontSize: cx(28), fontWeight: 600, color: deltaColor ?? "#6b7280" }}>
+              <div
+                style={{
+                  display: "flex",
+                  // Capped at 1.45x: the longest comparison ("N días más que
+                  // en el mismo periodo de YYYY") still fits one line.
+                  fontSize: px(28 * Math.min(format.content, 1.45)),
+                  fontWeight: 600,
+                  color: deltaColor ?? "#6b7280",
+                }}
+              >
                 {deltaText}
               </div>
             )}
@@ -158,13 +169,22 @@ export async function GET(request: Request) {
               display: "flex",
               flexDirection: "column",
               marginTop: px(40),
-              paddingTop: px(32),
+              paddingTop: fx(32),
               borderTop: `${px(2)}px solid #e5e7eb`,
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontSize: px(20) }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: px(4) }}>
-                <div style={{ display: "flex", fontSize: px(18), color: "#9ca3af" }}>Fuente</div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: format.stackFooter ? "column" : "row",
+                justifyContent: "space-between",
+                alignItems: format.stackFooter ? "flex-start" : "flex-end",
+                gap: format.stackFooter ? fx(20) : 0,
+                fontSize: fx(20),
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: fx(4) }}>
+                <div style={{ display: "flex", fontSize: fx(18), color: "#9ca3af" }}>Fuente</div>
                 <div style={{ display: "flex", color: "#6b7280" }}>Sistema Integral de Monitoreo Ambiental (SIMA) de Nuevo León</div>
               </div>
               <div style={{ display: "flex", flexShrink: 0, fontWeight: 600, color: "#6b7280" }}>observatoriodelaire.com</div>
