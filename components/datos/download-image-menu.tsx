@@ -83,11 +83,11 @@ export default function DownloadImageMenu({
       {open && (
         <div
           role="menu"
-          aria-label="¿Dónde lo vas a compartir?"
+          aria-label="Descarga la imagen según dónde la vas a compartir"
           className="absolute right-0 top-full z-20 mt-2 w-60 rounded-xl border border-black/[0.08] bg-white/95 p-1.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
         >
           <p className="px-3 pb-1 pt-2 text-xs font-medium text-gray-400">
-            ¿Dónde lo vas a compartir?
+            Descarga la imagen según dónde la vas a compartir
           </p>
           {GROUPS.map((group, i) => (
             <div key={group.options[0].format} className={i > 0 ? "mt-1 border-t border-gray-100 pt-1" : ""}>
