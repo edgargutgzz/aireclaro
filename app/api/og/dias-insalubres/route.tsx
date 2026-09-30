@@ -40,6 +40,8 @@ export async function GET(request: Request) {
   // The layout below is written at a 1080-wide design scale; px() scales
   // every measurement to this format's width.
   const px = (n: number) => Math.round((n * format.width) / 1080);
+  // The central stat block also takes the format's own content scale.
+  const cx = (n: number) => px(n * format.content);
   const logoAsset = format.width > 1080 ? OG_LOGO_LARGE : OG_LOGO;
 
   const options: ImageOptions = {
@@ -91,6 +93,9 @@ export async function GET(request: Request) {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
 
+  const headline = [`días sobre la norma`, `de ${POLLUTANT_LABEL[pollutant]} en ${year}`];
+  const headlineLines = format.splitHeadline ? headline : [headline.join(" ")];
+
   return new ImageResponse(
     (
       <div
@@ -117,26 +122,32 @@ export async function GET(request: Request) {
           )}
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
-            <div style={{ display: "flex", fontSize: px(30), fontWeight: 500, color: "#6b7280", marginBottom: px(20) }}>
+            <div style={{ display: "flex", fontSize: cx(30), fontWeight: 500, color: "#6b7280", marginBottom: cx(20) }}>
               Zona Metropolitana de Monterrey
             </div>
-            <div style={{ display: "flex", fontSize: px(220), fontWeight: 700, color: COLOR_INSALUBRE, lineHeight: 1 }}>
+            <div style={{ display: "flex", fontSize: cx(220), fontWeight: 700, color: COLOR_INSALUBRE, lineHeight: 1 }}>
               {total}
             </div>
             <div
               style={{
                 display: "flex",
-                fontSize: px(40),
+                flexDirection: "column",
+                fontSize: cx(40),
                 fontWeight: 600,
                 color: "#111827",
-                marginTop: px(8),
-                marginBottom: px(16),
+                lineHeight: 1.2,
+                marginTop: cx(8),
+                marginBottom: cx(16),
               }}
             >
-              días sobre la norma de {POLLUTANT_LABEL[pollutant]} en {year}
+              {headlineLines.map((line) => (
+                <div key={line} style={{ display: "flex" }}>
+                  {line}
+                </div>
+              ))}
             </div>
             {deltaText && (
-              <div style={{ display: "flex", fontSize: px(28), fontWeight: 600, color: deltaColor ?? "#6b7280" }}>
+              <div style={{ display: "flex", fontSize: cx(28), fontWeight: 600, color: deltaColor ?? "#6b7280" }}>
                 {deltaText}
               </div>
             )}
