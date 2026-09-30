@@ -120,7 +120,6 @@ export async function GET(request: Request) {
       ]
     : [`${current.dias} días de aire contaminado`, `en ${mesMin} de ${year}`];
   const points = prior ? [prior, current] : [current];
-  const context = ["Zona Metropolitana de Monterrey"];
   // Headline scales with the format but is capped where the longest verdict
   // ("Los mismos días de aire contaminado") must stay on one line.
   const hx = (n: number) => px(n * Math.min(format.content, 1));
@@ -152,7 +151,7 @@ export async function GET(request: Request) {
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
             {/* Logo (who says it) -> month + verdict + the two numbers (the
-                finding) -> where / which limit -> footer (source). */}
+                finding) -> footer (source). */}
             <div style={{ display: "flex", fontSize: hx(26), fontWeight: 600, color: "#6b7280", marginBottom: cx(12) }}>
               {eyebrow}
             </div>
@@ -203,22 +202,6 @@ export async function GET(request: Request) {
               })}
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                fontSize: cx(24),
-                lineHeight: 1.4,
-                color: "#6b7280",
-                marginTop: cx(44),
-              }}
-            >
-              {context.map((line) => (
-                <div key={line} style={{ display: "flex" }}>
-                  {line}
-                </div>
-              ))}
-            </div>
           </div>
 
           <div
