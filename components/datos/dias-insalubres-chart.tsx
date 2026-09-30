@@ -922,18 +922,27 @@ export default function DiasInsalubresChart({
 
   return (
     <ChartCard
-      title="Días sobre la norma de partículas en la Zona Metropolitana de Monterrey"
+      title={
+        compare
+          ? "Comparación de días sobre el límite en la Zona Metropolitana de Monterrey"
+          : "Días sobre la norma de partículas en la Zona Metropolitana de Monterrey"
+      }
       subtitle={
-        // Each year stands alone against the norm in force that year; no
-        // year-over-year line here (NOM-025 tightened on 2025-12-27; the
-        // comparison view below handles that, on one limit). Hidden in the
-        // comparison view (it's one year's official count, which the lines
-        // don't show), but still laid out invisibly so the header keeps
-        // exactly the same height, wrapping included, when switching views.
-        <div className={compare ? "invisible" : undefined} aria-hidden={compare || undefined}>
-          <span style={{ color: COLOR_INSALUBRE }}>{totalInsalubres}</span> días sobre la norma por{" "}
-          {POLLUTANT_LABEL[pollutant]} en {year}
-        </div>
+        compare ? (
+          // The one limit every line is counted against, per pollutant.
+          <div>
+            Límite de {POLLUTANT_LABEL[pollutant]}: {POLLUTANT_LIMITS[pollutant].desde} µg/m³ en todos los
+            años
+          </div>
+        ) : (
+          // Each year stands alone against the norm in force that year; no
+          // year-over-year line here (NOM-025 tightened on 2025-12-27; the
+          // comparison view handles that, on one limit).
+          <div>
+            <span style={{ color: COLOR_INSALUBRE }}>{totalInsalubres}</span> días sobre la norma por{" "}
+            {POLLUTANT_LABEL[pollutant]} en {year}
+          </div>
+        )
       }
       headerRight={
         <>
@@ -960,22 +969,37 @@ export default function DiasInsalubresChart({
             </>
           )}
           {/* In compare mode the year toggle and the (per-year) download
-              don't apply. On desktop they're removed (the header's height
-              doesn't depend on them); on phones they stay laid out but
-              invisible, since they fill the wrapped second row and removing
-              them would shrink the header when switching views. */}
+              don't apply, but they stay laid out, invisible, at every
+              width: removing them lets the title reflow onto fewer lines
+              and the header would change height between views. The
+              comparison toggle goes last so it never moves either. */}
           <div
-            className={compare ? "invisible sm:hidden" : undefined}
+            className={compare ? "invisible" : undefined}
             aria-hidden={compare || undefined}
           >
             <YearToggle years={years} year={year} onChange={setSelectedYear} />
           </div>
           {/* Phones wrap the icon pair onto its own row; a divider there
               would dangle at the end of the first row. */}
-          {!compare && <div className="hidden h-5 w-px bg-gray-200 sm:block" />}
-          {/* View + download side by side. In compare mode the year toggle
-              and the (per-year) download hide; only the toggle stays. */}
+          <div
+            className={`hidden h-5 w-px bg-gray-200 sm:block ${compare ? "invisible" : ""}`}
+            aria-hidden
+          />
           <div className="flex items-center gap-2">
+            {/* Always the current year+pollutant headline total,
+                independent of whether a month is drilled into below. */}
+            {year !== null && (
+              <div className={compare ? "invisible" : undefined} aria-hidden={compare || undefined}>
+                <DownloadImageMenu
+                  href={(format) =>
+                    `/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}&format=${format}`
+                  }
+                  filename={(format) =>
+                    `observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}-${format}.png`
+                  }
+                />
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setCompare((c) => !c)}
@@ -990,20 +1014,6 @@ export default function DiasInsalubresChart({
             >
               <LineChart className="h-3.5 w-3.5" />
             </button>
-            {/* Always the current year+pollutant headline total,
-                independent of whether a month is drilled into below. */}
-            {year !== null && (
-              <div className={compare ? "invisible sm:hidden" : undefined} aria-hidden={compare || undefined}>
-              <DownloadImageMenu
-                href={(format) =>
-                  `/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}&format=${format}`
-                }
-                filename={(format) =>
-                  `observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}-${format}.png`
-                }
-              />
-              </div>
-            )}
           </div>
         </>
       }
@@ -1018,10 +1028,7 @@ export default function DiasInsalubresChart({
             actual cause of the left/right mismatch reported. Reverted.) */}
         {compare ? (
           <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 md:mb-6">
-            <span className="text-xs text-gray-400">
-              Días sobre la norma por mes, con el límite actual (
-              {POLLUTANT_LIMITS[pollutant].desde} µg/m³) en todos los años
-            </span>
+            <span className="text-xs text-gray-400">Días sobre el límite</span>
             <div className="flex items-center gap-4 text-xs text-gray-500">
               {yearLines.map((l) => (
                 <span key={l.ano} className="flex items-center gap-1.5">
