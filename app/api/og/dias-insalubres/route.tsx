@@ -5,7 +5,7 @@ import {
   MONTHS_ES_FULL,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE, COLOR_SALUDABLE, COLOR_YEAR_PAST } from "@/lib/datos-colors";
+import { COLOR_INSALUBRE, COLOR_YEAR_PAST } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
@@ -120,17 +120,11 @@ export async function GET(request: Request) {
       ]
     : [`${current.dias} días de aire contaminado`, `en ${mesMin} de ${year}`];
   const points = prior ? [prior, current] : [current];
-  // This year's number carries the verdict, in /datos' own good/bad pair:
-  // red = more days of polluted air than a year earlier, green = fewer,
-  // neutral gray = the same. With no prior year to compare, it's simply a
-  // count of bad days: red. Last year's number stays the gray reference.
-  const verdictColor = !prior
-    ? COLOR_INSALUBRE
-    : current.dias > prior.dias
-      ? COLOR_INSALUBRE
-      : current.dias < prior.dias
-        ? COLOR_SALUDABLE
-        : "#6b7280";
+  // This year's number is always red: any day of polluted air is bad news,
+  // even in a month with fewer of them than a year earlier (the headline
+  // carries the más/menos comparison). Last year's number is the gray
+  // reference.
+  const verdictColor = COLOR_INSALUBRE;
   // Headline scales with the format but is capped where the longest verdict
   // ("Los mismos días de aire contaminado") must stay on one line.
   const hx = (n: number) => px(n * Math.min(format.content, 1));
@@ -183,7 +177,7 @@ export async function GET(request: Request) {
               ))}
             </div>
 
-            {/* Last year: gray reference. This year: the verdict color. */}
+            {/* Last year: gray reference. This year: always red. */}
             <div style={{ display: "flex", gap: cx(72), marginTop: cx(48) }}>
               {points.map((pt) => {
                 const isCurrent = pt.ano === year;
