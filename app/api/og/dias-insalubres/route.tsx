@@ -7,7 +7,7 @@ import {
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
-import { loadOgLogo, OG_LOGO_HEIGHT, OG_LOGO_WIDTH } from "@/lib/og-logo";
+import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO_HEIGHT, OG_LOGO_WIDTH } from "@/lib/og-logo";
 
 // The branded stat card behind the días insalubres chart's "Compartir"
 // button (components/datos/dias-insalubres-chart.tsx) -- a square image
@@ -25,7 +25,7 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 };
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com/datos días sobre la norma en el mismo periodo de más menos mismos Generado Zona Metropolitana Monterrey Un día se clasifica si alguna estación monitoreo del SIMA supera límite diario establecido por la NOM-025-SSA1-2021 No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de más menos mismos Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -84,12 +84,6 @@ export async function GET(request: Request) {
     return messageCard(options, "No se pudo generar la imagen.");
   }
 
-  const generatedOn = new Intl.DateTimeFormat("es-MX", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-
   return new ImageResponse(
     (
       <div
@@ -102,7 +96,7 @@ export async function GET(request: Request) {
           fontFamily: "Inter",
         }}
       >
-        <div style={{ height: 14, background: COLOR_INSALUBRE }} />
+        <div style={{ height: 14, background: OG_BRAND_BLUE }} />
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "72px 80px" }}>
           {logo ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -141,14 +135,21 @@ export async function GET(request: Request) {
             )}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            <div style={{ display: "flex", fontSize: 22, color: "#9ca3af", lineHeight: 1.4 }}>
-              Un día se clasifica sobre la norma si alguna estación de monitoreo del SIMA supera el
-              límite diario de {POLLUTANT_LABEL[pollutant]} establecido por la NOM-025-SSA1-2021.
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontSize: 22 }}>
-              <div style={{ display: "flex", color: "#9ca3af" }}>Generado el {generatedOn}</div>
-              <div style={{ display: "flex", fontWeight: 600, color: "#6b7280" }}>observatoriodelaire.com/datos</div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              marginTop: 40,
+              paddingTop: 32,
+              borderTop: "2px solid #e5e7eb",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontSize: 20 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <div style={{ display: "flex", fontSize: 18, color: "#9ca3af" }}>Fuente</div>
+                <div style={{ display: "flex", color: "#6b7280" }}>Sistema Integral de Monitoreo Ambiental (SIMA) de Nuevo León</div>
+              </div>
+              <div style={{ display: "flex", flexShrink: 0, fontWeight: 600, color: "#6b7280" }}>observatoriodelaire.com</div>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, ChevronRight, HeartPulse, Share2, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, ChevronRight, HeartPulse, ImageDown, ShieldCheck, Wind } from "lucide-react";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import { summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
@@ -744,12 +744,12 @@ export default function DiasInsalubresChart({
                   specific month is drilled into below. */}
               <a
                 href={`/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}`}
-                download={`aire-claro-dias-insalubres-${pollutant}-${year}.png`}
+                download={`observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}.png`}
                 className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 aria-label="Descargar imagen para compartir"
                 title="Descargar imagen para compartir"
               >
-                <Share2 className="h-4 w-4" />
+                <ImageDown className="h-4 w-4" />
               </a>
             </>
           )}

@@ -20,3 +20,7 @@ export async function loadOgLogo(requestUrl: string): Promise<string | null> {
     return null;
   }
 }
+
+// The logo's own blue (pixel-sampled from the OCCAMM lettering), for brand
+// accents on the cards so they read as the NGO's before anything else.
+export const OG_BRAND_BLUE = "#226caf";
