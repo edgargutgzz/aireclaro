@@ -5,6 +5,8 @@ import { BookOpen, ChevronRight, HeartPulse, LineChart, ShieldCheck, Wind } from
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import { MONTHS_ES_FULL, summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
+  BRAND_BLUE,
+  BRAND_PURPLE,
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
@@ -510,10 +512,11 @@ function StackedBarsChart({
 // limit in force today (diasInsalubresLimiteActual), so the lines share one
 // yardstick. The official bars above keep each day's own limit.
 //
-// Color is focus + context, not a categorical set: the latest year carries
-// the chart's red, earlier years recede to gray (older = lighter). Identity
-// never rides on color alone: every line is also direct-labeled at its last
-// point, the legend names each, and the tooltip lists them in text.
+// Each year is an identity, so it gets a fixed categorical hue from the
+// logo, in year order (2025 blue, 2026 purple), never re-assigned by rank:
+// a new year adds a color, the old ones keep theirs. Identity never rides on
+// color alone: every line is also direct-labeled at its last point, the
+// legend names each, and the tooltip lists them in text.
 
 export interface YearLine {
   ano: number;
@@ -527,8 +530,11 @@ const LINE_TOOLTIP_WIDTH = 176;
 const LINE_TOOLTIP_HEIGHT = 110;
 const POINT_R = 4;
 
-export function yearLineColor(indexFromLatest: number): string {
-  return indexFromLatest === 0 ? COLOR_INSALUBRE : indexFromLatest === 1 ? "#6b7280" : "#9ca3af";
+// A third year needs a third hue validated against these two (dataviz
+// skill's validate_palette.js) before it ships; gray is only a stopgap.
+const YEAR_LINE_COLORS = [BRAND_BLUE, BRAND_PURPLE];
+export function yearLineColor(indexFromEarliest: number): string {
+  return YEAR_LINE_COLORS[indexFromEarliest] ?? "#9ca3af";
 }
 
 function YearLinesChart({
@@ -803,7 +809,7 @@ export default function DiasInsalubresChart({
         const byMonth = new Map(activeData.filter((d) => d.ano === ano).map((d) => [d.mesNumero, d]));
         return {
           ano,
-          color: yearLineColor(years.length - 1 - i),
+          color: yearLineColor(i),
           dias: Array.from({ length: 12 }, (_, m) => byMonth.get(m + 1)?.diasInsalubresLimiteActual ?? null),
           totales: Array.from({ length: 12 }, (_, m) => byMonth.get(m + 1)?.diasTotales ?? null),
         };

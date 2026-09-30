@@ -82,13 +82,13 @@ export default function DownloadImageMenu({
       {open && (
         <div
           role="menu"
-          aria-label="Descargar imagen para compartir en:"
+          aria-label="Descargar imagen para:"
           className="absolute right-0 top-full z-20 mt-2 w-60 rounded-xl sm:w-auto sm:min-w-60 border border-black/[0.08] bg-white/95 p-1.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
         >
-          {/* Heading + option read as one phrase ("Descargar imagen para compartir en
+          {/* Heading + option read as one phrase ("Descargar imagen para
               WhatsApp"), and the button itself carries the download icon,
               so what a click does is said before it happens. */}
-          <p className="px-3 pb-1 pt-2 text-xs font-medium text-gray-400 sm:whitespace-nowrap">Descargar imagen para compartir en:</p>
+          <p className="px-3 pb-1 pt-2 text-xs font-medium text-gray-400 sm:whitespace-nowrap">Descargar imagen para:</p>
           {GROUPS.map((group, i) => (
             <div key={group.options[0].format} className={i > 0 ? "mt-1 border-t border-gray-100 pt-1" : ""}>
               {group.title && (

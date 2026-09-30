@@ -34,6 +34,14 @@ export const COLOR_CUBIERTO_FILL_OPACITY = 0.68;
 export const COLOR_INSALUBRE = "#ef4444"; // Tailwind red-500
 export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 
+// The logo's own colors, pixel-sampled from public/navbar/occamm-logo.png
+// (OCCAMM lettering / "Observatorio del Aire" lettering). Brand accents
+// (share-image bar) and the year-comparison lines, where a year is an
+// identity, not a good/bad reading. As a categorical pair they pass the
+// dataviz validator on white (CVD ΔE 9.4, normal ΔE 17.6, both >= 3:1).
+export const BRAND_BLUE = "#226caf";
+export const BRAND_PURPLE = "#743479";
+
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);
   const r = (int >> 16) & 255;

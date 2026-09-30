@@ -1,3 +1,5 @@
+import { BRAND_BLUE } from "@/lib/datos-colors";
+
 // The Observatory lockup (swirl + OCCAMM + "Observatorio del Aire") for the
 // next/og ImageResponse routes (app/api/og/*). Fetched from this deployment's
 // own public/ and inlined as a data URI, so a failed fetch returns null and
@@ -45,4 +47,4 @@ export async function loadOgLogo(requestUrl: string, logo: OgLogo = OG_LOGO): Pr
 
 // The logo's own blue (pixel-sampled from the OCCAMM lettering), for brand
 // accents on the cards so they read as the NGO's before anything else.
-export const OG_BRAND_BLUE = "#226caf";
+export const OG_BRAND_BLUE = BRAND_BLUE;
