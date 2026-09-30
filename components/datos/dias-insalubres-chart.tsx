@@ -955,28 +955,34 @@ export default function DiasInsalubresChart({
               <div className="h-5 w-px bg-gray-200" />
             </>
           )}
-          {/* Before the year toggle so it doesn't move when compare mode
-              hides the year toggle and the (per-year) download. */}
-          <button
-            type="button"
-            onClick={() => setCompare((c) => !c)}
-            aria-pressed={compare}
-            aria-label={compare ? "Volver a la vista por año" : "Comparar años"}
-            title={compare ? "Volver a la vista por año" : "Comparar años"}
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-              compare
-                ? "bg-gray-800 text-white hover:bg-gray-700"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
-            }`}
-          >
-            <LineChart className="h-3.5 w-3.5" />
-          </button>
-          {!compare && <YearToggle years={years} year={year} onChange={setSelectedYear} />}
-          {!compare && year !== null && (
+          {!compare && (
             <>
-              <div className="h-5 w-px bg-gray-200" />
-              {/* Always the current year+pollutant headline total,
-                  independent of whether a month is drilled into below. */}
+              <YearToggle years={years} year={year} onChange={setSelectedYear} />
+              {/* Phones wrap the icon pair onto its own row; a divider
+                  there would dangle at the end of the first row. */}
+              <div className="hidden h-5 w-px bg-gray-200 sm:block" />
+            </>
+          )}
+          {/* View + download side by side. In compare mode the year toggle
+              and the (per-year) download hide; only the toggle stays. */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCompare((c) => !c)}
+              aria-pressed={compare}
+              aria-label={compare ? "Volver a la vista por año" : "Comparar años"}
+              title={compare ? "Volver a la vista por año" : "Comparar años"}
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                compare
+                  ? "bg-gray-800 text-white hover:bg-gray-700"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
+              }`}
+            >
+              <LineChart className="h-3.5 w-3.5" />
+            </button>
+            {/* Always the current year+pollutant headline total,
+                independent of whether a month is drilled into below. */}
+            {!compare && year !== null && (
               <DownloadImageMenu
                 href={(format) =>
                   `/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}&format=${format}`
@@ -985,8 +991,8 @@ export default function DiasInsalubresChart({
                   `observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}-${format}.png`
                 }
               />
-            </>
-          )}
+            )}
+          </div>
         </>
       }
     >
