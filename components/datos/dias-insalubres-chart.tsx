@@ -968,12 +968,11 @@ export default function DiasInsalubresChart({
               <div className="h-5 w-px bg-gray-200" />
             </>
           )}
-          {/* In compare mode the year toggle and the (per-year) download
-              don't apply, but they stay laid out, invisible, at every
-              width: removing them lets the title reflow onto fewer lines
-              and the header would change height between views. The
-              comparison toggle sits before the (invisible) download, so it
-              never moves either. */}
+          {/* The year toggle only applies to the bars, the download only to
+              the comparison; whichever doesn't apply stays laid out,
+              invisible, at every width (removing it lets the title reflow
+              and the header would change height between views). The
+              comparison toggle sits between them, so it never moves. */}
           <div
             className={compare ? "invisible" : undefined}
             aria-hidden={compare || undefined}
@@ -1001,16 +1000,20 @@ export default function DiasInsalubresChart({
             >
               <LineChart className="h-3.5 w-3.5" />
             </button>
-            {/* Always the current year+pollutant headline total,
-                independent of whether a month is drilled into below. */}
-            {year !== null && (
-              <div className={compare ? "invisible" : undefined} aria-hidden={compare || undefined}>
+            {/* Only in the comparison view: the image is that view's
+                summary (latest month vs. the same month a year earlier,
+                both pollutants), so whoever downloads it has just seen the
+                chart behind it. In the bars view it stays laid out,
+                invisible, so the header doesn't change between views. The
+                latest year with data, whatever year the bars had open. */}
+            {years.length > 0 && (
+              <div className={compare ? undefined : "invisible"} aria-hidden={!compare || undefined}>
                 <DownloadImageMenu
                   href={(format) =>
-                    `/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}&format=${format}`
+                    `/api/og/dias-insalubres?year=${years[years.length - 1]}&format=${format}`
                   }
                   filename={(format) =>
-                    `observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}-${format}.png`
+                    `observatorio-del-aire-comparacion-${years[years.length - 1]}-${format}.png`
                   }
                 />
               </div>

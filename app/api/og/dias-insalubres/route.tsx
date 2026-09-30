@@ -30,7 +30,7 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Más Menos Los mismos que el de aire contaminado Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Más Menos Los mismos que el de aire contaminado frente PM2.5 PM10 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -38,7 +38,6 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const yearParam = searchParams.get("year");
   const year = yearParam && /^\d{4}$/.test(yearParam) ? Number(yearParam) : null;
-  const pollutant: Pollutant = searchParams.get("pollutant") === "pm10" ? "pm10" : "pm25";
   const formatParam = searchParams.get("format");
   const format = SHARE_FORMATS[isShareFormat(formatParam) ? formatParam : "whatsapp"];
   // The layout below is written at a 1080-wide design scale; px() scales
@@ -75,59 +74,71 @@ export async function GET(request: Request) {
     return messageCard(options, px(32), "Falta el año.");
   }
 
-  type YearPoint = { ano: number; dias: number };
+  // Both pollutants on one image: one share, one message.
+  const POLLUTANTS: Pollutant[] = ["pm25", "pm10"];
+  type Row = { pollutant: Pollutant; current: number; prior: number | null };
   let mes: number;
-  let current: YearPoint;
-  let prior: YearPoint | null;
+  let rowsOut: Row[];
   try {
     const supabase = createPublicClient();
-    const rows = (await fetchDiasInsalubresMensual(supabase))[pollutant];
-    // The latest month the monthly cron has processed for this year (the
-    // data decides, never the calendar).
-    const latest = rows
-      .filter((r) => r.ano === year && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null)
-      .sort((x, y) => y.mesNumero - x.mesNumero)[0];
-    if (!latest) {
+    const data = await fetchDiasInsalubresMensual(supabase);
+    const usable = (p: Pollutant, ano: number) =>
+      data[p].filter((r) => r.ano === ano && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null);
+    // The latest month the monthly cron has processed for this year, for
+    // both pollutants (the data decides, never the calendar).
+    const months = POLLUTANTS.map((p) => new Set(usable(p, year).map((r) => r.mesNumero)));
+    const shared = [...months[0]].filter((m) => months.every((set) => set.has(m)));
+    if (shared.length === 0) {
       return messageCard(options, px(32), "Aún no hay datos para este año.");
     }
-    mes = latest.mesNumero;
-    current = { ano: year, dias: latest.diasInsalubresLimiteActual as number };
-    const before = rows.find(
-      (r) => r.ano === year - 1 && r.mesNumero === mes && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null,
-    );
-    prior = before
-      ? { ano: year - 1, dias: before.diasInsalubresLimiteActual as number }
-      : null;
+    mes = Math.max(...shared);
+    rowsOut = POLLUTANTS.map((p) => {
+      const cur = usable(p, year).find((r) => r.mesNumero === mes)!;
+      const before = usable(p, year - 1).find((r) => r.mesNumero === mes);
+      return {
+        pollutant: p,
+        current: cur.diasInsalubresLimiteActual as number,
+        prior: before ? (before.diasInsalubresLimiteActual as number) : null,
+      };
+    });
   } catch {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
 
   const mesNombre = MONTHS_ES_FULL[mes - 1];
   const mesMin = mesNombre.toLowerCase();
-  const eyebrow = `${mesNombre} de ${year} · ${POLLUTANT_LABEL[pollutant]}`;
+  const eyebrow = `${mesNombre} de ${year}`;
+  const hasPrior = rowsOut.every((r) => r.prior !== null);
   // The verdict, always two set lines, in plain words for a casual reader
   // ("aire contaminado", not "sobre el límite"): each counted day, the air
-  // somewhere in the metro exceeded the official limit. The limit, the
-  // days-with-data and the method live on the site, not on the image.
-  const headlineLines = prior
-    ? [
-        current.dias > prior.dias
-          ? "Más días de aire contaminado"
-          : current.dias < prior.dias
-            ? "Menos días de aire contaminado"
-            : "Los mismos días de aire contaminado",
-        `que en ${mesMin} de ${prior.ano}`,
-      ]
-    : [`${current.dias} días de aire contaminado`, `en ${mesMin} de ${year}`];
-  const points = prior ? [prior, current] : [current];
+  // somewhere in the metro exceeded the official limit. Said for both
+  // pollutants only when they agree; otherwise a neutral headline and each
+  // row speaks for itself.
+  const signs = rowsOut.map((r) => Math.sign(r.current - (r.prior ?? 0)));
+  const agree = hasPrior && signs.every((x) => x === signs[0]);
+  const headlineLines = !hasPrior
+    ? ["Días de aire contaminado", `en ${mesMin} de ${year}`]
+    : agree
+      ? [
+          signs[0] > 0
+            ? "Más días de aire contaminado"
+            : signs[0] < 0
+              ? "Menos días de aire contaminado"
+              : "Los mismos días de aire contaminado",
+          `que en ${mesMin} de ${year - 1}`,
+        ]
+      : ["Días de aire contaminado", `${mesMin} de ${year} frente a ${year - 1}`];
   // This year's number is always red: any day of polluted air is bad news,
   // even in a month with fewer of them than a year earlier (the headline
   // carries the más/menos comparison). Last year's number is the gray
   // reference.
   const verdictColor = COLOR_INSALUBRE;
-  // Headline scales with the format but is capped where the longest verdict
-  // ("Los mismos días de aire contaminado") must stay on one line.
+  const years = hasPrior ? [year - 1, year] : [year];
+  // Headline capped where the longest verdict ("Los mismos días de aire
+  // contaminado") stays on one line; the pollutant table capped where its
+  // three columns still fit the story's width.
   const hx = (n: number) => px(n * Math.min(format.content, 1));
+  const tx = (n: number) => px(n * Math.min(format.content, 1.2));
 
   return new ImageResponse(
     (
@@ -155,8 +166,8 @@ export async function GET(request: Request) {
           )}
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
-            {/* Logo (who says it) -> month + verdict + the two numbers (the
-                finding) -> footer (source). */}
+            {/* Logo (who says it) -> month + verdict + both pollutants'
+                numbers (the finding) -> footer (source). */}
             <div style={{ display: "flex", fontSize: hx(26), fontWeight: 600, color: "#6b7280", marginBottom: cx(12) }}>
               {eyebrow}
             </div>
@@ -177,35 +188,45 @@ export async function GET(request: Request) {
               ))}
             </div>
 
-            {/* Last year: gray reference. This year: always red. */}
-            <div style={{ display: "flex", gap: cx(72), marginTop: cx(48) }}>
-              {points.map((pt) => {
-                const isCurrent = pt.ano === year;
-                return (
-                  <div key={pt.ano} style={{ display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", fontSize: cx(26), fontWeight: 600, color: "#6b7280" }}>
-                      {mesNombre} {pt.ano}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "baseline",
-                        gap: cx(12),
-                        color: isCurrent ? verdictColor : COLOR_YEAR_PAST,
-                      }}
-                    >
-                      <div style={{ display: "flex", fontSize: cx(150), fontWeight: 700, lineHeight: 1.05 }}>
-                        {pt.dias}
-                      </div>
-                      <div style={{ display: "flex", fontSize: cx(34), fontWeight: 600 }}>
-                        {pt.dias === 1 ? "día" : "días"}
-                      </div>
-                    </div>
+            {/* One row per pollutant: last year (gray reference), this
+                year (always red). */}
+            <div style={{ display: "flex", flexDirection: "column", gap: tx(20), marginTop: tx(52) }}>
+              <div style={{ display: "flex", fontSize: tx(24), fontWeight: 600, color: "#6b7280" }}>
+                <div style={{ display: "flex", width: tx(170) }} />
+                {years.map((y) => (
+                  <div key={y} style={{ display: "flex", width: tx(270) }}>
+                    {mesNombre} {y}
                   </div>
-                );
-              })}
+                ))}
+              </div>
+              {rowsOut.map((r) => (
+                <div key={r.pollutant} style={{ display: "flex", alignItems: "baseline" }}>
+                  <div style={{ display: "flex", width: tx(170), fontSize: tx(30), fontWeight: 700, color: "#374151" }}>
+                    {POLLUTANT_LABEL[r.pollutant]}
+                  </div>
+                  {years.map((y) => {
+                    const v = y === year ? r.current : (r.prior as number);
+                    return (
+                      <div
+                        key={y}
+                        style={{
+                          display: "flex",
+                          alignItems: "baseline",
+                          gap: tx(10),
+                          width: tx(270),
+                          color: y === year ? verdictColor : COLOR_YEAR_PAST,
+                        }}
+                      >
+                        <div style={{ display: "flex", fontSize: tx(110), fontWeight: 700, lineHeight: 1 }}>{v}</div>
+                        <div style={{ display: "flex", fontSize: tx(28), fontWeight: 600 }}>
+                          {v === 1 ? "día" : "días"}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
-
           </div>
 
           <div
