@@ -130,9 +130,7 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          . En la vista de comparación entre años, todos los años se cuentan
-          con el límite actual ({desde} µg/m³), para compararlos con la misma
-          medida.
+          .
         </>
       ),
     },
