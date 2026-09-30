@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, ChevronRight, HeartPulse, ImageDown, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, ChevronRight, HeartPulse, Send, ShieldCheck, Wind } from "lucide-react";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import { summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
@@ -749,7 +749,7 @@ export default function DiasInsalubresChart({
                 aria-label="Descargar imagen para compartir"
                 title="Descargar imagen para compartir"
               >
-                <ImageDown className="h-4 w-4" />
+                <Send className="h-4 w-4" />
               </a>
             </>
           )}
