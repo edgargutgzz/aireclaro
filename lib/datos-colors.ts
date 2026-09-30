@@ -42,13 +42,13 @@ export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 export const BRAND_BLUE = "#226caf";
 export const BRAND_PURPLE = "#743479";
 
-// Year-comparison lines on /datos: focus + context, not a categorical
-// pair. The current year is the one line in color (Tailwind blue-500);
-// past years recede to gray (Tailwind gray-400). Color is the only
-// difference. Blue, not the bars' red: the view compares years, it isn't the
-// good/bad reading the red carries.
-export const COLOR_YEAR_CURRENT = "#3b82f6"; // Tailwind blue-500
-export const COLOR_YEAR_PAST = "#9ca3af"; // Tailwind gray-400
+// Year-comparison lines on /datos: focus + context by color only. The
+// current year is drawn in the bars' own "sobre la norma" red -- the 2026
+// line is literally the height of the 2026 red bar segments, so the two
+// views read as the same data. Past years recede to light gray (Tailwind
+// gray-300): present as a reference, not competing.
+export const COLOR_YEAR_CURRENT = COLOR_INSALUBRE;
+export const COLOR_YEAR_PAST = "#d1d5db"; // Tailwind gray-300
 
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);

@@ -924,7 +924,7 @@ export default function DiasInsalubresChart({
     <ChartCard
       title={
         compare
-          ? "Comparación de días sobre el límite en la Zona Metropolitana de Monterrey"
+          ? "Comparación de días sobre la norma en la Zona Metropolitana de Monterrey"
           : "Días sobre la norma de partículas en la Zona Metropolitana de Monterrey"
       }
       subtitle={
