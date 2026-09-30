@@ -6,7 +6,6 @@ import {
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_YEAR_CURRENT, COLOR_YEAR_PAST } from "@/lib/datos-colors";
-import { LIMITE_ACTUAL_PM10, LIMITE_ACTUAL_PM25 } from "@/lib/pm25-limits";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
@@ -28,13 +27,10 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
   pm10: "PM10",
 };
-const LIMITE_ACTUAL: Record<Pollutant, number> = {
-  pm25: LIMITE_ACTUAL_PM25,
-  pm10: LIMITE_ACTUAL_PM10,
-};
+
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Más Menos Los mismos que el límite ambos años Límite µg/m³ con medición Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Más Menos Los mismos que el de aire contaminado Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -79,7 +75,7 @@ export async function GET(request: Request) {
     return messageCard(options, px(32), "Falta el año.");
   }
 
-  type YearPoint = { ano: number; dias: number; totales: number };
+  type YearPoint = { ano: number; dias: number };
   let mes: number;
   let current: YearPoint;
   let prior: YearPoint | null;
@@ -95,12 +91,12 @@ export async function GET(request: Request) {
       return messageCard(options, px(32), "Aún no hay datos para este año.");
     }
     mes = latest.mesNumero;
-    current = { ano: year, dias: latest.diasInsalubresLimiteActual as number, totales: latest.diasTotales };
+    current = { ano: year, dias: latest.diasInsalubresLimiteActual as number };
     const before = rows.find(
       (r) => r.ano === year - 1 && r.mesNumero === mes && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null,
     );
     prior = before
-      ? { ano: year - 1, dias: before.diasInsalubresLimiteActual as number, totales: before.diasTotales }
+      ? { ano: year - 1, dias: before.diasInsalubresLimiteActual as number }
       : null;
   } catch {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
@@ -109,27 +105,25 @@ export async function GET(request: Request) {
   const mesNombre = MONTHS_ES_FULL[mes - 1];
   const mesMin = mesNombre.toLowerCase();
   const eyebrow = `${mesNombre} de ${year} · ${POLLUTANT_LABEL[pollutant]}`;
-  // The verdict, always two set lines. "Más/menos días sobre el límite",
-  // not "respiramos mejor/peor": a day counts when any one station exceeded
-  // the limit, which says that much and no more.
+  // The verdict, always two set lines, in plain words for a casual reader
+  // ("aire contaminado", not "sobre el límite"): each counted day, the air
+  // somewhere in the metro exceeded the official limit. The limit, the
+  // days-with-data and the method live on the site, not on the image.
   const headlineLines = prior
     ? [
         current.dias > prior.dias
-          ? "Más días sobre el límite"
+          ? "Más días de aire contaminado"
           : current.dias < prior.dias
-            ? "Menos días sobre el límite"
-            : "Los mismos días sobre el límite",
+            ? "Menos días de aire contaminado"
+            : "Los mismos días de aire contaminado",
         `que en ${mesMin} de ${prior.ano}`,
       ]
-    : [`${current.dias} días sobre el límite`, `en ${mesMin} de ${year}`];
+    : [`${current.dias} días de aire contaminado`, `en ${mesMin} de ${year}`];
   const points = prior ? [prior, current] : [current];
-  const context = [
-    "Zona Metropolitana de Monterrey",
-    `Límite de ${POLLUTANT_LABEL[pollutant]}: ${LIMITE_ACTUAL[pollutant]} µg/m³${prior ? " en ambos años" : ""}`,
-  ];
-  // Headline and numbers scale with the format but are capped where the
-  // longest verdict ("Los mismos días sobre el límite") must stay on one line.
-  const hx = (n: number) => px(n * Math.min(format.content, 1.45));
+  const context = ["Zona Metropolitana de Monterrey"];
+  // Headline scales with the format but is capped where the longest verdict
+  // ("Los mismos días de aire contaminado") must stay on one line.
+  const hx = (n: number) => px(n * Math.min(format.content, 1));
 
   return new ImageResponse(
     (
@@ -203,9 +197,6 @@ export async function GET(request: Request) {
                       <div style={{ display: "flex", fontSize: cx(34), fontWeight: 600 }}>
                         {pt.dias === 1 ? "día" : "días"}
                       </div>
-                    </div>
-                    <div style={{ display: "flex", fontSize: cx(22), color: "#9ca3af" }}>
-                      de {pt.totales} con medición
                     </div>
                   </div>
                 );

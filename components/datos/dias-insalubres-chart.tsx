@@ -972,7 +972,8 @@ export default function DiasInsalubresChart({
               don't apply, but they stay laid out, invisible, at every
               width: removing them lets the title reflow onto fewer lines
               and the header would change height between views. The
-              comparison toggle goes last so it never moves either. */}
+              comparison toggle sits before the (invisible) download, so it
+              never moves either. */}
           <div
             className={compare ? "invisible" : undefined}
             aria-hidden={compare || undefined}
@@ -986,20 +987,6 @@ export default function DiasInsalubresChart({
             aria-hidden
           />
           <div className="flex items-center gap-2">
-            {/* Always the current year+pollutant headline total,
-                independent of whether a month is drilled into below. */}
-            {year !== null && (
-              <div className={compare ? "invisible" : undefined} aria-hidden={compare || undefined}>
-                <DownloadImageMenu
-                  href={(format) =>
-                    `/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}&format=${format}`
-                  }
-                  filename={(format) =>
-                    `observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}-${format}.png`
-                  }
-                />
-              </div>
-            )}
             <button
               type="button"
               onClick={() => setCompare((c) => !c)}
@@ -1014,6 +1001,20 @@ export default function DiasInsalubresChart({
             >
               <LineChart className="h-3.5 w-3.5" />
             </button>
+            {/* Always the current year+pollutant headline total,
+                independent of whether a month is drilled into below. */}
+            {year !== null && (
+              <div className={compare ? "invisible" : undefined} aria-hidden={compare || undefined}>
+                <DownloadImageMenu
+                  href={(format) =>
+                    `/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}&format=${format}`
+                  }
+                  filename={(format) =>
+                    `observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}-${format}.png`
+                  }
+                />
+              </div>
+            )}
           </div>
         </>
       }
