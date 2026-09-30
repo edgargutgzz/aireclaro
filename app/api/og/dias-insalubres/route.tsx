@@ -210,7 +210,7 @@ export async function GET(request: Request) {
             <div
               style={{
                 display: "flex",
-                fontSize: hx(26),
+                fontSize: hx(22),
                 lineHeight: 1.35,
                 color: "#6b7280",
                 marginTop: hx(16),
