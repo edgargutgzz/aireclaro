@@ -737,7 +737,7 @@ export default function DiasInsalubresChart({
           {year !== null && (
             <>
               <div className="h-5 w-px bg-gray-200" />
-              {/* Tinted icon button: same gray pill, height (h-10) and radius as
+              {/* Tinted icon button, sized like the selected year chip (h-8) inside
                   the YearToggle beside it, so it doesn't float. A same-origin <a
                   download> triggers a save instead of a navigation, no
                   client-side fetch/blob dance needed. Always the current
@@ -746,7 +746,7 @@ export default function DiasInsalubresChart({
               <a
                 href={`/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}`}
                 download={`observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}.png`}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 aria-label="Descargar imagen para compartir"
                 title="Descargar imagen para compartir"
               >
