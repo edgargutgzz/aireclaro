@@ -30,7 +30,7 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
 
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Más Menos Los mismos que el de aire contaminado frente PM2.5 PM10 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Más Menos Los mismos que el sobre la norma frente PM2.5 PM10 Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
@@ -109,33 +109,33 @@ export async function GET(request: Request) {
   const mesMin = mesNombre.toLowerCase();
   const eyebrow = `${mesNombre} de ${year}`;
   const hasPrior = rowsOut.every((r) => r.prior !== null);
-  // The verdict, always two set lines, in plain words for a casual reader
-  // ("aire contaminado", not "sobre el límite"): each counted day, the air
-  // somewhere in the metro exceeded the official limit. Said for both
-  // pollutants only when they agree; otherwise a neutral headline and each
-  // row speaks for itself.
+  // The verdict, always two set lines, in the observatory's own measured
+  // terms ("días sobre la norma", not colloquial "aire contaminado"): the
+  // image has to read as a professional source. Said for both pollutants
+  // only when they agree; otherwise a neutral headline and each row speaks
+  // for itself.
   const signs = rowsOut.map((r) => Math.sign(r.current - (r.prior ?? 0)));
   const agree = hasPrior && signs.every((x) => x === signs[0]);
   const headlineLines = !hasPrior
-    ? ["Días de aire contaminado", `en ${mesMin} de ${year}`]
+    ? ["Días sobre la norma", `en ${mesMin} de ${year}`]
     : agree
       ? [
           signs[0] > 0
-            ? "Más días de aire contaminado"
+            ? "Más días sobre la norma"
             : signs[0] < 0
-              ? "Menos días de aire contaminado"
-              : "Los mismos días de aire contaminado",
+              ? "Menos días sobre la norma"
+              : "Los mismos días sobre la norma",
           `que en ${mesMin} de ${year - 1}`,
         ]
-      : ["Días de aire contaminado", `${mesMin} de ${year} frente a ${year - 1}`];
+      : ["Días sobre la norma", `${mesMin} de ${year} frente a ${year - 1}`];
   // This year's number is always red: any day of polluted air is bad news,
   // even in a month with fewer of them than a year earlier (the headline
   // carries the más/menos comparison). Last year's number is the gray
   // reference.
   const verdictColor = COLOR_INSALUBRE;
   const years = hasPrior ? [year - 1, year] : [year];
-  // Headline capped where the longest verdict ("Los mismos días de aire
-  // contaminado") stays on one line; the pollutant table capped where its
+  // Headline capped where the longest verdict ("Los mismos días sobre la
+  // norma") stays on one line; the pollutant table capped where its
   // three columns still fit the story's width.
   const hx = (n: number) => px(n * Math.min(format.content, 1));
   const tx = (n: number) => px(n * Math.min(format.content, 1.2));
@@ -226,6 +226,11 @@ export async function GET(request: Request) {
                   })}
                 </div>
               ))}
+            </div>
+            {/* The source of the rule, named: marks the image as the
+                observatory's, without explaining the method. */}
+            <div style={{ display: "flex", fontSize: tx(22), color: "#9ca3af", marginTop: tx(36) }}>
+              Con base en la NOM-025-SSA1-2021
             </div>
           </div>
 
