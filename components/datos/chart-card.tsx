@@ -37,7 +37,10 @@ export default function ChartCard({
               legally nest inside a p. */}
           <div className="mt-1 text-xs text-gray-500 md:text-sm">{subtitle}</div>
         </div>
-        {headerRight && <div className="flex items-center gap-2">{headerRight}</div>}
+        {/* flex-wrap: on a phone the controls (pollutant, view, year,
+            download) can outgrow the row; they wrap instead of squeezing
+            a button or pushing one out of view. */}
+        {headerRight && <div className="flex flex-wrap items-center gap-2">{headerRight}</div>}
       </div>
       {children}
     </div>

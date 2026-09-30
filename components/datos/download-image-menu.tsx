@@ -74,7 +74,7 @@ export default function DownloadImageMenu({
         aria-expanded={open}
         aria-label="Descargar imagen"
         title="Descargar imagen"
-        className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
         <ArrowDownToLine className="h-3.5 w-3.5" />
       </button>

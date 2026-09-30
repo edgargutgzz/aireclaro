@@ -8,6 +8,13 @@ export function getLimitForDatePM10(fecha: string): number {
   return fecha >= "2025-12-27" ? 50 : 60;
 }
 
+// The daily limit in force today (the norm's final, Año 5 step), applied
+// to every date alike. Used only for the cross-year comparison on /datos,
+// which needs one yardstick for all years; the official per-month count
+// keeps judging each day by the limit in force on that date (above).
+export const LIMITE_ACTUAL_PM25 = getLimitForDate("9999-12-31");
+export const LIMITE_ACTUAL_PM10 = getLimitForDatePM10("9999-12-31");
+
 // NOM-025-SSA1-2021 Tabla 1's ANNUAL limit, gradual by "Año 1/3/5" bracket
 // (counted from the norm's entry into force: publication 2021-10-27 + 60
 // días naturales = 2021-12-26). PM2.5's own annual limit is flat at 10

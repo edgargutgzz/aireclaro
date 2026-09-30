@@ -207,6 +207,7 @@ export async function GET(request: NextRequest) {
             parametro: pollutant === "pm25" ? "PM2.5" : "PM10",
             dias_insalubres: m.diasInsalubres,
             dias_totales: m.diasTotales,
+            dias_insalubres_limite_actual: m.diasInsalubresLimiteActual,
           })),
       );
       const { error } = await supabase

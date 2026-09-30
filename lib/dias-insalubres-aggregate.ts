@@ -1,5 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getLimitForDate, getLimitForDatePM10 } from "@/lib/pm25-limits";
+import {
+  getLimitForDate,
+  getLimitForDatePM10,
+  LIMITE_ACTUAL_PM10,
+  LIMITE_ACTUAL_PM25,
+} from "@/lib/pm25-limits";
 
 // Shared by the monthly sync cron (which computes this and writes the small
 // result into sima_insalubres_mensual) -- NOT by the /datos page, which just
@@ -20,6 +25,10 @@ export interface MonthData {
   mes: string;
   diasInsalubres: number;
   diasTotales: number;
+  // Same days, judged by today's limit instead of the one in force on each
+  // date, so years can be compared on one yardstick (the comparison view).
+  // null for rows written before this column existed.
+  diasInsalubresLimiteActual: number | null;
 }
 
 export const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
@@ -53,6 +62,7 @@ const HIDDEN_MONTHS: Record<"PM2.5" | "PM10", Set<string>> = {
 function aggregateByMonth(
   rows: { fecha: string; promedio: number | null }[],
   getLimit: (fecha: string) => number,
+  limiteActual: number,
 ): MonthData[] {
   const porDia = new Map<string, number[]>();
   for (const row of rows) {
@@ -69,6 +79,7 @@ function aggregateByMonth(
     const key = `${anoStr}-${mesStr}`;
     const limite = getLimit(fecha);
     const excedido = valores.some((v) => Math.round(v) > limite);
+    const excedidoLimiteActual = valores.some((v) => Math.round(v) > limiteActual);
 
     const actual = porMes.get(key) ?? {
       ano,
@@ -76,9 +87,11 @@ function aggregateByMonth(
       mes: MONTHS_ES[mesNumero - 1],
       diasInsalubres: 0,
       diasTotales: 0,
+      diasInsalubresLimiteActual: 0,
     };
     actual.diasTotales += 1;
     if (excedido) actual.diasInsalubres += 1;
+    if (excedidoLimiteActual) actual.diasInsalubresLimiteActual = (actual.diasInsalubresLimiteActual ?? 0) + 1;
     porMes.set(key, actual);
   }
 
@@ -152,8 +165,8 @@ export async function computeDiasInsalubresMensual(
   );
 
   return {
-    pm25: aggregateByMonth(pm25Rows, getLimitForDate),
-    pm10: aggregateByMonth(pm10Rows, getLimitForDatePM10),
+    pm25: aggregateByMonth(pm25Rows, getLimitForDate, LIMITE_ACTUAL_PM25),
+    pm10: aggregateByMonth(pm10Rows, getLimitForDatePM10, LIMITE_ACTUAL_PM10),
   };
 }
 
@@ -167,7 +180,10 @@ export async function fetchDiasInsalubresMensual(
 ): Promise<Record<Pollutant, MonthData[]>> {
   const { data, error } = await supabase
     .from("sima_insalubres_mensual")
-    .select("ano, mes, parametro, dias_insalubres, dias_totales")
+    // "*" rather than a column list so the page keeps working if
+    // dias_insalubres_limite_actual hasn't been added to the table yet
+    // (it just reads as null, and the comparison view says so).
+    .select("*")
     .order("ano", { ascending: true })
     .order("mes", { ascending: true });
 
@@ -184,6 +200,7 @@ export async function fetchDiasInsalubresMensual(
         mes: MONTHS_ES[r.mes - 1],
         diasInsalubres: r.dias_insalubres,
         diasTotales: r.dias_totales,
+        diasInsalubresLimiteActual: r.dias_insalubres_limite_actual ?? null,
       }));
 
   return {
@@ -229,6 +246,7 @@ export function summarizeYear(data: MonthData[], year: number): YearSummary {
         mes: MONTHS_ES[i],
         diasInsalubres: 0,
         diasTotales: 0,
+        diasInsalubresLimiteActual: null,
       }
     );
   });

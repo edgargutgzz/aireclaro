@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, ChevronRight, HeartPulse, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, ChevronRight, HeartPulse, LineChart, ShieldCheck, Wind } from "lucide-react";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import { MONTHS_ES_FULL, summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
@@ -128,7 +128,9 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
           >
             NOM-025-SSA1-2021
           </a>
-          .
+          . En la vista de comparación entre años, todos los años se cuentan
+          con el límite actual ({desde} µg/m³), para compararlos con la misma
+          medida.
         </>
       ),
     },
@@ -503,6 +505,264 @@ function StackedBarsChart({
   );
 }
 
+// ---- Year-over-year lines (comparison view) --------------------------------
+// One line per year, month by month, every year's days counted against the
+// limit in force today (diasInsalubresLimiteActual), so the lines share one
+// yardstick. The official bars above keep each day's own limit.
+//
+// Color is focus + context, not a categorical set: the latest year carries
+// the chart's red, earlier years recede to gray (older = lighter). Identity
+// never rides on color alone: every line is also direct-labeled at its last
+// point, the legend names each, and the tooltip lists them in text.
+
+export interface YearLine {
+  ano: number;
+  color: string;
+  // 12 entries, Jan..Dec; null = no data for that month (a gap in the line).
+  dias: (number | null)[];
+  totales: (number | null)[];
+}
+
+const LINE_TOOLTIP_WIDTH = 176;
+const LINE_TOOLTIP_HEIGHT = 110;
+const POINT_R = 4;
+
+export function yearLineColor(indexFromLatest: number): string {
+  return indexFromLatest === 0 ? COLOR_INSALUBRE : indexFromLatest === 1 ? "#6b7280" : "#9ca3af";
+}
+
+function YearLinesChart({
+  lines,
+  monthColWidth,
+  chartHeight,
+}: {
+  lines: YearLine[];
+  monthColWidth: number;
+  chartHeight: number;
+}) {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  useDismissTooltip(hoveredIdx !== null, () => setHoveredIdx(null));
+
+  const totalWidth = PAD_LEFT + monthColWidth * 12 + PAD_RIGHT;
+  const plotHeight = chartHeight - PAD_TOP - PAD_BOTTOM;
+  const plotRight = totalWidth - PAD_RIGHT;
+  const ticks = [0, 5, 10, 15, 20, 25, 30, 35];
+  const niceMax = 35;
+  const baseline = PAD_TOP + plotHeight;
+  const xOf = (i: number) => PAD_LEFT + i * monthColWidth + monthColWidth / 2;
+  const yOf = (v: number) => baseline - (v / niceMax) * plotHeight;
+
+  // Break the path at missing months instead of bridging them.
+  const pathFor = (dias: (number | null)[]) => {
+    let d = "";
+    let pen = false;
+    dias.forEach((v, i) => {
+      if (v === null) {
+        pen = false;
+        return;
+      }
+      d += `${pen ? "L" : "M"}${xOf(i)},${yOf(v)}`;
+      pen = true;
+    });
+    return d;
+  };
+  const lastIdx = (dias: (number | null)[]) => {
+    for (let i = dias.length - 1; i >= 0; i--) if (dias[i] !== null) return i;
+    return -1;
+  };
+
+  const clearHover = (i: number) => setHoveredIdx((cur) => (cur === i ? null : cur));
+  const hoveredTop =
+    hoveredIdx === null
+      ? 0
+      : Math.min(
+          ...lines.map((l) => {
+            const v = l.dias[hoveredIdx];
+            return v === null ? baseline : yOf(v);
+          }),
+        );
+
+  return (
+    <div className="relative" style={{ width: totalWidth, height: chartHeight }}>
+      <svg
+        width={totalWidth}
+        height={chartHeight}
+        role="img"
+        aria-label="Días sobre el límite actual por mes, un año por línea"
+      >
+        {ticks.map((t) => (
+          <g key={t}>
+            <line x1={PAD_LEFT} x2={plotRight} y1={yOf(t)} y2={yOf(t)} stroke="rgb(243,244,246)" strokeWidth={1} />
+            <text
+              x={PAD_LEFT - 8}
+              y={yOf(t)}
+              textAnchor="end"
+              dominantBaseline="middle"
+              fontSize={12}
+              fontWeight={500}
+              fill="rgb(107,114,128)"
+            >
+              {t}
+            </text>
+          </g>
+        ))}
+
+        {MONTH_SHORT.map((label, i) => (
+          <text
+            key={label}
+            x={xOf(i)}
+            y={chartHeight - PAD_BOTTOM + 16}
+            textAnchor="middle"
+            fontSize={12}
+            fontWeight={500}
+            fill="rgb(75,85,99)"
+          >
+            {label}
+          </text>
+        ))}
+
+        {hoveredIdx !== null && (
+          <line
+            x1={xOf(hoveredIdx)}
+            x2={xOf(hoveredIdx)}
+            y1={PAD_TOP}
+            y2={baseline}
+            stroke="rgb(229,231,235)"
+            strokeWidth={1}
+          />
+        )}
+
+        {/* Older years first, so the latest (red) draws on top. */}
+        {[...lines].reverse().map((l) => (
+          <path
+            key={l.ano}
+            d={pathFor(l.dias)}
+            fill="none"
+            stroke={l.color}
+            strokeWidth={2}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+        ))}
+        {[...lines].reverse().map((l) =>
+          l.dias.map((v, i) =>
+            v === null ? null : (
+              <circle
+                key={`${l.ano}-${i}`}
+                cx={xOf(i)}
+                cy={yOf(v)}
+                r={hoveredIdx === i ? POINT_R + 1 : POINT_R}
+                fill={l.color}
+                stroke="white"
+                strokeWidth={2}
+              />
+            ),
+          ),
+        )}
+
+        {/* Direct label at each line's last point, in text ink (not the
+            series color); the dot beside it carries identity. */}
+        {lines.map((l) => {
+          const i = lastIdx(l.dias);
+          if (i < 0) return null;
+          const v = l.dias[i] as number;
+          return (
+            <text
+              key={`label-${l.ano}`}
+              x={xOf(i)}
+              y={yOf(v) - 12}
+              textAnchor={i === 11 ? "end" : "middle"}
+              fontSize={12}
+              fontWeight={600}
+              fill="rgb(55,65,81)"
+              // White halo: legible where the label crosses another line.
+              stroke="white"
+              strokeWidth={4}
+              strokeLinejoin="round"
+              paintOrder="stroke"
+            >
+              {l.ano}
+            </text>
+          );
+        })}
+
+        {MONTH_SHORT.map((label, i) => (
+          <rect
+            key={`hit-${label}`}
+            x={PAD_LEFT + i * monthColWidth}
+            y={PAD_TOP}
+            width={monthColWidth}
+            height={plotHeight}
+            fill="transparent"
+            tabIndex={0}
+            aria-label={`${MONTHS_ES_FULL[i]}: ${lines
+              .map((l) => `${l.ano}, ${l.dias[i] === null ? "sin datos" : `${l.dias[i]} días`}`)
+              .join("; ")}`}
+            style={{ outline: "none" }}
+            onMouseEnter={() => setHoveredIdx(i)}
+            onMouseLeave={() => clearHover(i)}
+            onFocus={() => setHoveredIdx(i)}
+            onBlur={() => clearHover(i)}
+          />
+        ))}
+      </svg>
+
+      <ul className="sr-only">
+        {lines.map((l) => (
+          <li key={l.ano}>
+            {l.ano}:{" "}
+            {l.dias
+              .map((v, i) => (v === null ? null : `${MONTHS_ES_FULL[i]} ${v} días`))
+              .filter(Boolean)
+              .join(", ")}
+          </li>
+        ))}
+      </ul>
+
+      {hoveredIdx !== null && (
+        <div
+          className="pointer-events-none absolute z-10 grid w-[11rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
+          style={tooltipPositionStyle(
+            xOf(hoveredIdx),
+            hoveredTop,
+            totalWidth,
+            chartHeight,
+            LINE_TOOLTIP_WIDTH,
+            LINE_TOOLTIP_HEIGHT,
+            10,
+            POINT_R,
+          )}
+        >
+          <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+            {MONTHS_ES_FULL[hoveredIdx]}
+          </span>
+          {lines.map((l) => {
+            const v = l.dias[hoveredIdx];
+            const t = l.totales[hoveredIdx];
+            return (
+              <div key={l.ano} className="flex items-center justify-between gap-3 text-xs">
+                <span className="flex items-center gap-1.5 text-gray-500">
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: l.color }} />
+                  {l.ano}
+                </span>
+                <span className="text-gray-500">
+                  {v === null ? (
+                    "Sin datos"
+                  ) : (
+                    <>
+                      <span className="text-sm font-semibold text-gray-800">{v}</span> de {t} días
+                    </>
+                  )}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 
 export default function DiasInsalubresChart({
@@ -517,6 +777,8 @@ export default function DiasInsalubresChart({
   // Cleared whenever the pollutant or year changes out from under it, so a
   // toggle click can't leave a stale month's detail showing.
   const [drilledMonth, setDrilledMonth] = useState<MonthBar | null>(null);
+  // The comparison view: every year as a line, all against today's limit.
+  const [compare, setCompare] = useState(false);
 
   const years = useMemo(
     () => [...new Set(activeData.map((d) => d.ano))].sort(),
@@ -533,7 +795,23 @@ export default function DiasInsalubresChart({
 
   useEffect(() => {
     setDrilledMonth(null);
-  }, [pollutant, year]);
+  }, [pollutant, year, compare]);
+
+  const yearLines = useMemo<YearLine[]>(
+    () =>
+      years.map((ano, i) => {
+        const byMonth = new Map(activeData.filter((d) => d.ano === ano).map((d) => [d.mesNumero, d]));
+        return {
+          ano,
+          color: yearLineColor(years.length - 1 - i),
+          dias: Array.from({ length: 12 }, (_, m) => byMonth.get(m + 1)?.diasInsalubresLimiteActual ?? null),
+          totales: Array.from({ length: 12 }, (_, m) => byMonth.get(m + 1)?.diasTotales ?? null),
+        };
+      }),
+    [activeData, years],
+  );
+  // Rows written before the same-limit count existed read as null.
+  const comparisonReady = yearLines.some((l) => l.dias.some((v) => v !== null));
 
   // Builds all 12 months, then drops the trailing run that has no data --
   // the current in-progress month plus whatever hasn't happened yet. Only
@@ -570,7 +848,7 @@ export default function DiasInsalubresChart({
   // observer measures. Re-measures against the current month count too, not
   // just on resize -- switching from a partial year (fewer columns) to a
   // complete one changes how wide each column should be at the same width.
-  const monthCount = chartData.length;
+  const monthCount = compare ? 12 : chartData.length;
   // A callback ref, not a plain useRef: this div unmounts when drilling
   // into a month's calendar and a brand-new one mounts on the way back
   // (the ternary below swaps branches, not just content) -- a plain
@@ -677,8 +955,24 @@ export default function DiasInsalubresChart({
               <div className="h-5 w-px bg-gray-200" />
             </>
           )}
-          <YearToggle years={years} year={year} onChange={setSelectedYear} />
-          {year !== null && (
+          {/* Before the year toggle so it doesn't move when compare mode
+              hides the year toggle and the (per-year) download. */}
+          <button
+            type="button"
+            onClick={() => setCompare((c) => !c)}
+            aria-pressed={compare}
+            aria-label={compare ? "Volver a la vista por año" : "Comparar años"}
+            title={compare ? "Volver a la vista por año" : "Comparar años"}
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+              compare
+                ? "bg-gray-800 text-white hover:bg-gray-700"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
+            }`}
+          >
+            <LineChart className="h-3.5 w-3.5" />
+          </button>
+          {!compare && <YearToggle years={years} year={year} onChange={setSelectedYear} />}
+          {!compare && year !== null && (
             <>
               <div className="h-5 w-px bg-gray-200" />
               {/* Always the current year+pollutant headline total,
@@ -704,6 +998,22 @@ export default function DiasInsalubresChart({
             row above*, a different, unrelated row -- that pulled this row's
             own right edge off its natural symmetric position and was the
             actual cause of the left/right mismatch reported. Reverted.) */}
+        {compare ? (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 md:mb-6">
+            <span className="text-xs text-gray-400">
+              Días sobre la norma por mes, con el límite actual (
+              {POLLUTANT_LIMITS[pollutant].desde} µg/m³) en todos los años
+            </span>
+            <div className="flex items-center gap-4 text-xs text-gray-500">
+              {yearLines.map((l) => (
+                <span key={l.ano} className="flex items-center gap-1.5">
+                  <span className="h-0.5 w-3 rounded-full" style={{ backgroundColor: l.color }} />
+                  {l.ano}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
         <div
           className={`mb-4 flex items-center md:mb-6 ${drilledMonth ? "justify-end" : "justify-between"}`}
         >
@@ -741,7 +1051,23 @@ export default function DiasInsalubresChart({
             )}
           </div>
         </div>
-        {drilledMonth ? (
+        )}
+        {compare ? (
+          comparisonReady ? (
+            <div ref={setMeasureNode} className="w-full">
+              <HorizontalScrollFade minWidth={PAD_LEFT + monthColWidth * 12 + PAD_RIGHT}>
+                <YearLinesChart lines={yearLines} monthColWidth={monthColWidth} chartHeight={chartHeight} />
+              </HorizontalScrollFade>
+            </div>
+          ) : (
+            <div
+              className="flex items-center justify-center text-center text-sm text-gray-500"
+              style={{ height: chartHeight }}
+            >
+              La comparación entre años estará disponible con la próxima actualización de datos.
+            </div>
+          )
+        ) : drilledMonth ? (
           <DiasInsalubresMonthDetail
             ano={drilledMonth.ano}
             mesNumero={drilledMonth.mesNumero}
