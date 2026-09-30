@@ -5,12 +5,14 @@ import { BookOpen, ChevronRight, HeartPulse, LineChart, ShieldCheck, Wind } from
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import { MONTHS_ES_FULL, summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
-  BRAND_BLUE,
-  BRAND_PURPLE,
   COLOR_INSALUBRE,
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
   COLOR_SALUDABLE_FILL_OPACITY,
+  COLOR_YEAR_1,
+  COLOR_YEAR_2,
+  COLOR_YEAR_LINE_OPACITY,
+  onWhite,
 } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
@@ -512,8 +514,9 @@ function StackedBarsChart({
 // limit in force today (diasInsalubresLimiteActual), so the lines share one
 // yardstick. The official bars above keep each day's own limit.
 //
-// Each year is an identity, so it gets a fixed categorical hue from the
-// logo, in year order (2025 blue, 2026 purple), never re-assigned by rank:
+// Each year is an identity, so it gets a fixed categorical hue in year
+// order (2025 blue, 2026 purple; see lib/datos-colors.ts), never re-assigned
+// by rank:
 // a new year adds a color, the old ones keep theirs. Identity never rides on
 // color alone: every line is also direct-labeled at its last point, the
 // legend names each, and the tooltip lists them in text.
@@ -532,7 +535,7 @@ const POINT_R = 4;
 
 // A third year needs a third hue validated against these two (dataviz
 // skill's validate_palette.js) before it ships; gray is only a stopgap.
-const YEAR_LINE_COLORS = [BRAND_BLUE, BRAND_PURPLE];
+const YEAR_LINE_COLORS = [COLOR_YEAR_1, COLOR_YEAR_2].map((c) => onWhite(c, COLOR_YEAR_LINE_OPACITY));
 export function yearLineColor(indexFromEarliest: number): string {
   return YEAR_LINE_COLORS[indexFromEarliest] ?? "#9ca3af";
 }
@@ -928,18 +931,16 @@ export default function DiasInsalubresChart({
     <ChartCard
       title="Días sobre la norma de partículas en la Zona Metropolitana de Monterrey"
       subtitle={
-        // None in the comparison view: this line is one year's official
-        // count, which the lines (current limit, every year) don't show.
-        compare ? undefined : (
         // Each year stands alone against the norm in force that year; no
-        // year-over-year line here (NOM-025 tightened on 2025-12-27, so a
-        // cross-year comparison is a separate question, to be shown
-        // elsewhere, labeled).
-        <div>
+        // year-over-year line here (NOM-025 tightened on 2025-12-27; the
+        // comparison view below handles that, on one limit). Hidden in the
+        // comparison view (it's one year's official count, which the lines
+        // don't show), but still laid out invisibly so the header keeps
+        // exactly the same height, wrapping included, when switching views.
+        <div className={compare ? "invisible" : undefined} aria-hidden={compare || undefined}>
           <span style={{ color: COLOR_INSALUBRE }}>{totalInsalubres}</span> días sobre la norma por{" "}
           {POLLUTANT_LABEL[pollutant]} en {year}
         </div>
-        )
       }
       headerRight={
         <>
@@ -965,14 +966,20 @@ export default function DiasInsalubresChart({
               <div className="h-5 w-px bg-gray-200" />
             </>
           )}
-          {!compare && (
-            <>
-              <YearToggle years={years} year={year} onChange={setSelectedYear} />
-              {/* Phones wrap the icon pair onto its own row; a divider
-                  there would dangle at the end of the first row. */}
-              <div className="hidden h-5 w-px bg-gray-200 sm:block" />
-            </>
-          )}
+          {/* In compare mode the year toggle and the (per-year) download
+              don't apply. On desktop they're removed (the header's height
+              doesn't depend on them); on phones they stay laid out but
+              invisible, since they fill the wrapped second row and removing
+              them would shrink the header when switching views. */}
+          <div
+            className={compare ? "invisible sm:hidden" : undefined}
+            aria-hidden={compare || undefined}
+          >
+            <YearToggle years={years} year={year} onChange={setSelectedYear} />
+          </div>
+          {/* Phones wrap the icon pair onto its own row; a divider there
+              would dangle at the end of the first row. */}
+          {!compare && <div className="hidden h-5 w-px bg-gray-200 sm:block" />}
           {/* View + download side by side. In compare mode the year toggle
               and the (per-year) download hide; only the toggle stays. */}
           <div className="flex items-center gap-2">
@@ -992,7 +999,8 @@ export default function DiasInsalubresChart({
             </button>
             {/* Always the current year+pollutant headline total,
                 independent of whether a month is drilled into below. */}
-            {!compare && year !== null && (
+            {year !== null && (
+              <div className={compare ? "invisible sm:hidden" : undefined} aria-hidden={compare || undefined}>
               <DownloadImageMenu
                 href={(format) =>
                   `/api/og/dias-insalubres?year=${year}&pollutant=${pollutant}&format=${format}`
@@ -1001,6 +1009,7 @@ export default function DiasInsalubresChart({
                   `observatorio-del-aire-dias-sobre-la-norma-${pollutant}-${year}-${format}.png`
                 }
               />
+              </div>
             )}
           </div>
         </>

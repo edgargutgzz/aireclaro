@@ -42,6 +42,26 @@ export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 export const BRAND_BLUE = "#226caf";
 export const BRAND_PURPLE = "#743479";
 
+// Year-comparison lines on /datos: Tailwind blue-500 / purple-700, the same
+// family and the same 0.65 strength as the bars' red (COLOR_INSALUBRE_FILL_
+// OPACITY), so the two views read alike. Not blue-500/purple-500: that pair
+// is near-identical for deuteranopes (validator ΔE 0.9); purple-700's lower
+// lightness separates it (ΔE 9.6 at this strength). Contrast < 3:1, same as
+// the bars' red, relieved the same way: direct labels + tooltip + sr list.
+export const COLOR_YEAR_1 = "#3b82f6"; // Tailwind blue-500
+export const COLOR_YEAR_2 = "#7e22ce"; // Tailwind purple-700
+export const COLOR_YEAR_LINE_OPACITY = COLOR_INSALUBRE_FILL_OPACITY;
+
+// The solid color `hex` renders as at `opacity` over white -- for marks
+// that overlap themselves (a line through its own points), where real
+// transparency would show the overlap.
+export function onWhite(hex: string, opacity: number): string {
+  const int = parseInt(hex.slice(1), 16);
+  const mix = (c: number) => Math.round(c * opacity + 255 * (1 - opacity));
+  const [r, g, b] = [(int >> 16) & 255, (int >> 8) & 255, int & 255].map(mix);
+  return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
+}
+
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);
   const r = (int >> 16) & 255;
