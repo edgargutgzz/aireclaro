@@ -43,9 +43,9 @@ export const BRAND_BLUE = "#226caf";
 export const BRAND_PURPLE = "#743479";
 
 // Year-comparison lines on /datos: focus + context, not a categorical
-// pair. The current year is the one line in color (Tailwind blue-500, full
-// strength, thicker); past years recede to gray (Tailwind gray-400,
-// thinner). Blue, not the bars' red: the view compares years, it isn't the
+// pair. The current year is the one line in color (Tailwind blue-500);
+// past years recede to gray (Tailwind gray-400). Color is the only
+// difference. Blue, not the bars' red: the view compares years, it isn't the
 // good/bad reading the red carries.
 export const COLOR_YEAR_CURRENT = "#3b82f6"; // Tailwind blue-500
 export const COLOR_YEAR_PAST = "#9ca3af"; // Tailwind gray-400

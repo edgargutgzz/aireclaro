@@ -512,17 +512,15 @@ function StackedBarsChart({
 // limit in force today (diasInsalubresLimiteActual), so the lines share one
 // yardstick. The official bars above keep each day's own limit.
 //
-// Current year vs. past years (focus + context): the latest year is the
-// one line in color, thicker, with larger points and a dark label; past
-// years recede to thin gray lines with muted labels. Which year is "now"
-// reads before any color does. Identity never rides on color alone: every
+// Current year vs. past years (focus + context), by color only: the latest
+// year is the one line in color, past years are gray; stroke, points and
+// labels are identical. Identity never rides on color alone: every
 // line is direct-labeled at its last point, the legend names each, and the
 // tooltip lists them in text.
 
 export interface YearLine {
   ano: number;
-  // The latest year: drawn in color, thicker, labeled in dark ink. Past
-  // years recede (gray, thinner, muted label).
+  // The latest year: the one line in color (past years gray).
   current: boolean;
   color: string;
   // 12 entries, Jan..Dec; null = no data for that month (a gap in the line).
@@ -642,7 +640,7 @@ function YearLinesChart({
             d={pathFor(l.dias)}
             fill="none"
             stroke={l.color}
-            strokeWidth={l.current ? 3 : 2}
+            strokeWidth={2}
             strokeLinejoin="round"
             strokeLinecap="round"
           />
@@ -654,7 +652,7 @@ function YearLinesChart({
                 key={`${l.ano}-${i}`}
                 cx={xOf(i)}
                 cy={yOf(v)}
-                r={(l.current ? POINT_R : POINT_R - 1) + (hoveredIdx === i ? 1 : 0)}
+                r={hoveredIdx === i ? POINT_R + 1 : POINT_R}
                 fill={l.color}
                 stroke="white"
                 strokeWidth={2}
@@ -676,8 +674,8 @@ function YearLinesChart({
               y={yOf(v) - 12}
               textAnchor={i === 11 ? "end" : "middle"}
               fontSize={12}
-              fontWeight={l.current ? 600 : 500}
-              fill={l.current ? "rgb(31,41,55)" : "rgb(156,163,175)"}
+              fontWeight={600}
+              fill="rgb(55,65,81)"
               // White halo: legible where the label crosses another line.
               stroke="white"
               strokeWidth={4}
@@ -1027,11 +1025,8 @@ export default function DiasInsalubresChart({
             <div className="flex items-center gap-4 text-xs text-gray-500">
               {yearLines.map((l) => (
                 <span key={l.ano} className="flex items-center gap-1.5">
-                  <span
-                    className={`w-3 rounded-full ${l.current ? "h-[3px]" : "h-0.5"}`}
-                    style={{ backgroundColor: l.color }}
-                  />
-                  <span className={l.current ? "font-medium text-gray-700" : undefined}>{l.ano}</span>
+                  <span className="h-0.5 w-3 rounded-full" style={{ backgroundColor: l.color }} />
+                  {l.ano}
                 </span>
               ))}
             </div>
