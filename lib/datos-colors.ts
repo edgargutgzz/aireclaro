@@ -42,12 +42,13 @@ export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 export const BRAND_BLUE = "#226caf";
 export const BRAND_PURPLE = "#743479";
 
-// Year-comparison lines on /datos: focus + context by color only. Never
-// red or green for a year -- on /datos those mean "sobre / dentro de la
-// norma", so a colored year would read as a verdict. The current year takes
-// the logo's blue (BRAND_BLUE, same as the share image's top bar); past
-// years recede to light gray (Tailwind gray-300).
-export const COLOR_YEAR_CURRENT = BRAND_BLUE;
+// Year-comparison lines on /datos: focus + context by color only. A year
+// can't borrow a color that already means something: red/green = sobre /
+// dentro de la norma, blue = data coverage here (COLOR_CUBIERTO), the
+// orange/yellow family = air-quality levels on the map. The current year
+// takes the logo's purple (BRAND_PURPLE); past years recede to light gray
+// (Tailwind gray-300).
+export const COLOR_YEAR_CURRENT = BRAND_PURPLE;
 export const COLOR_YEAR_PAST = "#d1d5db"; // Tailwind gray-300
 
 export function withOpacity(hex: string, opacity: number): string {
