@@ -30,7 +30,7 @@ const PASOS = [
     text: "Si tu sitio es aprobado, agendaremos una visita final para instalar el sensor y firmar el acuerdo de adopción.",
   },
   {
-    text: "Consulta los registros de tu sensor hora con hora en nuestra plataforma Aire Claro.",
+    text: "Consulta los registros de tu sensor hora con hora en nuestro mapa de calidad del aire.",
     link: "/mapa",
   },
 ];

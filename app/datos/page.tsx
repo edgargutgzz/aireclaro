@@ -20,7 +20,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Calidad del aire",
   description:
-    "Explora y descarga los datos históricos de calidad del aire de Aire Claro.",
+    "Explora y descarga los datos históricos de calidad del aire del Observatorio del Aire.",
 };
 
 export default function Datos() {

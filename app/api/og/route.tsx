@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 import { loadGoogleFont } from "@/lib/og-font";
+import { loadOgLogo, OG_LOGO_RATIO } from "@/lib/og-logo";
 
 // The unfurl card behind a shared ?sensor= link. Short-lived on purpose: it
 // carries a live reading, so a day-long CDN cache would show a stale number.
@@ -10,7 +11,7 @@ const CACHE = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
 // Subset to the glyphs this card can actually print so the font fetch stays
 // tiny (see lib/og-font.ts).
 const GLYPHS =
-  "Aire Claro abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - aireclaro.com Actualizado Buena Aceptable Mala Muy Extremadamente Sin lectura reciente PM2.5 μg/m³ Zona Metropolitana de Monterrey Nuevo León";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com Actualizado Buena Aceptable Mala Muy Extremadamente Sin lectura reciente PM2.5 μg/m³ Zona Metropolitana de Monterrey Nuevo León";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -34,6 +35,7 @@ export async function GET(request: Request) {
     height: 630,
     headers: { "cache-control": CACHE },
   };
+  const logo = await loadOgLogo(request.url);
   try {
     const [f400, f600, f700] = await Promise.all([
       loadGoogleFont(400, GLYPHS),
@@ -63,17 +65,22 @@ export async function GET(request: Request) {
       >
         <div style={{ height: 14, background: accent }} />
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "72px 80px" }}>
-          <div
-            style={{
-              display: "flex",
-              fontSize: 28,
-              fontWeight: 700,
-              color: "#111827",
-              letterSpacing: -0.5,
-            }}
-          >
-            Aire Claro
-          </div>
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo} width={Math.round(52 * OG_LOGO_RATIO)} height={52} alt="" />
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                fontSize: 28,
+                fontWeight: 700,
+                color: "#111827",
+                letterSpacing: -0.5,
+              }}
+            >
+              Observatorio del Aire
+            </div>
+          )}
 
           <div
             style={{
@@ -140,7 +147,7 @@ export async function GET(request: Request) {
             <div style={{ display: "flex", color: "#9ca3af" }}>
               {updated ? `Actualizado ${updated}` : "Datos en tiempo real"}
             </div>
-            <div style={{ display: "flex", fontWeight: 600, color: "#6b7280" }}>aireclaro.com</div>
+            <div style={{ display: "flex", fontWeight: 600, color: "#6b7280" }}>observatoriodelaire.com</div>
           </div>
         </div>
       </div>

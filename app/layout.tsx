@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     locale: "es_MX",
     images: [
       {
-        url: "/aireclaro-logo-fb.png",
+        url: "/observatorio-og.png",
         width: 1200,
         height: 630,
         alt: "Observatorio del Aire, calidad del aire en Monterrey",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
       "Monitorea en tiempo real la calidad del aire (PM2.5) en Monterrey y Zona Metropolitana.",
     images: [
       {
-        url: "/aireclaro-logo-fb.png",
+        url: "/observatorio-og.png",
         alt: "Observatorio del Aire, calidad del aire en Monterrey",
       },
     ],
@@ -72,7 +72,7 @@ const organizationSchema = {
   "@type": "Organization",
   name: "Observatorio Ciudadano de la Calidad del Aire (OCCAMM)",
   url: SITE_URL,
-  logo: `${SITE_URL}/aireclaro-logo.png`,
+  logo: `${SITE_URL}/navbar/occamm-logo.png`,
   description:
     "Organización de la sociedad civil dedicada a monitorear y mejorar la calidad del aire en Nuevo León.",
   address: {

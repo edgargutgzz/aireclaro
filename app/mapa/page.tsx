@@ -42,8 +42,8 @@ export async function generateMetadata({
       : `${snapshot.name} — Calidad del aire`;
   const description =
     quality && pm
-      ? `Calidad del aire ${quality.label.toLowerCase()}, ${pm} μg/m³ de PM2.5, en ${where}. Lectura en tiempo real de Aire Claro.`
-      : `Lectura de calidad del aire en tiempo real para ${where} en Aire Claro.`;
+      ? `Calidad del aire ${quality.label.toLowerCase()}, ${pm} μg/m³ de PM2.5, en ${where}. Lectura en tiempo real del Observatorio del Aire.`
+      : `Lectura de calidad del aire en tiempo real para ${where} en el Observatorio del Aire.`;
 
   const ogImage = `/api/og?sensor=${snapshot.sensorId}`;
   const pageUrl = `/mapa?sensor=${snapshot.sensorId}`;

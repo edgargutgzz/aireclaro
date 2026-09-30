@@ -7,6 +7,7 @@ import {
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE, COLOR_SALUDABLE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
+import { loadOgLogo, OG_LOGO_RATIO } from "@/lib/og-logo";
 
 // The branded stat card behind the días insalubres chart's "Compartir"
 // button (components/datos/dias-insalubres-chart.tsx) -- a square image
@@ -39,6 +40,7 @@ export async function GET(request: Request) {
     height: 1080,
     headers: { "cache-control": CACHE },
   };
+  const logo = await loadOgLogo(request.url);
   try {
     const [f400, f600, f700] = await Promise.all([
       loadGoogleFont(400, GLYPHS),
@@ -102,11 +104,16 @@ export async function GET(request: Request) {
       >
         <div style={{ height: 14, background: COLOR_INSALUBRE }} />
         <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "72px 80px" }}>
-          <div
-            style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#111827", letterSpacing: -0.5 }}
-          >
-            Observatorio del Aire
-          </div>
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo} width={Math.round(64 * OG_LOGO_RATIO)} height={64} alt="" />
+          ) : (
+            <div
+              style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#111827", letterSpacing: -0.5 }}
+            >
+              Observatorio del Aire
+            </div>
+          )}
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
             <div style={{ display: "flex", fontSize: 30, fontWeight: 500, color: "#6b7280", marginBottom: 20 }}>
