@@ -750,7 +750,7 @@ export default function DiasInsalubresChart({
                 aria-label="Descargar imagen"
                 title="Descargar imagen"
               >
-                <ImageDown className="h-4 w-4" />
+                <ImageDown className="h-3.5 w-3.5" />
               </a>
             </>
           )}
