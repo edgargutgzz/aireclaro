@@ -928,6 +928,9 @@ export default function DiasInsalubresChart({
     <ChartCard
       title="Días sobre la norma de partículas en la Zona Metropolitana de Monterrey"
       subtitle={
+        // None in the comparison view: this line is one year's official
+        // count, which the lines (current limit, every year) don't show.
+        compare ? undefined : (
         // Each year stands alone against the norm in force that year; no
         // year-over-year line here (NOM-025 tightened on 2025-12-27, so a
         // cross-year comparison is a separate question, to be shown
@@ -936,6 +939,7 @@ export default function DiasInsalubresChart({
           <span style={{ color: COLOR_INSALUBRE }}>{totalInsalubres}</span> días sobre la norma por{" "}
           {POLLUTANT_LABEL[pollutant]} en {year}
         </div>
+        )
       }
       headerRight={
         <>

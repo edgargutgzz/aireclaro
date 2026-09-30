@@ -14,7 +14,7 @@ export default function ChartCard({
   children,
 }: {
   title: string;
-  subtitle: ReactNode;
+  subtitle?: ReactNode;
   headerRight?: ReactNode;
   children: ReactNode;
 }) {
@@ -35,7 +35,7 @@ export default function ChartCard({
           {/* div, not p: a caller's subtitle can carry its own block-level
               row (e.g. a year-over-year comparison line), which can't
               legally nest inside a p. */}
-          <div className="mt-1 text-xs text-gray-500 md:text-sm">{subtitle}</div>
+          {subtitle && <div className="mt-1 text-xs text-gray-500 md:text-sm">{subtitle}</div>}
         </div>
         {/* flex-wrap: on a phone the controls (pollutant, view, year,
             download) can outgrow the row; they wrap instead of squeezing
