@@ -92,7 +92,7 @@ export default function DownloadImageMenu({
           {GROUPS.map((group, i) => (
             <div key={group.options[0].format} className={i > 0 ? "mt-1 border-t border-gray-100 pt-1" : ""}>
               {group.title && (
-                <p className="px-3 pb-0.5 pt-2 text-sm font-semibold text-gray-800">{group.title}</p>
+                <p className="px-3 pb-0.5 pt-2 text-sm font-medium text-gray-700">{group.title}</p>
               )}
               {group.options.map((o) => (
                 <a
@@ -105,7 +105,7 @@ export default function DownloadImageMenu({
                     group.title ? "pl-6" : "pl-3"
                   }`}
                 >
-                  <span className={`text-sm ${group.title ? "text-gray-700" : "font-semibold text-gray-800"}`}>
+                  <span className={`text-sm ${group.title ? "text-gray-600" : "font-medium text-gray-700"}`}>
                     {o.label}
                   </span>
                 </a>
