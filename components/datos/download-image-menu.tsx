@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { ArrowDownToLine, Send } from "lucide-react";
 import type { ShareFormat } from "@/lib/share-image-formats";
 
 // The días insalubres chart's image download: asks where the image is going
@@ -83,12 +83,13 @@ export default function DownloadImageMenu({
       {open && (
         <div
           role="menu"
-          aria-label="Descarga la imagen según dónde la vas a compartir"
+          aria-label="Descargar imagen para"
           className="absolute right-0 top-full z-20 mt-2 w-60 rounded-xl border border-black/[0.08] bg-white/95 p-1.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
         >
-          <p className="px-3 pb-1 pt-2 text-xs font-medium text-gray-400">
-            Descarga la imagen según dónde la vas a compartir
-          </p>
+          {/* Heading + option read as one phrase ("Descargar imagen para
+              WhatsApp"), so what a click does is said before it happens;
+              the trailing arrow on each row repeats it. */}
+          <p className="px-3 pb-1 pt-2 text-xs font-medium text-gray-400">Descargar imagen para</p>
           {GROUPS.map((group, i) => (
             <div key={group.options[0].format} className={i > 0 ? "mt-1 border-t border-gray-100 pt-1" : ""}>
               {group.title && (
@@ -101,14 +102,20 @@ export default function DownloadImageMenu({
                   href={href(o.format)}
                   download={filename(o.format)}
                   onClick={() => setOpen(false)}
-                  className={`flex flex-col rounded-lg py-2 pr-3 transition-colors hover:bg-gray-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${
+                  className={`group flex items-center justify-between gap-3 rounded-lg py-2 pr-3 transition-colors hover:bg-gray-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${
                     group.title ? "pl-6" : "pl-3"
                   }`}
                 >
-                  <span className={`text-sm ${group.title ? "text-gray-700" : "font-semibold text-gray-800"}`}>
-                    {o.label}
+                  <span className="flex flex-col">
+                    <span className={`text-sm ${group.title ? "text-gray-700" : "font-semibold text-gray-800"}`}>
+                      {o.label}
+                    </span>
+                    <span className="text-xs text-gray-400">{o.hint}</span>
                   </span>
-                  <span className="text-xs text-gray-400">{o.hint}</span>
+                  <ArrowDownToLine
+                    aria-hidden
+                    className="h-3.5 w-3.5 shrink-0 text-gray-300 transition-colors group-hover:text-gray-600"
+                  />
                 </a>
               ))}
             </div>
