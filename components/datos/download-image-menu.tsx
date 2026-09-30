@@ -21,8 +21,8 @@ const GROUPS: { title: string | null; options: Option[] }[] = [
   {
     title: "Instagram",
     options: [
-      { format: "instagram-post", label: "Publicación", hint: "Vertical, para el feed" },
-      { format: "instagram-story", label: "Historia", hint: "Pantalla completa" },
+      { format: "instagram-post", label: "Post", hint: "Vertical, para el feed" },
+      { format: "instagram-story", label: "Story", hint: "Pantalla completa" },
     ],
   },
   { title: null, options: [{ format: "facebook-post", label: "Facebook", hint: "Publicación vertical" }] },
