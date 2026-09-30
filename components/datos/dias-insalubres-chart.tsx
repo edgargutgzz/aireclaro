@@ -9,10 +9,8 @@ import {
   COLOR_INSALUBRE_FILL_OPACITY,
   COLOR_SALUDABLE,
   COLOR_SALUDABLE_FILL_OPACITY,
-  COLOR_YEAR_1,
-  COLOR_YEAR_2,
-  COLOR_YEAR_LINE_OPACITY,
-  onWhite,
+  COLOR_YEAR_CURRENT,
+  COLOR_YEAR_PAST,
 } from "@/lib/datos-colors";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
@@ -514,15 +512,18 @@ function StackedBarsChart({
 // limit in force today (diasInsalubresLimiteActual), so the lines share one
 // yardstick. The official bars above keep each day's own limit.
 //
-// Each year is an identity, so it gets a fixed categorical hue in year
-// order (2025 blue, 2026 purple; see lib/datos-colors.ts), never re-assigned
-// by rank:
-// a new year adds a color, the old ones keep theirs. Identity never rides on
-// color alone: every line is also direct-labeled at its last point, the
-// legend names each, and the tooltip lists them in text.
+// Current year vs. past years (focus + context): the latest year is the
+// one line in color, thicker, with larger points and a dark label; past
+// years recede to thin gray lines with muted labels. Which year is "now"
+// reads before any color does. Identity never rides on color alone: every
+// line is direct-labeled at its last point, the legend names each, and the
+// tooltip lists them in text.
 
 export interface YearLine {
   ano: number;
+  // The latest year: drawn in color, thicker, labeled in dark ink. Past
+  // years recede (gray, thinner, muted label).
+  current: boolean;
   color: string;
   // 12 entries, Jan..Dec; null = no data for that month (a gap in the line).
   dias: (number | null)[];
@@ -532,13 +533,6 @@ export interface YearLine {
 const LINE_TOOLTIP_WIDTH = 176;
 const LINE_TOOLTIP_HEIGHT = 110;
 const POINT_R = 4;
-
-// A third year needs a third hue validated against these two (dataviz
-// skill's validate_palette.js) before it ships; gray is only a stopgap.
-const YEAR_LINE_COLORS = [COLOR_YEAR_1, COLOR_YEAR_2].map((c) => onWhite(c, COLOR_YEAR_LINE_OPACITY));
-export function yearLineColor(indexFromEarliest: number): string {
-  return YEAR_LINE_COLORS[indexFromEarliest] ?? "#9ca3af";
-}
 
 function YearLinesChart({
   lines,
@@ -648,7 +642,7 @@ function YearLinesChart({
             d={pathFor(l.dias)}
             fill="none"
             stroke={l.color}
-            strokeWidth={2}
+            strokeWidth={l.current ? 3 : 2}
             strokeLinejoin="round"
             strokeLinecap="round"
           />
@@ -660,7 +654,7 @@ function YearLinesChart({
                 key={`${l.ano}-${i}`}
                 cx={xOf(i)}
                 cy={yOf(v)}
-                r={hoveredIdx === i ? POINT_R + 1 : POINT_R}
+                r={(l.current ? POINT_R : POINT_R - 1) + (hoveredIdx === i ? 1 : 0)}
                 fill={l.color}
                 stroke="white"
                 strokeWidth={2}
@@ -682,8 +676,8 @@ function YearLinesChart({
               y={yOf(v) - 12}
               textAnchor={i === 11 ? "end" : "middle"}
               fontSize={12}
-              fontWeight={600}
-              fill="rgb(55,65,81)"
+              fontWeight={l.current ? 600 : 500}
+              fill={l.current ? "rgb(31,41,55)" : "rgb(156,163,175)"}
               // White halo: legible where the label crosses another line.
               stroke="white"
               strokeWidth={4}
@@ -812,7 +806,8 @@ export default function DiasInsalubresChart({
         const byMonth = new Map(activeData.filter((d) => d.ano === ano).map((d) => [d.mesNumero, d]));
         return {
           ano,
-          color: yearLineColor(i),
+          current: i === years.length - 1,
+          color: i === years.length - 1 ? COLOR_YEAR_CURRENT : COLOR_YEAR_PAST,
           dias: Array.from({ length: 12 }, (_, m) => byMonth.get(m + 1)?.diasInsalubresLimiteActual ?? null),
           totales: Array.from({ length: 12 }, (_, m) => byMonth.get(m + 1)?.diasTotales ?? null),
         };
@@ -1032,8 +1027,11 @@ export default function DiasInsalubresChart({
             <div className="flex items-center gap-4 text-xs text-gray-500">
               {yearLines.map((l) => (
                 <span key={l.ano} className="flex items-center gap-1.5">
-                  <span className="h-0.5 w-3 rounded-full" style={{ backgroundColor: l.color }} />
-                  {l.ano}
+                  <span
+                    className={`w-3 rounded-full ${l.current ? "h-[3px]" : "h-0.5"}`}
+                    style={{ backgroundColor: l.color }}
+                  />
+                  <span className={l.current ? "font-medium text-gray-700" : undefined}>{l.ano}</span>
                 </span>
               ))}
             </div>
