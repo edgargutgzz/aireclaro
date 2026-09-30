@@ -131,10 +131,6 @@ export async function GET(request: Request) {
           )}
 
           <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", fontSize: cx(30), marginBottom: cx(20) }}>
-              <div style={{ display: "flex", color: "#6b7280" }}>Zona Metropolitana de Monterrey</div>
-              <div style={{ display: "flex", fontWeight: 600, color: "#374151" }}>{period}</div>
-            </div>
             <div style={{ display: "flex", fontSize: cx(220), fontWeight: 700, color: COLOR_INSALUBRE, lineHeight: 1 }}>
               {total}
             </div>
@@ -170,6 +166,22 @@ export async function GET(request: Request) {
                 {deltaText}
               </div>
             )}
+            {/* Context after the message, quieter: logo (who says it) ->
+                number + headline + comparison (the finding) -> where/when
+                -> footer (source). */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                fontSize: cx(24),
+                lineHeight: 1.4,
+                color: "#6b7280",
+                marginTop: cx(36),
+              }}
+            >
+              <div style={{ display: "flex" }}>Zona Metropolitana de Monterrey</div>
+              <div style={{ display: "flex" }}>{period}</div>
+            </div>
           </div>
 
           <div
