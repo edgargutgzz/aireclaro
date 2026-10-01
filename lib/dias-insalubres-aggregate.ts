@@ -310,7 +310,10 @@ export interface MonthlySummary {
   rows: MonthlySummaryRow[];
   /** Both pollutants have the same month a year earlier. */
   hasPrior: boolean;
-  /** The verdict, as two set lines. */
+  /** Both pollutants moved the same way vs. a year earlier; null when they
+   *  disagree or there's no prior month. */
+  trend: "más" | "menos" | "los mismos" | null;
+  /** The verdict, as two set lines (the image's headline). */
   headline: [string, string];
 }
 
@@ -340,17 +343,11 @@ export function monthlySummary(
   const hasPrior = rows.every((r) => r.prior !== null);
   const signs = rows.map((r) => Math.sign(r.current - (r.prior ?? 0)));
   const agree = hasPrior && signs.every((x) => x === signs[0]);
+  const trend = agree ? (signs[0] > 0 ? "más" : signs[0] < 0 ? "menos" : "los mismos") : null;
   const headline: [string, string] = !hasPrior
     ? ["Días sobre la norma", `en ${mesMin} de ${year}`]
-    : agree
-      ? [
-          signs[0] > 0
-            ? "Se registraron más días sobre la norma"
-            : signs[0] < 0
-              ? "Se registraron menos días sobre la norma"
-              : "Se registraron los mismos días sobre la norma",
-          `que en ${mesMin} de ${year - 1}`,
-        ]
+    : trend
+      ? [`Se registraron ${trend} días sobre la norma`, `que en ${mesMin} de ${year - 1}`]
       : ["Días sobre la norma", `${mesMin} de ${year} frente a ${year - 1}`];
-  return { year, mes, rows, hasPrior, headline };
+  return { year, mes, rows, hasPrior, trend, headline };
 }
