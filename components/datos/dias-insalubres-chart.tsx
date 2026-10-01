@@ -65,7 +65,7 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
   pm10: "PM10",
 };
-const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
+export const POLLUTANT_LIMITS: Record<Pollutant, { antes: number; desde: number }> = {
   pm25: { antes: 33, desde: 25 },
   pm10: { antes: 60, desde: 50 },
 };
@@ -85,29 +85,33 @@ const LEGEND = {
   saludables: { label: "Dentro de la norma", color: COLOR_SALUDABLE },
 };
 
+// Shared with the share-image card (dias-insalubres-share.tsx): same
+// source, one copy.
+export const FUENTE_TAB: InfoTab = {
+  id: "fuente",
+  label: "Datos oficiales",
+  icon: ShieldCheck,
+  body: (
+    <>
+      Los datos de calidad del aire provienen de las estaciones de
+      monitoreo del{" "}
+      <a
+        href="http://aire.nl.gob.mx"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+      >
+        Sistema Integral de Monitoreo Ambiental (SIMA)
+      </a>{" "}
+      de Nuevo León.
+    </>
+  ),
+};
+
 function infoTabs(pollutant: Pollutant): InfoTab[] {
   const { antes, desde } = POLLUTANT_LIMITS[pollutant];
   return [
-    {
-      id: "fuente",
-      label: "Datos oficiales",
-      icon: ShieldCheck,
-      body: (
-        <>
-          Los datos de calidad del aire provienen de las estaciones de
-          monitoreo del{" "}
-          <a
-            href="http://aire.nl.gob.mx"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-          >
-            Sistema Integral de Monitoreo Ambiental (SIMA)
-          </a>{" "}
-          de Nuevo León.
-        </>
-      ),
-    },
+    FUENTE_TAB,
     {
       id: "norma",
       label: "Metodología",

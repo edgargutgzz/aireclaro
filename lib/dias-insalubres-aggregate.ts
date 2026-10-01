@@ -281,7 +281,7 @@ export function summarizeYear(data: MonthData[], year: number): YearSummary {
 // The share image's month: the latest month of `year` the monthly cron has
 // processed for every pollutant, counted on today's limit (the data decides,
 // never the calendar). null when there's none yet. Shared by the image route
-// and the share card under the chart, so the card's caption always names the
+// and the share-image card under the chart, so the card's caption always names the
 // month the image shows.
 export function latestShareMonth(
   data: Record<Pollutant, MonthData[]>,

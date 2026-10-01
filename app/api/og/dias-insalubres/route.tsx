@@ -12,7 +12,7 @@ import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 
 // The branded stat card behind the días insalubres chart's share card
-// (components/datos/share-images-card.tsx) -- one size per destination
+// (components/datos/share-image-card.tsx) -- one size per destination
 // (?format=, see lib/share-image-formats.ts), not the 1200x630 landscape unfurl card
 // app/api/og/route.tsx renders for a shared sensor link.
 //
