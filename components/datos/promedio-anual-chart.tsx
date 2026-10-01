@@ -737,7 +737,8 @@ export default function PromedioAnualChart({
   return (
     <ChartCard
       infoTab={infoTab(pollutant)}
-      title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
+      title="Promedio anual por estación en la"
+      place="Zona Metropolitana de Monterrey"
       // Leads with the headline number, plain (no bold/color) -- matches
       // días insalubres ("{totalInsalubres} días de aire insalubre por
       // PM2.5 en 2026") and cobertura ("{pctCobertura}% de cobertura de

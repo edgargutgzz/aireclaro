@@ -13,12 +13,17 @@ import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
 // be repeated (or forgotten) per file.
 export default function ChartCard({
   title,
+  place,
   subtitle,
   headerRight,
   infoTab,
   children,
 }: {
   title: string;
+  /** Where the chart applies (e.g. "Zona Metropolitana de Monterrey"),
+   *  ending the title: its own line from lg, flowing on in the sentence
+   *  below that. */
+  place?: string;
   subtitle?: ReactNode;
   headerRight?: ReactNode;
   /** The chart's own "learn more" (its methodology): a pill at the end of
@@ -44,7 +49,15 @@ export default function ChartCard({
             horizontal overflow. Classic flexbox gotcha, not specific to any
             one caller. */}
         <div className="min-w-0">
-          <h3 className="text-lg font-medium text-gray-700">{title}</h3>
+          <h3 className="text-lg font-medium text-gray-700">
+            {title}
+            {place && (
+              <>
+                {" "}
+                <span className="lg:block">{place}</span>
+              </>
+            )}
+          </h3>
           {/* div, not p: a caller's subtitle can carry its own block-level
               row (e.g. a year-over-year comparison line), which can't
               legally nest inside a p. */}
