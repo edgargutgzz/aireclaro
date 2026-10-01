@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, ChevronRight, HeartPulse, LineChart, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, ChevronRight, LineChart, ShieldCheck } from "lucide-react";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import { MONTHS_ES_FULL, summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
@@ -132,43 +132,6 @@ function infoTabs(pollutant: Pollutant): InfoTab[] {
             className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
           >
             NOM-025-SSA1-2021
-          </a>
-          .
-        </>
-      ),
-    },
-    {
-      id: "contaminante",
-      label: "Contaminantes",
-      icon: Wind,
-      body: (
-        <>
-          PM2.5 y PM10 son partículas en suspensión en el aire, de hasta 2.5
-          y 10 micrómetros de diámetro respectivamente (las PM2.5, unas 30
-          veces más delgadas que un cabello humano).
-        </>
-      ),
-    },
-    {
-      id: "salud",
-      label: "Impacto en salud",
-      icon: HeartPulse,
-      body: (
-        <>
-          La exposición a PM2.5 y PM10 es dañina para la salud. A corto
-          plazo, irritan oídos, ojos, nariz y garganta, y agravan el asma y
-          la bronquitis; a largo plazo, se asocian con
-          enfermedades cardiovasculares, respiratorias y cerebrovasculares,
-          además de una menor esperanza de vida. Si quieres entender mejor
-          cómo nos afecta, puedes consultar la
-          siguiente{" "}
-          <a
-            href="/infografias/infografia_salud.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-          >
-            infografía
           </a>
           .
         </>

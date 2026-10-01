@@ -2,6 +2,7 @@ import { RefreshCw } from "lucide-react";
 import { createPublicClient } from "@/utils/supabase/public";
 import { monterreyNaiveNow } from "@/lib/monterrey-time";
 import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
+import DatosGeneralInfo from "@/components/datos/datos-general-info";
 
 
 // The monthly cron (app/api/cron/sima-monthly-sync, vercel.json's "0 8 6 * *")
@@ -81,28 +82,35 @@ export default async function DatosHeader() {
     // first (cobertura's own "has data" blue) but read as a data-currency
     // claim rather than a neutral status line, so this stays gray/monochrome
     // like info-tabs' own icons (2026-09-27 feedback).
-    <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-4">
-      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100">
-        <RefreshCw className="h-4 w-4 text-gray-500" aria-hidden />
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+      <div className="flex items-center gap-3 px-5 py-4">
+        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100">
+          <RefreshCw className="h-4 w-4 text-gray-500" aria-hidden />
+        </div>
+        {/* Same subtitle recipe días insalubres/cobertura already use for their
+            own two-stat line (md:flex md:items-center md:gap-3, a hairline
+            divider that only appears once both stats share a row) -- one
+            shared row shape across the page instead of a bespoke one just for
+            this banner. One text size throughout, weight/color doing the
+            contrast instead of a size jump. */}
+        <div className="text-sm md:flex md:items-center md:gap-3">
+          <div>
+            <span className="text-gray-500">Datos actualizados hasta </span>
+            <span className="font-medium text-gray-800">{stamp}</span>
+            <span className="text-gray-500">.</span>
+          </div>
+          <div className="hidden h-4 w-px bg-gray-200 md:block" />
+          <div className="mt-1 md:mt-0">
+            <span className="text-gray-500">Los datos de </span>
+            <span className="font-medium text-gray-800">{addedMonthLabel}</span>
+            <span className="text-gray-500"> estarán disponibles en {daysLabel}.</span>
+          </div>
+        </div>
       </div>
-      {/* Same subtitle recipe días insalubres/cobertura already use for their
-          own two-stat line (md:flex md:items-center md:gap-3, a hairline
-          divider that only appears once both stats share a row) -- one
-          shared row shape across the page instead of a bespoke one just for
-          this banner. One text size throughout, weight/color doing the
-          contrast instead of a size jump. */}
-      <div className="text-sm md:flex md:items-center md:gap-3">
-        <div>
-          <span className="text-gray-500">Datos actualizados hasta </span>
-          <span className="font-medium text-gray-800">{stamp}</span>
-          <span className="text-gray-500">.</span>
-        </div>
-        <div className="hidden h-4 w-px bg-gray-200 md:block" />
-        <div className="mt-1 md:mt-0">
-          <span className="text-gray-500">Los datos de </span>
-          <span className="font-medium text-gray-800">{addedMonthLabel}</span>
-          <span className="text-gray-500"> estarán disponibles en {daysLabel}.</span>
-        </div>
+      {/* The tabs every chart shares (pollutants, health), once for the
+          page; same row recipe as each chart card's own tabs. */}
+      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
+        <DatosGeneralInfo />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, ShieldCheck } from "lucide-react";
 import type { Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { getLimitAnualPM10 } from "@/lib/pm25-limits";
 import {
@@ -126,41 +126,6 @@ function tabs(pollutant: Pollutant): InfoTab[] {
             className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
           >
             NOM-025-SSA1-2021
-          </a>
-          .
-        </>
-      ),
-    },
-    {
-      id: "contaminante",
-      label: "Contaminantes",
-      icon: Wind,
-      body: (
-        <>
-          PM2.5 y PM10 son partículas en suspensión en el aire, de hasta 2.5
-          y 10 micrómetros de diámetro respectivamente (las PM2.5, unas 30
-          veces más delgadas que un cabello humano).
-        </>
-      ),
-    },
-    {
-      id: "salud",
-      label: "Impacto en salud",
-      icon: HeartPulse,
-      body: (
-        <>
-          Las partículas PM2.5 y PM10 son tan pequeñas que penetran profundo
-          en los pulmones y llegan al torrente sanguíneo. La exposición
-          prolongada se asocia con enfermedades respiratorias,
-          cardiovasculares y daño sistémico. Si quieres entender mejor cómo
-          nos afecta, te compartimos la siguiente{" "}
-          <a
-            href="/infografias/infografia_salud.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-          >
-            infografía
           </a>
           .
         </>

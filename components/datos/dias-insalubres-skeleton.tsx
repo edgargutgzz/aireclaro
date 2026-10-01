@@ -36,8 +36,6 @@ export default function DiasInsalubresSkeleton() {
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
-        <SkeletonBlock className="h-7 w-28 rounded-xl" />
-        <SkeletonBlock className="h-7 w-36 rounded-xl" />
       </div>
     </div>
   );
