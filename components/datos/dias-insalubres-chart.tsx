@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, ChevronRight, LineChart, ShieldCheck } from "lucide-react";
+import { BookOpen, ChevronRight, LineChart } from "lucide-react";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import { MONTHS_ES_FULL, summarizeYear, type MonthData, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import {
@@ -85,33 +85,9 @@ const LEGEND = {
   saludables: { label: "Dentro de la norma", color: COLOR_SALUDABLE },
 };
 
-// Shared with the share-image card (dias-insalubres-share.tsx): same
-// source, one copy.
-export const FUENTE_TAB: InfoTab = {
-  id: "fuente",
-  label: "Datos oficiales",
-  icon: ShieldCheck,
-  body: (
-    <>
-      Los datos de calidad del aire provienen de las estaciones de
-      monitoreo del{" "}
-      <a
-        href="http://aire.nl.gob.mx"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-      >
-        Sistema Integral de Monitoreo Ambiental (SIMA)
-      </a>{" "}
-      de Nuevo León.
-    </>
-  ),
-};
-
 function infoTabs(pollutant: Pollutant): InfoTab[] {
   const { antes, desde } = POLLUTANT_LIMITS[pollutant];
   return [
-    FUENTE_TAB,
     {
       id: "norma",
       label: "Metodología",

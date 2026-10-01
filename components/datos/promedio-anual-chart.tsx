@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, ShieldCheck } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import type { Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { getLimitAnualPM10 } from "@/lib/pm25-limits";
 import {
@@ -82,26 +82,6 @@ const STATION_COL_WIDTH_MAX = 300;
 // per pollutant either.
 function tabs(pollutant: Pollutant): InfoTab[] {
   return [
-    {
-      id: "fuente",
-      label: "Datos oficiales",
-      icon: ShieldCheck,
-      body: (
-        <>
-          Los datos de calidad del aire provienen de las estaciones de
-          monitoreo del{" "}
-          <a
-            href="http://aire.nl.gob.mx"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-          >
-            Sistema Integral de Monitoreo Ambiental (SIMA)
-          </a>{" "}
-          de Nuevo León.
-        </>
-      ),
-    },
     {
       // One merged tab, not two -- días insalubres and cobertura each have
       // a single "Metodología" tab that states its rule and closes with the

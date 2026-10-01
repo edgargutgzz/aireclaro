@@ -4,7 +4,7 @@ import { BookOpen } from "lucide-react";
 import ChartCard from "@/components/datos/chart-card";
 import DownloadImageMenu from "@/components/datos/download-image-menu";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
-import { FUENTE_TAB, POLLUTANT_LIMITS } from "@/components/datos/dias-insalubres-chart";
+import { POLLUTANT_LIMITS } from "@/components/datos/dias-insalubres-chart";
 import { COLOR_INSALUBRE } from "@/lib/datos-colors";
 import { MONTHS_ES_FULL, SUMMARY_GLOSS, type MonthlySummary, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 
@@ -30,7 +30,6 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
   const years = hasPrior ? [year - 1, year] : [year];
 
   const tabs: InfoTab[] = [
-    FUENTE_TAB,
     {
       id: "norma",
       label: "Metodología",

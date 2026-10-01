@@ -1,13 +1,32 @@
 "use client";
 
-import { HeartPulse, Wind } from "lucide-react";
+import { HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 
-// The "learn more" tabs that apply to every /datos chart (what PM2.5/PM10
-// are, what they do to health), shown once in the page's top bar instead of
-// repeated under each chart. Chart-specific tabs (source, methodology) stay
-// on their own chart.
+// The "learn more" tabs that apply to every /datos chart (where the data
+// comes from, what PM2.5/PM10 are, what they do to health), shown once in the page's top bar instead of
+// repeated under each chart. Each chart keeps only its own methodology.
 const TABS: InfoTab[] = [
+  {
+    id: "fuente",
+    label: "Datos oficiales",
+    icon: ShieldCheck,
+    body: (
+      <>
+        Los datos de calidad del aire provienen de las estaciones de monitoreo
+        del{" "}
+        <a
+          href="http://aire.nl.gob.mx"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          Sistema Integral de Monitoreo Ambiental (SIMA)
+        </a>{" "}
+        de Nuevo León.
+      </>
+    ),
+  },
   {
     id: "contaminante",
     label: "Contaminantes",

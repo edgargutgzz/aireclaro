@@ -44,7 +44,6 @@ export default function PromedioAnualSkeleton() {
           request), same shape as chart 1/2's own single Metodología tab. */}
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
-        <SkeletonBlock className="h-7 w-32 rounded-xl" />
       </div>
     </div>
   );
