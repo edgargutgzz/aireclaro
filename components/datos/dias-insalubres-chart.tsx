@@ -12,7 +12,7 @@ import {
   COLOR_YEAR_CURRENT,
   COLOR_YEAR_PAST,
 } from "@/lib/datos-colors";
-import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
+import type { InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
@@ -85,35 +85,33 @@ const LEGEND = {
   saludables: { label: "Dentro de la norma", color: COLOR_SALUDABLE },
 };
 
-function infoTabs(pollutant: Pollutant): InfoTab[] {
+function infoTab(pollutant: Pollutant): InfoTab {
   const { antes, desde } = POLLUTANT_LIMITS[pollutant];
-  return [
-    {
-      id: "norma",
-      label: "Metodología",
-      icon: BookOpen,
-      body: (
-        <>
-          Se clasifica un día como sobre la norma si alguna estación de
-          monitoreo supera el límite diario, que bajó de {antes} µg/m³ en
-          2025 a {desde} µg/m³ en 2026; de lo contrario, se clasifica como
-          dentro de la norma. Algunos meses pueden mostrar menos días de los que
-          corresponden, ya que un día se contabiliza solo si alguna estación
-          de monitoreo reportó mediciones suficientes. Todo lo anterior, con
-          base en la Norma Oficial Mexicana:{" "}
-          <a
-            href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-          >
-            NOM-025-SSA1-2021
-          </a>
-          .
-        </>
-      ),
-    },
-  ];
+  return {
+    id: "norma",
+    label: "Metodología",
+    icon: BookOpen,
+    body: (
+      <>
+        Se clasifica un día como sobre la norma si alguna estación de
+        monitoreo supera el límite diario, que bajó de {antes} µg/m³ en
+        2025 a {desde} µg/m³ en 2026; de lo contrario, se clasifica como
+        dentro de la norma. Algunos meses pueden mostrar menos días de los que
+        corresponden, ya que un día se contabiliza solo si alguna estación
+        de monitoreo reportó mediciones suficientes. Todo lo anterior, con
+        base en la Norma Oficial Mexicana:{" "}
+        <a
+          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          NOM-025-SSA1-2021
+        </a>
+        .
+      </>
+    ),
+  };
 }
 
 interface MonthBar {
@@ -844,7 +842,6 @@ export default function DiasInsalubresChart({
   );
   const totalInsalubres = yearSummary?.total ?? 0;
 
-  const tabs = infoTabs(pollutant);
 
   // Same guard cobertura already has for a genuinely empty table (a brand-
   // new deploy, or local dev against an empty database) -- without it,
@@ -862,6 +859,7 @@ export default function DiasInsalubresChart({
 
   return (
     <ChartCard
+      infoTab={infoTab(pollutant)}
       title={
         compare
           ? "Comparación de días sobre la norma en la Zona Metropolitana de Monterrey"
@@ -1048,9 +1046,6 @@ export default function DiasInsalubresChart({
         )}
       </div>
 
-      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
-        <InfoTabs tabs={tabs} />
-      </div>
     </ChartCard>
   );
 }

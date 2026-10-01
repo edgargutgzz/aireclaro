@@ -10,7 +10,7 @@ import {
   COLOR_SALUDABLE,
   withOpacity,
 } from "@/lib/datos-colors";
-import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
+import type { InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
@@ -95,32 +95,30 @@ const WEEKDAY_FULL = [
   "Domingo",
 ];
 
-function tabs(pollutant: Pollutant): InfoTab[] {
-  return [
-    {
-      id: "metodologia",
-      label: "Metodología",
-      icon: BookOpen,
-      body: (
-        <>
-          Un día se contabiliza como &ldquo;Con datos&rdquo; cuando alguna
-          estación de monitoreo registró al menos el 75% de las horas del día
-          con una medición válida de {POLLUTANT_LABEL[pollutant]}; de lo
-          contrario, se contabiliza como &ldquo;Datos insuficientes&rdquo;.
-          Todo lo anterior, con base en la Norma Oficial Mexicana:{" "}
-          <a
-            href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-          >
-            NOM-025-SSA1-2021
-          </a>
-          .
-        </>
-      ),
-    },
-  ];
+function infoTab(pollutant: Pollutant): InfoTab {
+  return {
+    id: "metodologia",
+    label: "Metodología",
+    icon: BookOpen,
+    body: (
+      <>
+        Un día se contabiliza como &ldquo;Con datos&rdquo; cuando alguna
+        estación de monitoreo registró al menos el 75% de las horas del día
+        con una medición válida de {POLLUTANT_LABEL[pollutant]}; de lo
+        contrario, se contabiliza como &ldquo;Datos insuficientes&rdquo;.
+        Todo lo anterior, con base en la Norma Oficial Mexicana:{" "}
+        <a
+          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          NOM-025-SSA1-2021
+        </a>
+        .
+      </>
+    ),
+  };
 }
 
 interface Cell {
@@ -591,6 +589,7 @@ export default function CoberturaEstacionesChart({
 
   return (
     <ChartCard
+      infoTab={infoTab(pollutant)}
       title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
       subtitle={
         <div className="md:flex md:items-center md:gap-3">
@@ -702,9 +701,6 @@ export default function CoberturaEstacionesChart({
         )}
       </div>
 
-      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
-        <InfoTabs tabs={tabs(pollutant)} />
-      </div>
     </ChartCard>
   );
 }

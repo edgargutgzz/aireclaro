@@ -1,4 +1,7 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useId, useState, type ReactNode } from "react";
+import type { InfoTab } from "@/components/datos/info-tabs";
 
 // Shared outer shell for every /datos chart -- same duplication risk as
 // info-tabs.tsx and year-toggle.tsx (see those files): this exact card
@@ -11,13 +14,22 @@ export default function ChartCard({
   title,
   subtitle,
   headerRight,
+  infoTab,
   children,
 }: {
   title: string;
   subtitle?: ReactNode;
   headerRight?: ReactNode;
+  /** The chart's own "learn more" (its methodology): a pill at the end of
+   *  the header controls that opens its text right under the header. The
+   *  tabs every chart shares live once in the page's top bar instead. */
+  infoTab?: InfoTab;
   children: ReactNode;
 }) {
+  const [infoOpen, setInfoOpen] = useState(false);
+  const panelId = useId();
+  const InfoIcon = infoTab?.icon;
+
   return (
     // Opaque, not glass -- per the style guide, translucency is reserved for
     // floating chrome over the map; a chart card is a reading surface, like
@@ -40,8 +52,38 @@ export default function ChartCard({
         {/* flex-wrap: on a phone the controls (pollutant, view, year,
             download) can outgrow the row; they wrap instead of squeezing
             a button or pushing one out of view. */}
-        {headerRight && <div className="flex flex-wrap items-center gap-2">{headerRight}</div>}
+        {(headerRight || infoTab) && (
+          <div className="flex flex-wrap items-center gap-2">
+            {headerRight}
+            {infoTab && InfoIcon && (
+              // Same tinted h-8 control as the header's icon buttons, dark
+              // while open (like the comparison toggle).
+              <button
+                type="button"
+                onClick={() => setInfoOpen((o) => !o)}
+                aria-expanded={infoOpen}
+                aria-controls={panelId}
+                className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                  infoOpen
+                    ? "bg-gray-800 text-white hover:bg-gray-700"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
+                }`}
+              >
+                <InfoIcon className="h-3.5 w-3.5" aria-hidden />
+                {infoTab.label}
+              </button>
+            )}
+          </div>
+        )}
       </div>
+      {infoTab && infoOpen && (
+        // The same panel box the old bottom-row tabs opened.
+        <div className="px-5 pt-4">
+          <div id={panelId} className="rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
+            <div className="text-sm leading-relaxed text-gray-600">{infoTab.body}</div>
+          </div>
+        </div>
+      )}
       {children}
     </div>
   );

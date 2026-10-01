@@ -1,7 +1,7 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
 // Mirrors DiasInsalubresShare's shell (title/subtitle header, month header,
-// two pollutant rows, info-tabs row) so the page doesn't jump when it
+// two pollutant rows) so the page doesn't jump when it
 // streams in.
 export default function DiasInsalubresShareSkeleton() {
   return (
@@ -14,9 +14,6 @@ export default function DiasInsalubresShareSkeleton() {
         <SkeletonBlock className="mb-4 h-3 w-48 md:mb-6" />
         <SkeletonBlock className="mb-4 h-14 w-full md:mb-6 md:h-20" />
         <SkeletonBlock className="h-14 w-full md:h-20" />
-      </div>
-      <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
-        <SkeletonBlock className="h-7 w-32 rounded-xl" />
       </div>
     </div>
   );

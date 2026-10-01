@@ -3,7 +3,7 @@
 import { BookOpen } from "lucide-react";
 import ChartCard from "@/components/datos/chart-card";
 import DownloadImageMenu from "@/components/datos/download-image-menu";
-import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
+import type { InfoTab } from "@/components/datos/info-tabs";
 import { POLLUTANT_LIMITS } from "@/components/datos/dias-insalubres-chart";
 import { COLOR_INSALUBRE } from "@/lib/datos-colors";
 import { MONTHS_ES_FULL, type MonthlySummary, type Pollutant } from "@/lib/dias-insalubres-aggregate";
@@ -24,26 +24,25 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
   const title = headline.join(" ");
   const years = hasPrior ? [year - 1, year] : [year];
 
-  const tabs: InfoTab[] = [
-    {
-      id: "norma",
-      label: "Metodología",
-      icon: BookOpen,
-      body: (
-        <>
-          Se compara el último mes con datos contra el mismo mes del año
-          anterior. Para comparar con la misma medida, ambos años se cuentan
-          con el límite diario vigente: {POLLUTANT_LIMITS.pm25.desde} µg/m³
-          para PM2.5 y {POLLUTANT_LIMITS.pm10.desde} µg/m³ para PM10. Un día
-          está sobre la norma si alguna estación de monitoreo supera ese
-          límite.
-        </>
-      ),
-    },
-  ];
+  const infoTab: InfoTab = {
+    id: "norma",
+    label: "Metodología",
+    icon: BookOpen,
+    body: (
+      <>
+        Se compara el último mes con datos contra el mismo mes del año
+        anterior. Para comparar con la misma medida, ambos años se cuentan
+        con el límite diario vigente: {POLLUTANT_LIMITS.pm25.desde} µg/m³
+        para PM2.5 y {POLLUTANT_LIMITS.pm10.desde} µg/m³ para PM10. Un día
+        está sobre la norma si alguna estación de monitoreo supera ese
+        límite.
+      </>
+    ),
+  };
 
   return (
     <ChartCard
+      infoTab={infoTab}
       title={title}
       headerRight={
         <DownloadImageMenu
@@ -92,9 +91,6 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
         </table>
       </div>
 
-      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
-        <InfoTabs tabs={tabs} />
-      </div>
     </ChartCard>
   );
 }

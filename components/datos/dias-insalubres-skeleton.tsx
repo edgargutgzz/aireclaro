@@ -1,7 +1,7 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
 // Mirrors ChartCard's shell + DiasInsalubresChart's layout (header,
-// label/legend row, chart area, info-tabs row) so the page doesn't jump
+// label/legend row, chart area) so the page doesn't jump
 // around once the real data streams in behind this Suspense fallback.
 export default function DiasInsalubresSkeleton() {
   return (
@@ -31,10 +31,6 @@ export default function DiasInsalubresSkeleton() {
             scroll on top of the header's) -- a taller/shorter skeleton than
             the real chart is exactly the layout-jump this exists to prevent. */}
         <SkeletonBlock className="h-[320px] w-full rounded-lg md:h-[460px]" />
-      </div>
-
-      <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
-        <SkeletonBlock className="h-7 w-32 rounded-xl" />
       </div>
     </div>
   );

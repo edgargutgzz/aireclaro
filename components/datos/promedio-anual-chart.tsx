@@ -13,7 +13,7 @@ import {
   COLOR_SALUDABLE_FILL_OPACITY,
   withOpacity,
 } from "@/lib/datos-colors";
-import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
+import type { InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
@@ -80,38 +80,36 @@ const STATION_COL_WIDTH_MAX = 300;
 // actual limit value (that sentence was dropped 2026-09-28 -- the chart's
 // own dashed reference line already shows it), so it no longer branches
 // per pollutant either.
-function tabs(pollutant: Pollutant): InfoTab[] {
-  return [
-    {
-      // One merged tab, not two -- días insalubres and cobertura each have
-      // a single "Metodología" tab that states its rule and closes with the
-      // same NOM citation sentence; chart 3 had split that same shape into
-      // a separate "Norma Mexicana" (the limit value) and "Metodología"
-      // (the trimester rule) tab (2026-09-28 request: match how 1 and 2
-      // already word this panel, one tab).
-      id: "metodologia",
-      label: "Metodología",
-      icon: BookOpen,
-      body: (
-        <>
-          La estación se considera con datos suficientes para presentar su
-          promedio anual si al menos tres de los cuatro trimestres son
-          válidos; un trimestre es válido cuando la estación reportó
-          mediciones en al menos el 75% de sus días. Todo lo anterior, con
-          base en la Norma Oficial Mexicana:{" "}
-          <a
-            href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-          >
-            NOM-025-SSA1-2021
-          </a>
-          .
-        </>
-      ),
-    },
-  ];
+function infoTab(pollutant: Pollutant): InfoTab {
+  return {
+    // One merged tab, not two -- días insalubres and cobertura each have
+    // a single "Metodología" tab that states its rule and closes with the
+    // same NOM citation sentence; chart 3 had split that same shape into
+    // a separate "Norma Mexicana" (the limit value) and "Metodología"
+    // (the trimester rule) tab (2026-09-28 request: match how 1 and 2
+    // already word this panel, one tab).
+    id: "metodologia",
+    label: "Metodología",
+    icon: BookOpen,
+    body: (
+      <>
+        La estación se considera con datos suficientes para presentar su
+        promedio anual si al menos tres de los cuatro trimestres son
+        válidos; un trimestre es válido cuando la estación reportó
+        mediciones en al menos el 75% de sus días. Todo lo anterior, con
+        base en la Norma Oficial Mexicana:{" "}
+        <a
+          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          NOM-025-SSA1-2021
+        </a>
+        .
+      </>
+    ),
+  };
 }
 
 // Prefers the latest COMPLETE year as the default/fallback selection, not
@@ -738,6 +736,7 @@ export default function PromedioAnualChart({
 
   return (
     <ChartCard
+      infoTab={infoTab(pollutant)}
       title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
       // Leads with the headline number, plain (no bold/color) -- matches
       // días insalubres ("{totalInsalubres} días de aire insalubre por
@@ -878,9 +877,6 @@ export default function PromedioAnualChart({
         )}
       </div>
 
-      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
-        <InfoTabs tabs={tabs(pollutant)} />
-      </div>
     </ChartCard>
   );
 }

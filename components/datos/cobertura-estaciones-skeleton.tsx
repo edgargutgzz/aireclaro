@@ -1,7 +1,7 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
 // Mirrors CoberturaEstacionesChart's shell (header, legend, station-tile
-// list, info-tabs row). Only a handful of tiles are stubbed out -- the
+// list). Only a handful of tiles are stubbed out -- the
 // real list has 15, but the skeleton just needs to read as "a list is
 // loading," not reproduce every row.
 //
@@ -56,9 +56,6 @@ export default function CoberturaEstacionesSkeleton() {
       {/* 4 pills -- matches the chart's own fuente/metodologia/contaminante/
           salud tabs (Contaminantes added 2026-09-28, this skeleton wasn't
           updated at the time). */}
-      <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
-        <SkeletonBlock className="h-7 w-32 rounded-xl" />
-      </div>
     </div>
   );
 }

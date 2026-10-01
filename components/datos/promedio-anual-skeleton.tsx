@@ -1,7 +1,7 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
 // Mirrors ChartCard's shell + PromedioAnualChart's layout (header, legend
-// row, bar area, info-tabs row) so the page doesn't jump around once the
+// row, bar area) so the page doesn't jump around once the
 // real data streams in behind this Suspense fallback.
 export default function PromedioAnualSkeleton() {
   return (
@@ -42,9 +42,6 @@ export default function PromedioAnualSkeleton() {
       {/* 4 pills now, matching días insalubres/cobertura's own tab count --
           "Norma Mexicana" and "Metodología" merged into one tab (2026-09-28
           request), same shape as chart 1/2's own single Metodología tab. */}
-      <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
-        <SkeletonBlock className="h-7 w-32 rounded-xl" />
-      </div>
     </div>
   );
 }
