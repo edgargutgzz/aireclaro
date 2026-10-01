@@ -23,6 +23,10 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
   // The image's headline lines, as one sentence.
   const title = headline.join(" ");
   const years = hasPrior ? [year - 1, year] : [year];
+  // Label column + one column per year; same template on every row.
+  const cols = hasPrior
+    ? "grid-cols-[8rem_1fr_1fr] sm:grid-cols-[12rem_1fr_1fr]"
+    : "grid-cols-[8rem_1fr] sm:grid-cols-[12rem_1fr]";
 
   const infoTab: InfoTab = {
     id: "norma",
@@ -55,40 +59,44 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
         {/* One row per pollutant: last year (gray reference), this year
             (always red: any day over the norm is bad news; the title carries
             the más/menos). Bare numbers, the title already says "días". */}
-        <table className="w-full table-fixed">
-          <thead>
-            <tr className="text-left text-xs font-normal text-gray-400">
-              <th className="w-32 pb-4 font-normal sm:w-48 md:pb-6">
-                <span className="sr-only">Contaminante</span>
-              </th>
-              {years.map((y) => (
-                <th key={y} className="pb-4 font-normal md:pb-6">
-                  {mesNombre} {y}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.pollutant} className="border-t border-gray-100">
-                <th className="py-4 text-left font-normal md:py-6">
-                  <div className="text-sm font-medium text-gray-700 md:text-base">{POLLUTANT_LABEL[r.pollutant]}</div>
-                  {/* The one limit both years' numbers in this row count against. */}
-                  <div className="mt-1 text-xs text-gray-400">Límite: {r.limit} µg/m³</div>
-                </th>
-                {years.map((y) => (
-                  <td
-                    key={y}
-                    className="py-4 text-4xl font-semibold tabular-nums md:py-6 md:text-6xl"
-                    style={{ color: y === year ? COLOR_INSALUBRE : "#9ca3af" }}
-                  >
-                    {y === year ? r.current : r.prior}
-                  </td>
-                ))}
-              </tr>
+        {/* A grid with table roles, not a <table>: each row aligns its
+            cells on their LAST baseline (items-baseline-last), so the big
+            number sits on the "Límite" line, which table cells can't do. */}
+        <div role="table" aria-label={title}>
+          <div role="row" className={`grid ${cols} pb-4 text-xs text-gray-400 md:pb-6`}>
+            <div role="columnheader">
+              <span className="sr-only">Contaminante</span>
+            </div>
+            {years.map((y) => (
+              <div key={y} role="columnheader">
+                {mesNombre} {y}
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+          {rows.map((r) => (
+            <div
+              key={r.pollutant}
+              role="row"
+              className={`grid ${cols} items-baseline-last border-t border-gray-100 py-4 md:py-6`}
+            >
+              <div role="rowheader">
+                <div className="text-sm font-medium text-gray-700 md:text-base">{POLLUTANT_LABEL[r.pollutant]}</div>
+                {/* The one limit both years' numbers in this row count against. */}
+                <div className="mt-1 text-xs text-gray-400">Límite: {r.limit} µg/m³</div>
+              </div>
+              {years.map((y) => (
+                <div
+                  key={y}
+                  role="cell"
+                  className="text-4xl font-semibold leading-none tabular-nums md:text-6xl"
+                  style={{ color: y === year ? COLOR_INSALUBRE : "#9ca3af" }}
+                >
+                  {y === year ? r.current : r.prior}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
     </ChartCard>
