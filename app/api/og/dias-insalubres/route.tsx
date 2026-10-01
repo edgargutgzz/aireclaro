@@ -108,10 +108,11 @@ export async function GET(request: Request) {
   // reference.
   const verdictColor = COLOR_INSALUBRE;
   const years = hasPrior ? [year - 1, year] : [year];
-  // Headline capped where its longest line ("En septiembre 2026 se
-  // registraron") stays on one line; the pollutant table capped where its
-  // three columns still fit the story's width.
-  const hx = (n: number) => px(n * Math.min(format.content, 1));
+  // Headline (and its gloss, width included) capped at 1.12, measured:
+  // where its longest line ("En septiembre 2026 se registraron") still fits
+  // the narrowest text column. The pollutant table capped where its three
+  // columns still fit the story's width.
+  const hx = (n: number) => px(n * Math.min(format.content, 1.12));
   const tx = (n: number) => px(n * Math.min(format.content, 1.2));
   // At lineHeight 1, Inter's baseline sits ~0.135em above the bottom of the
   // line box. Bottom-aligned text of size `small` next to size `big` needs
@@ -178,7 +179,7 @@ export async function GET(request: Request) {
                 marginTop: hx(20),
                 // Breaks the sentence evenly ('...superaron el límite' / 'para
                 // proteger la salud.') instead of stranding one word.
-                maxWidth: px(760),
+                maxWidth: hx(760),
               }}
             >
               Días en que las partículas en el aire superaron el límite para proteger la salud.
