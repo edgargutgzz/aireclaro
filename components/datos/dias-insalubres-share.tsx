@@ -29,10 +29,10 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
   // The card's title leads with the month (the image's headline doesn't:
   // its table already says it, and its line breaks are set).
   const title = trend
-    ? `En ${mesMin} de ${year} se registraron ${trend} días sobre la norma que el año pasado`
+    ? `En ${mesMin} ${year} se registraron ${trend} días sobre la norma que el año pasado`
     : hasPrior
-      ? `En ${mesMin} de ${year}, días sobre la norma frente al año pasado`
-      : `En ${mesMin} de ${year}, días sobre la norma`;
+      ? `En ${mesMin} ${year}, días sobre la norma frente al año pasado`
+      : `En ${mesMin} ${year}, días sobre la norma`;
   const years = hasPrior ? [year - 1, year] : [year];
 
   const tabs: InfoTab[] = [
