@@ -108,8 +108,8 @@ export async function GET(request: Request) {
   // reference.
   const verdictColor = COLOR_INSALUBRE;
   const years = hasPrior ? [year - 1, year] : [year];
-  // Headline capped where the longest verdict ("Respiramos los mismos días
-  // sobre la norma") stays on one line; the pollutant table capped where its
+  // Headline capped where its longest line ("En septiembre 2026 se
+  // registraron") stays on one line; the pollutant table capped where its
   // three columns still fit the story's width.
   const hx = (n: number) => px(n * Math.min(format.content, 1));
   const tx = (n: number) => px(n * Math.min(format.content, 1.2));

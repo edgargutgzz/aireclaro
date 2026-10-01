@@ -12,7 +12,7 @@ import { MONTHS_ES_FULL, type MonthlySummary, type Pollutant } from "@/lib/dias-
 // same month a year earlier, both pollutants, both years on today's limit.
 // Same content as the downloadable image (app/api/og/dias-insalubres, from
 // the header's download menu) minus its brand frame, which only the
-// downloaded file needs: verdict as the title (led by the month), its plain-language gloss as
+// downloaded file needs: the same verdict as the title, its plain-language gloss as
 // the subtitle, the numbers as the body.
 
 const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
@@ -23,16 +23,10 @@ const POLLUTANT_DESCRIPTOR: Record<Pollutant, string> = {
 };
 
 export default function DiasInsalubresShare({ summary }: { summary: MonthlySummary }) {
-  const { year, mes, rows, hasPrior, trend } = summary;
+  const { year, mes, rows, hasPrior, headline } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
-  const mesMin = mesNombre.toLowerCase();
-  // The card's title leads with the month (the image's headline doesn't:
-  // its table already says it, and its line breaks are set).
-  const title = trend
-    ? `En ${mesMin} ${year} se registraron ${trend} días sobre la norma que el año pasado`
-    : hasPrior
-      ? `En ${mesMin} ${year}, días sobre la norma frente al año pasado`
-      : `En ${mesMin} ${year}, días sobre la norma`;
+  // The image's headline lines, as one sentence.
+  const title = headline.join(" ");
   const years = hasPrior ? [year - 1, year] : [year];
 
   const tabs: InfoTab[] = [
