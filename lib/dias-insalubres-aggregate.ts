@@ -281,8 +281,7 @@ export function summarizeYear(data: MonthData[], year: number): YearSummary {
 // The share image's month: the latest month of `year` the monthly cron has
 // processed for every pollutant, counted on today's limit (the data decides,
 // never the calendar). null when there's none yet. Shared by the image route
-// and the share-image card under the chart, so the card's caption always names the
-// month the image shows.
+// and the /datos monthly summary card, so both show the same month.
 export function latestShareMonth(
   data: Record<Pollutant, MonthData[]>,
   year: number,
@@ -297,4 +296,61 @@ export function latestShareMonth(
   );
   const shared = [...months[0]].filter((m) => months.every((set) => set.has(m)));
   return shared.length > 0 ? Math.max(...shared) : null;
+}
+
+export interface MonthlySummaryRow {
+  pollutant: Pollutant;
+  current: number;
+  prior: number | null;
+}
+
+export interface MonthlySummary {
+  year: number;
+  mes: number;
+  rows: MonthlySummaryRow[];
+  /** Both pollutants have the same month a year earlier. */
+  hasPrior: boolean;
+  /** The verdict, as two set lines. */
+  headline: [string, string];
+}
+
+// The monthly update: the latest month of `year` with data vs. the same month
+// a year earlier, both pollutants, both counted on today's limit (the
+// comparison view's numbers). Shared by the summary card on /datos and the
+// downloadable image, so the two can't say different things. The verdict is
+// in the observatory's measured terms ("días sobre la norma"), said for both
+// pollutants only when they agree; otherwise neutral, and each row speaks for
+// itself.
+export function monthlySummary(
+  data: Record<Pollutant, MonthData[]>,
+  year: number,
+): MonthlySummary | null {
+  const mes = latestShareMonth(data, year);
+  if (mes === null) return null;
+  const pick = (p: Pollutant, ano: number) =>
+    data[p].find(
+      (r) => r.ano === ano && r.mesNumero === mes && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null,
+    );
+  const rows: MonthlySummaryRow[] = (["pm25", "pm10"] as const).map((p) => ({
+    pollutant: p,
+    current: pick(p, year)!.diasInsalubresLimiteActual as number,
+    prior: (pick(p, year - 1)?.diasInsalubresLimiteActual as number | undefined) ?? null,
+  }));
+  const mesMin = MONTHS_ES_FULL[mes - 1].toLowerCase();
+  const hasPrior = rows.every((r) => r.prior !== null);
+  const signs = rows.map((r) => Math.sign(r.current - (r.prior ?? 0)));
+  const agree = hasPrior && signs.every((x) => x === signs[0]);
+  const headline: [string, string] = !hasPrior
+    ? ["Días sobre la norma", `en ${mesMin} de ${year}`]
+    : agree
+      ? [
+          signs[0] > 0
+            ? "Se registraron más días sobre la norma"
+            : signs[0] < 0
+              ? "Se registraron menos días sobre la norma"
+              : "Se registraron los mismos días sobre la norma",
+          `que en ${mesMin} de ${year - 1}`,
+        ]
+      : ["Días sobre la norma", `${mesMin} de ${year} frente a ${year - 1}`];
+  return { year, mes, rows, hasPrior, headline };
 }

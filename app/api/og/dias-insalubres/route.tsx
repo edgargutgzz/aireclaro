@@ -2,8 +2,9 @@ import { ImageResponse } from "next/og";
 import { createPublicClient } from "@/utils/supabase/public";
 import {
   fetchDiasInsalubresMensual,
-  latestShareMonth,
+  monthlySummary,
   MONTHS_ES_FULL,
+  type MonthlySummary,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE } from "@/lib/datos-colors";
@@ -11,9 +12,10 @@ import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 
-// The branded stat card behind the días insalubres chart's share card
-// (components/datos/share-image-card.tsx) -- one size per destination
-// (?format=, see lib/share-image-formats.ts), not the 1200x630 landscape unfurl card
+// The downloadable, branded version of the /datos monthly summary card
+// (components/datos/dias-insalubres-share.tsx; not linked from the page for
+// now) -- one size per destination (?format=, see
+// lib/share-image-formats.ts), not the 1200x630 landscape unfurl card
 // app/api/og/route.tsx renders for a shared sensor link.
 //
 // The message is the monthly update: the latest month with data in the
@@ -85,56 +87,21 @@ export async function GET(request: Request) {
     return messageCard(options, px(32), "Falta el año.");
   }
 
-  // Both pollutants on one image: one share, one message.
-  const POLLUTANTS: Pollutant[] = ["pm25", "pm10"];
-  type Row = { pollutant: Pollutant; current: number; prior: number | null };
-  let mes: number;
-  let rowsOut: Row[];
+  // Both pollutants on one image: one share, one message (monthlySummary
+  // in the aggregate lib, shared with the /datos summary card).
+  let summary: MonthlySummary | null;
   try {
     const supabase = createPublicClient();
-    const data = await fetchDiasInsalubresMensual(supabase);
-    const usable = (p: Pollutant, ano: number) =>
-      data[p].filter((r) => r.ano === ano && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null);
-    const latest = latestShareMonth(data, year);
-    if (latest === null) {
-      return messageCard(options, px(32), "Aún no hay datos para este año.");
-    }
-    mes = latest;
-    rowsOut = POLLUTANTS.map((p) => {
-      const cur = usable(p, year).find((r) => r.mesNumero === mes)!;
-      const before = usable(p, year - 1).find((r) => r.mesNumero === mes);
-      return {
-        pollutant: p,
-        current: cur.diasInsalubresLimiteActual as number,
-        prior: before ? (before.diasInsalubresLimiteActual as number) : null,
-      };
-    });
+    summary = monthlySummary(await fetchDiasInsalubresMensual(supabase), year);
   } catch {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
-
+  if (summary === null) {
+    return messageCard(options, px(32), "Aún no hay datos para este año.");
+  }
+  const { mes, rows: rowsOut, hasPrior, headline: headlineLines } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
-  const mesMin = mesNombre.toLowerCase();
-  const hasPrior = rowsOut.every((r) => r.prior !== null);
-  // The verdict, always two set lines, in the observatory's own measured
-  // terms ("días sobre la norma", not colloquial "aire contaminado"): the
-  // image has to read as a professional source. Said for both pollutants
-  // only when they agree; otherwise a neutral headline and each row speaks
-  // for itself.
-  const signs = rowsOut.map((r) => Math.sign(r.current - (r.prior ?? 0)));
-  const agree = hasPrior && signs.every((x) => x === signs[0]);
-  const headlineLines = !hasPrior
-    ? ["Días sobre la norma", `en ${mesMin} de ${year}`]
-    : agree
-      ? [
-          signs[0] > 0
-            ? "Se registraron más días sobre la norma"
-            : signs[0] < 0
-              ? "Se registraron menos días sobre la norma"
-              : "Se registraron los mismos días sobre la norma",
-          `que en ${mesMin} de ${year - 1}`,
-        ]
-      : ["Días sobre la norma", `${mesMin} de ${year} frente a ${year - 1}`];
+
   // This year's number is always red: any day of polluted air is bad news,
   // even in a month with fewer of them than a year earlier (the headline
   // carries the más/menos comparison). Last year's number is the gray

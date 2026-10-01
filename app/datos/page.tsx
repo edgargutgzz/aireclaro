@@ -4,7 +4,7 @@ import DatosHeader from "@/components/datos/datos-header";
 import DatosHeaderSkeleton from "@/components/datos/datos-header-skeleton";
 import DiasInsalubres from "@/components/datos/dias-insalubres";
 import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton";
-import ShareImageSkeleton from "@/components/datos/share-image-skeleton";
+import DiasInsalubresShareSkeleton from "@/components/datos/dias-insalubres-share-skeleton";
 import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
 import CoberturaEstacionesSkeleton from "@/components/datos/cobertura-estaciones-skeleton";
 import PromedioAnualEstacion from "@/components/datos/promedio-anual-estacion";
@@ -33,13 +33,13 @@ export default function Datos() {
             <DatosHeader />
           </Suspense>
         </div>
-        {/* DiasInsalubres also renders its share-image card below it. */}
+        {/* DiasInsalubres also renders its monthly summary card below it. */}
         <Suspense
           fallback={
             <>
               <DiasInsalubresSkeleton />
               <div className="mt-16">
-                <ShareImageSkeleton />
+                <DiasInsalubresShareSkeleton />
               </div>
             </>
           }

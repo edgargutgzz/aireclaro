@@ -1,16 +1,30 @@
 "use client";
 
 import { BookOpen } from "lucide-react";
-import ShareImageCard from "@/components/datos/share-image-card";
+import ChartCard from "@/components/datos/chart-card";
+import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import { FUENTE_TAB, POLLUTANT_LIMITS } from "@/components/datos/dias-insalubres-chart";
-import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
-import type { InfoTab } from "@/components/datos/info-tabs";
+import { COLOR_INSALUBRE } from "@/lib/datos-colors";
+import { MONTHS_ES_FULL, type MonthlySummary, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 
-// Chart 1's monthly image (app/api/og/dias-insalubres) as its own /datos
-// card: the latest month with data vs. the same month a year earlier, both
-// pollutants, both years on today's limit.
-export default function DiasInsalubresShare({ year, mes }: { year: number; mes: number }) {
-  const mesMin = MONTHS_ES_FULL[mes - 1].toLowerCase();
+// The monthly update as a /datos card: the latest month with data vs. the
+// same month a year earlier, both pollutants, both years on today's limit.
+// Same content as the downloadable image (app/api/og/dias-insalubres) minus
+// its brand frame, which only the downloaded file needs: verdict as the
+// title, its plain-language gloss as the subtitle, the numbers as the body.
+
+const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
+// For a reader who doesn't know what PM2.5 / PM10 are.
+const POLLUTANT_DESCRIPTOR: Record<Pollutant, string> = {
+  pm25: "Partículas finas",
+  pm10: "Partículas gruesas",
+};
+
+export default function DiasInsalubresShare({ summary }: { summary: MonthlySummary }) {
+  const { year, mes, rows, hasPrior, headline } = summary;
+  const mesNombre = MONTHS_ES_FULL[mes - 1];
+  const years = hasPrior ? [year - 1, year] : [year];
+
   const tabs: InfoTab[] = [
     FUENTE_TAB,
     {
@@ -19,24 +33,64 @@ export default function DiasInsalubresShare({ year, mes }: { year: number; mes: 
       icon: BookOpen,
       body: (
         <>
-          La imagen compara el último mes con datos contra el mismo mes del
-          año anterior. Para comparar con la misma medida, ambos años se
-          cuentan con el límite diario vigente: {POLLUTANT_LIMITS.pm25.desde}{" "}
-          µg/m³ para PM2.5 y {POLLUTANT_LIMITS.pm10.desde} µg/m³ para PM10.
-          Un día está sobre la norma si alguna estación de monitoreo supera
-          ese límite.
+          Se compara el último mes con datos contra el mismo mes del año
+          anterior. Para comparar con la misma medida, ambos años se cuentan
+          con el límite diario vigente: {POLLUTANT_LIMITS.pm25.desde} µg/m³
+          para PM2.5 y {POLLUTANT_LIMITS.pm10.desde} µg/m³ para PM10. Un día
+          está sobre la norma si alguna estación de monitoreo supera ese
+          límite.
         </>
       ),
     },
   ];
 
   return (
-    <ShareImageCard
-      title="Resumen mensual para compartir"
-      subtitle={`Días sobre la norma en ${mesMin} de ${year} frente a ${mesMin} de ${year - 1}`}
-      src={`/api/og/dias-insalubres?year=${year}`}
-      filenameBase={`observatorio-del-aire-comparacion-${year}`}
-      tabs={tabs}
-    />
+    <ChartCard
+      title={`${headline[0]} ${headline[1]}`}
+      subtitle="Días en que las partículas en el aire superaron el límite para proteger la salud."
+    >
+      <div className="px-5 pb-6 pt-5 md:pt-6">
+        {/* One row per pollutant: last year (gray reference), this year
+            (always red: any day over the norm is bad news; the title carries
+            the más/menos). Bare numbers, the title already says "días". */}
+        <table className="w-full table-fixed">
+          <thead>
+            <tr className="text-left text-xs font-normal text-gray-400">
+              <th className="w-32 pb-4 font-normal sm:w-48 md:pb-6">
+                <span className="sr-only">Contaminante</span>
+              </th>
+              {years.map((y) => (
+                <th key={y} className="pb-4 font-normal md:pb-6">
+                  {mesNombre} {y}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.pollutant} className="border-t border-gray-100">
+                <th className="py-4 text-left font-normal md:py-6">
+                  <div className="text-sm font-medium text-gray-700 md:text-base">{POLLUTANT_LABEL[r.pollutant]}</div>
+                  <div className="text-xs text-gray-400 md:text-sm">{POLLUTANT_DESCRIPTOR[r.pollutant]}</div>
+                </th>
+                {years.map((y) => (
+                  <td
+                    key={y}
+                    className="py-4 text-4xl font-semibold tabular-nums md:py-6 md:text-6xl"
+                    style={{ color: y === year ? COLOR_INSALUBRE : "#9ca3af" }}
+                  >
+                    {y === year ? r.current : r.prior}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
+        <InfoTabs tabs={tabs} />
+      </div>
+    </ChartCard>
   );
 }

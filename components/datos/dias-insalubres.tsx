@@ -1,7 +1,7 @@
 import { createPublicClient } from "@/utils/supabase/public";
 import {
   fetchDiasInsalubresMensual,
-  latestShareMonth,
+  monthlySummary,
 } from "@/lib/dias-insalubres-aggregate";
 import DiasInsalubresChart from "@/components/datos/dias-insalubres-chart";
 import DiasInsalubresShare from "@/components/datos/dias-insalubres-share";
@@ -15,18 +15,17 @@ export default async function DiasInsalubres() {
   const supabase = createPublicClient();
   const chartData = await fetchDiasInsalubresMensual(supabase);
 
-  // The share image summarizes the latest month with data (both
-  // pollutants) against the same month a year earlier; no card until
-  // there's such a month.
+  // The monthly summary card: latest month with data (both pollutants)
+  // vs. the same month a year earlier; no card until there's such a month.
   const year = Math.max(0, ...chartData.pm25.map((d) => d.ano));
-  const mes = year > 0 ? latestShareMonth(chartData, year) : null;
+  const summary = year > 0 ? monthlySummary(chartData, year) : null;
 
   return (
     <>
       <DiasInsalubresChart data={chartData} />
-      {mes !== null && (
+      {summary && (
         <div className="mt-16">
-          <DiasInsalubresShare year={year} mes={mes} />
+          <DiasInsalubresShare summary={summary} />
         </div>
       )}
     </>
