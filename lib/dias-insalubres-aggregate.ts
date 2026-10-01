@@ -277,3 +277,24 @@ export function summarizeYear(data: MonthData[], year: number): YearSummary {
     priorSharePct: priorComplete ? pct(priorTotal, priorDays) : null,
   };
 }
+
+// The share image's month: the latest month of `year` the monthly cron has
+// processed for every pollutant, counted on today's limit (the data decides,
+// never the calendar). null when there's none yet. Shared by the image route
+// and the share card under the chart, so the card's caption always names the
+// month the image shows.
+export function latestShareMonth(
+  data: Record<Pollutant, MonthData[]>,
+  year: number,
+): number | null {
+  const months = (Object.keys(data) as Pollutant[]).map(
+    (p) =>
+      new Set(
+        data[p]
+          .filter((r) => r.ano === year && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null)
+          .map((r) => r.mesNumero),
+      ),
+  );
+  const shared = [...months[0]].filter((m) => months.every((set) => set.has(m)));
+  return shared.length > 0 ? Math.max(...shared) : null;
+}

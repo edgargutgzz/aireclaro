@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { createPublicClient } from "@/utils/supabase/public";
 import {
   fetchDiasInsalubresMensual,
+  latestShareMonth,
   MONTHS_ES_FULL,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
@@ -10,8 +11,8 @@ import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 
-// The branded stat card behind the días insalubres chart's download menu
-// (components/datos/download-image-menu.tsx) -- one size per destination
+// The branded stat card behind the días insalubres chart's share card
+// (components/datos/share-images-card.tsx) -- one size per destination
 // (?format=, see lib/share-image-formats.ts), not the 1200x630 landscape unfurl card
 // app/api/og/route.tsx renders for a shared sensor link.
 //
@@ -94,14 +95,11 @@ export async function GET(request: Request) {
     const data = await fetchDiasInsalubresMensual(supabase);
     const usable = (p: Pollutant, ano: number) =>
       data[p].filter((r) => r.ano === ano && r.diasTotales > 0 && r.diasInsalubresLimiteActual !== null);
-    // The latest month the monthly cron has processed for this year, for
-    // both pollutants (the data decides, never the calendar).
-    const months = POLLUTANTS.map((p) => new Set(usable(p, year).map((r) => r.mesNumero)));
-    const shared = [...months[0]].filter((m) => months.every((set) => set.has(m)));
-    if (shared.length === 0) {
+    const latest = latestShareMonth(data, year);
+    if (latest === null) {
       return messageCard(options, px(32), "Aún no hay datos para este año.");
     }
-    mes = Math.max(...shared);
+    mes = latest;
     rowsOut = POLLUTANTS.map((p) => {
       const cur = usable(p, year).find((r) => r.mesNumero === mes)!;
       const before = usable(p, year - 1).find((r) => r.mesNumero === mes);

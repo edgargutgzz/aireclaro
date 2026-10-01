@@ -17,7 +17,6 @@ import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
 import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
 import DiasInsalubresMonthDetail from "@/components/datos/dias-insalubres-month-detail";
-import DownloadImageMenu from "@/components/datos/download-image-menu";
 import {
   niceTicks,
   roundedRectPath,
@@ -968,19 +967,18 @@ export default function DiasInsalubresChart({
               <div className="h-5 w-px bg-gray-200" />
             </>
           )}
-          {/* The year toggle only applies to the bars, the download only to
-              the comparison; whichever doesn't apply stays laid out,
-              invisible, at every width (removing it lets the title reflow
-              and the header would change height between views). The
-              comparison toggle sits between them, so it never moves. */}
+          {/* The year toggle only applies to the bars; in the comparison it
+              stays laid out, invisible, at every width (removing it lets the
+              title reflow and the header would change height between
+              views), so the comparison toggle never moves. */}
           <div
             className={compare ? "invisible" : undefined}
             aria-hidden={compare || undefined}
           >
             <YearToggle years={years} year={year} onChange={setSelectedYear} />
           </div>
-          {/* Phones wrap the icon pair onto its own row; a divider there
-              would dangle at the end of the first row. */}
+          {/* Phones wrap the comparison toggle onto its own row; a divider
+              there would dangle at the end of the first row. */}
           <div
             className={`hidden h-5 w-px bg-gray-200 sm:block ${compare ? "invisible" : ""}`}
             aria-hidden
@@ -1000,24 +998,6 @@ export default function DiasInsalubresChart({
             >
               <LineChart className="h-3.5 w-3.5" />
             </button>
-            {/* Only in the comparison view: the image is that view's
-                summary (latest month vs. the same month a year earlier,
-                both pollutants), so whoever downloads it has just seen the
-                chart behind it. In the bars view it stays laid out,
-                invisible, so the header doesn't change between views. The
-                latest year with data, whatever year the bars had open. */}
-            {years.length > 0 && (
-              <div className={compare ? undefined : "invisible"} aria-hidden={!compare || undefined}>
-                <DownloadImageMenu
-                  href={(format) =>
-                    `/api/og/dias-insalubres?year=${years[years.length - 1]}&format=${format}`
-                  }
-                  filename={(format) =>
-                    `observatorio-del-aire-comparacion-${years[years.length - 1]}-${format}.png`
-                  }
-                />
-              </div>
-            )}
           </div>
         </>
       }
