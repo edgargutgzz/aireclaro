@@ -298,10 +298,6 @@ export function latestShareMonth(
   return shared.length > 0 ? Math.max(...shared) : null;
 }
 
-// The headline's plain-language gloss, under it on the card and the image.
-export const SUMMARY_GLOSS =
-  "Días en que los niveles de partículas en el aire superaron el límite para proteger la salud.";
-
 export interface MonthlySummaryRow {
   pollutant: Pollutant;
   current: number;

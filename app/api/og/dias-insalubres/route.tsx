@@ -4,7 +4,6 @@ import {
   fetchDiasInsalubresMensual,
   monthlySummary,
   MONTHS_ES_FULL,
-  SUMMARY_GLOSS,
   type MonthlySummary,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
@@ -104,7 +103,7 @@ export async function GET(request: Request) {
   // reference.
   const verdictColor = COLOR_INSALUBRE;
   const years = hasPrior ? [year - 1, year] : [year];
-  // Headline (and its gloss, width included) capped at 1.12, measured: a
+  // Headline capped at 1.12, measured: a
   // 33-character line ("En septiembre 2026 se registraron") still fits the
   // narrowest text column there. A longer line ("los mismos días sobre la
   // norma de salud") scales the whole headline down in proportion, so it
@@ -148,9 +147,8 @@ export async function GET(request: Request) {
           <div
             style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", paddingTop: px(56) }}
           >
-            {/* Logo (who says it) -> verdict + its plain-language gloss
-                (what they say) -> both pollutants' numbers (the evidence)
-                -> footer (source). */}
+            {/* Logo (who says it) -> verdict (what they say) -> both
+                pollutants' numbers (the evidence) -> footer (source). */}
             <div
               style={{
                 display: "flex",
@@ -169,23 +167,6 @@ export async function GET(request: Request) {
                   {line}
                 </div>
               ))}
-            </div>
-            {/* The headline's technical term, translated for a reader who
-                doesn't know what the norm protects. */}
-            <div
-              style={{
-                display: "flex",
-                fontSize: hx(26),
-                lineHeight: 1.35,
-                color: "#6b7280",
-                marginTop: hx(20),
-                flexShrink: 0,
-                // Breaks the sentence evenly ('...superaron el límite' / 'para
-                // proteger la salud.') instead of stranding one word.
-                maxWidth: hx(760),
-              }}
-            >
-              {SUMMARY_GLOSS}
             </div>
 
             {/* One row per pollutant: last year (gray reference), this

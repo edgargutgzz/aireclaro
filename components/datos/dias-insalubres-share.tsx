@@ -6,14 +6,14 @@ import DownloadImageMenu from "@/components/datos/download-image-menu";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import { POLLUTANT_LIMITS } from "@/components/datos/dias-insalubres-chart";
 import { COLOR_INSALUBRE } from "@/lib/datos-colors";
-import { MONTHS_ES_FULL, SUMMARY_GLOSS, type MonthlySummary, type Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { MONTHS_ES_FULL, type MonthlySummary, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 
 // The monthly update as a /datos card: the latest month with data vs. the
 // same month a year earlier, both pollutants, both years on today's limit.
 // Same content as the downloadable image (app/api/og/dias-insalubres, from
 // the header's download menu) minus its brand frame, which only the
-// downloaded file needs: the same verdict as the title, its plain-language gloss as
-// the subtitle, the numbers as the body.
+// downloaded file needs: the same verdict as the title, the numbers as the
+// body.
 
 const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
 
@@ -45,7 +45,6 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
   return (
     <ChartCard
       title={title}
-      subtitle={SUMMARY_GLOSS}
       headerRight={
         <DownloadImageMenu
           href={(format) => `/api/og/dias-insalubres?year=${year}&format=${format}`}
