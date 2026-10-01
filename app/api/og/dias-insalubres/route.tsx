@@ -154,8 +154,10 @@ export async function GET(request: Request) {
                 display: "flex",
                 flexDirection: "column",
                 fontSize: hx(47),
-                fontWeight: 700,
-                color: "#111827",
+                // 600 in gray-800, not 700 near-black: lets the numbers
+                // below lead instead of competing with them.
+                fontWeight: 600,
+                color: "#1f2937",
                 lineHeight: 1.15,
                 // Satori squeezes text blocks in an overfull column instead
                 // of letting them push; none of these may shrink.
@@ -176,7 +178,7 @@ export async function GET(request: Request) {
                 different sizes, so each row is bottom-aligned at lineHeight
                 1 and the small text is lifted by baseLift() onto the big
                 number's baseline. */}
-            <div style={{ display: "flex", flexDirection: "column", gap: tx(44), marginTop: tx(52), flexShrink: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: tx(44), marginTop: tx(72), flexShrink: 0 }}>
               <div style={{ display: "flex", fontSize: tx(24), fontWeight: 600, color: "#6b7280" }}>
                 <div style={{ display: "flex", width: tx(LABEL_COL) }} />
                 {years.map((y) => (
@@ -197,7 +199,7 @@ export async function GET(request: Request) {
                       paddingBottom: baseLift(NUMBER_SIZE, 20),
                     }}
                   >
-                    <div style={{ display: "flex", fontSize: tx(30), fontWeight: 700, color: "#374151" }}>
+                    <div style={{ display: "flex", fontSize: tx(30), fontWeight: 600, color: "#374151" }}>
                       {POLLUTANT_LABEL[r.pollutant]}
                     </div>
                     {/* The one limit both years' numbers in this row count
