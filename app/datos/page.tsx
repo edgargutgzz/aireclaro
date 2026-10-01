@@ -28,7 +28,7 @@ export default function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
-        <div className="mb-16">
+        <div className="mb-8">
           <Suspense fallback={<DatosHeaderSkeleton />}>
             <DatosHeader />
           </Suspense>
