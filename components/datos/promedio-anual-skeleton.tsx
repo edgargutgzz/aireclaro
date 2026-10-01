@@ -6,7 +6,7 @@ import SkeletonBlock from "@/components/datos/skeleton-block";
 export default function PromedioAnualSkeleton() {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-3 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
         <div className="flex flex-col gap-2">
           <SkeletonBlock className="h-5 w-96 max-w-full" />
           <SkeletonBlock className="h-4 w-64 max-w-full" />

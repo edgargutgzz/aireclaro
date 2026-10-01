@@ -27,6 +27,9 @@ const GROUPS: { title: string | null; options: Option[] }[] = [
   { title: "Facebook", options: [{ format: "facebook-post", label: "Post" }] },
 ];
 
+// w-60 / min-w-60 below.
+const MENU_MIN_WIDTH = 240;
+
 export default function DownloadImageMenu({
   href,
   filename,
@@ -37,6 +40,10 @@ export default function DownloadImageMenu({
   filename: (format: ShareFormat) => string;
 }) {
   const [open, setOpen] = useState(false);
+  // Where the menu opens, in viewport px. Fixed, not absolute: the button
+  // lives in the card header's sideways-scrolling control row, which would
+  // clip an absolutely positioned menu.
+  const [pos, setPos] = useState<{ top: number; left?: number; right?: number } | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -45,6 +52,23 @@ export default function DownloadImageMenu({
   // option before its click (the download) lands.
   useEffect(() => {
     if (!open) return;
+    // Re-anchored on every scroll/resize (page or the control row), so the
+    // fixed menu stays under its button instead of drifting. Not closed on
+    // scroll: phones fire scroll/resize on their own (address bar).
+    const place = () => {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      // Right-aligned to the button where the menu (min 240px) fits to its
+      // left; otherwise (a phone, button at the row's start) left-aligned.
+      setPos(
+        rect.right >= MENU_MIN_WIDTH + 8
+          ? { top: rect.bottom + 8, right: window.innerWidth - rect.right }
+          : { top: rect.bottom + 8, left: Math.max(8, rect.left) },
+      );
+    };
+    place();
+    window.addEventListener("scroll", place, { capture: true, passive: true });
+    window.addEventListener("resize", place);
     const onPointerDown = (e: PointerEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
     };
@@ -57,6 +81,8 @@ export default function DownloadImageMenu({
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
     return () => {
+      window.removeEventListener("scroll", place, { capture: true });
+      window.removeEventListener("resize", place);
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
@@ -64,26 +90,27 @@ export default function DownloadImageMenu({
 
   return (
     <div ref={rootRef} className="relative">
-      {/* Tinted icon button, the same as the chart above's comparison
-          toggle (h-8). */}
+      {/* Tinted icon + label button, the same as chart 1's Comparar and
+          every card's Metodología (h-8). */}
       <button
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label="Descargar imagen"
         title="Descargar imagen"
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
-        <ArrowDownToLine className="h-3.5 w-3.5" />
+        <ArrowDownToLine className="h-3.5 w-3.5" aria-hidden />
+        Compartir
       </button>
 
-      {open && (
+      {open && pos && (
         <div
           role="menu"
           aria-label="Descargar imagen para:"
-          className="absolute right-0 top-full z-20 mt-2 w-60 rounded-xl sm:w-auto sm:min-w-60 border border-black/[0.08] bg-white/95 p-1.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
+          style={pos}
+          className="fixed z-20 w-60 rounded-xl sm:w-auto sm:min-w-60 border border-black/[0.08] bg-white/95 p-1.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
         >
           {/* Heading + option read as one phrase ("Descargar imagen para
               WhatsApp"), and the button itself carries the download icon,

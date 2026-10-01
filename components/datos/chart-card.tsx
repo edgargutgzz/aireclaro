@@ -2,6 +2,7 @@
 
 import { useId, useState, type ReactNode } from "react";
 import type { InfoTab } from "@/components/datos/info-tabs";
+import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
 
 // Shared outer shell for every /datos chart -- same duplication risk as
 // info-tabs.tsx and year-toggle.tsx (see those files): this exact card
@@ -35,7 +36,7 @@ export default function ChartCard({
     // floating chrome over the map; a chart card is a reading surface, like
     // a dialog, and stays opaque white on a gray-200 hairline.
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-3 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
         {/* min-w-0: a flex item's default min-width is auto, not 0 -- without
             this, a child with wide unwrapped content (a long title, or the
             year-over-year comparison line) can force this whole item wider
@@ -49,32 +50,35 @@ export default function ChartCard({
               legally nest inside a p. */}
           {subtitle && <div className="mt-1 text-xs text-gray-500 md:text-sm">{subtitle}</div>}
         </div>
-        {/* flex-wrap: on a phone the controls (pollutant, view, year,
-            download) can outgrow the row; they wrap instead of squeezing
-            a button or pushing one out of view. */}
+        {/* One line of controls that never wraps: below lg it sits under
+            the title and slides sideways when it doesn't fit (bleeding to
+            the card's edges, with the charts' own edge fade); from lg it
+            sits beside the title, which wraps instead. */}
         {(headerRight || infoTab) && (
-          <div className="flex flex-wrap items-center gap-2">
-            {headerRight}
-            {infoTab && InfoIcon && (
-              // Icon only, the same tinted h-8 square as the header's other
-              // icon buttons, dark while open (like the comparison toggle);
-              // the label is its aria-label and hover title.
-              <button
-                type="button"
-                onClick={() => setInfoOpen((o) => !o)}
-                aria-expanded={infoOpen}
-                aria-controls={panelId}
-                aria-label={infoTab.label}
-                title={infoTab.label}
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                  infoOpen
-                    ? "bg-gray-800 text-white hover:bg-gray-700"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
-                }`}
-              >
-                <InfoIcon className="h-3.5 w-3.5" aria-hidden />
-              </button>
-            )}
+          <div className="-mx-5 lg:mx-0 lg:shrink-0">
+            <HorizontalScrollFade minWidth={0}>
+              <div className="flex w-max items-center gap-2 px-5 lg:px-0">
+                {headerRight}
+                {infoTab && InfoIcon && (
+                  // Icon + label, the same tinted h-8 button as the header's
+                  // Comparar / Compartir, dark while open (like Comparar).
+                  <button
+                    type="button"
+                    onClick={() => setInfoOpen((o) => !o)}
+                    aria-expanded={infoOpen}
+                    aria-controls={panelId}
+                    className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                      infoOpen
+                        ? "bg-gray-800 text-white hover:bg-gray-700"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
+                    }`}
+                  >
+                    <InfoIcon className="h-3.5 w-3.5" aria-hidden />
+                    {infoTab.label}
+                  </button>
+                )}
+              </div>
+            </HorizontalScrollFade>
           </div>
         )}
       </div>

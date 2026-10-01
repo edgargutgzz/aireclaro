@@ -918,10 +918,8 @@ export default function DiasInsalubresChart({
           >
             <YearToggle years={years} year={year} onChange={setSelectedYear} />
           </div>
-          {/* Phones wrap the comparison toggle onto its own row; a divider
-              there would dangle at the end of the first row. */}
           <div
-            className={`hidden h-5 w-px bg-gray-200 sm:block ${compare ? "invisible" : ""}`}
+            className={`h-5 w-px shrink-0 bg-gray-200 ${compare ? "invisible" : ""}`}
             aria-hidden
           />
           <div className="flex items-center gap-2">
@@ -929,15 +927,15 @@ export default function DiasInsalubresChart({
               type="button"
               onClick={() => setCompare((c) => !c)}
               aria-pressed={compare}
-              aria-label={compare ? "Volver a la vista por año" : "Comparar años"}
               title={compare ? "Volver a la vista por año" : "Comparar años"}
-              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
                 compare
                   ? "bg-gray-800 text-white hover:bg-gray-700"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
               }`}
             >
-              <LineChart className="h-3.5 w-3.5" />
+              <LineChart className="h-3.5 w-3.5" aria-hidden />
+              Comparar
             </button>
           </div>
         </>
