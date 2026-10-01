@@ -260,9 +260,16 @@ export async function GET(request: Request) {
             >
               <div style={{ display: "flex", flexDirection: "column", gap: fx(4) }}>
                 <div style={{ display: "flex", fontSize: fx(18), color: "#9ca3af" }}>Fuente</div>
-                <div style={{ display: "flex", color: "#6b7280" }}>Sistema Integral de Monitoreo Ambiental (SIMA) de Nuevo León</div>
-                {/* The norm the days are judged against, under the source. */}
-                <div style={{ display: "flex", color: "#6b7280" }}>NOM-025-SSA1-2021</div>
+                {/* Two sources, one per line, each behind a dot so they read
+                    as a list: the data (SIMA) and the norm the days are
+                    judged against. A drawn dot, not a glyph: crisp at any
+                    scale and not dependent on the font subset. */}
+                {["Sistema Integral de Monitoreo Ambiental (SIMA) de Nuevo León", "NOM-025-SSA1-2021"].map((src) => (
+                  <div key={src} style={{ display: "flex", alignItems: "center", gap: fx(10), color: "#6b7280" }}>
+                    <div style={{ display: "flex", width: fx(5), height: fx(5), borderRadius: fx(5), background: "#9ca3af" }} />
+                    {src}
+                  </div>
+                ))}
               </div>
               <div style={{ display: "flex", flexShrink: 0, fontWeight: 600, color: "#6b7280" }}>observatoriodelaire.com</div>
             </div>
