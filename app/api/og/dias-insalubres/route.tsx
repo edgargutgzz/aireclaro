@@ -262,7 +262,7 @@ export async function GET(request: Request) {
                 <div style={{ display: "flex", fontSize: fx(18), color: "#9ca3af" }}>Fuente</div>
                 <div style={{ display: "flex", color: "#6b7280" }}>Sistema Integral de Monitoreo Ambiental (SIMA) de Nuevo León</div>
                 {/* The norm the days are judged against, under the source. */}
-                <div style={{ display: "flex", color: "#6b7280" }}>Con base en la NOM-025-SSA1-2021</div>
+                <div style={{ display: "flex", color: "#6b7280" }}>NOM-025-SSA1-2021</div>
               </div>
               <div style={{ display: "flex", flexShrink: 0, fontWeight: 600, color: "#6b7280" }}>observatoriodelaire.com</div>
             </div>
