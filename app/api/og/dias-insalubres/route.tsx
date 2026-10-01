@@ -115,7 +115,9 @@ export async function GET(request: Request) {
   // At lineHeight 1, Inter's baseline sits ~0.135em above the bottom of the
   // line box. Bottom-aligned text of size `small` next to size `big` needs
   // this much bottom padding to share `big`'s baseline.
-  const NUMBER_SIZE = 115;
+  // 84, down from 115: the headline reads first, the numbers follow as its
+  // evidence (at 115 they outweighed the sentence).
+  const NUMBER_SIZE = 84;
   const LABEL_COL = 250;
   const baseLift = (big: number, small: number) => tx(0.135 * (big - small));
 
