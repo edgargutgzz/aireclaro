@@ -23,7 +23,7 @@ const POLLUTANT_DESCRIPTOR: Record<Pollutant, string> = {
 };
 
 export default function DiasInsalubresShare({ summary }: { summary: MonthlySummary }) {
-  const { year, mes, rows, hasPrior, headline } = summary;
+  const { year, mes, rows, hasPrior, headline, limitNote } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
   // The image's headline lines, as one sentence.
   const title = headline.join(" ");
@@ -96,6 +96,8 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
             ))}
           </tbody>
         </table>
+        {/* Says why the two years are comparable: one limit for both. */}
+        <p className="mt-2 border-t border-gray-100 pt-4 text-xs text-gray-400 md:text-sm">{limitNote}</p>
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">

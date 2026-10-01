@@ -25,8 +25,9 @@ export interface ShareFormatSpec {
 export const SHARE_FORMATS: Record<ShareFormat, ShareFormatSpec> = {
   // WhatsApp's standard-quality photo send caps the long edge at 1600px, so
   // this is the largest square it passes through without resizing. Square
-  // shows uncropped in the chat.
-  whatsapp: { width: 1600, height: 1600, padTop: 72, padBottom: 72, content: 1.1, chrome: 1 },
+  // shows uncropped in the chat. Tighter top/bottom padding than the
+  // portraits: it's the shortest canvas, and the limit line needs the room.
+  whatsapp: { width: 1600, height: 1600, padTop: 48, padBottom: 48, content: 1.1, chrome: 1 },
   // Instagram's feed portrait (4:5). The profile grid's 3:4 thumbnail trims
   // ~34px off each side, inside the 80px side padding. content 1.2 is the
   // most before the one-line headline wraps.

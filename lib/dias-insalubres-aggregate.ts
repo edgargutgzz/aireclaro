@@ -316,6 +316,9 @@ export interface MonthlySummary {
   /** The verdict, as set lines: the image's headline line by line, the
    *  /datos card's title joined into one sentence. */
   headline: string[];
+  /** The limit both years are counted against, per pollutant, said under
+   *  the numbers on the card and the image. */
+  limitNote: string;
 }
 
 // The monthly update: the latest month of `year` with data vs. the same month
@@ -351,5 +354,7 @@ export function monthlySummary(
     : trend
       ? [`${lead} se registraron`, `${trend} días sobre la norma`, "que el año pasado"]
       : [`${lead},`, "días sobre la norma", "frente al año pasado"];
-  return { year, mes, rows, hasPrior, trend, headline };
+  const limits = `${LIMITE_ACTUAL_PM25} µg/m³ para PM2.5 y ${LIMITE_ACTUAL_PM10} µg/m³ para PM10`;
+  const limitNote = hasPrior ? `Límite diario en ambos años: ${limits}` : `Límite diario: ${limits}`;
+  return { year, mes, rows, hasPrior, trend, headline, limitNote };
 }

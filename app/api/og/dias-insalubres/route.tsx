@@ -99,7 +99,7 @@ export async function GET(request: Request) {
   if (summary === null) {
     return messageCard(options, px(32), "Aún no hay datos para este año.");
   }
-  const { mes, rows: rowsOut, hasPrior, headline: headlineLines } = summary;
+  const { mes, rows: rowsOut, hasPrior, headline: headlineLines, limitNote } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
 
   // This year's number is always red: any day of polluted air is bad news,
@@ -147,7 +147,7 @@ export async function GET(request: Request) {
           )}
 
           <div
-            style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", paddingTop: px(56) }}
+            style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", paddingTop: px(32) }}
           >
             {/* Logo (who says it) -> verdict + its plain-language gloss
                 (what they say) -> both pollutants' numbers (the evidence)
@@ -160,6 +160,9 @@ export async function GET(request: Request) {
                 fontWeight: 700,
                 color: "#111827",
                 lineHeight: 1.15,
+                // Satori squeezes text blocks in an overfull column instead
+                // of letting them push; none of these may shrink.
+                flexShrink: 0,
               }}
             >
               {headlineLines.map((line) => (
@@ -177,6 +180,7 @@ export async function GET(request: Request) {
                 lineHeight: 1.35,
                 color: "#6b7280",
                 marginTop: hx(20),
+                flexShrink: 0,
                 // Breaks the sentence evenly ('...superaron el límite' / 'para
                 // proteger la salud.') instead of stranding one word.
                 maxWidth: hx(760),
@@ -192,7 +196,7 @@ export async function GET(request: Request) {
                 different sizes, so each row is bottom-aligned at lineHeight
                 1 and the small text is lifted by baseLift() onto the big
                 number's baseline. */}
-            <div style={{ display: "flex", flexDirection: "column", gap: tx(44), marginTop: tx(52) }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: tx(34), marginTop: tx(44), flexShrink: 0 }}>
               <div style={{ display: "flex", fontSize: tx(24), fontWeight: 600, color: "#6b7280" }}>
                 <div style={{ display: "flex", width: tx(LABEL_COL) }} />
                 {years.map((y) => (
@@ -237,6 +241,8 @@ export async function GET(request: Request) {
                   ))}
                 </div>
               ))}
+              {/* Why the two years compare: one limit for both. */}
+              <div style={{ display: "flex", fontSize: tx(22), color: "#9ca3af" }}>{limitNote}</div>
             </div>
           </div>
 
