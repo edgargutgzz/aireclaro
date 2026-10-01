@@ -13,8 +13,8 @@ import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 
 // The downloadable, branded version of the /datos monthly summary card
-// (components/datos/dias-insalubres-share.tsx; not linked from the page for
-// now) -- one size per destination (?format=, see
+// (components/datos/dias-insalubres-share.tsx, via its download menu) --
+// one size per destination (?format=, see
 // lib/share-image-formats.ts), not the 1200x630 landscape unfurl card
 // app/api/og/route.tsx renders for a shared sensor link.
 //

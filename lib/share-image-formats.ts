@@ -1,6 +1,7 @@
 // The downloadable días insalubres image comes in one size per destination,
-// rendered by app/api/og/dias-insalubres (no download UI on the page for
-// now). The image is laid out at a 1080-wide design scale; each format scales
+// picked from the monthly summary card's download menu
+// (components/datos/download-image-menu.tsx) and rendered by
+// app/api/og/dias-insalubres. The image is laid out at a 1080-wide design scale; each format scales
 // it to its own width and adds its own top/bottom padding (design units) and
 // its own scale on the central stat block, since a phone-screen story needs bigger type than a chat square.
 export type ShareFormat = "whatsapp" | "instagram-post" | "instagram-story" | "facebook-post";

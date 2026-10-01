@@ -2,6 +2,7 @@
 
 import { BookOpen } from "lucide-react";
 import ChartCard from "@/components/datos/chart-card";
+import DownloadImageMenu from "@/components/datos/download-image-menu";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import { FUENTE_TAB, POLLUTANT_LIMITS } from "@/components/datos/dias-insalubres-chart";
 import { COLOR_INSALUBRE } from "@/lib/datos-colors";
@@ -9,9 +10,10 @@ import { MONTHS_ES_FULL, type MonthlySummary, type Pollutant } from "@/lib/dias-
 
 // The monthly update as a /datos card: the latest month with data vs. the
 // same month a year earlier, both pollutants, both years on today's limit.
-// Same content as the downloadable image (app/api/og/dias-insalubres) minus
-// its brand frame, which only the downloaded file needs: verdict as the
-// title, its plain-language gloss as the subtitle, the numbers as the body.
+// Same content as the downloadable image (app/api/og/dias-insalubres, from
+// the header's download menu) minus its brand frame, which only the
+// downloaded file needs: verdict as the title, its plain-language gloss as
+// the subtitle, the numbers as the body.
 
 const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
 // For a reader who doesn't know what PM2.5 / PM10 are.
@@ -48,6 +50,12 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
     <ChartCard
       title={`${headline[0]} ${headline[1]}`}
       subtitle="Días en que las partículas en el aire superaron el límite para proteger la salud."
+      headerRight={
+        <DownloadImageMenu
+          href={(format) => `/api/og/dias-insalubres?year=${year}&format=${format}`}
+          filename={(format) => `observatorio-del-aire-dias-sobre-la-norma-${year}-${mesNombre.toLowerCase()}-${format}.png`}
+        />
+      }
     >
       <div className="px-5 pb-6 pt-5 md:pt-6">
         {/* One row per pollutant: last year (gray reference), this year
