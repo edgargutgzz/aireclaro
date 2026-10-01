@@ -6,7 +6,7 @@ import DownloadImageMenu from "@/components/datos/download-image-menu";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import { FUENTE_TAB, POLLUTANT_LIMITS } from "@/components/datos/dias-insalubres-chart";
 import { COLOR_INSALUBRE } from "@/lib/datos-colors";
-import { MONTHS_ES_FULL, type MonthlySummary, type Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { MONTHS_ES_FULL, SUMMARY_GLOSS, type MonthlySummary, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 
 // The monthly update as a /datos card: the latest month with data vs. the
 // same month a year earlier, both pollutants, both years on today's limit.
@@ -23,7 +23,7 @@ const POLLUTANT_DESCRIPTOR: Record<Pollutant, string> = {
 };
 
 export default function DiasInsalubresShare({ summary }: { summary: MonthlySummary }) {
-  const { year, mes, rows, hasPrior, headline, limitNote } = summary;
+  const { year, mes, rows, hasPrior, headline } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
   // The image's headline lines, as one sentence.
   const title = headline.join(" ");
@@ -51,7 +51,7 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
   return (
     <ChartCard
       title={title}
-      subtitle="Días en que las partículas en el aire superaron el límite para proteger la salud."
+      subtitle={SUMMARY_GLOSS}
       headerRight={
         <DownloadImageMenu
           href={(format) => `/api/og/dias-insalubres?year=${year}&format=${format}`}
@@ -82,6 +82,8 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
                 <th className="py-4 text-left font-normal md:py-6">
                   <div className="text-sm font-medium text-gray-700 md:text-base">{POLLUTANT_LABEL[r.pollutant]}</div>
                   <div className="text-xs text-gray-400 md:text-sm">{POLLUTANT_DESCRIPTOR[r.pollutant]}</div>
+                  {/* The one limit both years' numbers in this row count against. */}
+                  <div className="mt-1 text-xs text-gray-400">Límite: {r.limit} µg/m³</div>
                 </th>
                 {years.map((y) => (
                   <td
@@ -96,8 +98,6 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
             ))}
           </tbody>
         </table>
-        {/* Says why the two years are comparable: one limit for both. */}
-        <p className="mt-2 border-t border-gray-100 pt-4 text-xs text-gray-400 md:text-sm">{limitNote}</p>
       </div>
 
       <div className="border-t border-gray-100 px-5 pb-5 pt-4">

@@ -298,10 +298,16 @@ export function latestShareMonth(
   return shared.length > 0 ? Math.max(...shared) : null;
 }
 
+// The headline's plain-language gloss, under it on the card and the image.
+export const SUMMARY_GLOSS =
+  "Días en que los niveles de partículas en el aire superaron el límite para proteger la salud.";
+
 export interface MonthlySummaryRow {
   pollutant: Pollutant;
   current: number;
   prior: number | null;
+  /** Today's daily limit (µg/m³), the one both years are counted against. */
+  limit: number;
 }
 
 export interface MonthlySummary {
@@ -316,16 +322,13 @@ export interface MonthlySummary {
   /** The verdict, as set lines: the image's headline line by line, the
    *  /datos card's title joined into one sentence. */
   headline: string[];
-  /** The limit both years are counted against, per pollutant, said under
-   *  the numbers on the card and the image. */
-  limitNote: string;
 }
 
 // The monthly update: the latest month of `year` with data vs. the same month
 // a year earlier, both pollutants, both counted on today's limit (the
 // comparison view's numbers). Shared by the summary card on /datos and the
 // downloadable image, so the two can't say different things. The verdict is
-// in the observatory's measured terms ("días sobre la norma"), said for both
+// in the observatory's measured terms ("días sobre la norma de salud"), said for both
 // pollutants only when they agree; otherwise neutral, and each row speaks for
 // itself.
 export function monthlySummary(
@@ -342,6 +345,7 @@ export function monthlySummary(
     pollutant: p,
     current: pick(p, year)!.diasInsalubresLimiteActual as number,
     prior: (pick(p, year - 1)?.diasInsalubresLimiteActual as number | undefined) ?? null,
+    limit: p === "pm25" ? LIMITE_ACTUAL_PM25 : LIMITE_ACTUAL_PM10,
   }));
   const mesMin = MONTHS_ES_FULL[mes - 1].toLowerCase();
   const hasPrior = rows.every((r) => r.prior !== null);
@@ -350,11 +354,9 @@ export function monthlySummary(
   const trend = agree ? (signs[0] > 0 ? "más" : signs[0] < 0 ? "menos" : "los mismos") : null;
   const lead = `En ${mesMin} ${year}`;
   const headline = !hasPrior
-    ? [`${lead},`, "días sobre la norma"]
+    ? [`${lead},`, "días sobre la norma de salud"]
     : trend
-      ? [`${lead} se registraron`, `${trend} días sobre la norma`, "que el año pasado"]
-      : [`${lead},`, "días sobre la norma", "frente al año pasado"];
-  const limits = `${LIMITE_ACTUAL_PM25} µg/m³ para PM2.5 y ${LIMITE_ACTUAL_PM10} µg/m³ para PM10`;
-  const limitNote = hasPrior ? `Límite diario en ambos años: ${limits}` : `Límite diario: ${limits}`;
-  return { year, mes, rows, hasPrior, trend, headline, limitNote };
+      ? [`${lead} se registraron`, `${trend} días sobre la norma de salud`, "que el año pasado"]
+      : [`${lead},`, "días sobre la norma de salud", "frente al año pasado"];
+  return { year, mes, rows, hasPrior, trend, headline };
 }
