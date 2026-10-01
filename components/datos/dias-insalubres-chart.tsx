@@ -862,10 +862,9 @@ export default function DiasInsalubresChart({
       infoTab={infoTab(pollutant)}
       title={
         compare
-          ? "Comparación de días sobre la norma en la"
-          : "Días sobre la norma de partículas en la"
+          ? "Comparación de días sobre la norma en la Zona Metropolitana de Monterrey"
+          : "Días sobre la norma de partículas en la Zona Metropolitana de Monterrey"
       }
-      place="Zona Metropolitana de Monterrey"
       subtitle={
         compare ? (
           // The one limit every line is counted against, per pollutant.

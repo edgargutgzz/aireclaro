@@ -590,8 +590,7 @@ export default function CoberturaEstacionesChart({
   return (
     <ChartCard
       infoTab={infoTab(pollutant)}
-      title="Cobertura de estaciones en la"
-      place="Zona Metropolitana de Monterrey"
+      title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
       subtitle={
         <div className="md:flex md:items-center md:gap-3">
           <div>
