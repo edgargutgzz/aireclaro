@@ -31,11 +31,6 @@ const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
   pm10: "PM10",
 };
-// For a reader who doesn't know what PM2.5 / PM10 are.
-const POLLUTANT_DESCRIPTOR: Record<Pollutant, string> = {
-  pm25: "Partículas finas",
-  pm10: "Partículas gruesas",
-};
 // Last year's numbers: gray-400, a step darker than the chart lines'
 // gray-300 -- as a big numeral on a phone (and after WhatsApp's
 // compression) gray-300 all but disappears, and it's the reference that
@@ -224,11 +219,8 @@ export async function GET(request: Request) {
                     <div style={{ display: "flex", fontSize: tx(30), fontWeight: 700, color: "#374151" }}>
                       {POLLUTANT_LABEL[r.pollutant]}
                     </div>
-                    <div style={{ display: "flex", fontSize: tx(22), color: "#9ca3af" }}>
-                      {POLLUTANT_DESCRIPTOR[r.pollutant]}
-                    </div>
                     {/* The one limit both years' numbers in this row count
-                        against; quieter than the descriptor. */}
+                        against. */}
                     <div style={{ display: "flex", fontSize: tx(20), color: "#9ca3af", marginTop: tx(2) }}>
                       Límite: {r.limit} µg/m³
                     </div>

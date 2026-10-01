@@ -16,11 +16,6 @@ import { MONTHS_ES_FULL, SUMMARY_GLOSS, type MonthlySummary, type Pollutant } fr
 // the subtitle, the numbers as the body.
 
 const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
-// For a reader who doesn't know what PM2.5 / PM10 are.
-const POLLUTANT_DESCRIPTOR: Record<Pollutant, string> = {
-  pm25: "Partículas finas",
-  pm10: "Partículas gruesas",
-};
 
 export default function DiasInsalubresShare({ summary }: { summary: MonthlySummary }) {
   const { year, mes, rows, hasPrior, headline } = summary;
@@ -80,7 +75,6 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
               <tr key={r.pollutant} className="border-t border-gray-100">
                 <th className="py-4 text-left font-normal md:py-6">
                   <div className="text-sm font-medium text-gray-700 md:text-base">{POLLUTANT_LABEL[r.pollutant]}</div>
-                  <div className="text-xs text-gray-400 md:text-sm">{POLLUTANT_DESCRIPTOR[r.pollutant]}</div>
                   {/* The one limit both years' numbers in this row count against. */}
                   <div className="mt-1 text-xs text-gray-400">Límite: {r.limit} µg/m³</div>
                 </th>
