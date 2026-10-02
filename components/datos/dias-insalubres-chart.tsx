@@ -109,9 +109,7 @@ function infoTab(pollutant: Pollutant, compare: boolean, year: number | null): I
       <>
         Cada línea muestra los días sobre la norma de salud de un año, mes por
         mes. Para comparar los años con la misma medida, todos se cuentan con
-        el límite diario vigente de {desde} µg/m³. Un día se considera sobre la norma de salud
-        si alguna estación de monitoreo supera ese límite, y se contabiliza
-        solo si alguna estación reportó mediciones suficientes.
+        el límite diario vigente de {desde} µg/m³.
       </>
     ) : (
       <>
