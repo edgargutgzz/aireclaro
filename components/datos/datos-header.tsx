@@ -3,7 +3,6 @@ import { createPublicClient } from "@/utils/supabase/public";
 import { monterreyNaiveNow } from "@/lib/monterrey-time";
 import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
 import DatosGeneralInfo from "@/components/datos/datos-general-info";
-import { PRIMARY_BUTTON_CLASS } from "@/components/datos/primary-button";
 
 
 // The monthly cron (app/api/cron/sima-monthly-sync, vercel.json's "0 8 6 * *")
@@ -112,8 +111,13 @@ export default async function DatosHeader() {
         {/* The raw-data download lives in its own card at the bottom of the
             page (after the charts it feeds); this shortcut makes it visible
             on arrival without pushing the charts down. */}
-        <a href="#descarga" className={PRIMARY_BUTTON_CLASS}>
-          <ArrowDownToLine className="h-4 w-4" aria-hidden />
+        {/* The tinted h-8 button the chart headers use (Comparar,
+            Descargar, Metodología): findable without competing with them. */}
+        <a
+          href="#descarga"
+          className="flex h-8 w-fit shrink-0 items-center gap-1.5 rounded-lg bg-gray-100 px-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        >
+          <ArrowDownToLine className="h-3.5 w-3.5" aria-hidden />
           Descargar datos
         </a>
       </div>

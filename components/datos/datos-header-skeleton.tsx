@@ -13,7 +13,7 @@ export default function DatosHeaderSkeleton() {
             <SkeletonBlock className="h-4 w-40" />
           </div>
         </div>
-        <SkeletonBlock className="h-10 w-40 rounded-xl" />
+        <SkeletonBlock className="h-8 w-36 rounded-lg" />
       </div>
       <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
         <SkeletonBlock className="h-7 w-32 rounded-xl" />
