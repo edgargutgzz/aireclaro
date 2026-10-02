@@ -93,7 +93,7 @@ function infoTab(pollutant: Pollutant): InfoTab {
     icon: BookOpen,
     body: (
       <>
-        Se clasifica un día como sobre la norma si alguna estación de
+        Se clasifica un día como sobre la norma de salud si alguna estación de
         monitoreo supera el límite diario, que bajó de {antes} µg/m³ en
         2025 a {desde} µg/m³ en 2026; de lo contrario, se clasifica como
         dentro de la norma. Algunos meses pueden mostrar menos días de los que
