@@ -12,6 +12,7 @@ import {
   COLOR_YEAR_CURRENT,
   COLOR_YEAR_PAST,
 } from "@/lib/datos-colors";
+import { getLimitForDate, getLimitForDatePM10 } from "@/lib/pm25-limits";
 import type { InfoTab } from "@/components/datos/info-tabs";
 import YearToggle from "@/components/datos/year-toggle";
 import ChartCard from "@/components/datos/chart-card";
@@ -96,10 +97,21 @@ const NOM_LINK = (
   </a>
 );
 
+const LIMIT_FOR_DATE: Record<Pollutant, (fecha: string) => number> = {
+  pm25: getLimitForDate,
+  pm10: getLimitForDatePM10,
+};
+
 // The comparison view counts every year on today's limit, so it gets its
-// own text: the per-year one explains each year on the limit in force then.
-function infoTab(pollutant: Pollutant, compare: boolean): InfoTab {
-  const { antes, desde } = POLLUTANT_LIMITS[pollutant];
+// own text. The per-year text names only the selected pollutant and the
+// limit in force in the selected year (plus the change date, in the one
+// year the norm tightened partway through: 2025-12-27).
+function infoTab(pollutant: Pollutant, compare: boolean, year: number | null): InfoTab {
+  const { desde } = POLLUTANT_LIMITS[pollutant];
+  const label = POLLUTANT_LABEL[pollutant];
+  const limitOf = LIMIT_FOR_DATE[pollutant];
+  const inicio = year !== null ? limitOf(`${year}-01-01`) : desde;
+  const fin = year !== null ? limitOf(`${year}-12-31`) : desde;
   return {
     id: "norma",
     label: "Metodología",
@@ -115,13 +127,12 @@ function infoTab(pollutant: Pollutant, compare: boolean): InfoTab {
       </>
     ) : (
       <>
-        Se clasifica un día como sobre la norma de salud si alguna estación de
-        monitoreo supera el límite diario, que bajó de {antes} µg/m³ en
-        2025 a {desde} µg/m³ en 2026; de lo contrario, se clasifica como
-        dentro de la norma. Algunos meses pueden mostrar menos días de los que
-        corresponden, ya que un día se contabiliza solo si alguna estación
-        de monitoreo reportó mediciones suficientes. Todo lo anterior, con
-        base en la Norma Oficial Mexicana: {NOM_LINK}.
+        Un día está sobre la norma de salud si alguna estación de monitoreo
+        supera el límite diario de {label}
+        {year !== null && <> en {year}</>}: {inicio} µg/m³
+        {fin !== inicio && <> ({fin} µg/m³ a partir del 27 de diciembre)</>}.
+        Un día se contabiliza solo si alguna estación reportó mediciones
+        suficientes. Con base en la Norma Oficial Mexicana: {NOM_LINK}.
       </>
     ),
   };
@@ -872,7 +883,7 @@ export default function DiasInsalubresChart({
 
   return (
     <ChartCard
-      infoTab={infoTab(pollutant, compare)}
+      infoTab={infoTab(pollutant, compare, year)}
       title={
         compare
           ? "Comparación de días sobre la norma de salud en la Zona Metropolitana de Monterrey"
