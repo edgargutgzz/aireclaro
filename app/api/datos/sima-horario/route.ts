@@ -18,7 +18,11 @@ const PAGE_SIZE = 1000; // PostgREST's max-rows on this project
 const PARAMETROS = ["PM2.5", "PM10"] as const;
 const FIRST_YEAR = 2025; // the table starts 2025-01-01
 
-const HEADER = "fecha,hora,estacion_id,estacion,parametro,valor_ug_m3,valido,bandera\n";
+// The table's own column names, plus the station's name (a bare sensor_id
+// means nothing outside the project). Left out: id and created_at (internal
+// bookkeeping), sinaica_id (a second station code), and banda_o (a SINAICA
+// flag with no public definition that none of our calculations use).
+const HEADER = "fecha,hora,sensor_id,estacion,parametro,valor,val\n";
 
 function badRequest(message: string) {
   return new Response(message, { status: 400, headers: { "Content-Type": "text/plain; charset=utf-8" } });
@@ -74,13 +78,12 @@ export async function GET(request: NextRequest) {
     parametro: string;
     valor: number | null;
     val: number | null;
-    banda_o: string | null;
   };
 
   const fetchPage = async (desde: string, hasta: string, page: number) => {
     const { data, error } = await supabase
       .from("sima_mediciones_finales")
-      .select("fecha, hora, sensor_id, parametro, valor, val, banda_o")
+      .select("fecha, hora, sensor_id, parametro, valor, val")
       .gte("fecha", desde)
       .lt("fecha", hasta)
       .in("sensor_id", stationIds)
@@ -129,7 +132,7 @@ export async function GET(request: NextRequest) {
           const rows = await fetchMonth(month);
           if (rows.length === 0) continue;
           const lines = rows.map((r) =>
-            [r.fecha, r.hora, r.sensor_id, nombres.get(r.sensor_id), r.parametro, r.valor, r.val, r.banda_o]
+            [r.fecha, r.hora, r.sensor_id, nombres.get(r.sensor_id), r.parametro, r.valor, r.val]
               .map(csvField)
               .join(","),
           );

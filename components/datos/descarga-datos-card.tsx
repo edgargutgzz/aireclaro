@@ -40,23 +40,19 @@ const INFO_TAB: InfoTab = {
           como los reporta SINAICA.
         </li>
         <li>
-          <span className="font-medium text-gray-700">estacion_id, estacion:</span> clave de SINAICA y nombre
+          <span className="font-medium text-gray-700">sensor_id, estacion:</span> clave de SINAICA y nombre
           de la estación.
         </li>
         <li>
           <span className="font-medium text-gray-700">parametro:</span> contaminante medido, PM2.5 o PM10.
         </li>
         <li>
-          <span className="font-medium text-gray-700">valor_ug_m3:</span> concentración en µg/m³. Vacío si la
+          <span className="font-medium text-gray-700">valor:</span> concentración en µg/m³. Vacío si la
           estación no reportó esa hora.
         </li>
         <li>
-          <span className="font-medium text-gray-700">valido:</span> indicador de validez de SINAICA. Las
-          gráficas solo usan horas con valido = 1 y valor no negativo.
-        </li>
-        <li>
-          <span className="font-medium text-gray-700">bandera:</span> código de bandera de SINAICA, sin
-          modificar.
+          <span className="font-medium text-gray-700">val:</span> indicador de validez de SINAICA. Las
+          gráficas solo usan horas con val = 1 y valor no negativo.
         </li>
       </ul>
     </div>
