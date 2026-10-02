@@ -12,15 +12,16 @@ import { MONTHS_ES_FULL, type MonthlySummary, type Pollutant } from "@/lib/dias-
 // same month a year earlier, both pollutants, both years on today's limit.
 // Same content as the downloadable image (app/api/og/dias-insalubres, from
 // the header's download menu) minus its brand frame, which only the
-// downloaded file needs. The card's title is a plain label; the image keeps
-// its verdict headline.
+// downloaded file needs: the same verdict as the title, the numbers as the
+// body.
 
 const POLLUTANT_LABEL: Record<Pollutant, string> = { pm25: "PM2.5", pm10: "PM10" };
 
 export default function DiasInsalubresShare({ summary }: { summary: MonthlySummary }) {
-  const { year, mes, rows, hasPrior } = summary;
+  const { year, mes, rows, hasPrior, headline } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
-  const title = "Días sobre la norma de salud";
+  // The image's headline lines, as one sentence.
+  const title = headline.join(" ");
   const years = hasPrior ? [year - 1, year] : [year];
   // Label column + one column per year; same template on every row.
   const cols = hasPrior
@@ -56,8 +57,8 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
     >
       <div className="px-5 pb-6 pt-5 md:pt-6">
         {/* One row per pollutant: last year (gray reference), this year
-            (always red: any day over the norm is bad news). Bare numbers, the
-            title already says "días". */}
+            (always red: any day over the norm is bad news; the title carries
+            the más/menos). Bare numbers, the title already says "días". */}
         {/* A grid with table roles, not a <table>: each row aligns its
             cells on their LAST baseline (items-baseline-last), so the big
             number sits on the "Límite" line, which table cells can't do. */}
