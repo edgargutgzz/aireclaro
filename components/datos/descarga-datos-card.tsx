@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDownToLine, BookOpen, ChevronDown } from "lucide-react";
+import { ArrowDownToLine, BookOpen } from "lucide-react";
 import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
 import type { InfoTab } from "@/components/datos/info-tabs";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import YearToggle from "@/components/datos/year-toggle";
+import SelectMenu from "@/components/datos/select-menu";
 
 interface Estacion {
   sensorId: string;
@@ -126,25 +127,16 @@ export default function DescargaDatosCard({
           />
         </Field>
         <Field label="Estación" htmlFor="descarga-estacion">
-          <div className="relative">
-            <select
-              id="descarga-estacion"
-              value={estacion}
-              onChange={(e) => setEstacion(e.target.value)}
-              className="w-full appearance-none rounded-xl bg-gray-100 py-2.5 pl-3 pr-9 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 lg:w-64"
-            >
-              <option value="todas">Todas las estaciones</option>
-              {estaciones.map((e) => (
-                <option key={e.sensorId} value={e.sensorId}>
-                  {e.nombre}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-              aria-hidden
-            />
-          </div>
+          <SelectMenu
+            id="descarga-estacion"
+            options={[
+              { value: "todas", label: "Todas las estaciones" },
+              ...estaciones.map((e) => ({ value: e.sensorId, label: e.nombre })),
+            ]}
+            value={estacion}
+            onChange={setEstacion}
+            className="w-64 max-w-full"
+          />
         </Field>
         <div className="flex flex-col gap-2 lg:ml-auto lg:items-end">
           <a
