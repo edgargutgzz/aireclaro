@@ -777,22 +777,19 @@ export default function DiasInsalubresChart({
   // Rows written before the same-limit count existed read as null.
   const comparisonReady = yearLines.some((l) => l.dias.some((v) => v !== null));
 
-  // The comparison's headline stat: the latest year vs. the year before,
-  // both on today's limit, over only the months both years have (a year in
-  // progress would otherwise lose to a full one by default).
+  // The comparison's headline stat: the latest month with data in the
+  // latest year vs. the same month a year earlier, both on today's limit.
   const comparisonStat = useMemo(() => {
     if (yearLines.length < 2) return null;
     const cur = yearLines[yearLines.length - 1];
     const prev = yearLines[yearLines.length - 2];
-    const months = cur.dias
-      .map((v, m) => (v !== null && prev.dias[m] !== null ? m : null))
-      .filter((m): m is number => m !== null);
-    if (months.length === 0) return null;
+    let m = 11;
+    while (m >= 0 && (cur.dias[m] === null || prev.dias[m] === null)) m--;
+    if (m < 0) return null;
     return {
-      cur: { ano: cur.ano, total: months.reduce((acc, m) => acc + (cur.dias[m] ?? 0), 0) },
-      prev: { ano: prev.ano, total: months.reduce((acc, m) => acc + (prev.dias[m] ?? 0), 0) },
-      desde: MONTHS_ES_FULL[months[0]].toLowerCase(),
-      hasta: MONTHS_ES_FULL[months[months.length - 1]].toLowerCase(),
+      mes: MONTHS_ES_FULL[m].toLowerCase(),
+      cur: { ano: cur.ano, dias: cur.dias[m] ?? 0 },
+      prev: { ano: prev.ano, dias: prev.dias[m] ?? 0 },
     };
   }, [yearLines]);
 
@@ -910,14 +907,25 @@ export default function DiasInsalubresChart({
       }
       subtitle={
         compare ? (
-          // Same shape as the per-year stat: the number first, then what it
-          // counts. Current year in its line color.
+          // The latest month vs. the same month last year; the change in
+          // red (more days over the norm) or green (fewer).
           comparisonStat ? (
             <div>
-              <span style={{ color: COLOR_YEAR_CURRENT }}>{comparisonStat.cur.total}</span> días sobre la
-              norma de salud por {POLLUTANT_LABEL[pollutant]} en {comparisonStat.cur.ano} y{" "}
-              {comparisonStat.prev.total} en {comparisonStat.prev.ano}, de {comparisonStat.desde} a{" "}
-              {comparisonStat.hasta}
+              {comparisonStat.cur.dias} días sobre la norma de salud por{" "}
+              {POLLUTANT_LABEL[pollutant]} en {comparisonStat.mes} {comparisonStat.cur.ano},{" "}
+              {(() => {
+                const delta = comparisonStat.cur.dias - comparisonStat.prev.dias;
+                return (
+                  <span
+                    style={{
+                      color: delta > 0 ? COLOR_INSALUBRE : delta < 0 ? COLOR_SALUDABLE : undefined,
+                    }}
+                  >
+                    {delta === 0 ? "los mismos" : `${Math.abs(delta)} ${delta > 0 ? "más" : "menos"}`}
+                  </span>
+                );
+              })()}{" "}
+              que en {comparisonStat.mes} {comparisonStat.prev.ano}
             </div>
           ) : (
             <div>
