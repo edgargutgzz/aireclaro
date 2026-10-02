@@ -106,16 +106,6 @@ function infoTab(pollutant: Pollutant): InfoTab {
         estación de monitoreo registró al menos el 75% de las horas del día
         con una medición válida de {POLLUTANT_LABEL[pollutant]}; de lo
         contrario, se contabiliza como &ldquo;Datos insuficientes&rdquo;.
-        Todo lo anterior, con base en la Norma Oficial Mexicana:{" "}
-        <a
-          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          NOM-025-SSA1-2021
-        </a>
-        .
       </>
     ),
   };

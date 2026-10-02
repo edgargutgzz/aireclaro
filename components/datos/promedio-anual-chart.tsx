@@ -96,17 +96,7 @@ function infoTab(pollutant: Pollutant): InfoTab {
         La estación se considera con datos suficientes para presentar su
         promedio anual si al menos tres de los cuatro trimestres son
         válidos; un trimestre es válido cuando la estación reportó
-        mediciones en al menos el 75% de sus días. Todo lo anterior, con
-        base en la Norma Oficial Mexicana:{" "}
-        <a
-          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          NOM-025-SSA1-2021
-        </a>
-        .
+        mediciones en al menos el 75% de sus días.
       </>
     ),
   };

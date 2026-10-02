@@ -86,17 +86,6 @@ const LEGEND = {
   saludables: { label: "Dentro de la norma", color: COLOR_SALUDABLE },
 };
 
-const NOM_LINK = (
-  <a
-    href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-  >
-    NOM-025-SSA1-2021
-  </a>
-);
-
 const LIMIT_FOR_DATE: Record<Pollutant, (fecha: string) => number> = {
   pm25: getLimitForDate,
   pm10: getLimitForDatePM10,
@@ -122,8 +111,7 @@ function infoTab(pollutant: Pollutant, compare: boolean, year: number | null): I
         mes. Para comparar los años con la misma medida, todos se cuentan con
         el límite diario vigente de {desde} µg/m³. Un día se considera sobre la norma de salud
         si alguna estación de monitoreo supera ese límite, y se contabiliza
-        solo si alguna estación reportó mediciones suficientes. Con base
-        en la Norma Oficial Mexicana: {NOM_LINK}.
+        solo si alguna estación reportó mediciones suficientes.
       </>
     ) : (
       <>
@@ -132,7 +120,7 @@ function infoTab(pollutant: Pollutant, compare: boolean, year: number | null): I
         {year !== null && <> en {year}</>}: {inicio} µg/m³
         {fin !== inicio && <> ({fin} µg/m³ a partir del 27 de diciembre)</>}.
         Un día se contabiliza solo si alguna estación reportó mediciones
-        suficientes. Con base en la Norma Oficial Mexicana: {NOM_LINK}.
+        suficientes.
       </>
     ),
   };

@@ -1,11 +1,12 @@
 "use client";
 
-import { HeartPulse, ShieldCheck, Wind } from "lucide-react";
+import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 
 // The "learn more" tabs that apply to every /datos chart (where the data
-// comes from, what PM2.5/PM10 are, what they do to health), shown once in the page's top bar instead of
-// repeated under each chart. Each chart keeps only its own methodology.
+// comes from, the norm every chart applies, what PM2.5/PM10 are, what they
+// do to health), shown once in the page's top bar instead of repeated under
+// each chart. Each chart keeps only its own methodology.
 const TABS: InfoTab[] = [
   {
     id: "fuente",
@@ -24,6 +25,27 @@ const TABS: InfoTab[] = [
           Sistema Integral de Monitoreo Ambiental (SIMA)
         </a>{" "}
         de Nuevo León.
+      </>
+    ),
+  },
+  {
+    id: "metodologia",
+    label: "Metodología",
+    icon: BookOpen,
+    body: (
+      <>
+        La metodología de todas las gráficas sigue la Norma Oficial
+        Mexicana{" "}
+        <a
+          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          NOM-025-SSA1-2021
+        </a>
+        , que establece los valores límite de PM2.5 y PM10 para proteger la
+        salud.
       </>
     ),
   },
