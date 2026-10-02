@@ -8,6 +8,7 @@ import PageShell from "@/components/observatorio/page-shell";
 // name, so each entry names it once.
 
 export const metadata: Metadata = pageMetadata({
+  title: "Recursos",
   description: "Descarga los documentos e investigaciones que hemos recopilado para entender la calidad del aire en la ciudad.",
   path: "/recursos",
 });

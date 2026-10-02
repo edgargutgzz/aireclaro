@@ -12,6 +12,7 @@ const LEAD =
   "Únete a la iniciativa adoptando un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.";
 
 export const metadata: Metadata = pageMetadata({
+  title: "Adopta un sensor",
   description: LEAD,
   path: "/adopta-sensor",
 });

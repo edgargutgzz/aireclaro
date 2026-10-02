@@ -10,6 +10,7 @@ import { editoriales, formatEditorialDate, type Editorial } from "./data";
 // content opens its article page (./[slug]).
 
 export const metadata: Metadata = pageMetadata({
+  title: "Editoriales",
   description: "Explora nuestras publicaciones y artículos sobre la calidad del aire en la ciudad.",
   path: "/editoriales",
 });

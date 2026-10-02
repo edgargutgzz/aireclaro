@@ -25,6 +25,7 @@ export async function generateMetadata({
   const article = getArticleBySlug((await params).slug);
   if (!article) return {};
   return pageMetadata({
+    title: article.title,
     description: `${article.author}, ${article.newspaper.replace(/^\P{L}+/u, "")}, ${formatEditorialDate(article.date)}.`,
     path: `/editoriales/${article.slug}`,
     ogTitle: article.title,

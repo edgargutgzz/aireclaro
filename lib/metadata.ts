@@ -16,20 +16,24 @@ export const OG_BASE = { type: "website", locale: "es_MX" } as const;
 // replaces it wholesale when the page sets one. So every page builds its card
 // here, or a shared link unfurls with the homepage's title and description.
 // X falls back to these og tags (the layout only sets twitter's card type).
-// The tab and card title is the site name everywhere for now (set once in the
-// layout). Pass `ogTitle` for a card that needs its own (an article).
+// The card's title is the site name on every section for now; `title` still
+// names the browser tab. Pass `ogTitle` for content that needs its own
+// (an article).
 export function pageMetadata({
+  title,
   description,
   path,
   images = OG_IMAGES,
   ogTitle = SITE_NAME,
 }: {
+  title: string;
   description: string;
   path: string;
   images?: OgImages;
   ogTitle?: string;
 }): Metadata {
   return {
+    title,
     description,
     openGraph: {
       ...OG_BASE,

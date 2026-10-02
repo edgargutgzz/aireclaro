@@ -9,6 +9,7 @@ import { fetchWithFallback } from "@/utils/fetch";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 
+const BASE_TITLE = "Mapa de Calidad del Aire en Monterrey en Tiempo Real";
 const BASE_DESCRIPTION =
   "Consulta el mapa interactivo de calidad del aire (PM2.5) en Monterrey y Zona Metropolitana. Datos en tiempo real de estaciones SIMA y sensores ciudadanos PurpleAir.";
 
@@ -23,7 +24,7 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ sensor?: string | string[] }>;
 }): Promise<Metadata> {
-  const base = pageMetadata({ description: BASE_DESCRIPTION, path: "/mapa" });
+  const base = pageMetadata({ title: BASE_TITLE, description: BASE_DESCRIPTION, path: "/mapa" });
 
   const raw = (await searchParams).sensor;
   const sensorParam = Array.isArray(raw) ? raw[0] : raw;
@@ -49,6 +50,7 @@ export async function generateMetadata({
   const pageUrl = `/mapa?sensor=${snapshot.sensorId}`;
 
   return {
+    title,
     description,
     openGraph: {
       title,
