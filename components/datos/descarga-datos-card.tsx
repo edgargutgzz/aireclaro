@@ -44,6 +44,9 @@ const INFO_TAB: InfoTab = {
           de la estación.
         </li>
         <li>
+          <span className="font-medium text-gray-700">parametro:</span> contaminante medido, PM2.5 o PM10.
+        </li>
+        <li>
           <span className="font-medium text-gray-700">valor_ug_m3:</span> concentración en µg/m³. Vacío si la
           estación no reportó esa hora.
         </li>
