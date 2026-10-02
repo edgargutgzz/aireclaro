@@ -145,7 +145,7 @@ export default function DescargaDatosCard({
             Descargar CSV
           </a>
           <p className="text-xs text-gray-500">
-            {filas.toLocaleString("es-MX")} filas, {periodo}
+            {filas.toLocaleString("es-MX")} mediciones, {periodo}
           </p>
         </div>
       </div>
