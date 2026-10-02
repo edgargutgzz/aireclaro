@@ -51,8 +51,8 @@ const INFO_TAB: InfoTab = {
           estación no reportó esa hora.
         </li>
         <li>
-          <span className="font-medium text-gray-700">val:</span> indicador de validez. Un dato
-          se considera válido si val = 1 y valor no es negativo.
+          <span className="font-medium text-gray-700">val:</span> indicador oficial de validez. Vale 1
+          cuando la medición es válida y queda vacío cuando no hay medición.
         </li>
       </ul>
     </div>
