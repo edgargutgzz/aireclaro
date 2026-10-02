@@ -903,7 +903,7 @@ export default function DiasInsalubresChart({
           // year-over-year line here (NOM-025 tightened on 2025-12-27; the
           // comparison view handles that, on one limit).
           <div>
-            <span style={{ color: COLOR_INSALUBRE }}>{totalInsalubres}</span> días sobre la norma por{" "}
+            <span style={{ color: COLOR_INSALUBRE }}>{totalInsalubres}</span> días sobre la norma de salud por{" "}
             {POLLUTANT_LABEL[pollutant]} en {year}
           </div>
         )
