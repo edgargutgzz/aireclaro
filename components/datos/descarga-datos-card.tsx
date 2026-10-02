@@ -24,8 +24,8 @@ const PARAMETRO_OPTIONS: { value: Parametro; label: string }[] = [
 ];
 
 const INFO_TAB: InfoTab = {
-  id: "metodologia",
-  label: "Metodología",
+  id: "diccionario",
+  label: "Diccionario",
   icon: BookOpen,
   body: (
     <div className="space-y-3">
