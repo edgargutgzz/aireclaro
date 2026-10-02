@@ -63,7 +63,11 @@ export default function SelectMenu<T extends string>({
     if (!open) return;
     // Opens below the trigger, or above when there's more room there (the
     // card sits at the bottom of the page). Re-anchored on scroll/resize.
-    const place = () => {
+    const place = (e?: Event) => {
+      // The list's own scrolling isn't a page scroll: re-placing on it
+      // re-rendered the list and snapped it back to the active option, so
+      // it couldn't be scrolled at all (2026-10-01 bug).
+      if (e?.target === listRef.current) return;
       const rect = buttonRef.current?.getBoundingClientRect();
       if (!rect) return;
       const below = window.innerHeight - rect.bottom - GAP * 2;
@@ -90,14 +94,27 @@ export default function SelectMenu<T extends string>({
     };
   }, [open]);
 
-  // Focus the list once it's placed, and keep the active option in view.
+  // Once the list is on screen, focus it (for the arrow keys) and bring the
+  // selected option into view. Keyed on whether it's mounted, not on pos, so
+  // re-anchoring on page scroll never runs this again.
+  const mounted = open && pos !== null;
   useEffect(() => {
-    if (open && pos) listRef.current?.focus({ preventScroll: true });
-  }, [open, pos]);
-  useEffect(() => {
-    if (!open) return;
-    listRef.current?.querySelector<HTMLElement>(`[data-index="${active}"]`)?.scrollIntoView({ block: "nearest" });
-  }, [open, active, pos]);
+    if (!mounted) return;
+    listRef.current?.focus({ preventScroll: true });
+    keepInView(active);
+  }, [mounted]);
+
+  // Scrolls only the list, never the page (scrollIntoView can move both).
+  const keepInView = (index: number) => {
+    const list = listRef.current;
+    const item = list?.querySelector<HTMLElement>(`[data-index="${index}"]`);
+    if (!list || !item) return;
+    if (item.offsetTop < list.scrollTop) {
+      list.scrollTop = item.offsetTop - 6;
+    } else if (item.offsetTop + item.offsetHeight > list.scrollTop + list.clientHeight) {
+      list.scrollTop = item.offsetTop + item.offsetHeight - list.clientHeight + 6;
+    }
+  };
 
   const openList = () => {
     setActive(selectedIndex);
@@ -106,11 +123,15 @@ export default function SelectMenu<T extends string>({
 
   const onListKeyDown = (e: React.KeyboardEvent) => {
     const last = options.length - 1;
+    const move = (index: number) => {
+      setActive(index);
+      keepInView(index);
+    };
     const keys: Record<string, () => void> = {
-      ArrowDown: () => setActive((i) => Math.min(last, i + 1)),
-      ArrowUp: () => setActive((i) => Math.max(0, i - 1)),
-      Home: () => setActive(0),
-      End: () => setActive(last),
+      ArrowDown: () => move(Math.min(last, active + 1)),
+      ArrowUp: () => move(Math.max(0, active - 1)),
+      Home: () => move(0),
+      End: () => move(last),
       Enter: () => pick(active),
       " ": () => pick(active),
       Escape: () => close(true),
