@@ -29,6 +29,18 @@ const INFO_TAB: InfoTab = {
   icon: BookOpen,
   body: (
     <div className="space-y-3">
+      <p>
+        Las mediciones provienen de las estaciones del SIMA y se obtienen del{" "}
+        <a
+          href="https://sinaica.inecc.gob.mx"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          Sistema Nacional de Información de la Calidad del Aire (SINAICA)
+        </a>
+        . Los valores se publican tal como los reporta SINAICA.
+      </p>
       <p>Cada fila representa una medición horaria de un contaminante en una estación.</p>
       <ul className="list-disc space-y-1 pl-5">
         <li>
@@ -51,8 +63,8 @@ const INFO_TAB: InfoTab = {
           estación no reportó esa hora.
         </li>
         <li>
-          <span className="font-medium text-gray-700">val:</span> indicador oficial de validez. Es igual a
-          1 cuando la medición es válida y está vacío cuando no hay medición.
+          <span className="font-medium text-gray-700">val:</span> indicador de validez reportado por SINAICA. Es
+          igual a 1 cuando la medición es válida y está vacío cuando no hay medición.
         </li>
       </ul>
     </div>
