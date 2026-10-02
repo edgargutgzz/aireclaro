@@ -12,7 +12,6 @@ const LEAD =
   "Conoce al equipo detrás del Observatorio del Aire, comprometido con un aire más limpio.";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Equipo",
   description: LEAD,
   path: "/equipo",
 });

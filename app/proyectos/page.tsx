@@ -9,7 +9,6 @@ import PageShell from "@/components/observatorio/page-shell";
 // styled directly (LinkButton) instead of wrapping a <button>, invalid in an <a>.
 
 export const metadata: Metadata = pageMetadata({
-  title: "Proyectos",
   description: "Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en Nuevo León.",
   path: "/proyectos",
 });

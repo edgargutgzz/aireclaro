@@ -9,7 +9,6 @@ import PageShell from "@/components/observatorio/page-shell";
 // entry in a list instead of a hand-copied block.
 
 export const metadata: Metadata = pageMetadata({
-  title: "Infografías",
   description: "Conoce las infografías que hemos creado para informarnos sobre la calidad del aire en Nuevo León.",
   path: "/infografias",
 });
