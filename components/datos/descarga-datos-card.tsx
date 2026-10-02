@@ -38,7 +38,7 @@ const INFO_TAB: InfoTab = {
           <span className="font-medium text-gray-700">hora:</span> hora de la medición (0 a 23).
         </li>
         <li>
-          <span className="font-medium text-gray-700">sensor_id:</span> clave de la estación en SINAICA.
+          <span className="font-medium text-gray-700">sensor_id:</span> clave de la estación.
         </li>
         <li>
           <span className="font-medium text-gray-700">estacion:</span> nombre de la estación.
@@ -51,7 +51,7 @@ const INFO_TAB: InfoTab = {
           estación no reportó esa hora.
         </li>
         <li>
-          <span className="font-medium text-gray-700">val:</span> indicador de validez de SINAICA. Un dato
+          <span className="font-medium text-gray-700">val:</span> indicador de validez. Un dato
           se considera válido si val = 1 y valor no es negativo.
         </li>
       </ul>
