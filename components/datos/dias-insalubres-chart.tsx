@@ -122,8 +122,8 @@ function infoTab(pollutant: Pollutant, compare: boolean, year: number | null): I
         mes. Para comparar los años con la misma medida, todos se cuentan con
         el límite diario vigente de {desde} µg/m³. Un día se considera sobre la norma de salud
         si alguna estación de monitoreo supera ese límite, y se contabiliza
-        solo si alguna estación reportó mediciones suficientes. Todo lo
-        anterior, con base en la Norma Oficial Mexicana: {NOM_LINK}.
+        solo si alguna estación reportó mediciones suficientes. Con base
+        en la Norma Oficial Mexicana: {NOM_LINK}.
       </>
     ) : (
       <>
