@@ -51,7 +51,7 @@ const INFO_TAB: InfoTab = {
           <span className="font-medium text-gray-700">hora:</span> hora de la medición (0 a 23).
         </li>
         <li>
-          <span className="font-medium text-gray-700">sensor_id:</span> clave de la estación.
+          <span className="font-medium text-gray-700">sensor_id:</span> clave de la estación en SINAICA.
         </li>
         <li>
           <span className="font-medium text-gray-700">estacion:</span> nombre de la estación.
