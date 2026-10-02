@@ -98,7 +98,7 @@ export default function DescargaDatosCard({
 
   return (
     <ChartCard
-      title="Descarga de datos horarios"
+      title="Descarga la base de datos completa"
       subtitle={`Mediciones horarias de PM2.5 y PM10 de las ${estaciones.length} estaciones del SIMA en la Zona Metropolitana de Monterrey.`}
       infoTab={INFO_TAB}
     >
