@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import MapaSensors from "@/components/mapa/mapa-sensors-loader";
 import PurpleAirSensors from "@/components/data/purple-air-sensors";
 import PurpleAirData from "@/components/data/purple-air-data";
@@ -23,7 +24,7 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ sensor?: string | string[] }>;
 }): Promise<Metadata> {
-  const base: Metadata = { title: BASE_TITLE, description: BASE_DESCRIPTION };
+  const base = pageMetadata({ title: BASE_TITLE, description: BASE_DESCRIPTION, path: "/mapa" });
 
   const raw = (await searchParams).sensor;
   const sensorParam = Array.isArray(raw) ? raw[0] : raw;

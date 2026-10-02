@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import PageShell from "@/components/observatorio/page-shell";
 
@@ -10,10 +11,11 @@ import PageShell from "@/components/observatorio/page-shell";
 const LEAD =
   "Conoce al equipo detrás del Observatorio del Aire, comprometido con un aire más limpio.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Equipo",
   description: LEAD,
-};
+  path: "/equipo",
+});
 
 const EQUIPO = [
   { name: "Rosario Álvarez", image: "rosario", puesto: "Directora de Pronatura Noreste A.C." },

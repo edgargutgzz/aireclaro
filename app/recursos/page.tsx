@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import PageShell from "@/components/observatorio/page-shell";
 
@@ -6,11 +7,11 @@ import PageShell from "@/components/observatorio/page-shell";
 // grid. Each card opens its PDF in a new tab. The PDF and cover share a file
 // name, so each entry names it once.
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Recursos",
-  description:
-    "Descarga los documentos e investigaciones que hemos recopilado para entender la calidad del aire en la ciudad.",
-};
+  description: "Descarga los documentos e investigaciones que hemos recopilado para entender la calidad del aire en la ciudad.",
+  path: "/recursos",
+});
 
 const TYPE_COLORS = {
   Comunicado: "bg-green-100",

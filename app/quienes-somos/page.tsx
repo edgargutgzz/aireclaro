@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import FeatureCard from "@/components/observatorio/feature-card";
 import PageShell from "@/components/observatorio/page-shell";
@@ -11,10 +12,11 @@ import PageShell from "@/components/observatorio/page-shell";
 const LEAD =
   "Somos una organización de la sociedad civil dedicada a generar esfuerzos colaborativos y fundamento técnico para mejorar la calidad del aire en Nuevo León.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Quiénes somos",
   description: LEAD,
-};
+  path: "/quienes-somos",
+});
 
 const LINEAS = [
   { image: "/quienes-somos/linea-1.webp", text: "Mejorar el marco normativo." },

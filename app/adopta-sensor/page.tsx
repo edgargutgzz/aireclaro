@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import FeatureCard from "@/components/observatorio/feature-card";
 import LinkButton from "@/components/observatorio/link-button";
 import PageShell from "@/components/observatorio/page-shell";
@@ -10,10 +11,11 @@ import PageShell from "@/components/observatorio/page-shell";
 const LEAD =
   "Únete a la iniciativa adoptando un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Adopta un sensor",
   description: LEAD,
-};
+  path: "/adopta-sensor",
+});
 
 const PASOS = [
   {

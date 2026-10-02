@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { Suspense } from "react";
 import DatosHeader from "@/components/datos/datos-header";
 import DatosHeaderSkeleton from "@/components/datos/datos-header-skeleton";
@@ -20,11 +21,11 @@ import DescargaDatosSkeleton from "@/components/datos/descarga-datos-skeleton";
 // deployment. Forcing dynamic keeps it a per-request (cached) fetch instead.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Calidad del aire",
-  description:
-    "Explora y descarga los datos históricos de calidad del aire del Observatorio del Aire.",
-};
+  description: "Explora y descarga los datos históricos de calidad del aire del Observatorio del Aire.",
+  path: "/datos",
+});
 
 export default function Datos() {
   return (

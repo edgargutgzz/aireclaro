@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import FeatureCard from "@/components/observatorio/feature-card";
 import LinkButton, { type LinkButtonProps } from "@/components/observatorio/link-button";
 import PageShell from "@/components/observatorio/page-shell";
@@ -7,11 +8,11 @@ import PageShell from "@/components/observatorio/page-shell";
 // layout. The six hand-copied cards are one data list here, and the links are
 // styled directly (LinkButton) instead of wrapping a <button>, invalid in an <a>.
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Proyectos",
-  description:
-    "Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en Nuevo León.",
-};
+  description: "Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en Nuevo León.",
+  path: "/proyectos",
+});
 
 type Project = {
   title: string;

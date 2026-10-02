@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import PageShell from "@/components/observatorio/page-shell";
 
@@ -7,11 +8,11 @@ import PageShell from "@/components/observatorio/page-shell";
 // originals), declared at their real portrait ratio, and each card is one
 // entry in a list instead of a hand-copied block.
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Infografías",
-  description:
-    "Conoce las infografías que hemos creado para informarnos sobre la calidad del aire en Nuevo León.",
-};
+  description: "Conoce las infografías que hemos creado para informarnos sobre la calidad del aire en Nuevo León.",
+  path: "/infografias",
+});
 
 const INFOGRAFIAS = [
   {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import PageShell from "@/components/observatorio/page-shell";
 import Link from "next/link";
@@ -8,11 +9,11 @@ import { editoriales, formatEditorialDate, type Editorial } from "./data";
 // grid. An editorial with a PDF opens it in a new tab; one with written
 // content opens its article page (./[slug]).
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Editoriales",
-  description:
-    "Explora nuestras publicaciones y artículos sobre la calidad del aire en la ciudad.",
-};
+  description: "Explora nuestras publicaciones y artículos sobre la calidad del aire en la ciudad.",
+  path: "/editoriales",
+});
 
 const cardClass =
   "transform rounded-lg bg-white p-4 shadow-md transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";

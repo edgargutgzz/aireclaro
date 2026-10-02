@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -23,11 +24,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const article = getArticleBySlug((await params).slug);
   if (!article) return {};
-  return {
+  return pageMetadata({
     title: article.title,
     description: `${article.author}, ${article.newspaper.replace(/^\P{L}+/u, "")}, ${formatEditorialDate(article.date)}.`,
-    openGraph: { images: [{ url: article.image, alt: article.imageAlt }] },
-  };
+    path: `/editoriales/${article.slug}`,
+    images: [{ url: article.image, alt: article.imageAlt }],
+  });
 }
 
 export default async function ArticlePage({
