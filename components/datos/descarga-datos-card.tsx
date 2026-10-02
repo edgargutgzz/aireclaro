@@ -29,10 +29,6 @@ const INFO_TAB: InfoTab = {
   icon: BookOpen,
   body: (
     <div className="space-y-3">
-      <p>
-        Mediciones horarias tal como las publica SINAICA, sin ajustes. Son la base de todas las gráficas
-        de esta página. Se actualizan cada mes, cuando SINAICA cierra el mes anterior.
-      </p>
       <p>Cada fila es una hora de una estación y un contaminante. Columnas:</p>
       <ul className="list-disc space-y-1 pl-5">
         <li>
