@@ -29,7 +29,7 @@ const INFO_TAB: InfoTab = {
   icon: BookOpen,
   body: (
     <div className="space-y-3">
-      <p>Cada fila es una medición horaria de un contaminante en una estación.</p>
+      <p>Cada fila representa una medición horaria de un contaminante en una estación.</p>
       <ul className="list-disc space-y-1 pl-5">
         <li>
           <span className="font-medium text-gray-700">fecha:</span> día de la medición.
