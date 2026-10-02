@@ -64,8 +64,7 @@ const INFO_TAB: InfoTab = {
           estación no reportó esa hora.
         </li>
         <li>
-          <span className="font-medium text-gray-700">val:</span> indicador de validez reportado por SINAICA. Es
-          igual a 1 cuando la medición es válida y está vacío cuando no hay medición.
+          <span className="font-medium text-gray-700">val:</span> indicador de validez reportado por SINAICA.
         </li>
       </ul>
     </div>
