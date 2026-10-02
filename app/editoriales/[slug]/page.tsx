@@ -28,7 +28,6 @@ export async function generateMetadata({
     title: article.title,
     description: `${article.author}, ${article.newspaper.replace(/^\P{L}+/u, "")}, ${formatEditorialDate(article.date)}.`,
     path: `/editoriales/${article.slug}`,
-    ogTitle: article.title,
     images: [{ url: article.image, alt: article.imageAlt }],
   });
 }

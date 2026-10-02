@@ -9,7 +9,7 @@ import { fetchWithFallback } from "@/utils/fetch";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 
-const BASE_TITLE = "Mapa de Calidad del Aire en Monterrey en Tiempo Real";
+const BASE_TITLE = "Mapa de calidad del aire";
 const BASE_DESCRIPTION =
   "Consulta el mapa interactivo de calidad del aire (PM2.5) en Monterrey y Zona Metropolitana. Datos en tiempo real de estaciones SIMA y sensores ciudadanos PurpleAir.";
 
