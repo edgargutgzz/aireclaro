@@ -6,7 +6,6 @@ import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
 import type { InfoTab } from "@/components/datos/info-tabs";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
-import YearToggle from "@/components/datos/year-toggle";
 import SelectMenu from "@/components/datos/select-menu";
 
 interface Estacion {
@@ -85,27 +84,40 @@ export default function DescargaDatosCard({
   const ultimoAnio = Number(ultimaFecha.slice(0, 4));
   const ultimoMes = Number(ultimaFecha.slice(5, 7));
   const years = Array.from({ length: ultimoAnio - FIRST_YEAR + 1 }, (_, i) => FIRST_YEAR + i);
+  // Same pill as the charts' YearToggle, plus "Todos" (every year, one file).
+  const anioOptions: { value: string; label: string }[] = [
+    ...years.map((y) => ({ value: String(y), label: String(y) })),
+    { value: "todos", label: "Todos" },
+  ];
 
-  const [anio, setAnio] = useState(ultimoAnio);
+  const [anio, setAnio] = useState("todos");
   const [parametro, setParametro] = useState<Parametro>("todos");
   const [estacion, setEstacion] = useState("todas");
 
+  // v = the latest loaded month: when the monthly sync adds one, the link
+  // changes, so the CDN can't hand out last month's cached file.
   const href = `/api/datos/sima-horario?${new URLSearchParams({
-    anio: String(anio),
+    anio,
     parametro,
     estacion,
+    v: ultimaFecha.slice(0, 7),
   })}`;
 
   // Size hint: the row grid is complete (an empty hour is still a row), so
   // stations x pollutants x hours is the exact row count.
-  const mesFinal = anio === ultimoAnio ? ultimoMes : 12;
-  const dias = (Date.UTC(anio, mesFinal, 1) - Date.UTC(anio, 0, 1)) / 86_400_000;
+  const anioInicio = anio === "todos" ? FIRST_YEAR : Number(anio);
+  const anioFin = anio === "todos" ? ultimoAnio : Number(anio);
+  const mesFinal = anioFin === ultimoAnio ? ultimoMes : 12;
+  const dias = (Date.UTC(anioFin, mesFinal, 1) - Date.UTC(anioInicio, 0, 1)) / 86_400_000;
   const filas =
     (estacion === "todas" ? estaciones.length : 1) * (parametro === "todos" ? 2 : 1) * dias * 24;
+  const mes = (m: number) => MONTHS_ES_FULL[m - 1].toLowerCase();
   const periodo =
-    mesFinal === 12
-      ? `todo ${anio}`
-      : `${MONTHS_ES_FULL[0].toLowerCase()} a ${MONTHS_ES_FULL[mesFinal - 1].toLowerCase()} de ${anio}`;
+    anioInicio !== anioFin
+      ? `${mes(1)} de ${anioInicio} a ${mes(mesFinal)} de ${anioFin}`
+      : mesFinal === 12
+        ? `todo ${anioFin}`
+        : `${mes(1)} a ${mes(mesFinal)} de ${anioFin}`;
 
   return (
     <ChartCard
@@ -115,7 +127,7 @@ export default function DescargaDatosCard({
     >
       <div className="flex flex-col gap-5 px-5 py-5 lg:flex-row lg:flex-wrap lg:items-end">
         <Field label="Año">
-          <YearToggle years={years} year={anio} onChange={setAnio} />
+          <SegmentedToggle options={anioOptions} value={anio} onChange={setAnio} ariaLabel="Año" />
         </Field>
         <Field label="Contaminante">
           <SegmentedToggle

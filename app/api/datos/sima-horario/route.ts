@@ -4,7 +4,7 @@ import { createPublicClient } from "@/utils/supabase/public";
 // Bulk CSV download of sima_mediciones_finales: the raw hourly readings every
 // /datos chart is computed from, exactly as SINAICA publishes them (no
 // validation or rounding applied here). One tidy row per
-// station/pollutant/date/hour. Filters: ?anio=2025&parametro=PM2.5|PM10|todos
+// station/pollutant/date/hour. Filters: ?anio=2025|todos&parametro=PM2.5|PM10|todos
 // &estacion=<sensor_id>|todas.
 //
 // Streamed, not buffered: a full year of every station and both pollutants is
@@ -12,7 +12,7 @@ import { createPublicClient } from "@/utils/supabase/public";
 // month by month (pages within a month in parallel) and written out as each
 // month arrives. The browser starts the download on the first bytes.
 
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 const PAGE_SIZE = 1000; // PostgREST's max-rows on this project
 const PARAMETROS = ["PM2.5", "PM10"] as const;
@@ -43,13 +43,14 @@ export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const supabase = createPublicClient();
 
-  const anio = Number(params.get("anio"));
+  const anioParam = params.get("anio") ?? "";
+  const anio = anioParam === "todos" ? null : Number(anioParam);
   const parametro = params.get("parametro") ?? "todos";
   const estacion = params.get("estacion") ?? "todas";
 
   const currentYear = new Date().getUTCFullYear();
-  if (!Number.isInteger(anio) || anio < FIRST_YEAR || anio > currentYear) {
-    return badRequest(`anio debe estar entre ${FIRST_YEAR} y ${currentYear}`);
+  if (anio !== null && (!Number.isInteger(anio) || anio < FIRST_YEAR || anio > currentYear)) {
+    return badRequest(`anio debe ser todos o estar entre ${FIRST_YEAR} y ${currentYear}`);
   }
   if (parametro !== "todos" && !(PARAMETROS as readonly string[]).includes(parametro)) {
     return badRequest("parametro debe ser PM2.5, PM10 o todos");
@@ -66,6 +67,21 @@ export async function GET(request: NextRequest) {
   const nombres = new Map((sensores ?? []).map((s) => [s.sensor_id as string, s.nombre_display as string]));
   if (estacion !== "todas" && !nombres.has(estacion)) {
     return badRequest("estacion no reconocida");
+  }
+
+  // Months to read: the chosen year (or every year), stopping at the latest
+  // loaded date, so months with no data yet cost no queries.
+  const { data: ultima, error: ultimaError } = await supabase
+    .from("sima_mediciones_finales")
+    .select("fecha")
+    .order("fecha", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (ultimaError) return new Response("Error al leer las mediciones", { status: 502 });
+  const ultimoMes = ultima ? Number(ultima.fecha.slice(0, 4)) * 12 + Number(ultima.fecha.slice(5, 7)) - 1 : -1;
+  const months: { year: number; month: number }[] = [];
+  for (let y = anio ?? FIRST_YEAR; y <= (anio ?? currentYear); y++) {
+    for (let m = 1; m <= 12 && y * 12 + m - 1 <= ultimoMes; m++) months.push({ year: y, month: m });
   }
 
   const stationIds = estacion === "todas" ? [...nombres.keys()] : [estacion];
@@ -102,10 +118,10 @@ export async function GET(request: NextRequest) {
   // One month of rows, in order. The row grid is complete (a null valor is
   // still a row), so the page count is known up front and fetched in
   // parallel; the loop only continues if that estimate ever falls short.
-  const fetchMonth = async (month: number) => {
-    const desde = `${anio}-${pad2(month)}-01`;
-    const hasta = month === 12 ? `${anio + 1}-01-01` : `${anio}-${pad2(month + 1)}-01`;
-    const days = new Date(Date.UTC(anio, month, 0)).getUTCDate();
+  const fetchMonth = async (year: number, month: number) => {
+    const desde = `${year}-${pad2(month)}-01`;
+    const hasta = month === 12 ? `${year + 1}-01-01` : `${year}-${pad2(month + 1)}-01`;
+    const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
     const expected = Math.ceil((stationIds.length * parametros.length * days * 24) / PAGE_SIZE);
     const pages = await Promise.all(Array.from({ length: expected }, (_, i) => fetchPage(desde, hasta, i)));
     for (let next = expected; pages[pages.length - 1].length === PAGE_SIZE; next++) {
@@ -128,8 +144,8 @@ export async function GET(request: NextRequest) {
       try {
         // BOM so Excel opens the UTF-8 station names (accents) correctly.
         controller.enqueue(encoder.encode("﻿" + HEADER));
-        for (let month = 1; month <= 12; month++) {
-          const rows = await fetchMonth(month);
+        for (const { year, month } of months) {
+          const rows = await fetchMonth(year, month);
           if (rows.length === 0) continue;
           const lines = rows.map((r) =>
             [r.fecha, r.hora, r.sensor_id, nombres.get(r.sensor_id), r.parametro, r.valor, r.val]
@@ -149,7 +165,7 @@ export async function GET(request: NextRequest) {
 
   const slug = [
     "sima-horario",
-    anio,
+    anio ?? "todos",
     parametro === "todos" ? "pm25-pm10" : parametro.replace(".", "").toLowerCase(),
     estacion === "todas" ? "todas" : estacion.toLowerCase(),
   ].join("-");
@@ -158,8 +174,10 @@ export async function GET(request: NextRequest) {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="${slug}.csv"`,
-      // The table only changes once a month (the sync cron, on the 6th), so
-      // a day at the CDN is safe and spares repeat downloads the DB reads.
+      // The table only changes once a month (the sync cron, on the 6th). The
+      // /datos card adds &v=<latest month> to its link, so a new month is a
+      // new URL (a fresh file right away); a day at the CDN spares repeat
+      // downloads the DB reads.
       "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400",
     },
   });
