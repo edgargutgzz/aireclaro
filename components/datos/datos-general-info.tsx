@@ -35,7 +35,7 @@ const TABS: InfoTab[] = [
     body: (
       <>
         La metodología de todas las gráficas sigue la Norma Oficial
-        Mexicana{" "}
+        Mexicana:{" "}
         <a
           href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
           target="_blank"
