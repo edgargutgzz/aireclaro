@@ -51,8 +51,8 @@ const INFO_TAB: InfoTab = {
           estación no reportó esa hora.
         </li>
         <li>
-          <span className="font-medium text-gray-700">val:</span> indicador de validez de SINAICA. Las
-          gráficas solo usan horas con val = 1 y valor no negativo.
+          <span className="font-medium text-gray-700">val:</span> indicador de validez de SINAICA. Un dato
+          se considera válido si val = 1 y valor no es negativo.
         </li>
       </ul>
     </div>
