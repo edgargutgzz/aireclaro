@@ -35,8 +35,7 @@ const INFO_TAB: InfoTab = {
           <span className="font-medium text-gray-700">fecha:</span> día de la medición.
         </li>
         <li>
-          <span className="font-medium text-gray-700">hora:</span> hora de la medición (0 a 23), como la
-          reporta SINAICA.
+          <span className="font-medium text-gray-700">hora:</span> hora de la medición (0 a 23).
         </li>
         <li>
           <span className="font-medium text-gray-700">sensor_id:</span> clave de la estación en SINAICA.
