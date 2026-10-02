@@ -58,7 +58,9 @@ export default function Datos() {
             <PromedioAnualEstacion />
           </Suspense>
         </div>
-        <div className="mt-16">
+        {/* Target of the top bar's "Descargar datos"; scroll-mt leaves a
+            little air above the card when it jumps here. */}
+        <div id="descarga" className="mt-16 scroll-mt-6">
           <Suspense fallback={<DescargaDatosSkeleton />}>
             <DescargaDatos />
           </Suspense>

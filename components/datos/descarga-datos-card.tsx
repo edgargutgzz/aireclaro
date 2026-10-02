@@ -7,6 +7,7 @@ import type { InfoTab } from "@/components/datos/info-tabs";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import YearToggle from "@/components/datos/year-toggle";
+import { PRIMARY_BUTTON_CLASS } from "@/components/datos/primary-button";
 
 interface Estacion {
   sensorId: string;
@@ -139,7 +140,7 @@ export default function DescargaDatosCard({
           <a
             href={href}
             download
-            className="flex h-10 items-center justify-center gap-1.5 rounded-xl bg-gray-800 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className={PRIMARY_BUTTON_CLASS}
           >
             <ArrowDownToLine className="h-4 w-4" aria-hidden />
             Descargar CSV
