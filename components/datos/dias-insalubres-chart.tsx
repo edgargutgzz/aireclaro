@@ -85,13 +85,37 @@ const LEGEND = {
   saludables: { label: "Dentro de la norma", color: COLOR_SALUDABLE },
 };
 
-function infoTab(pollutant: Pollutant): InfoTab {
+const NOM_LINK = (
+  <a
+    href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+  >
+    NOM-025-SSA1-2021
+  </a>
+);
+
+// The comparison view counts every year on today's limit, so it gets its
+// own text: the per-year one explains each year on the limit in force then.
+function infoTab(pollutant: Pollutant, compare: boolean): InfoTab {
   const { antes, desde } = POLLUTANT_LIMITS[pollutant];
   return {
     id: "norma",
     label: "Metodología",
     icon: BookOpen,
-    body: (
+    body: compare ? (
+      <>
+        Cada línea muestra los días sobre la norma de salud de un año, mes por
+        mes. Para comparar los años con la misma medida, todos se cuentan con
+        el límite diario vigente de {desde} µg/m³, aunque en 2025 el límite
+        era de {antes} µg/m³. Por eso las cifras de 2025 aquí pueden ser
+        mayores que en la vista por año. Un día está sobre la norma de salud
+        si alguna estación de monitoreo supera ese límite, y se contabiliza
+        solo si alguna estación reportó mediciones suficientes. Todo lo
+        anterior, con base en la Norma Oficial Mexicana: {NOM_LINK}.
+      </>
+    ) : (
       <>
         Se clasifica un día como sobre la norma de salud si alguna estación de
         monitoreo supera el límite diario, que bajó de {antes} µg/m³ en
@@ -99,16 +123,7 @@ function infoTab(pollutant: Pollutant): InfoTab {
         dentro de la norma. Algunos meses pueden mostrar menos días de los que
         corresponden, ya que un día se contabiliza solo si alguna estación
         de monitoreo reportó mediciones suficientes. Todo lo anterior, con
-        base en la Norma Oficial Mexicana:{" "}
-        <a
-          href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
-        >
-          NOM-025-SSA1-2021
-        </a>
-        .
+        base en la Norma Oficial Mexicana: {NOM_LINK}.
       </>
     ),
   };
@@ -859,7 +874,7 @@ export default function DiasInsalubresChart({
 
   return (
     <ChartCard
-      infoTab={infoTab(pollutant)}
+      infoTab={infoTab(pollutant, compare)}
       title={
         compare
           ? "Comparación de días sobre la norma de salud en la Zona Metropolitana de Monterrey"
