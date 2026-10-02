@@ -9,6 +9,8 @@ import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
 import CoberturaEstacionesSkeleton from "@/components/datos/cobertura-estaciones-skeleton";
 import PromedioAnualEstacion from "@/components/datos/promedio-anual-estacion";
 import PromedioAnualSkeleton from "@/components/datos/promedio-anual-skeleton";
+import DescargaDatos from "@/components/datos/descarga-datos";
+import DescargaDatosSkeleton from "@/components/datos/descarga-datos-skeleton";
 
 // DiasInsalubres reads a cached aggregate (see that component), but the
 // underlying query is occasionally slow/flaky (small Supabase instance,
@@ -54,6 +56,11 @@ export default function Datos() {
         <div className="mt-16">
           <Suspense fallback={<PromedioAnualSkeleton />}>
             <PromedioAnualEstacion />
+          </Suspense>
+        </div>
+        <div className="mt-16">
+          <Suspense fallback={<DescargaDatosSkeleton />}>
+            <DescargaDatos />
           </Suspense>
         </div>
       </div>
