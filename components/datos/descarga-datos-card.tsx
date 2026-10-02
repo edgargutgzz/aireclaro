@@ -32,12 +32,17 @@ const INFO_TAB: InfoTab = {
       <p>Cada fila es una hora de una estación y un contaminante. Columnas:</p>
       <ul className="list-disc space-y-1 pl-5">
         <li>
-          <span className="font-medium text-gray-700">fecha, hora:</span> día y hora (0 a 23) de la medición,
-          como los reporta SINAICA.
+          <span className="font-medium text-gray-700">fecha:</span> día de la medición.
         </li>
         <li>
-          <span className="font-medium text-gray-700">sensor_id, estacion:</span> clave de SINAICA y nombre
-          de la estación.
+          <span className="font-medium text-gray-700">hora:</span> hora de la medición (0 a 23), como la
+          reporta SINAICA.
+        </li>
+        <li>
+          <span className="font-medium text-gray-700">sensor_id:</span> clave de la estación en SINAICA.
+        </li>
+        <li>
+          <span className="font-medium text-gray-700">estacion:</span> nombre de la estación.
         </li>
         <li>
           <span className="font-medium text-gray-700">parametro:</span> contaminante medido, PM2.5 o PM10.
