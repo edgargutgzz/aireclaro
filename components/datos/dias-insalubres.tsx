@@ -22,14 +22,12 @@ export default async function DiasInsalubres() {
 
   return (
     <>
-      {/* The monthly summary leads the page: the headline finding first,
-          the full chart behind it next. */}
+      <DiasInsalubresChart data={chartData} />
       {summary && (
-        <div className="mb-16">
+        <div className="mt-16">
           <DiasInsalubresShare summary={summary} />
         </div>
       )}
-      <DiasInsalubresChart data={chartData} />
     </>
   );
 }

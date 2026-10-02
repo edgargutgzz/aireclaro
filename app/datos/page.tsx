@@ -33,14 +33,14 @@ export default function Datos() {
             <DatosHeader />
           </Suspense>
         </div>
-        {/* DiasInsalubres also renders its monthly summary card, above it. */}
+        {/* DiasInsalubres also renders its monthly summary card below it. */}
         <Suspense
           fallback={
             <>
-              <div className="mb-16">
+              <DiasInsalubresSkeleton />
+              <div className="mt-16">
                 <DiasInsalubresShareSkeleton />
               </div>
-              <DiasInsalubresSkeleton />
             </>
           }
         >
