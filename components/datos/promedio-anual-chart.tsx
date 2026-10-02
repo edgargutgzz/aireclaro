@@ -54,6 +54,15 @@ const NOM_ANUAL_PM25 = 10;
 const OMS_ANUAL_PM25 = 5;
 const OMS_ANUAL_PM10 = 15; // WHO 2021 guidelines (down from 20 in 2005)
 
+// NOM-025-SSA1-2021 §4.2.1.2: the annual figure is a whole number, rounded
+// half up; §4.2.6: a station complies when that number is <= the limit. So
+// round first, then compare, the same order días insalubres uses for daily
+// averages (§4.2.1.1). Comparing the raw mean could label a bar showing "10"
+// as over a limit of 10.
+function sobreLimiteAnual(promedio: number, limite: number) {
+  return Math.round(promedio) > limite;
+}
+
 // Measured/clamped the same way días insalubres sizes its month columns
 // (2026-09-28 feedback: chart 3's bars read as "thin" and out of place next
 // to chart 1's) -- but station names are long and variable ("Garcia: Valle
@@ -300,7 +309,7 @@ function TooltipCard({
   // regardless of whether this station cleared the limit (2026-09-28
   // feedback: the chart didn't visually distinguish "over" from "under" at
   // all, only the subtitle's count and the dashed line's position did).
-  const sobreLimite = bar.promedio > nomAnual;
+  const sobreLimite = sobreLimiteAnual(bar.promedio, nomAnual);
   const color = sobreLimite ? COLOR_INSALUBRE : COLOR_SALUDABLE;
 
   const positionStyle = tooltipPositionStyle(
@@ -469,7 +478,7 @@ function BarsChart({
           // uniformly red chart couldn't visually show which stations were
           // actually over the limit, only the subtitle's count and the
           // dashed line's position could).
-          const sobreLimite = b.promedio > nomAnual;
+          const sobreLimite = sobreLimiteAnual(b.promedio, nomAnual);
           const barColor = sobreLimite ? COLOR_INSALUBRE : COLOR_SALUDABLE;
           const barOpacity = sobreLimite
             ? COLOR_INSALUBRE_FILL_OPACITY
@@ -544,7 +553,7 @@ function BarsChart({
         {bars.map((b) => (
           <li key={b.sensorId}>
             {b.nombre}: {Math.round(b.promedio)} µg/m³ (
-            {b.promedio > nomAnual ? "sobre" : "dentro de"} el límite anual)
+            {sobreLimiteAnual(b.promedio, nomAnual) ? "sobre" : "dentro de"} el límite anual)
           </li>
         ))}
       </ul>
@@ -672,7 +681,7 @@ export default function PromedioAnualChart({
   const nomAnual =
     pollutant === "pm25" ? NOM_ANUAL_PM25 : getLimitAnualPM10(year ?? new Date().getFullYear());
   const omsAnual = pollutant === "pm25" ? OMS_ANUAL_PM25 : OMS_ANUAL_PM10;
-  const sobreLimite = bars.filter((b) => b.promedio > nomAnual).length;
+  const sobreLimite = bars.filter((b) => sobreLimiteAnual(b.promedio, nomAnual)).length;
 
   // Measures the card's own content width so a spotty year (few stations
   // qualifying as bars) spreads them out to fill the card instead of leaving
