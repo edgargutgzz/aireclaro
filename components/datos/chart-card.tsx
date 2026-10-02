@@ -61,7 +61,7 @@ export default function ChartCard({
                 {headerRight}
                 {infoTab && InfoIcon && (
                   // Icon + label, the same tinted h-8 button as the header's
-                  // Comparar / Compartir, dark while open (like Comparar).
+                  // Comparar / Descargar, dark while open (like Comparar).
                   <button
                     type="button"
                     onClick={() => setInfoOpen((o) => !o)}

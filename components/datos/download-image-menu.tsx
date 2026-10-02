@@ -102,7 +102,7 @@ export default function DownloadImageMenu({
         className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
         <ArrowDownToLine className="h-3.5 w-3.5" aria-hidden />
-        Compartir
+        Descargar
       </button>
 
       {open && pos && (
