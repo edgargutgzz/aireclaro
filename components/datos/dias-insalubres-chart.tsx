@@ -777,6 +777,25 @@ export default function DiasInsalubresChart({
   // Rows written before the same-limit count existed read as null.
   const comparisonReady = yearLines.some((l) => l.dias.some((v) => v !== null));
 
+  // The comparison's headline stat: the latest year vs. the year before,
+  // both on today's limit, over only the months both years have (a year in
+  // progress would otherwise lose to a full one by default).
+  const comparisonStat = useMemo(() => {
+    if (yearLines.length < 2) return null;
+    const cur = yearLines[yearLines.length - 1];
+    const prev = yearLines[yearLines.length - 2];
+    const months = cur.dias
+      .map((v, m) => (v !== null && prev.dias[m] !== null ? m : null))
+      .filter((m): m is number => m !== null);
+    if (months.length === 0) return null;
+    return {
+      cur: { ano: cur.ano, total: months.reduce((acc, m) => acc + (cur.dias[m] ?? 0), 0) },
+      prev: { ano: prev.ano, total: months.reduce((acc, m) => acc + (prev.dias[m] ?? 0), 0) },
+      desde: MONTHS_ES_FULL[months[0]].toLowerCase(),
+      hasta: MONTHS_ES_FULL[months[months.length - 1]].toLowerCase(),
+    };
+  }, [yearLines]);
+
   // Builds all 12 months, then drops the trailing run that has no data --
   // the current in-progress month plus whatever hasn't happened yet. Only
   // trailing months are dropped (a real gap mid-year still renders as an
@@ -891,13 +910,20 @@ export default function DiasInsalubresChart({
       }
       subtitle={
         compare ? (
-          // The one limit every line is counted against, per pollutant.
-          <div>
-            {/* "ambos" while there are two years; "todos los" once a third
-                arrives. */}
-            Límite diario: {POLLUTANT_LIMITS[pollutant].desde} µg/m³ en{" "}
-            {years.length === 2 ? "ambos años" : "todos los años"}
-          </div>
+          // Same shape as the per-year stat: the number first, then what it
+          // counts. Current year in its line color.
+          comparisonStat ? (
+            <div>
+              <span style={{ color: COLOR_YEAR_CURRENT }}>{comparisonStat.cur.total}</span> días sobre la
+              norma de salud por {POLLUTANT_LABEL[pollutant]} en {comparisonStat.cur.ano} y{" "}
+              {comparisonStat.prev.total} en {comparisonStat.prev.ano}, de {comparisonStat.desde} a{" "}
+              {comparisonStat.hasta}
+            </div>
+          ) : (
+            <div>
+              Límite diario: {POLLUTANT_LIMITS[pollutant].desde} µg/m³ en todos los años
+            </div>
+          )
         ) : (
           // Each year stands alone against the norm in force that year; no
           // year-over-year line here (NOM-025 tightened on 2025-12-27; the
