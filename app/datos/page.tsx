@@ -22,7 +22,7 @@ import DescargaDatosSkeleton from "@/components/datos/descarga-datos-skeleton";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Calidad del aire",
+  title: "Datos",
   description: "Explora y descarga los datos históricos de calidad del aire del Observatorio del Aire.",
   path: "/datos",
 });
