@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 
 export const SITE_NAME = "Observatorio del Aire";
 
-export const SITE_DESCRIPTION =
-  "Trabajamos por una mejor calidad del aire. Consulta y descarga datos abiertos de la Zona Metropolitana de Monterrey.";
+export const SITE_DESCRIPTION = "Trabajamos por una mejor calidad del aire.";
 
 type OgImages = NonNullable<NonNullable<Metadata["openGraph"]>["images"]>;
 
