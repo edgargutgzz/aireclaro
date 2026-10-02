@@ -925,7 +925,7 @@ export default function DiasInsalubresChart({
                   </span>
                 );
               })()}{" "}
-              que en {comparisonStat.mes} {comparisonStat.prev.ano}
+              que en {comparisonStat.prev.ano}
             </div>
           ) : (
             <div>
