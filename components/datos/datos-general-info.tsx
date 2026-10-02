@@ -44,8 +44,7 @@ const TABS: InfoTab[] = [
         >
           NOM-025-SSA1-2021
         </a>
-        , que establece los valores límite de PM2.5 y PM10 para proteger la
-        salud.
+        .
       </>
     ),
   },
