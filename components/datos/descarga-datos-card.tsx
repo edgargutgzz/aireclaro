@@ -39,7 +39,7 @@ const INFO_TAB: InfoTab = {
         >
           Sistema Nacional de Información de la Calidad del Aire (SINAICA)
         </a>
-        . Los valores se publican tal como los reporta SINAICA.
+        .
       </p>
       <p>Cada fila representa una medición horaria de un contaminante en una estación.</p>
       <ul className="list-disc space-y-1 pl-5">
