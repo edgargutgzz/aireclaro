@@ -249,12 +249,12 @@ export default function Navbar() {
           </Link>
 
           {/* Datos: last, in the action spot, one quiet step up from the other
-              links: the logo's purple (lib/datos-colors.ts BRAND_PURPLE) and
-              semibold, no button shape. */}
+              links: the logo's purple (lib/datos-colors.ts BRAND_PURPLE), no
+              button shape. */}
           <Link
             href="/datos"
             aria-current={current("/datos")}
-            className={`block font-semibold text-[#743479] hover:opacity-75 ${FOCUS} ${isCurrent("/datos") ? CURRENT : ""}`}
+            className={`block text-[#743479] hover:opacity-75 ${FOCUS} ${isCurrent("/datos") ? CURRENT : ""}`}
             onClick={handleLinkClick}
           >
             Datos
