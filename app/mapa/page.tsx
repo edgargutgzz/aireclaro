@@ -28,7 +28,7 @@ export async function generateMetadata({
     title: BASE_TITLE,
     description: BASE_DESCRIPTION,
     path: "/mapa",
-    images: [{ url: "/api/og/mapa?d=2", width: 1200, height: 630, alt: "Mapa de calidad del aire" }],
+    images: [{ url: "/api/og/mapa?d=3", width: 1200, height: 630, alt: "Mapa de calidad del aire" }],
   });
 
   const raw = (await searchParams).sensor;

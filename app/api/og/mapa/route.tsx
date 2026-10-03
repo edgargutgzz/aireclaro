@@ -74,22 +74,17 @@ export async function GET(request: Request) {
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={base} width={W} height={H} alt="" style={{ position: "absolute", left: 0, top: 0 }} />
-            {dots.map((d, i) => (
-              <div
-                key={i}
-                style={{
-                  position: "absolute",
-                  left: d.x - R,
-                  top: d.y - R,
-                  width: R * 2,
-                  height: R * 2,
-                  borderRadius: R,
-                  background: d.fill as string,
-                  border: "2.5px solid #ffffff",
-                  boxShadow: "0 1px 4px rgba(15, 23, 42, 0.35)",
-                }}
-              />
-            ))}
+            {/* One SVG for every disc: ~130 positioned divs with borders and
+                shadows took Satori past the function's time limit. A faint
+                offset circle under each stands in for the drop shadow. */}
+            <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
+              {dots.map((d, i) => (
+                <circle key={`s${i}`} cx={d.x} cy={d.y + 1.5} r={R + 2} fill="#0f172a" fillOpacity={0.18} />
+              ))}
+              {dots.map((d, i) => (
+                <circle key={i} cx={d.x} cy={d.y} r={R} fill={d.fill as string} stroke="#ffffff" strokeWidth={2.5} />
+              ))}
+            </svg>
           </>
         }
         headline={["Mapa de", "calidad del aire"]}
