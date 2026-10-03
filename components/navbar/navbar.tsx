@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, Map, BarChart3 } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 // The site's one navbar, on every page including the map. Copied from
 // observatoriodelaire.com's navbar (components/navbar.tsx there), markup and
@@ -238,30 +238,21 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Datos and Mapa: equal-weight neutral buttons (white, gray border,
-              the menu's dark text); only the icon carries the logo's purple /
-              blue (lib/datos-colors.ts BRAND_PURPLE / BRAND_BLUE). On its own
-              page a button takes a light tint and text in its color, standing
-              in for the text links' underline. */}
-          <Link
-            href="/datos"
-            aria-current={current("/datos")}
-            onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${isCurrent("/datos") ? "border-[#743479]/40 bg-[#743479]/10 text-[#743479]" : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"}`}
-          >
-            <BarChart3 size={14} className="mr-1.5 text-[#743479]" />
-            Datos
-          </Link>
-
-          <Link
-            href="/mapa"
-            aria-current={current("/mapa")}
-            onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${isCurrent("/mapa") ? "border-[#226caf]/40 bg-[#226caf]/10 text-[#226caf]" : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"}`}
-          >
-            <Map size={14} className="mr-1.5 text-[#226caf]" />
-            Mapa
-          </Link>
+          {/* Datos and Mapa: plain menu links like the rest. */}
+          {[
+            { href: "/datos", label: "Datos" },
+            { href: "/mapa", label: "Mapa" },
+          ].map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              aria-current={current(l.href)}
+              className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+              onClick={handleLinkClick}
+            >
+              {l.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Menu Icon for mobile and tablet */}
