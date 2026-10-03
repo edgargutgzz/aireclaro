@@ -7,7 +7,7 @@ import TickerTrack, { type TickerItem } from "./ticker-track";
 // The homepage's live ticker above the navbar (app/@strip), only about the
 // live stations (the map): every official metro station's PM2.5 this hour,
 // dot in the map marker's color, worst first, scrolling, each linking to its
-// station on the map; the label and "Ver mapa" link to the map too. Hidden
+// station on the map; the label links to the map too. Hidden
 // entirely when no station has a fresh reading.
 
 // Inset ring, square: the links are full-height sections of a straight strip.
@@ -45,12 +45,6 @@ export default async function Ticker() {
         </span>
       </Link>
       <TickerTrack items={items} />
-      <Link
-        href="/mapa"
-        className={`hidden shrink-0 items-center border-l border-stone-200 px-4 font-medium text-[#226caf] hover:underline sm:flex lg:px-8 ${FOCUS}`}
-      >
-        Ver mapa →
-      </Link>
     </section>
   );
 }
