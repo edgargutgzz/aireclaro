@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import JsonLd from "@/components/json-ld";
 import { OG_BASE, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
@@ -42,6 +44,15 @@ export default function Home() {
       <JsonLd data={websiteSchema} />
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:px-8">
         <div className="flex flex-col gap-8">
+          {/* A quiet invitation to /datos above the slogan: small, neutral,
+              same 12px radius as the site's other small elements. */}
+          <Link
+            href="/datos"
+            className="group -mb-2 inline-flex w-fit items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-600 shadow-xs transition-colors hover:border-gray-300 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            Datos abiertos de PM2.5 y PM10
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+          </Link>
           <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
             Trabajamos por una mejor{" "}
             <span className="text-[#226caf]">calidad del aire.</span>
