@@ -3,18 +3,12 @@ import { createPublicClient } from "@/utils/supabase/public";
 import {
   fetchDiasInsalubresMensual,
   monthlySummary,
-  MONTHS_ES,
   MONTHS_ES_FULL,
   type MonthData,
   type MonthlySummary,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import {
-  COLOR_INSALUBRE,
-  COLOR_INSALUBRE_FILL_OPACITY,
-  COLOR_SALUDABLE,
-  COLOR_SALUDABLE_FILL_OPACITY,
-} from "@/lib/datos-colors";
+import { COLOR_INSALUBRE, COLOR_YEAR_CURRENT, COLOR_YEAR_PAST } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
@@ -312,70 +306,83 @@ function messageCard(options: ImageOptions, fontSize: number, message: string) {
   );
 }
 
-// The /datos link card, built like the /mapa one: chart 1's bars (this
-// year's months, PM2.5, the chart's default view; months still to come as
-// faint empty tracks) fill the card as its backdrop, and a white wash on the
-// left carries the section's name. It introduces the data section, so it
-// states no single figure; the logo signs it in the corner.
+// The /datos link card, built like the /mapa one: chart 1's comparison
+// view (one line per year, PM2.5, every year counted against today's limit
+// so the lines compare on one yardstick) fills the card as its backdrop:
+// past years gray, this year violet with a soft fill under it. It introduces
+// the data section, so it states no single figure.
 function linkCard(options: ImageOptions, year: number, logo: string | null, months: MonthData[]) {
-  const W = SECTION_CARD.width;
-  const byMonth = new Map(months.filter((m) => m.ano === year).map((m) => [m.mesNumero, m]));
-  const LEFT = 440;
-  const RIGHT = 56;
-  const BOTTOM = 56;
-  const CHART_H = 500;
-  const SLOT = (W - LEFT - RIGHT) / 12;
-  const BAR_W = Math.round(SLOT * 0.62);
-  const scale = CHART_H / 31;
-  const sobre = mixOpacity(COLOR_INSALUBRE, COLOR_INSALUBRE_FILL_OPACITY);
-  const dentro = mixOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY);
+  const { width: W, height: H } = SECTION_CARD;
+  const X0 = 470;
+  const X1 = W - 70;
+  const Y0 = 70;
+  const Y1 = H - 70;
+  const years = [year - 1, year];
+  const series = years.map((y) =>
+    months
+      .filter((m) => m.ano === y)
+      .sort((a, b) => a.mesNumero - b.mesNumero)
+      .map((m) => ({ mes: m.mesNumero, v: m.diasInsalubresLimiteActual ?? m.diasInsalubres })),
+  );
+  const max = Math.max(10, ...series.flat().map((p) => p.v));
+  const x = (mes: number) => X0 + ((mes - 1) / 11) * (X1 - X0);
+  const yPos = (v: number) => Y1 - (v / max) * (Y1 - Y0);
+  const pts = (s: { mes: number; v: number }[]) => s.map((p) => [x(p.mes), yPos(p.v)] as const);
 
-  const backdrop = MONTHS_ES.map((label, i) => {
-    const m = byMonth.get(i + 1);
-    const left = LEFT + i * SLOT + (SLOT - BAR_W) / 2;
-    return (
-      <div
-        key={label}
-        style={{ position: "absolute", left, bottom: BOTTOM, width: BAR_W, display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        {/* Satori flattens fragments into the parent row, so the two
-            segments sit in their own column. Same marks as chart 1:
-            sobre la norma at the base, a 2px white gap between segments,
-            only the top of the stack rounded. */}
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", width: BAR_W, height: CHART_H }}>
-          {m ? (
-            <div style={{ display: "flex", flexDirection: "column", width: BAR_W, gap: m.diasInsalubres > 0 && m.diasInsalubres < m.diasTotales ? 2 : 0 }}>
-              {m.diasTotales > m.diasInsalubres ? (
-                <div style={{ display: "flex", width: BAR_W, height: (m.diasTotales - m.diasInsalubres) * scale, background: dentro, borderRadius: "5px 5px 0 0" }} />
-              ) : null}
-              {m.diasInsalubres > 0 ? (
-                <div style={{ display: "flex", width: BAR_W, height: m.diasInsalubres * scale, background: sobre, borderRadius: m.diasTotales === m.diasInsalubres ? "5px 5px 0 0" : 0 }} />
-              ) : null}
-            </div>
-          ) : (
-            <div style={{ display: "flex", width: BAR_W, height: 30 * scale, borderRadius: "5px 5px 0 0", background: "#f3f4f6" }} />
-          )}
-        </div>
-      </div>
-    );
-  });
+  const backdrop = (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
+      {[0, 0.25, 0.5, 0.75, 1].map((t) => (
+        <line key={t} x1={X0} x2={X1} y1={Y1 - t * (Y1 - Y0)} y2={Y1 - t * (Y1 - Y0)} stroke="#eef0f3" strokeWidth={2} />
+      ))}
+      {series.map((s, i) => {
+        const p = pts(s);
+        if (p.length < 2) return null;
+        const d = smoothPath(p);
+        const current = years[i] === year;
+        return (
+          <g key={years[i]}>
+            {current ? (
+              <path d={`${d} L ${p[p.length - 1][0]} ${Y1} L ${p[0][0]} ${Y1} Z`} fill={COLOR_YEAR_CURRENT} fillOpacity={0.12} />
+            ) : null}
+            <path d={d} fill="none" stroke={current ? COLOR_YEAR_CURRENT : COLOR_YEAR_PAST} strokeWidth={current ? 7 : 6} strokeLinecap="round" strokeLinejoin="round" />
+            {current
+              ? p.map(([cx, cy], k) => (
+                  <circle key={k} cx={cx} cy={cy} r={k === p.length - 1 ? 11 : 7} fill={COLOR_YEAR_CURRENT} stroke="#ffffff" strokeWidth={3} />
+                ))
+              : null}
+          </g>
+        );
+      })}
+    </svg>
+  );
 
   return new ImageResponse(
-    (
-      <SectionCard
-        backdrop={backdrop}
-        headline={["Datos de", "calidad del aire"]}
-        logo={logo}
-      />
-    ),
+    <SectionCard backdrop={backdrop} headline={["Datos de", "calidad del aire"]} logo={logo} />,
     options,
   );
 }
 
-// The chart's translucent fills, flattened onto white (Satori draws opacity
-// fine, but a flat color keeps the stacked edges crisp).
-function mixOpacity(hex: string, alpha: number) {
-  const n = parseInt(hex.slice(1), 16);
-  const ch = (v: number) => Math.round(255 - (255 - v) * alpha);
-  return `rgb(${ch((n >> 16) & 255)}, ${ch((n >> 8) & 255)}, ${ch(n & 255)})`;
+// A gentle curve through the points that never overshoots them (monotone
+// cubic, Fritsch-Carlson; the same idea as d3's curveMonotoneX): between two
+// months the line stays within their two values, so the curve can't invent
+// a peak or dip the data doesn't have.
+function smoothPath(p: readonly (readonly [number, number])[]) {
+  const n = p.length;
+  const dx = (i: number) => p[i + 1][0] - p[i][0];
+  const slope = (i: number) => (p[i + 1][1] - p[i][1]) / dx(i);
+  const m: number[] = new Array(n);
+  m[0] = slope(0);
+  m[n - 1] = slope(n - 2);
+  for (let i = 1; i < n - 1; i++) {
+    const a = slope(i - 1);
+    const b = slope(i);
+    m[i] = a * b <= 0 ? 0 : (3 * (dx(i - 1) + dx(i))) / ((2 * dx(i) + dx(i - 1)) / a + (dx(i) + 2 * dx(i - 1)) / b);
+  }
+  let d = `M ${p[0][0]} ${p[0][1]}`;
+  for (let i = 0; i < n - 1; i++) {
+    const h = dx(i) / 3;
+    d += ` C ${p[i][0] + h} ${p[i][1] + h * m[i]}, ${p[i + 1][0] - h} ${p[i + 1][1] - h * m[i + 1]}, ${p[i + 1][0]} ${p[i + 1][1]}`;
+  }
+  return d;
 }
+

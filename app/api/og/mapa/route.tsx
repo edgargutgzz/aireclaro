@@ -4,6 +4,7 @@ import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import { getMarkerFillHex } from "@/lib/air-quality";
+import { monterreyNaiveHoursAgo } from "@/lib/monterrey-time";
 import { loadOgLogo, ogLogoAt } from "@/lib/og-logo";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 import { loadInterFonts } from "@/lib/og-fonts";
@@ -47,7 +48,10 @@ export async function GET(request: Request) {
     loadInterFonts(GLYPHS),
   ]);
 
-  const cutoff = Date.now() - FRESH_HOURS * 3_600_000;
+  // time_stamp is naive Monterrey wall-clock, so the cutoff is built in the
+  // same naive terms (the server runs in UTC; a Date comparison would read
+  // every reading as six hours old and drop them all).
+  const cutoff = monterreyNaiveHoursAgo(FRESH_HOURS);
   const latest = new Map<string, Reading>();
   for (const r of [...(paData as Reading[]), ...(simaData as Reading[])]) {
     if (!latest.has(String(r.sensor_id))) latest.set(String(r.sensor_id), r);
@@ -56,7 +60,7 @@ export async function GET(request: Request) {
   const dots = [...(pa as Sensor[]), ...(sima as Sensor[])]
     .map((s) => {
       const r = latest.get(String(s.sensor_id));
-      const fill = r && new Date(r.time_stamp).getTime() >= cutoff ? getMarkerFillHex(r.pm25) : null;
+      const fill = r && r.time_stamp >= cutoff ? getMarkerFillHex(r.pm25) : null;
       const p = project(s.lon, s.lat);
       return { fill, x: p.x - c.x + W / 2, y: p.y - c.y + H / 2 };
     })

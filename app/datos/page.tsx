@@ -36,7 +36,9 @@ const DATOS_DESCRIPTION = "Explora y descarga los datos históricos de calidad d
 export async function generateMetadata(): Promise<Metadata> {
   const ultimo = await fetchUltimoMes().catch(() => null);
   if (!ultimo) return pageMetadata({ title: DATOS_TITLE, description: DATOS_DESCRIPTION, path: "/datos" });
-  const image = `/api/og/dias-insalubres?format=link&year=${ultimo.ano}&mes=${ultimo.mes}`;
+  // d= is the card design's version: bump it when the design changes so chat
+  // apps (which cache per image URL) fetch the new one.
+  const image = `/api/og/dias-insalubres?format=link&year=${ultimo.ano}&mes=${ultimo.mes}&d=2`;
   return pageMetadata({
     title: DATOS_TITLE,
     description: DATOS_DESCRIPTION,
