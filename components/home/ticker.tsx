@@ -40,10 +40,7 @@ export default async function Ticker() {
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00a400]" />
         </span>
-        <span>
-          <span className="hidden sm:inline">Calidad del aire</span>
-          <span className="sm:hidden">En vivo</span> · {horaDeLectura(stations)}
-        </span>
+        En vivo · {horaDeLectura(stations)}
       </Link>
       <TickerTrack items={items} />
     </section>
