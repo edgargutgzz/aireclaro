@@ -222,24 +222,25 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Datos: the primary action, solid in the logo's purple
-              (lib/datos-colors.ts BRAND_PURPLE). */}
+          {/* Datos and Mapa: equal weight, a tint in the logo's purple / blue
+              (lib/datos-colors.ts BRAND_PURPLE / BRAND_BLUE). The border is the
+              current-page marker here, in place of the text links' underline;
+              it stays transparent otherwise so the button never resizes. */}
           <Link
             href="/datos"
             aria-current={current("/datos")}
             onClick={handleLinkClick}
-            className="flex w-fit items-center rounded-xl border border-[#743479] bg-[#743479] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold text-[#743479] transition-colors bg-[#743479]/10 hover:bg-[#743479]/15 ${isCurrent("/datos") ? "border-[#743479]" : "border-transparent"}`}
           >
             <BarChart3 size={14} className="mr-1.5" />
             Datos
           </Link>
 
-          {/* Mapa: secondary, outlined in the logo's blue (BRAND_BLUE). */}
           <Link
             href="/mapa"
             aria-current={current("/mapa")}
             onClick={handleLinkClick}
-            className="flex w-fit items-center rounded-xl border border-[#226caf]/60 bg-[#226caf]/10 px-4 py-2 text-sm font-semibold text-[#226caf] transition-opacity hover:opacity-80"
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold text-[#226caf] transition-colors bg-[#226caf]/10 hover:bg-[#226caf]/15 ${isCurrent("/mapa") ? "border-[#226caf]" : "border-transparent"}`}
           >
             <Map size={14} className="mr-1.5" />
             Mapa
