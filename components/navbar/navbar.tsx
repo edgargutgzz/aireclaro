@@ -146,7 +146,7 @@ export default function Navbar() {
               />
             </button>
             {menuState.isPublicacionesSubmenuOpen && (
-              <div className="mt-2 flex flex-col gap-4 pl-4 lg:absolute lg:w-40 lg:rounded-md lg:border lg:bg-white lg:p-4 lg:pl-4 lg:shadow-md">
+              <div className="mt-2 flex flex-col gap-4 pl-4 lg:absolute lg:w-40 lg:rounded-2xl lg:border lg:bg-white lg:p-4 lg:pl-4 lg:shadow-md">
                 <Link
                   href="/infografias"
                   className="block hover:text-gray-500"
@@ -185,7 +185,7 @@ export default function Navbar() {
               />
             </button>
             {menuState.isSubmenuOpen && (
-              <div className="mt-2 flex flex-col gap-4 pl-4 lg:absolute lg:w-40 lg:rounded-md lg:border lg:bg-white lg:p-4 lg:pl-4 lg:shadow-md">
+              <div className="mt-2 flex flex-col gap-4 pl-4 lg:absolute lg:w-40 lg:rounded-2xl lg:border lg:bg-white lg:p-4 lg:pl-4 lg:shadow-md">
                 <Link
                   href="/quienes-somos"
                   className="block hover:text-gray-500"
@@ -208,7 +208,7 @@ export default function Navbar() {
           <Link
             href="/datos"
             onClick={handleLinkClick}
-            className="flex w-fit items-center rounded-2xl border px-4 py-2 text-sm font-semibold backdrop-blur-md transition-colors hover:opacity-80"
+            className="flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold backdrop-blur-md transition-colors hover:opacity-80"
             style={{
               borderColor: "rgba(123, 54, 153, 0.6)",
               backgroundColor: "rgba(123, 54, 153, 0.1)",
@@ -223,7 +223,7 @@ export default function Navbar() {
           <Link
             href="/mapa"
             onClick={handleLinkClick}
-            className="flex w-fit items-center rounded-2xl border px-4 py-2 text-sm font-semibold backdrop-blur-md transition-colors hover:opacity-80"
+            className="flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold backdrop-blur-md transition-colors hover:opacity-80"
             style={{
               borderColor: "rgba(14, 165, 233, 0.6)",
               backgroundColor: "rgba(14, 165, 233, 0.1)",

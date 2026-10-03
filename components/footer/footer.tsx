@@ -56,7 +56,7 @@ export default function Footer() {
         <Link
           href="https://datacomun.com"
           target="_blank"
-          className="self-start flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-xs transition-all hover:border-gray-300 hover:shadow-sm whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="self-start flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-xs transition-all hover:border-gray-300 hover:shadow-sm whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           Diseño y desarrollo por
           <span className="font-medium">
