@@ -248,13 +248,11 @@ export default function Navbar() {
             Mapa
           </Link>
 
-          {/* Datos: last, in the action spot, one quiet step up from the other
-              links: the logo's purple (lib/datos-colors.ts BRAND_PURPLE), no
-              button shape. */}
+          {/* Datos: last, the action spot. */}
           <Link
             href="/datos"
             aria-current={current("/datos")}
-            className={`block text-[#743479] hover:opacity-75 ${FOCUS} ${isCurrent("/datos") ? CURRENT : ""}`}
+            className={`block hover:text-gray-500 ${FOCUS} ${isCurrent("/datos") ? CURRENT : ""}`}
             onClick={handleLinkClick}
           >
             Datos

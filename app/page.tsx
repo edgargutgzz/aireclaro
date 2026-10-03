@@ -3,6 +3,7 @@ import JsonLd from "@/components/json-ld";
 import { OG_BASE, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import AirQualitySlider from "@/components/home/air-quality-slider";
+import DatosEnCifras from "@/components/home/datos-en-cifras";
 
 // Homepage. The hero is ported from observatoriodelaire.com's homepage. The map
 // lives at /mapa; proxy.ts sends embeds and legacy map links that still point
@@ -38,6 +39,7 @@ const websiteSchema = {
 
 export default function Home() {
   return (
+    <>
     <div className="flex min-h-screen items-center">
       <JsonLd data={websiteSchema} />
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:px-8">
@@ -63,5 +65,7 @@ export default function Home() {
         </div>
       </div>
     </div>
+    <DatosEnCifras />
+    </>
   );
 }
