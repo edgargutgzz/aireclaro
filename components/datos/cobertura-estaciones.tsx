@@ -58,7 +58,7 @@ function compactar(rows: CoberturaRow[]): CoberturaCompacta {
 
 // Cached already packed: the compact form is what's worth keeping (the raw
 // rows are ~1.4 MB, close to the data cache's per-item limit).
-const fetchCoberturaCompacta = cachedDatos(
+export const fetchCoberturaCompacta = cachedDatos(
   async () => compactar(await fetchAllCobertura(createPublicClient())),
   "cobertura",
 );

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import JsonLd from "@/components/json-ld";
-import { SITE_NAME } from "@/lib/metadata";
+import { OG_BASE, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import AirQualitySlider from "@/components/home/air-quality-slider";
 
@@ -12,6 +12,15 @@ import AirQualitySlider from "@/components/home/air-quality-slider";
 // one this short, and its canonical (see lib/metadata.ts for why that isn't
 // set in the layout).
 export const metadata: Metadata = {
+  // The link card is set here, not inherited, so the homepage gets its own
+  // image (app/api/og/home); Next replaces the layout's openGraph wholesale.
+  openGraph: {
+    ...OG_BASE,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: "/",
+    images: [{ url: "/api/og/home", width: 1200, height: 630, alt: SITE_NAME }],
+  },
   description:
     "Observatorio ciudadano de la calidad del aire en la Zona Metropolitana de Monterrey, con mapa en vivo, datos abiertos de PM2.5 y PM10, análisis y editoriales.",
   alternates: { canonical: "/" },

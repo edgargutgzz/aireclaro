@@ -3,14 +3,22 @@ import { createPublicClient } from "@/utils/supabase/public";
 import {
   fetchDiasInsalubresMensual,
   monthlySummary,
+  MONTHS_ES,
   MONTHS_ES_FULL,
+  type MonthData,
   type MonthlySummary,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE } from "@/lib/datos-colors";
+import {
+  COLOR_INSALUBRE,
+  COLOR_INSALUBRE_FILL_OPACITY,
+  COLOR_SALUDABLE,
+  COLOR_SALUDABLE_FILL_OPACITY,
+} from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
+import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 
 // The downloadable, branded version of the /datos monthly summary card
 // (components/datos/dias-insalubres-share.tsx, via its download menu) --
@@ -39,12 +47,12 @@ const PAST_NUMBER_COLOR = "#9ca3af";
 
 
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Se registraron más menos los mismos que el sobre la norma frente PM2.5 PM10 Partículas finas gruesas Días en que las partículas en el aire superaron el límite para proteger la salud. Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
+  "Datos abiertos Gráficas descargas Dentro Ene Feb Mar Abr May Jun Jul Ago Sep Oct Nov Dic Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com días sobre la norma en el mismo periodo de los superaron Se registraron más menos los mismos que el sobre la norma frente PM2.5 PM10 Partículas finas gruesas Días en que las partículas en el aire superaron el límite para proteger la salud. Con base en NOM-025-SSA1-2021 Aún no hay datos para este año Fuente Gobierno Nuevo León Zona Metropolitana Monterrey No se pudo generar la imagen Falta el año";
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
 // The link-preview size every chat app and social network unfurls.
-const LINK_CARD = { width: 1200, height: 630 };
+const LINK_CARD = SECTION_CARD;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -90,9 +98,11 @@ export async function GET(request: Request) {
   // Both pollutants on one image: one share, one message (monthlySummary
   // in the aggregate lib, shared with the /datos summary card).
   let summary: MonthlySummary | null;
+  let chartData: Record<Pollutant, MonthData[]>;
   try {
     const supabase = createPublicClient();
-    summary = monthlySummary(await fetchDiasInsalubresMensual(supabase), year);
+    chartData = await fetchDiasInsalubresMensual(supabase);
+    summary = monthlySummary(chartData, year);
   } catch {
     return messageCard(options, px(32), "No se pudo generar la imagen.");
   }
@@ -102,7 +112,7 @@ export async function GET(request: Request) {
   const { mes, rows: rowsOut, hasPrior, headline: headlineLines } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
 
-  if (isLinkCard) return linkCard(options, summary, year, logo);
+  if (isLinkCard) return linkCard(options, year, logo, chartData.pm25);
 
   // This year's number is always red: any day of polluted air is bad news,
   // even in a month with fewer of them than a year earlier (the headline
@@ -302,120 +312,75 @@ function messageCard(options: ImageOptions, fontSize: number, message: string) {
   );
 }
 
-// The /datos link card: logo, then the headline on the left and both
-// pollutants' numbers on the right, source along the bottom. A preview shows
-// at roughly a third of this size, so type runs larger relative to the canvas
-// than on the download formats, and the source is one line.
-function linkCard(options: ImageOptions, summary: MonthlySummary, year: number, logo: string | null) {
-  const { mes, rows, hasPrior, headline } = summary;
-  const mesNombre = MONTHS_ES_FULL[mes - 1];
-  const years = hasPrior ? [year - 1, year] : [year];
-  // Inter runs ~0.49em per character here: 38px fits a 30-character line in
-  // the 580px column, and longer lines ("más días sobre la norma de salud",
-  // 32) scale down in proportion so none wraps.
-  const longestLine = Math.max(...headline.map((l) => l.length));
-  const headlineSize = Math.floor(Math.min(38, (38 * 30) / longestLine));
-  const LABEL_COL = 150;
-  const NUMBER_SIZE = 76;
-  const LABEL_SIZE = 15;
-  const baseLift = Math.round(0.135 * (NUMBER_SIZE - LABEL_SIZE));
+// The /datos link card, built like the /mapa one: chart 1's bars (this
+// year's months, PM2.5, the chart's default view; months still to come as
+// faint empty tracks) fill the card as its backdrop, and a white wash on the
+// left carries the section's name. It introduces the data section, so it
+// states no single figure; the logo signs it in the corner.
+function linkCard(options: ImageOptions, year: number, logo: string | null, months: MonthData[]) {
+  const W = SECTION_CARD.width;
+  const byMonth = new Map(months.filter((m) => m.ano === year).map((m) => [m.mesNumero, m]));
+  const LEFT = 440;
+  const RIGHT = 56;
+  const BOTTOM = 64;
+  const CHART_H = 470;
+  const SLOT = (W - LEFT - RIGHT) / 12;
+  const BAR_W = Math.round(SLOT * 0.62);
+  const scale = CHART_H / 31;
+  const sobre = mixOpacity(COLOR_INSALUBRE, COLOR_INSALUBRE_FILL_OPACITY);
+  const dentro = mixOpacity(COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY);
+
+  const backdrop = MONTHS_ES.map((label, i) => {
+    const m = byMonth.get(i + 1);
+    const left = LEFT + i * SLOT + (SLOT - BAR_W) / 2;
+    return (
+      <div
+        key={label}
+        style={{ position: "absolute", left, bottom: BOTTOM - 30, width: BAR_W, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}
+      >
+        {/* Satori flattens fragments into the parent row, so the two
+            segments sit in their own column. Same marks as chart 1:
+            sobre la norma at the base, a 2px white gap between segments,
+            only the top of the stack rounded. */}
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", width: BAR_W, height: CHART_H }}>
+          {m ? (
+            <div style={{ display: "flex", flexDirection: "column", width: BAR_W, gap: m.diasInsalubres > 0 && m.diasInsalubres < m.diasTotales ? 2 : 0 }}>
+              {m.diasTotales > m.diasInsalubres ? (
+                <div style={{ display: "flex", width: BAR_W, height: (m.diasTotales - m.diasInsalubres) * scale, background: dentro, borderRadius: "5px 5px 0 0" }} />
+              ) : null}
+              {m.diasInsalubres > 0 ? (
+                <div style={{ display: "flex", width: BAR_W, height: m.diasInsalubres * scale, background: sobre, borderRadius: m.diasTotales === m.diasInsalubres ? "5px 5px 0 0" : 0 }} />
+              ) : null}
+            </div>
+          ) : (
+            <div style={{ display: "flex", width: BAR_W, height: 30 * scale, borderRadius: "5px 5px 0 0", background: "#f3f4f6" }} />
+          )}
+        </div>
+        <div style={{ display: "flex", fontSize: 15, color: m ? "#6b7280" : "#c4c8cf" }}>{label}</div>
+      </div>
+    );
+  });
 
   return new ImageResponse(
     (
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", background: "#ffffff", fontFamily: "Inter" }}>
-        <div style={{ height: 12, background: OG_BRAND_BLUE }} />
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "44px 64px 36px" }}>
-          {logo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={logo} width={OG_LOGO.width} height={OG_LOGO.height} alt="" />
-          ) : (
-            <div style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#111827" }}>Observatorio del Aire</div>
-          )}
-
-          <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 48 }}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                width: 580,
-                flexShrink: 0,
-                fontSize: headlineSize,
-                fontWeight: 600,
-                color: "#1f2937",
-                lineHeight: 1.18,
-              }}
-            >
-              {headline.map((line) => (
-                <div key={line} style={{ display: "flex" }}>
-                  {line}
-                </div>
-              ))}
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 26 }}>
-              <div style={{ display: "flex", fontSize: 17, fontWeight: 600, color: "#6b7280" }}>
-                <div style={{ display: "flex", width: LABEL_COL }} />
-                {years.map((y) => (
-                  <div key={y} style={{ display: "flex", flex: 1 }}>
-                    {mesNombre} {y}
-                  </div>
-                ))}
-              </div>
-              {rows.map((r) => (
-                <div key={r.pollutant} style={{ display: "flex", alignItems: "flex-end" }}>
-                  <div style={{ display: "flex", flexDirection: "column", width: LABEL_COL, lineHeight: 1, gap: 6, paddingBottom: baseLift }}>
-                    <div style={{ display: "flex", fontSize: 24, fontWeight: 600, color: "#374151" }}>
-                      {POLLUTANT_LABEL[r.pollutant]}
-                    </div>
-                    <div style={{ display: "flex", fontSize: LABEL_SIZE, color: "#9ca3af" }}>Límite: {r.limit} µg/m³</div>
-                  </div>
-                  {years.map((y) => (
-                    <div
-                      key={y}
-                      style={{
-                        display: "flex",
-                        flex: 1,
-                        fontSize: NUMBER_SIZE,
-                        fontWeight: 700,
-                        lineHeight: 1,
-                        color: y === year ? COLOR_INSALUBRE : PAST_NUMBER_COLOR,
-                      }}
-                    >
-                      {y === year ? r.current : (r.prior as number)}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingTop: 20,
-              borderTop: "2px solid #e5e7eb",
-              fontSize: 17,
-              color: "#6b7280",
-            }}
-          >
-            {/* Same two sources as the download formats, as drawn-dot items
-                on one line. */}
-            <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-              <div style={{ display: "flex", color: "#9ca3af" }}>Fuente</div>
-              {["SIMA de Nuevo León", "NOM-025-SSA1-2021"].map((src) => (
-                <div key={src} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ display: "flex", width: 5, height: 5, borderRadius: 5, background: "#9ca3af" }} />
-                  {src}
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "flex", fontWeight: 600 }}>observatoriodelaire.com</div>
-          </div>
-        </div>
-      </div>
+      <SectionCard
+        backdrop={backdrop}
+        eyebrow="Datos abiertos"
+        accent={OG_BRAND_BLUE}
+        marker="square"
+        headline={["Datos de", "calidad del aire"]}
+        lines={["Gráficas y descargas de la", "Zona Metropolitana de Monterrey"]}
+        logo={logo}
+      />
     ),
     options,
   );
+}
+
+// The chart's translucent fills, flattened onto white (Satori draws opacity
+// fine, but a flat color keeps the stacked edges crisp).
+function mixOpacity(hex: string, alpha: number) {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = (v: number) => Math.round(255 - (255 - v) * alpha);
+  return `rgb(${ch((n >> 16) & 255)}, ${ch((n >> 8) & 255)}, ${ch(n & 255)})`;
 }

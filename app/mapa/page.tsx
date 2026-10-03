@@ -24,7 +24,12 @@ export async function generateMetadata({
 }: {
   searchParams: Promise<{ sensor?: string | string[] }>;
 }): Promise<Metadata> {
-  const base = pageMetadata({ title: BASE_TITLE, description: BASE_DESCRIPTION, path: "/mapa" });
+  const base = pageMetadata({
+    title: BASE_TITLE,
+    description: BASE_DESCRIPTION,
+    path: "/mapa",
+    images: [{ url: "/api/og/mapa", width: 1200, height: 630, alt: "Mapa de calidad del aire" }],
+  });
 
   const raw = (await searchParams).sensor;
   const sensorParam = Array.isArray(raw) ? raw[0] : raw;
