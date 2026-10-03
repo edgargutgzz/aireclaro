@@ -64,4 +64,4 @@ export const DATA_LICENSE = {
 };
 
 export const DATA_CITATION =
-  "Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey. Calidad del aire (PM2.5 y PM10) en la Zona Metropolitana de Monterrey. Con datos de SINAICA (INECC). https://www.observatoriodelaire.com/datos";
+  "Observatorio Ciudadano de la Calidad del Aire. Calidad del aire (PM2.5 y PM10) en la Zona Metropolitana de Monterrey. Con datos de SINAICA (INECC). https://www.observatoriodelaire.com/datos";
