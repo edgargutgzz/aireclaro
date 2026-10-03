@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { fetchCoberturaCompacta } from "@/components/datos/cobertura-estaciones";
-import { BRAND_BLUE, COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY } from "@/lib/datos-colors";
-import { loadOgLogo } from "@/lib/og-logo";
+import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY } from "@/lib/datos-colors";
+import { loadOgLogo, ogLogoAt } from "@/lib/og-logo";
 import { loadInterFonts } from "@/lib/og-fonts";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 
@@ -15,17 +15,14 @@ const GLYPHS =
 
 export async function GET(request: Request) {
   const v = new URL(request.url).searchParams.get("v") === "b" ? "b" : "a";
-  const [logo, fonts] = await Promise.all([loadOgLogo(request.url), loadInterFonts(GLYPHS)]);
+  const [logo, fonts] = await Promise.all([loadOgLogo(request.url, ogLogoAt(65)), loadInterFonts(GLYPHS)]);
   const backdrop = v === "a" ? photo(request.url) : await coverage();
 
   return new ImageResponse(
     (
       <SectionCard
         backdrop={backdrop}
-        eyebrow="Observatorio ciudadano"
-        accent={BRAND_BLUE}
         headline={["Trabajamos por", "una mejor calidad", "del aire."]}
-        lines={["Mapa en tiempo real y datos abiertos de la", "Zona Metropolitana de Monterrey"]}
         logo={logo}
       />
     ),

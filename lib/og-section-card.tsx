@@ -1,28 +1,25 @@
 import type { ReactNode } from "react";
-import { OG_LOGO } from "@/lib/og-logo";
+import { ogLogoAt } from "@/lib/og-logo";
+
+// The 65px file, the largest pre-shrunk logo: ~18px tall in a phone preview.
+const LOGO = ogLogoAt(65);
 
 // The shared frame of the section link cards (Inicio, Mapa, Datos): a
 // full-bleed backdrop showing what the link opens, a white wash on the left
-// fading into it, the section's eyebrow + name + one supporting line over the
-// wash, and the logo as a signature in the bottom-left corner. Each route
-// draws only its backdrop and words. 1200x630, the link-preview size.
+// fading into it, one big headline over the wash, and the logo as a
+// signature in the bottom-left corner. Nothing smaller: a chat preview shows
+// this at ~330px wide, where anything under ~50px tall here is unreadable,
+// and the app prints the title and description under the image anyway.
+// Each route draws only its backdrop and headline. 1200x630.
 export const SECTION_CARD = { width: 1200, height: 630 };
 
 export function SectionCard({
   backdrop,
-  eyebrow,
-  accent,
-  marker = "dot",
   headline,
-  lines,
   logo,
 }: {
   backdrop: ReactNode;
-  eyebrow: string;
-  accent: string;
-  marker?: "dot" | "square";
   headline: string[];
-  lines: string[];
   logo: string | null;
 }) {
   const { width: W, height: H } = SECTION_CARD;
@@ -34,34 +31,36 @@ export function SectionCard({
           position: "absolute",
           left: 0,
           top: 0,
-          width: 600,
+          width: 680,
           height: H,
           backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.9) 55%, rgba(255,255,255,0) 100%)",
         }}
       />
-      <div style={{ position: "absolute", left: 64, top: 0, height: H, display: "flex", flexDirection: "column", justifyContent: "center", gap: 18 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 20, fontWeight: 600, color: accent }}>
-          <div style={{ display: "flex", width: 12, height: 12, borderRadius: marker === "dot" ? 6 : 3, background: accent }} />
-          {eyebrow}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", fontSize: 58, fontWeight: 700, color: "#111827", lineHeight: 1.05, letterSpacing: -1.5 }}>
-          {headline.map((l) => (
-            <div key={l} style={{ display: "flex" }}>
-              {l}
-            </div>
-          ))}
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", fontSize: 22, color: "#4b5563", lineHeight: 1.35 }}>
-          {lines.map((l) => (
-            <div key={l} style={{ display: "flex" }}>
-              {l}
-            </div>
-          ))}
-        </div>
+      <div
+        style={{
+          position: "absolute",
+          left: 64,
+          top: 0,
+          height: H,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          fontSize: 76,
+          fontWeight: 700,
+          color: "#111827",
+          lineHeight: 1.04,
+          letterSpacing: -2,
+        }}
+      >
+        {headline.map((l) => (
+          <div key={l} style={{ display: "flex" }}>
+            {l}
+          </div>
+        ))}
       </div>
       {logo ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={logo} width={OG_LOGO.width} height={OG_LOGO.height} alt="" style={{ position: "absolute", left: 64, bottom: 44 }} />
+        <img src={logo} width={LOGO.width} height={LOGO.height} alt="" style={{ position: "absolute", left: 64, bottom: 40 }} />
       ) : null}
     </div>
   );

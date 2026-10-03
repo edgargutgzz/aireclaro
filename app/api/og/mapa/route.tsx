@@ -4,7 +4,7 @@ import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import { getMarkerFillHex } from "@/lib/air-quality";
-import { loadOgLogo } from "@/lib/og-logo";
+import { loadOgLogo, ogLogoAt } from "@/lib/og-logo";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 import { loadInterFonts } from "@/lib/og-fonts";
 
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     PurpleAirData().catch(() => []),
     SimaSensors().catch(() => []),
     SimaData().catch(() => []),
-    loadOgLogo(request.url),
+    loadOgLogo(request.url, ogLogoAt(65)),
     loadInterFonts(GLYPHS),
   ]);
 
@@ -53,20 +53,15 @@ export async function GET(request: Request) {
     if (!latest.has(String(r.sensor_id))) latest.set(String(r.sensor_id), r);
   }
   const c = project(...CENTER);
-  const dots = [
-    ...(pa as Sensor[]).map((s) => ({ ...s, network: "ciudadano" as const })),
-    ...(sima as Sensor[]).map((s) => ({ ...s, network: "sima" as const })),
-  ]
+  const dots = [...(pa as Sensor[]), ...(sima as Sensor[])]
     .map((s) => {
       const r = latest.get(String(s.sensor_id));
       const fill = r && new Date(r.time_stamp).getTime() >= cutoff ? getMarkerFillHex(r.pm25) : null;
       const p = project(s.lon, s.lat);
-      return { network: s.network, fill, x: p.x - c.x + W / 2, y: p.y - c.y + H / 2 };
+      return { fill, x: p.x - c.x + W / 2, y: p.y - c.y + H / 2 };
     })
     .filter((d) => d.fill && d.x > 8 && d.x < W - 8 && d.y > 8 && d.y < H - 8);
 
-  const ciudadanos = dots.filter((d) => d.network === "ciudadano").length;
-  const estaciones = dots.filter((d) => d.network === "sima").length;
   const R = 8;
   return new ImageResponse(
     (
@@ -93,13 +88,7 @@ export async function GET(request: Request) {
             ))}
           </>
         }
-        eyebrow="En tiempo real"
-        accent="#16a34a"
         headline={["Mapa de", "calidad del aire"]}
-        // Counted separately: SIMA stations are reference monitors, not
-        // sensors, and the citizen network leads (it's what only the
-        // Observatorio publishes).
-        lines={[`${ciudadanos} sensores ciudadanos y ${estaciones} estaciones SIMA`, "en la Zona Metropolitana de Monterrey"]}
         logo={logo}
       />
     ),

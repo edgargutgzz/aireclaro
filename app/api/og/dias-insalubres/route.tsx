@@ -16,7 +16,7 @@ import {
   COLOR_SALUDABLE_FILL_OPACITY,
 } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
-import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO, ogLogoAt } from "@/lib/og-logo";
+import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
   const cx = (n: number) => px(n * format.content);
   // The brand frame (logo + footer) takes the format's chrome scale.
   const fx = (n: number) => px(n * format.chrome);
-  const logoAsset = isLinkCard ? OG_LOGO : ogLogoAt(fx(44));
+  const logoAsset = ogLogoAt(isLinkCard ? 65 : fx(44));
 
   const options: ImageOptions = {
     width: isLinkCard ? LINK_CARD.width : format.width,
@@ -322,8 +322,8 @@ function linkCard(options: ImageOptions, year: number, logo: string | null, mont
   const byMonth = new Map(months.filter((m) => m.ano === year).map((m) => [m.mesNumero, m]));
   const LEFT = 440;
   const RIGHT = 56;
-  const BOTTOM = 64;
-  const CHART_H = 470;
+  const BOTTOM = 56;
+  const CHART_H = 500;
   const SLOT = (W - LEFT - RIGHT) / 12;
   const BAR_W = Math.round(SLOT * 0.62);
   const scale = CHART_H / 31;
@@ -336,7 +336,7 @@ function linkCard(options: ImageOptions, year: number, logo: string | null, mont
     return (
       <div
         key={label}
-        style={{ position: "absolute", left, bottom: BOTTOM - 30, width: BAR_W, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}
+        style={{ position: "absolute", left, bottom: BOTTOM, width: BAR_W, display: "flex", flexDirection: "column", alignItems: "center" }}
       >
         {/* Satori flattens fragments into the parent row, so the two
             segments sit in their own column. Same marks as chart 1:
@@ -356,7 +356,6 @@ function linkCard(options: ImageOptions, year: number, logo: string | null, mont
             <div style={{ display: "flex", width: BAR_W, height: 30 * scale, borderRadius: "5px 5px 0 0", background: "#f3f4f6" }} />
           )}
         </div>
-        <div style={{ display: "flex", fontSize: 15, color: m ? "#6b7280" : "#c4c8cf" }}>{label}</div>
       </div>
     );
   });
@@ -365,11 +364,7 @@ function linkCard(options: ImageOptions, year: number, logo: string | null, mont
     (
       <SectionCard
         backdrop={backdrop}
-        eyebrow="Datos abiertos"
-        accent={OG_BRAND_BLUE}
-        marker="square"
         headline={["Datos de", "calidad del aire"]}
-        lines={["Gráficas y descargas de la", "Zona Metropolitana de Monterrey"]}
         logo={logo}
       />
     ),
