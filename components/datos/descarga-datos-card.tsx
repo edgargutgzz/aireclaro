@@ -68,7 +68,7 @@ const INFO_TAB: InfoTab = {
         </li>
       </ul>
       <p>
-        <span className="font-medium text-gray-700">Licencia:</span> los datos se publican bajo{" "}
+        <span className="font-medium text-gray-700">Licencia:</span> esta compilación se publica bajo{" "}
         <a
           href={DATA_LICENSE.deedUrl}
           target="_blank"
@@ -77,7 +77,7 @@ const INFO_TAB: InfoTab = {
         >
           {DATA_LICENSE.name}
         </a>
-        . Puedes usarlos, compartirlos y adaptarlos para cualquier fin, siempre que cites la fuente.
+        . Las mediciones son de SINAICA (INECC); al usarlas, cita a SINAICA como fuente original.
       </p>
       <p>
         <span className="font-medium text-gray-700">Cómo citar:</span> {DATA_CITATION}
