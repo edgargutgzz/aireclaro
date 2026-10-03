@@ -43,13 +43,11 @@ function CloseIcon() {
 const CURRENT = "underline decoration-2 underline-offset-8";
 
 // Desktop dropdowns read like the mobile menu (the validated design): the
-// bar's own background unrolling from its bottom edge, plain links (no group
-// label: the button above already names the group). It positions against <header> (the trigger's wrapper
-// isn't `relative`), so top-full is the bar's bottom, while left stays auto:
-// the panel's static position, right under its trigger; -ml-6/px-6 keep the
-// text aligned with the trigger's.
+// bar's own background and plain links, no group label (the button already
+// names the group). It opens right under its button, with the text aligned
+// to the button's (-ml-6/px-6), outlined so it stands apart from the bar.
 const DROPDOWN =
-  "absolute top-full -ml-6 min-w-56 rounded-b-2xl border border-t-0 border-stone-200 bg-stone-50 px-6 pb-3 pt-2 shadow-sm";
+  "absolute left-0 top-full mt-3 -ml-6 min-w-56 rounded-2xl border border-stone-200 bg-stone-50 px-6 py-2 shadow-sm";
 
 // The small gray label over each group of links in the mobile menu.
 const GROUP_LABEL = "pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500";
@@ -210,7 +208,7 @@ export default function Navbar() {
         {/* Desktop menu (lg+): dropdowns for the two groups, then Mapa and Datos. */}
         <nav aria-label="Principal" className="hidden lg:flex lg:items-center lg:gap-10">
           {/* Publicaciones */}
-          <div onBlur={closeOnFocusOut("isPublicacionesSubmenuOpen")}>
+          <div className="relative" onBlur={closeOnFocusOut("isPublicacionesSubmenuOpen")}>
             <button
               ref={publicacionesButtonRef}
               onClick={togglePublicacionesSubmenu}
@@ -242,7 +240,7 @@ export default function Navbar() {
             )}
           </div>
           {/* Nosotros */}
-          <div onBlur={closeOnFocusOut("isSubmenuOpen")}>
+          <div className="relative" onBlur={closeOnFocusOut("isSubmenuOpen")}>
             <button
               ref={nosotrosButtonRef}
               onClick={toggleSubmenu}
