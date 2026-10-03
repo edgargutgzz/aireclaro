@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 // The site's one navbar, on every page including the map. Copied from
 // observatoriodelaire.com's navbar (components/navbar.tsx there), markup and
@@ -288,37 +288,34 @@ export default function Navbar() {
 
         {/* Mobile / tablet menu: a full-screen panel under the bar (inside
             menuRef, so a tap on a link isn't read as a tap outside). No
-            accordions: every link visible at once, in iOS-Settings-style groups:
-            a small gray label over a white card of rows (divider + chevron),
-            so what's tappable is unmistakable and every group looks alike.
-            The current page's row is semibold. */}
+            accordions: every link visible at once, each group under a small gray
+            label (Explora, Publicaciones, Nosotros) so all three look alike. */}
         {menuState.isOpen && (
           <nav
             id="menu-movil"
             aria-label="Principal"
             style={{ top: panelTop }}
-            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-4 pb-10 pt-2 lg:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
           >
             {[
               { titulo: "Explora", links: PRINCIPALES },
               { titulo: "Publicaciones", links: PUBLICACIONES },
               { titulo: "Nosotros", links: NOSOTROS },
             ].map((grupo) => (
-              <div key={grupo.titulo} className="mt-6 first:mt-2">
-                <h2 className="px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+              <div key={grupo.titulo} className="mt-8 first:mt-2">
+                <h2 className="pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
                   {grupo.titulo}
                 </h2>
-                <ul className="divide-y divide-stone-200 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+                <ul>
                   {grupo.links.map((l) => (
                     <li key={l.href}>
                       <Link
                         href={l.href}
                         aria-current={current(l.href)}
-                        className={`flex items-center justify-between px-4 py-3.5 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 active:bg-stone-100 ${isCurrent(l.href) ? "font-semibold text-gray-900" : "text-gray-800"}`}
+                        className={`block w-fit py-2.5 text-lg ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
                         onClick={handleLinkClick}
                       >
                         {l.label}
-                        <ChevronRight className="h-4 w-4 text-gray-400" aria-hidden />
                       </Link>
                     </li>
                   ))}
