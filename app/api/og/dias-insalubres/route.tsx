@@ -8,7 +8,9 @@ import {
   type MonthlySummary,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE, COLOR_YEAR_CURRENT, COLOR_YEAR_PAST } from "@/lib/datos-colors";
+import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE } from "@/lib/datos-colors";
+import { fetchCoberturaCompacta } from "@/components/datos/cobertura-estaciones";
+import type { CoberturaCompacta } from "@/components/datos/cobertura-estaciones-chart";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
@@ -106,7 +108,7 @@ export async function GET(request: Request) {
   const { mes, rows: rowsOut, hasPrior, headline: headlineLines } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
 
-  if (isLinkCard) return linkCard(options, year, logo, chartData.pm25);
+  if (isLinkCard) return linkCard(options, year, logo, await fetchCoberturaCompacta().catch(() => null));
 
   // This year's number is always red: any day of polluted air is bad news,
   // even in a month with fewer of them than a year earlier (the headline
@@ -306,53 +308,54 @@ function messageCard(options: ImageOptions, fontSize: number, message: string) {
   );
 }
 
-// The /datos link card, built like the /mapa one: chart 1's comparison
-// view (one line per year, PM2.5, every year counted against today's limit
-// so the lines compare on one yardstick) fills the card as its backdrop:
-// past years gray, this year violet with a soft fill under it. It introduces
-// the data section, so it states no single figure.
-function linkCard(options: ImageOptions, year: number, logo: string | null, months: MonthData[]) {
+// The /datos link card, built like the /mapa one: the coverage chart's
+// calendars (one per station, weeks as columns, weekdays as rows, this year,
+// PM2.5) stacked on the right as the backdrop, in the chart's own colors --
+// blue for a day with valid data, gray for a known gap, faded gray for a day
+// not synced yet. It introduces the data section, so it states no figure.
+function linkCard(options: ImageOptions, year: number, logo: string | null, cobertura: CoberturaCompacta | null) {
   const { width: W, height: H } = SECTION_CARD;
-  const X0 = 470;
-  const X1 = W - 70;
-  const Y0 = 70;
-  const Y1 = H - 70;
-  const years = [year - 1, year];
-  const series = years.map((y) =>
-    months
-      .filter((m) => m.ano === y)
-      .sort((a, b) => a.mesNumero - b.mesNumero)
-      .map((m) => ({ mes: m.mesNumero, v: m.diasInsalubresLimiteActual ?? m.diasInsalubres })),
-  );
-  const max = Math.max(10, ...series.flat().map((p) => p.v));
-  const x = (mes: number) => X0 + ((mes - 1) / 11) * (X1 - X0);
-  const yPos = (v: number) => Y1 - (v / max) * (Y1 - Y0);
-  const pts = (s: { mes: number; v: number }[]) => s.map((p) => [x(p.mes), yPos(p.v)] as const);
+  const CELL = 14;
+  const GAP = 3;
+  const PITCH = CELL + GAP;
+  const STATION_GAP = 26;
+  const STATIONS = 4;
+  const jan1 = Date.UTC(year, 0, 1);
+  // Monday-first weekday of Jan 1, so each column is one calendar week.
+  const lead = (new Date(jan1).getUTCDay() + 6) % 7;
+  const days = (Date.UTC(year + 1, 0, 1) - jan1) / 86_400_000;
+  const weeks = Math.ceil((lead + days) / 7);
+  const gridW = weeks * PITCH - GAP;
+  const left = W - 56 - gridW;
+  const blockH = 7 * PITCH - GAP;
+  const top = (H - (STATIONS * blockH + (STATIONS - 1) * STATION_GAP)) / 2;
+
+  const { fechas, porEstacion } = cobertura?.["PM2.5"] ?? { fechas: [], porEstacion: {} };
+  const index = new Map(fechas.map((f, i) => [f, i]));
+  const codes = Object.values(porEstacion).slice(0, STATIONS);
 
   const backdrop = (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
-      {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-        <line key={t} x1={X0} x2={X1} y1={Y1 - t * (Y1 - Y0)} y2={Y1 - t * (Y1 - Y0)} stroke="#eef0f3" strokeWidth={2} />
-      ))}
-      {series.map((s, i) => {
-        const p = pts(s);
-        if (p.length < 2) return null;
-        const d = smoothPath(p);
-        const current = years[i] === year;
-        return (
-          <g key={years[i]}>
-            {current ? (
-              <path d={`${d} L ${p[p.length - 1][0]} ${Y1} L ${p[0][0]} ${Y1} Z`} fill={COLOR_YEAR_CURRENT} fillOpacity={0.12} />
-            ) : null}
-            <path d={d} fill="none" stroke={current ? COLOR_YEAR_CURRENT : COLOR_YEAR_PAST} strokeWidth={current ? 7 : 6} strokeLinecap="round" strokeLinejoin="round" />
-            {current
-              ? p.map(([cx, cy], k) => (
-                  <circle key={k} cx={cx} cy={cy} r={k === p.length - 1 ? 11 : 7} fill={COLOR_YEAR_CURRENT} stroke="#ffffff" strokeWidth={3} />
-                ))
-              : null}
-          </g>
-        );
-      })}
+      {codes.map((code, s) =>
+        Array.from({ length: days }, (_, d) => {
+          const fecha = new Date(jan1 + d * 86_400_000).toISOString().slice(0, 10);
+          const i = index.get(fecha);
+          const c = i === undefined ? "-" : code[i];
+          const pos = lead + d;
+          return (
+            <rect
+              key={`${s}-${d}`}
+              x={left + Math.floor(pos / 7) * PITCH}
+              y={top + s * (blockH + STATION_GAP) + (pos % 7) * PITCH}
+              width={CELL}
+              height={CELL}
+              rx={2.5}
+              fill={c === "1" ? COLOR_CUBIERTO : COLOR_INSUFICIENTE}
+              fillOpacity={c === "1" ? COLOR_CUBIERTO_FILL_OPACITY : c === "0" ? 1 : NO_DATA_FILL_OPACITY}
+            />
+          );
+        }),
+      )}
     </svg>
   );
 
@@ -362,27 +365,7 @@ function linkCard(options: ImageOptions, year: number, logo: string | null, mont
   );
 }
 
-// A gentle curve through the points that never overshoots them (monotone
-// cubic, Fritsch-Carlson; the same idea as d3's curveMonotoneX): between two
-// months the line stays within their two values, so the curve can't invent
-// a peak or dip the data doesn't have.
-function smoothPath(p: readonly (readonly [number, number])[]) {
-  const n = p.length;
-  const dx = (i: number) => p[i + 1][0] - p[i][0];
-  const slope = (i: number) => (p[i + 1][1] - p[i][1]) / dx(i);
-  const m: number[] = new Array(n);
-  m[0] = slope(0);
-  m[n - 1] = slope(n - 2);
-  for (let i = 1; i < n - 1; i++) {
-    const a = slope(i - 1);
-    const b = slope(i);
-    m[i] = a * b <= 0 ? 0 : (3 * (dx(i - 1) + dx(i))) / ((2 * dx(i) + dx(i - 1)) / a + (dx(i) + 2 * dx(i - 1)) / b);
-  }
-  let d = `M ${p[0][0]} ${p[0][1]}`;
-  for (let i = 0; i < n - 1; i++) {
-    const h = dx(i) / 3;
-    d += ` C ${p[i][0] + h} ${p[i][1] + h * m[i]}, ${p[i + 1][0] - h} ${p[i + 1][1] - h * m[i + 1]}, ${p[i + 1][0]} ${p[i + 1][1]}`;
-  }
-  return d;
-}
+// The coverage chart's own gap colors (components/datos/cobertura-estaciones-chart.tsx).
+const COLOR_INSUFICIENTE = "#dbdfe3";
+const NO_DATA_FILL_OPACITY = 0.4;
 

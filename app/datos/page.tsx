@@ -38,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (!ultimo) return pageMetadata({ title: DATOS_TITLE, description: DATOS_DESCRIPTION, path: "/datos" });
   // d= is the card design's version: bump it when the design changes so chat
   // apps (which cache per image URL) fetch the new one.
-  const image = `/api/og/dias-insalubres?format=link&year=${ultimo.ano}&mes=${ultimo.mes}&d=2`;
+  const image = `/api/og/dias-insalubres?format=link&year=${ultimo.ano}&mes=${ultimo.mes}&d=3`;
   return pageMetadata({
     title: DATOS_TITLE,
     description: DATOS_DESCRIPTION,
