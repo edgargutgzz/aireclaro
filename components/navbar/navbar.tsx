@@ -8,9 +8,8 @@ import { ChevronDown } from "lucide-react";
 
 // The site's one navbar, on every page including the map. Copied from
 // observatoriodelaire.com's navbar (components/navbar.tsx there), markup and
-// styling unchanged. Its rendered height is restated as --header-h in
-// globals.css (the map sizes itself against it), so a change here that moves
-// the bar's height must update that var too.
+// styling unchanged. Its height is fixed to --header-h (globals.css), which
+// the map also sizes itself against.
 //
 // Differences from the original: the two react-icons glyphs are inlined as
 // their exact SVGs (no new dependency); the logo carries its real aspect ratio
@@ -45,6 +44,12 @@ const CURRENT = "underline decoration-2 underline-offset-8";
 
 // The house focus ring, on every focusable item in the bar.
 const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+
+// The two main pages: first on mobile, last on desktop (Datos rightmost).
+const PRINCIPALES = [
+  { href: "/datos", label: "Datos" },
+  { href: "/mapa", label: "Mapa" },
+];
 
 const PUBLICACIONES = [
   { href: "/infografias", label: "Infografías" },
@@ -158,7 +163,7 @@ export default function Navbar() {
   return (
     <header className="relative z-50 bg-stone-50 border-stone-200">
       <div
-        className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8"
+        className="h-header mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
         ref={menuRef}
       >
         {/* Logo */}
@@ -173,12 +178,8 @@ export default function Navbar() {
             preload
           />
         </Link>
-        {/* Menu */}
-        <nav
-          id="menu-principal"
-          aria-label="Principal"
-          className={`absolute left-0 top-16 z-10 flex w-full flex-col gap-6 border-b-4 bg-stone-50 py-5 pl-6 lg:static lg:left-auto lg:top-auto lg:flex lg:w-auto lg:flex-row lg:items-center lg:gap-10 lg:border-b-0 lg:py-0 lg:pl-0 ${menuState.isOpen ? "block" : "hidden"}`}
-        >
+        {/* Desktop menu (lg+): dropdowns for the two groups, then Mapa and Datos. */}
+        <nav aria-label="Principal" className="hidden lg:flex lg:items-center lg:gap-10">
           {/* Publicaciones */}
           <div className="relative" onBlur={closeOnFocusOut("isPublicacionesSubmenuOpen")}>
             <button
@@ -193,7 +194,7 @@ export default function Navbar() {
               />
             </button>
             {menuState.isPublicacionesSubmenuOpen && (
-              <div className="mt-2 flex flex-col gap-4 pl-4 lg:absolute lg:w-40 lg:rounded-2xl lg:border lg:bg-white lg:p-4 lg:pl-4 lg:shadow-md">
+              <div className="absolute mt-2 flex w-40 flex-col gap-4 rounded-2xl border bg-white p-4 shadow-md">
                 {PUBLICACIONES.map((l) => (
                   <Link
                     key={l.href}
@@ -222,7 +223,7 @@ export default function Navbar() {
               />
             </button>
             {menuState.isSubmenuOpen && (
-              <div className="mt-2 flex flex-col gap-4 pl-4 lg:absolute lg:w-40 lg:rounded-2xl lg:border lg:bg-white lg:p-4 lg:pl-4 lg:shadow-md">
+              <div className="absolute mt-2 flex w-40 flex-col gap-4 rounded-2xl border bg-white p-4 shadow-md">
                 {NOSOTROS.map((l) => (
                   <Link
                     key={l.href}
@@ -238,25 +239,20 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mapa */}
-          <Link
-            href="/mapa"
-            aria-current={current("/mapa")}
-            className={`block hover:text-gray-500 ${FOCUS} ${isCurrent("/mapa") ? CURRENT : ""}`}
-            onClick={handleLinkClick}
-          >
-            Mapa
-          </Link>
-
-          {/* Datos: last, the action spot. */}
-          <Link
-            href="/datos"
-            aria-current={current("/datos")}
-            className={`block hover:text-gray-500 ${FOCUS} ${isCurrent("/datos") ? CURRENT : ""}`}
-            onClick={handleLinkClick}
-          >
-            Datos
-          </Link>
+          {/* Mapa, then Datos last (the action spot). */}
+          {PRINCIPALES.slice()
+            .reverse()
+            .map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={current(l.href)}
+                className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                onClick={handleLinkClick}
+              >
+                {l.label}
+              </Link>
+            ))}
         </nav>
 
         {/* Menu Icon for mobile and tablet */}
@@ -266,12 +262,63 @@ export default function Navbar() {
             onClick={toggleMobileMenu}
             aria-label={menuState.isOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuState.isOpen}
-            aria-controls="menu-principal"
+            aria-controls="menu-movil"
             className={`-m-2 p-2 ${FOCUS}`}
           >
             {menuState.isOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
         </div>
+
+        {/* Mobile / tablet menu: a full-screen panel under the bar (inside
+            menuRef, so a tap on a link isn't read as a tap outside). No
+            accordions: with 8 links, every one is visible at once, the main
+            pages first and larger, the groups under small gray labels. */}
+        {menuState.isOpen && (
+          <nav
+            id="menu-movil"
+            aria-label="Principal"
+            className="fixed inset-x-0 bottom-0 top-[var(--header-h)] z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
+          >
+            <ul>
+              {PRINCIPALES.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    aria-current={current(l.href)}
+                    className={`block py-3 text-2xl font-medium ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                    onClick={handleLinkClick}
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {[
+              { titulo: "Publicaciones", links: PUBLICACIONES },
+              { titulo: "Nosotros", links: NOSOTROS },
+            ].map((grupo) => (
+              <div key={grupo.titulo} className="mt-8">
+                <h2 className="pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  {grupo.titulo}
+                </h2>
+                <ul>
+                  {grupo.links.map((l) => (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        aria-current={current(l.href)}
+                        className={`block py-2.5 text-lg ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                        onClick={handleLinkClick}
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        )}
       </div>
     </header>
   );

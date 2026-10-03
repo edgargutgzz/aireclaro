@@ -343,19 +343,17 @@
   }
 }
 
-/* The navbar's rendered height, in one place; the map fills what's left
-   (h-below-header). The bar is copied from observatoriodelaire.com and sizes to
-   its content, so these restate it: py-6 (48px) plus the tallest item. Below lg
-   that's the 28px menu button, which sits on an inline line box that rounds it
-   up to 34px (82px); at lg the 38px "Explorar" pills (86px). Measured in
-   Chromium, not just derived. Change the navbar's height and these follow. */
+/* The navbar's height, in one place: the bar is set to exactly this
+   (h-header on its row) and the map fills what's left (h-below-header), so
+   the two can't drift. Values match the bar's natural size so nothing moved
+   when it was pinned (2026-10-03): 82px below lg, 76px at lg. */
 :root {
   --header-h: 82px;
 }
 
 @media (min-width: 1024px) {
   :root {
-    --header-h: 86px;
+    --header-h: 76px;
   }
 }
 
