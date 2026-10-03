@@ -5,7 +5,7 @@ import { createPublicClient } from "@/utils/supabase/public";
 import { getLevel, getPM25Color, IMECA_LEVELS } from "@/lib/air-quality";
 import { monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
 
-// The homepage's slim strip under the navbar: right now (one dot per official
+// The homepage's slim strip above the navbar (app/@strip): right now (one dot per official
 // metro station, in its NOM-172 color, linking to the map) and this year
 // (days over the PM2.5 norm, linking to /datos). One line on desktop, two on
 // mobile. Each line hides itself

@@ -82,8 +82,14 @@ export default function Navbar() {
   const publicacionesButtonRef = useRef<HTMLButtonElement>(null);
   const nosotrosButtonRef = useRef<HTMLButtonElement>(null);
 
+  // The bar's bottom edge, where the mobile panel starts: not always
+  // --header-h from the top, since the homepage has a strip above the bar.
+  const headerRef = useRef<HTMLElement>(null);
+  const [panelTop, setPanelTop] = useState(0);
+
   // Toggles the mobile menu open/closed state
   const toggleMobileMenu = () => {
+    setPanelTop(headerRef.current?.getBoundingClientRect().bottom ?? 0);
     setMenuState((prev) => ({
       ...prev,
       isOpen: !prev.isOpen,
@@ -172,7 +178,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="relative z-50 bg-stone-50 border-stone-200">
+    <header ref={headerRef} className="relative z-50 bg-stone-50 border-stone-200">
       <div
         className="h-header mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
         ref={menuRef}
@@ -290,7 +296,8 @@ export default function Navbar() {
           <nav
             id="menu-movil"
             aria-label="Principal"
-            className="fixed inset-x-0 bottom-0 top-[var(--header-h)] z-40 overflow-y-auto overscroll-contain bg-stone-50 px-4 pb-10 pt-2 lg:hidden"
+            style={{ top: panelTop }}
+            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-4 pb-10 pt-2 lg:hidden"
           >
             {[
               { titulo: "Explora", links: PRINCIPALES },
