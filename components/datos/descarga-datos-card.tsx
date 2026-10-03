@@ -7,6 +7,7 @@ import type { InfoTab } from "@/components/datos/info-tabs";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import SelectMenu from "@/components/datos/select-menu";
+import { DATA_CITATION, DATA_LICENSE } from "@/lib/metadata";
 
 interface Estacion {
   sensorId: string;
@@ -66,6 +67,21 @@ const INFO_TAB: InfoTab = {
           <span className="font-medium text-gray-700">val:</span> indicador de validez reportado por SINAICA.
         </li>
       </ul>
+      <p>
+        <span className="font-medium text-gray-700">Licencia:</span> los datos se publican bajo{" "}
+        <a
+          href={DATA_LICENSE.deedUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+        >
+          {DATA_LICENSE.name}
+        </a>
+        . Puedes usarlos, compartirlos y adaptarlos para cualquier fin, siempre que cites la fuente.
+      </p>
+      <p>
+        <span className="font-medium text-gray-700">Cómo citar:</span> {DATA_CITATION}
+      </p>
     </div>
   ),
 };

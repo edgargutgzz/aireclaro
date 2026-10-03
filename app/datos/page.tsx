@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
+import { DATA_CITATION, DATA_LICENSE, ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import { Suspense } from "react";
@@ -29,9 +29,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/datos",
 });
 
-// Lists the download in Google Dataset Search. No `license` yet: the data
-// license is still undecided (docs/methodology.md), and adding one is what
-// makes the listing complete.
+// Lists the download in Google Dataset Search.
 const datasetSchema = {
   "@context": "https://schema.org",
   "@type": "Dataset",
@@ -43,6 +41,8 @@ const datasetSchema = {
   creator: ORGANIZATION_REF,
   isBasedOn: "https://sinaica.inecc.gob.mx",
   isAccessibleForFree: true,
+  license: DATA_LICENSE.url,
+  creditText: DATA_CITATION,
   inLanguage: "es-MX",
   temporalCoverage: "2025-01-01/..",
   spatialCoverage: {

@@ -54,3 +54,14 @@ export const ORGANIZATION_REF = {
   alternateName: SITE_NAME,
   url: SITE_URL,
 };
+
+// The license /datos publishes under, chosen 2026-10-02. One source for the
+// download card's text and the Dataset structured data.
+export const DATA_LICENSE = {
+  name: "CC BY 4.0",
+  url: "https://creativecommons.org/licenses/by/4.0/", // canonical, for structured data
+  deedUrl: "https://creativecommons.org/licenses/by/4.0/deed.es", // the Spanish summary, for people
+};
+
+export const DATA_CITATION =
+  "Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey. Calidad del aire (PM2.5 y PM10) en la Zona Metropolitana de Monterrey. Con datos de SINAICA (INECC). https://www.observatoriodelaire.com/datos";
