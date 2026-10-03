@@ -222,15 +222,14 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Datos and Mapa: equal weight, a tint in the logo's purple / blue
-              (lib/datos-colors.ts BRAND_PURPLE / BRAND_BLUE). The border is the
-              current-page marker here, in place of the text links' underline;
-              it stays transparent otherwise so the button never resizes. */}
+          {/* Datos and Mapa: equal weight, outlined in the logo's purple / blue
+              (lib/datos-colors.ts BRAND_PURPLE / BRAND_BLUE). On its own page
+              a button fills solid, standing in for the text links' underline. */}
           <Link
             href="/datos"
             aria-current={current("/datos")}
             onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold text-[#743479] transition-colors bg-[#743479]/10 hover:bg-[#743479]/15 ${isCurrent("/datos") ? "border-[#743479]" : "border-transparent"}`}
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${isCurrent("/datos") ? "border-[#743479] bg-[#743479] text-white" : "border-[#743479]/60 bg-[#743479]/10 text-[#743479] hover:bg-[#743479]/15"}`}
           >
             <BarChart3 size={14} className="mr-1.5" />
             Datos
@@ -240,7 +239,7 @@ export default function Navbar() {
             href="/mapa"
             aria-current={current("/mapa")}
             onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold text-[#226caf] transition-colors bg-[#226caf]/10 hover:bg-[#226caf]/15 ${isCurrent("/mapa") ? "border-[#226caf]" : "border-transparent"}`}
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${isCurrent("/mapa") ? "border-[#226caf] bg-[#226caf] text-white" : "border-[#226caf]/60 bg-[#226caf]/10 text-[#226caf] hover:bg-[#226caf]/15"}`}
           >
             <Map size={14} className="mr-1.5" />
             Mapa
