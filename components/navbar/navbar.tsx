@@ -114,6 +114,9 @@ export default function Navbar() {
             alt="OCCAMM Logo"
             width={150}
             height={28}
+            // Above the fold on every page, and /mapa's largest paint:
+            // load it with the page instead of lazily.
+            preload
           />
         </Link>
         {/* Menu */}

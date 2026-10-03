@@ -22,12 +22,14 @@ interface Estacion {
   nombre: string;
 }
 
-interface CoberturaDia {
-  sensor_id: string;
-  fecha: string;
-  parametro: "PM2.5" | "PM10";
-  cubierto: boolean;
-}
+// The coverage grid as sent to the browser, per pollutant: the dates that
+// have any row, plus one string per station with a character per date
+// ("1" cubierto, "0" not, "-" no row). The row-per-day form was ~19k objects
+// and 1.5 MB of page payload; this is the same information in ~35 KB.
+export type CoberturaCompacta = Record<
+  "PM2.5" | "PM10",
+  { fechas: string[]; porEstacion: Record<string, string> }
+>;
 
 const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
@@ -428,25 +430,22 @@ export default function CoberturaEstacionesChart({
   cobertura,
 }: {
   estaciones: Estacion[];
-  cobertura: CoberturaDia[];
+  cobertura: CoberturaCompacta;
 }) {
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
   const parametro = pollutant === "pm25" ? "PM2.5" : "PM10";
 
   const { dates: allDates, coberturaPorEstacion } = useMemo(() => {
-    const dateSet = new Set<string>();
+    const { fechas, porEstacion: codigos } = cobertura[parametro];
     const porEstacion = new Map<string, Map<string, boolean>>();
-    for (const row of cobertura) {
-      if (row.parametro !== parametro) continue;
-      dateSet.add(row.fecha);
-      if (!porEstacion.has(row.sensor_id))
-        porEstacion.set(row.sensor_id, new Map());
-      porEstacion.get(row.sensor_id)!.set(row.fecha, row.cubierto);
+    for (const [sensorId, codigo] of Object.entries(codigos)) {
+      const porFecha = new Map<string, boolean>();
+      for (let i = 0; i < fechas.length; i++) {
+        if (codigo[i] !== "-") porFecha.set(fechas[i], codigo[i] === "1");
+      }
+      porEstacion.set(sensorId, porFecha);
     }
-    return {
-      dates: Array.from(dateSet).sort(),
-      coberturaPorEstacion: porEstacion,
-    };
+    return { dates: fechas, coberturaPorEstacion: porEstacion };
   }, [cobertura, parametro]);
 
   const years = useMemo(

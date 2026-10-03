@@ -1,5 +1,5 @@
 import { createPublicClient } from "@/utils/supabase/public";
-import CoberturaEstacionesChart from "@/components/datos/cobertura-estaciones-chart";
+import CoberturaEstacionesChart, { type CoberturaCompacta } from "@/components/datos/cobertura-estaciones-chart";
 
 // Reads the precomputed sima_cobertura_diaria table (written by the monthly
 // sync cron, see lib/cobertura-aggregate.ts) -- a plain indexed table, not
@@ -33,6 +33,28 @@ async function fetchAllCobertura(supabase: ReturnType<typeof createPublicClient>
   return rows;
 }
 
+type CoberturaRow = Awaited<ReturnType<typeof fetchAllCobertura>>[number];
+
+// Packs the rows into the chart's compact form (see CoberturaCompacta).
+function compactar(rows: CoberturaRow[]): CoberturaCompacta {
+  const result = {} as CoberturaCompacta;
+  for (const parametro of ["PM2.5", "PM10"] as const) {
+    const delParametro = rows.filter((r) => r.parametro === parametro);
+    const fechas = [...new Set(delParametro.map((r) => r.fecha))].sort();
+    const indice = new Map(fechas.map((f, i) => [f, i]));
+    const codigos = new Map<string, string[]>();
+    for (const r of delParametro) {
+      if (!codigos.has(r.sensor_id)) codigos.set(r.sensor_id, Array(fechas.length).fill("-"));
+      codigos.get(r.sensor_id)![indice.get(r.fecha)!] = r.cubierto ? "1" : "0";
+    }
+    result[parametro] = {
+      fechas,
+      porEstacion: Object.fromEntries([...codigos].map(([id, c]) => [id, c.join("")])),
+    };
+  }
+  return result;
+}
+
 export default async function CoberturaEstaciones() {
   const supabase = createPublicClient();
 
@@ -52,7 +74,7 @@ export default async function CoberturaEstaciones() {
   return (
     <CoberturaEstacionesChart
       estaciones={(estaciones ?? []).map((e) => ({ sensorId: e.sensor_id, nombre: e.nombre_display }))}
-      cobertura={cobertura}
+      cobertura={compactar(cobertura)}
     />
   );
 }
