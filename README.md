@@ -32,8 +32,8 @@ See [`docs/methodology.md`](docs/methodology.md).
   low-cost sensors.
 
 Reliability, corrections, known gaps, and the metro-vs-Saltillo station scope
-are covered in [`docs/methodology.md`](docs/methodology.md). SIMA is ingested
-by Vercel crons in this repo; PurpleAir by a separate job outside it. See
+are covered in [`docs/methodology.md`](docs/methodology.md). Both sources are
+ingested by Vercel crons in this repo. See
 [`docs/architecture.md`](docs/architecture.md#the-ingestion-boundary).
 
 ## Running it
