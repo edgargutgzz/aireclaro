@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
 // The site's one navbar, on every page including the map. Copied from
 // observatoriodelaire.com's navbar (components/navbar.tsx there), markup and
@@ -282,46 +282,36 @@ export default function Navbar() {
 
         {/* Mobile / tablet menu: a full-screen panel under the bar (inside
             menuRef, so a tap on a link isn't read as a tap outside). No
-            accordions: with 8 links, every one is visible at once, the main
-            pages first, the groups under small gray labels. */}
+            accordions: every link visible at once, in iOS-Settings-style groups:
+            a small gray label over a white card of rows (divider + chevron),
+            so what's tappable is unmistakable and every group looks alike.
+            The current page's row is semibold. */}
         {menuState.isOpen && (
           <nav
             id="menu-movil"
             aria-label="Principal"
-            className="fixed inset-x-0 bottom-0 top-[var(--header-h)] z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
+            className="fixed inset-x-0 bottom-0 top-[var(--header-h)] z-40 overflow-y-auto overscroll-contain bg-stone-50 px-4 pb-10 pt-2 lg:hidden"
           >
-            <ul>
-              {PRINCIPALES.map((l) => (
-                <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    aria-current={current(l.href)}
-                    className={`block py-2.5 text-lg ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-                    onClick={handleLinkClick}
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
             {[
+              { titulo: "Explora", links: PRINCIPALES },
               { titulo: "Publicaciones", links: PUBLICACIONES },
               { titulo: "Nosotros", links: NOSOTROS },
             ].map((grupo) => (
-              <div key={grupo.titulo} className="mt-8">
-                <h2 className="pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
+              <div key={grupo.titulo} className="mt-6 first:mt-2">
+                <h2 className="px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
                   {grupo.titulo}
                 </h2>
-                <ul>
+                <ul className="divide-y divide-stone-200 overflow-hidden rounded-2xl border border-stone-200 bg-white">
                   {grupo.links.map((l) => (
                     <li key={l.href}>
                       <Link
                         href={l.href}
                         aria-current={current(l.href)}
-                        className={`block py-2.5 text-lg ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                        className={`flex items-center justify-between px-4 py-3.5 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 active:bg-stone-100 ${isCurrent(l.href) ? "font-semibold text-gray-900" : "text-gray-800"}`}
                         onClick={handleLinkClick}
                       >
                         {l.label}
+                        <ChevronRight className="h-4 w-4 text-gray-400" aria-hidden />
                       </Link>
                     </li>
                   ))}
