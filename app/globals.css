@@ -491,3 +491,29 @@
     background-color: #fff;
   }
 }
+
+/* The homepage ticker (components/home/ticker-track.tsx): the doubled list
+   slides by half its width for a seamless loop, ~5s per station. Stops on
+   hover, keyboard focus or the pause button; never moves under reduced
+   motion. The mask fades both edges so items don't cut off hard. */
+@keyframes ticker-run {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ticker-run {
+  animation: ticker-run 75s linear infinite;
+}
+.group:hover .ticker-run,
+.group:focus-within .ticker-run,
+.ticker-run[data-paused] {
+  animation-play-state: paused;
+}
+.ticker-mask {
+  mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-run {
+    animation: none;
+  }
+}

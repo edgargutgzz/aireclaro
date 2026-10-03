@@ -1,43 +1,12 @@
 import Link from "next/link";
-import fetchSimaData from "@/components/data/sima-data";
-import { cachedDatos } from "@/lib/datos-cache";
-import { createPublicClient } from "@/utils/supabase/public";
-import { getLevel, getPM25Color, IMECA_LEVELS } from "@/lib/air-quality";
-import { monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
+import { getLevel, IMECA_LEVELS } from "@/lib/air-quality";
+import { fetchDiasSobreNorma, getLiveStations, horaDeLectura, MESES } from "@/lib/home-air";
 
 // Two cards under the homepage hero: right now (one dot per official metro
 // station, in its NOM-172 color, linking to the map) and this year (days over
-// the PM2.5 norm, linking to /datos). Side by side from md, stacked below. Each line hides itself
-// when its data can't back it up, rather than showing something stale.
-
-// Older than this, the readings aren't "en vivo" anymore.
-const LIVE_MAX_AGE_MS = 3 * 60 * 60 * 1000;
-
-const MESES = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
-];
-
-// The latest year in the "días sobre la norma" chart's table, on the current
-// limit (the chart's own comparison column), PM2.5.
-const fetchDiasSobreNorma = cachedDatos(async () => {
-  const { data, error } = await createPublicClient()
-    .from("sima_insalubres_mensual")
-    .select("ano, mes, dias_insalubres_limite_actual")
-    .eq("parametro", "PM2.5")
-    .order("ano", { ascending: false })
-    .order("mes", { ascending: true });
-  if (error) throw new Error(`Failed to load días sobre la norma: ${error.message}`);
-  if (!data?.length) return null;
-  const ano = data[0].ano;
-  const meses = data.filter((r) => r.ano === ano);
-  return {
-    ano,
-    dias: meses.reduce((sum, r) => sum + r.dias_insalubres_limite_actual, 0),
-    primerMes: meses[0].mes,
-    ultimoMes: meses[meses.length - 1].mes,
-  };
-}, "home-dias-sobre-norma");
+// the PM2.5 norm, linking to /datos). Side by side from md, stacked below.
+// Each card hides itself when its data can't back it up, rather than showing
+// something stale (the rules live in lib/home-air.ts).
 
 // Each card is one link; the "Ver …" line at its foot is the visible cue.
 const cardClass =
@@ -46,18 +15,11 @@ const kickerClass = "flex items-center gap-2 text-xs font-medium uppercase track
 const ctaClass = "mt-auto pt-2 text-sm font-medium text-[#226caf] group-hover:underline";
 
 export default async function AireAhora() {
-  const [lecturas, anual] = await Promise.all([
-    fetchSimaData().catch(() => []),
+  const [estaciones, anual] = await Promise.all([
+    getLiveStations().catch(() => []),
     fetchDiasSobreNorma().catch(() => null),
   ]);
-
-  // Metro stations only (FIN is Saltillo), with a real reading (the map's own
-  // no-data rule), from the last few hours.
-  const now = parseMonterreyNaive(monterreyNaiveNow()).getTime();
-  const vivas = lecturas
-    .filter((l) => l.sensor_id !== "FIN" && getPM25Color(l.pm25) !== null)
-    .filter((l) => now - parseMonterreyNaive(l.time_stamp).getTime() < LIVE_MAX_AGE_MS)
-    .sort((a, b) => a.pm25 - b.pm25);
+  const vivas = [...estaciones].sort((a, b) => a.pm25 - b.pm25);
 
   let resumen: string | null = null;
   let hora: string | null = null;
@@ -73,9 +35,7 @@ export default async function AireAhora() {
             .map((g, i) => (i === 0 ? `${g.n} con calidad ${g.label}` : `${g.n} ${g.label}`))
             .join(", ")
             .replace(/, ([^,]*)$/, " y $1")}`;
-    const latest = vivas.reduce((a, b) => (a.time_stamp > b.time_stamp ? a : b)).time_stamp;
-    const h = parseMonterreyNaive(latest).getUTCHours();
-    hora = `${h % 12 || 12}:00 ${h < 12 ? "AM" : "PM"}`;
+    hora = horaDeLectura(vivas);
   }
 
   if (!resumen && !anual) return null;
@@ -96,7 +56,7 @@ export default async function AireAhora() {
             <span className="flex gap-1 sm:gap-1.5" aria-hidden>
               {vivas.map((l) => (
                 <span
-                  key={l.sensor_id}
+                  key={l.sensorId}
                   className="h-3 w-3 rounded-full ring-1 sm:h-3.5 sm:w-3.5 ring-inset ring-black/10"
                   style={{ backgroundColor: getLevel(l.pm25).color }}
                 />
