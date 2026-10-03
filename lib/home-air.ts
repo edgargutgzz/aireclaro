@@ -12,8 +12,6 @@ const LIVE_MAX_AGE_MS = 3 * 60 * 60 * 1000;
 export interface LiveStation {
   sensorId: string;
   pm25: number;
-  // The station's reading from the hour before, when there is one.
-  prev: number | null;
   timeStamp: string;
 }
 
@@ -29,26 +27,19 @@ const fetchRecientes = cachedMapData(async () => {
   return data ?? [];
 }, "home-recientes");
 
-// One entry per metro station (FIN is Saltillo) with a real reading (the
-// map's no-data rule) from the last 3 hours, plus its previous hour's value.
-// Rows are bucketed by hour, so a duplicate write within an hour can't pose
-// as the "previous" reading.
+// Each metro station's latest real reading (FIN is Saltillo; the map's own
+// no-data rule), kept only if it's from the last 3 hours.
 export async function getLiveStations(): Promise<LiveStation[]> {
   const rows = await fetchRecientes();
   const now = parseMonterreyNaive(monterreyNaiveNow()).getTime();
-  const porEstacion = new Map<string, { hour: string; pm25: number; ts: string }[]>();
+  const latest = new Map<string, LiveStation>();
   for (const r of rows) {
-    if (r.sensor_id === "FIN" || getPM25Color(r.pm25) === null) continue;
-    const hours = porEstacion.get(r.sensor_id) ?? [];
-    const hour = r.time_stamp.slice(0, 13);
-    if (hours.length === 0 || hours[hours.length - 1].hour !== hour) {
-      hours.push({ hour, pm25: r.pm25, ts: r.time_stamp });
-    }
-    porEstacion.set(r.sensor_id, hours);
+    if (r.sensor_id === "FIN" || getPM25Color(r.pm25) === null || latest.has(r.sensor_id)) continue;
+    latest.set(r.sensor_id, { sensorId: r.sensor_id, pm25: r.pm25, timeStamp: r.time_stamp });
   }
-  return [...porEstacion.entries()]
-    .filter(([, h]) => now - parseMonterreyNaive(h[0].ts).getTime() < LIVE_MAX_AGE_MS)
-    .map(([sensorId, h]) => ({ sensorId, pm25: h[0].pm25, prev: h[1]?.pm25 ?? null, timeStamp: h[0].ts }));
+  return [...latest.values()].filter(
+    (s) => now - parseMonterreyNaive(s.timeStamp).getTime() < LIVE_MAX_AGE_MS,
+  );
 }
 
 // "3:00 PM": the hour the latest of these readings belongs to, the map's own

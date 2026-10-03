@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { getLevel } from "@/lib/air-quality";
+import { getMarkerFillHex } from "@/lib/air-quality";
 import { fetchEstaciones } from "@/lib/datos-cache";
 import { fetchDiasSobreNorma, getLiveStations, horaDeLectura } from "@/lib/home-air";
 import TickerTrack, { type TickerItem } from "./ticker-track";
 
 // The homepage's live ticker above the navbar (app/@strip): every official
-// metro station's PM2.5 this hour with its change from the hour before,
-// worst first, scrolling; "En vivo" links to the map, the year's days over
+// metro station's PM2.5 this hour, dot in the map marker's color, worst first,
+// scrolling; "En vivo" links to the map, the year's days over
 // the norm to /datos. Hidden entirely when no station has a fresh reading.
 
 // Inset ring, square: the links are full-height sections of a straight strip.
@@ -27,8 +27,7 @@ export default async function Ticker() {
       id: s.sensorId,
       nombre: nombres.get(s.sensorId) ?? s.sensorId,
       pm25: s.pm25,
-      cambio: s.prev === null ? null : s.pm25 - s.prev,
-      color: getLevel(s.pm25).color,
+      color: getMarkerFillHex(s.pm25) ?? "#d1d5db",
     }));
 
   return (
