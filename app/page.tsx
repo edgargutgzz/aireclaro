@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-// The hero's live line (components/home/aire-ahora.tsx) reads the map's
+// The live strip (components/home/aire-ahora.tsx) reads the map's
 // hourly SIMA feed: re-render at most every 5 minutes, not once per deploy.
 export const revalidate = 300;
 
@@ -43,6 +43,8 @@ const websiteSchema = {
 
 export default function Home() {
   return (
+    <>
+    <AireAhora />
     <div className="flex min-h-screen items-center">
       <JsonLd data={websiteSchema} />
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:px-8">
@@ -56,7 +58,6 @@ export default function Home() {
             esfuerzos colaborativos y fundamento técnico para mejorar la calidad
             del aire en la Zona Metropolitana de Monterrey.
           </p>
-          <AireAhora />
         </div>
 
         <div className="relative flex items-center justify-center">
@@ -69,5 +70,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </>
   );
 }
