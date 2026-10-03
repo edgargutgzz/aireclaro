@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import AirQualitySlider from "@/components/home/air-quality-slider";
 
 // Homepage. The hero is ported from observatoriodelaire.com's homepage. The map
 // lives at /mapa; proxy.ts sends embeds and legacy map links that still point
 // at / over there.
+// The homepage keeps the layout's title and card; it only adds its canonical
+// (see lib/metadata.ts for why that isn't set in the layout).
+export const metadata: Metadata = { alternates: { canonical: "/" } };
+
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center">

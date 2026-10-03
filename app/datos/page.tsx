@@ -31,6 +31,7 @@ export default function Datos() {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-7xl px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
+        <h1 className="sr-only">Datos de calidad del aire de la Zona Metropolitana de Monterrey</h1>
         <div className="mb-8">
           <Suspense fallback={<DatosHeaderSkeleton />}>
             <DatosHeader />

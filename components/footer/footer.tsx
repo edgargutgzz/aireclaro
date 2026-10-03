@@ -3,7 +3,7 @@ import { AiFillInstagram, AiFillTikTok } from "react-icons/ai";
 import { FaFacebook, FaYoutube } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 
-const socialLinks = [
+export const SOCIAL_LINKS = [
   { href: "https://www.instagram.com/observatoriomty/", label: "Instagram", Icon: AiFillInstagram, size: 18 },
   { href: "https://www.facebook.com/observatoriomty", label: "Facebook", Icon: FaFacebook, size: 16 },
   { href: "https://x.com/observatoriomty", label: "X", Icon: FaSquareXTwitter, size: 16 },
@@ -35,7 +35,7 @@ export default function Footer() {
         </div>
 
         <div className="flex items-center gap-3">
-          {socialLinks.map(({ href, label, Icon, size }) => (
+          {SOCIAL_LINKS.map(({ href, label, Icon, size }) => (
             <Link
               key={label}
               href={href}

@@ -17,6 +17,9 @@ export const OG_BASE = { type: "website", locale: "es_MX" } as const;
 // here, or a shared link unfurls with the homepage's title and description.
 // X falls back to these og tags (the layout only sets twitter's card type).
 // The card's title matches the browser tab: section first, then the site name.
+// The canonical folds query-string variants (?sensor=, ?v=, chart state) into
+// the one page. It lives here, not in the layout, because a layout canonical
+// is inherited by every page that doesn't override it.
 export function pageMetadata({
   title,
   description,
@@ -31,6 +34,7 @@ export function pageMetadata({
   return {
     title,
     description,
+    alternates: { canonical: path },
     openGraph: {
       ...OG_BASE,
       title: `${title} | ${SITE_NAME}`,

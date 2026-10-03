@@ -6,6 +6,7 @@ import MainContent from "@/components/main-content";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SITE_URL } from "@/lib/site";
+import { SOCIAL_LINKS } from "@/components/footer/footer";
 import { OG_BASE, OG_IMAGES, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
 
 // Latin only: it covers all of Spanish (áéíóúñü¿¡); latin-ext was a whole
@@ -51,6 +52,7 @@ const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Observatorio Ciudadano de la Calidad del Aire (OCCAMM)",
+  alternateName: SITE_NAME,
   url: SITE_URL,
   logo: `${SITE_URL}/navbar/occamm-logo.png`,
   description:
@@ -67,6 +69,7 @@ const organizationSchema = {
     email: "contacto@observatoriodelaire.com",
     contactType: "customer support",
   },
+  sameAs: SOCIAL_LINKS.map(({ href }) => href),
 };
 
 export default function RootLayout({

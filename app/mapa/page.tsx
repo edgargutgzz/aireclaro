@@ -52,6 +52,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: "/mapa" },
     openGraph: {
       title,
       description,
@@ -93,5 +94,10 @@ export default async function Mapa() {
   const sensors = [...taggedPurpleAirSensors, ...taggedSimaSensors];
   const data = [...purpleAirData, ...simaData];
 
-  return <MapaSensors sensors={sensors} data={data} />;
+  return (
+    <>
+      <h1 className="sr-only">Mapa de calidad del aire en la Zona Metropolitana de Monterrey</h1>
+      <MapaSensors sensors={sensors} data={data} />
+    </>
+  );
 }
