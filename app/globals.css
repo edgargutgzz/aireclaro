@@ -55,24 +55,33 @@
   }
 }
 
+/* The footer's datacomun credit. Each stop is one shade darker than the
+   studio's cyan/violet/pink so the small text keeps >=4.5:1 on white; it holds
+   still on the first color when the visitor asks for reduced motion. */
 @keyframes colorCycle {
   0% {
-    color: #06b6d4;
+    color: #0e7490;
   }
   33% {
-    color: #8b5cf6;
+    color: #7c3aed;
   }
   66% {
-    color: #ec4899;
+    color: #db2777;
   }
   100% {
-    color: #06b6d4;
+    color: #0e7490;
   }
 }
 
 .datacomun-comun {
-  color: #06b6d4;
+  color: #0e7490;
   animation: colorCycle 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .datacomun-comun {
+    animation: none;
+  }
 }
 
 /* Map markers.
