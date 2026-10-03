@@ -55,6 +55,9 @@ const PUBLICACIONES = [
 const NOSOTROS = [
   { href: "/quienes-somos", label: "Quiénes somos" },
   { href: "/equipo", label: "Equipo" },
+  // Tucked in here (last, least prominent) until the page is ready to go
+  // back to the top level.
+  { href: "/proyectos", label: "Proyectos" },
 ];
 
 export default function Navbar() {
@@ -176,16 +179,6 @@ export default function Navbar() {
           aria-label="Principal"
           className={`absolute left-0 top-16 z-10 flex w-full flex-col gap-6 border-b-4 bg-stone-50 py-5 pl-6 lg:static lg:left-auto lg:top-auto lg:flex lg:w-auto lg:flex-row lg:items-center lg:gap-10 lg:border-b-0 lg:py-0 lg:pl-0 ${menuState.isOpen ? "block" : "hidden"}`}
         >
-          {/* Proyectos */}
-          <Link
-            href="/proyectos"
-            aria-current={current("/proyectos")}
-            className={`block hover:text-gray-500 ${FOCUS} ${isCurrent("/proyectos") ? CURRENT : ""}`}
-            onClick={handleLinkClick}
-          >
-            Proyectos
-          </Link>
-
           {/* Publicaciones */}
           <div className="relative" onBlur={closeOnFocusOut("isPublicacionesSubmenuOpen")}>
             <button
