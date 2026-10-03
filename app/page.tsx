@@ -3,6 +3,7 @@ import JsonLd from "@/components/json-ld";
 import { OG_BASE, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import AirQualitySlider from "@/components/home/air-quality-slider";
+import AireAhora from "@/components/home/aire-ahora";
 
 // Homepage. The hero is ported from observatoriodelaire.com's homepage. The map
 // lives at /mapa; proxy.ts sends embeds and legacy map links that still point
@@ -25,6 +26,10 @@ export const metadata: Metadata = {
     "Observatorio ciudadano de la calidad del aire en la Zona Metropolitana de Monterrey, con mapa en vivo, datos abiertos de PM2.5 y PM10, análisis y editoriales.",
   alternates: { canonical: "/" },
 };
+
+// The hero's live line (components/home/aire-ahora.tsx) reads the map's
+// hourly SIMA feed: re-render at most every 5 minutes, not once per deploy.
+export const revalidate = 300;
 
 // Tells Google what to call the site in results ("Observatorio del Aire"
 // instead of the bare domain). Homepage only, per Google's site-name guide.
@@ -51,6 +56,7 @@ export default function Home() {
             esfuerzos colaborativos y fundamento técnico para mejorar la calidad
             del aire en la Zona Metropolitana de Monterrey.
           </p>
+          <AireAhora />
         </div>
 
         <div className="relative flex items-center justify-center">
