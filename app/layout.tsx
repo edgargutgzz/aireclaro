@@ -85,7 +85,13 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <div className="flex min-h-svh flex-col">
-          {/* Navbar - mobile bottom bar is self-contained fixed; desktop header is in normal flow */}
+          {/* Skip link: hidden until focused, the first Tab stop on every page. */}
+          <a
+            href="#contenido"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-900/15"
+          >
+            Saltar al contenido
+          </a>
           <Navbar />
           {/* Content - no padding */}
           <MainContent>{children}</MainContent>

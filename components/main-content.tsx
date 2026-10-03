@@ -15,7 +15,8 @@ export default function MainContent({ children }: { children: React.ReactNode })
   }, [pathname]);
 
   return (
-    <main ref={ref} className="w-full flex-grow overflow-y-auto bg-gray-50">
+    // id + tabIndex: the skip link's target (focusable, no ring of its own).
+    <main ref={ref} id="contenido" tabIndex={-1} className="w-full flex-grow overflow-y-auto bg-gray-50 focus:outline-none">
       {children}
       {/* Same footer as observatoriodelaire.com, everywhere except the map.
           No bottom-bar clearance needed: only the map has the mobile bottom

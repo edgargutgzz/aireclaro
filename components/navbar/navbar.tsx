@@ -43,6 +43,9 @@ function CloseIcon() {
 // button is underlined when one of its pages is current.
 const CURRENT = "underline decoration-2 underline-offset-8";
 
+// The house focus ring, on every focusable item in the bar.
+const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+
 const PUBLICACIONES = [
   { href: "/infografias", label: "Infografías" },
   { href: "/editoriales", label: "Editoriales" },
@@ -67,6 +70,9 @@ export default function Navbar() {
 
   // Ref for detecting clicks outside of menu
   const menuRef = useRef<HTMLDivElement>(null);
+  // The dropdown buttons, so Escape can hand focus back to the one it closed.
+  const publicacionesButtonRef = useRef<HTMLButtonElement>(null);
+  const nosotrosButtonRef = useRef<HTMLButtonElement>(null);
 
   // Toggles the mobile menu open/closed state
   const toggleMobileMenu = () => {
@@ -108,6 +114,11 @@ export default function Navbar() {
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        // Focus inside an open dropdown returns to its button.
+        const active = document.activeElement;
+        for (const button of [publicacionesButtonRef.current, nosotrosButtonRef.current]) {
+          if (button && active && button.parentElement?.contains(active)) button.focus();
+        }
         setMenuState({
           isOpen: false,
           isSubmenuOpen: false,
@@ -124,6 +135,14 @@ export default function Navbar() {
     };
   }, []);
 
+  // Tabbing out of an open dropdown closes it.
+  const closeOnFocusOut =
+    (key: "isSubmenuOpen" | "isPublicacionesSubmenuOpen") => (event: React.FocusEvent<HTMLDivElement>) => {
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+        setMenuState((prev) => (prev[key] ? { ...prev, [key]: false } : prev));
+      }
+    };
+
   // Handles link clicks
   const handleLinkClick = () => {
     setMenuState({
@@ -134,13 +153,13 @@ export default function Navbar() {
   };
 
   return (
-    <div className="relative z-50 bg-stone-50 border-stone-200">
+    <header className="relative z-50 bg-stone-50 border-stone-200">
       <div
         className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8"
         ref={menuRef}
       >
         {/* Logo */}
-        <Link href="/" onClick={handleLinkClick}>
+        <Link href="/" onClick={handleLinkClick} className={FOCUS}>
           <Image
             src="/navbar/occamm-logo.png"
             alt="Observatorio del Aire, inicio"
@@ -152,25 +171,28 @@ export default function Navbar() {
           />
         </Link>
         {/* Menu */}
-        <div
+        <nav
+          id="menu-principal"
+          aria-label="Principal"
           className={`absolute left-0 top-16 z-10 flex w-full flex-col gap-6 border-b-4 bg-stone-50 py-5 pl-6 lg:static lg:left-auto lg:top-auto lg:flex lg:w-auto lg:flex-row lg:items-center lg:gap-10 lg:border-b-0 lg:py-0 lg:pl-0 ${menuState.isOpen ? "block" : "hidden"}`}
         >
           {/* Proyectos */}
           <Link
             href="/proyectos"
             aria-current={current("/proyectos")}
-            className={`block hover:text-gray-500 ${isCurrent("/proyectos") ? CURRENT : ""}`}
+            className={`block hover:text-gray-500 ${FOCUS} ${isCurrent("/proyectos") ? CURRENT : ""}`}
             onClick={handleLinkClick}
           >
             Proyectos
           </Link>
 
           {/* Publicaciones */}
-          <div className="relative">
+          <div className="relative" onBlur={closeOnFocusOut("isPublicacionesSubmenuOpen")}>
             <button
+              ref={publicacionesButtonRef}
               onClick={togglePublicacionesSubmenu}
               aria-expanded={menuState.isPublicacionesSubmenuOpen}
-              className={`flex items-center hover:text-gray-500 ${PUBLICACIONES.some((l) => isCurrent(l.href)) ? CURRENT : ""}`}
+              className={`flex items-center hover:text-gray-500 ${FOCUS} ${PUBLICACIONES.some((l) => isCurrent(l.href)) ? CURRENT : ""}`}
             >
               Publicaciones
               <ChevronDown
@@ -184,7 +206,7 @@ export default function Navbar() {
                     key={l.href}
                     href={l.href}
                     aria-current={current(l.href)}
-                    className={`block hover:text-gray-500 ${isCurrent(l.href) ? CURRENT : ""}`}
+                    className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
                     onClick={handleLinkClick}
                   >
                     {l.label}
@@ -194,11 +216,12 @@ export default function Navbar() {
             )}
           </div>
           {/* Nosotros */}
-          <div className="relative">
+          <div className="relative" onBlur={closeOnFocusOut("isSubmenuOpen")}>
             <button
+              ref={nosotrosButtonRef}
               onClick={toggleSubmenu}
               aria-expanded={menuState.isSubmenuOpen}
-              className={`flex items-center hover:text-gray-500 ${NOSOTROS.some((l) => isCurrent(l.href)) ? CURRENT : ""}`}
+              className={`flex items-center hover:text-gray-500 ${FOCUS} ${NOSOTROS.some((l) => isCurrent(l.href)) ? CURRENT : ""}`}
             >
               Nosotros
               <ChevronDown
@@ -212,7 +235,7 @@ export default function Navbar() {
                     key={l.href}
                     href={l.href}
                     aria-current={current(l.href)}
-                    className={`block hover:text-gray-500 ${isCurrent(l.href) ? CURRENT : ""}`}
+                    className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
                     onClick={handleLinkClick}
                   >
                     {l.label}
@@ -229,7 +252,7 @@ export default function Navbar() {
             href="/datos"
             aria-current={current("/datos")}
             onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${isCurrent("/datos") ? "border-[#743479] bg-[#743479]/20 text-[#743479]" : "border-[#743479]/60 bg-[#743479]/10 text-[#743479] hover:bg-[#743479]/15"}`}
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${isCurrent("/datos") ? "border-[#743479] bg-[#743479]/20 text-[#743479]" : "border-[#743479]/60 bg-[#743479]/10 text-[#743479] hover:bg-[#743479]/15"}`}
           >
             <BarChart3 size={14} className="mr-1.5" />
             Datos
@@ -239,24 +262,27 @@ export default function Navbar() {
             href="/mapa"
             aria-current={current("/mapa")}
             onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${isCurrent("/mapa") ? "border-[#226caf] bg-[#226caf]/20 text-[#226caf]" : "border-[#226caf]/60 bg-[#226caf]/10 text-[#226caf] hover:bg-[#226caf]/15"}`}
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${isCurrent("/mapa") ? "border-[#226caf] bg-[#226caf]/20 text-[#226caf]" : "border-[#226caf]/60 bg-[#226caf]/10 text-[#226caf] hover:bg-[#226caf]/15"}`}
           >
             <Map size={14} className="mr-1.5" />
             Mapa
           </Link>
-        </div>
+        </nav>
 
         {/* Menu Icon for mobile and tablet */}
         <div className="lg:hidden">
+          {/* p-2/-m-2: a 44px tap target around the 28px icon, same position. */}
           <button
             onClick={toggleMobileMenu}
             aria-label={menuState.isOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuState.isOpen}
+            aria-controls="menu-principal"
+            className={`-m-2 p-2 ${FOCUS}`}
           >
             {menuState.isOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
