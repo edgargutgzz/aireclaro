@@ -60,7 +60,7 @@ export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }:
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-controls={bodyId}
-          className="group -my-1 flex min-w-0 flex-1 items-center gap-2 rounded-lg py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="group -my-1 flex min-w-0 flex-1 items-center gap-2 rounded-xl py-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           {/* A legend-swatch disc in the band's `color` with a 1px `ink`
               inset ring, the same mark the map marker carries. It sits on
@@ -85,7 +85,7 @@ export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }:
         <button
           type="button"
           onClick={onShowInfo}
-          className="-my-1 -mr-1 -translate-y-px flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="-my-1 -mr-1 -translate-y-px flex-shrink-0 rounded-xl p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           aria-label="Más información sobre recomendaciones de salud"
         >
           <Info aria-hidden="true" className="h-3 w-3" />
@@ -172,7 +172,7 @@ export function StationReading({
         <button
           type="button"
           onClick={onCopyCoords}
-          className={`-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-lg p-1 text-sm leading-none text-gray-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${copyInteractionClass}`}
+          className={`-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-xl p-1 text-sm leading-none text-gray-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${copyInteractionClass}`}
           aria-label="Copiar coordenadas"
         >
           {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-gray-400" />}

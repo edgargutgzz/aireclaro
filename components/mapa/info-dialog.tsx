@@ -154,7 +154,7 @@ export function InfoDialog({
           /* gray-500, not gray-400: with no footer button left, this icon is
              the only visible way out, and gray-400 on white is 2.54:1 against
              the 3:1 WCAG asks of anything identifying a control. */
-          className="-mr-2 -mt-1 flex-shrink-0 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="-mr-2 -mt-1 flex-shrink-0 rounded-xl p-2 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           <X className="h-4 w-4" />
         </button>

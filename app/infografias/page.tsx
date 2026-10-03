@@ -50,7 +50,7 @@ export default function Infografias() {
             href={`/infografias/${slug}.pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="block transform overflow-hidden rounded-lg bg-white p-3 shadow-md transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="block transform overflow-hidden rounded-xl bg-white p-3 shadow-md transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             <Image
               src={`/infografias/${slug}.webp`}
@@ -58,7 +58,7 @@ export default function Infografias() {
               width={1600}
               height={height}
               sizes="(min-width: 1280px) 560px, (min-width: 768px) 45vw, 100vw"
-              className="rounded-lg"
+              className="rounded-xl"
             />
             <span className="sr-only"> (PDF, abre en una nueva pestaña)</span>
           </a>

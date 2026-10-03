@@ -26,14 +26,6 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
       },
-      borderRadius: {
-        // Anchored to --radius (0.75rem / 12px = the house button radius,
-        // .ai-style-guide.md §5). Bigger surfaces still reach for the literal
-        // rounded-2xl / rounded-3xl from the scale.
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
     },
   },
 };

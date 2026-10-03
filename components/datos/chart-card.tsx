@@ -67,7 +67,7 @@ export default function ChartCard({
                     onClick={() => setInfoOpen((o) => !o)}
                     aria-expanded={infoOpen}
                     aria-controls={panelId}
-                    className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                    className={`flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
                       infoOpen
                         ? "bg-gray-800 text-white hover:bg-gray-700"
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"

@@ -12,7 +12,7 @@ export default function DatosError({ reset }: { reset: () => void }) {
       </p>
       <button
         onClick={reset}
-        className="mt-1 rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        className="mt-1 rounded-xl bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
         Reintentar
       </button>

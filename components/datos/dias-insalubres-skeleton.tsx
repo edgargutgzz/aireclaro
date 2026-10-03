@@ -30,7 +30,7 @@ export default function DiasInsalubresSkeleton() {
             2026-09-22 -- shorter on mobile so the chart doesn't need its own
             scroll on top of the header's) -- a taller/shorter skeleton than
             the real chart is exactly the layout-jump this exists to prevent. */}
-        <SkeletonBlock className="h-[320px] w-full rounded-lg md:h-[460px]" />
+        <SkeletonBlock className="h-[320px] w-full rounded-xl md:h-[460px]" />
       </div>
     </div>
   );

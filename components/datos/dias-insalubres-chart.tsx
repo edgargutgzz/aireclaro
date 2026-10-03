@@ -937,7 +937,7 @@ export default function DiasInsalubresChart({
                   <button
                     key={p}
                     onClick={() => setPollutant(p)}
-                    className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                    className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
                       pollutant === p
                         ? "bg-white text-gray-800 shadow-sm hover:shadow"
                         : "text-gray-500 hover:text-gray-700"
@@ -972,7 +972,7 @@ export default function DiasInsalubresChart({
               onClick={() => setCompare((c) => !c)}
               aria-pressed={compare}
               title={compare ? "Volver a la vista por año" : "Comparar años"}
-              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
                 compare
                   ? "bg-gray-800 text-white hover:bg-gray-700"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"

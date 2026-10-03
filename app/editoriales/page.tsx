@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 const cardClass =
-  "transform rounded-lg bg-white p-4 shadow-md transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+  "transform rounded-xl bg-white p-4 shadow-md transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
 function EditorialCard({ editorial }: { editorial: Editorial }) {
   const body = (
@@ -27,7 +27,7 @@ function EditorialCard({ editorial }: { editorial: Editorial }) {
         width={1024}
         height={576}
         sizes="(min-width: 1280px) 384px, (min-width: 1024px) 30vw, 100vw"
-        className="aspect-video w-full rounded-lg object-cover"
+        className="aspect-video w-full rounded-xl object-cover"
       />
       <h2 className="pt-4 text-lg font-semibold md:pt-6 md:text-2xl lg:pt-4 lg:text-lg">
         {editorial.title}

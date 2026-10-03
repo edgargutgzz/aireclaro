@@ -56,10 +56,10 @@ export default function QuienesSomos() {
                   alt=""
                   fill
                   sizes="(min-width: 1280px) 400px, (min-width: 768px) 33vw, 100vw"
-                  className="rounded-lg object-cover"
+                  className="rounded-xl object-cover"
                 />
                 {/* Tint so the white text reads on light photos too (tile 1). */}
-                <div aria-hidden="true" className="absolute inset-0 rounded-lg bg-black/25" />
+                <div aria-hidden="true" className="absolute inset-0 rounded-xl bg-black/25" />
                 <div className="relative z-10 flex flex-col p-4 text-white">
                   <span
                     aria-hidden="true"

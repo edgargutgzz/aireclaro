@@ -143,7 +143,7 @@ export default function Recursos() {
             href={`/recursos/${recurso.file}.pdf`}
             target="_blank"
             rel="noopener noreferrer"
-            className="transform rounded-lg bg-white p-4 shadow-md transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="transform rounded-xl bg-white p-4 shadow-md transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             <Image
               src={`/recursos/${recurso.file}.webp`}
@@ -151,14 +151,14 @@ export default function Recursos() {
               width={1024}
               height={576}
               sizes="(min-width: 1280px) 384px, (min-width: 1024px) 30vw, 100vw"
-              className="aspect-video w-full rounded-lg object-cover"
+              className="aspect-video w-full rounded-xl object-cover"
             />
             <h2 className="pt-4 text-lg font-semibold md:pt-6 md:text-2xl lg:pt-4 lg:text-lg">
               {recurso.title}
             </h2>
             <div className="flex items-center justify-between pt-8 md:pt-10 lg:pt-8">
               <p
-                className={`rounded-lg px-2 py-1 text-sm text-gray-600 md:text-lg lg:text-sm ${TYPE_COLORS[recurso.type]}`}
+                className={`rounded-xl px-2 py-1 text-sm text-gray-600 md:text-lg lg:text-sm ${TYPE_COLORS[recurso.type]}`}
               >
                 {recurso.type}
               </p>

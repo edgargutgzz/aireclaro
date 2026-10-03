@@ -99,7 +99,7 @@ export default function DownloadImageMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         title="Descargar imagen"
-        className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        className="flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
       >
         <ArrowDownToLine className="h-3.5 w-3.5" aria-hidden />
         Descargar
@@ -128,7 +128,7 @@ export default function DownloadImageMenu({
                   href={href(o.format)}
                   download={filename(o.format)}
                   onClick={() => setOpen(false)}
-                  className={`flex items-center rounded-lg py-2 pr-3 transition-colors hover:bg-gray-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${
+                  className={`flex items-center rounded-xl py-2 pr-3 transition-colors hover:bg-gray-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 ${
                     group.title ? "pl-6" : "pl-3"
                   }`}
                 >

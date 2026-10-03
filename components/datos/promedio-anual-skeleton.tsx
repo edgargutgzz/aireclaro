@@ -32,7 +32,7 @@ export default function PromedioAnualSkeleton() {
             chart got the same responsive height días insalubres' own chart
             already had) -- a taller/shorter skeleton than the real chart is
             exactly the layout-jump this component exists to prevent. */}
-        <SkeletonBlock className="h-[320px] w-full rounded-lg md:h-[460px]" />
+        <SkeletonBlock className="h-[320px] w-full rounded-xl md:h-[460px]" />
         {/* No falta-de-información pill row placeholder -- that per-station
             pill list was removed entirely (2026-09-28 request), replaced by
             a plain count folded into the header subtitle above, which the

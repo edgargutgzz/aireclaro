@@ -82,7 +82,7 @@ export function LegendDetail({ className = "" }: { className?: string }) {
         <button
           type="button"
           onClick={() => setShowPM25Info(true)}
-          className="-my-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="-my-1 flex-shrink-0 rounded-xl p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           aria-label="Qué es PM2.5"
         >
           <Info aria-hidden="true" className="h-3 w-3" />

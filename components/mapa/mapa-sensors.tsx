@@ -1166,7 +1166,7 @@ export default function MapaSensors({
                   type="button"
                   onClick={closeCard}
                   aria-label="Cerrar"
-                  className="-my-1 -mr-1 flex-shrink-0 rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                  className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-gray-400 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                 >
                   <X aria-hidden="true" className="h-4 w-4" />
                 </button>

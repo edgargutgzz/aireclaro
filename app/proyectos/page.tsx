@@ -85,7 +85,7 @@ export default function Proyectos() {
             imageAlt={project.title}
           >
             <div className="flex flex-wrap items-center justify-between gap-3 pt-6 md:pt-12">
-              <p className="whitespace-nowrap rounded-lg bg-blue-100 px-2 py-1 text-sm">
+              <p className="whitespace-nowrap rounded-xl bg-blue-100 px-2 py-1 text-sm">
                 {project.tag}
               </p>
               {project.links.length > 0 && (

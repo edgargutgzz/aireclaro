@@ -192,7 +192,7 @@ export default function SelectMenu<T extends string>({
                 aria-selected={isSelected}
                 onClick={() => pick(i)}
                 onPointerMove={() => setActive(i)}
-                className={`flex cursor-pointer items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
+                className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
                   i === active ? "bg-gray-100/70" : ""
                 } ${isSelected ? "font-medium text-gray-800" : "text-gray-600"}`}
               >

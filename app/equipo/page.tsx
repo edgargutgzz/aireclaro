@@ -46,14 +46,14 @@ export default function Equipo() {
         {EQUIPO.map((persona) => (
           <li
             key={persona.image}
-            className="flex flex-col items-center justify-center rounded-lg bg-white p-6 text-center shadow-lg"
+            className="flex flex-col items-center justify-center rounded-xl bg-white p-6 text-center shadow-lg"
           >
             <Image
               src={`/equipo/${persona.image}.webp`}
               alt={persona.name}
               width={288}
               height={288}
-              className="h-36 w-36 rounded-lg object-cover"
+              className="h-36 w-36 rounded-xl object-cover"
             />
             <h2 className="pt-5 text-lg font-semibold">{persona.name}</h2>
             <p className="pt-1.5 text-sm leading-relaxed text-gray-600">

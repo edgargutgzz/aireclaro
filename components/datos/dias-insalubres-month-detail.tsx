@@ -223,7 +223,7 @@ export default function DiasInsalubresMonthDetail({
               return (
               <div
                 key={c.day.fecha}
-                className="flex items-center justify-center rounded-lg text-sm font-medium"
+                className="flex items-center justify-center rounded-xl text-sm font-medium"
                 tabIndex={0}
                 aria-label={`${WEEKDAY_FULL[c.row]} ${c.day.dia} de ${MONTHS_ES_FULL[mesNumero - 1]}: ${dayLabel(c.day, todayStr)}`}
                 style={{

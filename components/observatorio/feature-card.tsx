@@ -20,7 +20,7 @@ export default function FeatureCard({
   children?: React.ReactNode;
 }) {
   return (
-    <article className="flex flex-col rounded-lg bg-white p-4 shadow-lg md:flex-row md:p-0">
+    <article className="flex flex-col rounded-xl bg-white p-4 shadow-lg md:flex-row md:p-0">
       <div className={imageSide === "right" ? "md:order-last md:w-1/2" : "md:w-1/2"}>
         <Image
           src={image}
@@ -28,7 +28,7 @@ export default function FeatureCard({
           width={1080}
           height={1080}
           sizes="(min-width: 1280px) 616px, (min-width: 768px) 50vw, 100vw"
-          className="w-full rounded-lg"
+          className="w-full rounded-xl"
         />
       </div>
       <div className="flex flex-col justify-center md:w-1/2 md:px-12">

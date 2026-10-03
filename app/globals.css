@@ -1,7 +1,7 @@
 @import "tailwindcss";
 /* Tailwind v4: keep driving theme/content from the existing JS config
    (tailwind.config.ts) rather than a CSS-native @theme block -- it's
-   already down to 3 colors + radius + 3 panel widths, small enough that
+   already down to 3 colors + 3 panel widths, small enough that
    the bridge costs nothing and there's no reason to force a rewrite. */
 @config "../tailwind.config.ts";
 
@@ -13,9 +13,9 @@
    The app is light-only (.ai-style-guide.md §3): there is a `:root` block
    only, no `.dark`. Originally shadcn/ui's full token bridge (~20 variables);
    trimmed 2026-09-19 when shadcn was removed project-wide down to just the
-   three still actually consumed (the global `body`/`*` reset below) plus
-   `--radius` (the house button radius, still referenced by
-   `rounded-lg`/`md`/`sm` throughout the app) — every other shadcn color
+   three still actually consumed (the global `body`/`*` reset below). The
+   `--radius` override of rounded-lg/md/sm went 2026-10-03, so every radius
+   class is stock Tailwind. Every other shadcn color
    variable (card, popover, primary, secondary, muted, accent, destructive,
    input, ring, chart-1..5) had zero real usage anywhere, JSX or CSS, and
    was deleted rather than kept "just in case." The air-quality scale is not
@@ -24,8 +24,6 @@
   --background: 210 20% 98%; /* gray-50  #f9fafb */
   --foreground: 215 28% 17%; /* gray-800 #1f2937 */
   --border: 220 13% 91%; /* gray-200 #e5e7eb */
-
-  --radius: 0.75rem; /* 12px — the house button radius (§5) */
 }
 
 @layer base {

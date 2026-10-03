@@ -21,7 +21,7 @@ function EstacionTileSkeleton() {
         <SkeletonBlock className="h-4 w-28" />
         <SkeletonBlock className="h-[68px] w-40 md:h-9 md:w-56" />
       </div>
-      <SkeletonBlock className="h-20 w-full rounded-lg md:h-[137px]" />
+      <SkeletonBlock className="h-20 w-full rounded-xl md:h-[137px]" />
     </div>
   );
 }
