@@ -44,7 +44,7 @@ export default function Home() {
         <div className="flex flex-col gap-8">
           <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
             Trabajamos por una mejor{" "}
-            <span className="text-[#2980B9]">calidad del aire.</span>
+            <span className="text-[#226caf]">calidad del aire.</span>
           </h1>
           <p className="max-w-lg text-lg leading-relaxed text-gray-600 md:text-xl">
             Somos una organización de la sociedad civil dedicada a generar

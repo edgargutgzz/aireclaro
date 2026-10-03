@@ -105,12 +105,42 @@ export default function AirQualitySlider() {
     [updatePosition],
   );
 
+  // Arrow keys step 5%, Page Up/Down 10%, Home/End jump to either photo.
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const step: Record<string, (pos: number) => number> = {
+      ArrowLeft: (pos) => pos - 5,
+      ArrowDown: (pos) => pos - 5,
+      ArrowRight: (pos) => pos + 5,
+      ArrowUp: (pos) => pos + 5,
+      PageDown: (pos) => pos - 10,
+      PageUp: (pos) => pos + 10,
+      Home: () => 0,
+      End: () => 100,
+    };
+    const move = step[e.key];
+    if (!move) return;
+    e.preventDefault();
+    setSmooth(true);
+    setSliderPos((pos) => Math.max(0, Math.min(100, move(pos))));
+  }, []);
+
   const transition = smooth ? "duration-300 ease-out" : "duration-0";
+  const cleanPercent = Math.round(sliderPos);
 
   return (
     <div
       ref={containerRef}
-      className="relative h-[400px] w-full cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-3xl shadow-2xl md:h-[500px] lg:h-[550px]"
+      // A WAI-ARIA slider: focusable, keyboard-driven, and read out as how
+      // much of each photo is showing.
+      role="slider"
+      tabIndex={0}
+      aria-label="Comparación: aire limpio y aire contaminado"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={cleanPercent}
+      aria-valuetext={`${cleanPercent}% aire limpio, ${100 - cleanPercent}% aire contaminado`}
+      onKeyDown={handleKeyDown}
+      className="group relative h-[400px] w-full cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-3xl shadow-2xl focus-visible:outline-none md:h-[500px] lg:h-[550px]"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -150,8 +180,10 @@ export default function AirQualitySlider() {
         style={{ left: `${sliderPos}%` }}
       >
         <div className="h-full w-[2px] bg-white/80" />
-        {/* Handle */}
-        <div className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-white/90 shadow-lg backdrop-blur-sm">
+        {/* Handle. Keyboard focus shows here as a solid outline: the
+            translucent house ring disappears over photos (same exception as
+            the map's selected station). */}
+        <div className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-white/90 shadow-lg backdrop-blur-sm group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-gray-900">
           <svg
             width="16"
             height="16"
