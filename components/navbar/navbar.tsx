@@ -238,16 +238,18 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Datos and Mapa: equal weight, outlined in the logo's purple / blue
-              (lib/datos-colors.ts BRAND_PURPLE / BRAND_BLUE). On its own page
-              a button deepens (full border, twice the tint), standing in for the text links' underline. */}
+          {/* Datos and Mapa: equal-weight neutral buttons (white, gray border,
+              the menu's dark text); only the icon carries the logo's purple /
+              blue (lib/datos-colors.ts BRAND_PURPLE / BRAND_BLUE). On its own
+              page a button takes a light tint and text in its color, standing
+              in for the text links' underline. */}
           <Link
             href="/datos"
             aria-current={current("/datos")}
             onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${isCurrent("/datos") ? "border-[#743479] bg-[#743479]/20 text-[#743479]" : "border-[#743479]/60 bg-[#743479]/10 text-[#743479] hover:bg-[#743479]/15"}`}
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${isCurrent("/datos") ? "border-[#743479]/40 bg-[#743479]/10 text-[#743479]" : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"}`}
           >
-            <BarChart3 size={14} className="mr-1.5" />
+            <BarChart3 size={14} className="mr-1.5 text-[#743479]" />
             Datos
           </Link>
 
@@ -255,9 +257,9 @@ export default function Navbar() {
             href="/mapa"
             aria-current={current("/mapa")}
             onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${isCurrent("/mapa") ? "border-[#226caf] bg-[#226caf]/20 text-[#226caf]" : "border-[#226caf]/60 bg-[#226caf]/10 text-[#226caf] hover:bg-[#226caf]/15"}`}
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${isCurrent("/mapa") ? "border-[#226caf]/40 bg-[#226caf]/10 text-[#226caf]" : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"}`}
           >
-            <Map size={14} className="mr-1.5" />
+            <Map size={14} className="mr-1.5 text-[#226caf]" />
             Mapa
           </Link>
         </nav>
