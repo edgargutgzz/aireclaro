@@ -26,7 +26,7 @@ import DescargaDatosSkeleton from "@/components/datos/descarga-datos-skeleton";
 export const dynamic = "force-dynamic";
 
 const DATOS_TITLE = "Datos";
-const DATOS_DESCRIPTION = "Explora y descarga los datos históricos de calidad del aire del Observatorio del Aire.";
+const DATOS_DESCRIPTION = "Explora y descarga los datos históricos de calidad del aire en la Zona Metropolitana de Monterrey.";
 
 // A shared /datos link unfurls with the month's result (the monthly summary
 // as a 1200x630 card, app/api/og/dias-insalubres?format=link) instead of the
