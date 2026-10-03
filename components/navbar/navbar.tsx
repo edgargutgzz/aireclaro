@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown, Map, BarChart3 } from "lucide-react";
 
@@ -37,7 +38,26 @@ function CloseIcon() {
   );
 }
 
+// The current page's item is underlined (no width change, so the bar doesn't
+// shift between pages) and announced as aria-current="page"; a dropdown's
+// button is underlined when one of its pages is current.
+const CURRENT = "underline decoration-2 underline-offset-8";
+
+const PUBLICACIONES = [
+  { href: "/infografias", label: "Infografías" },
+  { href: "/editoriales", label: "Editoriales" },
+  { href: "/recursos", label: "Recursos" },
+];
+
+const NOSOTROS = [
+  { href: "/quienes-somos", label: "Quiénes somos" },
+  { href: "/equipo", label: "Equipo" },
+];
+
 export default function Navbar() {
+  const pathname = usePathname();
+  const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const current = (href: string) => (isCurrent(href) ? "page" : undefined);
   // Menu state
   const [menuState, setMenuState] = useState({
     isOpen: false,
@@ -56,7 +76,7 @@ export default function Navbar() {
     }));
   };
 
-  // Toggles the submenu open/closed state (Observatorio)
+  // Toggles the submenu open/closed state (Nosotros)
   const toggleSubmenu = () => {
     setMenuState((prev) => ({
       ...prev,
@@ -86,9 +106,21 @@ export default function Navbar() {
       }
     };
 
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuState({
+          isOpen: false,
+          isSubmenuOpen: false,
+          isPublicacionesSubmenuOpen: false,
+        });
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
@@ -111,7 +143,7 @@ export default function Navbar() {
         <Link href="/" onClick={handleLinkClick}>
           <Image
             src="/navbar/occamm-logo.png"
-            alt="OCCAMM Logo"
+            alt="Observatorio del Aire, inicio"
             width={150}
             height={28}
             // Above the fold on every page, and /mapa's largest paint:
@@ -126,7 +158,8 @@ export default function Navbar() {
           {/* Proyectos */}
           <Link
             href="/proyectos"
-            className="block hover:text-gray-500"
+            aria-current={current("/proyectos")}
+            className={`block hover:text-gray-500 ${isCurrent("/proyectos") ? CURRENT : ""}`}
             onClick={handleLinkClick}
           >
             Proyectos
@@ -136,9 +169,8 @@ export default function Navbar() {
           <div className="relative">
             <button
               onClick={togglePublicacionesSubmenu}
-              aria-label="Publicaciones menu"
               aria-expanded={menuState.isPublicacionesSubmenuOpen}
-              className="flex items-center hover:text-gray-500"
+              className={`flex items-center hover:text-gray-500 ${PUBLICACIONES.some((l) => isCurrent(l.href)) ? CURRENT : ""}`}
             >
               Publicaciones
               <ChevronDown
@@ -147,81 +179,70 @@ export default function Navbar() {
             </button>
             {menuState.isPublicacionesSubmenuOpen && (
               <div className="mt-2 flex flex-col gap-4 pl-4 lg:absolute lg:w-40 lg:rounded-2xl lg:border lg:bg-white lg:p-4 lg:pl-4 lg:shadow-md">
-                <Link
-                  href="/infografias"
-                  className="block hover:text-gray-500"
-                  onClick={handleLinkClick}
-                >
-                  Infografías
-                </Link>
-                <Link
-                  href="/editoriales"
-                  className="block hover:text-gray-500"
-                  onClick={handleLinkClick}
-                >
-                  Editoriales
-                </Link>
-                <Link
-                  href="/recursos"
-                  className="block hover:text-gray-500"
-                  onClick={handleLinkClick}
-                >
-                  Recursos
-                </Link>
+                {PUBLICACIONES.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    aria-current={current(l.href)}
+                    className={`block hover:text-gray-500 ${isCurrent(l.href) ? CURRENT : ""}`}
+                    onClick={handleLinkClick}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
               </div>
             )}
           </div>
-          {/* Observatorio */}
+          {/* Nosotros */}
           <div className="relative">
             <button
               onClick={toggleSubmenu}
-              aria-label="Observatorio menu"
               aria-expanded={menuState.isSubmenuOpen}
-              className="flex items-center hover:text-gray-500"
+              className={`flex items-center hover:text-gray-500 ${NOSOTROS.some((l) => isCurrent(l.href)) ? CURRENT : ""}`}
             >
-              Observatorio
+              Nosotros
               <ChevronDown
                 className={`ml-1 h-4 transition-transform ${menuState.isSubmenuOpen ? "rotate-180" : "rotate-0"}`}
               />
             </button>
             {menuState.isSubmenuOpen && (
               <div className="mt-2 flex flex-col gap-4 pl-4 lg:absolute lg:w-40 lg:rounded-2xl lg:border lg:bg-white lg:p-4 lg:pl-4 lg:shadow-md">
-                <Link
-                  href="/quienes-somos"
-                  className="block hover:text-gray-500"
-                  onClick={handleLinkClick}
-                >
-                  Quiénes somos
-                </Link>
-                <Link
-                  href="/equipo"
-                  className="block hover:text-gray-500"
-                  onClick={handleLinkClick}
-                >
-                  Equipo
-                </Link>
+                {NOSOTROS.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    aria-current={current(l.href)}
+                    className={`block hover:text-gray-500 ${isCurrent(l.href) ? CURRENT : ""}`}
+                    onClick={handleLinkClick}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
               </div>
             )}
           </div>
 
-          {/* Explorar datos pill, in the logo's purple (lib/datos-colors.ts BRAND_PURPLE) */}
+          {/* Datos: the primary action, solid in the logo's purple
+              (lib/datos-colors.ts BRAND_PURPLE). */}
           <Link
             href="/datos"
+            aria-current={current("/datos")}
             onClick={handleLinkClick}
-            className="flex w-fit items-center rounded-xl border border-[#743479]/60 bg-[#743479]/10 px-4 py-2 text-sm font-semibold text-[#743479] backdrop-blur-md transition-colors hover:opacity-80"
+            className="flex w-fit items-center rounded-xl border border-[#743479] bg-[#743479] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           >
             <BarChart3 size={14} className="mr-1.5" />
-            Explorar datos
+            Datos
           </Link>
 
-          {/* Explorar mapa pill, in the logo's blue (BRAND_BLUE) */}
+          {/* Mapa: secondary, outlined in the logo's blue (BRAND_BLUE). */}
           <Link
             href="/mapa"
+            aria-current={current("/mapa")}
             onClick={handleLinkClick}
-            className="flex w-fit items-center rounded-xl border border-[#226caf]/60 bg-[#226caf]/10 px-4 py-2 text-sm font-semibold text-[#226caf] backdrop-blur-md transition-colors hover:opacity-80"
+            className="flex w-fit items-center rounded-xl border border-[#226caf]/60 bg-[#226caf]/10 px-4 py-2 text-sm font-semibold text-[#226caf] transition-opacity hover:opacity-80"
           >
             <Map size={14} className="mr-1.5" />
-            Explorar mapa
+            Mapa
           </Link>
         </div>
 
@@ -229,7 +250,7 @@ export default function Navbar() {
         <div className="lg:hidden">
           <button
             onClick={toggleMobileMenu}
-            aria-label="Toggle menu"
+            aria-label={menuState.isOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={menuState.isOpen}
           >
             {menuState.isOpen ? <CloseIcon /> : <MenuIcon />}
