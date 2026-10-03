@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/metadata";
+import { ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
+import { SITE_URL } from "@/lib/site";
+import JsonLd from "@/components/json-ld";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { editoriales, formatEditorialDate, getArticleBySlug } from "../data";
+import { editoriales, editorialDateISO, formatEditorialDate, getArticleBySlug } from "../data";
 
 // Ported from observatoriodelaire.com/editoriales/[slug]. Only editorials with
 // written content get a page (PDF-only ones open the PDF from the list), and
@@ -41,8 +43,21 @@ export default async function ArticlePage({
   const article = getArticleBySlug(slug);
   if (!article?.content) notFound();
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    image: `${SITE_URL}${article.image}`,
+    datePublished: editorialDateISO(article.date) ?? undefined,
+    author: { "@type": "Person", name: article.author },
+    publisher: ORGANIZATION_REF,
+    url: `${SITE_URL}/editoriales/${article.slug}`,
+    inLanguage: "es-MX",
+  };
+
   return (
     <div className="px-6 py-16 lg:px-8 lg:py-40">
+      <JsonLd data={articleSchema} />
       <article className="mx-auto max-w-3xl">
         <header className="mb-12">
           <h1 className="mb-6 text-3xl font-bold md:text-4xl">

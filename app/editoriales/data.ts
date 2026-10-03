@@ -36,13 +36,27 @@ export function getArticleBySlug(slug: string): Editorial | undefined {
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 const EN_MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
-export function formatEditorialDate(date: string): string {
+function parseEditorialDate(date: string): { year: number; month: number; day: number } | null {
   const match = /^([A-Za-z]{3})\w*\.? (\d{1,2}), (\d{4})$/.exec(date.trim());
-  if (!match) return date;
+  if (!match) return null;
   const mon = match[1].toLowerCase();
   const i = MONTHS.indexOf(mon) >= 0 ? MONTHS.indexOf(mon) : EN_MONTHS.indexOf(mon);
-  if (i < 0) return date;
-  return `${Number(match[2])} ${MONTHS[i]} ${match[3]}`;
+  if (i < 0) return null;
+  return { year: Number(match[3]), month: i + 1, day: Number(match[2]) };
+}
+
+export function formatEditorialDate(date: string): string {
+  const parsed = parseEditorialDate(date);
+  if (!parsed) return date;
+  return `${parsed.day} ${MONTHS[parsed.month - 1]} ${parsed.year}`;
+}
+
+// "2026-08-30", for structured data. Null when the date doesn't parse.
+export function editorialDateISO(date: string): string | null {
+  const parsed = parseEditorialDate(date);
+  if (!parsed) return null;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${parsed.year}-${pad(parsed.month)}-${pad(parsed.day)}`;
 }
 
 export const editoriales: Editorial[] = [

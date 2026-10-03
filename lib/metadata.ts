@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
 
 export const SITE_NAME = "Observatorio del Aire";
 
@@ -44,3 +45,12 @@ export function pageMetadata({
     },
   };
 }
+
+// The organization as an author/publisher/creator inside other structured
+// data (articles, the dataset). The full Organization entry is in the layout.
+export const ORGANIZATION_REF = {
+  "@type": "Organization",
+  name: "Observatorio Ciudadano de la Calidad del Aire (OCCAMM)",
+  alternateName: SITE_NAME,
+  url: SITE_URL,
+};

@@ -29,7 +29,7 @@ const LINEAS = [
 
 export default function QuienesSomos() {
   return (
-    <PageShell title="Quiénes Somos" lead={LEAD}>
+    <PageShell title="Quiénes somos" lead={LEAD}>
       <div className="flex flex-col gap-28 md:gap-48">
         <FeatureCard
           title="Misión"

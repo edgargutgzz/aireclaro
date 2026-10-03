@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/metadata";
+import { ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
+import { SITE_URL } from "@/lib/site";
+import JsonLd from "@/components/json-ld";
 import { Suspense } from "react";
 import DatosHeader from "@/components/datos/datos-header";
 import DatosHeaderSkeleton from "@/components/datos/datos-header-skeleton";
@@ -27,9 +29,38 @@ export const metadata: Metadata = pageMetadata({
   path: "/datos",
 });
 
+// Lists the download in Google Dataset Search. No `license` yet: the data
+// license is still undecided (docs/methodology.md), and adding one is what
+// makes the listing complete.
+const datasetSchema = {
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  name: "Calidad del aire (PM2.5 y PM10) en la Zona Metropolitana de Monterrey",
+  description:
+    "Mediciones horarias de PM2.5 y PM10 de las estaciones de monitoreo del SIMA en la Zona Metropolitana de Monterrey, publicadas por SINAICA (INECC). Una fila por estación, contaminante, fecha y hora, sin validación ni redondeo. Se actualiza cada mes.",
+  url: `${SITE_URL}/datos`,
+  keywords: ["calidad del aire", "PM2.5", "PM10", "Monterrey", "Nuevo León", "SIMA", "SINAICA"],
+  creator: ORGANIZATION_REF,
+  isBasedOn: "https://sinaica.inecc.gob.mx",
+  isAccessibleForFree: true,
+  inLanguage: "es-MX",
+  temporalCoverage: "2025-01-01/..",
+  spatialCoverage: {
+    "@type": "Place",
+    name: "Zona Metropolitana de Monterrey, Nuevo León, México",
+  },
+  variableMeasured: ["PM2.5", "PM10"],
+  distribution: {
+    "@type": "DataDownload",
+    encodingFormat: "text/csv",
+    contentUrl: `${SITE_URL}/api/datos/sima-horario?anio=todos&parametro=todos&estacion=todas`,
+  },
+};
+
 export default function Datos() {
   return (
     <div className="min-h-screen">
+      <JsonLd data={datasetSchema} />
       <div className="mx-auto max-w-7xl px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
         <h1 className="sr-only">Datos de calidad del aire de la Zona Metropolitana de Monterrey</h1>
         <div className="mb-8">

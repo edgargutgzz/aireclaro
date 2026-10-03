@@ -32,7 +32,7 @@ const PROJECTS: Project[] = [
     links: [{ href: "https://alerta-regia.com/", label: "Visitar" }],
   },
   {
-    title: "Adopta un Sensor",
+    title: "Adopta un sensor",
     description:
       "Únete a la iniciativa adoptando un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.",
     tag: "Monitoreo Ambiental",

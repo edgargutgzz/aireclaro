@@ -4,9 +4,15 @@ import AirQualitySlider from "@/components/home/air-quality-slider";
 // Homepage. The hero is ported from observatoriodelaire.com's homepage. The map
 // lives at /mapa; proxy.ts sends embeds and legacy map links that still point
 // at / over there.
-// The homepage keeps the layout's title and card; it only adds its canonical
-// (see lib/metadata.ts for why that isn't set in the layout).
-export const metadata: Metadata = { alternates: { canonical: "/" } };
+// The homepage keeps the layout's title and link card (the slogan alone); it
+// adds a longer description for search results, where Google tends to replace
+// one this short, and its canonical (see lib/metadata.ts for why that isn't
+// set in the layout).
+export const metadata: Metadata = {
+  description:
+    "Observatorio ciudadano de la calidad del aire en la Zona Metropolitana de Monterrey. Mapa en vivo, datos abiertos de PM2.5 y PM10, análisis y editoriales.",
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (

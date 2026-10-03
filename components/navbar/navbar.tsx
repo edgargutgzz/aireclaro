@@ -188,7 +188,7 @@ export default function Navbar() {
                   className="block hover:text-gray-500"
                   onClick={handleLinkClick}
                 >
-                  Quiénes Somos
+                  Quiénes somos
                 </Link>
                 <Link
                   href="/equipo"

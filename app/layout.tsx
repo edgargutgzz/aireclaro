@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SITE_URL } from "@/lib/site";
 import { SOCIAL_LINKS } from "@/components/footer/footer";
+import JsonLd from "@/components/json-ld";
 import { OG_BASE, OG_IMAGES, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
 
 // Latin only: it covers all of Spanish (áéíóúñü¿¡); latin-ext was a whole
@@ -80,10 +81,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-        />
+        <JsonLd data={organizationSchema} />
       </head>
       <body className={inter.className}>
         <div className="flex min-h-svh flex-col">

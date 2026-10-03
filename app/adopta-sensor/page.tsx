@@ -39,7 +39,7 @@ const PASOS = [
 
 export default function AdoptaSensor() {
   return (
-    <PageShell title="Adopta un Sensor" lead={LEAD}>
+    <PageShell title="Adopta un sensor" lead={LEAD}>
       <ol className="flex flex-col gap-28 md:gap-48">
         {PASOS.map((paso, i) => (
           <li key={i}>
