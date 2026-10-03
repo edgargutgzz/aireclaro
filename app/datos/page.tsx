@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DATA_CITATION, DATA_LICENSE, ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
+import { fetchUltimoMes } from "@/lib/datos-cache";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import { Suspense } from "react";
@@ -24,11 +25,25 @@ import DescargaDatosSkeleton from "@/components/datos/descarga-datos-skeleton";
 // the data cache (lib/datos-cache.ts) after the first visit.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Datos",
-  description: "Explora y descarga los datos históricos de calidad del aire del Observatorio del Aire.",
-  path: "/datos",
-});
+const DATOS_TITLE = "Datos";
+const DATOS_DESCRIPTION = "Explora y descarga los datos históricos de calidad del aire del Observatorio del Aire.";
+
+// A shared /datos link unfurls with the month's result (the monthly summary
+// as a 1200x630 card, app/api/og/dias-insalubres?format=link) instead of the
+// generic logo card. The month is in the image URL so chat apps, which cache
+// previews per image URL, fetch a new card each month. Falls back to the
+// generic card if the latest month can't be read.
+export async function generateMetadata(): Promise<Metadata> {
+  const ultimo = await fetchUltimoMes().catch(() => null);
+  if (!ultimo) return pageMetadata({ title: DATOS_TITLE, description: DATOS_DESCRIPTION, path: "/datos" });
+  const image = `/api/og/dias-insalubres?format=link&year=${ultimo.ano}&mes=${ultimo.mes}`;
+  return pageMetadata({
+    title: DATOS_TITLE,
+    description: DATOS_DESCRIPTION,
+    path: "/datos",
+    images: [{ url: image, width: 1200, height: 630, alt: "Días sobre la norma de salud en la Zona Metropolitana de Monterrey" }],
+  });
+}
 
 // Lists the download in Google Dataset Search.
 const datasetSchema = {

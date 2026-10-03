@@ -9,14 +9,15 @@ import {
 } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSALUBRE } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
-import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
+import { loadOgLogo, OG_BRAND_BLUE, OG_LOGO, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
 
 // The downloadable, branded version of the /datos monthly summary card
 // (components/datos/dias-insalubres-share.tsx, via its download menu) --
 // one size per destination (?format=, see
-// lib/share-image-formats.ts), not the 1200x630 landscape unfurl card
-// app/api/og/route.tsx renders for a shared sensor link.
+// lib/share-image-formats.ts). ?format=link is the 1200x630 landscape card a
+// shared /datos link unfurls with (app/datos/page.tsx's og:image): the same
+// message and brand frame, laid out side by side to fit a link preview.
 //
 // The message is the monthly update: the latest month with data in the
 // requested year vs. the same month a year earlier, both counted against
@@ -42,11 +43,15 @@ const GLYPHS =
 
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
+// The link-preview size every chat app and social network unfurls.
+const LINK_CARD = { width: 1200, height: 630 };
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const yearParam = searchParams.get("year");
   const year = yearParam && /^\d{4}$/.test(yearParam) ? Number(yearParam) : null;
   const formatParam = searchParams.get("format");
+  const isLinkCard = formatParam === "link";
   const format = SHARE_FORMATS[isShareFormat(formatParam) ? formatParam : "whatsapp"];
   // The layout below is written at a 1080-wide design scale; px() scales
   // every measurement to this format's width.
@@ -55,11 +60,11 @@ export async function GET(request: Request) {
   const cx = (n: number) => px(n * format.content);
   // The brand frame (logo + footer) takes the format's chrome scale.
   const fx = (n: number) => px(n * format.chrome);
-  const logoAsset = ogLogoAt(fx(44));
+  const logoAsset = isLinkCard ? OG_LOGO : ogLogoAt(fx(44));
 
   const options: ImageOptions = {
-    width: format.width,
-    height: format.height,
+    width: isLinkCard ? LINK_CARD.width : format.width,
+    height: isLinkCard ? LINK_CARD.height : format.height,
     headers: { "cache-control": CACHE },
   };
   const logo = await loadOgLogo(request.url, logoAsset);
@@ -96,6 +101,8 @@ export async function GET(request: Request) {
   }
   const { mes, rows: rowsOut, hasPrior, headline: headlineLines } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
+
+  if (isLinkCard) return linkCard(options, summary, year, logo);
 
   // This year's number is always red: any day of polluted air is bad news,
   // even in a month with fewer of them than a year earlier (the headline
@@ -289,6 +296,124 @@ function messageCard(options: ImageOptions, fontSize: number, message: string) {
         }}
       >
         {message}
+      </div>
+    ),
+    options,
+  );
+}
+
+// The /datos link card: logo, then the headline on the left and both
+// pollutants' numbers on the right, source along the bottom. A preview shows
+// at roughly a third of this size, so type runs larger relative to the canvas
+// than on the download formats, and the source is one line.
+function linkCard(options: ImageOptions, summary: MonthlySummary, year: number, logo: string | null) {
+  const { mes, rows, hasPrior, headline } = summary;
+  const mesNombre = MONTHS_ES_FULL[mes - 1];
+  const years = hasPrior ? [year - 1, year] : [year];
+  // Inter runs ~0.49em per character here: 38px fits a 30-character line in
+  // the 580px column, and longer lines ("más días sobre la norma de salud",
+  // 32) scale down in proportion so none wraps.
+  const longestLine = Math.max(...headline.map((l) => l.length));
+  const headlineSize = Math.floor(Math.min(38, (38 * 30) / longestLine));
+  const LABEL_COL = 150;
+  const NUMBER_SIZE = 76;
+  const LABEL_SIZE = 15;
+  const baseLift = Math.round(0.135 * (NUMBER_SIZE - LABEL_SIZE));
+
+  return new ImageResponse(
+    (
+      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", background: "#ffffff", fontFamily: "Inter" }}>
+        <div style={{ height: 12, background: OG_BRAND_BLUE }} />
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, padding: "44px 64px 36px" }}>
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo} width={OG_LOGO.width} height={OG_LOGO.height} alt="" />
+          ) : (
+            <div style={{ display: "flex", fontSize: 30, fontWeight: 700, color: "#111827" }}>Observatorio del Aire</div>
+          )}
+
+          <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 48 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                width: 580,
+                flexShrink: 0,
+                fontSize: headlineSize,
+                fontWeight: 600,
+                color: "#1f2937",
+                lineHeight: 1.18,
+              }}
+            >
+              {headline.map((line) => (
+                <div key={line} style={{ display: "flex" }}>
+                  {line}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 26 }}>
+              <div style={{ display: "flex", fontSize: 17, fontWeight: 600, color: "#6b7280" }}>
+                <div style={{ display: "flex", width: LABEL_COL }} />
+                {years.map((y) => (
+                  <div key={y} style={{ display: "flex", flex: 1 }}>
+                    {mesNombre} {y}
+                  </div>
+                ))}
+              </div>
+              {rows.map((r) => (
+                <div key={r.pollutant} style={{ display: "flex", alignItems: "flex-end" }}>
+                  <div style={{ display: "flex", flexDirection: "column", width: LABEL_COL, lineHeight: 1, gap: 6, paddingBottom: baseLift }}>
+                    <div style={{ display: "flex", fontSize: 24, fontWeight: 600, color: "#374151" }}>
+                      {POLLUTANT_LABEL[r.pollutant]}
+                    </div>
+                    <div style={{ display: "flex", fontSize: LABEL_SIZE, color: "#9ca3af" }}>Límite: {r.limit} µg/m³</div>
+                  </div>
+                  {years.map((y) => (
+                    <div
+                      key={y}
+                      style={{
+                        display: "flex",
+                        flex: 1,
+                        fontSize: NUMBER_SIZE,
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        color: y === year ? COLOR_INSALUBRE : PAST_NUMBER_COLOR,
+                      }}
+                    >
+                      {y === year ? r.current : (r.prior as number)}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingTop: 20,
+              borderTop: "2px solid #e5e7eb",
+              fontSize: 17,
+              color: "#6b7280",
+            }}
+          >
+            {/* Same two sources as the download formats, as drawn-dot items
+                on one line. */}
+            <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+              <div style={{ display: "flex", color: "#9ca3af" }}>Fuente</div>
+              {["SIMA de Nuevo León", "NOM-025-SSA1-2021"].map((src) => (
+                <div key={src} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ display: "flex", width: 5, height: 5, borderRadius: 5, background: "#9ca3af" }} />
+                  {src}
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", fontWeight: 600 }}>observatoriodelaire.com</div>
+          </div>
+        </div>
       </div>
     ),
     options,

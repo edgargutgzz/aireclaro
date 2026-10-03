@@ -32,3 +32,19 @@ export const fetchEstaciones = cachedDatos(async (): Promise<Estacion[]> => {
   if (error) throw new Error(`Failed to load estaciones: ${error.message}`);
   return (data ?? []).map((e) => ({ sensorId: e.sensor_id, nombre: e.nombre_display }));
 }, "estaciones");
+
+// The latest month the /datos data runs through (PM2.5's, which every chart
+// shares since one cron run writes them all). Read by the page header and by
+// the /datos link card's image URL.
+export const fetchUltimoMes = cachedDatos(async (): Promise<{ ano: number; mes: number } | null> => {
+  const { data, error } = await createPublicClient()
+    .from("sima_insalubres_mensual")
+    .select("ano, mes")
+    .eq("parametro", "PM2.5")
+    .order("ano", { ascending: false })
+    .order("mes", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to load último mes: ${error.message}`);
+  return data;
+}, "ultimo-mes");

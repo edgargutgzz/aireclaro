@@ -15,7 +15,7 @@ const BASE_DESCRIPTION =
 
 // A bare visit gets the map's own metadata. A shared ?sensor= link gets a
 // title, description and unfurl card built from that station's latest reading,
-// so it travels as "<estación> — Mala · 48 μg/m³ PM2.5" instead of a generic
+// so it travels as "<estación>, calidad del aire mala, 48 μg/m³ PM2.5" instead of a generic
 // preview. Reading searchParams makes this render dynamic; the four map
 // datasets themselves are cached across requests (components/data/cache.ts),
 // so a dynamic render is only the render, not four database round-trips.
@@ -39,8 +39,8 @@ export async function generateMetadata({
 
   const title =
     quality && pm
-      ? `${snapshot.name} — ${quality.label} · ${pm} μg/m³ PM2.5`
-      : `${snapshot.name} — Calidad del aire`;
+      ? `${snapshot.name}, calidad del aire ${quality.label.toLowerCase()}, ${pm} μg/m³ PM2.5`
+      : `${snapshot.name}, calidad del aire`;
   const description =
     quality && pm
       ? `Calidad del aire ${quality.label.toLowerCase()}, ${pm} μg/m³ de PM2.5, en ${where}. Lectura en tiempo real del Observatorio del Aire.`

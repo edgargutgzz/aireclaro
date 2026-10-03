@@ -1,6 +1,5 @@
 import { ArrowDownToLine, RefreshCw } from "lucide-react";
-import { createPublicClient } from "@/utils/supabase/public";
-import { cachedDatos } from "@/lib/datos-cache";
+import { fetchUltimoMes } from "@/lib/datos-cache";
 import { monterreyNaiveNow } from "@/lib/monterrey-time";
 import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
 import DatosGeneralInfo from "@/components/datos/datos-general-info";
@@ -54,18 +53,6 @@ function nextUpdate(): { addedMonthLabel: string; daysUntil: number } {
 // rather than adding a new query path: whatever month that table's latest
 // PM2.5 row belongs to IS the month every /datos chart is current through,
 // since the same monthly cron writes all three at once.
-const fetchUltimoMes = cachedDatos(async () => {
-  const { data, error } = await createPublicClient()
-    .from("sima_insalubres_mensual")
-    .select("ano, mes")
-    .eq("parametro", "PM2.5")
-    .order("ano", { ascending: false })
-    .order("mes", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw new Error(`Failed to load datos header: ${error.message}`);
-  return data;
-}, "ultimo-mes");
 
 export default async function DatosHeader() {
   // No data yet is a real (if unlikely) state for a brand-new deploy -- fail
