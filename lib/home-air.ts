@@ -4,8 +4,7 @@ import { createPublicClient } from "@/utils/supabase/public";
 import { getPM25Color } from "@/lib/air-quality";
 import { monterreyNaiveHoursAgo, monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
 
-// Data for the homepage's live pieces (the ticker above the navbar and the
-// two cards under the hero).
+// Data for the homepage's live ticker (components/home/ticker.tsx).
 
 // Older than this, a reading isn't "en vivo" anymore.
 const LIVE_MAX_AGE_MS = 3 * 60 * 60 * 1000;
@@ -60,11 +59,6 @@ export function horaDeLectura(stations: LiveStation[]): string {
   return `${h % 12 || 12}:00 ${h < 12 ? "AM" : "PM"}`;
 }
 
-export const MESES = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
-];
-
 // The latest year in the "días sobre la norma" chart's table, on the current
 // limit (the chart's own comparison column), PM2.5.
 export const fetchDiasSobreNorma = cachedDatos(async () => {
@@ -78,10 +72,5 @@ export const fetchDiasSobreNorma = cachedDatos(async () => {
   if (!data?.length) return null;
   const ano = data[0].ano;
   const meses = data.filter((r) => r.ano === ano);
-  return {
-    ano,
-    dias: meses.reduce((sum, r) => sum + r.dias_insalubres_limite_actual, 0),
-    primerMes: meses[0].mes,
-    ultimoMes: meses[meses.length - 1].mes,
-  };
+  return { ano, dias: meses.reduce((sum, r) => sum + r.dias_insalubres_limite_actual, 0) };
 }, "home-dias-sobre-norma");
