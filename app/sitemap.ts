@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { editoriales } from "@/app/editoriales/data";
+import { editoriales, editorialDateISO } from "@/app/editoriales/data";
 import { SITE_URL as BASE } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       .filter((editorial) => editorial.content)
       .map((editorial) => ({
         url: `${BASE}/editoriales/${editorial.slug}`,
+        lastModified: editorialDateISO(editorial.date) ?? undefined,
         changeFrequency: "yearly" as const,
         priority: 0.4,
       })),

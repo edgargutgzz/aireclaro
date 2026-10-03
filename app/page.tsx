@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import JsonLd from "@/components/json-ld";
+import { SITE_NAME } from "@/lib/metadata";
+import { SITE_URL } from "@/lib/site";
 import AirQualitySlider from "@/components/home/air-quality-slider";
 
 // Homepage. The hero is ported from observatoriodelaire.com's homepage. The map
@@ -14,9 +17,20 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+// Tells Google what to call the site in results ("Observatorio del Aire"
+// instead of the bare domain). Homepage only, per Google's site-name guide.
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  alternateName: "OCCAMM",
+  url: `${SITE_URL}/`,
+};
+
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center">
+      <JsonLd data={websiteSchema} />
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:px-8">
         <div className="flex flex-col gap-8">
           <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
