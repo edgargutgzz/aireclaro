@@ -42,6 +42,18 @@ function CloseIcon() {
 // button is underlined when one of its pages is current.
 const CURRENT = "underline decoration-2 underline-offset-8";
 
+// Desktop dropdowns read like the mobile menu (the validated design): the
+// bar's own background unrolling from its bottom edge, a small gray group
+// label, plain links. It positions against <header> (the trigger's wrapper
+// isn't `relative`), so top-full is the bar's bottom, while left stays auto:
+// the panel's static position, right under its trigger; -ml-6/px-6 keep the
+// text aligned with the trigger's.
+const DROPDOWN =
+  "absolute top-full -ml-6 min-w-56 rounded-b-2xl border border-t-0 border-stone-200 bg-stone-50 px-6 pb-4 pt-3 shadow-sm";
+
+// The small gray label over each group of links, mobile and desktop.
+const GROUP_LABEL = "pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500";
+
 // The house focus ring, on every focusable item in the bar.
 const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
@@ -198,7 +210,7 @@ export default function Navbar() {
         {/* Desktop menu (lg+): dropdowns for the two groups, then Mapa and Datos. */}
         <nav aria-label="Principal" className="hidden lg:flex lg:items-center lg:gap-10">
           {/* Publicaciones */}
-          <div className="relative" onBlur={closeOnFocusOut("isPublicacionesSubmenuOpen")}>
+          <div onBlur={closeOnFocusOut("isPublicacionesSubmenuOpen")}>
             <button
               ref={publicacionesButtonRef}
               onClick={togglePublicacionesSubmenu}
@@ -211,23 +223,27 @@ export default function Navbar() {
               />
             </button>
             {menuState.isPublicacionesSubmenuOpen && (
-              <div className="absolute mt-2 flex w-40 flex-col gap-4 rounded-2xl border bg-white p-4 shadow-md">
-                {PUBLICACIONES.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    aria-current={current(l.href)}
-                    className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-                    onClick={handleLinkClick}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
+              <div className={DROPDOWN}>
+                <h2 className={GROUP_LABEL}>Publicaciones</h2>
+                <ul>
+                  {PUBLICACIONES.map((l) => (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        aria-current={current(l.href)}
+                        className={`block w-fit py-2 hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                        onClick={handleLinkClick}
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
           {/* Nosotros */}
-          <div className="relative" onBlur={closeOnFocusOut("isSubmenuOpen")}>
+          <div onBlur={closeOnFocusOut("isSubmenuOpen")}>
             <button
               ref={nosotrosButtonRef}
               onClick={toggleSubmenu}
@@ -240,18 +256,22 @@ export default function Navbar() {
               />
             </button>
             {menuState.isSubmenuOpen && (
-              <div className="absolute mt-2 flex w-40 flex-col gap-4 rounded-2xl border bg-white p-4 shadow-md">
-                {NOSOTROS.map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    aria-current={current(l.href)}
-                    className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-                    onClick={handleLinkClick}
-                  >
-                    {l.label}
-                  </Link>
-                ))}
+              <div className={DROPDOWN}>
+                <h2 className={GROUP_LABEL}>Nosotros</h2>
+                <ul>
+                  {NOSOTROS.map((l) => (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        aria-current={current(l.href)}
+                        className={`block w-fit py-2 hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                        onClick={handleLinkClick}
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
@@ -303,7 +323,7 @@ export default function Navbar() {
               { titulo: "Nosotros", links: NOSOTROS },
             ].map((grupo) => (
               <div key={grupo.titulo} className="mt-8 first:mt-2">
-                <h2 className="pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                <h2 className={GROUP_LABEL}>
                   {grupo.titulo}
                 </h2>
                 <ul>
