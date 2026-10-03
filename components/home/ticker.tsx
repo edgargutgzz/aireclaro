@@ -31,7 +31,7 @@ export default async function Ticker() {
     }));
 
   return (
-    <section aria-label="PM2.5 por estación oficial, en vivo" className="flex h-10 items-stretch border-b border-stone-200 bg-white text-[13px]">
+    <section aria-label="PM2.5 por estación oficial, en vivo" className="flex h-10 items-stretch bg-white text-[13px]">
       <Link
         href="/mapa"
         className={`flex shrink-0 items-center gap-2 border-r border-stone-200 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-900 lg:px-8 ${FOCUS}`}
