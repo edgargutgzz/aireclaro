@@ -6,7 +6,7 @@ import TickerTrack, { type TickerItem } from "./ticker-track";
 
 // The homepage's live ticker above the navbar (app/@strip): every official
 // metro station's PM2.5 this hour, dot in the map marker's color, worst first,
-// scrolling; "En vivo" links to the map, the year's days over
+// scrolling, each linking to its station on the map; "En vivo" links to the map, the year's days over
 // the norm to /datos. Hidden entirely when no station has a fresh reading.
 
 // Inset ring, square: the links are full-height sections of a straight strip.

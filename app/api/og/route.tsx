@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
+import { parseSensorParam } from "@/lib/map-url-state";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_LOGO } from "@/lib/og-logo";
@@ -16,7 +17,8 @@ const GLYPHS =
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const raw = searchParams.get("sensor");
-  const sensorId = raw && /^\d+$/.test(raw) ? Number(raw) : null;
+  const param = parseSensorParam(raw);
+  const sensorId = param && /^\d+$/.test(param) ? Number(param) : param;
 
   const snapshot = sensorId ? await getSensorSnapshot(sensorId).catch(() => null) : null;
   const quality = snapshot ? getQualityInfo(snapshot.pm25) : null;

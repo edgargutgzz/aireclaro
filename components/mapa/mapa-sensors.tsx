@@ -97,7 +97,7 @@ export default function MapaSensors({
   const initialSensorId = useRef(readSensorParam()).current;
   const initialFilters = useRef(readFilterParams()).current;
   const linkedSensor = initialSensorId != null
-    ? sensors.find((s) => s.sensor_id === initialSensorId)
+    ? sensors.find((s) => String(s.sensor_id) === initialSensorId)
     : undefined;
   const linkedSource: "occamm" | "otros" | "gob" | null = linkedSensor
     ? linkedSensor.source === "sima" ? "gob" : linkedSensor.red ? "occamm" : "otros"
@@ -634,7 +634,7 @@ export default function MapaSensors({
     didOpeningFlyRef.current = true;
 
     const urlSensor = initialSensorId != null
-      ? sensors.find((s) => s.sensor_id === initialSensorId)
+      ? sensors.find((s) => String(s.sensor_id) === initialSensorId)
       : undefined;
     const focus = urlSensor
       ? { center: [urlSensor.lon, urlSensor.lat] as [number, number], zoom: 13 }

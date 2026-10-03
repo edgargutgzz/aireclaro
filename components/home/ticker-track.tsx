@@ -1,13 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import Link from "next/link";
 
 // The ticker's moving part. The stations run twice back to back and the strip
-// slides by half its width, so the loop is seamless. The whole strip is the
-// pause control (moving content needs a way to stop it, WCAG 2.2.2): a tap or
-// click (or Enter) pauses or resumes it; it also holds still under a mouse
-// pointer, and never moves for visitors who ask for reduced motion. The moving copies
-// are hidden from screen readers, which get the plain list instead.
+// slides by half its width, so the loop is seamless. Every station links to
+// the map with that station selected.
+//
+// Moving content needs a way to stop it (WCAG 2.2.2):
+// - mouse: it holds still while the pointer is over it, so a click lands;
+// - touch: the first tap on the moving strip pauses it instead of following a
+//   link; once paused, a tap on a station opens it, a tap between stations
+//   resumes;
+// - keyboard: it holds still while a station link has focus;
+// - reduced motion: it never moves.
+// The second copy is hidden from screen readers and skipped by Tab.
 
 export interface TickerItem {
   id: string;
@@ -17,45 +24,70 @@ export interface TickerItem {
   color: string;
 }
 
-function Items({ items }: { items: TickerItem[] }) {
+function Items({
+  items,
+  copy,
+  onStationClick,
+}: {
+  items: TickerItem[];
+  copy?: boolean;
+  onStationClick: (event: React.MouseEvent) => void;
+}) {
   return (
-    <span className="flex shrink-0 items-center">
+    <ul className="flex shrink-0 items-center" aria-hidden={copy || undefined}>
       {items.map((item) => (
-        <span key={item.id} className="flex items-center gap-1.5 whitespace-nowrap px-4 text-gray-600">
-          <span
-            className="h-2 w-2 shrink-0 rounded-full ring-1 ring-inset ring-black/10"
-            style={{ backgroundColor: item.color }}
-          />
-          {item.nombre}
-          <span className="font-mono font-semibold text-gray-900">{item.pm25}</span>
-        </span>
+        <li key={item.id}>
+          <Link
+            href={`/mapa?sensor=${item.id}`}
+            tabIndex={copy ? -1 : undefined}
+            onClick={onStationClick}
+            className="flex items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-1 text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
+          >
+            <span
+              className="h-2 w-2 shrink-0 rounded-full ring-1 ring-inset ring-black/10"
+              style={{ backgroundColor: item.color }}
+              aria-hidden
+            />
+            {item.nombre}
+            <span className="font-mono font-semibold text-gray-900">{item.pm25}</span>
+            <span className="sr-only">µg/m³</span>
+          </Link>
+        </li>
       ))}
-    </span>
+    </ul>
   );
 }
 
 export default function TickerTrack({ items }: { items: TickerItem[] }) {
   const [paused, setPaused] = useState(false);
+  const pointerType = useRef("mouse");
+
+  const isTouch = () => pointerType.current === "touch";
+
+  // On a link's own onClick, where next/link checks preventDefault before it
+  // navigates: a touch tap on the moving strip only pauses it.
+  const onStationClick = (event: React.MouseEvent) => {
+    if (isTouch() && !paused) {
+      event.preventDefault();
+      setPaused(true);
+    }
+  };
+
+  // A touch tap between stations toggles it.
+  const onStripClick = (event: React.MouseEvent) => {
+    if (isTouch() && !(event.target as Element).closest("a")) setPaused((p) => !p);
+  };
+
   return (
-    <div className="relative flex min-w-0 flex-1 items-stretch">
-      <ul className="sr-only">
-        {items.map((item) => (
-          <li key={item.id}>
-            {item.nombre}: {item.pm25} µg/m³
-          </li>
-        ))}
-      </ul>
-      <button
-        type="button"
-        onClick={() => setPaused((p) => !p)}
-        aria-label={paused ? "Reanudar la cinta" : "Pausar la cinta"}
-        className="ticker-mask group min-w-0 flex-1 cursor-pointer overflow-hidden text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15 motion-reduce:cursor-auto motion-reduce:overflow-x-auto"
-      >
-        <span className="ticker-run flex h-full w-max items-center" data-paused={paused || undefined} aria-hidden>
-          <Items items={items} />
-          <Items items={items} />
-        </span>
-      </button>
+    <div
+      className="ticker-mask group min-w-0 flex-1 overflow-hidden motion-reduce:overflow-x-auto"
+      onPointerDown={(e) => (pointerType.current = e.pointerType)}
+      onClick={onStripClick}
+    >
+      <div className="ticker-run flex h-full w-max items-center" data-paused={paused || undefined}>
+        <Items items={items} onStationClick={onStationClick} />
+        <Items items={items} copy onStationClick={onStationClick} />
+      </div>
     </div>
   );
 }

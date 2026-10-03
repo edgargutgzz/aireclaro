@@ -494,7 +494,7 @@
 
 /* The homepage ticker (components/home/ticker-track.tsx): the doubled list
    slides by half its width for a seamless loop, ~5s per station. Stops on
-   mouse hover; a tap/click/Enter on the strip toggles it; never moves under
+   mouse hover, keyboard focus, or a first tap on touch; never moves under
    reduced motion. The mask fades both edges so items don't cut off hard. */
 @keyframes ticker-run {
   to {
@@ -504,7 +504,8 @@
 .ticker-run {
   animation: ticker-run 75s linear infinite;
 }
-.ticker-run[data-paused] {
+.ticker-run[data-paused],
+.group:focus-within .ticker-run {
   animation-play-state: paused;
 }
 /* Hover-pause only with a real pointer: on touch, a tap leaves a sticky

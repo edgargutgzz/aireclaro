@@ -24,19 +24,22 @@ function replaceIfChanged(url: URL): void {
 
 // ---- ?sensor= --------------------------------------------------------------
 
-// The sensor_id named in ?sensor= at load, or null. Rejects anything that
-// isn't a positive integer so a junk param can't become a NaN lookup.
-export function readSensorParam(): number | null {
+// The sensor_id named in ?sensor= at load, as written (compare it against
+// String(sensor.sensor_id)), or null if it isn't a valid id.
+export function readSensorParam(): string | null {
   if (typeof window === "undefined") return null;
-  const raw = new URLSearchParams(window.location.search).get(SENSOR_PARAM);
-  if (!raw) return null;
-  const id = Number(raw);
-  return Number.isInteger(id) && id > 0 ? id : null;
+  return parseSensorParam(new URLSearchParams(window.location.search).get(SENSOR_PARAM));
+}
+
+// A ?sensor= value is either a PurpleAir sensor_id (a positive integer) or a
+// SIMA station code ("CE", "NE2", "SUR"). Anything else is junk and dropped.
+export function parseSensorParam(raw: string | null | undefined): string | null {
+  return raw && /^(?:[1-9]\d*|[A-Z][A-Z0-9]{0,4})$/.test(raw) ? raw : null;
 }
 
 // Mirror the current selection into ?sensor=. Passing null drops the param,
 // which also cleans up a stale or unresolvable id on the first render.
-export function writeSensorParam(sensorId: number | null): void {
+export function writeSensorParam(sensorId: number | string | null): void {
   if (typeof window === "undefined") return;
   const url = new URL(window.location.href);
   if (sensorId == null) url.searchParams.delete(SENSOR_PARAM);

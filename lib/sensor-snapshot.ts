@@ -1,7 +1,8 @@
 import { createPublicClient } from "@/utils/supabase/public";
 
+// PurpleAir ids are integers, SIMA station ids are text codes ("CE").
 export type SensorSnapshot = {
-  sensorId: number;
+  sensorId: number | string;
   source: "purpleAir" | "sima";
   name: string;
   municipio: string | null;
@@ -19,7 +20,7 @@ export type SensorSnapshot = {
 // moved and renamed on PurpleAir) are resolved by taking the highest id,
 // which is the live row — see the note in components/data/purple-air-sensors.tsx.
 export async function getSensorSnapshot(
-  sensorId: number,
+  sensorId: number | string,
 ): Promise<SensorSnapshot | null> {
   const supabase = createPublicClient();
 
@@ -42,6 +43,9 @@ export async function getSensorSnapshot(
       readingAt: reading?.time_stamp ?? null,
     };
   }
+
+  // A text code can only be SIMA; don't send it to PurpleAir's integer column.
+  if (typeof sensorId !== "number") return null;
 
   const purpleAir = await supabase
     .from("purpleair_sensores")
@@ -69,7 +73,7 @@ export async function getSensorSnapshot(
 async function latestReading(
   supabase: ReturnType<typeof createPublicClient>,
   table: "sima_mediciones" | "purpleair_mediciones",
-  sensorId: number,
+  sensorId: number | string,
 ) {
   const { data } = await supabase
     .from(table)

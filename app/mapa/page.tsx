@@ -7,6 +7,7 @@ import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import { fetchWithFallback } from "@/utils/fetch";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
+import { parseSensorParam } from "@/lib/map-url-state";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 
 const BASE_TITLE = "Mapa";
@@ -33,9 +34,10 @@ export async function generateMetadata({
 
   const raw = (await searchParams).sensor;
   const sensorParam = Array.isArray(raw) ? raw[0] : raw;
-  if (!sensorParam || !/^\d+$/.test(sensorParam)) return base;
+  const sensorId = parseSensorParam(sensorParam);
+  if (!sensorId) return base;
 
-  const snapshot = await getSensorSnapshot(Number(sensorParam)).catch(() => null);
+  const snapshot = await getSensorSnapshot(/^\d+$/.test(sensorId) ? Number(sensorId) : sensorId).catch(() => null);
   if (!snapshot) return base;
 
   const quality = getQualityInfo(snapshot.pm25);
