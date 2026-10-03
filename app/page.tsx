@@ -13,7 +13,7 @@ import AirQualitySlider from "@/components/home/air-quality-slider";
 // set in the layout).
 export const metadata: Metadata = {
   description:
-    "Observatorio ciudadano de la calidad del aire en la Zona Metropolitana de Monterrey. Mapa en vivo, datos abiertos de PM2.5 y PM10, análisis y editoriales.",
+    "Observatorio ciudadano de la calidad del aire en la Zona Metropolitana de Monterrey, con mapa en vivo, datos abiertos de PM2.5 y PM10, análisis y editoriales.",
   alternates: { canonical: "/" },
 };
 

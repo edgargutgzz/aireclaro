@@ -11,7 +11,7 @@ import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 
 const BASE_TITLE = "Mapa";
 const BASE_DESCRIPTION =
-  "Consulta el mapa interactivo de calidad del aire (PM2.5) en Monterrey y Zona Metropolitana. Datos en tiempo real de estaciones SIMA y sensores ciudadanos PurpleAir.";
+  "Consulta en tiempo real la calidad del aire (PM2.5) de las estaciones SIMA y los sensores ciudadanos en la Zona Metropolitana de Monterrey.";
 
 // A bare visit gets the map's own metadata. A shared ?sensor= link gets a
 // title, description and unfurl card built from that station's latest reading,
@@ -43,7 +43,7 @@ export async function generateMetadata({
       : `${snapshot.name}, calidad del aire`;
   const description =
     quality && pm
-      ? `Calidad del aire ${quality.label.toLowerCase()}, ${pm} μg/m³ de PM2.5, en ${where}. Lectura en tiempo real del Observatorio del Aire.`
+      ? `Calidad del aire ${quality.label.toLowerCase()}, ${pm} μg/m³ de PM2.5, en ${where}, en tiempo real.`
       : `Lectura de calidad del aire en tiempo real para ${where} en el Observatorio del Aire.`;
 
   const ogImage = `/api/og?sensor=${snapshot.sensorId}`;
