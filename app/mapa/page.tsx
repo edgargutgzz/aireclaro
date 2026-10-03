@@ -11,7 +11,7 @@ import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 
 const BASE_TITLE = "Mapa";
 const BASE_DESCRIPTION =
-  "Consulta en tiempo real la calidad del aire (PM2.5) de las estaciones SIMA y los sensores ciudadanos en la Zona Metropolitana de Monterrey.";
+  "Consulta en tiempo real la calidad del aire (PM2.5) de los sensores ciudadanos y las estaciones SIMA en la Zona Metropolitana de Monterrey.";
 
 // A bare visit gets the map's own metadata. A shared ?sensor= link gets a
 // title, description and unfurl card built from that station's latest reading,
