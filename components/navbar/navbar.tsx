@@ -224,12 +224,12 @@ export default function Navbar() {
 
           {/* Datos and Mapa: equal weight, outlined in the logo's purple / blue
               (lib/datos-colors.ts BRAND_PURPLE / BRAND_BLUE). On its own page
-              a button fills solid, standing in for the text links' underline. */}
+              a button deepens (full border, twice the tint), standing in for the text links' underline. */}
           <Link
             href="/datos"
             aria-current={current("/datos")}
             onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${isCurrent("/datos") ? "border-[#743479] bg-[#743479] text-white" : "border-[#743479]/60 bg-[#743479]/10 text-[#743479] hover:bg-[#743479]/15"}`}
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${isCurrent("/datos") ? "border-[#743479] bg-[#743479]/20 text-[#743479]" : "border-[#743479]/60 bg-[#743479]/10 text-[#743479] hover:bg-[#743479]/15"}`}
           >
             <BarChart3 size={14} className="mr-1.5" />
             Datos
@@ -239,7 +239,7 @@ export default function Navbar() {
             href="/mapa"
             aria-current={current("/mapa")}
             onClick={handleLinkClick}
-            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${isCurrent("/mapa") ? "border-[#226caf] bg-[#226caf] text-white" : "border-[#226caf]/60 bg-[#226caf]/10 text-[#226caf] hover:bg-[#226caf]/15"}`}
+            className={`flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${isCurrent("/mapa") ? "border-[#226caf] bg-[#226caf]/20 text-[#226caf]" : "border-[#226caf]/60 bg-[#226caf]/10 text-[#226caf] hover:bg-[#226caf]/15"}`}
           >
             <Map size={14} className="mr-1.5" />
             Mapa
