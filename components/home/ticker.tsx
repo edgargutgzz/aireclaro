@@ -1,22 +1,22 @@
 import Link from "next/link";
 import { getMarkerFillHex } from "@/lib/air-quality";
 import { fetchEstaciones } from "@/lib/datos-cache";
-import { fetchDiasSobreNorma, getLiveStations, horaDeLectura } from "@/lib/home-air";
+import { getLiveStations, horaDeLectura } from "@/lib/home-air";
 import TickerTrack, { type TickerItem } from "./ticker-track";
 
-// The homepage's live ticker above the navbar (app/@strip): every official
-// metro station's PM2.5 this hour, dot in the map marker's color, worst first,
-// scrolling, each linking to its station on the map; "En vivo" links to the map, the year's days over
-// the norm to /datos. Hidden entirely when no station has a fresh reading.
+// The homepage's live ticker above the navbar (app/@strip), only about the
+// live stations (the map): every official metro station's PM2.5 this hour,
+// dot in the map marker's color, worst first, scrolling, each linking to its
+// station on the map; the label and "Ver mapa" link to the map too. Hidden
+// entirely when no station has a fresh reading.
 
 // Inset ring, square: the links are full-height sections of a straight strip.
 const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15";
 
 export default async function Ticker() {
-  const [stations, estaciones, anual] = await Promise.all([
+  const [stations, estaciones] = await Promise.all([
     getLiveStations().catch(() => []),
     fetchEstaciones().catch(() => []),
-    fetchDiasSobreNorma().catch(() => null),
   ]);
   if (stations.length === 0) return null;
 
@@ -40,20 +40,17 @@ export default async function Ticker() {
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00a400]" />
         </span>
-        En vivo · {horaDeLectura(stations)}
+        <span>
+          <span className="hidden sm:inline">Estaciones </span>en vivo · {horaDeLectura(stations)}
+        </span>
       </Link>
       <TickerTrack items={items} />
-      {anual && (
-        <Link
-          href="/datos"
-          className={`hidden shrink-0 items-center gap-3 border-l border-stone-200 px-4 text-gray-600 sm:flex lg:px-8 ${FOCUS}`}
-        >
-          <span>
-            <span className="font-semibold text-gray-900">{anual.dias} días</span> sobre la norma en {anual.ano}
-          </span>
-          <span className="font-medium text-[#226caf]">Ver datos →</span>
-        </Link>
-      )}
+      <Link
+        href="/mapa"
+        className={`hidden shrink-0 items-center border-l border-stone-200 px-4 font-medium text-[#226caf] hover:underline sm:flex lg:px-8 ${FOCUS}`}
+      >
+        Ver mapa →
+      </Link>
     </section>
   );
 }
