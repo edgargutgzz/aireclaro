@@ -82,8 +82,8 @@ export default function Navbar() {
   const publicacionesButtonRef = useRef<HTMLButtonElement>(null);
   const nosotrosButtonRef = useRef<HTMLButtonElement>(null);
 
-  // The bar's bottom edge, where the mobile panel starts: not always
-  // --header-h from the top, since the homepage has a strip above the bar.
+  // The bar's bottom edge, where the mobile panel starts, measured on open so
+  // the panel lines up wherever the bar sits.
   const headerRef = useRef<HTMLElement>(null);
   const [panelTop, setPanelTop] = useState(0);
 

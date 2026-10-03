@@ -3,6 +3,7 @@ import JsonLd from "@/components/json-ld";
 import { OG_BASE, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import AirQualitySlider from "@/components/home/air-quality-slider";
+import AireAhora from "@/components/home/aire-ahora";
 
 // Homepage. The hero is ported from observatoriodelaire.com's homepage. The map
 // lives at /mapa; proxy.ts sends embeds and legacy map links that still point
@@ -26,6 +27,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+// The cards under the hero (components/home/aire-ahora.tsx) read the map's
+// hourly SIMA feed: re-render at most every 5 minutes, not once per deploy.
+export const revalidate = 300;
+
 // Tells Google what to call the site in results ("Observatorio del Aire"
 // instead of the bare domain). Homepage only, per Google's site-name guide.
 const websiteSchema = {
@@ -38,6 +43,7 @@ const websiteSchema = {
 
 export default function Home() {
   return (
+    <>
     <div className="flex min-h-screen items-center">
       <JsonLd data={websiteSchema} />
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:px-8">
@@ -63,5 +69,7 @@ export default function Home() {
         </div>
       </div>
     </div>
+    <AireAhora />
+    </>
   );
 }
