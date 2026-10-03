@@ -43,15 +43,15 @@ function CloseIcon() {
 const CURRENT = "underline decoration-2 underline-offset-8";
 
 // Desktop dropdowns read like the mobile menu (the validated design): the
-// bar's own background unrolling from its bottom edge, a small gray group
-// label, plain links. It positions against <header> (the trigger's wrapper
+// bar's own background unrolling from its bottom edge, plain links (no group
+// label: the button above already names the group). It positions against <header> (the trigger's wrapper
 // isn't `relative`), so top-full is the bar's bottom, while left stays auto:
 // the panel's static position, right under its trigger; -ml-6/px-6 keep the
 // text aligned with the trigger's.
 const DROPDOWN =
-  "absolute top-full -ml-6 min-w-56 rounded-b-2xl border border-t-0 border-stone-200 bg-stone-50 px-6 pb-4 pt-3 shadow-sm";
+  "absolute top-full -ml-6 min-w-56 rounded-b-2xl border border-t-0 border-stone-200 bg-stone-50 px-6 pb-3 pt-2 shadow-sm";
 
-// The small gray label over each group of links, mobile and desktop.
+// The small gray label over each group of links in the mobile menu.
 const GROUP_LABEL = "pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500";
 
 // The house focus ring, on every focusable item in the bar.
@@ -224,7 +224,6 @@ export default function Navbar() {
             </button>
             {menuState.isPublicacionesSubmenuOpen && (
               <div className={DROPDOWN}>
-                <h2 className={GROUP_LABEL}>Publicaciones</h2>
                 <ul>
                   {PUBLICACIONES.map((l) => (
                     <li key={l.href}>
@@ -257,7 +256,6 @@ export default function Navbar() {
             </button>
             {menuState.isSubmenuOpen && (
               <div className={DROPDOWN}>
-                <h2 className={GROUP_LABEL}>Nosotros</h2>
                 <ul>
                   {NOSOTROS.map((l) => (
                     <li key={l.href}>
