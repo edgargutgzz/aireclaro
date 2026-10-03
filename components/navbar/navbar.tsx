@@ -143,6 +143,17 @@ export default function Navbar() {
     };
   }, []);
 
+  // While the mobile panel is open nothing behind it scrolls: the page's
+  // scroller is <main> (components/main-content.tsx), plus the document
+  // itself for iOS Safari's rubber-banding.
+  useEffect(() => {
+    if (!menuState.isOpen) return;
+    const scrollers = [document.getElementById("contenido"), document.documentElement];
+    const previous = scrollers.map((el) => el?.style.overflow ?? "");
+    scrollers.forEach((el) => el && (el.style.overflow = "hidden"));
+    return () => scrollers.forEach((el, i) => el && (el.style.overflow = previous[i]));
+  }, [menuState.isOpen]);
+
   // Tabbing out of an open dropdown closes it.
   const closeOnFocusOut =
     (key: "isSubmenuOpen" | "isPublicacionesSubmenuOpen") => (event: React.FocusEvent<HTMLDivElement>) => {
@@ -272,7 +283,7 @@ export default function Navbar() {
         {/* Mobile / tablet menu: a full-screen panel under the bar (inside
             menuRef, so a tap on a link isn't read as a tap outside). No
             accordions: with 8 links, every one is visible at once, the main
-            pages first and larger, the groups under small gray labels. */}
+            pages first, the groups under small gray labels. */}
         {menuState.isOpen && (
           <nav
             id="menu-movil"
@@ -285,7 +296,7 @@ export default function Navbar() {
                   <Link
                     href={l.href}
                     aria-current={current(l.href)}
-                    className={`block py-3 text-2xl font-medium ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                    className={`block py-2.5 text-lg ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
                     onClick={handleLinkClick}
                   >
                     {l.label}
