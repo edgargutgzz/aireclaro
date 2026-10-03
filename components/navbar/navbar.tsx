@@ -238,21 +238,27 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Datos and Mapa: plain menu links like the rest. */}
-          {[
-            { href: "/datos", label: "Datos" },
-            { href: "/mapa", label: "Mapa" },
-          ].map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              aria-current={current(l.href)}
-              className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-              onClick={handleLinkClick}
-            >
-              {l.label}
-            </Link>
-          ))}
+          {/* Mapa */}
+          <Link
+            href="/mapa"
+            aria-current={current("/mapa")}
+            className={`block hover:text-gray-500 ${FOCUS} ${isCurrent("/mapa") ? CURRENT : ""}`}
+            onClick={handleLinkClick}
+          >
+            Mapa
+          </Link>
+
+          {/* Datos: last, in the action spot, one quiet step up from the other
+              links: the logo's purple (lib/datos-colors.ts BRAND_PURPLE) and
+              semibold, no button shape. */}
+          <Link
+            href="/datos"
+            aria-current={current("/datos")}
+            className={`block font-semibold text-[#743479] hover:opacity-75 ${FOCUS} ${isCurrent("/datos") ? CURRENT : ""}`}
+            onClick={handleLinkClick}
+          >
+            Datos
+          </Link>
         </nav>
 
         {/* Menu Icon for mobile and tablet */}
