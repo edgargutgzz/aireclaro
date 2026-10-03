@@ -4,7 +4,7 @@ import { fetchEstaciones } from "@/lib/datos-cache";
 import { getLiveStations, horaDeLectura } from "@/lib/home-air";
 import TickerTrack, { type TickerItem } from "./ticker-track";
 
-// The homepage's live ticker above the navbar (app/@strip), only about the
+// The homepage's live ticker under the navbar (app/@strip), only about the
 // live stations (the map): every official metro station's PM2.5 this hour,
 // dot in the map marker's color, worst first, scrolling, each linking to its
 // station on the map; the label links to the map too. Hidden

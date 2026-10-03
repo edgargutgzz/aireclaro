@@ -78,7 +78,7 @@ export default function RootLayout({
   strip,
 }: Readonly<{
   children: React.ReactNode;
-  // Parallel route (app/@strip): the homepage's live ticker above the navbar,
+  // Parallel route (app/@strip): the homepage's live ticker under the navbar,
   // null everywhere else.
   strip: React.ReactNode;
 }>) {
@@ -96,8 +96,8 @@ export default function RootLayout({
           >
             Saltar al contenido
           </a>
-          {strip}
           <Navbar />
+          {strip}
           {/* Content - no padding */}
           <MainContent>{children}</MainContent>
         </div>
