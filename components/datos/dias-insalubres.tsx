@@ -1,4 +1,5 @@
 import { createPublicClient } from "@/utils/supabase/public";
+import { cachedDatos } from "@/lib/datos-cache";
 import {
   fetchDiasInsalubresMensual,
   monthlySummary,
@@ -11,9 +12,13 @@ import DiasInsalubresShare from "@/components/datos/dias-insalubres-share";
 // small precomputed result, it never touches sima_promedios_diarios (the
 // ~15k-row view the calculation is actually derived from) itself. See
 // lib/dias-insalubres-aggregate.ts for the calculation and why it moved.
+const fetchChartData = cachedDatos(
+  () => fetchDiasInsalubresMensual(createPublicClient()),
+  "dias-insalubres",
+);
+
 export default async function DiasInsalubres() {
-  const supabase = createPublicClient();
-  const chartData = await fetchDiasInsalubresMensual(supabase);
+  const chartData = await fetchChartData();
 
   // The monthly summary card: latest month with data (both pollutants)
   // vs. the same month a year earlier; no card until there's such a month.

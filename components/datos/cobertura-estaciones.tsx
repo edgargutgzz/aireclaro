@@ -1,4 +1,5 @@
 import { createPublicClient } from "@/utils/supabase/public";
+import { cachedDatos, fetchEstaciones } from "@/lib/datos-cache";
 import CoberturaEstacionesChart, { type CoberturaCompacta } from "@/components/datos/cobertura-estaciones-chart";
 
 // Reads the precomputed sima_cobertura_diaria table (written by the monthly
@@ -55,26 +56,14 @@ function compactar(rows: CoberturaRow[]): CoberturaCompacta {
   return result;
 }
 
+// Cached already packed: the compact form is what's worth keeping (the raw
+// rows are ~1.4 MB, close to the data cache's per-item limit).
+const fetchCoberturaCompacta = cachedDatos(
+  async () => compactar(await fetchAllCobertura(createPublicClient())),
+  "cobertura",
+);
+
 export default async function CoberturaEstaciones() {
-  const supabase = createPublicClient();
-
-  const [{ data: estaciones, error: estacionesError }, cobertura] = await Promise.all([
-    supabase
-      .from("sima_sensores")
-      .select("sensor_id, nombre_display")
-      .neq("sensor_id", "FIN")
-      .order("nombre_display"),
-    fetchAllCobertura(supabase),
-  ]);
-
-  if (estacionesError) {
-    throw new Error(`Failed to load cobertura de estaciones: ${estacionesError.message}`);
-  }
-
-  return (
-    <CoberturaEstacionesChart
-      estaciones={(estaciones ?? []).map((e) => ({ sensorId: e.sensor_id, nombre: e.nombre_display }))}
-      cobertura={compactar(cobertura)}
-    />
-  );
+  const [estaciones, cobertura] = await Promise.all([fetchEstaciones(), fetchCoberturaCompacta()]);
+  return <CoberturaEstacionesChart estaciones={estaciones} cobertura={cobertura} />;
 }

@@ -20,7 +20,8 @@ import DescargaDatosSkeleton from "@/components/datos/descarga-datos-skeleton";
 // intermittent contention -- confirmed 2026-09-12, not a hard failure).
 // Without this, Next tries to run that query at *build* time to prerender
 // the page statically, and a single slow build hit fails the whole
-// deployment. Forcing dynamic keeps it a per-request (cached) fetch instead.
+// deployment. Forcing dynamic keeps it a request-time read instead, served from
+// the data cache (lib/datos-cache.ts) after the first visit.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = pageMetadata({

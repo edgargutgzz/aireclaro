@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
+import { DATOS_CACHE_TAG } from "@/lib/datos-cache";
 import { createServiceClient } from "@/utils/supabase/service";
 import { computeDiasInsalubresMensual, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { computeCoberturaDiaria } from "@/lib/cobertura-aggregate";
@@ -259,6 +261,11 @@ export async function GET(request: NextRequest) {
       promedioTrimestralError = err instanceof Error ? err.message : String(err);
     }
   }
+
+  // /datos caches its reads until the data changes (lib/datos-cache.ts):
+  // anything written this run expires them now, so the next visit reads the
+  // new month instead of waiting out the daily safety-net revalidate.
+  if (rowsWritten > 0) revalidateTag(DATOS_CACHE_TAG, { expire: 0 });
 
   return NextResponse.json({
     fechaInit,

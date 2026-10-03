@@ -1,36 +1,27 @@
 import { createPublicClient } from "@/utils/supabase/public";
+import { cachedDatos, fetchEstaciones } from "@/lib/datos-cache";
 import DescargaDatosCard from "@/components/datos/descarga-datos-card";
 
 // The raw-data download card. Only reads what the filter needs (the station
 // list and the latest loaded date); the file itself is built by
 // app/api/datos/sima-horario on download.
+const fetchUltimaFecha = cachedDatos(async (): Promise<string | null> => {
+  const { data, error } = await createPublicClient()
+    .from("sima_mediciones_finales")
+    .select("fecha")
+    .order("fecha", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to load descarga de datos: ${error.message}`);
+  return data?.fecha ?? null;
+}, "ultima-fecha");
+
 export default async function DescargaDatos() {
-  const supabase = createPublicClient();
+  const [estaciones, ultimaFecha] = await Promise.all([
+    fetchEstaciones(),
+    fetchUltimaFecha().catch(() => null),
+  ]);
+  if (!ultimaFecha) return null;
 
-  const [{ data: estaciones, error: estacionesError }, { data: ultima, error: ultimaError }] =
-    await Promise.all([
-      supabase
-        .from("sima_sensores")
-        .select("sensor_id, nombre_display")
-        .neq("sensor_id", "FIN")
-        .order("nombre_display"),
-      supabase
-        .from("sima_mediciones_finales")
-        .select("fecha")
-        .order("fecha", { ascending: false })
-        .limit(1)
-        .maybeSingle(),
-    ]);
-
-  if (estacionesError) {
-    throw new Error(`Failed to load descarga de datos: ${estacionesError.message}`);
-  }
-  if (ultimaError || !ultima) return null;
-
-  return (
-    <DescargaDatosCard
-      estaciones={(estaciones ?? []).map((e) => ({ sensorId: e.sensor_id, nombre: e.nombre_display }))}
-      ultimaFecha={ultima.fecha}
-    />
-  );
+  return <DescargaDatosCard estaciones={estaciones} ultimaFecha={ultimaFecha} />;
 }
