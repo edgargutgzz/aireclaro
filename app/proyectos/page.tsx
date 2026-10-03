@@ -42,17 +42,6 @@ const PROJECTS: Project[] = [
     ],
   },
   {
-    title: "Aire Claro",
-    description:
-      "Aire Claro brinda información sobre la contaminación atmosférica en la Zona Metropolitana de Monterrey y Saltillo.",
-    tag: "Aplicación Web",
-    image: "/proyectos/aireclaro.webp",
-    links: [
-      { href: "https://www.youtube.com/watch?v=zUt6HwlZB08", label: "Video", video: true },
-      { href: "/mapa", label: "Visitar" },
-    ],
-  },
-  {
     title: "Red Espesies",
     description:
       "Somos colaboradores para afrontar determinantes sociales y ambientales desde la salud, protegiendo los derechos de la naturaleza.",
