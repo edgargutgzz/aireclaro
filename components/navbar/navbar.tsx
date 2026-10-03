@@ -204,31 +204,21 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Explorar datos pill */}
+          {/* Explorar datos pill, in the logo's purple (lib/datos-colors.ts BRAND_PURPLE) */}
           <Link
             href="/datos"
             onClick={handleLinkClick}
-            className="flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold backdrop-blur-md transition-colors hover:opacity-80"
-            style={{
-              borderColor: "rgba(123, 54, 153, 0.6)",
-              backgroundColor: "rgba(123, 54, 153, 0.1)",
-              color: "rgba(123, 54, 153, 1)",
-            }}
+            className="flex w-fit items-center rounded-xl border border-[#743479]/60 bg-[#743479]/10 px-4 py-2 text-sm font-semibold text-[#743479] backdrop-blur-md transition-colors hover:opacity-80"
           >
             <BarChart3 size={14} className="mr-1.5" />
             Explorar datos
           </Link>
 
-          {/* Explorar mapa pill */}
+          {/* Explorar mapa pill, in the logo's blue (BRAND_BLUE) */}
           <Link
             href="/mapa"
             onClick={handleLinkClick}
-            className="flex w-fit items-center rounded-xl border px-4 py-2 text-sm font-semibold backdrop-blur-md transition-colors hover:opacity-80"
-            style={{
-              borderColor: "rgba(14, 165, 233, 0.6)",
-              backgroundColor: "rgba(14, 165, 233, 0.1)",
-              color: "rgba(14, 165, 233, 1)",
-            }}
+            className="flex w-fit items-center rounded-xl border border-[#226caf]/60 bg-[#226caf]/10 px-4 py-2 text-sm font-semibold text-[#226caf] backdrop-blur-md transition-colors hover:opacity-80"
           >
             <Map size={14} className="mr-1.5" />
             Explorar mapa
