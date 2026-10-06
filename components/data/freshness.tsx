@@ -3,11 +3,11 @@
 // you anything — and the timestamp, not the colour, is what actually carries
 // the state. The value itself (floored hour, day label past today, status
 // bucket) is computed in mapa-sensors.tsx where the sensor data lives.
-export type Freshness = {
-  dateTime: string;
-  when: string;
-  status: "fresh" | "delayed" | "stale";
-};
+// "nodata": the station on screen has no reading from the last 3 hours (the
+// site's live cutoff); there is no time to show, only that it isn't reporting.
+export type Freshness =
+  | { dateTime: string; when: string; status: "fresh" | "delayed" | "stale" }
+  | { status: "nodata" };
 
 export function FreshnessDot({ status }: { status: Freshness["status"] }) {
   const dot =
@@ -32,6 +32,13 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
 // companion — a bare colour cannot say how old "old" is. `compact` just drops
 // the type a notch for the mobile map pill, which should sit quietly.
 export function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
+  if (freshness.status === "nodata") {
+    return (
+      <span className={`whitespace-nowrap font-medium text-gray-700 ${compact ? "text-[11px]" : "text-[13px]"}`}>
+        Sin datos recientes
+      </span>
+    );
+  }
   return (
     <span className={`whitespace-nowrap text-gray-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
       Actualizado{" "}

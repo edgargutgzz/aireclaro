@@ -356,7 +356,8 @@ export default function MapaSensors({
   }, []);
 
   // The freshness readout reports the reading on screen: the card's station
-  // (picked, else Obispado), else the newest anywhere in the live set. Sensors
+  // (picked, else the default), else the newest anywhere in the live set; a
+  // card station without a reading reads "Sin datos recientes". Sensors
   // publish on their own schedules, so a dataset-wide "newest" would sit ahead
   // of one station and make a current reading look late.
   //
@@ -366,6 +367,9 @@ export default function MapaSensors({
   // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
     if (now === null) return null;
+    // A station on screen with no reading (a gray disc) says so, rather than
+    // borrowing the network's newest time and looking up to date.
+    if (cardSubject && !cardSubject.readingAt) return { status: "nodata" };
     const reading = cardSubject?.readingAt ? new Date(cardSubject.readingAt) : latestReading;
     if (!reading || Number.isNaN(reading.getTime())) return null;
 
