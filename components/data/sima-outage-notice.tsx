@@ -18,8 +18,8 @@ export default function SimaOutageNotice({ compact = false }: { compact?: boolea
         >
           {SIMA_OUTAGE_LINK.label}
           <span className="sr-only"> (abre en una nueva pestaña)</span>
-        </a>{" "}
-        {SIMA_OUTAGE_AFTER}
+        </a>
+        {SIMA_OUTAGE_AFTER ? ` ${SIMA_OUTAGE_AFTER}` : "."}
       </span>
     </p>
   );
