@@ -5,13 +5,15 @@ import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
 import DatosGeneralInfo from "@/components/datos/datos-general-info";
 
 
-// The monthly cron (app/api/cron/sima-monthly-sync, vercel.json's "0 8 6 * *")
-// runs the 6th of every month and pulls the month that just closed -- keep
-// this in sync if that schedule ever changes. String-sliced rather than
+// The monthly cron (app/api/cron/sima-monthly-sync, vercel.json's
+// "0 10 1,8 * *") pulls the month that just closed on the 1st and pulls it
+// again on the 8th to catch hours SINAICA receives late after an outage. The
+// 1st is when a new month appears, so that's the date shown -- keep this in
+// sync if the schedule ever changes. String-sliced rather than
 // built with Date arithmetic, same reasoning as lib/monterrey-time.ts's own
 // helpers: no timezone/DST surprises from constructing a Date and asking it
 // for parts back.
-const CRON_DAY = 6;
+const CRON_DAY = 1;
 
 // A day count ("en 9 días"), not a calendar date -- simpler to parse at a
 // glance than making the reader do "how far is Oct 6" math themselves

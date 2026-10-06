@@ -7,7 +7,7 @@ import { computeCoberturaDiaria } from "@/lib/cobertura-aggregate";
 import { computePromedioTrimestral } from "@/lib/promedio-anual-aggregate";
 import { fetchPromediosDiarios, type PromedioDiario } from "@/lib/promedios-diarios";
 
-// Pulls SINAICA's finalized (post-month-close) hourly readings (PM2.5 and
+// Pulls SINAICA's hourly readings for the month that just closed (PM2.5 and
 // PM10 by default) for the 15 Monterrey metro SIMA stations into
 // sima_mediciones_finales. Separate from sima_mediciones (the live hourly
 // mirror the map reads) and from sima_sensores (only read here, never
