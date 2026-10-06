@@ -11,7 +11,7 @@ export const SIMA_OUTAGE_MIN_SILENT = 10;
 
 // The sentence runs around the link: BEFORE + link + AFTER.
 export const SIMA_OUTAGE_BEFORE =
-  "Por el momento no estamos recibiendo los datos de las estaciones oficiales del SIMA. Puedes consultar sus mediciones en";
+  "Por el momento no estamos recibiendo datos de las estaciones oficiales del SIMA. Puedes consultar sus mediciones en";
 export const SIMA_OUTAGE_AFTER = "";
 
 export const SIMA_OUTAGE_LINK = { href: "https://aire.nl.gob.mx/", label: "aire.nl.gob.mx" };
