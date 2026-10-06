@@ -4,8 +4,9 @@ import { fetchUltimoMes } from "@/lib/datos-cache";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import { Suspense } from "react";
-import DatosHeader from "@/components/datos/datos-header";
-import DatosHeaderSkeleton from "@/components/datos/datos-header-skeleton";
+import { ArrowDownToLine } from "lucide-react";
+import DatosAcerca from "@/components/datos/datos-acerca";
+import DatosAcercaSkeleton from "@/components/datos/datos-acerca-skeleton";
 import DiasInsalubres from "@/components/datos/dias-insalubres";
 import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton";
 import DiasInsalubresShareSkeleton from "@/components/datos/dias-insalubres-share-skeleton";
@@ -81,10 +82,18 @@ export default function Datos() {
       <JsonLd data={datasetSchema} />
       <div className="mx-auto max-w-7xl px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
         <h1 className="sr-only">Datos de calidad del aire de la Zona Metropolitana de Monterrey</h1>
-        <div className="mb-8">
-          <Suspense fallback={<DatosHeaderSkeleton />}>
-            <DatosHeader />
-          </Suspense>
+        {/* Charts first; the context (sources, period, pollutants, health)
+            and the download sit at the foot. This one quiet link keeps the
+            download findable on arrival, since the open data is the point
+            of the page. Same tinted h-8 button the chart headers use. */}
+        <div className="mb-6 flex justify-end">
+          <a
+            href="#descarga"
+            className="flex h-8 w-fit items-center gap-1.5 rounded-xl bg-gray-100 px-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200/70 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            <ArrowDownToLine className="h-3.5 w-3.5" aria-hidden />
+            Descargar datos
+          </a>
         </div>
         {/* DiasInsalubres also renders its monthly summary card below it. */}
         <Suspense
@@ -109,9 +118,14 @@ export default function Datos() {
             <PromedioAnualEstacion />
           </Suspense>
         </div>
-        {/* Target of the top bar's "Descargar datos"; scroll-mt leaves a
+        <div className="mt-16">
+          <Suspense fallback={<DatosAcercaSkeleton />}>
+            <DatosAcerca />
+          </Suspense>
+        </div>
+        {/* Target of the top "Descargar datos" link; scroll-mt leaves a
             little air above the card when it jumps here. */}
-        <div id="descarga" className="mt-16 scroll-mt-6">
+        <div id="descarga" className="mt-8 scroll-mt-6">
           <Suspense fallback={<DescargaDatosSkeleton />}>
             <DescargaDatos />
           </Suspense>
