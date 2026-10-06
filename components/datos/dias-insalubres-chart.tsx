@@ -763,8 +763,10 @@ export default function DiasInsalubresChart({
   // Rows written before the same-limit count existed read as null.
   const comparisonReady = yearLines.some((l) => l.dias.some((v) => v !== null));
 
-  // The comparison's headline stat: the latest month with data in the
-  // latest year vs. the same month a year earlier, both on today's limit.
+  // The comparison's headline stat: the year so far vs. the same stretch a
+  // year earlier, both on today's limit. "So far" runs from January to the
+  // latest month both years have, and only months both years have count, so
+  // the two totals always cover the same calendar.
   const comparisonStat = useMemo(() => {
     if (yearLines.length < 2) return null;
     const cur = yearLines[yearLines.length - 1];
@@ -772,10 +774,20 @@ export default function DiasInsalubresChart({
     let m = 11;
     while (m >= 0 && (cur.dias[m] === null || prev.dias[m] === null)) m--;
     if (m < 0) return null;
+    let curTotal = 0;
+    let prevTotal = 0;
+    let first = -1;
+    for (let i = 0; i <= m; i++) {
+      if (cur.dias[i] === null || prev.dias[i] === null) continue;
+      if (first < 0) first = i;
+      curTotal += cur.dias[i] ?? 0;
+      prevTotal += prev.dias[i] ?? 0;
+    }
     return {
-      mes: MONTHS_ES_FULL[m].toLowerCase(),
-      cur: { ano: cur.ano, dias: cur.dias[m] ?? 0 },
-      prev: { ano: prev.ano, dias: prev.dias[m] ?? 0 },
+      desde: MONTHS_ES_FULL[first].toLowerCase(),
+      hasta: MONTHS_ES_FULL[m].toLowerCase(),
+      cur: { ano: cur.ano, dias: curTotal },
+      prev: { ano: prev.ano, dias: prevTotal },
     };
   }, [yearLines]);
 
@@ -893,12 +905,13 @@ export default function DiasInsalubresChart({
       }
       subtitle={
         compare ? (
-          // The latest month vs. the same month last year; the change in
+          // The year so far vs. the same stretch last year; the change in
           // red (more days over the norm) or green (fewer).
           comparisonStat ? (
             <div>
               {comparisonStat.cur.dias} días sobre la norma de salud por{" "}
-              {POLLUTANT_LABEL[pollutant]} en {comparisonStat.mes} {comparisonStat.cur.ano},{" "}
+              {POLLUTANT_LABEL[pollutant]} de {comparisonStat.desde} a {comparisonStat.hasta} de{" "}
+              {comparisonStat.cur.ano},{" "}
               {(() => {
                 const delta = comparisonStat.cur.dias - comparisonStat.prev.dias;
                 return (
@@ -911,7 +924,7 @@ export default function DiasInsalubresChart({
                   </span>
                 );
               })()}{" "}
-              que en {comparisonStat.prev.ano}
+              que en el mismo periodo de {comparisonStat.prev.ano}
             </div>
           ) : (
             <div>
