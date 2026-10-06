@@ -264,7 +264,8 @@ export interface MonthlySummary {
    *  disagree or there's no prior month. */
   trend: "más" | "menos" | "los mismos" | null;
   /** The verdict, as set lines: the image's headline line by line, the
-   *  /datos card's title joined into one sentence. */
+   *  /datos card's title joined into one sentence. When the pollutants
+   *  disagree it names each one ("menos… por PM2.5 y más por PM10"). */
   headline: string[];
 }
 
@@ -297,10 +298,20 @@ export function monthlySummary(
   const agree = hasPrior && signs.every((x) => x === signs[0]);
   const trend = agree ? (signs[0] > 0 ? "más" : signs[0] < 0 ? "menos" : "los mismos") : null;
   const lead = `En ${mesMin} ${year}`;
+  // When the pollutants moved in opposite directions (Sept 2026: fewer PM2.5
+  // days, more PM10), the title says each one instead of a neutral "frente
+  // al año pasado" that told the reader nothing.
+  const word = (r: MonthlySummaryRow) =>
+    r.current > (r.prior ?? 0) ? "más" : r.current < (r.prior ?? 0) ? "menos" : "los mismos";
   const headline = !hasPrior
     ? [`${lead},`, "días sobre la norma de salud"]
     : trend
       ? [`${lead} se registraron`, `${trend} días sobre la norma de salud`, "que el año pasado"]
-      : [`${lead},`, "días sobre la norma de salud", "frente al año pasado"];
+      : [
+          `${lead} se registraron`,
+          `${word(rows[0])} días sobre la norma de salud`,
+          `por PM2.5 y ${word(rows[1])} por PM10`,
+          "que el año pasado",
+        ];
   return { year, mes, rows, hasPrior, trend, headline };
 }
