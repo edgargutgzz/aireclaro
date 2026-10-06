@@ -1,4 +1,4 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PromedioDiario } from "@/lib/promedios-diarios";
 
 // Shared by the monthly sync cron, same pattern as lib/dias-insalubres-aggregate.ts
 // and lib/cobertura-aggregate.ts. Reads sima_promedios_diarios (already applies
@@ -54,57 +54,11 @@ function daysInTrimestre(ano: number, trimestre: number): number {
   );
 }
 
-function baseQuery(supabase: SupabaseClient) {
-  return supabase
-    .from("sima_promedios_diarios")
-    .select("sensor_id, fecha, promedio, parametro", { count: "exact" })
-    .in("parametro", ["PM2.5", "PM10"])
-    .neq("sensor_id", "FIN")
-    .not("promedio", "is", null)
-    .order("fecha", { ascending: true })
-    .order("sensor_id", { ascending: true })
-    .order("parametro", { ascending: true });
-}
-
-// Same paginate-in-small-concurrent-batches shape as
-// cobertura-aggregate.ts/dias-insalubres-aggregate.ts -- only valid days are
-// fetched (the "not null" filter above), since invalid days contribute
-// nothing to a sum and the day-count denominators below are pure calendar
-// arithmetic, not row counts.
-const BATCH_SIZE = 4;
-
-async function fetchAllValidDays(supabase: SupabaseClient) {
-  const pageSize = 1000;
-  type Row = { sensor_id: string; fecha: string; promedio: number; parametro: "PM2.5" | "PM10" };
-
-  const first = await baseQuery(supabase).range(0, pageSize - 1);
-  if (first.error) {
-    throw new Error(`Failed to load promedio anual: ${first.error.message}`);
-  }
-  const total = first.count ?? first.data?.length ?? 0;
-
-  const rows: Row[] = [...((first.data ?? []) as Row[])];
-  const remainingPages = Math.max(0, Math.ceil(total / pageSize) - 1);
-  for (let batchStart = 0; batchStart < remainingPages; batchStart += BATCH_SIZE) {
-    const batch = await Promise.all(
-      Array.from({ length: Math.min(BATCH_SIZE, remainingPages - batchStart) }, (_, j) => {
-        const i = batchStart + j;
-        const from = (i + 1) * pageSize;
-        return baseQuery(supabase).range(from, from + pageSize - 1);
-      }),
-    );
-    for (const page of batch) {
-      if (page.error) {
-        throw new Error(`Failed to load promedio anual: ${page.error.message}`);
-      }
-      rows.push(...((page.data ?? []) as Row[]));
-    }
-  }
-  return rows;
-}
-
-export async function computePromedioTrimestral(supabase: SupabaseClient): Promise<TrimestreRow[]> {
-  const rows = await fetchAllValidDays(supabase);
+// Rows come from the monthly cron's single read of sima_promedios_diarios
+// (lib/promedios-diarios.ts); only valid days count (invalid ones add nothing
+// to a sum, and the day-count denominators are calendar arithmetic).
+export function computePromedioTrimestral(allRows: PromedioDiario[]): TrimestreRow[] {
+  const rows = allRows.filter((r): r is PromedioDiario & { promedio: number } => r.promedio !== null);
 
   // (sensor_id, ano, trimestre, parametro) -> that trimester's valid daily
   // averages, pooled directly -- no month-level grouping step, per the norm

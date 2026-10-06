@@ -5,6 +5,7 @@ import { createServiceClient } from "@/utils/supabase/service";
 import { computeDiasInsalubresMensual, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { computeCoberturaDiaria } from "@/lib/cobertura-aggregate";
 import { computePromedioTrimestral } from "@/lib/promedio-anual-aggregate";
+import { fetchPromediosDiarios, type PromedioDiario } from "@/lib/promedios-diarios";
 
 // Pulls SINAICA's finalized (post-month-close) hourly readings (PM2.5 and
 // PM10 by default) for the 15 Monterrey metro SIMA stations into
@@ -197,10 +198,24 @@ export async function GET(request: NextRequest) {
   // (2026-09-12 outage). Recompute the whole history (not just the target
   // month) so a re-sync or a threshold/HIDDEN_MONTHS change self-corrects
   // every month, not just going forward.
-  let diasInsalubresError: string | undefined;
+  //
+  // All three precomputes below come from ONE read of the view (it used to be
+  // read three times; on 2026-10-06 the first read failed and September never
+  // reached días insalubres). The read retries failed pages itself.
+  let promedios: PromedioDiario[] | null = null;
+  let promediosError: string | undefined;
   if (rowsWritten > 0) {
     try {
-      const monthly = await computeDiasInsalubresMensual(supabase);
+      promedios = await fetchPromediosDiarios(supabase);
+    } catch (err) {
+      promediosError = err instanceof Error ? err.message : String(err);
+    }
+  }
+
+  let diasInsalubresError: string | undefined;
+  if (promedios) {
+    try {
+      const monthly = computeDiasInsalubresMensual(promedios);
       const upsertRows = (Object.entries(monthly) as [Pollutant, typeof monthly.pm25][]).flatMap(
         ([pollutant, months]) =>
           months.map((m) => ({
@@ -226,9 +241,9 @@ export async function GET(request: NextRequest) {
   // full history is already well past a single upsert's comfortable row
   // count.
   let coberturaError: string | undefined;
-  if (rowsWritten > 0) {
+  if (promedios) {
     try {
-      const cobertura = await computeCoberturaDiaria(supabase);
+      const cobertura = computeCoberturaDiaria(promedios);
       const chunkSize = 1000;
       for (let i = 0; i < cobertura.length; i += chunkSize) {
         const chunk = cobertura.slice(i, i + chunkSize);
@@ -250,9 +265,9 @@ export async function GET(request: NextRequest) {
   // (stations * years * 4 * 2 pollutants) to upsert in one shot, no
   // chunking needed.
   let promedioTrimestralError: string | undefined;
-  if (rowsWritten > 0) {
+  if (promedios) {
     try {
-      const trimestres = await computePromedioTrimestral(supabase);
+      const trimestres = computePromedioTrimestral(promedios);
       const { error } = await supabase
         .from("sima_promedio_trimestral")
         .upsert(trimestres, { onConflict: "sensor_id,ano,trimestre,parametro" });
@@ -267,6 +282,13 @@ export async function GET(request: NextRequest) {
   // new month instead of waiting out the daily safety-net revalidate.
   if (rowsWritten > 0) revalidateTag(DATOS_CACHE_TAG, { expire: 0 });
 
+  // Failures go to the logs too, not only the response nobody sees (the
+  // 2026-10-06 failure left no trace in Vercel).
+  const failures = { promediosError, diasInsalubresError, coberturaError, promedioTrimestralError };
+  if (errors.length > 0 || Object.values(failures).some(Boolean)) {
+    console.error("sima-monthly-sync errors:", { errors, ...failures });
+  }
+
   return NextResponse.json({
     fechaInit,
     fechaFin,
@@ -274,6 +296,7 @@ export async function GET(request: NextRequest) {
     estaciones: estaciones.length,
     rowsWritten,
     errors,
+    promediosError,
     diasInsalubresError,
     coberturaError,
     promedioTrimestralError,

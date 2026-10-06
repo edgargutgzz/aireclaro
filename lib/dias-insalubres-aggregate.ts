@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PromedioDiario } from "@/lib/promedios-diarios";
 import {
   getLimitForDate,
   getLimitForDatePM10,
@@ -98,69 +99,16 @@ function aggregateByMonth(
   return Array.from(porMes.values()).sort((a, b) => a.ano - b.ano || a.mesNumero - b.mesNumero);
 }
 
-// PostgREST caps an unpaginated select at 1000 rows. This table already
-// exceeds that combined across both pollutants, so an unpaginated fetch
-// silently drops rows (undercounting días insalubres) -- page through with
-// .range(). sima_promedios_diarios is a view that recomputes its aggregation
-// on every call, so pages are fetched in small concurrent batches (order is
-// only needed for stable pagination, not for the aggregation below).
-// Fetching all pages at once overloaded Postgres under contention and
-// fetching one at a time was slow enough to trip a gateway timeout
-// (2026-09-12 outage) -- but this now only ever runs from the monthly cron,
-// not per page view, so both failure modes matter far less than they used to.
-function baseQuery(supabase: SupabaseClient) {
-  return supabase
-    .from("sima_promedios_diarios")
-    .select("sensor_id, fecha, promedio, parametro", { count: "exact" })
-    .in("parametro", ["PM2.5", "PM10"])
-    .neq("sensor_id", "FIN")
-    .not("promedio", "is", null)
-    .order("fecha", { ascending: true })
-    .order("sensor_id", { ascending: true })
-    .order("parametro", { ascending: true });
-}
-
-const BATCH_SIZE = 4;
-
-async function fetchAllPromediosDiarios(supabase: SupabaseClient) {
-  const pageSize = 1000;
-  type Row = { sensor_id: string; fecha: string; promedio: number | null; parametro: string };
-
-  const first = await baseQuery(supabase).range(0, pageSize - 1);
-  if (first.error) {
-    throw new Error(`Failed to load días insalubres: ${first.error.message}`);
-  }
-  const total = first.count ?? first.data?.length ?? 0;
-
-  const rows: Row[] = [...(first.data ?? [])];
-  const remainingPages = Math.max(0, Math.ceil(total / pageSize) - 1);
-  for (let batchStart = 0; batchStart < remainingPages; batchStart += BATCH_SIZE) {
-    const batch = await Promise.all(
-      Array.from({ length: Math.min(BATCH_SIZE, remainingPages - batchStart) }, (_, j) => {
-        const i = batchStart + j;
-        const from = (i + 1) * pageSize;
-        return baseQuery(supabase).range(from, from + pageSize - 1);
-      }),
-    );
-    for (const page of batch) {
-      if (page.error) {
-        throw new Error(`Failed to load días insalubres: ${page.error.message}`);
-      }
-      rows.push(...(page.data ?? []));
-    }
-  }
-  return rows;
-}
-
-export async function computeDiasInsalubresMensual(
-  supabase: SupabaseClient,
-): Promise<Record<Pollutant, MonthData[]>> {
-  const rows = await fetchAllPromediosDiarios(supabase);
-
-  const pm25Rows = rows.filter(
+// Rows come from the monthly cron's single read of sima_promedios_diarios
+// (lib/promedios-diarios.ts); only valid days count here.
+export function computeDiasInsalubresMensual(
+  rows: PromedioDiario[],
+): Record<Pollutant, MonthData[]> {
+  const valid = rows.filter((r) => r.promedio !== null);
+  const pm25Rows = valid.filter(
     (r) => r.parametro === "PM2.5" && !HIDDEN_MONTHS["PM2.5"].has(r.fecha.slice(0, 7)),
   );
-  const pm10Rows = rows.filter(
+  const pm10Rows = valid.filter(
     (r) => r.parametro === "PM10" && !HIDDEN_MONTHS.PM10.has(r.fecha.slice(0, 7)),
   );
 
