@@ -1,54 +1,13 @@
 import { ArrowDownToLine, RefreshCw } from "lucide-react";
 import { fetchUltimoMes } from "@/lib/datos-cache";
-import { monterreyNaiveNow } from "@/lib/monterrey-time";
 import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
 import DatosGeneralInfo from "@/components/datos/datos-general-info";
 
 
-// The monthly cron (app/api/cron/sima-monthly-sync, vercel.json's
-// "0 10 1 * *") runs at 04:00 Monterrey on the 1st and pulls the month that
-// just closed -- keep this in sync if that schedule ever changes. String-sliced rather than
-// built with Date arithmetic, same reasoning as lib/monterrey-time.ts's own
-// helpers: no timezone/DST surprises from constructing a Date and asking it
-// for parts back.
-const CRON_DAY = 1;
-
-// A day count ("en 9 días"), not a calendar date -- simpler to parse at a
-// glance than making the reader do "how far is Oct 6" math themselves
-// (2026-09-28 feedback). addedMonth is derived from the run-day math
-// (targetMonth - 1), not from the stamp below, so it's still correct even
-// if a run were ever missed and the stamp fell more than one month behind.
-function nextUpdate(): { addedMonthLabel: string; daysUntil: number } {
-  const [y, m, d] = monterreyNaiveNow().slice(0, 10).split("-").map(Number);
-  let targetYear = y;
-  let targetMonth = m;
-  if (d >= CRON_DAY) {
-    targetMonth += 1;
-    if (targetMonth > 12) {
-      targetMonth = 1;
-      targetYear += 1;
-    }
-  }
-  let addedMonth = targetMonth - 1;
-  let addedYear = targetYear;
-  if (addedMonth < 1) {
-    addedMonth = 12;
-    addedYear -= 1;
-  }
-  const todayUTC = Date.UTC(y, m - 1, d);
-  const targetUTC = Date.UTC(targetYear, targetMonth - 1, CRON_DAY);
-  return {
-    addedMonthLabel: `${MONTHS_ES_FULL[addedMonth - 1].toLowerCase()} ${addedYear}`,
-    daysUntil: Math.round((targetUTC - todayUTC) / 86_400_000),
-  };
-}
-
-// Two short sentences, shared by every /datos chart -- what's on screen now,
-// and what lands next. Went through a couple of shapes: first one run-on
-// sentence mixing both ideas (confusing), then a label/value stat pair with
-// an exact date (didn't say a WHOLE month arrives that day). Settled on
-// plain sentences with a day-count instead of a date -- reads closer to how
-// the client would actually say it out loud (2026-09-28 feedback). Reads the
+// Two short sentences, shared by every /datos chart: what's on screen now,
+// and that it updates monthly. A countdown to the next month ("estarán
+// disponibles en N días") was tried and dropped as confusing (2026-10-06);
+// the monthly cron (vercel.json) runs on the 1st. Reads the
 // same precomputed rollup días insalubres does (sima_insalubres_mensual)
 // rather than adding a new query path: whatever month that table's latest
 // PM2.5 row belongs to IS the month every /datos chart is current through,
@@ -62,8 +21,6 @@ export default async function DatosHeader() {
   if (!data) return null;
 
   const stamp = `${MONTHS_ES_FULL[data.mes - 1].toLowerCase()} ${data.ano}`;
-  const { addedMonthLabel, daysUntil } = nextUpdate();
-  const daysLabel = `${daysUntil} día${daysUntil === 1 ? "" : "s"}`;
 
   return (
     // White + border-gray-200, same shell ChartCard uses below -- the
@@ -93,11 +50,7 @@ export default async function DatosHeader() {
               <span className="text-gray-500">.</span>
             </div>
             <div className="hidden h-4 w-px bg-gray-200 md:block" />
-            <div className="mt-1 md:mt-0">
-              <span className="text-gray-500">Los datos de </span>
-              <span className="font-medium text-gray-800">{addedMonthLabel}</span>
-              <span className="text-gray-500"> estarán disponibles en {daysLabel}.</span>
-            </div>
+            <div className="mt-1 text-gray-500 md:mt-0">Se actualizan cada mes.</div>
           </div>
         </div>
         {/* The raw-data download lives in its own card at the bottom of the
