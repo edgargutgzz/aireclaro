@@ -9,7 +9,9 @@
 // last 3 hours counts as an outage rather than a few stations off.
 export const SIMA_OUTAGE_MIN_SILENT = 10;
 
-export const SIMA_OUTAGE_TEXT =
-  "Por el momento las estaciones oficiales del SIMA no se están actualizando en este mapa. Consulta los datos del Gobierno de Nuevo León en";
+// The sentence runs around the link: BEFORE + link + AFTER.
+export const SIMA_OUTAGE_BEFORE =
+  "Por el momento las estaciones oficiales del SIMA no se están actualizando. Puedes consultar sus mediciones en";
+export const SIMA_OUTAGE_AFTER = "en lo que se restablece la conexión.";
 
 export const SIMA_OUTAGE_LINK = { href: "https://aire.nl.gob.mx/", label: "aire.nl.gob.mx" };

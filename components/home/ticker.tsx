@@ -8,8 +8,8 @@ import TickerTrack, { type TickerItem } from "./ticker-track";
 // live stations (the map): every official metro station's PM2.5 this hour,
 // dot in the map marker's color, worst first, scrolling, each linking to its
 // station on the map; the label links to the map too. A station with no
-// fresh reading stays in the strip as a gray "sin actualizar"; the label stays
-// "En vivo" (without an hour when no station has one).
+// fresh reading stays in the strip as a gray "sin actualizar"; when no station
+// has one, the strip is hidden.
 
 // Inset ring, square: the links are full-height sections of a straight strip.
 const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15";
@@ -19,7 +19,11 @@ export default async function Ticker() {
     getLiveStations().catch(() => []),
     fetchEstaciones().catch(() => []),
   ]);
-  if (estaciones.length === 0) return null;
+  // No station with a reading at all means we're not receiving the network's
+  // data (the stations themselves may well be measuring, as on 2026-10-06),
+  // not that the air has no reading: hide the strip rather than fill it with
+  // gray. A partial gap still shows, station by station.
+  if (estaciones.length === 0 || stations.length === 0) return null;
 
   // Every metro station, always: one without a reading from the last 3 hours
   // shows as a gray "sin actualizar" dot, like its gray disc on the map, so a
@@ -36,7 +40,6 @@ export default async function Ticker() {
         ? Number(a.pm25 === null) - Number(b.pm25 === null) || a.nombre.localeCompare(b.nombre, "es")
         : b.pm25 - a.pm25,
     );
-  const hayDatos = stations.length > 0;
 
   return (
     <section aria-label="PM2.5 por estación oficial, en vivo" className="flex h-10 items-stretch bg-white text-[13px]">
@@ -48,7 +51,7 @@ export default async function Ticker() {
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00a400]" />
         </span>
-        En vivo{hayDatos ? ` · ${horaDeLectura(stations)}` : ""}
+        En vivo · {horaDeLectura(stations)}
       </Link>
       <TickerTrack items={items} />
     </section>
