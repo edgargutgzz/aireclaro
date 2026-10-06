@@ -6,10 +6,8 @@ import DatosGeneralInfo from "@/components/datos/datos-general-info";
 
 
 // The monthly cron (app/api/cron/sima-monthly-sync, vercel.json's
-// "0 10 1,8 * *") pulls the month that just closed on the 1st and pulls it
-// again on the 8th to catch hours SINAICA receives late after an outage. The
-// 1st is when a new month appears, so that's the date shown -- keep this in
-// sync if the schedule ever changes. String-sliced rather than
+// "0 10 1 * *") runs at 04:00 Monterrey on the 1st and pulls the month that
+// just closed -- keep this in sync if that schedule ever changes. String-sliced rather than
 // built with Date arithmetic, same reasoning as lib/monterrey-time.ts's own
 // helpers: no timezone/DST surprises from constructing a Date and asking it
 // for parts back.
