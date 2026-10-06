@@ -9,6 +9,7 @@ import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMa
 import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
+import { monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
 import {
   PULSE_FALLBACK_COLOR,
   municipioKey,
@@ -49,7 +50,36 @@ import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 // SIMA "CE" — Monterrey: Obispado, the central government reference station.
 // The card shows this one station's own reading; there is no median fallback,
 // so if it's filtered out (Capas → gobierno off) the card is simply empty.
+// When Obispado has no reading from the last 3 hours (the cutoff the hourly
+// SIMA job and the homepage ticker use), the default is instead the PurpleAir
+// sensor nearest to it that has one, so the map never opens on an empty or
+// stale card. Rule decided 2026-10-06, after a SINAICA outage left Obispado
+// without data.
 const DEFAULT_SENSOR_ID = "CE";
+const DEFAULT_MAX_AGE_MS = 3 * 60 * 60 * 1000;
+
+function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefined {
+  const obispado = candidates.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
+  if (!obispado) return undefined;
+
+  // Readings are naive Monterrey wall-clock; compare them in the same terms.
+  const now = parseMonterreyNaive(monterreyNaiveNow()).getTime();
+  const fresh = new Set(
+    data
+      .filter((d) => d.pm25 != null && d.pm25 > 0.4 && now - parseMonterreyNaive(d.time_stamp).getTime() < DEFAULT_MAX_AGE_MS)
+      .map((d) => String(d.sensor_id)),
+  );
+  if (fresh.has(DEFAULT_SENSOR_ID)) return obispado;
+
+  // Nearest by a flat-earth distance (fine at city scale), longitude scaled
+  // by the latitude so east-west and north-south count alike.
+  const k = Math.cos((obispado.lat * Math.PI) / 180);
+  const dist = (s: Sensor) => Math.hypot((s.lon - obispado.lon) * k, s.lat - obispado.lat);
+  const nearest = candidates
+    .filter((s) => s.source === "purpleAir" && fresh.has(String(s.sensor_id)))
+    .sort((a, b) => dist(a) - dist(b))[0];
+  return nearest ?? obispado;
+}
 
 // Subtle repaint of stock light-v11, applied on style.load. Tuned in small
 // increments — each value is a knob.
@@ -156,7 +186,7 @@ export default function MapaSensors({
     if (didSeedDefaultRef.current || !isDesktop) return;
     didSeedDefaultRef.current = true;
     if (linkedSensor || selectedSensor) return;
-    const def = sensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
+    const def = pickDefaultSensor(sensors, data);
     if (def) setSelectedSensor(buildSelection(def, data));
   }, [isDesktop, linkedSensor, selectedSensor, sensors, data]);
 
@@ -303,12 +333,13 @@ export default function MapaSensors({
   }, [data]);
 
   // The station the card falls back to when nothing is picked: Obispado (CE),
-  // built the same way a click builds a selection. Null only if it's filtered
-  // out or absent from the feed. `cardSubject` is what every card consumer
-  // reads — the explicit pick, else this.
+  // or the nearest PurpleAir sensor when Obispado has no recent reading (see
+  // pickDefaultSensor), built the same way a click builds a selection. Null
+  // only if Obispado is filtered out or absent from the feed. `cardSubject` is
+  // what every card consumer reads — the explicit pick, else this.
   const defaultSelection = useMemo<SelectedSensor | null>(() => {
-    const obispado = visibleSensors.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
-    return obispado ? buildSelection(obispado, data) : null;
+    const def = pickDefaultSensor(visibleSensors, data);
+    return def ? buildSelection(def, data) : null;
   }, [visibleSensors, data]);
   const cardSubject = selectedSensor ?? defaultSelection;
 
