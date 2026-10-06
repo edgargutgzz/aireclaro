@@ -7,6 +7,8 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
+import SimaOutageNotice from "@/components/data/sima-outage-notice";
+import { SIMA_OUTAGE_MIN_SILENT } from "@/lib/sima-outage";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
 import { monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
@@ -343,6 +345,16 @@ export default function MapaSensors({
   }, [visibleSensors, data]);
   const cardSubject = selectedSensor ?? defaultSelection;
 
+  // Most official metro stations (FIN is Saltillo) without a reading at once:
+  // an outage, explained by the notice in the legend panel / mobile pill.
+  const simaOutage = useMemo(() => {
+    const withReading = new Set(data.filter((d) => d.pm25 != null && d.pm25 > 0.4).map((d) => String(d.sensor_id)));
+    const silent = sensors.filter(
+      (s) => s.source === "sima" && String(s.sensor_id) !== "FIN" && !withReading.has(String(s.sensor_id)),
+    ).length;
+    return silent >= SIMA_OUTAGE_MIN_SILENT;
+  }, [sensors, data]);
+
   // Null until mounted, so the server and the first client render agree on a
   // value that is by definition different on each; then re-read on a timer,
   // because a tab left open all afternoon should watch the badge go amber
@@ -357,7 +369,7 @@ export default function MapaSensors({
 
   // The freshness readout reports the reading on screen: the card's station
   // (picked, else the default), else the newest anywhere in the live set; a
-  // card station without a reading reads "Sin datos recientes". Sensors
+  // card station without a reading reads "Sin actualizar". Sensors
   // publish on their own schedules, so a dataset-wide "newest" would sit ahead
   // of one station and make a current reading look late.
   //
@@ -1086,9 +1098,14 @@ export default function MapaSensors({
           map, just under the top bar. It hides with the right-edge buttons once
           the sheet is expanded. Low-priority chrome, so it runs small and
           shadowless. Desktop pins the full badge to the foot of the left rail. */}
-      {sheetState === 'peek' && freshness && (
-        <div className="pointer-events-none absolute left-4 top-4 z-[45] md:hidden">
-          <FreshnessBadge freshness={freshness} compact />
+      {sheetState === 'peek' && (freshness || simaOutage) && (
+        <div className="pointer-events-none absolute left-4 top-4 z-[45] flex max-w-[16rem] flex-col items-start gap-2 md:hidden">
+          {freshness && <FreshnessBadge freshness={freshness} compact />}
+          {simaOutage && (
+            <div className="glass pointer-events-auto rounded-xl px-2.5 py-2">
+              <SimaOutageNotice compact />
+            </div>
+          )}
         </div>
       )}
 
@@ -1295,6 +1312,11 @@ export default function MapaSensors({
             <div className="flex items-center gap-2 border-t border-gray-100 px-5 py-3">
               <FreshnessDot status={freshness.status} />
               <FreshnessText freshness={freshness} />
+            </div>
+          )}
+          {simaOutage && (
+            <div className="border-t border-gray-100 px-5 py-3">
+              <SimaOutageNotice />
             </div>
           )}
         </div>

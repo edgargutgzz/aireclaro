@@ -4,7 +4,8 @@
 // the state. The value itself (floored hour, day label past today, status
 // bucket) is computed in mapa-sensors.tsx where the sensor data lives.
 // "nodata": the station on screen has no reading from the last 3 hours (the
-// site's live cutoff); there is no time to show, only that it isn't reporting.
+// site's live cutoff); there is no time to show, only that it hasn't updated
+// ("Sin actualizar", not "no data": the station may well be measuring).
 export type Freshness =
   | { dateTime: string; when: string; status: "fresh" | "delayed" | "stale" }
   | { status: "nodata" };
@@ -35,7 +36,7 @@ export function FreshnessText({ freshness, compact = false }: { freshness: Fresh
   if (freshness.status === "nodata") {
     return (
       <span className={`whitespace-nowrap font-medium text-gray-700 ${compact ? "text-[11px]" : "text-[13px]"}`}>
-        Sin datos recientes
+        Sin actualizar
       </span>
     );
   }

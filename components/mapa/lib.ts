@@ -54,14 +54,14 @@ export function displayName(sensor: Sensor) {
 }
 
 // The comma-joined marker / a11y label: source, name, the reading (or "sin
-// lectura"), and the quality band. `pm25` is the value for the frame on screen.
+// actualizar"), and the quality band. `pm25` is the value for the frame on screen.
 export function markerLabel(sensor: Sensor, pm25: number | null) {
   const isSima = sensor.source === "sima";
   const has = pm25 != null && pm25 > 0.4;
   return [
     getSourceLabel(isSima, sensor.red),
     displayName(sensor),
-    has ? `${roundPM25(pm25)} μg/m³ PM2.5` : "sin lectura",
+    has ? `${roundPM25(pm25)} μg/m³ PM2.5` : "sin actualizar",
     has ? getQualityInfo(pm25)?.label : null,
   ]
     .filter(Boolean)

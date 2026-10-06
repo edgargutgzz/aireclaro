@@ -19,7 +19,7 @@ import Link from "next/link";
 export interface TickerItem {
   id: string;
   nombre: string;
-  // null: no reading from the last 3 hours ("sin datos").
+  // null: no reading from the last 3 hours ("sin actualizar").
   pm25: number | null;
   // The map marker's own fill for this reading; null draws the map's gray.
   color: string | null;
@@ -51,7 +51,7 @@ function Items({
             />
             {item.nombre}
             {item.pm25 === null ? (
-              <span className="text-gray-400">sin datos</span>
+              <span className="text-gray-400">sin actualizar</span>
             ) : (
               <>
                 <span className="font-mono font-semibold text-gray-900">{item.pm25}</span>

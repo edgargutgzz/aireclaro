@@ -3,12 +3,14 @@ import { getMarkerFillHex } from "@/lib/air-quality";
 import { fetchEstaciones } from "@/lib/datos-cache";
 import { getLiveStations, horaDeLectura } from "@/lib/home-air";
 import TickerTrack, { type TickerItem } from "./ticker-track";
+import SimaOutageNotice from "@/components/data/sima-outage-notice";
+import { SIMA_OUTAGE_MIN_SILENT } from "@/lib/sima-outage";
 
 // The homepage's live ticker under the navbar (app/@strip), only about the
 // live stations (the map): every official metro station's PM2.5 this hour,
 // dot in the map marker's color, worst first, scrolling, each linking to its
 // station on the map; the label links to the map too. A station with no
-// fresh reading stays in the strip as a gray "sin datos"; the label stays
+// fresh reading stays in the strip as a gray "sin actualizar"; the label stays
 // "En vivo" (without an hour when no station has one).
 
 // Inset ring, square: the links are full-height sections of a straight strip.
@@ -22,7 +24,7 @@ export default async function Ticker() {
   if (estaciones.length === 0) return null;
 
   // Every metro station, always: one without a reading from the last 3 hours
-  // shows as a gray "sin datos" dot, like its gray disc on the map, so a
+  // shows as a gray "sin actualizar" dot, like its gray disc on the map, so a
   // network outage is visible instead of the strip going quiet. Stations with
   // data first, worst first; then the silent ones, by name.
   const lecturas = new Map(stations.map((s) => [s.sensorId, s.pm25]));
@@ -37,8 +39,10 @@ export default async function Ticker() {
         : b.pm25 - a.pm25,
     );
   const hayDatos = stations.length > 0;
+  const outage = estaciones.length - stations.length >= SIMA_OUTAGE_MIN_SILENT;
 
   return (
+    <>
     <section aria-label="PM2.5 por estación oficial, en vivo" className="flex h-10 items-stretch bg-white text-[13px]">
       <Link
         href="/mapa"
@@ -52,5 +56,13 @@ export default async function Ticker() {
       </Link>
       <TickerTrack items={items} />
     </section>
+    {/* Most stations silent at once: say why the strip is gray and where the
+        state's own data is (lib/sima-outage.ts). */}
+    {outage && (
+      <div className="bg-white px-4 pb-3 pt-1 lg:px-8">
+        <SimaOutageNotice />
+      </div>
+    )}
+    </>
   );
 }
