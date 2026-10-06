@@ -346,14 +346,18 @@ export default function MapaSensors({
   const cardSubject = selectedSensor ?? defaultSelection;
 
   // Most official metro stations (FIN is Saltillo) without a reading at once:
-  // an outage, explained by the notice in the legend panel / mobile pill.
-  const simaOutage = useMemo(() => {
+  // an outage. The notice (legend panel / mobile pill) shows only while the
+  // station on screen is one of those silent official stations, never for a
+  // citizen sensor.
+  const simaOutageAll = useMemo(() => {
     const withReading = new Set(data.filter((d) => d.pm25 != null && d.pm25 > 0.4).map((d) => String(d.sensor_id)));
     const silent = sensors.filter(
       (s) => s.source === "sima" && String(s.sensor_id) !== "FIN" && !withReading.has(String(s.sensor_id)),
     ).length;
     return silent >= SIMA_OUTAGE_MIN_SILENT;
   }, [sensors, data]);
+  const simaOutage =
+    simaOutageAll && cardSubject?.sensor.source === "sima" && !cardSubject.readingAt;
 
   // Null until mounted, so the server and the first client render agree on a
   // value that is by definition different on each; then re-read on a timer,
