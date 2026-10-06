@@ -8,8 +8,8 @@ import TickerTrack, { type TickerItem } from "./ticker-track";
 // live stations (the map): every official metro station's PM2.5 this hour,
 // dot in the map marker's color, worst first, scrolling, each linking to its
 // station on the map; the label links to the map too. A station with no
-// fresh reading stays in the strip as a gray "sin datos", and if none has one
-// the label says so.
+// fresh reading stays in the strip as a gray "sin datos"; the label stays
+// "En vivo" (without an hour when no station has one).
 
 // Inset ring, square: the links are full-height sections of a straight strip.
 const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15";
@@ -44,15 +44,11 @@ export default async function Ticker() {
         href="/mapa"
         className={`flex shrink-0 items-center gap-2 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-900 lg:px-8 ${FOCUS}`}
       >
-        {hayDatos ? (
-          <span className="relative flex h-2 w-2" aria-hidden>
-            <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00a400]" />
-          </span>
-        ) : (
-          <span className="h-2 w-2 rounded-full bg-gray-400" aria-hidden />
-        )}
-        En vivo · {hayDatos ? horaDeLectura(stations) : "sin datos"}
+        <span className="relative flex h-2 w-2" aria-hidden>
+          <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00a400]" />
+        </span>
+        En vivo{hayDatos ? ` · ${horaDeLectura(stations)}` : ""}
       </Link>
       <TickerTrack items={items} />
     </section>
