@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { ArrowDownToLine, BookOpen } from "lucide-react";
 import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
-import type { InfoTab } from "@/components/datos/info-tabs";
+import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
+import { GENERAL_TABS } from "@/components/datos/datos-general-info";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import SelectMenu from "@/components/datos/select-menu";
@@ -86,8 +87,12 @@ const INFO_TAB: InfoTab = {
   ),
 };
 
-// The raw-data download: a few filters that build the URL of
-// app/api/datos/sima-horario, and a same-origin <a download>, so the browser
+// The foot of /datos, one card for everything about the data itself: what it
+// is and what period it covers ("Periodo · Actualización", labelled facts,
+// INEGI style), the raw-data download, and the shared "learn more" tabs
+// (source, methodology, pollutants, health) plus the CSV's Diccionario.
+// The download is a few filters that build the URL of
+// app/api/datos/sima-horario and a same-origin <a download>, so the browser
 // saves the streamed CSV directly (same pattern as DownloadImageMenu).
 export default function DescargaDatosCard({
   estaciones,
@@ -137,9 +142,23 @@ export default function DescargaDatosCard({
 
   return (
     <ChartCard
-      title="Descarga la base de datos completa"
-      subtitle={`Mediciones horarias de PM2.5 y PM10 de las ${estaciones.length} estaciones del SIMA en la Zona Metropolitana de Monterrey.`}
-      infoTab={INFO_TAB}
+      title="Datos abiertos"
+      subtitle={
+        <>
+          <div>
+            Mediciones horarias de PM2.5 y PM10 de las {estaciones.length} estaciones del SIMA en la Zona
+            Metropolitana de Monterrey.
+          </div>
+          <div className="mt-1">
+            <span className="font-medium text-gray-700">Periodo:</span> {mes(1)} {FIRST_YEAR} a {mes(ultimoMes)}{" "}
+            {ultimoAnio}
+            <span className="px-2 text-gray-300" aria-hidden>
+              ·
+            </span>
+            <span className="font-medium text-gray-700">Actualización:</span> mensual
+          </div>
+        </>
+      }
     >
       <div className="flex flex-col gap-5 px-5 py-5 lg:flex-row lg:flex-wrap lg:items-end">
         <Field label="Año">
@@ -178,6 +197,9 @@ export default function DescargaDatosCard({
             {filas.toLocaleString("es-MX")} mediciones, {periodo}
           </p>
         </div>
+      </div>
+      <div className="border-t border-gray-100 px-5 pb-5 pt-4">
+        <InfoTabs tabs={[...GENERAL_TABS, INFO_TAB]} />
       </div>
     </ChartCard>
   );

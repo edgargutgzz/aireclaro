@@ -48,18 +48,3 @@ export const fetchUltimoMes = cachedDatos(async (): Promise<{ ano: number; mes: 
   if (error) throw new Error(`Failed to load último mes: ${error.message}`);
   return data;
 }, "ultimo-mes");
-
-// The first month the /datos data starts from (PM2.5's, like fetchUltimoMes):
-// the start of the "Periodo" line in the page's "Sobre los datos" card.
-export const fetchPrimerMes = cachedDatos(async (): Promise<{ ano: number; mes: number } | null> => {
-  const { data, error } = await createPublicClient()
-    .from("sima_insalubres_mensual")
-    .select("ano, mes")
-    .eq("parametro", "PM2.5")
-    .order("ano", { ascending: true })
-    .order("mes", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw new Error(`Failed to load primer mes: ${error.message}`);
-  return data;
-}, "primer-mes");

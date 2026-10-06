@@ -1,13 +1,13 @@
 "use client";
 
 import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
-import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
+import type { InfoTab } from "@/components/datos/info-tabs";
 
 // The "learn more" tabs that apply to every /datos chart (where the data
 // comes from, the norm every chart applies, what PM2.5/PM10 are, what they
-// do to health), shown once in the "Sobre los datos" card instead of repeated under
+// do to health), shown once in the "Datos abiertos" card at the foot of /datos instead of repeated under
 // each chart. Each chart keeps only its own methodology.
-const TABS: InfoTab[] = [
+export const GENERAL_TABS: InfoTab[] = [
   {
     id: "fuente",
     label: "Datos oficiales",
@@ -84,7 +84,3 @@ const TABS: InfoTab[] = [
     ),
   },
 ];
-
-export default function DatosGeneralInfo() {
-  return <InfoTabs tabs={TABS} />;
-}

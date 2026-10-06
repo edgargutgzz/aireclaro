@@ -4,8 +4,6 @@ import { fetchUltimoMes } from "@/lib/datos-cache";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import { Suspense } from "react";
-import DatosAcerca from "@/components/datos/datos-acerca";
-import DatosAcercaSkeleton from "@/components/datos/datos-acerca-skeleton";
 import DiasInsalubres from "@/components/datos/dias-insalubres";
 import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton";
 import DiasInsalubresShareSkeleton from "@/components/datos/dias-insalubres-share-skeleton";
@@ -104,14 +102,9 @@ export default function Datos() {
             <PromedioAnualEstacion />
           </Suspense>
         </div>
-        <div className="mt-16">
-          <Suspense fallback={<DatosAcercaSkeleton />}>
-            <DatosAcerca />
-          </Suspense>
-        </div>
         {/* #descarga: the card's anchor for links from elsewhere; scroll-mt
             leaves a little air above it. */}
-        <div id="descarga" className="mt-8 scroll-mt-6">
+        <div id="descarga" className="mt-16 scroll-mt-6">
           <Suspense fallback={<DescargaDatosSkeleton />}>
             <DescargaDatos />
           </Suspense>

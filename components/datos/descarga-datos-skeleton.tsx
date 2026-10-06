@@ -10,7 +10,6 @@ export default function DescargaDatosSkeleton() {
           <SkeletonBlock className="h-5 w-64 max-w-full" />
           <SkeletonBlock className="h-4 w-96 max-w-full" />
         </div>
-        <SkeletonBlock className="h-8 w-32 rounded-xl" />
       </div>
       <div className="flex flex-col gap-5 px-5 py-5 lg:flex-row lg:items-end">
         {["w-32", "w-48", "w-64"].map((w) => (
@@ -20,6 +19,11 @@ export default function DescargaDatosSkeleton() {
           </div>
         ))}
         <SkeletonBlock className="h-10 w-40 rounded-xl lg:ml-auto" />
+      </div>
+      <div className="flex flex-wrap gap-3 border-t border-gray-100 px-5 pb-5 pt-4">
+        {["w-32", "w-32", "w-36", "w-36", "w-28"].map((w, i) => (
+          <SkeletonBlock key={i} className={`h-7 rounded-xl ${w}`} />
+        ))}
       </div>
     </div>
   );
