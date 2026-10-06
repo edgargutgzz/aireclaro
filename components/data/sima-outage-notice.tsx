@@ -2,8 +2,8 @@ import { Info } from "lucide-react";
 import { SIMA_OUTAGE_LINK, SIMA_OUTAGE_TEXT } from "@/lib/sima-outage";
 
 // The outage notice's text (lib/sima-outage.ts) with its info icon and the
-// link to the state's own site, sized for wherever it sits: under the
-// homepage ticker, in the map's legend panel, or as the mobile map pill.
+// link to the state's own site, sized for wherever it sits: the map's legend
+// panel (desktop) or under the mobile map pill.
 export default function SimaOutageNotice({ compact = false }: { compact?: boolean }) {
   return (
     <p className={`flex gap-2 text-gray-600 ${compact ? "text-[11px] leading-snug" : "text-[13px] leading-relaxed"}`}>

@@ -1,6 +1,6 @@
 // The notice shown when most official stations stop updating at once (a
 // network or transmission outage, like SINAICA's Nuevo León feed on
-// 2026-10-05/06), on the map and under the homepage ticker. It names what we
+// 2026-10-05/06), on the map only (the homepage ticker just grays out). It names what we
 // know for sure (the stations aren't updating in SINAICA, our source) and
 // where citizens can see the state's own data; it doesn't guess the cause.
 
