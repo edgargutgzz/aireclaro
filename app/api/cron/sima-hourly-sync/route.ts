@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/utils/supabase/service";
-import { monterreyNaiveNow } from "@/lib/monterrey-time";
+import { monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
 
 // The map's live SIMA feed: every hour, the latest PM2.5 hour SINAICA has
 // published today for each station, appended to sima_mediciones. Separate
@@ -11,6 +11,15 @@ import { monterreyNaiveNow } from "@/lib/monterrey-time";
 // time_stamp is when this job ran (naive Monterrey wall-clock), not the hour
 // the reading belongs to -- the convention the old job settled on after
 // trying both, and what the map's "latest per station" read expects.
+//
+// Because of that, a station whose latest SINAICA hour is old is skipped, not
+// written: otherwise, when a network stops reporting mid-day (Nuevo León on
+// 2026-10-05 from 10:00), every run re-stamps the same old value as current
+// and the map and the homepage ticker show it as live.
+
+// The newest hour SINAICA has for a station can be this far behind the run
+// before it counts as stale (normal publishing lag is 0-1 h).
+const MAX_LAG_MS = 3 * 60 * 60 * 1000;
 
 export const maxDuration = 120;
 
@@ -75,6 +84,8 @@ export async function GET(request: NextRequest) {
 
   const rows: { sensor_id: string; pm25: number; time_stamp: string }[] = [];
   const errors: string[] = [];
+  const stale: string[] = [];
+  const nowMs = parseMonterreyNaive(now).getTime();
 
   for (const estacion of estaciones) {
     try {
@@ -84,7 +95,11 @@ export async function GET(request: NextRequest) {
         null,
       );
       const pm25 = latest?.valor != null && latest.valor !== "" ? Number(latest.valor) : NaN;
-      if (Number.isFinite(pm25)) {
+      // The reading's hour, in the same naive Monterrey terms as `now`.
+      const readingMs = latest ? Date.parse(`${fecha}T00:00:00Z`) + Number(latest.hora) * 3_600_000 : NaN;
+      if (Number.isFinite(pm25) && nowMs - readingMs > MAX_LAG_MS) {
+        stale.push(`${estacion.sensor_id} (hora ${latest?.hora})`);
+      } else if (Number.isFinite(pm25)) {
         rows.push({ sensor_id: estacion.sensor_id, pm25: Math.round(pm25), time_stamp: timeStamp });
       }
     } catch (err) {
@@ -107,6 +122,8 @@ export async function GET(request: NextRequest) {
     timeStamp,
     estaciones: estaciones.length,
     rowsWritten: rows.length,
+    // Stations skipped because SINAICA's newest hour for them is too old.
+    stale,
     errors,
   });
 }
