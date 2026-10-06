@@ -19,9 +19,10 @@ import Link from "next/link";
 export interface TickerItem {
   id: string;
   nombre: string;
-  pm25: number;
-  // The map marker's own fill for this reading.
-  color: string;
+  // null: no reading from the last 3 hours ("sin datos").
+  pm25: number | null;
+  // The map marker's own fill for this reading; null draws the map's gray.
+  color: string | null;
 }
 
 function Items({
@@ -44,13 +45,19 @@ function Items({
             className="flex items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-1 text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
           >
             <span
-              className="h-2 w-2 shrink-0 rounded-full ring-1 ring-inset ring-black/10"
-              style={{ backgroundColor: item.color }}
+              className={`h-2 w-2 shrink-0 rounded-full ring-1 ring-inset ring-black/10 ${item.color ? "" : "bg-[#9ca3af]/50"}`}
+              style={item.color ? { backgroundColor: item.color } : undefined}
               aria-hidden
             />
             {item.nombre}
-            <span className="font-mono font-semibold text-gray-900">{item.pm25}</span>
-            <span className="sr-only">µg/m³</span>
+            {item.pm25 === null ? (
+              <span className="text-gray-400">sin datos</span>
+            ) : (
+              <>
+                <span className="font-mono font-semibold text-gray-900">{item.pm25}</span>
+                <span className="sr-only">µg/m³</span>
+              </>
+            )}
           </Link>
         </li>
       ))}
