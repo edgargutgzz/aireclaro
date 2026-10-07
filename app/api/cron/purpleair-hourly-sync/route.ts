@@ -15,7 +15,7 @@ import { monterreyNaiveNow } from "@/lib/monterrey-time";
 //   re-added under a new name). Each device is requested and written once,
 //   not once per row.
 // - estatus is only ever switched between "activo" and "inactivo". Any other
-//   value (e.g. "oculto" on a stale duplicate row) is a manual call this job
+//   value (e.g. "historico" on a moved/renamed device's old row) is a manual call this job
 //   never overwrites.
 // - A reading is written only when the device reported in the last hour,
 //   decided on this run's data, not on the status saved by the previous run.

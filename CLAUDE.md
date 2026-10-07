@@ -78,7 +78,10 @@ eviction), `pnpm install --force` rewrites every package in place.
 ## Hiding / showing a PurpleAir sensor
 
 Add / remove a `.neq("sensor_id", <id>)` line in
-`components/data/purple-air-sensors.tsx`.
+`components/data/purple-air-sensors.tsx`. A sensor that moved, was renamed
+or disappeared from PurpleAir is retired instead by setting its old row's
+`estatus` to `historico` in `purpleair_sensores` (the table is a history of
+every sensor; new location = new row with the same `sensor_id`).
 
 ## Environment variables
 

@@ -18,11 +18,12 @@ async function fetchPurpleAirSensors() {
     .neq("sensor_id", 286186) // García Online
     .neq("sensor_id", 267403) // Montenova International School
     .neq("sensor_id", 203629);
-  // Note: sensor_id 227913 has two rows in purpleair_sensores after the device
-  // was moved and renamed on PurpleAir (id=161 "Centro de Congresos", the stale
-  // one; id=193 "Explanada EGA Sombrillas", the live one). The ghost is handled
-  // by setting id=161 to estatus != "activo" in Supabase, not with a .neq here,
-  // so the live row keeps showing. Same duplicate-id shape on 221177 and 221261.
+  // purpleair_sensores is a history of every sensor ever registered: when a
+  // device moves or is renamed, a new row is added with the same sensor_id and
+  // the old row is set to estatus "historico" (kept, never shown, never touched
+  // by the hourly job). Done 2026-10-07 for ids 161, 138, 149 (old rows of
+  // 227913, 221177, 221261) and 194 (227867, gone from PurpleAir). The .neq
+  // list above is a separate, hand-kept hide list for live sensors.
 
   if (error) {
     console.error("PurpleAir Sensors fetch error:", error);
