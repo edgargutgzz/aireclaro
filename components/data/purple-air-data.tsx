@@ -1,14 +1,22 @@
 import { createPublicClient } from "@/utils/supabase/public";
 import { cachedMapData } from "./cache";
+import { monterreyNaiveHoursAgo } from "@/lib/monterrey-time";
 
 async function fetchPurpleAirData() {
   const supabase = createPublicClient();
 
+  // The last 3 hours only, the site's one "is this live?" rule (same window
+  // as the SIMA feed in sima-data.tsx). The job's activo/inactivo status only
+  // moves while the job runs; if it stops, or one sensor's request keeps
+  // failing, no new readings arrive and these age out, so the sensor stops
+  // being drawn instead of showing an old value as current. Naive Monterrey
+  // wall-clock, like time_stamp. ~150 readings an hour, well under the
+  // 1,000-row cap.
   const { data, error } = await supabase
     .from("purpleair_mediciones")
     .select("id, sensor_id, pm25, time_stamp")
-    .order("time_stamp", { ascending: false })
-    .limit(250);
+    .gte("time_stamp", monterreyNaiveHoursAgo(3))
+    .order("time_stamp", { ascending: false });
 
   if (error) {
     console.error("PurpleAir Data fetch error:", error);
