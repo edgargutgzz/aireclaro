@@ -73,6 +73,8 @@ eviction), `pnpm install --force` rewrites every package in place.
 | `README.md` | what the platform is, quickstart, the doc index |
 | `docs/architecture.md` | data model, ingestion boundary, domains + routing, map data flow, the GL marker field, API routes, URL-state model, `/datos` |
 | `docs/methodology.md` | how readings are presented, data sources & their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license/citation status |
+| `docs/sima-data-pipeline.md` | SIMA tables, the monthly sync, views, the /datos charts' rules, rounding, the public download |
+| `docs/purpleair-data-pipeline.md` | PurpleAir tables (the sensor history, `estatus`), the hourly job, what the map shows |
 | `.ai-style-guide.md` | the visual contract (tokens, spacing, component recipes) — consult for a new component or a token change |
 
 ## Hiding / showing a PurpleAir sensor
