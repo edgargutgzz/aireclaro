@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { ChevronRight, Layers, Wind, X } from "lucide-react";
 import mapboxgl, { Map, Marker } from "mapbox-gl";
+import { track } from "@vercel/analytics";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
@@ -59,6 +60,15 @@ import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 // without data.
 const DEFAULT_SENSOR_ID = "CE";
 const DEFAULT_MAX_AGE_MS = 3 * 60 * 60 * 1000;
+
+// Analytics: a station the visitor picked (map tap or the station list). The
+// default card and ?sensor= links aren't picks, so they aren't counted.
+function trackStationOpen(sensor: Sensor) {
+  track("estacion_abierta", {
+    estacion: sensor.nombre_display || sensor.nombre,
+    fuente: sensor.source,
+  });
+}
 
 function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefined {
   const obispado = candidates.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
@@ -894,6 +904,7 @@ export default function MapaSensors({
         setSelectedSensor(null);
         return;
       }
+      if (selectedIdRef.current !== sensor.sensor_id) trackStationOpen(sensor);
       setSelectedSensor(buildSelection(sensor, dataRef.current));
     };
     m.on("mousemove", FIELD_LAYER, onMove);
@@ -1014,6 +1025,7 @@ export default function MapaSensors({
 
   const selectFromList = useCallback(
     (s: Sensor) => {
+      if (selectedIdRef.current !== s.sensor_id) trackStationOpen(s);
       setSelectedSensor(buildSelection(s, dataRef.current));
       const m = map.current as any;
       if (!m) return;

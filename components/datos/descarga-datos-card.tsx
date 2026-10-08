@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowDownToLine, BookOpen } from "lucide-react";
+import { track } from "@vercel/analytics";
 import { MONTHS_ES_FULL } from "@/lib/dias-insalubres-aggregate";
 import InfoTabs, { type InfoTab } from "@/components/datos/info-tabs";
 import { GENERAL_TABS } from "@/components/datos/datos-general-info";
@@ -188,6 +189,7 @@ export default function DescargaDatosCard({
           <a
             href={href}
             download
+            onClick={() => track("descarga_csv", { anio, parametro, estacion })}
             className="flex h-10 w-fit items-center justify-center gap-1.5 rounded-xl bg-gray-800 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             <ArrowDownToLine className="h-4 w-4" aria-hidden />
