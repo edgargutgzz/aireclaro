@@ -156,10 +156,7 @@ export default function Biblioteca() {
     // lg+: the filters are a sidebar and the results take the rest of the
     // site's container; below that they stack, filters first.
     <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-12">
-      {/* lg+: fixed while the list scrolls. It's taller than most screens
-          (four filters), so it scrolls on its own; the px/-mx pair keeps
-          the focus rings from being clipped by that scroll box. */}
-      <div className="flex flex-col gap-4 lg:sticky lg:top-6 lg:-mx-2 lg:max-h-[calc(100svh-var(--header-h)-3rem)] lg:gap-8 lg:overflow-y-auto lg:overscroll-contain lg:px-2 lg:pb-2">
+      <div className="flex flex-col gap-4 lg:gap-8">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="publicaciones-buscar" className={labelClass}>
             Buscar
