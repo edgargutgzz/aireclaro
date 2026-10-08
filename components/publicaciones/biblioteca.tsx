@@ -240,11 +240,14 @@ export default function Biblioteca() {
       </div>
 
       <div className="mt-6 lg:mt-0">
-        <div className="flex items-center gap-3 text-xs text-gray-500" aria-live="polite">
+        {/* The page has no visible header, so this line also says whose
+            publications these are. */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600" aria-live="polite">
           <p>
-            {filtered
-              ? `${results.length} de ${publicaciones.length} publicaciones`
-              : `${publicaciones.length} publicaciones`}
+            <span className="font-semibold text-gray-800">
+              {filtered ? `${results.length} de ${publicaciones.length}` : publicaciones.length}
+            </span>{" "}
+            publicaciones del Observatorio
           </p>
           {filtered && (
             <button
