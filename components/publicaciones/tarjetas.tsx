@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FileText } from "lucide-react";
-import Avatares from "@/components/publicaciones/avatares";
-import { formatDate, photos, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
+import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The two ways a publication is listed: a card with its cover (the library's
 // "Lo más reciente", a page's "Más de…") and a row with a thumbnail (the
@@ -25,15 +24,10 @@ function Meta({ p }: { p: Publicacion }) {
   );
 }
 
-// "Uriel Chavarría", led by the authors' portraits when they have them (the
-// outlet is in the line above the title).
+// "Uriel Chavarría" (the outlet is in the line above the title). Portraits
+// are for the publication's own page only.
 function Byline({ p, className }: { p: Publicacion; className: string }) {
-  return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <Avatares fotos={photos(p)} size="sm" />
-      <p className="min-w-0 text-sm text-gray-600">{p.author}</p>
-    </div>
-  );
+  return <p className={`text-sm text-gray-600 ${className}`}>{p.author}</p>;
 }
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";

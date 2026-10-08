@@ -141,7 +141,7 @@ export default async function PublicacionPage({ params }: Props) {
 
           {fotos.length > 0 ? (
             <div className="flex items-center gap-4">
-              <Avatares fotos={fotos} size="lg" />
+              <Avatares fotos={fotos} />
               <p className="font-medium text-gray-800">
                 {p.people.map((name, i) => (
                   <span key={name}>
