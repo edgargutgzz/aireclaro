@@ -102,7 +102,7 @@ export default async function PublicacionPage({ params }: Props) {
   const outbound = p.file ?? p.externalUrl;
 
   return (
-    <div className="px-6 py-16 lg:px-8 lg:py-40">
+    <div className="px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
       <JsonLd data={structuredData(p)} />
       <article className="mx-auto max-w-3xl">
         <header className="mb-12">

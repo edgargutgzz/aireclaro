@@ -93,7 +93,7 @@ export default function Biblioteca() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div>
       <div className="flex flex-col gap-4 md:flex-row md:items-end">
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor="publicaciones-buscar" className={labelClass}>
