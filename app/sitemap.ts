@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { articulos } from "@/app/publicaciones/data";
+import { publicaciones } from "@/app/publicaciones/data";
 import { SITE_URL as BASE } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -13,10 +13,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/publicaciones`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/quienes-somos`, changeFrequency: "yearly", priority: 0.5 },
     { url: `${BASE}/equipo`, changeFrequency: "yearly", priority: 0.4 },
-    // Article pages exist only for columns with written content.
-    ...articulos.map((articulo) => ({
-      url: `${BASE}/publicaciones/${articulo.slug}`,
-      lastModified: articulo.date,
+    ...publicaciones.map((p) => ({
+      url: `${BASE}/publicaciones/${p.slug}`,
+      lastModified: p.date,
       changeFrequency: "yearly" as const,
       priority: 0.4,
     })),

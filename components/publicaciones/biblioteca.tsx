@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowUpRight, FileText, Search } from "lucide-react";
+import { FileText, Search } from "lucide-react";
 import SelectMenu from "@/components/datos/select-menu";
 import { TIPOS, formatDate, publicaciones, tipoLabel, type Publicacion, type Tipo } from "@/app/publicaciones/data";
 
@@ -25,7 +25,7 @@ function normalize(text: string): string {
 }
 
 const searchText = new Map(
-  publicaciones.map((p) => [p.key, normalize([p.title, p.author, p.outlet, tipoLabel(p.tipo)].join(" "))]),
+  publicaciones.map((p) => [p.slug, normalize([p.title, p.author, p.outlet, tipoLabel(p.tipo)].join(" "))]),
 );
 
 function readParams(): { tipo: Tipo | ""; anio: string; q: string } {
@@ -77,7 +77,7 @@ export default function Biblioteca() {
       (p) =>
         (!tipo || p.tipo === tipo) &&
         (!anio || p.year === Number(anio)) &&
-        words.every((w) => searchText.get(p.key)!.includes(w)),
+        words.every((w) => searchText.get(p.slug)!.includes(w)),
     );
   }, [tipo, anio, q]);
 
@@ -160,7 +160,7 @@ export default function Biblioteca() {
             </h2>
             <ul className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
               {items.map((p) => (
-                <li key={p.key} className="border-t border-gray-100 first:border-t-0">
+                <li key={p.slug} className="border-t border-gray-100 first:border-t-0">
                   <PublicacionRow publicacion={p} />
                 </li>
               ))}
@@ -175,40 +175,23 @@ export default function Biblioteca() {
 const ROW =
   "block px-5 py-4 transition-colors hover:bg-gray-100/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15";
 
+// Every row opens the item's page; the marker says what's behind it.
 function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
   const byline = [p.author, p.outlet].filter(Boolean).join(", ");
-  const body = (
-    <>
+  return (
+    <Link href={`/publicaciones/${p.slug}`} className={ROW}>
       <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-gray-500">
         <span>{tipoLabel(p.tipo)}</span>
-        {p.date && <span>· {formatDate(p.date)}</span>}
-        {p.format === "pdf" && (
+        {p.tipo === "columna" && p.date && <span>· {formatDate(p.date)}</span>}
+        {p.file && (
           <span className="inline-flex items-center gap-1">
             · <FileText className="h-3 w-3" aria-hidden /> PDF
           </span>
         )}
-        {p.format === "externo" && (
-          <span className="inline-flex items-center gap-1">
-            · Enlace externo <ArrowUpRight className="h-3 w-3" aria-hidden />
-          </span>
-        )}
+        {p.externalUrl && <span>· {p.outlet}</span>}
       </p>
       <p className="mt-1.5 text-base font-semibold leading-snug text-gray-800">{p.title}</p>
-      {byline && <p className="mt-1 text-sm text-gray-600">{byline}</p>}
-    </>
-  );
-
-  if (p.format === "articulo") {
-    return (
-      <Link href={p.href} className={ROW}>
-        {body}
-      </Link>
-    );
-  }
-  return (
-    <a href={p.href} target="_blank" rel="noopener noreferrer" className={ROW}>
-      {body}
-      <span className="sr-only"> (abre en una nueva pestaña)</span>
-    </a>
+      <p className="mt-1 text-sm text-gray-600">{byline}</p>
+    </Link>
   );
 }

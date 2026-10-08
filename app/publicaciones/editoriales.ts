@@ -2,8 +2,8 @@ import React from "react";
 
 // The Observatory's newspaper columns, one of the two sources merged into
 // /publicaciones (./data.ts). A column with written `content` gets its own
-// page (/publicaciones/[slug]); one with `pdfLink` opens the clipping, or the
-// outlet's own page when the link is external.
+// page with its full text; one with `pdfLink` gets a page that summarizes it
+// and links to the clipping, or to the outlet's own page.
 export interface Editorial {
   title: string;
   slug: string;
@@ -16,6 +16,9 @@ export interface Editorial {
   date: string; // "2026-08-30"
   content?: React.ReactNode;
   pdfLink?: string;
+  /** For a column without `content`: the deck printed under its byline,
+   *  verbatim (the Este País one, which has none, is described instead). */
+  summary?: string;
 }
 
 export const editoriales: Editorial[] = [
@@ -1543,6 +1546,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2025-02-16",
     pdfLink: "/editoriales/16feb2025.pdf",
+    summary: "Contra la contaminación debemos escoger muy bien la táctica y no distraernos.",
   },
   {
     title: "Por debajo de la alfombra...",
@@ -1555,6 +1559,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2025-01-19",
     pdfLink: "/editoriales/19ene2025.pdf",
+    summary: "Los ciudadanos seguimos en la indefensión ante las compañías contaminantes.",
   },
   {
     title: "Un 2025 para movilizarnos",
@@ -1567,6 +1572,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2025-01-12",
     pdfLink: "/editoriales/12ene2025.pdf",
+    summary: "Tenemos el tiempo contado frente al empeoramiento de la calidad del aire.",
   },
   {
     title: "Impuestos verdes y buen gobierno",
@@ -1579,6 +1585,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-12-15",
     pdfLink: "/editoriales/15dic2024.pdf",
+    summary: "Bien invertidos, los cobros verdes pueden revertir el deterioro ambiental.",
   },
   {
     title: "Días limpios, ciudades humanas",
@@ -1591,6 +1598,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-11-22",
     pdfLink: "/editoriales/22nov2024.pdf",
+    summary: "Ciudadanía informada y autoridad receptiva son un sólido binomio.",
   },
   {
     title: "Días sobre la norma, una verdad incómoda",
@@ -1603,6 +1611,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-11-03",
     pdfLink: "/editoriales/03nov2024.pdf",
+    summary: "Hay evidencia sobre el deterioro en salud asociado a la mala calidad del aire.",
   },
   {
     title: "Colaborar para prosperar",
@@ -1615,6 +1624,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-11-01",
     pdfLink: "/editoriales/01nov2024.pdf",
+    summary: "Para resolver problemas estructurales, necesitamos flexibilidad en objetivos.",
   },
   {
     title: "Octubre de cambios y marrones",
@@ -1627,6 +1637,7 @@ export const editoriales: Editorial[] = [
     newspaper: "ABC Noticias",
     date: "2024-10-10",
     pdfLink: "/editoriales/10oct2024.pdf",
+    summary: "La contaminación atmosférica es más visible en el otoño e invierno. En esta época estamos más expuestos.",
   },
   {
     title: "La docena de una ciudad razonable",
@@ -1776,6 +1787,7 @@ export const editoriales: Editorial[] = [
     newspaper: "ABC Noticias",
     date: "2024-08-30",
     pdfLink: "/editoriales/30ago2024.pdf",
+    summary: "Morelos fue el primer estado de nuestro país en implementar las zonas de bajas emisiones. ¿Qué espera Nuevo León para hacerlo?",
   },
   {
     title: "El espejismo de la abundancia",
@@ -1788,6 +1800,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-09-29",
     pdfLink: "/editoriales/29sep2024.pdf",
+    summary: "La percepción de seguridad hídrica enmascara temas de fondo aún sin resolver.",
   },
   {
     title: "Corredores verdes",
@@ -1800,6 +1813,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-08-09",
     pdfLink: "/editoriales/09ago2024.pdf",
+    summary: "Es posible transformar la ciudad gris y hostil en una biodiverciudad.",
   },
   {
     title: "Combustibles fósiles",
@@ -1812,6 +1826,7 @@ export const editoriales: Editorial[] = [
     newspaper: "ABC Noticias",
     date: "2024-07-22",
     pdfLink: "/editoriales/22jul2024.pdf",
+    summary: "¿Por qué seguimos refinando petróleo de forma tan ineficiente y contaminante dentro de nuestra zona metropolitana, donde viven y respiran millones de personas?",
   },
   {
     title: "Todo lo que sube tiene que bajar",
@@ -1824,6 +1839,7 @@ export const editoriales: Editorial[] = [
     newspaper: "ABC Noticias",
     date: "2024-06-25",
     pdfLink: "/editoriales/25jun2024.pdf",
+    summary: "Las partículas suspendidas son el principal factor de riesgo ambiental para la salud.",
   },
   {
     title: "El aire limpio nos dejaría vivir más",
@@ -1836,6 +1852,7 @@ export const editoriales: Editorial[] = [
     newspaper: "ABC Noticias",
     date: "2024-06-04",
     pdfLink: "/editoriales/04jun2024.pdf",
+    summary: "De eso depende en gran parte nuestra salud, calidad y esperanza de vida.",
   },
   {
     title: "Aire limpio, corazón contento",
@@ -1848,6 +1865,7 @@ export const editoriales: Editorial[] = [
     newspaper: "ABC Noticias",
     date: "2024-05-16",
     pdfLink: "/editoriales/16may2024.pdf",
+    summary: "La contaminación del aire: una amenaza para la salud de nuestros corazones.",
   },
   {
     title: "Vacíos y tolerancia",
@@ -1860,6 +1878,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-03-15",
     pdfLink: "/editoriales/15mar2024.pdf",
+    summary: "Mejorar la calidad del aire requiere voluntad política y participación ciudadana.",
   },
   {
     title: "Ozono: mejor arriba que abajo",
@@ -1872,6 +1891,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-03-12",
     pdfLink: "/editoriales/12mar2024.pdf",
+    summary: "Exponerse al ozono causa graves daños; refinemos la forma de transportarnos.",
   },
   {
     title: "Nuevo León y el viejo fantasma",
@@ -1884,6 +1904,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-03-03",
     pdfLink: "/editoriales/03mar2024.pdf",
+    summary: "Es urgente actualizar el programa de respuesta a contingencias atmosféricas.",
   },
   {
     title: "¡Gracias, refinería!",
@@ -1896,6 +1917,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-01-26",
     pdfLink: "/editoriales/26ene2024.pdf",
+    summary: "Dejemos de ser violentados pensando que las cosas van a cambiar. Es hora de apretar.",
   },
   {
     title: "Una Agencia del Aire",
@@ -1908,6 +1930,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2024-01-15",
     pdfLink: "/editoriales/15ene2024.pdf",
+    summary: "Requerimos de una Agencia con personalidad jurídica y potestad normativa en NL.",
   },
   {
     title: "Lo que se respira no se juzga",
@@ -1920,9 +1943,10 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2023-10-27",
     pdfLink: "/editoriales/27oct2023.pdf",
+    summary: "La contaminación citadina es evidente, pese a normas laxas de emisión de partículas.",
   },
   {
-    title: "Observatorios ciudadanos",
+    title: "Observatorios ciudadanos y buen gobierno",
     slug: "observatorios-ciudadanos",
     image: "/editoriales/19sep2023.webp",
     imageAlt: "Observatorios ciudadanos y buen gobierno",
@@ -1931,8 +1955,9 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "Este País",
     date: "2023-09-19",
-    pdfLink:
-      "https://estepais.com/ambiente/observatorios-ciudadanos-buen-gobierno/?sfnsn=scwspwa",
+    pdfLink: "https://estepais.com/ambiente/observatorios-ciudadanos-buen-gobierno/",
+    summary:
+      "El papel de los observatorios ciudadanos para reducir la brecha de información entre gobierno y ciudadanía y fortalecer la rendición de cuentas.",
   },
   {
     title: "¿Refinar o respirar?",
@@ -1945,6 +1970,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2023-06-09",
     pdfLink: "/editoriales/09jun2023.pdf",
+    summary: "Urge tecnología y reducir contaminantes de la refinería para proteger el aire limpio.",
   },
   {
     title: "Tengo un sueño para Monterrey",
@@ -1957,6 +1983,7 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2023-02-25",
     pdfLink: "/editoriales/25feb2023.pdf",
+    summary: "Me imagino una ciudad llena de vida, conocimiento, salud y prosperidad social.",
   },
   {
     title: "Pirotecnia",
@@ -1969,5 +1996,6 @@ export const editoriales: Editorial[] = [
     newspaper: "El Norte",
     date: "2019-12-29",
     pdfLink: "/editoriales/29dic2019.pdf",
+    summary: "La contaminación nos está matando. Aportemos no tronando \"cuetes\".",
   },
 ];

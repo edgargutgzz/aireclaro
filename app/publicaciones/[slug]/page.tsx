@@ -1,96 +1,182 @@
 import type { Metadata } from "next";
+import { statSync } from "node:fs";
+import path from "node:path";
 import { ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
+import Cita from "@/components/publicaciones/cita";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { articulos, formatDate, getArticulo } from "../data";
+import { ArrowUpRight, FileText } from "lucide-react";
+import {
+  OCCAMM,
+  citation,
+  displayDate,
+  getPublicacion,
+  pageUrl,
+  publicaciones,
+  tipoLabel,
+  type Publicacion,
+} from "../data";
 
-// A column's article page, for the columns with written content (PDF-only
-// ones open the PDF from the list). Any other slug is a static 404. Was
-// /editoriales/[slug], which redirects here (next.config.mjs).
+// One page per publication, all static. A column with written content shows
+// it in full; everything else shows its summary and opens the PDF (or the
+// outlet's page). Every page ends with a citation, so a link to it is
+// something people can cite. /editoriales/[slug] redirects here
+// (next.config.mjs); any slug not in ../data is a static 404.
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return articulos.map((articulo) => ({ slug: articulo.slug }));
+  return publicaciones.map((p) => ({ slug: p.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
-  const article = getArticulo((await params).slug);
-  if (!article) return {};
-  return pageMetadata({
-    title: article.title,
-    description: `${article.author}, ${article.newspaper}, ${formatDate(article.date)}.`,
-    path: `/publicaciones/${article.slug}`,
-    images: [{ url: article.image, alt: article.imageAlt }],
+type Props = { params: Promise<{ slug: string }> };
+
+function byline(p: Publicacion): string {
+  return [p.author, p.outlet].filter(Boolean).join(", ");
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const p = getPublicacion((await params).slug);
+  if (!p) return {};
+  const metadata = pageMetadata({
+    title: p.title,
+    description: p.summary ?? `${byline(p)}, ${displayDate(p)}.`,
+    path: `/publicaciones/${p.slug}`,
+    images: [{ url: p.image, alt: p.title }],
   });
+  // Google Scholar's tags, for the documents (the columns are news).
+  if (p.tipo !== "columna" && p.file) {
+    metadata.other = {
+      citation_title: p.title,
+      citation_author: p.author,
+      citation_publication_date: p.date?.replaceAll("-", "/") ?? String(p.year),
+      citation_pdf_url: `${SITE_URL}${p.file}`,
+      ...(p.outlet && { citation_journal_title: p.outlet }),
+      ...(p.doi && { citation_doi: p.doi }),
+    };
+  }
+  return metadata;
 }
 
-export default async function ArticlePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  const article = getArticulo(slug);
-  if (!article?.content) notFound();
+// "PDF · 3.4 MB · 22 páginas", read from public/ at build time.
+function pdfFacts(p: Publicacion): string {
+  const bytes = statSync(path.join(process.cwd(), "public", p.file!)).size;
+  const size = bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.round(bytes / 1e3)} KB`;
+  const pages = p.pages ? ` · ${p.pages} ${p.pages === 1 ? "página" : "páginas"}` : "";
+  return `PDF · ${size}${pages}`;
+}
 
-  const articleSchema = {
+function structuredData(p: Publicacion) {
+  const common = {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    image: `${SITE_URL}${article.image}`,
-    datePublished: article.date,
-    author: { "@type": "Person", name: article.author },
-    publisher: ORGANIZATION_REF,
-    url: `${SITE_URL}/publicaciones/${article.slug}`,
+    headline: p.title,
+    name: p.title,
+    description: p.summary,
+    image: `${SITE_URL}${p.image}`,
+    datePublished: p.date ?? String(p.year),
+    url: pageUrl(p),
     inLanguage: "es-MX",
   };
+  if (p.tipo === "columna") {
+    return { ...common, "@type": "Article", author: { "@type": "Person", name: p.author }, publisher: ORGANIZATION_REF };
+  }
+  return {
+    ...common,
+    "@type": p.doi ? "ScholarlyArticle" : "Report",
+    ...(p.author === OCCAMM && { author: ORGANIZATION_REF }),
+    ...(p.doi && { sameAs: `https://doi.org/${p.doi}` }),
+    encoding: { "@type": "MediaObject", contentUrl: `${SITE_URL}${p.file}`, encodingFormat: "application/pdf" },
+  };
+}
+
+const PRIMARY_BUTTON =
+  "inline-flex h-10 items-center gap-1.5 rounded-xl bg-gray-800 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+
+export default async function PublicacionPage({ params }: Props) {
+  const p = getPublicacion((await params).slug);
+  if (!p) notFound();
+
+  const outbound = p.file ?? p.externalUrl;
 
   return (
     <div className="px-6 py-16 lg:px-8 lg:py-40">
-      <JsonLd data={articleSchema} />
+      <JsonLd data={structuredData(p)} />
       <article className="mx-auto max-w-3xl">
         <header className="mb-12">
-          <h1 className="mb-6 text-3xl font-bold md:text-4xl">
-            {article.title}
-          </h1>
+          <p className="mb-4 text-sm text-gray-500">
+            {tipoLabel(p.tipo)} · {displayDate(p)}
+          </p>
+          <h1 className="mb-6 text-3xl font-bold md:text-4xl">{p.title}</h1>
 
-          <div className="mb-8 flex items-center gap-4">
-            <Image
-              src={article.authorProfile}
-              alt={article.authorProfileAlt}
-              width={96}
-              height={96}
-              className="h-12 w-12 rounded-full"
-            />
-            <div>
-              <p className="font-medium">{article.author}</p>
-              <p className="text-gray-600">
-                {article.newspaper} • {formatDate(article.date)}
-              </p>
+          {p.authorPhoto ? (
+            <div className="flex items-center gap-4">
+              <Image src={p.authorPhoto} alt="" width={96} height={96} className="h-12 w-12 rounded-full" />
+              <div>
+                <p className="font-medium">{p.author}</p>
+                {p.outlet && <p className="text-gray-600">{p.outlet}</p>}
+              </div>
             </div>
-          </div>
+          ) : (
+            <p className="text-gray-600">{byline(p)}</p>
+          )}
 
-          <Image
-            src={article.image}
-            alt={article.imageAlt}
-            width={1200}
-            height={675}
-            sizes="(min-width: 768px) 768px, 100vw"
-            preload
-            className="w-full rounded-xl shadow-md"
-          />
+          {p.summary && <p className="mt-8 text-lg leading-relaxed text-gray-700">{p.summary}</p>}
+
+          {outbound && (
+            <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <a href={outbound} target="_blank" rel="noopener noreferrer" className={PRIMARY_BUTTON}>
+                {p.file ? (
+                  <>
+                    <FileText className="h-4 w-4" aria-hidden /> Abrir PDF
+                  </>
+                ) : (
+                  <>
+                    Leer en {p.outlet} <ArrowUpRight className="h-4 w-4" aria-hidden />
+                  </>
+                )}
+                <span className="sr-only"> (abre en una nueva pestaña)</span>
+              </a>
+              {p.file && <span className="text-xs text-gray-500">{pdfFacts(p)}</span>}
+            </div>
+          )}
         </header>
 
-        <div className="prose prose-lg prose-headings:font-semibold prose-headings:text-gray-800 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600 prose-strong:font-semibold prose-strong:text-gray-800 prose-li:text-gray-700 prose-li:mb-2 prose-img:rounded-xl prose-img:shadow-md max-w-none">
-          {article.content}
+        {p.editorial ? (
+          <>
+            <Image
+              src={p.image}
+              alt={p.editorial.imageAlt}
+              width={1200}
+              height={675}
+              sizes="(min-width: 768px) 768px, 100vw"
+              preload
+              className="mb-12 w-full rounded-xl shadow-md"
+            />
+            <div className="prose prose-lg prose-headings:font-semibold prose-headings:text-gray-800 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600 prose-strong:font-semibold prose-strong:text-gray-800 prose-li:text-gray-700 prose-li:mb-2 prose-img:rounded-xl prose-img:shadow-md max-w-none">
+              {p.editorial.content}
+            </div>
+          </>
+        ) : (
+          // The cover (a document's first page, a column's clipping), as a
+          // preview that also opens it.
+          <a href={outbound} target="_blank" rel="noopener noreferrer" tabIndex={-1} aria-hidden="true">
+            <Image
+              src={p.image}
+              alt=""
+              width={1024}
+              height={576}
+              sizes="(min-width: 768px) 768px, 100vw"
+              preload
+              className="w-full rounded-xl shadow-md"
+            />
+          </a>
+        )}
+
+        <div className="mt-16">
+          <Cita text={citation(p)} />
         </div>
 
         <div className="mt-16 border-t border-gray-200 pt-8">
