@@ -1,43 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileText } from "lucide-react";
 import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The two ways a publication is listed: a card with its cover (the library's
 // "Lo más reciente", a page's "Más de…") and a row with a thumbnail (the
 // library's list). Shared so both pages show an item the same way.
 
-// "El Norte · 30 ago 2026 · PDF" for a column (the newspaper already says
-// it's an opinion piece, so no type label), "Informe · PDF" for a document:
-// where it ran first, then what it is, then what's behind it.
-function Meta({ p }: { p: Publicacion }) {
-  const parts: React.ReactNode[] = [];
-  if (p.outlet) parts.push(<span className="font-semibold text-gray-700">{p.outlet}</span>);
-  if (p.tipo !== "columna") parts.push(tipoLabel(p.tipo));
-  if (p.tipo === "columna" && p.date) parts.push(formatDate(p.date));
-  if (p.file) {
-    parts.push(
-      <span className="inline-flex items-center gap-1">
-        <FileText className="h-3 w-3" aria-hidden /> PDF
-      </span>,
-    );
-  }
+// Every item reads in three steps, the way opinion sections list columns:
+// who (the author, dark), what (the title, the largest), and where and when
+// (quiet, last). A column: "Uriel Chavarría" / title / "El Norte · 16 feb
+// 2025". A document, whose authors are often long organization names: its
+// type ("Informe") on top, and who signed it with the year at the bottom.
+// Portraits are for the publication's own page only.
+
+function Who({ p }: { p: Publicacion }) {
   return (
-    <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-gray-500">
-      {parts.map((part, i) => (
-        <span key={i}>
-          {i > 0 && "· "}
-          {part}
-        </span>
-      ))}
-    </p>
+    <p className="text-sm font-medium text-gray-800">{p.tipo === "columna" ? p.author : tipoLabel(p.tipo)}</p>
   );
 }
 
-// "Uriel Chavarría" (the outlet is in the line above the title). Portraits
-// are for the publication's own page only.
-function Byline({ p, className }: { p: Publicacion; className: string }) {
-  return <p className={`text-sm text-gray-600 ${className}`}>{p.author}</p>;
+function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
+  const where = p.tipo === "columna" ? p.outlet : [p.outlet, p.author].filter(Boolean).join(", ");
+  const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
+  return (
+    <p className={`text-xs text-gray-500 ${className}`}>
+      {where && <span className="font-medium text-gray-600">{where}</span>}
+      {where && " · "}
+      {when}
+    </p>
+  );
 }
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
@@ -58,9 +49,9 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
         className="aspect-video w-full object-cover"
       />
       <div className="flex flex-1 flex-col p-4">
-        <Meta p={p} />
-        <p className="mt-1.5 text-base font-semibold leading-snug text-gray-800 group-hover:text-gray-600">{p.title}</p>
-        <Byline p={p} className="mt-auto pt-3" />
+        <Who p={p} />
+        <p className="mt-1 text-lg font-semibold leading-snug text-gray-800 group-hover:text-gray-600">{p.title}</p>
+        <WhereWhen p={p} className="mt-auto pt-4" />
       </div>
     </Link>
   );
@@ -82,9 +73,9 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
         className="aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36"
       />
       <div className="min-w-0">
-        <Meta p={p} />
-        <p className="mt-1.5 text-base font-semibold leading-snug text-gray-800">{p.title}</p>
-        <Byline p={p} className="mt-1.5" />
+        <Who p={p} />
+        <p className="mt-0.5 text-base font-semibold leading-snug text-gray-800">{p.title}</p>
+        <WhereWhen p={p} className="mt-2" />
       </div>
     </Link>
   );
