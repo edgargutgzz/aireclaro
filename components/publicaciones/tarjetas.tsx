@@ -13,9 +13,14 @@ import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/dat
 // type ("Informe") on top, and who signed it with the year at the bottom.
 // Portraits are for the publication's own page only.
 
+// The style guide's eyebrow label (uppercase, tracked), in gray-500 rather
+// than its gray-400 because a name carries information: set apart from the
+// title by case, size and color, the way opinion sections set the columnist.
 function Who({ p }: { p: Publicacion }) {
   return (
-    <p className="text-sm font-medium text-gray-800">{p.tipo === "columna" ? p.author : tipoLabel(p.tipo)}</p>
+    <p className="text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500">
+      {p.tipo === "columna" ? p.author : tipoLabel(p.tipo)}
+    </p>
   );
 }
 
@@ -50,7 +55,7 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
       />
       <div className="flex flex-1 flex-col p-4">
         <Who p={p} />
-        <p className="mt-1 text-lg font-semibold leading-snug text-gray-800 group-hover:text-gray-600">{p.title}</p>
+        <p className="mt-1.5 text-lg font-semibold leading-snug text-gray-900 group-hover:text-gray-600">{p.title}</p>
         <WhereWhen p={p} className="mt-auto pt-4" />
       </div>
     </Link>
@@ -74,7 +79,7 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
       />
       <div className="min-w-0">
         <Who p={p} />
-        <p className="mt-0.5 text-base font-semibold leading-snug text-gray-800">{p.title}</p>
+        <p className="mt-1 text-base font-semibold leading-snug text-gray-900">{p.title}</p>
         <WhereWhen p={p} className="mt-2" />
       </div>
     </Link>
