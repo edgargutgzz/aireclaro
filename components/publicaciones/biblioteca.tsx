@@ -93,8 +93,10 @@ export default function Biblioteca() {
   };
 
   return (
-    <div>
-      <div className="flex flex-col gap-4 md:flex-row md:items-end">
+    // lg+: the filters are a sticky sidebar and the results take the rest of
+    // the site's container; below that they stack, filters first.
+    <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-12">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end lg:sticky lg:top-6 lg:flex-col lg:items-stretch">
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor="publicaciones-buscar" className={labelClass}>
             Buscar
@@ -111,7 +113,7 @@ export default function Biblioteca() {
             />
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 lg:flex-col">
           <div className="flex flex-1 flex-col gap-1.5 md:flex-none">
             <label htmlFor="publicaciones-tipo" className={labelClass}>
               Tipo
@@ -121,53 +123,55 @@ export default function Biblioteca() {
               options={TIPO_OPTIONS}
               value={tipo}
               onChange={setTipo}
-              className="md:w-52"
+              className="md:w-52 lg:w-full"
             />
           </div>
           <div className="flex flex-1 flex-col gap-1.5 md:flex-none">
             <label htmlFor="publicaciones-anio" className={labelClass}>
               Año
             </label>
-            <SelectMenu id="publicaciones-anio" options={YEAR_OPTIONS} value={anio} onChange={setAnio} className="md:w-40" />
+            <SelectMenu id="publicaciones-anio" options={YEAR_OPTIONS} value={anio} onChange={setAnio} className="md:w-40 lg:w-full" />
           </div>
         </div>
       </div>
 
-      <div className="mt-6 flex items-center gap-3 text-xs text-gray-500" aria-live="polite">
-        <p>
-          {filtered
-            ? `${results.length} de ${publicaciones.length} publicaciones`
-            : `${publicaciones.length} publicaciones`}
-        </p>
-        {filtered && (
-          <button
-            type="button"
-            onClick={clear}
-            className="rounded-xl font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          >
-            Quitar filtros
-          </button>
+      <div className="mt-6 lg:mt-0">
+        <div className="flex items-center gap-3 text-xs text-gray-500" aria-live="polite">
+          <p>
+            {filtered
+              ? `${results.length} de ${publicaciones.length} publicaciones`
+              : `${publicaciones.length} publicaciones`}
+          </p>
+          {filtered && (
+            <button
+              type="button"
+              onClick={clear}
+              className="rounded-xl font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            >
+              Quitar filtros
+            </button>
+          )}
+        </div>
+
+        {byYear.length === 0 ? (
+          <p className="mt-10 text-sm text-gray-600">No hay publicaciones con estos filtros.</p>
+        ) : (
+          byYear.map(({ year, items }) => (
+            <section key={year} className="mt-10 first-of-type:mt-4" aria-labelledby={`publicaciones-${year}`}>
+              <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-800">
+                {year}
+              </h2>
+              <ul className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                {items.map((p) => (
+                  <li key={p.slug} className="border-t border-gray-100 first:border-t-0">
+                    <PublicacionRow publicacion={p} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
         )}
       </div>
-
-      {byYear.length === 0 ? (
-        <p className="mt-10 text-sm text-gray-600">No hay publicaciones con estos filtros.</p>
-      ) : (
-        byYear.map(({ year, items }) => (
-          <section key={year} className="mt-10" aria-labelledby={`publicaciones-${year}`}>
-            <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-800">
-              {year}
-            </h2>
-            <ul className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-              {items.map((p) => (
-                <li key={p.slug} className="border-t border-gray-100 first:border-t-0">
-                  <PublicacionRow publicacion={p} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))
-      )}
     </div>
   );
 }
