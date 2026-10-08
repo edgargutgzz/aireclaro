@@ -61,10 +61,11 @@ const PRINCIPALES = [
   { href: "/mapa", label: "Mapa" },
 ];
 
-const PUBLICACIONES = [
+// The reading pages: plain links, first on desktop, after the main pages on
+// mobile. A dropdown for two items would only add a click.
+const LECTURA = [
+  { href: "/publicaciones", label: "Publicaciones" },
   { href: "/infografias", label: "Infografías" },
-  { href: "/editoriales", label: "Editoriales" },
-  { href: "/recursos", label: "Recursos" },
 ];
 
 const NOSOTROS = [
@@ -83,13 +84,11 @@ export default function Navbar() {
   const [menuState, setMenuState] = useState({
     isOpen: false,
     isSubmenuOpen: false,
-    isPublicacionesSubmenuOpen: false,
   });
 
   // Ref for detecting clicks outside of menu
   const menuRef = useRef<HTMLDivElement>(null);
-  // The dropdown buttons, so Escape can hand focus back to the one it closed.
-  const publicacionesButtonRef = useRef<HTMLButtonElement>(null);
+  // The dropdown's button, so Escape can hand focus back to it.
   const nosotrosButtonRef = useRef<HTMLButtonElement>(null);
 
   // The bar's bottom edge, where the mobile panel starts, measured on open so
@@ -111,16 +110,6 @@ export default function Navbar() {
     setMenuState((prev) => ({
       ...prev,
       isSubmenuOpen: !prev.isSubmenuOpen,
-      isPublicacionesSubmenuOpen: false,
-    }));
-  };
-
-  // Toggles the publicaciones submenu open/closed state
-  const togglePublicacionesSubmenu = () => {
-    setMenuState((prev) => ({
-      ...prev,
-      isPublicacionesSubmenuOpen: !prev.isPublicacionesSubmenuOpen,
-      isSubmenuOpen: false,
     }));
   };
 
@@ -131,22 +120,19 @@ export default function Navbar() {
         setMenuState({
           isOpen: false,
           isSubmenuOpen: false,
-          isPublicacionesSubmenuOpen: false,
         });
       }
     };
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        // Focus inside an open dropdown returns to its button.
+        // Focus inside the open dropdown returns to its button.
         const active = document.activeElement;
-        for (const button of [publicacionesButtonRef.current, nosotrosButtonRef.current]) {
-          if (button && active && button.parentElement?.contains(active)) button.focus();
-        }
+        const button = nosotrosButtonRef.current;
+        if (button && active && button.parentElement?.contains(active)) button.focus();
         setMenuState({
           isOpen: false,
           isSubmenuOpen: false,
-          isPublicacionesSubmenuOpen: false,
         });
       }
     };
@@ -172,7 +158,7 @@ export default function Navbar() {
 
   // Tabbing out of an open dropdown closes it.
   const closeOnFocusOut =
-    (key: "isSubmenuOpen" | "isPublicacionesSubmenuOpen") => (event: React.FocusEvent<HTMLDivElement>) => {
+    (key: "isSubmenuOpen") => (event: React.FocusEvent<HTMLDivElement>) => {
       if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
         setMenuState((prev) => (prev[key] ? { ...prev, [key]: false } : prev));
       }
@@ -183,7 +169,6 @@ export default function Navbar() {
     setMenuState({
       isOpen: false,
       isSubmenuOpen: false,
-      isPublicacionesSubmenuOpen: false,
     });
   };
 
@@ -205,40 +190,20 @@ export default function Navbar() {
             preload
           />
         </Link>
-        {/* Desktop menu (lg+): dropdowns for the two groups, then Mapa and Datos. */}
+        {/* Desktop menu (lg+): Publicaciones, Infografías, the Nosotros dropdown, then Mapa and Datos. */}
         <nav aria-label="Principal" className="hidden lg:flex lg:items-center lg:gap-10">
-          {/* Publicaciones */}
-          <div className="relative" onBlur={closeOnFocusOut("isPublicacionesSubmenuOpen")}>
-            <button
-              ref={publicacionesButtonRef}
-              onClick={togglePublicacionesSubmenu}
-              aria-expanded={menuState.isPublicacionesSubmenuOpen}
-              className={`flex items-center hover:text-gray-500 ${FOCUS} ${PUBLICACIONES.some((l) => isCurrent(l.href)) ? CURRENT : ""}`}
+          {/* Publicaciones, Infografías */}
+          {LECTURA.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              aria-current={current(l.href)}
+              className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+              onClick={handleLinkClick}
             >
-              Publicaciones
-              <ChevronDown
-                className={`ml-1 h-4 transition-transform ${menuState.isPublicacionesSubmenuOpen ? "rotate-180" : "rotate-0"}`}
-              />
-            </button>
-            {menuState.isPublicacionesSubmenuOpen && (
-              <div className={DROPDOWN}>
-                <ul>
-                  {PUBLICACIONES.map((l) => (
-                    <li key={l.href}>
-                      <Link
-                        href={l.href}
-                        aria-current={current(l.href)}
-                        className={`block w-fit py-2 hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-                        onClick={handleLinkClick}
-                      >
-                        {l.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+              {l.label}
+            </Link>
+          ))}
           {/* Nosotros */}
           <div className="relative" onBlur={closeOnFocusOut("isSubmenuOpen")}>
             <button
@@ -305,7 +270,7 @@ export default function Navbar() {
         {/* Mobile / tablet menu: a full-screen panel under the bar (inside
             menuRef, so a tap on a link isn't read as a tap outside). No
             accordions: every link visible at once, each group under a small gray
-            label (Explora, Publicaciones, Nosotros) so all three look alike. */}
+            label (Explora, Nosotros) so both look alike. */}
         {menuState.isOpen && (
           <nav
             id="menu-movil"
@@ -314,8 +279,7 @@ export default function Navbar() {
             className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
           >
             {[
-              { titulo: "Explora", links: PRINCIPALES },
-              { titulo: "Publicaciones", links: PUBLICACIONES },
+              { titulo: "Explora", links: [...PRINCIPALES, ...LECTURA] },
               { titulo: "Nosotros", links: NOSOTROS },
             ].map((grupo) => (
               <div key={grupo.titulo} className="mt-8 first:mt-2">

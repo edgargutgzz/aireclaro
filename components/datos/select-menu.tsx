@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 
-// A single-choice dropdown for /datos. Replaces a native <select>, whose open
+// A single-choice dropdown (/datos, /publicaciones). Replaces a native <select>, whose open
 // list is drawn by the OS and can't match the page (2026-10-01 feedback). The
 // list uses the same surface as DownloadImageMenu, and follows the WAI-ARIA
 // listbox pattern: arrows / Home / End move, Enter / Space pick, Escape or

@@ -5,18 +5,16 @@ import JsonLd from "@/components/json-ld";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { editoriales, editorialDateISO, formatEditorialDate, getArticleBySlug } from "../data";
+import { articulos, formatDate, getArticulo } from "../data";
 
-// Ported from observatoriodelaire.com/editoriales/[slug]. Only editorials with
-// written content get a page (PDF-only ones open the PDF from the list), and
-// any other slug is a static 404.
+// A column's article page, for the columns with written content (PDF-only
+// ones open the PDF from the list). Any other slug is a static 404. Was
+// /editoriales/[slug], which redirects here (next.config.mjs).
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return editoriales
-    .filter((editorial) => editorial.content)
-    .map((editorial) => ({ slug: editorial.slug }));
+  return articulos.map((articulo) => ({ slug: articulo.slug }));
 }
 
 export async function generateMetadata({
@@ -24,12 +22,12 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const article = getArticleBySlug((await params).slug);
+  const article = getArticulo((await params).slug);
   if (!article) return {};
   return pageMetadata({
     title: article.title,
-    description: `${article.author}, ${article.newspaper.replace(/^\P{L}+/u, "")}, ${formatEditorialDate(article.date)}.`,
-    path: `/editoriales/${article.slug}`,
+    description: `${article.author}, ${article.newspaper}, ${formatDate(article.date)}.`,
+    path: `/publicaciones/${article.slug}`,
     images: [{ url: article.image, alt: article.imageAlt }],
   });
 }
@@ -40,7 +38,7 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = getArticulo(slug);
   if (!article?.content) notFound();
 
   const articleSchema = {
@@ -48,10 +46,10 @@ export default async function ArticlePage({
     "@type": "Article",
     headline: article.title,
     image: `${SITE_URL}${article.image}`,
-    datePublished: editorialDateISO(article.date) ?? undefined,
+    datePublished: article.date,
     author: { "@type": "Person", name: article.author },
     publisher: ORGANIZATION_REF,
-    url: `${SITE_URL}/editoriales/${article.slug}`,
+    url: `${SITE_URL}/publicaciones/${article.slug}`,
     inLanguage: "es-MX",
   };
 
@@ -75,7 +73,7 @@ export default async function ArticlePage({
             <div>
               <p className="font-medium">{article.author}</p>
               <p className="text-gray-600">
-                {article.newspaper} • {formatEditorialDate(article.date)}
+                {article.newspaper} • {formatDate(article.date)}
               </p>
             </div>
           </div>
@@ -97,7 +95,7 @@ export default async function ArticlePage({
 
         <div className="mt-16 border-t border-gray-200 pt-8">
           <Link
-            href="/editoriales"
+            href="/publicaciones"
             className="inline-flex items-center rounded-xl border border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             <svg
@@ -113,7 +111,7 @@ export default async function ArticlePage({
                 clipRule="evenodd"
               />
             </svg>
-            Volver a editoriales
+            Volver a publicaciones
           </Link>
         </div>
       </article>

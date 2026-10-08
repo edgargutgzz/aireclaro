@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { editoriales, editorialDateISO } from "@/app/editoriales/data";
+import { articulos } from "@/app/publicaciones/data";
 import { SITE_URL as BASE } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -10,18 +10,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/proyectos`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/adopta-sensor`, changeFrequency: "yearly", priority: 0.6 },
     { url: `${BASE}/infografias`, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE}/editoriales`, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE}/recursos`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE}/publicaciones`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/quienes-somos`, changeFrequency: "yearly", priority: 0.5 },
     { url: `${BASE}/equipo`, changeFrequency: "yearly", priority: 0.4 },
-    // Article pages exist only for editorials with written content.
-    ...editoriales
-      .filter((editorial) => editorial.content)
-      .map((editorial) => ({
-        url: `${BASE}/editoriales/${editorial.slug}`,
-        lastModified: editorialDateISO(editorial.date) ?? undefined,
-        changeFrequency: "yearly" as const,
-        priority: 0.4,
-      })),
+    // Article pages exist only for columns with written content.
+    ...articulos.map((articulo) => ({
+      url: `${BASE}/publicaciones/${articulo.slug}`,
+      lastModified: articulo.date,
+      changeFrequency: "yearly" as const,
+      priority: 0.4,
+    })),
   ];
 }

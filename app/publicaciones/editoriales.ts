@@ -1,62 +1,21 @@
 import React from "react";
 
+// The Observatory's newspaper columns, one of the two sources merged into
+// /publicaciones (./data.ts). A column with written `content` gets its own
+// page (/publicaciones/[slug]); one with `pdfLink` opens the clipping, or the
+// outlet's own page when the link is external.
 export interface Editorial {
-  // Existing fields from current implementation
   title: string;
+  slug: string;
   image: string;
   imageAlt: string;
   author: string;
   authorProfile: string;
   authorProfileAlt: string;
   newspaper: string;
-  date: string;
-
-  // New fields
-  slug: string; // URL-friendly version of the title
-  content?: React.ReactNode; // Rich text content using JSX, made optional with ?
-  pdfLink?: string; // New optional field
-}
-
-// Helper function to create slugs
-export function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-");
-}
-
-// Helper function to get article by slug
-export function getArticleBySlug(slug: string): Editorial | undefined {
-  return editoriales.find((editorial) => editorial.slug === slug);
-}
-
-// `date` is written "Mon D, YYYY" with the month abbreviated in English or
-// Spanish depending on the entry ("Aug 30, 2026", "Ene 11, 2026"). Shown
-// uniformly in Spanish: "30 ago 2026". Anything unparseable is shown as-is.
-const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-const EN_MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-
-function parseEditorialDate(date: string): { year: number; month: number; day: number } | null {
-  const match = /^([A-Za-z]{3})\w*\.? (\d{1,2}), (\d{4})$/.exec(date.trim());
-  if (!match) return null;
-  const mon = match[1].toLowerCase();
-  const i = MONTHS.indexOf(mon) >= 0 ? MONTHS.indexOf(mon) : EN_MONTHS.indexOf(mon);
-  if (i < 0) return null;
-  return { year: Number(match[3]), month: i + 1, day: Number(match[2]) };
-}
-
-export function formatEditorialDate(date: string): string {
-  const parsed = parseEditorialDate(date);
-  if (!parsed) return date;
-  return `${parsed.day} ${MONTHS[parsed.month - 1]} ${parsed.year}`;
-}
-
-// "2026-08-30", for structured data. Null when the date doesn't parse.
-export function editorialDateISO(date: string): string | null {
-  const parsed = parseEditorialDate(date);
-  if (!parsed) return null;
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${parsed.year}-${pad(parsed.month)}-${pad(parsed.day)}`;
+  date: string; // "2026-08-30"
+  content?: React.ReactNode;
+  pdfLink?: string;
 }
 
 export const editoriales: Editorial[] = [
@@ -68,8 +27,8 @@ export const editoriales: Editorial[] = [
     author: "Uriel Chavarría",
     authorProfile: "/equipo/uriel.webp",
     authorProfileAlt: "Uriel Chavarría",
-    newspaper: "📰 El Norte",
-    date: "Aug 30, 2026",
+    newspaper: "El Norte",
+    date: "2026-08-30",
     content: React.createElement(
       React.Fragment,
       null,
@@ -172,8 +131,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 El Norte",
-    date: "Jul 12, 2026",
+    newspaper: "El Norte",
+    date: "2026-07-12",
     content: React.createElement(
       React.Fragment,
       null,
@@ -199,8 +158,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 ABC Noticias",
-    date: "Apr 15, 2026",
+    newspaper: "ABC Noticias",
+    date: "2026-04-15",
     content: React.createElement(
       React.Fragment,
       null,
@@ -269,8 +228,8 @@ export const editoriales: Editorial[] = [
     author: "Ana Cristina García Luna",
     authorProfile: "/equipo/ana.webp",
     authorProfileAlt: "Ana Cristina García Luna",
-    newspaper: "📰 El Norte",
-    date: "Mar 8, 2026",
+    newspaper: "El Norte",
+    date: "2026-03-08",
     content: React.createElement(
       React.Fragment,
       null,
@@ -367,8 +326,8 @@ export const editoriales: Editorial[] = [
     author: "Ana Cristina García Luna",
     authorProfile: "/equipo/ana.webp",
     authorProfileAlt: "Ana Cristina García Luna",
-    newspaper: "📰 El Norte",
-    date: "Ene 11, 2026",
+    newspaper: "El Norte",
+    date: "2026-01-11",
     content: React.createElement(
       React.Fragment,
       null,
@@ -482,8 +441,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Nov 23, 2025",
+    newspaper: "El Norte",
+    date: "2025-11-23",
     content: React.createElement(
       React.Fragment,
       null,
@@ -537,8 +496,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 El Norte",
-    date: "Oct 26, 2025",
+    newspaper: "El Norte",
+    date: "2025-10-26",
     content: React.createElement(
       React.Fragment,
       null,
@@ -627,8 +586,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Oct 05, 2025",
+    newspaper: "El Norte",
+    date: "2025-10-05",
     content: React.createElement(
       React.Fragment,
       null,
@@ -727,8 +686,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 Consejo Cívico",
-    date: "Sep 07, 2025",
+    newspaper: "Consejo Cívico",
+    date: "2025-09-07",
     content: React.createElement(
       React.Fragment,
       null,
@@ -797,8 +756,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Jul 08, 2025",
+    newspaper: "El Norte",
+    date: "2025-07-08",
     content: React.createElement(
       React.Fragment,
       null,
@@ -888,8 +847,8 @@ export const editoriales: Editorial[] = [
     author: "Ana Cristina García Luna",
     authorProfile: "/equipo/ana.webp",
     authorProfileAlt: "Ana Cristina García Luna",
-    newspaper: "📰 El Norte",
-    date: "Jun 06, 2025",
+    newspaper: "El Norte",
+    date: "2025-06-06",
     content: React.createElement(
       React.Fragment,
       null,
@@ -998,8 +957,8 @@ export const editoriales: Editorial[] = [
     author: "Uriel Chavarría",
     authorProfile: "/equipo/uriel.webp",
     authorProfileAlt: "Uriel Chavarría",
-    newspaper: "📰 El Norte",
-    date: "May 18, 2025",
+    newspaper: "El Norte",
+    date: "2025-05-18",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1088,8 +1047,8 @@ export const editoriales: Editorial[] = [
     author: "Selene Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene Guajardo",
-    newspaper: "📰 El Norte",
-    date: "May 02, 2025",
+    newspaper: "El Norte",
+    date: "2025-05-02",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1163,8 +1122,8 @@ export const editoriales: Editorial[] = [
     author: "Selene Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene Guajardo",
-    newspaper: "📰 ABC Noticias",
-    date: "Abr 30, 2025",
+    newspaper: "ABC Noticias",
+    date: "2025-04-30",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1263,8 +1222,8 @@ export const editoriales: Editorial[] = [
     author: "Uriel Chavarría",
     authorProfile: "/equipo/uriel.webp",
     authorProfileAlt: "Uriel Chavarría",
-    newspaper: "📰 El Norte",
-    date: "Abr 06, 2025",
+    newspaper: "El Norte",
+    date: "2025-04-06",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1373,8 +1332,8 @@ export const editoriales: Editorial[] = [
     author: "Ana Cristina García Luna",
     authorProfile: "/equipo/ana.webp",
     authorProfileAlt: "Ana Cristina García Luna",
-    newspaper: "📰 El Norte",
-    date: "Mar 09, 2025",
+    newspaper: "El Norte",
+    date: "2025-03-09",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1453,8 +1412,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Mar 07, 2025",
+    newspaper: "El Norte",
+    date: "2025-03-07",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1581,8 +1540,8 @@ export const editoriales: Editorial[] = [
     author: "Uriel Chavarría",
     authorProfile: "/equipo/uriel.webp",
     authorProfileAlt: "Uriel Chavarría",
-    newspaper: "📰 El Norte",
-    date: "Feb 16, 2025",
+    newspaper: "El Norte",
+    date: "2025-02-16",
     pdfLink: "/editoriales/16feb2025.pdf",
   },
   {
@@ -1593,8 +1552,8 @@ export const editoriales: Editorial[] = [
     author: "Uriel Chavarría",
     authorProfile: "/equipo/uriel.webp",
     authorProfileAlt: "Uriel Chavarría",
-    newspaper: "📰 El Norte",
-    date: "Ene 19, 2025",
+    newspaper: "El Norte",
+    date: "2025-01-19",
     pdfLink: "/editoriales/19ene2025.pdf",
   },
   {
@@ -1605,8 +1564,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 El Norte",
-    date: "Ene 12, 2025",
+    newspaper: "El Norte",
+    date: "2025-01-12",
     pdfLink: "/editoriales/12ene2025.pdf",
   },
   {
@@ -1617,8 +1576,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Dic 15, 2024",
+    newspaper: "El Norte",
+    date: "2024-12-15",
     pdfLink: "/editoriales/15dic2024.pdf",
   },
   {
@@ -1629,8 +1588,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Nov 22, 2024",
+    newspaper: "El Norte",
+    date: "2024-11-22",
     pdfLink: "/editoriales/22nov2024.pdf",
   },
   {
@@ -1641,8 +1600,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 El Norte",
-    date: "Nov 3, 2024",
+    newspaper: "El Norte",
+    date: "2024-11-03",
     pdfLink: "/editoriales/03nov2024.pdf",
   },
   {
@@ -1653,8 +1612,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Nov 1, 2024",
+    newspaper: "El Norte",
+    date: "2024-11-01",
     pdfLink: "/editoriales/01nov2024.pdf",
   },
   {
@@ -1665,8 +1624,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 ABC Noticias",
-    date: "Oct 10, 2024",
+    newspaper: "ABC Noticias",
+    date: "2024-10-10",
     pdfLink: "/editoriales/10oct2024.pdf",
   },
   {
@@ -1677,8 +1636,8 @@ export const editoriales: Editorial[] = [
     author: "Gabriel Todd",
     authorProfile: "/equipo/gabriel.webp",
     authorProfileAlt: "Gabriel Todd",
-    newspaper: "📰 ABC Noticias",
-    date: "Sep 3, 2024",
+    newspaper: "ABC Noticias",
+    date: "2024-09-03",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1814,8 +1773,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 ABC Noticias",
-    date: "Ago 30, 2024",
+    newspaper: "ABC Noticias",
+    date: "2024-08-30",
     pdfLink: "/editoriales/30ago2024.pdf",
   },
   {
@@ -1826,8 +1785,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Sep 29, 2024",
+    newspaper: "El Norte",
+    date: "2024-09-29",
     pdfLink: "/editoriales/29sep2024.pdf",
   },
   {
@@ -1838,8 +1797,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Ago 9, 2024",
+    newspaper: "El Norte",
+    date: "2024-08-09",
     pdfLink: "/editoriales/09ago2024.pdf",
   },
   {
@@ -1850,8 +1809,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 ABC Noticias",
-    date: "Jul 22, 2024",
+    newspaper: "ABC Noticias",
+    date: "2024-07-22",
     pdfLink: "/editoriales/22jul2024.pdf",
   },
   {
@@ -1862,8 +1821,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 ABC Noticias",
-    date: "Jun 25, 2024",
+    newspaper: "ABC Noticias",
+    date: "2024-06-25",
     pdfLink: "/editoriales/25jun2024.pdf",
   },
   {
@@ -1874,8 +1833,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 ABC Noticias",
-    date: "Jun 4, 2024",
+    newspaper: "ABC Noticias",
+    date: "2024-06-04",
     pdfLink: "/editoriales/04jun2024.pdf",
   },
   {
@@ -1886,8 +1845,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 ABC Noticias",
-    date: "May 16, 2024",
+    newspaper: "ABC Noticias",
+    date: "2024-05-16",
     pdfLink: "/editoriales/16may2024.pdf",
   },
   {
@@ -1898,8 +1857,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Mar 15, 2024",
+    newspaper: "El Norte",
+    date: "2024-03-15",
     pdfLink: "/editoriales/15mar2024.pdf",
   },
   {
@@ -1910,8 +1869,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 El Norte",
-    date: "Mar 12, 2024",
+    newspaper: "El Norte",
+    date: "2024-03-12",
     pdfLink: "/editoriales/12mar2024.pdf",
   },
   {
@@ -1922,8 +1881,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 El Norte",
-    date: "Mar 3, 2024",
+    newspaper: "El Norte",
+    date: "2024-03-03",
     pdfLink: "/editoriales/03mar2024.pdf",
   },
   {
@@ -1934,8 +1893,8 @@ export const editoriales: Editorial[] = [
     author: "Uriel Chavarría",
     authorProfile: "/equipo/uriel.webp",
     authorProfileAlt: "Uriel Chavarría",
-    newspaper: "📰 El Norte",
-    date: "Ene 26, 2024",
+    newspaper: "El Norte",
+    date: "2024-01-26",
     pdfLink: "/editoriales/26ene2024.pdf",
   },
   {
@@ -1946,8 +1905,8 @@ export const editoriales: Editorial[] = [
     author: "Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/lorenzo.webp",
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
-    newspaper: "📰 El Norte",
-    date: "Ene 15, 2024",
+    newspaper: "El Norte",
+    date: "2024-01-15",
     pdfLink: "/editoriales/15ene2024.pdf",
   },
   {
@@ -1958,8 +1917,8 @@ export const editoriales: Editorial[] = [
     author: "Uriel Chavarría",
     authorProfile: "/equipo/uriel.webp",
     authorProfileAlt: "Uriel Chavarría",
-    newspaper: "📰 El Norte",
-    date: "Oct 27, 2023",
+    newspaper: "El Norte",
+    date: "2023-10-27",
     pdfLink: "/editoriales/27oct2023.pdf",
   },
   {
@@ -1970,8 +1929,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo y Lorenzo J. de Rosenzweig",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 Este País",
-    date: "Sep 19, 2023",
+    newspaper: "Este País",
+    date: "2023-09-19",
     pdfLink:
       "https://estepais.com/ambiente/observatorios-ciudadanos-buen-gobierno/?sfnsn=scwspwa",
   },
@@ -1983,8 +1942,8 @@ export const editoriales: Editorial[] = [
     author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
     authorProfileAlt: "Selene M. Guajardo",
-    newspaper: "📰 El Norte",
-    date: "Jun 9, 2023",
+    newspaper: "El Norte",
+    date: "2023-06-09",
     pdfLink: "/editoriales/09jun2023.pdf",
   },
   {
@@ -1995,8 +1954,8 @@ export const editoriales: Editorial[] = [
     author: "Alberto E. Garza Santos",
     authorProfile: "/equipo/alberto.webp",
     authorProfileAlt: "Alberto E. Garza Santos",
-    newspaper: "📰 El Norte",
-    date: "Feb 25, 2023",
+    newspaper: "El Norte",
+    date: "2023-02-25",
     pdfLink: "/editoriales/25feb2023.pdf",
   },
   {
@@ -2007,8 +1966,8 @@ export const editoriales: Editorial[] = [
     author: "Uriel Chavarría",
     authorProfile: "/equipo/uriel.webp",
     authorProfileAlt: "Uriel Chavarría",
-    newspaper: "📰 El Norte",
-    date: "Dec 29, 2019",
+    newspaper: "El Norte",
+    date: "2019-12-29",
     pdfLink: "/editoriales/29dic2019.pdf",
   },
 ];
