@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { FileText, Search } from "lucide-react";
 import SelectMenu from "@/components/datos/select-menu";
-import { PERSONAS, TIPOS, formatDate, publicaciones, tipoLabel, type Publicacion, type Tipo } from "@/app/publicaciones/data";
+import Avatares from "@/components/publicaciones/avatares";
+import { PERSONAS, TIPOS, formatDate, photos, publicaciones, tipoLabel, type Publicacion, type Tipo } from "@/app/publicaciones/data";
 
 // The /publicaciones library: search, type, year and author filters over every
 // publication, grouped by year, newest first. Unfiltered, the three newest
@@ -350,8 +351,14 @@ function Meta({ p }: { p: Publicacion }) {
   );
 }
 
-function byline(p: Publicacion): string {
-  return [p.author, p.outlet].filter(Boolean).join(", ");
+// "Uriel Chavarría, El Norte", led by the authors' portraits when they have them.
+function Byline({ p, className }: { p: Publicacion; className: string }) {
+  return (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <Avatares fotos={photos(p)} size="sm" />
+      <p className="min-w-0 text-sm text-gray-600">{[p.author, p.outlet].filter(Boolean).join(", ")}</p>
+    </div>
+  );
 }
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
@@ -374,7 +381,7 @@ function PublicacionCard({ publicacion: p, priority }: { publicacion: Publicacio
       <div className="flex flex-1 flex-col p-4">
         <Meta p={p} />
         <p className="mt-1.5 text-base font-semibold leading-snug text-gray-800 group-hover:text-gray-600">{p.title}</p>
-        <p className="mt-auto pt-2 text-sm text-gray-600">{byline(p)}</p>
+        <Byline p={p} className="mt-auto pt-3" />
       </div>
     </Link>
   );
@@ -398,7 +405,7 @@ function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
       <div className="min-w-0">
         <Meta p={p} />
         <p className="mt-1.5 text-base font-semibold leading-snug text-gray-800">{p.title}</p>
-        <p className="mt-1 text-sm text-gray-600">{byline(p)}</p>
+        <Byline p={p} className="mt-1.5" />
       </div>
     </Link>
   );

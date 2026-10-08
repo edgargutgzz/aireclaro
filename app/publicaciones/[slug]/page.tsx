@@ -4,6 +4,7 @@ import path from "node:path";
 import { ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
+import Avatares from "@/components/publicaciones/avatares";
 import Cita from "@/components/publicaciones/cita";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +16,7 @@ import {
   displayDate,
   getPublicacion,
   pageUrl,
+  photos,
   publicaciones,
   tipoLabel,
   type Publicacion,
@@ -111,9 +113,9 @@ export default async function PublicacionPage({ params }: Props) {
           </p>
           <h1 className="mb-6 text-3xl font-bold md:text-4xl">{p.title}</h1>
 
-          {p.authorPhoto ? (
+          {photos(p).length > 0 ? (
             <div className="flex items-center gap-4">
-              <Image src={p.authorPhoto} alt="" width={96} height={96} className="h-12 w-12 rounded-full" />
+              <Avatares fotos={photos(p)} size="lg" />
               <div>
                 <p className="font-medium">{p.author}</p>
                 {p.outlet && <p className="text-gray-600">{p.outlet}</p>}

@@ -37,8 +37,6 @@ export type Publicacion = {
   /** The people among the authors, one name each, for the Autoría filter
    *  (organizations aren't listed). A column's come from its byline. */
   people: string[];
-  /** A column author's portrait. */
-  authorPhoto?: string;
   /** The author as cited ("Chavarría, U."), when it differs from `author`. */
   citeAuthor?: string;
   /** Where it was published (newspaper, journal), if not by the Observatory. */
@@ -268,7 +266,6 @@ function fromEditorial(e: Editorial): Publicacion {
     date: e.date,
     author: e.author,
     people: e.author.split(" y ").map((name) => name.trim()),
-    authorPhoto: e.authorProfile,
     citeAuthor: citeName(e.author),
     outlet: e.newspaper,
     summary: e.summary,
@@ -321,6 +318,20 @@ export const PERSONAS = (() => {
   for (const p of publicaciones) for (const name of p.people) counts.set(name, (counts.get(name) ?? 0) + 1);
   return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "es")).map(([name]) => name);
 })();
+
+// Portraits (public/equipo), by the names in `people`: each columnist's from
+// their own columns, plus Horacio Riojas from /equipo. Shown only when every
+// person on an item has one (see `photos`), so a multi-author document never
+// shows one face as if that person led it.
+const PHOTOS = new Map<string, string>([
+  ...editoriales.filter((e) => !e.author.includes(" y ")).map((e): [string, string] => [e.author, e.authorProfile]),
+  ["Horacio Riojas", "/equipo/horacio.webp"],
+]);
+
+export function photos(p: Publicacion): { name: string; src: string }[] {
+  if (p.people.length === 0 || !p.people.every((name) => PHOTOS.has(name))) return [];
+  return p.people.map((name) => ({ name, src: PHOTOS.get(name)! }));
+}
 
 export function getPublicacion(slug: string): Publicacion | undefined {
   return publicaciones.find((p) => p.slug === slug);
