@@ -260,9 +260,12 @@ export default function Biblioteca() {
           )}
         </div>
 
-        {/* The newest as cards (no label), then the list grouped by year. */}
+        {/* The newest as cards, then the list grouped by year. */}
         {featured.length > 0 && (
-          <section aria-label="Lo más reciente" className="mt-4">
+          <section aria-labelledby="publicaciones-recientes" className="mt-4">
+            <h2 id="publicaciones-recientes" className="mb-3 text-sm font-semibold text-gray-800">
+              Lo más reciente
+            </h2>
             <ul className="grid gap-4 sm:grid-cols-3">
               {featured.map((p, i) => (
                 <li key={p.slug}>
