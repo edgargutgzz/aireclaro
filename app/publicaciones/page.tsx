@@ -8,7 +8,7 @@ import Biblioteca from "@/components/publicaciones/biblioteca";
 // header, the way /datos starts with its content (same container and top
 // padding as /datos and the navbar, so the edges line up).
 
-const LEAD = "Columnas, estudios y posicionamientos en los que ha participado el Observatorio.";
+const LEAD = "Columnas, estudios y posicionamientos sobre la calidad del aire.";
 
 export const metadata: Metadata = pageMetadata({
   title: "Publicaciones",
