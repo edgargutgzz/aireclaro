@@ -333,6 +333,42 @@ export function photos(p: Publicacion): { name: string; src: string }[] {
   return p.people.map((name) => ({ name, src: PHOTOS.get(name)! }));
 }
 
+// Lowercase, accents dropped, so a search for "futbol" finds "fútbol".
+export function normalize(text: string): string {
+  return text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+}
+
+// A person's ?autor= / an outlet's ?medio= value on /publicaciones:
+// "Selene M. Guajardo" → "selene-m-guajardo", "El Norte" → "el-norte".
+export function urlKey(name: string): string {
+  return normalize(name).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+// The end of a publication's page: up to three more by the same person (a
+// single author with other work), else the newest of the same type.
+export function relacionadas(p: Publicacion): { title: string; items: Publicacion[]; more?: { href: string; label: string } } {
+  const others = publicaciones.filter((o) => o.slug !== p.slug);
+  if (p.people.length === 1) {
+    const [name] = p.people;
+    const theirs = others.filter((o) => o.people.includes(name));
+    if (theirs.length > 0) {
+      return {
+        title: `Más de ${name}`,
+        items: theirs.slice(0, 3),
+        more:
+          theirs.length > 3
+            ? { href: `/publicaciones?autor=${urlKey(name)}`, label: `Ver sus ${theirs.length + 1} publicaciones` }
+            : undefined,
+      };
+    }
+  }
+  return {
+    title: "Más publicaciones",
+    items: others.filter((o) => o.tipo === p.tipo).slice(0, 3),
+    more: { href: "/publicaciones", label: "Ver todas las publicaciones" },
+  };
+}
+
 export function getPublicacion(slug: string): Publicacion | undefined {
   return publicaciones.find((p) => p.slug === slug);
 }

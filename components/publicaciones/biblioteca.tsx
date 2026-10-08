@@ -1,12 +1,19 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { FileText, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import SelectMenu from "@/components/datos/select-menu";
-import Avatares from "@/components/publicaciones/avatares";
-import { PERSONAS, TIPOS, formatDate, photos, publicaciones, tipoLabel, type Publicacion, type Tipo } from "@/app/publicaciones/data";
+import { PublicacionCard, PublicacionRow } from "@/components/publicaciones/tarjetas";
+import {
+  PERSONAS,
+  TIPOS,
+  normalize,
+  publicaciones,
+  tipoLabel,
+  urlKey,
+  type Publicacion,
+  type Tipo,
+} from "@/app/publicaciones/data";
 
 // The /publicaciones library: search, type, outlet, author and year filters over every
 // publication, grouped by year, newest first. Unfiltered, the three newest
@@ -28,24 +35,12 @@ import { PERSONAS, TIPOS, formatDate, photos, publicaciones, tipoLabel, type Pub
 const YEARS = [...new Set(publicaciones.map((p) => p.year))];
 const FEATURED = 3;
 
-// Lowercase, accents dropped, so "contingencias" finds "Contingencias" and
-// "fútbol" finds "futbol".
-function normalize(text: string): string {
-  return text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
-}
-
 const searchText = new Map(
   publicaciones.map((p) => [
     p.slug,
     normalize([p.title, p.author, ...p.people, p.outlet, tipoLabel(p.tipo)].join(" ")),
   ]),
 );
-
-// A person's ?autor= / an outlet's ?medio= value: "Selene M. Guajardo" →
-// "selene-m-guajardo", "El Norte" → "el-norte".
-function urlKey(name: string): string {
-  return normalize(name).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
 
 const PERSON_KEYS = new Set(PERSONAS.map(urlKey));
 
@@ -390,83 +385,5 @@ function Facet<T extends string>({
         </button>
       )}
     </div>
-  );
-}
-
-// "El Norte · Columna de opinión · 30 ago 2026 · PDF": where it ran (first,
-// so the newspaper reads before anything else), what it is, what's behind it.
-function Meta({ p }: { p: Publicacion }) {
-  return (
-    <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-gray-500">
-      {p.outlet && <span className="font-semibold text-gray-700">{p.outlet} ·</span>}
-      <span>{tipoLabel(p.tipo)}</span>
-      {p.tipo === "columna" && p.date && <span>· {formatDate(p.date)}</span>}
-      {p.file && (
-        <span className="inline-flex items-center gap-1">
-          · <FileText className="h-3 w-3" aria-hidden /> PDF
-        </span>
-      )}
-    </p>
-  );
-}
-
-// "Uriel Chavarría", led by the authors' portraits when they have them (the
-// outlet is in the line above the title).
-function Byline({ p, className }: { p: Publicacion; className: string }) {
-  return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <Avatares fotos={photos(p)} size="sm" />
-      <p className="min-w-0 text-sm text-gray-600">{p.author}</p>
-    </div>
-  );
-}
-
-const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
-
-function PublicacionCard({ publicacion: p, priority }: { publicacion: Publicacion; priority: boolean }) {
-  return (
-    <Link
-      href={`/publicaciones/${p.slug}`}
-      className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md ${FOCUS_RING}`}
-    >
-      <Image
-        src={p.image}
-        alt=""
-        width={640}
-        height={360}
-        sizes="(min-width: 1024px) 300px, (min-width: 640px) 33vw, 100vw"
-        preload={priority}
-        className="aspect-video w-full object-cover"
-      />
-      <div className="flex flex-1 flex-col p-4">
-        <Meta p={p} />
-        <p className="mt-1.5 text-base font-semibold leading-snug text-gray-800 group-hover:text-gray-600">{p.title}</p>
-        <Byline p={p} className="mt-auto pt-3" />
-      </div>
-    </Link>
-  );
-}
-
-// Every row opens the item's page, its cover as a thumbnail.
-function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
-  return (
-    <Link
-      href={`/publicaciones/${p.slug}`}
-      className={`flex items-start gap-4 px-4 py-4 transition-colors hover:bg-gray-100/70 sm:px-5 ${FOCUS_RING} focus-visible:ring-inset`}
-    >
-      <Image
-        src={p.image}
-        alt=""
-        width={288}
-        height={162}
-        sizes="(min-width: 640px) 144px, 96px"
-        className="aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36"
-      />
-      <div className="min-w-0">
-        <Meta p={p} />
-        <p className="mt-1.5 text-base font-semibold leading-snug text-gray-800">{p.title}</p>
-        <Byline p={p} className="mt-1.5" />
-      </div>
-    </Link>
   );
 }

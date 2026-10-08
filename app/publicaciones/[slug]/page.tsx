@@ -6,10 +6,11 @@ import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import Avatares from "@/components/publicaciones/avatares";
 import Cita from "@/components/publicaciones/cita";
+import { PublicacionCard } from "@/components/publicaciones/tarjetas";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowUpRight, FileText } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, FileText } from "lucide-react";
 import {
   OCCAMM,
   citation,
@@ -17,6 +18,8 @@ import {
   getPublicacion,
   pageUrl,
   photos,
+  relacionadas,
+  urlKey,
   publicaciones,
   tipoLabel,
   type Publicacion,
@@ -25,7 +28,10 @@ import {
 // One page per publication, all static. A column with written content shows
 // it in full; everything else shows its summary and opens the PDF (or the
 // outlet's page). Every page ends with a citation, so a link to it is
-// something people can cite. /editoriales/[slug] redirects here
+// something people can cite. It opens with a way back to the library (many
+// readers arrive from search or a shared link) and ends with more by the
+// same author. The newspaper and the authors link to their library filters.
+// /editoriales/[slug] redirects here
 // (next.config.mjs); any slug not in ../data is a static 404.
 
 export const dynamicParams = false;
@@ -94,6 +100,9 @@ function structuredData(p: Publicacion) {
   };
 }
 
+const TEXT_LINK =
+  "rounded underline decoration-gray-300 underline-offset-2 hover:decoration-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+
 const PRIMARY_BUTTON =
   "inline-flex h-10 items-center gap-1.5 rounded-xl bg-gray-800 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
@@ -102,27 +111,50 @@ export default async function PublicacionPage({ params }: Props) {
   if (!p) notFound();
 
   const outbound = p.file ?? p.externalUrl;
+  const related = relacionadas(p);
+  const fotos = photos(p);
 
   return (
     <div className="px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
       <JsonLd data={structuredData(p)} />
       <article className="mx-auto max-w-3xl">
+        <Link
+          href="/publicaciones"
+          className="mb-8 inline-flex items-center gap-1.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden /> Publicaciones
+        </Link>
         <header className="mb-12">
+          {/* Same order as the library: the newspaper first. */}
           <p className="mb-4 text-sm text-gray-500">
+            {p.outlet && (
+              <>
+                <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-semibold text-gray-800 ${TEXT_LINK}`}>
+                  {p.outlet}
+                </Link>{" "}
+                ·{" "}
+              </>
+            )}
             {tipoLabel(p.tipo)} · {displayDate(p)}
           </p>
-          <h1 className="mb-6 text-3xl font-bold md:text-4xl">{p.title}</h1>
+          <h1 className="mb-6 text-3xl font-bold text-gray-800 md:text-4xl">{p.title}</h1>
 
-          {photos(p).length > 0 ? (
+          {fotos.length > 0 ? (
             <div className="flex items-center gap-4">
-              <Avatares fotos={photos(p)} size="lg" />
-              <div>
-                <p className="font-medium">{p.author}</p>
-                {p.outlet && <p className="text-gray-600">{p.outlet}</p>}
-              </div>
+              <Avatares fotos={fotos} size="lg" />
+              <p className="font-medium text-gray-800">
+                {p.people.map((name, i) => (
+                  <span key={name}>
+                    {i > 0 && " y "}
+                    <Link href={`/publicaciones?autor=${urlKey(name)}`} className={TEXT_LINK}>
+                      {name}
+                    </Link>
+                  </span>
+                ))}
+              </p>
             </div>
           ) : (
-            <p className="text-gray-600">{byline(p)}</p>
+            <p className="text-gray-600">{p.author}</p>
           )}
 
           {p.summary && <p className="mt-8 text-lg leading-relaxed text-gray-700">{p.summary}</p>}
@@ -181,28 +213,29 @@ export default async function PublicacionPage({ params }: Props) {
           <Cita text={citation(p)} />
         </div>
 
-        <div className="mt-16 border-t border-gray-200 pt-8">
-          <Link
-            href="/publicaciones"
-            className="inline-flex items-center rounded-xl border border-gray-300 bg-white px-4 py-2 text-gray-700 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="mr-2 h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
-            Volver a publicaciones
-          </Link>
-        </div>
       </article>
+
+      {related.items.length > 0 && (
+        <section aria-labelledby="relacionadas" className="mx-auto mt-20 max-w-5xl border-t border-gray-200 pt-10">
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <h2 id="relacionadas" className="text-lg font-semibold text-gray-800">
+              {related.title}
+            </h2>
+            {related.more && (
+              <Link href={related.more.href} className={`text-sm font-medium text-gray-700 ${TEXT_LINK}`}>
+                {related.more.label}
+              </Link>
+            )}
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-3">
+            {related.items.map((r) => (
+              <li key={r.slug}>
+                <PublicacionCard publicacion={r} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }
