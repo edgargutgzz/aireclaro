@@ -159,7 +159,7 @@ export default function Biblioteca() {
       {/* lg+: fixed while the list scrolls. It's taller than most screens
           (four filters), so it scrolls on its own; the px/-mx pair keeps
           the focus rings from being clipped by that scroll box. */}
-      <div className="flex flex-col gap-4 lg:sticky lg:top-6 lg:-mx-2 lg:max-h-[calc(100svh-var(--header-h)-3rem)] lg:gap-6 lg:overflow-y-auto lg:overscroll-contain lg:px-2 lg:pb-2">
+      <div className="flex flex-col gap-4 lg:sticky lg:top-6 lg:-mx-2 lg:max-h-[calc(100svh-var(--header-h)-3rem)] lg:gap-8 lg:overflow-y-auto lg:overscroll-contain lg:px-2 lg:pb-2">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="publicaciones-buscar" className={labelClass}>
             Buscar
@@ -226,31 +226,17 @@ export default function Biblioteca() {
         </div>
 
         {/* lg+: every option in view, with its count. */}
-        <Facet
-          label="Tipo"
-          options={tipoOptions}
-          value={tipo}
-          onChange={(v) => set({ tipo: v })}
-          limit={4}
-          moreLabel="Ver todos los tipos"
-        />
-        <Facet
-          label="Medio"
-          options={medioOptions}
-          value={medio}
-          onChange={(v) => set({ medio: v })}
-          limit={3}
-          moreLabel="Ver todos los medios"
-        />
+        <Facet label="Tipo" options={tipoOptions} value={tipo} onChange={(v) => set({ tipo: v })} />
+        <Facet label="Medio" options={medioOptions} value={medio} onChange={(v) => set({ medio: v })} />
         <Facet
           label="Autoría"
           options={autorOptions}
           value={autor}
           onChange={(v) => set({ autor: v })}
-          limit={4}
+          limit={6}
           moreLabel="Ver todas las personas"
         />
-        <Facet label="Año" options={anioOptions} value={anio} onChange={(v) => set({ anio: v })} grid />
+        <Facet label="Año" options={anioOptions} value={anio} onChange={(v) => set({ anio: v })} />
       </div>
 
       <div className="mt-6 lg:mt-0">
@@ -308,13 +294,10 @@ export default function Biblioteca() {
   );
 }
 
-// A sidebar filter (lg+), sized so the whole sidebar fits on a laptop
-// screen and can stay fixed: no "Todos…" row (clicking the current option
-// again clears it, as does "Quitar filtros"), and with `limit` only the
-// first options show until "Ver todos…" is pressed (the current one always
-// shows). The current option gets the nav's wash; an option that would
-// leave nothing is disabled (its 0 says why), unless it's the current one.
-// `grid` lays short labels (years) out three to a row.
+// A sidebar filter (lg+): one row per option, the count trailing. The current
+// option gets the nav's wash; an option that would leave nothing is disabled
+// (its 0 says why), unless it's the current one. With `limit`, only the first
+// options show until "Ver todas…" is pressed (the current one always shows).
 function Facet<T extends string>({
   label,
   options,
@@ -322,7 +305,6 @@ function Facet<T extends string>({
   onChange,
   limit,
   moreLabel,
-  grid = false,
 }: {
   label: string;
   options: FacetOption<T>[];
@@ -330,17 +312,15 @@ function Facet<T extends string>({
   onChange: (value: T) => void;
   limit?: number;
   moreLabel?: string;
-  grid?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const all = options.find((o) => o.value === "");
-  const real = options.filter((o) => o.value !== "");
-  const collapsed = limit !== undefined && !expanded && real.length > limit + 1;
-  const shown = collapsed ? real.filter((o, i) => i < limit || o.value === value) : real;
+  const collapsed = limit !== undefined && !expanded && options.length > limit + 1;
+  // +1: the "Todas…" option doesn't count toward the limit.
+  const shown = collapsed ? options.filter((o, i) => i <= limit || o.value === value) : options;
   return (
     <div role="group" aria-label={label} className="hidden lg:block">
       <p className={`${labelClass} mb-1.5`}>{label}</p>
-      <ul className={grid ? "grid grid-cols-3 gap-1" : ""}>
+      <ul>
         {shown.map((o) => {
           const current = o.value === value;
           const empty = o.count === 0 && !current;
@@ -348,12 +328,10 @@ function Facet<T extends string>({
             <li key={o.value}>
               <button
                 type="button"
-                onClick={() => onChange(current && all ? all.value : o.value)}
+                onClick={() => onChange(o.value)}
                 aria-pressed={current}
                 disabled={empty}
-                className={`flex w-full items-center gap-2 rounded-xl text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
-                  grid ? "justify-center px-2 py-1.5" : "justify-between px-3 py-1"
-                } ${
+                className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-1.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
                   current
                     ? "bg-gray-900/[0.08] font-semibold text-gray-900"
                     : empty
@@ -372,9 +350,9 @@ function Facet<T extends string>({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="mt-0.5 rounded-xl px-3 py-1 text-xs font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="mt-1 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
-          {moreLabel} ({real.length})
+          {moreLabel} ({options.length - 1})
         </button>
       )}
     </div>
