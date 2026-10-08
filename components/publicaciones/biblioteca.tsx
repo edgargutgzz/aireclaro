@@ -240,29 +240,32 @@ export default function Biblioteca() {
       </div>
 
       <div className="mt-6 lg:mt-0">
-        {/* The page has no visible header, so this line also says whose
-            publications these are. */}
+        {/* Only once something is filtered: how many matched, and the way
+            back. Unfiltered, the page opens straight on the content. The
+            live region stays mounted so the counts are announced. */}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600" aria-live="polite">
-          <p>
-            <span className="font-semibold text-gray-800">
-              {filtered ? `${results.length} de ${publicaciones.length}` : publicaciones.length}
-            </span>{" "}
-            publicaciones del Observatorio
-          </p>
           {filtered && (
-            <button
-              type="button"
-              onClick={() => setFilters(NO_FILTERS)}
-              className="rounded-xl font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-            >
-              Quitar filtros
-            </button>
+            <>
+              <p>
+                <span className="font-semibold text-gray-800">
+                  {results.length} de {publicaciones.length}
+                </span>{" "}
+                publicaciones
+              </p>
+              <button
+                type="button"
+                onClick={() => setFilters(NO_FILTERS)}
+                className="rounded-xl font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+              >
+                Quitar filtros
+              </button>
+            </>
           )}
         </div>
 
         {/* The newest as cards, then the list grouped by year. */}
         {featured.length > 0 && (
-          <section aria-labelledby="publicaciones-recientes" className="mt-4">
+          <section aria-labelledby="publicaciones-recientes">
             <h2 id="publicaciones-recientes" className="mb-3 text-sm font-semibold text-gray-800">
               Lo más reciente
             </h2>
