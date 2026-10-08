@@ -34,6 +34,9 @@ export type Publicacion = {
   date?: string;
   /** Who wrote or signed it, as shown on the page. */
   author: string;
+  /** The people among the authors, one name each, for the Autoría filter
+   *  (organizations aren't listed). A column's come from its byline. */
+  people: string[];
   /** A column author's portrait. */
   authorPhoto?: string;
   /** The author as cited ("Chavarría, U."), when it differs from `author`. */
@@ -54,7 +57,7 @@ export type Publicacion = {
 
 // The documents. Credits, dates and summaries come from each PDF itself.
 // Each `file` names both public/recursos/<file>.pdf and its cover .webp.
-type Documento = Omit<Publicacion, "file" | "image" | "editorial"> & { file: string };
+type Documento = Omit<Publicacion, "file" | "image" | "editorial" | "people"> & { file: string; people?: string[] };
 
 const DOCUMENTOS: Documento[] = [
   {
@@ -196,6 +199,7 @@ const DOCUMENTOS: Documento[] = [
     year: 2020,
     author: "Alfonso Martínez Muñoz, Horacio Villalón Mendoza y Selene Martínez Guajardo",
     citeAuthor: "Martínez Muñoz, A., Villalón Mendoza, H. y Martínez Guajardo, S.",
+    people: ["Alfonso Martínez Muñoz", "Horacio Villalón Mendoza", "Selene M. Guajardo"],
     pages: 104,
     summary:
       "Manual de mejores prácticas para reducir las emisiones de polvo y contaminantes en obras de construcción y demolición, desde el plan de gestión ambiental hasta el diseño y los materiales.",
@@ -219,6 +223,7 @@ const DOCUMENTOS: Documento[] = [
     year: 2020,
     author: "Cómo Vamos Nuevo León y OCCAMM",
     citeAuthor: "Martínez Muñoz, A., Armendáriz Olivo, A., Escalante Díaz del Campo, J. y Garza Rodríguez, L.",
+    people: ["Alfonso Martínez Muñoz", "Alan Armendáriz Olivo", "Jimena Escalante Díaz del Campo", "Lesly Garza Rodríguez"],
     pages: 22,
     summary:
       "Análisis de PM2.5, PM10, ozono y monóxido de carbono durante el confinamiento por COVID-19: del 31 de marzo al 17 de junio de 2020, el material particulado bajó en promedio 6.41 µg/m³ (finas) y 7.49 µg/m³ (gruesas).",
@@ -232,6 +237,8 @@ const DOCUMENTOS: Documento[] = [
     year: 2020,
     author: "Alfonso Martínez-Muñoz, Magali Hurtado-Díaz, Julio César Cruz y Horacio Riojas-Rodríguez",
     citeAuthor: "Martínez-Muñoz, A., Hurtado-Díaz, M., Cruz, J. C. y Riojas-Rodríguez, H.",
+    // Named as on /equipo (Horacio Riojas) and the other documents.
+    people: ["Alfonso Martínez Muñoz", "Magali Hurtado Díaz", "Julio César Cruz", "Horacio Riojas"],
     outlet: "Salud Pública de México",
     doi: "10.21149/11184",
     pages: 9,
@@ -260,6 +267,7 @@ function fromEditorial(e: Editorial): Publicacion {
     year: Number(e.date.slice(0, 4)),
     date: e.date,
     author: e.author,
+    people: e.author.split(" y ").map((name) => name.trim()),
     authorPhoto: e.authorProfile,
     citeAuthor: citeName(e.author),
     outlet: e.newspaper,
@@ -275,7 +283,6 @@ function fromEditorial(e: Editorial): Publicacion {
 const CITE_NAMES: Record<string, string> = {
   "Uriel Chavarría": "Chavarría, U.",
   "Selene M. Guajardo": "Martínez Guajardo, S.",
-  "Selene Guajardo": "Martínez Guajardo, S.",
   "Lorenzo J. de Rosenzweig": "de Rosenzweig, L. J.",
   "Ana Cristina García Luna": "García Luna, A. C.",
   "Gabriel Todd": "Todd, G.",
@@ -296,6 +303,7 @@ export const publicaciones: Publicacion[] = [
   ...DOCUMENTOS.map(
     (d): Publicacion => ({
       ...d,
+      people: d.people ?? [],
       file: `/recursos/${d.file}.pdf`,
       image: `/recursos/${d.file}.webp`,
     }),
@@ -305,6 +313,14 @@ export const publicaciones: Publicacion[] = [
 if (new Set(publicaciones.map((p) => p.slug)).size !== publicaciones.length) {
   throw new Error("Two publications share a slug");
 }
+
+// The Autoría filter's people, most published first (a fixed order, so the
+// list doesn't reshuffle as the other filters change its counts).
+export const PERSONAS = (() => {
+  const counts = new Map<string, number>();
+  for (const p of publicaciones) for (const name of p.people) counts.set(name, (counts.get(name) ?? 0) + 1);
+  return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "es")).map(([name]) => name);
+})();
 
 export function getPublicacion(slug: string): Publicacion | undefined {
   return publicaciones.find((p) => p.slug === slug);

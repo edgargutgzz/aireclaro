@@ -5,16 +5,17 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { FileText, Search } from "lucide-react";
 import SelectMenu from "@/components/datos/select-menu";
-import { TIPOS, formatDate, publicaciones, tipoLabel, type Publicacion, type Tipo } from "@/app/publicaciones/data";
+import { PERSONAS, TIPOS, formatDate, publicaciones, tipoLabel, type Publicacion, type Tipo } from "@/app/publicaciones/data";
 
-// The /publicaciones library: search, type and year filters over every
+// The /publicaciones library: search, type, year and author filters over every
 // publication, grouped by year, newest first. Unfiltered, the three newest
 // lead as image cards; every list row carries its cover as a thumbnail.
 // The filters show how many items each option would leave (counted against
 // the other active filters, the usual faceted-search rule): a list in the
 // sidebar from lg, a dropdown below that so they don't push the results down.
 //
-// The filters live in the query string (?tipo=informe&anio=2025&q=gasolina)
+// The filters live in the query string (?tipo=informe&anio=2025&q=gasolina,
+// ?autor=selene-m-guajardo)
 // so a filtered view can be shared. Like the map (lib/map-url-state.ts),
 // it's read once on load and written back with history.replaceState, never
 // the Next router, so the page stays static: the server renders the full
@@ -30,16 +31,28 @@ function normalize(text: string): string {
 }
 
 const searchText = new Map(
-  publicaciones.map((p) => [p.slug, normalize([p.title, p.author, p.outlet, tipoLabel(p.tipo)].join(" "))]),
+  publicaciones.map((p) => [
+    p.slug,
+    normalize([p.title, p.author, ...p.people, p.outlet, tipoLabel(p.tipo)].join(" ")),
+  ]),
 );
 
-type Filters = { tipo: Tipo | ""; anio: string; q: string };
+// A person's ?autor= value: "Selene M. Guajardo" → "selene-m-guajardo".
+function personKey(name: string): string {
+  return normalize(name).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
 
-function matches(p: Publicacion, { tipo, anio, q }: Filters): boolean {
+const PERSON_BY_KEY = new Map(PERSONAS.map((name) => [personKey(name), name]));
+
+type Filters = { tipo: Tipo | ""; anio: string; autor: string; q: string };
+const NO_FILTERS: Filters = { tipo: "", anio: "", autor: "", q: "" };
+
+function matches(p: Publicacion, { tipo, anio, autor, q }: Filters): boolean {
   const words = normalize(q).split(/\s+/).filter(Boolean);
   return (
     (!tipo || p.tipo === tipo) &&
     (!anio || p.year === Number(anio)) &&
+    (!autor || p.people.some((name) => personKey(name) === autor)) &&
     words.every((w) => searchText.get(p.slug)!.includes(w))
   );
 }
@@ -48,9 +61,11 @@ function readParams(): Filters {
   const params = new URLSearchParams(window.location.search);
   const tipo = params.get("tipo") ?? "";
   const anio = params.get("anio") ?? "";
+  const autor = params.get("autor") ?? "";
   return {
     tipo: TIPOS.some((t) => t.value === tipo) ? (tipo as Tipo) : "",
     anio: YEARS.includes(Number(anio)) ? anio : "",
+    autor: PERSON_BY_KEY.has(autor) ? autor : "",
     q: params.get("q") ?? "",
   };
 }
@@ -72,9 +87,9 @@ const labelClass = "text-xs font-medium text-gray-500";
 type FacetOption<T extends string> = { value: T; label: string; count: number };
 
 export default function Biblioteca() {
-  const [filters, setFilters] = useState<Filters>({ tipo: "", anio: "", q: "" });
+  const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [loaded, setLoaded] = useState(false);
-  const { tipo, anio, q } = filters;
+  const { tipo, anio, autor, q } = filters;
   const set = (patch: Partial<Filters>) => setFilters((f) => ({ ...f, ...patch }));
 
   useEffect(() => {
@@ -104,7 +119,18 @@ export default function Biblioteca() {
     ];
   }, [filters]);
 
-  const filtered = Boolean(tipo || anio || q.trim());
+  const autorOptions = useMemo((): FacetOption<string>[] => {
+    const pool = publicaciones.filter((p) => matches(p, { ...filters, autor: "" }));
+    return [
+      { value: "", label: "Todas las personas", count: pool.length },
+      ...PERSONAS.map((name) => {
+        const key = personKey(name);
+        return { value: key, label: name, count: pool.filter((p) => p.people.some((n) => personKey(n) === key)).length };
+      }),
+    ];
+  }, [filters]);
+
+  const filtered = Boolean(tipo || anio || autor || q.trim());
   // Unfiltered, the newest lead as cards and the list carries on after them.
   const featured = filtered ? [] : results.slice(0, FEATURED);
   const listed = filtered ? results : results.slice(FEATURED);
@@ -116,11 +142,11 @@ export default function Biblioteca() {
     options.map((o) => ({ value: o.value, label: `${o.label} (${o.count})` }));
 
   return (
-    // lg+: the filters are a sticky sidebar and the results take the rest of
+    // lg+: the filters are a sidebar and the results take the rest of
     // the site's container; below that they stack, filters first.
     <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-12">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end lg:sticky lg:top-6 lg:flex-col lg:items-stretch lg:gap-8">
-        <div className="flex flex-1 flex-col gap-1.5 lg:flex-none">
+      <div className="flex flex-col gap-4 lg:gap-8">
+        <div className="flex flex-col gap-1.5">
           <label htmlFor="publicaciones-buscar" className={labelClass}>
             Buscar
           </label>
@@ -138,8 +164,8 @@ export default function Biblioteca() {
         </div>
 
         {/* Below lg: dropdowns. */}
-        <div className="flex gap-4 lg:hidden">
-          <div className="flex flex-1 flex-col gap-1.5 md:flex-none">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:hidden">
+          <div className="flex min-w-0 flex-col gap-1.5">
             <label htmlFor="publicaciones-tipo" className={labelClass}>
               Tipo
             </label>
@@ -148,10 +174,9 @@ export default function Biblioteca() {
               options={withCounts(tipoOptions)}
               value={tipo}
               onChange={(v) => set({ tipo: v })}
-              className="md:w-56"
             />
           </div>
-          <div className="flex flex-1 flex-col gap-1.5 md:flex-none">
+          <div className="flex min-w-0 flex-col gap-1.5">
             <label htmlFor="publicaciones-anio" className={labelClass}>
               Año
             </label>
@@ -160,7 +185,17 @@ export default function Biblioteca() {
               options={withCounts(anioOptions)}
               value={anio}
               onChange={(v) => set({ anio: v })}
-              className="md:w-44"
+            />
+          </div>
+          <div className="col-span-2 flex min-w-0 flex-col gap-1.5 sm:col-span-1">
+            <label htmlFor="publicaciones-autor" className={labelClass}>
+              Autoría
+            </label>
+            <SelectMenu
+              id="publicaciones-autor"
+              options={withCounts(autorOptions)}
+              value={autor}
+              onChange={(v) => set({ autor: v })}
             />
           </div>
         </div>
@@ -168,6 +203,14 @@ export default function Biblioteca() {
         {/* lg+: every option in view, with its count. */}
         <Facet label="Tipo" options={tipoOptions} value={tipo} onChange={(v) => set({ tipo: v })} />
         <Facet label="Año" options={anioOptions} value={anio} onChange={(v) => set({ anio: v })} />
+        <Facet
+          label="Autoría"
+          options={autorOptions}
+          value={autor}
+          onChange={(v) => set({ autor: v })}
+          limit={6}
+          moreLabel="Ver todas las personas"
+        />
       </div>
 
       <div className="mt-6 lg:mt-0">
@@ -180,7 +223,7 @@ export default function Biblioteca() {
           {filtered && (
             <button
               type="button"
-              onClick={() => setFilters({ tipo: "", anio: "", q: "" })}
+              onClick={() => setFilters(NO_FILTERS)}
               className="rounded-xl font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
             >
               Quitar filtros
@@ -228,23 +271,32 @@ export default function Biblioteca() {
 
 // A sidebar filter (lg+): one row per option, the count trailing. The current
 // option gets the nav's wash; an option that would leave nothing is disabled
-// (its 0 says why), unless it's the current one.
+// (its 0 says why), unless it's the current one. With `limit`, only the first
+// options show until "Ver todas…" is pressed (the current one always shows).
 function Facet<T extends string>({
   label,
   options,
   value,
   onChange,
+  limit,
+  moreLabel,
 }: {
   label: string;
   options: FacetOption<T>[];
   value: T;
   onChange: (value: T) => void;
+  limit?: number;
+  moreLabel?: string;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  const collapsed = limit !== undefined && !expanded && options.length > limit + 1;
+  // +1: the "Todas…" option doesn't count toward the limit.
+  const shown = collapsed ? options.filter((o, i) => i <= limit || o.value === value) : options;
   return (
     <div role="group" aria-label={label} className="hidden lg:block">
       <p className={`${labelClass} mb-1.5`}>{label}</p>
       <ul>
-        {options.map((o) => {
+        {shown.map((o) => {
           const current = o.value === value;
           const empty = o.count === 0 && !current;
           return (
@@ -269,6 +321,15 @@ function Facet<T extends string>({
           );
         })}
       </ul>
+      {collapsed && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="mt-1 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        >
+          {moreLabel} ({options.length - 1})
+        </button>
+      )}
     </div>
   );
 }

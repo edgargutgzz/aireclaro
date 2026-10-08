@@ -1047,9 +1047,9 @@ export const editoriales: Editorial[] = [
     slug: "mutualismo-o-parasitismo",
     image: "/editoriales/02may2025.webp",
     imageAlt: "¿Mutualismo o parasitismo?",
-    author: "Selene Guajardo",
+    author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
-    authorProfileAlt: "Selene Guajardo",
+    authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2025-05-02",
     content: React.createElement(
@@ -1122,9 +1122,9 @@ export const editoriales: Editorial[] = [
     slug: "monterrey-entre-50-millones-de-voces-por-el-aire-limpio",
     image: "/editoriales/30abr2025.webp",
     imageAlt: "Monterrey, entre 50 millones de voces por el aire limpio",
-    author: "Selene Guajardo",
+    author: "Selene M. Guajardo",
     authorProfile: "/equipo/selene.webp",
-    authorProfileAlt: "Selene Guajardo",
+    authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2025-04-30",
     content: React.createElement(
