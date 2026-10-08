@@ -18,6 +18,7 @@ export const TIPOS = [
   { value: "boletin", label: "Boletín de prensa" },
   { value: "manual", label: "Manual" },
   { value: "iniciativa", label: "Iniciativa" },
+  { value: "normativa", label: "Normativa" },
 ] as const;
 
 export type Tipo = (typeof TIPOS)[number]["value"];
@@ -52,10 +53,8 @@ export type Publicacion = {
   editorial?: Editorial;
 };
 
-// The documents. Credits, dates and summaries come from each PDF itself.
-// Only the Observatory's own work: the NOM-172 text (public/recursos/
-// 2024-indice.pdf, SEMARNAT's) was taken out on 2026-10-08; it belongs with
-// the methodology as reference material.
+// The documents: all 16 from the old /recursos page. Credits, dates and
+// summaries come from each PDF itself.
 // Each `file` names both public/recursos/<file>.pdf and its cover .webp.
 type Documento = Omit<Publicacion, "file" | "image" | "editorial" | "people"> & { file: string; people?: string[] };
 
@@ -129,6 +128,19 @@ const DOCUMENTOS: Documento[] = [
     pages: 4,
     summary:
       "Propuesta de un fideicomiso público-privado, con participación ciudadana, para proteger las cuencas hidrológicas y las zonas de recarga de acuíferos de Nuevo León.",
+  },
+  {
+    slug: "nom-172-semarnat-2023-indice-calidad-aire",
+    title: "Índice de Calidad del Aire NOM-172-SEMARNAT-2023",
+    file: "2024-indice",
+    tipo: "normativa",
+    year: 2024,
+    date: "2024-01-25",
+    author: "Secretaría de Medio Ambiente y Recursos Naturales (SEMARNAT)",
+    outlet: "Diario Oficial de la Federación",
+    pages: 23,
+    summary:
+      "Texto oficial de la NOM-172-SEMARNAT-2023, publicado en el Diario Oficial de la Federación, con los lineamientos para obtener y comunicar el Índice de Calidad del Aire y Riesgos a la Salud.",
   },
   {
     slug: "mala-calidad-aire-futbol-mexicano",
