@@ -19,7 +19,7 @@ export const metadata: Metadata = pageMetadata({
 export default function Publicaciones() {
   return (
     <div className="mx-auto max-w-7xl px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
-      <header className="mb-8">
+      <header className="mb-12 lg:mb-16">
         <h1 className="text-3xl font-bold text-gray-800 md:text-4xl">Publicaciones</h1>
         <p className="mt-3 max-w-3xl leading-relaxed text-gray-600 md:text-lg">{LEAD}</p>
       </header>
