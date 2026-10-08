@@ -16,7 +16,7 @@ import {
 } from "@/app/publicaciones/data";
 
 // The /publicaciones library: search, type, outlet, author and year filters over every
-// publication in one list, newest first. Unfiltered, the three newest
+// publication, grouped by year, newest first. Unfiltered, the three newest
 // lead as image cards; every list row carries its cover as a thumbnail.
 // The filters show how many items each option would leave (counted against
 // the other active filters, the usual faceted-search rule): a list in the
@@ -148,6 +148,9 @@ export default function Biblioteca() {
   // Unfiltered, the newest lead as cards and the list carries on after them.
   const featured = filtered ? [] : results.slice(0, FEATURED);
   const listed = filtered ? results : results.slice(FEATURED);
+  const byYear = YEARS.map((year) => ({ year, items: listed.filter((p) => p.year === year) })).filter(
+    (g) => g.items.length > 0,
+  );
 
   const withCounts = <T extends string>(options: FacetOption<T>[]) =>
     options.map((o) => ({ value: o.value, label: `${o.label} (${o.count})` }));
@@ -257,7 +260,7 @@ export default function Biblioteca() {
           )}
         </div>
 
-        {/* No visible section headings: every item carries its own date. */}
+        {/* The newest as cards (no label), then the list grouped by year. */}
         {featured.length > 0 && (
           <section aria-label="Lo más reciente" className="mt-4">
             <ul className="grid gap-4 sm:grid-cols-3">
@@ -273,18 +276,24 @@ export default function Biblioteca() {
         {results.length === 0 ? (
           <p className="mt-10 text-sm text-gray-600">No hay publicaciones con estos filtros.</p>
         ) : (
-          listed.length > 0 && (
-            <ul
-              aria-label="Publicaciones"
-              className={`overflow-hidden rounded-2xl border border-gray-200 bg-white ${featured.length > 0 ? "mt-8" : "mt-4"}`}
+          byYear.map(({ year, items }, i) => (
+            <section
+              key={year}
+              aria-labelledby={`publicaciones-${year}`}
+              className={i > 0 ? "mt-10" : featured.length > 0 ? "mt-8" : "mt-4"}
             >
-              {listed.map((p) => (
-                <li key={p.slug} className="border-t border-gray-100 first:border-t-0">
-                  <PublicacionRow publicacion={p} />
-                </li>
-              ))}
-            </ul>
-          )
+              <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-800">
+                {year}
+              </h2>
+              <ul className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                {items.map((p) => (
+                  <li key={p.slug} className="border-t border-gray-100 first:border-t-0">
+                    <PublicacionRow publicacion={p} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
         )}
       </div>
     </div>
