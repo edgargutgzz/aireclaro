@@ -3,8 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar/navbar";
 import MainContent from "@/components/main-content";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import Analytics from "@/components/analytics";
 import { SITE_URL } from "@/lib/site";
 import { SOCIAL_LINKS } from "@/components/footer/footer";
 import JsonLd from "@/components/json-ld";
@@ -102,7 +101,6 @@ export default function RootLayout({
           <MainContent>{children}</MainContent>
         </div>
         <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );
