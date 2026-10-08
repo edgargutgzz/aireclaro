@@ -7,19 +7,29 @@ import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/dat
 // "Lo más reciente", a page's "Más de…") and a row with a thumbnail (the
 // library's list). Shared so both pages show an item the same way.
 
-// "El Norte · Columna de opinión · 30 ago 2026 · PDF": where it ran (first,
-// so the newspaper reads before anything else), what it is, what's behind it.
+// "El Norte · 30 ago 2026 · PDF" for a column (the newspaper already says
+// it's an opinion piece, so no type label), "Informe · PDF" for a document:
+// where it ran first, then what it is, then what's behind it.
 function Meta({ p }: { p: Publicacion }) {
+  const parts: React.ReactNode[] = [];
+  if (p.outlet) parts.push(<span className="font-semibold text-gray-700">{p.outlet}</span>);
+  if (p.tipo !== "columna") parts.push(tipoLabel(p.tipo));
+  if (p.tipo === "columna" && p.date) parts.push(formatDate(p.date));
+  if (p.file) {
+    parts.push(
+      <span className="inline-flex items-center gap-1">
+        <FileText className="h-3 w-3" aria-hidden /> PDF
+      </span>,
+    );
+  }
   return (
     <p className="flex flex-wrap items-center gap-x-1.5 text-xs text-gray-500">
-      {p.outlet && <span className="font-semibold text-gray-700">{p.outlet} ·</span>}
-      <span>{tipoLabel(p.tipo)}</span>
-      {p.tipo === "columna" && p.date && <span>· {formatDate(p.date)}</span>}
-      {p.file && (
-        <span className="inline-flex items-center gap-1">
-          · <FileText className="h-3 w-3" aria-hidden /> PDF
+      {parts.map((part, i) => (
+        <span key={i}>
+          {i > 0 && "· "}
+          {part}
         </span>
-      )}
+      ))}
     </p>
   );
 }
