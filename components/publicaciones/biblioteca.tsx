@@ -22,10 +22,6 @@ import {
 // the other active filters, the usual faceted-search rule): a list in the
 // sidebar from lg, a dropdown below that so they don't push the results down.
 //
-// The page header lives here too: under the lead, a line names the outlets
-// that have run the Observatory's columns (from the data), each one a
-// shortcut to that outlet's filter.
-//
 // The filters live in the query string (?tipo=informe&anio=2025&q=gasolina,
 // ?medio=el-norte, ?autor=selene-m-guajardo) so a filtered view can be shared. Like the map (lib/map-url-state.ts),
 // it's read once on load and written back with history.replaceState, never
@@ -51,8 +47,6 @@ const MEDIOS = (() => {
   return [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "es")).map(([name]) => name);
 })();
 const MEDIO_KEYS = new Set(MEDIOS.map(urlKey));
-// The outlets that have run a column, for the header line.
-const MEDIOS_COLUMNAS = MEDIOS.filter((m) => publicaciones.some((p) => p.tipo === "columna" && p.outlet === m));
 
 type Filters = { tipo: Tipo | ""; medio: string; autor: string; anio: string; q: string };
 const NO_FILTERS: Filters = { tipo: "", medio: "", autor: "", anio: "", q: "" };
@@ -99,7 +93,7 @@ const labelClass = "text-xs font-medium text-gray-500";
 
 type FacetOption<T extends string> = { value: T; label: string; count: number };
 
-export default function Biblioteca({ lead }: { lead: string }) {
+export default function Biblioteca() {
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [loaded, setLoaded] = useState(false);
   const { tipo, medio, anio, autor, q } = filters;
@@ -162,164 +156,142 @@ export default function Biblioteca({ lead }: { lead: string }) {
     options.map((o) => ({ value: o.value, label: `${o.label} (${o.count})` }));
 
   return (
-    <>
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 md:text-4xl">Publicaciones</h1>
-        <p className="mt-3 max-w-3xl leading-relaxed text-gray-600 md:text-lg">{lead}</p>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-gray-600">
-          Nuestras columnas de opinión se publican en{" "}
-          {MEDIOS_COLUMNAS.map((m, i) => (
-            <span key={m}>
-              {i > 0 && (i === MEDIOS_COLUMNAS.length - 1 ? " y " : ", ")}
-              <button
-                type="button"
-                onClick={() => setFilters({ ...NO_FILTERS, medio: urlKey(m) })}
-                className="rounded font-semibold text-gray-800 underline decoration-gray-300 underline-offset-2 hover:decoration-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-              >
-                {m}
-              </button>
-            </span>
-          ))}
-          .
-        </p>
-      </header>
-      {/* lg+: the filters are a sidebar and the results take the rest of
-          the site's container; below that they stack, filters first. */}
-      <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-12">
-        <div className="flex flex-col gap-4 lg:gap-8">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="publicaciones-buscar" className={labelClass}>
-              Buscar
-            </label>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden />
-              <input
-                id="publicaciones-buscar"
-                type="search"
-                value={q}
-                onChange={(e) => set({ q: e.target.value })}
-                placeholder="Título, autor o medio"
-                className="w-full rounded-xl bg-gray-100 py-2.5 pl-9 pr-3 text-sm font-medium text-gray-700 transition-colors placeholder:font-normal placeholder:text-gray-500 hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-              />
-            </div>
+    // lg+: the filters are a sidebar and the results take the rest of the
+    // site's container; below that they stack, filters first.
+    <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-12">
+      <div className="flex flex-col gap-4 lg:gap-8">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="publicaciones-buscar" className={labelClass}>
+            Buscar
+          </label>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden />
+            <input
+              id="publicaciones-buscar"
+              type="search"
+              value={q}
+              onChange={(e) => set({ q: e.target.value })}
+              placeholder="Título, autor o medio"
+              className="w-full rounded-xl bg-gray-100 py-2.5 pl-9 pr-3 text-sm font-medium text-gray-700 transition-colors placeholder:font-normal placeholder:text-gray-500 hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            />
           </div>
-
-          {/* Below lg: dropdowns. */}
-          <div className="grid grid-cols-2 gap-4 lg:hidden">
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <label htmlFor="publicaciones-tipo" className={labelClass}>
-                Tipo
-              </label>
-              <SelectMenu
-                id="publicaciones-tipo"
-                options={withCounts(tipoOptions)}
-                value={tipo}
-                onChange={(v) => set({ tipo: v })}
-              />
-            </div>
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <label htmlFor="publicaciones-anio" className={labelClass}>
-                Año
-              </label>
-              <SelectMenu
-                id="publicaciones-anio"
-                options={withCounts(anioOptions)}
-                value={anio}
-                onChange={(v) => set({ anio: v })}
-              />
-            </div>
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <label htmlFor="publicaciones-medio" className={labelClass}>
-                Medio
-              </label>
-              <SelectMenu
-                id="publicaciones-medio"
-                options={withCounts(medioOptions)}
-                value={medio}
-                onChange={(v) => set({ medio: v })}
-              />
-            </div>
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <label htmlFor="publicaciones-autor" className={labelClass}>
-                Autoría
-              </label>
-              <SelectMenu
-                id="publicaciones-autor"
-                options={withCounts(autorOptions)}
-                value={autor}
-                onChange={(v) => set({ autor: v })}
-              />
-            </div>
-          </div>
-
-          {/* lg+: every option in view, with its count. */}
-          <Facet label="Tipo" options={tipoOptions} value={tipo} onChange={(v) => set({ tipo: v })} />
-          <Facet label="Medio" options={medioOptions} value={medio} onChange={(v) => set({ medio: v })} />
-          <Facet
-            label="Autoría"
-            options={autorOptions}
-            value={autor}
-            onChange={(v) => set({ autor: v })}
-            limit={6}
-            moreLabel="Ver todas las personas"
-          />
-          <Facet label="Año" options={anioOptions} value={anio} onChange={(v) => set({ anio: v })} />
         </div>
 
-        <div className="mt-6 lg:mt-0">
-          <div className="flex items-center gap-3 text-xs text-gray-500" aria-live="polite">
-            <p>
-              {filtered
-                ? `${results.length} de ${publicaciones.length} publicaciones`
-                : `${publicaciones.length} publicaciones`}
-            </p>
-            {filtered && (
-              <button
-                type="button"
-                onClick={() => setFilters(NO_FILTERS)}
-                className="rounded-xl font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-              >
-                Quitar filtros
-              </button>
-            )}
+        {/* Below lg: dropdowns. */}
+        <div className="grid grid-cols-2 gap-4 lg:hidden">
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <label htmlFor="publicaciones-tipo" className={labelClass}>
+              Tipo
+            </label>
+            <SelectMenu
+              id="publicaciones-tipo"
+              options={withCounts(tipoOptions)}
+              value={tipo}
+              onChange={(v) => set({ tipo: v })}
+            />
           </div>
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <label htmlFor="publicaciones-anio" className={labelClass}>
+              Año
+            </label>
+            <SelectMenu
+              id="publicaciones-anio"
+              options={withCounts(anioOptions)}
+              value={anio}
+              onChange={(v) => set({ anio: v })}
+            />
+          </div>
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <label htmlFor="publicaciones-medio" className={labelClass}>
+              Medio
+            </label>
+            <SelectMenu
+              id="publicaciones-medio"
+              options={withCounts(medioOptions)}
+              value={medio}
+              onChange={(v) => set({ medio: v })}
+            />
+          </div>
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <label htmlFor="publicaciones-autor" className={labelClass}>
+              Autoría
+            </label>
+            <SelectMenu
+              id="publicaciones-autor"
+              options={withCounts(autorOptions)}
+              value={autor}
+              onChange={(v) => set({ autor: v })}
+            />
+          </div>
+        </div>
 
-          {featured.length > 0 && (
-            <section aria-labelledby="publicaciones-recientes" className="mt-4">
-              <h2 id="publicaciones-recientes" className="mb-3 text-sm font-semibold text-gray-800">
-                Lo más reciente
+        {/* lg+: every option in view, with its count. */}
+        <Facet label="Tipo" options={tipoOptions} value={tipo} onChange={(v) => set({ tipo: v })} />
+        <Facet label="Medio" options={medioOptions} value={medio} onChange={(v) => set({ medio: v })} />
+        <Facet
+          label="Autoría"
+          options={autorOptions}
+          value={autor}
+          onChange={(v) => set({ autor: v })}
+          limit={6}
+          moreLabel="Ver todas las personas"
+        />
+        <Facet label="Año" options={anioOptions} value={anio} onChange={(v) => set({ anio: v })} />
+      </div>
+
+      <div className="mt-6 lg:mt-0">
+        <div className="flex items-center gap-3 text-xs text-gray-500" aria-live="polite">
+          <p>
+            {filtered
+              ? `${results.length} de ${publicaciones.length} publicaciones`
+              : `${publicaciones.length} publicaciones`}
+          </p>
+          {filtered && (
+            <button
+              type="button"
+              onClick={() => setFilters(NO_FILTERS)}
+              className="rounded-xl font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            >
+              Quitar filtros
+            </button>
+          )}
+        </div>
+
+        {featured.length > 0 && (
+          <section aria-labelledby="publicaciones-recientes" className="mt-4">
+            <h2 id="publicaciones-recientes" className="mb-3 text-sm font-semibold text-gray-800">
+              Lo más reciente
+            </h2>
+            <ul className="grid gap-4 sm:grid-cols-3">
+              {featured.map((p, i) => (
+                <li key={p.slug}>
+                  <PublicacionCard publicacion={p} priority={i === 0} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {results.length === 0 ? (
+          <p className="mt-10 text-sm text-gray-600">No hay publicaciones con estos filtros.</p>
+        ) : (
+          byYear.map(({ year, items }) => (
+            <section key={year} className="mt-10 first-of-type:mt-4" aria-labelledby={`publicaciones-${year}`}>
+              <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-800">
+                {year}
               </h2>
-              <ul className="grid gap-4 sm:grid-cols-3">
-                {featured.map((p, i) => (
-                  <li key={p.slug}>
-                    <PublicacionCard publicacion={p} priority={i === 0} />
+              <ul className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                {items.map((p) => (
+                  <li key={p.slug} className="border-t border-gray-100 first:border-t-0">
+                    <PublicacionRow publicacion={p} />
                   </li>
                 ))}
               </ul>
             </section>
-          )}
-
-          {results.length === 0 ? (
-            <p className="mt-10 text-sm text-gray-600">No hay publicaciones con estos filtros.</p>
-          ) : (
-            byYear.map(({ year, items }) => (
-              <section key={year} className="mt-10 first-of-type:mt-4" aria-labelledby={`publicaciones-${year}`}>
-                <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-800">
-                  {year}
-                </h2>
-                <ul className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-                  {items.map((p) => (
-                    <li key={p.slug} className="border-t border-gray-100 first:border-t-0">
-                      <PublicacionRow publicacion={p} />
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))
-          )}
-        </div>
+          ))
+        )}
       </div>
-    </>
+    </div>
   );
 }
 
