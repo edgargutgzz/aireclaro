@@ -10,8 +10,8 @@ import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/dat
 // Every item reads in three steps, the way opinion sections list columns:
 // who (the author, dark), what (the title, the largest), and where and when
 // (quiet, last). A column: "Uriel Chavarría" / title / "El Norte · 16 feb
-// 2025". A document, whose authors are often long organization names: its
-// type ("Informe") on top, and who signed it with the year at the bottom.
+// 2025". A document: its type ("Informe") on top and its title, nothing
+// more (its credits, often long organization names, are on its page).
 // Portraits are for the publication's own page only.
 
 // The style guide's eyebrow label (uppercase, tracked), in gray-500 rather
@@ -26,8 +26,11 @@ function Who({ p }: { p: Publicacion }) {
 }
 
 function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
-  const where = p.tipo === "columna" ? p.outlet : [p.outlet, p.author].filter(Boolean).join(", ");
-  const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
+  // A document shows only its type and title in a list (its credits are on
+  // its page); the year heading above already dates it.
+  if (p.tipo !== "columna") return null;
+  const where = p.outlet;
+  const when = p.date ? formatDate(p.date) : String(p.year);
   return (
     <p className={`text-xs text-gray-500 ${className}`}>
       {where && <span className="font-medium text-gray-600">{where}</span>}
