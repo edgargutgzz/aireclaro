@@ -17,7 +17,7 @@ const base = pageMetadata({
   title: "Publicaciones",
   description: DESCRIPTION,
   path: "/publicaciones",
-  images: [{ url: "/api/og/publicaciones?d=3", width: 1200, height: 630, alt: "Publicaciones del Observatorio del Aire" }],
+  images: [{ url: "/api/og/publicaciones?d=4", width: 1200, height: 630, alt: "Publicaciones del Observatorio del Aire" }],
 });
 
 export const metadata: Metadata = {
