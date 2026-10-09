@@ -9,7 +9,7 @@ import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 // can't read the covers' .webp files. Rebuild it by hand if the covers change.
 const { width: W, height: H } = SECTION_CARD;
 const CACHE = "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800";
-const GLYPHS = "Columnas y estudios sobre el aire.";
+const GLYPHS = "Publicaciones sobre calidad del aire";
 
 export async function GET(request: Request) {
   const [logo, fonts] = await Promise.all([loadOgLogo(request.url, ogLogoAt(65)), loadInterFonts(GLYPHS)]);
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       <SectionCard
         // eslint-disable-next-line @next/next/no-img-element
         backdrop={<img src={src} width={W} height={H} alt="" style={{ position: "absolute", left: 0, top: 0 }} />}
-        headline={["Columnas y", "estudios sobre", "el aire."]}
+        headline={["Publicaciones", "sobre calidad", "del aire"]}
         logo={logo}
       />
     ),
