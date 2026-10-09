@@ -44,10 +44,11 @@ const CURRENT = "underline decoration-2 underline-offset-8";
 
 // Desktop dropdowns read like the mobile menu (the validated design): the
 // bar's own background and plain links, no group label (the button already
-// names the group). It opens right under its button, with the text aligned
-// to the button's (-ml-6/px-6), outlined so it stands apart from the bar.
+// names the group). It opens right under its button, anchored to its right
+// edge (-mr-6/px-6) since Nosotros is the bar's last item and a left-anchored
+// panel would run past the page margin; outlined so it stands apart from the bar.
 const DROPDOWN =
-  "absolute left-0 top-full mt-3 -ml-6 min-w-56 rounded-2xl border border-stone-200 bg-stone-50 px-6 py-2 shadow-sm";
+  "absolute right-0 top-full mt-3 -mr-6 min-w-56 rounded-2xl border border-stone-200 bg-stone-50 px-6 py-2 shadow-sm";
 
 // The small gray label over each group of links in the mobile menu.
 const GROUP_LABEL = "pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500";
@@ -55,7 +56,7 @@ const GROUP_LABEL = "pb-1 text-xs font-semibold uppercase tracking-wider text-gr
 // The house focus ring, on every focusable item in the bar.
 const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// The two main pages: first on mobile, last on desktop (Datos rightmost).
+// The two main pages: first on mobile, after the reading pages on desktop.
 const PRINCIPALES = [
   { href: "/datos", label: "Datos" },
   { href: "/mapa", label: "Mapa" },
@@ -190,7 +191,7 @@ export default function Navbar() {
             preload
           />
         </Link>
-        {/* Desktop menu (lg+): Publicaciones, Infografías, the Nosotros dropdown, then Mapa and Datos. */}
+        {/* Desktop menu (lg+): Publicaciones, Infografías, Mapa, Datos, then the Nosotros dropdown last. */}
         <nav aria-label="Principal" className="hidden lg:flex lg:items-center lg:gap-10">
           {/* Publicaciones, Infografías */}
           {LECTURA.map((l) => (
@@ -204,6 +205,21 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
+          {/* Mapa, then Datos. */}
+          {PRINCIPALES.slice()
+            .reverse()
+            .map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={current(l.href)}
+                className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                onClick={handleLinkClick}
+              >
+                {l.label}
+              </Link>
+            ))}
+
           {/* Nosotros */}
           <div className="relative" onBlur={closeOnFocusOut("isSubmenuOpen")}>
             <button
@@ -236,21 +252,6 @@ export default function Navbar() {
               </div>
             )}
           </div>
-
-          {/* Mapa, then Datos last (the action spot). */}
-          {PRINCIPALES.slice()
-            .reverse()
-            .map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={current(l.href)}
-                className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-                onClick={handleLinkClick}
-              >
-                {l.label}
-              </Link>
-            ))}
         </nav>
 
         {/* Menu Icon for mobile and tablet */}
