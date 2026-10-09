@@ -58,7 +58,7 @@ export default function Footer() {
           target="_blank"
           className="self-start flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-xs transition-all hover:border-gray-300 hover:shadow-sm whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
-          Diseño y desarrollo por
+          Desarrollado por
           <span className="font-medium">
             <span className="text-slate-900">data</span>
             <span className="datacomun-comun">comun</span>
