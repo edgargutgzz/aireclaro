@@ -170,10 +170,7 @@ export default async function PublicacionPage({ params }: Props) {
                 ·{" "}
               </>
             )}
-            {/* A column's newspaper already says it's an opinion piece, as in
-                the library's cards; a document keeps its type. */}
-            {p.tipo !== "columna" && `${tipoLabel(p.tipo)} · `}
-            {displayDate(p)}
+            {tipoLabel(p.tipo)} · {displayDate(p)}
           </p>
           <h1 className="mb-6 text-3xl font-bold text-gray-800 md:text-4xl">{p.title}</h1>
 
