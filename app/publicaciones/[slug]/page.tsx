@@ -225,17 +225,6 @@ export default async function PublicacionPage({ params }: Props) {
             <div className="prose prose-lg prose-headings:font-semibold prose-headings:text-gray-800 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600 prose-strong:font-semibold prose-strong:text-gray-800 prose-li:text-gray-700 prose-li:mb-2 prose-img:rounded-xl prose-img:shadow-md max-w-none">
               {p.editorial.content ?? (p.transcripcion && <TranscripcionText t={p.transcripcion} />)}
             </div>
-            {/* A transcribed column: the clipping stays one click away, as the
-                record that it ran in the newspaper. */}
-            {p.file && (
-              <p className="mt-10 text-sm text-gray-600">
-                Publicada en {p.outlet}.{" "}
-                <a href={p.file} target="_blank" rel="noopener noreferrer" className={`font-medium text-gray-800 ${TEXT_LINK}`}>
-                  Ver el recorte del periódico (PDF)
-                  <span className="sr-only"> (abre en una nueva pestaña)</span>
-                </a>
-              </p>
-            )}
           </>
         ) : (
           // The cover (a document's first page, a column's clipping), as a

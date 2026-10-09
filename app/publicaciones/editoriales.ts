@@ -2,8 +2,9 @@ import React from "react";
 
 // The Observatory's newspaper columns, one of the two sources merged into
 // /publicaciones (./data.ts). A column with written `content` gets its own
-// page with its full text; one with `pdfLink` gets a page that summarizes it
-// and links to the clipping, or to the outlet's own page.
+// page with its full text, as does one transcribed from its clipping
+// (./transcripciones.ts); the one with an external `pdfLink` links to the
+// outlet's own page.
 export interface Editorial {
   title: string;
   slug: string;
@@ -1545,7 +1546,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Uriel Chavarría",
     newspaper: "El Norte",
     date: "2025-02-16",
-    pdfLink: "/editoriales/16feb2025.pdf",
     summary: "Contra la contaminación debemos escoger muy bien la táctica y no distraernos.",
   },
   {
@@ -1558,7 +1558,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Uriel Chavarría",
     newspaper: "El Norte",
     date: "2025-01-19",
-    pdfLink: "/editoriales/19ene2025.pdf",
     summary: "Los ciudadanos seguimos en la indefensión ante las compañías contaminantes.",
   },
   {
@@ -1571,7 +1570,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2025-01-12",
-    pdfLink: "/editoriales/12ene2025.pdf",
     summary: "Tenemos el tiempo contado frente al empeoramiento de la calidad del aire.",
   },
   {
@@ -1584,7 +1582,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2024-12-15",
-    pdfLink: "/editoriales/15dic2024.pdf",
     summary: "Bien invertidos, los cobros verdes pueden revertir el deterioro ambiental.",
   },
   {
@@ -1597,7 +1594,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2024-11-22",
-    pdfLink: "/editoriales/22nov2024.pdf",
     summary: "Ciudadanía informada y autoridad receptiva son un sólido binomio.",
   },
   {
@@ -1610,7 +1606,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2024-11-03",
-    pdfLink: "/editoriales/03nov2024.pdf",
     summary: "Hay evidencia sobre el deterioro en salud asociado a la mala calidad del aire.",
   },
   {
@@ -1623,7 +1618,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2024-11-01",
-    pdfLink: "/editoriales/01nov2024.pdf",
     summary: "Para resolver problemas estructurales, necesitamos flexibilidad en objetivos.",
   },
   {
@@ -1636,7 +1630,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2024-10-10",
-    pdfLink: "/editoriales/10oct2024.pdf",
     summary: "La contaminación atmosférica es más visible en el otoño e invierno. En esta época estamos más expuestos.",
   },
   {
@@ -1786,7 +1779,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2024-08-30",
-    pdfLink: "/editoriales/30ago2024.pdf",
     summary: "Morelos fue el primer estado de nuestro país en implementar las zonas de bajas emisiones. ¿Qué espera Nuevo León para hacerlo?",
   },
   {
@@ -1799,7 +1791,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2024-09-29",
-    pdfLink: "/editoriales/29sep2024.pdf",
     summary: "La percepción de seguridad hídrica enmascara temas de fondo aún sin resolver.",
   },
   {
@@ -1812,7 +1803,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2024-08-09",
-    pdfLink: "/editoriales/09ago2024.pdf",
     summary: "Es posible transformar la ciudad gris y hostil en una biodiverciudad.",
   },
   {
@@ -1825,7 +1815,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2024-07-22",
-    pdfLink: "/editoriales/22jul2024.pdf",
     summary: "¿Por qué seguimos refinando petróleo de forma tan ineficiente y contaminante dentro de nuestra zona metropolitana, donde viven y respiran millones de personas?",
   },
   {
@@ -1838,7 +1827,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2024-06-25",
-    pdfLink: "/editoriales/25jun2024.pdf",
     summary: "Las partículas suspendidas son el principal factor de riesgo ambiental para la salud.",
   },
   {
@@ -1851,7 +1839,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2024-06-04",
-    pdfLink: "/editoriales/04jun2024.pdf",
     summary: "De eso depende en gran parte nuestra salud, calidad y esperanza de vida.",
   },
   {
@@ -1864,7 +1851,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2024-05-16",
-    pdfLink: "/editoriales/16may2024.pdf",
     summary: "La contaminación del aire: una amenaza para la salud de nuestros corazones.",
   },
   {
@@ -1877,7 +1863,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2024-03-15",
-    pdfLink: "/editoriales/15mar2024.pdf",
     summary: "Mejorar la calidad del aire requiere voluntad política y participación ciudadana.",
   },
   {
@@ -1890,7 +1875,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2024-03-12",
-    pdfLink: "/editoriales/12mar2024.pdf",
     summary: "Exponerse al ozono causa graves daños; refinemos la forma de transportarnos.",
   },
   {
@@ -1903,7 +1887,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2024-03-03",
-    pdfLink: "/editoriales/03mar2024.pdf",
     summary: "Es urgente actualizar el programa de respuesta a contingencias atmosféricas.",
   },
   {
@@ -1916,7 +1899,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Uriel Chavarría",
     newspaper: "El Norte",
     date: "2024-01-26",
-    pdfLink: "/editoriales/26ene2024.pdf",
     summary: "Dejemos de ser violentados pensando que las cosas van a cambiar. Es hora de apretar.",
   },
   {
@@ -1929,7 +1911,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2024-01-15",
-    pdfLink: "/editoriales/15ene2024.pdf",
     summary: "Requerimos de una Agencia con personalidad jurídica y potestad normativa en NL.",
   },
   {
@@ -1942,7 +1923,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Uriel Chavarría",
     newspaper: "El Norte",
     date: "2023-10-27",
-    pdfLink: "/editoriales/27oct2023.pdf",
     summary: "La contaminación citadina es evidente, pese a normas laxas de emisión de partículas.",
   },
   {
@@ -1969,7 +1949,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2023-06-09",
-    pdfLink: "/editoriales/09jun2023.pdf",
     summary: "Urge tecnología y reducir contaminantes de la refinería para proteger el aire limpio.",
   },
   {
@@ -1982,7 +1961,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Alberto E. Garza Santos",
     newspaper: "El Norte",
     date: "2023-02-25",
-    pdfLink: "/editoriales/25feb2023.pdf",
     summary: "Me imagino una ciudad llena de vida, conocimiento, salud y prosperidad social.",
   },
   {
@@ -1995,7 +1973,6 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Uriel Chavarría",
     newspaper: "El Norte",
     date: "2019-12-29",
-    pdfLink: "/editoriales/29dic2019.pdf",
     summary: "La contaminación nos está matando. Aportemos no tronando \"cuetes\".",
   },
 ];
