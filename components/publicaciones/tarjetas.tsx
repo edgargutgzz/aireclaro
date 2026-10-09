@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The two ways a publication is listed: a card with its cover (the library's
@@ -32,16 +33,36 @@ function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
       {where && <span className="font-medium text-gray-600">{where}</span>}
       {where && " · "}
       {when}
+      {p.externalUrl && <ArrowUpRight className="ml-1 inline h-3.5 w-3.5 align-[-2px] text-gray-600" aria-hidden />}
     </p>
   );
 }
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
+// An item opens its page here, or, when it lives only on another site (the
+// Este País column), that site in a new tab, marked by the ↗ in its line and
+// announced to screen readers.
+function ItemLink({ p, className, children }: { p: Publicacion; className: string; children: React.ReactNode }) {
+  if (p.externalUrl) {
+    return (
+      <a href={p.externalUrl} target="_blank" rel="noopener noreferrer" className={className}>
+        {children}
+        <span className="sr-only"> (abre {p.outlet} en una nueva pestaña)</span>
+      </a>
+    );
+  }
+  return (
+    <Link href={`/publicaciones/${p.slug}`} className={className}>
+      {children}
+    </Link>
+  );
+}
+
 export function PublicacionCard({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
-    <Link
-      href={`/publicaciones/${p.slug}`}
+    <ItemLink
+      p={p}
       className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md ${FOCUS_RING}`}
     >
       <Image
@@ -58,15 +79,15 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
         <p className="mt-1.5 text-lg font-semibold leading-snug text-gray-900 group-hover:text-gray-600">{p.title}</p>
         <WhereWhen p={p} className="mt-auto pt-4" />
       </div>
-    </Link>
+    </ItemLink>
   );
 }
 
-// Every row opens the item's page, its cover as a thumbnail.
+// Every row opens the item (see ItemLink), its cover as a thumbnail.
 export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
   return (
-    <Link
-      href={`/publicaciones/${p.slug}`}
+    <ItemLink
+      p={p}
       className={`flex items-start gap-4 px-4 py-4 transition-colors hover:bg-gray-100/70 sm:px-5 ${FOCUS_RING} focus-visible:ring-inset`}
     >
       <Image
@@ -82,6 +103,6 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
         <p className="mt-1 text-base font-semibold leading-snug text-gray-900">{p.title}</p>
         <WhereWhen p={p} className="mt-2" />
       </div>
-    </Link>
+    </ItemLink>
   );
 }

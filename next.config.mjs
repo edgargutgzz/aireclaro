@@ -17,6 +17,12 @@ const nextConfig = {
       { source: "/editoriales", destination: "/publicaciones?tipo=columna", permanent: true },
       { source: "/editoriales/:slug([^./]+)", destination: "/publicaciones/:slug", permanent: true },
       { source: "/recursos", destination: "/publicaciones", permanent: true },
+      // The one column that lives only on its outlet's site has no page here.
+      {
+        source: "/publicaciones/observatorios-ciudadanos",
+        destination: "https://estepais.com/ambiente/observatorios-ciudadanos-buen-gobierno/",
+        permanent: true,
+      },
       // The columns' newspaper-clipping PDFs, removed 2026-10-08 once each
       // column's page carried its full text: old links land on that page.
       { source: "/editoriales/01nov2024.pdf", destination: "/publicaciones/colaborar-para-prosperar", permanent: true },

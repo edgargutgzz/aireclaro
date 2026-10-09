@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
-import { ArrowLeft, ArrowUpRight, FileText } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 import {
   OCCAMM,
   citation,
@@ -26,10 +26,9 @@ import {
   type Publicacion,
 } from "../data";
 
-// One page per publication, all static. A column with written content shows
-// it in full; everything else shows its summary and opens the PDF (or the
-// outlet's page). Every page ends with a citation, so a link to it is
-// something people can cite. It opens with a way back to the library (many
+// One page per publication, all static. A column shows its full text; a
+// document shows its summary and opens its PDF. Every page ends with a
+// citation, so a link to it is something people can cite. It opens with a way back to the library (many
 // readers arrive from search or a shared link) and ends with more by the
 // same author. The newspaper and the authors link to their library filters.
 // /editoriales/[slug] redirects here
@@ -37,8 +36,11 @@ import {
 
 export const dynamicParams = false;
 
+// No page for an item that lives only on another site (the Este País
+// column): the list links straight to it, and next.config.mjs redirects its
+// slug there.
 export function generateStaticParams() {
-  return publicaciones.map((p) => ({ slug: p.slug }));
+  return publicaciones.filter((p) => !p.externalUrl).map((p) => ({ slug: p.slug }));
 }
 
 type Props = { params: Promise<{ slug: string }> };
@@ -140,7 +142,8 @@ export default async function PublicacionPage({ params }: Props) {
   const p = getPublicacion((await params).slug);
   if (!p) notFound();
 
-  const outbound = p.file ?? p.externalUrl;
+  // Without full text on the page, the PDF is the read.
+  const outbound = p.editorial ? undefined : p.file;
   const related = relacionadas(p);
   const fotos = photos(p);
 
@@ -191,22 +194,13 @@ export default async function PublicacionPage({ params }: Props) {
               summary stays in the metadata (Google, link previews). */}
           {p.summary && !p.editorial && <p className="mt-8 text-lg leading-relaxed text-gray-700">{p.summary}</p>}
 
-          {/* Without full text on the page, the PDF or the outlet is the read. */}
-          {outbound && !p.editorial && (
+          {outbound && (
             <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
               <a href={outbound} target="_blank" rel="noopener noreferrer" className={PRIMARY_BUTTON}>
-                {p.file ? (
-                  <>
-                    <FileText className="h-4 w-4" aria-hidden /> Abrir PDF
-                  </>
-                ) : (
-                  <>
-                    Leer en {p.outlet} <ArrowUpRight className="h-4 w-4" aria-hidden />
-                  </>
-                )}
+                <FileText className="h-4 w-4" aria-hidden /> Abrir PDF
                 <span className="sr-only"> (abre en una nueva pestaña)</span>
               </a>
-              {p.file && <span className="text-xs text-gray-500">{pdfFacts(p)}</span>}
+              <span className="text-xs text-gray-500">{pdfFacts(p)}</span>
             </div>
           )}
         </header>
