@@ -6,6 +6,7 @@ import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import Avatares from "@/components/publicaciones/avatares";
 import Cita from "@/components/publicaciones/cita";
+import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 import { PublicacionCard } from "@/components/publicaciones/tarjetas";
 import Image from "next/image";
 import Link from "next/link";
@@ -198,10 +199,15 @@ export default async function PublicacionPage({ params }: Props) {
 
           {outbound && (
             <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
-              <a href={outbound} target="_blank" rel="noopener noreferrer" className={PRIMARY_BUTTON}>
+              <EnlaceMedido
+                href={outbound}
+                evento="pdf_abierto"
+                publicacion={p.slug}
+                aviso="abre en una nueva pestaña"
+                className={PRIMARY_BUTTON}
+              >
                 <FileText className="h-4 w-4" aria-hidden /> Abrir PDF
-                <span className="sr-only"> (abre en una nueva pestaña)</span>
-              </a>
+              </EnlaceMedido>
               <span className="text-xs text-gray-500">{pdfFacts(p)}</span>
             </div>
           )}

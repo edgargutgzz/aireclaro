@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The two ways a publication is listed: a card with its cover (the library's
@@ -56,18 +57,22 @@ function opensPdf(p: Publicacion): boolean {
 function ItemLink({ p, className, children }: { p: Publicacion; className: string; children: React.ReactNode }) {
   if (opensPdf(p)) {
     return (
-      <a href={p.file} target="_blank" rel="noopener noreferrer" className={className}>
+      <EnlaceMedido href={p.file!} evento="pdf_abierto" publicacion={p.slug} aviso="PDF, abre en una nueva pestaña" className={className}>
         {children}
-        <span className="sr-only"> (PDF, abre en una nueva pestaña)</span>
-      </a>
+      </EnlaceMedido>
     );
   }
   if (p.externalUrl) {
     return (
-      <a href={p.externalUrl} target="_blank" rel="noopener noreferrer" className={className}>
+      <EnlaceMedido
+        href={p.externalUrl}
+        evento="enlace_externo"
+        publicacion={p.slug}
+        aviso={`abre ${p.outlet} en una nueva pestaña`}
+        className={className}
+      >
         {children}
-        <span className="sr-only"> (abre {p.outlet} en una nueva pestaña)</span>
-      </a>
+      </EnlaceMedido>
     );
   }
   return (
