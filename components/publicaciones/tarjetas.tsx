@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, FileText } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The two ways a publication is listed: a card with its cover (the library's
@@ -34,11 +34,6 @@ function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
       {where && " · "}
       {when}
       {p.externalUrl && <ArrowUpRight className="ml-1 inline h-3.5 w-3.5 align-[-2px] text-gray-600" aria-hidden />}
-      {opensPdf(p) && (
-        <span className="ml-1.5 inline-flex items-center gap-1 align-[-2px] font-medium text-gray-600">
-          <FileText className="h-3.5 w-3.5" aria-hidden /> PDF
-        </span>
-      )}
     </p>
   );
 }
@@ -52,9 +47,9 @@ function opensPdf(p: Publicacion): boolean {
   return p.tipo !== "columna" && Boolean(p.file);
 }
 
-// An item opens its page here; a document, its PDF in a new tab (marked PDF
-// in its line); a column that lives only on another site, that site in a new
-// tab (marked ↗). Both announced to screen readers.
+// An item opens its page here; a document, its PDF in a new tab; a column
+// that lives only on another site, that site in a new tab (marked ↗). Both
+// new tabs are announced to screen readers.
 function ItemLink({ p, className, children }: { p: Publicacion; className: string; children: React.ReactNode }) {
   if (opensPdf(p)) {
     return (
