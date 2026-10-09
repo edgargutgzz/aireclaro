@@ -10,6 +10,7 @@ import { PublicacionCard } from "@/components/publicaciones/tarjetas";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Fragment } from "react";
 import { ArrowLeft, ArrowUpRight, FileText } from "lucide-react";
 import {
   OCCAMM,
@@ -100,6 +101,35 @@ function structuredData(p: Publicacion) {
   };
 }
 
+// A transcribed clipping, in the same shape as the written columns: the
+// epigraph and the author's note in italics, the text between.
+function TranscripcionText({ t }: { t: NonNullable<Publicacion["transcripcion"]> }) {
+  return (
+    <>
+      {t.epigraph && (
+        <p>
+          <em>
+            {t.epigraph.map((line, i) => (
+              <Fragment key={i}>
+                {i > 0 && <br />}
+                {line}
+              </Fragment>
+            ))}
+          </em>
+        </p>
+      )}
+      {t.paragraphs.map((text, i) => (
+        <p key={i}>{text}</p>
+      ))}
+      {t.note && (
+        <p>
+          <em>{t.note}</em>
+        </p>
+      )}
+    </>
+  );
+}
+
 const TEXT_LINK =
   "rounded underline decoration-gray-300 underline-offset-2 hover:decoration-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
@@ -159,7 +189,8 @@ export default async function PublicacionPage({ params }: Props) {
 
           {p.summary && <p className="mt-8 text-lg leading-relaxed text-gray-700">{p.summary}</p>}
 
-          {outbound && (
+          {/* Without full text on the page, the PDF or the outlet is the read. */}
+          {outbound && !p.editorial && (
             <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
               <a href={outbound} target="_blank" rel="noopener noreferrer" className={PRIMARY_BUTTON}>
                 {p.file ? (
@@ -190,8 +221,19 @@ export default async function PublicacionPage({ params }: Props) {
               className="mb-12 w-full rounded-xl shadow-md"
             />
             <div className="prose prose-lg prose-headings:font-semibold prose-headings:text-gray-800 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600 prose-strong:font-semibold prose-strong:text-gray-800 prose-li:text-gray-700 prose-li:mb-2 prose-img:rounded-xl prose-img:shadow-md max-w-none">
-              {p.editorial.content}
+              {p.editorial.content ?? (p.transcripcion && <TranscripcionText t={p.transcripcion} />)}
             </div>
+            {/* A transcribed column: the clipping stays one click away, as the
+                record that it ran in the newspaper. */}
+            {p.file && (
+              <p className="mt-10 text-sm text-gray-600">
+                Publicada en {p.outlet}.{" "}
+                <a href={p.file} target="_blank" rel="noopener noreferrer" className={`font-medium text-gray-800 ${TEXT_LINK}`}>
+                  Ver el recorte del periódico (PDF)
+                  <span className="sr-only"> (abre en una nueva pestaña)</span>
+                </a>
+              </p>
+            )}
           </>
         ) : (
           // The cover (a document's first page, a column's clipping), as a

@@ -1,4 +1,5 @@
 import { editoriales, type Editorial } from "./editoriales";
+import { transcripciones, type Transcripcion } from "./transcripciones";
 import { SITE_URL } from "@/lib/site";
 
 // Everything the Observatory has published, in one list for /publicaciones:
@@ -49,14 +50,16 @@ export type Publicacion = {
   pages?: number;
   doi?: string;
   image: string;
-  /** Set for a column with its full text on the page. */
+  /** Set for a column with its full text on the page: written `content`, or
+   *  a `transcripcion` of its clipping (./transcripciones.ts). */
   editorial?: Editorial;
+  transcripcion?: Transcripcion;
 };
 
 // The documents: all 16 from the old /recursos page. Credits, dates and
 // summaries come from each PDF itself.
 // Each `file` names both public/recursos/<file>.pdf and its cover .webp.
-type Documento = Omit<Publicacion, "file" | "image" | "editorial" | "people"> & { file: string; people?: string[] };
+type Documento = Omit<Publicacion, "file" | "image" | "editorial" | "transcripcion" | "people"> & { file: string; people?: string[] };
 
 const DOCUMENTOS: Documento[] = [
   {
@@ -273,7 +276,8 @@ function fromEditorial(e: Editorial): Publicacion {
     file: external ? undefined : e.pdfLink,
     externalUrl: external ? e.pdfLink : undefined,
     image: e.image,
-    editorial: e.content ? e : undefined,
+    editorial: e.content || transcripciones[e.slug] ? e : undefined,
+    transcripcion: transcripciones[e.slug],
   };
 }
 
