@@ -181,7 +181,9 @@ export default function Biblioteca() {
     <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start lg:gap-12">
       <div className="flex flex-col gap-4 lg:gap-8">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="publicaciones-buscar" className={labelClass}>
+          {/* Visible in the desktop sidebar; on mobile the icon and the
+              placeholder say it, so the label is for screen readers only. */}
+          <label htmlFor="publicaciones-buscar" className={`${labelClass} sr-only lg:not-sr-only`}>
             Buscar
           </label>
           <div className="flex gap-2">
