@@ -162,7 +162,6 @@ export default function Biblioteca() {
   const facets = (
     <>
       <Facet label="Tipo" options={tipoOptions} value={tipo} onChange={(v) => set({ tipo: v })} />
-      <Facet label="Medio" options={medioOptions} value={medio} onChange={(v) => set({ medio: v })} />
       <Facet
         label="Autoría"
         options={autorOptions}
@@ -171,6 +170,7 @@ export default function Biblioteca() {
         limit={6}
         moreLabel="Ver todas las personas"
       />
+      <Facet label="Medio" options={medioOptions} value={medio} onChange={(v) => set({ medio: v })} />
       <Facet label="Año" options={anioOptions} value={anio} onChange={(v) => set({ anio: v })} />
     </>
   );
