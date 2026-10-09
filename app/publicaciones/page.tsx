@@ -9,7 +9,7 @@ import Biblioteca from "@/components/publicaciones/biblioteca";
 // sits close under the navbar (pt-4). The h1 stays for search engines and
 // screen readers; the description is for Google and link previews.
 
-const DESCRIPTION = "Columnas, estudios y posicionamientos del Observatorio sobre la calidad del aire.";
+const DESCRIPTION = "Columnas de opinión, informes y estudios del Observatorio sobre la calidad del aire en Monterrey.";
 
 // The link card is app/api/og/publicaciones (d= is its design version: bump
 // it on any change, chat apps cache per image URL); the RSS feed is ./rss.xml.

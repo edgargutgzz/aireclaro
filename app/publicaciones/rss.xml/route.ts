@@ -40,7 +40,7 @@ export function GET() {
     <title>Publicaciones | ${SITE_NAME}</title>
     <link>${SITE_URL}/publicaciones</link>
     <atom:link href="${SITE_URL}/publicaciones/rss.xml" rel="self" type="application/rss+xml" />
-    <description>Columnas, estudios y posicionamientos del Observatorio sobre la calidad del aire.</description>
+    <description>Columnas de opinión, informes y estudios del Observatorio sobre la calidad del aire en Monterrey.</description>
     <language>es-MX</language>
 ${items}
   </channel>
