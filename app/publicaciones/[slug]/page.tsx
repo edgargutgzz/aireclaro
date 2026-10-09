@@ -27,7 +27,9 @@ import {
 } from "../data";
 
 // One page per publication, all static. A column shows its full text; a
-// document shows its summary and opens its PDF. Every page ends with a
+// document shows its summary and opens its PDF (the library links documents
+// straight to the PDF, so their pages are mainly for search engines, Google
+// Scholar and anyone citing them). Every page ends with a
 // citation, so a link to it is something people can cite. It opens with a way back to the library (many
 // readers arrive from search or a shared link) and ends with more by the
 // same author. The newspaper and the authors link to their library filters.
