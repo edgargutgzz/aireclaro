@@ -11,11 +11,21 @@ import Biblioteca from "@/components/publicaciones/biblioteca";
 
 const DESCRIPTION = "Columnas, estudios y posicionamientos del Observatorio sobre la calidad del aire.";
 
-export const metadata: Metadata = pageMetadata({
+// The link card is app/api/og/publicaciones; the RSS feed is ./rss.xml.
+const base = pageMetadata({
   title: "Publicaciones",
   description: DESCRIPTION,
   path: "/publicaciones",
+  images: [{ url: "/api/og/publicaciones", width: 1200, height: 630, alt: "Publicaciones del Observatorio del Aire" }],
 });
+
+export const metadata: Metadata = {
+  ...base,
+  alternates: {
+    ...base.alternates,
+    types: { "application/rss+xml": [{ url: "/publicaciones/rss.xml", title: "Publicaciones del Observatorio del Aire" }] },
+  },
+};
 
 export default function Publicaciones() {
   return (
