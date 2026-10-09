@@ -20,14 +20,15 @@ export function DialogLink({ href, children }: { href: string; children: React.R
   );
 }
 
-// Every modal on the map runs on the platform's own <dialog>. The browser puts
+// Every modal on the site (the map's popups, /publicaciones' mobile filters)
+// runs on the platform's own <dialog>. The browser puts
 // it in the top layer, so it clears the map chrome without a z-index to pick;
 // makes the rest of the page inert, so focus is trapped and the background is
 // hidden from assistive tech; handles Escape; and returns focus to the trigger
 // on close. All of that used to be hand-rolled, once per popup. What the
 // platform still doesn't give us is click-outside-to-dismiss and holding the
 // page still behind the dialog, so that is what is left here.
-function DialogShell({
+export function DialogShell({
   onClose,
   labelledBy,
   className,

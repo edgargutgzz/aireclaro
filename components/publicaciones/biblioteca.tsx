@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
-import SelectMenu from "@/components/datos/select-menu";
+import { useEffect, useId, useMemo, useState } from "react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
+import { DialogShell } from "@/components/mapa/info-dialog";
 import { PublicacionCard, PublicacionRow } from "@/components/publicaciones/tarjetas";
 import {
   PERSONAS,
@@ -20,7 +20,8 @@ import {
 // lead as image cards; every list row carries its cover as a thumbnail.
 // The filters show how many items each option would leave (counted against
 // the other active filters, the usual faceted-search rule): a list in the
-// sidebar from lg, a dropdown below that so they don't push the results down.
+// sidebar from lg; below that, behind a "Filtros" button that opens them in a
+// dialog, so they don't push the results down.
 //
 // The filters live in the query string (?tipo=informe&anio=2025&q=gasolina,
 // ?medio=el-norte, ?autor=selene-m-guajardo) so a filtered view can be shared. Like the map (lib/map-url-state.ts),
@@ -152,8 +153,27 @@ export default function Biblioteca() {
     (g) => g.items.length > 0,
   );
 
-  const withCounts = <T extends string>(options: FacetOption<T>[]) =>
-    options.map((o) => ({ value: o.value, label: `${o.label} (${o.count})` }));
+  // How many of the four filters are on, for the mobile "Filtros" button.
+  const activeFilters = [tipo, medio, autor, anio].filter(Boolean).length;
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filtersTitleId = `filtros-${useId().replace(/:/g, "")}`;
+
+  // The four filter lists: the sidebar from lg, the "Filtros" dialog below.
+  const facets = (
+    <>
+      <Facet label="Tipo" options={tipoOptions} value={tipo} onChange={(v) => set({ tipo: v })} />
+      <Facet label="Medio" options={medioOptions} value={medio} onChange={(v) => set({ medio: v })} />
+      <Facet
+        label="Autoría"
+        options={autorOptions}
+        value={autor}
+        onChange={(v) => set({ autor: v })}
+        limit={6}
+        moreLabel="Ver todas las personas"
+      />
+      <Facet label="Año" options={anioOptions} value={anio} onChange={(v) => set({ anio: v })} />
+    </>
+  );
 
   return (
     // lg+: the filters are a sidebar and the results take the rest of the
@@ -164,80 +184,86 @@ export default function Biblioteca() {
           <label htmlFor="publicaciones-buscar" className={labelClass}>
             Buscar
           </label>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden />
-            <input
-              id="publicaciones-buscar"
-              type="search"
-              value={q}
-              onChange={(e) => set({ q: e.target.value })}
-              placeholder="Título, autor o medio"
-              className="w-full rounded-xl bg-gray-100 py-2.5 pl-9 pr-3 text-sm font-medium text-gray-700 transition-colors placeholder:font-normal placeholder:text-gray-500 hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-            />
-          </div>
-        </div>
-
-        {/* Below lg: dropdowns. */}
-        <div className="grid grid-cols-2 gap-4 lg:hidden">
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <label htmlFor="publicaciones-tipo" className={labelClass}>
-              Tipo
-            </label>
-            <SelectMenu
-              id="publicaciones-tipo"
-              options={withCounts(tipoOptions)}
-              value={tipo}
-              onChange={(v) => set({ tipo: v })}
-            />
-          </div>
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <label htmlFor="publicaciones-anio" className={labelClass}>
-              Año
-            </label>
-            <SelectMenu
-              id="publicaciones-anio"
-              options={withCounts(anioOptions)}
-              value={anio}
-              onChange={(v) => set({ anio: v })}
-            />
-          </div>
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <label htmlFor="publicaciones-medio" className={labelClass}>
-              Medio
-            </label>
-            <SelectMenu
-              id="publicaciones-medio"
-              options={withCounts(medioOptions)}
-              value={medio}
-              onChange={(v) => set({ medio: v })}
-            />
-          </div>
-          <div className="flex min-w-0 flex-col gap-1.5">
-            <label htmlFor="publicaciones-autor" className={labelClass}>
-              Autoría
-            </label>
-            <SelectMenu
-              id="publicaciones-autor"
-              options={withCounts(autorOptions)}
-              value={autor}
-              onChange={(v) => set({ autor: v })}
-            />
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden />
+              <input
+                id="publicaciones-buscar"
+                type="search"
+                value={q}
+                onChange={(e) => set({ q: e.target.value })}
+                placeholder="Título, autor o medio"
+                className="w-full rounded-xl bg-gray-100 py-2.5 pl-9 pr-3 text-sm font-medium text-gray-700 transition-colors placeholder:font-normal placeholder:text-gray-500 hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+              />
+            </div>
+            {/* Below lg the filters live behind this button (the usual mobile
+                pattern), so the results start near the top of the screen. */}
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-haspopup="dialog"
+              className="flex shrink-0 items-center gap-1.5 rounded-xl bg-gray-100 px-3.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 lg:hidden"
+            >
+              <SlidersHorizontal className="h-4 w-4" aria-hidden />
+              Filtros
+              {activeFilters > 0 && (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-gray-800 px-1.5 text-xs font-semibold text-white">
+                  {activeFilters}
+                  <span className="sr-only"> activos</span>
+                </span>
+              )}
+            </button>
           </div>
         </div>
 
         {/* lg+: every option in view, with its count. */}
-        <Facet label="Tipo" options={tipoOptions} value={tipo} onChange={(v) => set({ tipo: v })} />
-        <Facet label="Medio" options={medioOptions} value={medio} onChange={(v) => set({ medio: v })} />
-        <Facet
-          label="Autoría"
-          options={autorOptions}
-          value={autor}
-          onChange={(v) => set({ autor: v })}
-          limit={6}
-          moreLabel="Ver todas las personas"
-        />
-        <Facet label="Año" options={anioOptions} value={anio} onChange={(v) => set({ anio: v })} />
+        <div className="hidden lg:flex lg:flex-col lg:gap-8">{facets}</div>
       </div>
+
+      {filtersOpen && (
+        <DialogShell
+          onClose={() => setFiltersOpen(false)}
+          labelledBy={filtersTitleId}
+          className="flex max-h-[85svh] w-[90%] max-w-md flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white p-6 shadow-xl"
+        >
+          <div className="flex flex-shrink-0 items-start justify-between gap-4 pb-4">
+            <h2 id={filtersTitleId} className="text-base font-medium text-gray-800">
+              Filtros
+            </h2>
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(false)}
+              aria-label="Cerrar"
+              className="-mr-2 -mt-1 flex-shrink-0 rounded-xl p-2 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          {/* `grow basis-auto`, not `flex-1`: see InfoDialog (iOS Safari
+              collapses a flex-1 body inside a fit-content <dialog>). */}
+          <div className="-mx-1 flex min-h-0 grow basis-auto flex-col gap-6 overflow-y-auto overscroll-contain px-1">
+            {facets}
+          </div>
+          <div className="flex flex-shrink-0 items-center gap-4 pt-4">
+            {activeFilters > 0 && (
+              <button
+                type="button"
+                onClick={() => setFilters((f) => ({ ...NO_FILTERS, q: f.q }))}
+                className="rounded-xl text-sm font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+              >
+                Quitar filtros
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(false)}
+              className="ml-auto flex h-10 items-center rounded-xl bg-gray-800 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            >
+              Ver {results.length} {results.length === 1 ? "publicación" : "publicaciones"}
+            </button>
+          </div>
+        </DialogShell>
+      )}
 
       <div className="mt-6 lg:mt-0">
         {/* Only once something is filtered: how many matched, and the way
@@ -306,7 +332,7 @@ export default function Biblioteca() {
   );
 }
 
-// A sidebar filter (lg+): one row per option, the count trailing. The current
+// A filter (the lg+ sidebar, or the mobile "Filtros" dialog): one row per option, the count trailing. The current
 // option gets the nav's wash; an option that would leave nothing is disabled
 // (its 0 says why), unless it's the current one. With `limit`, only the first
 // options show until "Ver todas…" is pressed (the current one always shows).
@@ -330,7 +356,7 @@ function Facet<T extends string>({
   // +1: the "Todas…" option doesn't count toward the limit.
   const shown = collapsed ? options.filter((o, i) => i <= limit || o.value === value) : options;
   return (
-    <div role="group" aria-label={label} className="hidden lg:block">
+    <div role="group" aria-label={label}>
       <p className={`${labelClass} mb-1.5`}>{label}</p>
       <ul>
         {shown.map((o) => {
