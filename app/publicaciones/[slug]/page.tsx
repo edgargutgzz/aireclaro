@@ -187,7 +187,9 @@ export default async function PublicacionPage({ params }: Props) {
             <p className="text-gray-600">{p.author}</p>
           )}
 
-          {p.summary && <p className="mt-8 text-lg leading-relaxed text-gray-700">{p.summary}</p>}
+          {/* Only where the page has no full text to read; otherwise the
+              summary stays in the metadata (Google, link previews). */}
+          {p.summary && !p.editorial && <p className="mt-8 text-lg leading-relaxed text-gray-700">{p.summary}</p>}
 
           {/* Without full text on the page, the PDF or the outlet is the read. */}
           {outbound && !p.editorial && (
