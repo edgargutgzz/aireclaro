@@ -14,7 +14,7 @@ import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 
 export const metadata: Metadata = pageMetadata({
   title: "Infografías",
-  description: "Conoce las infografías que hemos creado para informarnos sobre la calidad del aire en Nuevo León.",
+  description: "Infografías del Observatorio sobre la calidad del aire en Monterrey.",
   path: "/infografias",
 });
 
