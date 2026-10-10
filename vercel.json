@@ -5,6 +5,10 @@
       "schedule": "0 10 1 * *"
     },
     {
+      "path": "/api/cron/sima-weekly-sync",
+      "schedule": "0 10 * * 1"
+    },
+    {
       "path": "/api/cron/sima-hourly-sync",
       "schedule": "*/10 * * * *"
     },

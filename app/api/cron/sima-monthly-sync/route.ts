@@ -6,48 +6,19 @@ import { computeDiasInsalubresMensual, type Pollutant } from "@/lib/dias-insalub
 import { computeCoberturaDiaria } from "@/lib/cobertura-aggregate";
 import { computePromedioTrimestral } from "@/lib/promedio-anual-aggregate";
 import { fetchPromediosDiarios, type PromedioDiario } from "@/lib/promedios-diarios";
+import { DEFAULT_PARAMS, iso, syncMedicionesFinales } from "@/lib/sima-finales-sync";
 
 // Pulls SINAICA's hourly readings for the month that just closed (PM2.5 and
-// PM10 by default) for the 15 Monterrey metro SIMA stations into
-// sima_mediciones_finales. Separate from sima_mediciones (the live hourly
-// mirror the map reads) and from sima_sensores (only read here, never
-// written). Request shape mirrors the proven month-window fetch from the
-// sibling `sinaica` project.
+// PM10 by default) into sima_mediciones_finales (lib/sima-finales-sync.ts),
+// then recomputes the /datos tables from it. The weekly sync keeps the
+// current month's readings in the table meanwhile, without the recompute.
 
 export const maxDuration = 120;
-
-const SINAICA_URL = "https://sinaica.inecc.gob.mx/lib/libd/cnxn.php";
-const DEFAULT_PARAMS = ["PM2.5", "PM10"];
-
-interface SinaicaRow {
-  fecha: string;
-  hora: string | number;
-  valor: string | number;
-  val: string | number;
-  bandO?: string | null;
-}
-
-function iso(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
 
 function monthRange(year: number, month1indexed: number) {
   const start = new Date(Date.UTC(year, month1indexed - 1, 1));
   const end = new Date(Date.UTC(year, month1indexed, 1));
   return { fechaInit: iso(start), fechaFin: iso(end) };
-}
-
-// Every calendar date in [fechaInit, fechaFin), matching SINAICA's
-// inclusive-start/exclusive-end convention.
-function datesInRange(fechaInit: string, fechaFin: string): string[] {
-  const dates: string[] = [];
-  let current = new Date(`${fechaInit}T00:00:00Z`);
-  const end = new Date(`${fechaFin}T00:00:00Z`);
-  while (current < end) {
-    dates.push(iso(current));
-    current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
-  }
-  return dates;
 }
 
 // The month that closed most recently relative to `reference`.
@@ -57,44 +28,6 @@ function previousMonth(reference: Date) {
   return currentMonth1indexed === 1
     ? { year: year - 1, month1indexed: 12 }
     : { year, month1indexed: currentMonth1indexed - 1 };
-}
-
-async function fetchStationMonth(
-  sinaicaId: number,
-  fechaInit: string,
-  fechaFin: string,
-  param: string,
-): Promise<SinaicaRow[]> {
-  const body = new URLSearchParams({
-    metodo: "getDatos",
-    estacionesId: String(sinaicaId),
-    fechaInit,
-    fechaFin,
-    paramId: param,
-    nivel: "1000",
-    campos: "2",
-    limit: "1",
-    inc: "1",
-    soloVal: "1",
-  });
-
-  const res = await fetch(SINAICA_URL, {
-    method: "POST",
-    body,
-    signal: AbortSignal.timeout(60_000),
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-
-  const text = (await res.text()).trim();
-  if (!text || text === "null" || text === "[]") return [];
-
-  try {
-    return JSON.parse(text) as SinaicaRow[];
-  } catch {
-    return [];
-  }
 }
 
 export async function GET(request: NextRequest) {
@@ -121,75 +54,16 @@ export async function GET(request: NextRequest) {
 
   const supabase = createServiceClient();
 
-  const { data: estaciones, error: estacionesError } = await supabase
-    .from("sima_sensores")
-    .select("sensor_id, sinaica_id")
-    .neq("sensor_id", "FIN");
-
-  if (estacionesError || !estaciones) {
+  let sync;
+  try {
+    sync = await syncMedicionesFinales(supabase, fechaInit, fechaFin, params);
+  } catch (err) {
     return NextResponse.json(
-      { error: estacionesError?.message ?? "no stations found" },
+      { error: err instanceof Error ? err.message : String(err) },
       { status: 500 },
     );
   }
-
-  const dates = datesInRange(fechaInit, fechaFin);
-  let rowsWritten = 0;
-  const errors: string[] = [];
-
-  for (const estacion of estaciones) {
-    const rows = [];
-
-    for (const param of params) {
-      try {
-        const registros = await fetchStationMonth(estacion.sinaica_id, fechaInit, fechaFin, param);
-
-        // Full grid: one row per hour of every date in the month, even when
-        // SINAICA returned nothing for it. NULL means "no data at all" so
-        // it stays distinguishable from val=0 ("SINAICA has it, flagged
-        // invalid").
-        const byHour = new Map<string, SinaicaRow>();
-        for (const r of registros) {
-          byHour.set(`${r.fecha}|${Number(r.hora)}`, r);
-        }
-
-        for (const fecha of dates) {
-          for (let hora = 0; hora < 24; hora++) {
-            const r = byHour.get(`${fecha}|${hora}`);
-            rows.push({
-              sensor_id: estacion.sensor_id,
-              sinaica_id: estacion.sinaica_id,
-              parametro: param,
-              fecha,
-              hora,
-              valor: r && r.valor !== "" && r.valor != null ? Number(r.valor) : null,
-              val: r ? Number(r.val) : null,
-              banda_o: r?.bandO || null,
-            });
-          }
-        }
-      } catch (err) {
-        errors.push(
-          `${estacion.sensor_id}/${param}: ${err instanceof Error ? err.message : String(err)}`,
-        );
-      }
-
-      // Be polite to SINAICA's server between requests.
-      await new Promise((resolve) => setTimeout(resolve, 300));
-    }
-
-    if (rows.length === 0) continue;
-
-    const { error: upsertError } = await supabase
-      .from("sima_mediciones_finales")
-      .upsert(rows, { onConflict: "sensor_id,parametro,fecha,hora" });
-
-    if (upsertError) {
-      errors.push(`${estacion.sensor_id}: ${upsertError.message}`);
-    } else {
-      rowsWritten += rows.length;
-    }
-  }
+  const { rowsWritten, errors } = sync;
 
   // /datos reads a precomputed month-level rollup (sima_insalubres_mensual)
   // instead of the ~15k-row sima_promedios_diarios view directly -- that
@@ -206,7 +80,10 @@ export async function GET(request: NextRequest) {
   let promediosError: string | undefined;
   if (rowsWritten > 0) {
     try {
-      promedios = await fetchPromediosDiarios(supabase);
+      // Closed months only: the weekly sync keeps the month in progress in
+      // the table, and the charts don't show a partial month.
+      const inicioMesActual = iso(new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)));
+      promedios = (await fetchPromediosDiarios(supabase)).filter((p) => p.fecha < inicioMesActual);
     } catch (err) {
       promediosError = err instanceof Error ? err.message : String(err);
     }
@@ -293,7 +170,7 @@ export async function GET(request: NextRequest) {
     fechaInit,
     fechaFin,
     params,
-    estaciones: estaciones.length,
+    estaciones: sync.estaciones,
     rowsWritten,
     errors,
     promediosError,

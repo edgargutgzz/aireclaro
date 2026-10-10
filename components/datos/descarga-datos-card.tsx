@@ -116,13 +116,13 @@ export default function DescargaDatosCard({
   const [parametro, setParametro] = useState<Parametro>("todos");
   const [estacion, setEstacion] = useState("todas");
 
-  // v = the latest loaded month: when the monthly sync adds one, the link
-  // changes, so the CDN can't hand out last month's cached file.
+  // v = the latest loaded date: when a sync adds days, the link changes, so
+  // the CDN can't hand out an older cached file.
   const href = `/api/datos/sima-horario?${new URLSearchParams({
     anio,
     parametro,
     estacion,
-    v: ultimaFecha.slice(0, 7),
+    v: ultimaFecha,
   })}`;
 
   // Size hint: the row grid is complete (an empty hour is still a row), so
