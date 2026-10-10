@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { BookOpen, HeartPulse, ShieldCheck, Wind } from "lucide-react";
 import type { InfoTab } from "@/components/datos/info-tabs";
 
@@ -72,12 +71,14 @@ export const GENERAL_TABS: InfoTab[] = [
         asocian con enfermedades cardiovasculares y respiratorias, y con una
         menor esperanza de vida. Si quieres entender mejor cómo nos afecta,
         puedes consultar la siguiente{" "}
-        <Link
-          href="/publicaciones/efectos-contaminacion-aire-salud"
+        <a
+          href="/infografias/infografia_salud.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
           className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
         >
           infografía
-        </Link>
+        </a>
         .
       </>
     ),

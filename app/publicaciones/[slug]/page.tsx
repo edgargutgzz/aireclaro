@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
-import { ArrowLeft, Download, FileText } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 import {
   OCCAMM,
   citation,
@@ -28,8 +28,7 @@ import {
 // One page per publication, all static. A column shows its full text; a
 // document shows its summary and opens its PDF (the library links documents
 // straight to the PDF, so their pages are mainly for search engines, Google
-// Scholar and anyone citing them). An infographic shows its poster whole, as
-// wide as the navbar, and its PDF is a download. Every page ends with a
+// Scholar and anyone citing them). Every page ends with a
 // citation, so a link to it is something people can cite. It opens with a way back to the library (many
 // readers arrive from search or a shared link) and ends with more by the
 // same author. The newspaper and the authors link to their library filters.
@@ -197,15 +196,7 @@ export default async function PublicacionPage({ params }: Props) {
                 aviso="abre en una nueva pestaña"
                 className={PRIMARY_BUTTON}
               >
-                {p.poster ? (
-                  <>
-                    <Download className="h-4 w-4" aria-hidden /> Descargar
-                  </>
-                ) : (
-                  <>
-                    <FileText className="h-4 w-4" aria-hidden /> Abrir documento
-                  </>
-                )}
+                <FileText className="h-4 w-4" aria-hidden /> Abrir documento
               </EnlaceMedido>
             </div>
           )}
@@ -226,18 +217,6 @@ export default async function PublicacionPage({ params }: Props) {
               {p.editorial.content ?? (p.transcripcion && <TranscripcionText t={p.transcripcion} />)}
             </div>
           </>
-        ) : p.poster ? (
-          // The poster, whole, breaking out of the reading column to the
-          // navbar's width (max-w-7xl less its padding), so its text reads.
-          <Image
-            src={p.image}
-            alt={`Infografía: ${p.title}`}
-            width={p.poster.width}
-            height={p.poster.height}
-            sizes="(min-width: 1280px) 1216px, 100vw"
-            preload
-            className="relative left-1/2 w-[min(76rem,calc(100vw-3rem))] max-w-none -translate-x-1/2 rounded-xl shadow-md lg:w-[min(76rem,calc(100vw-4rem))]"
-          />
         ) : (
           // The cover (a document's first page, a column's clipping), as a
           // preview that also opens it.

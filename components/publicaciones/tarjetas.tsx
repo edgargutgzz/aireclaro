@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
-import { DESTACADA, formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
+import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The ways a publication is listed: a card with its cover (the library's
 // "Lo más reciente", a page's "Más de…"), a row with a thumbnail (the
@@ -46,11 +46,10 @@ function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
 // A document or an infographic (anything but a column) is its PDF, so the
-// list opens that directly. The featured item (DESTACADA) is the exception:
-// it opens its page, where the poster is shown whole. Its page stays online, unlinked from here, for search engines,
+// list opens that directly. Its page stays online, unlinked from here, for search engines,
 // Google Scholar and "Cómo citar".
 function opensPdf(p: Publicacion): boolean {
-  return p.tipo !== "columna" && p.slug !== DESTACADA && Boolean(p.file);
+  return p.tipo !== "columna" && Boolean(p.file);
 }
 
 // An item opens its page here; a document, its PDF in a new tab; a column
@@ -97,7 +96,7 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
         height={360}
         sizes="(min-width: 1024px) 300px, (min-width: 640px) 33vw, 100vw"
         preload={priority}
-        className={`aspect-video w-full object-cover ${p.poster ? "object-top" : ""}`}
+        className={`aspect-video w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
       />
       <div className="flex flex-1 flex-col p-4">
         <Who p={p} />
@@ -122,7 +121,7 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
         width={288}
         height={162}
         sizes="(min-width: 640px) 144px, 96px"
-        className={`aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36 ${p.poster ? "object-top" : ""}`}
+        className={`aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36 ${p.tipo === "infografia" ? "object-top" : ""}`}
       />
       <div className="min-w-0">
         <Who p={p} />
@@ -147,7 +146,7 @@ export function PublicacionDestacada({ publicacion: p }: { publicacion: Publicac
         height={360}
         sizes="(min-width: 1024px) 380px, (min-width: 640px) 40vw, 100vw"
         preload
-        className={`aspect-video h-full w-full object-cover ${p.poster ? "object-top" : ""}`}
+        className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
       />
       <div className="flex flex-col justify-center p-5 sm:p-6">
         <Who p={p} />

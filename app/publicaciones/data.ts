@@ -51,8 +51,6 @@ export type Publicacion = {
   pages?: number;
   doi?: string;
   image: string;
-  /** An infographic's poster size (its `image`), shown whole on its page. */
-  poster?: { width: number; height: number };
   /** Set for a column with its full text on the page: written `content`, or
    *  a `transcripcion` of its clipping (./transcripciones.ts). */
   editorial?: Editorial;
@@ -259,13 +257,10 @@ const DOCUMENTOS: Documento[] = [
   },
 ];
 
-// The infographics: posters. The list opens their PDFs like the documents'
-// (the featured one, DESTACADA, opens its page, the poster shown whole). Each `file` names both
-// public/infografias/<file>.pdf and its poster .webp (2400px wide, taken
-// from the PDF).
-type Infografia = Documento & { poster: { width: number; height: number } };
-
-const INFOGRAFIAS: Infografia[] = [
+// The infographics, opened from the list as PDFs like the documents. Each
+// `file` names both public/infografias/<file>.pdf and its poster .webp
+// (2400px wide, taken from the PDF; the list shows its top).
+const INFOGRAFIAS: Documento[] = [
   {
     slug: "efectos-contaminacion-aire-salud",
     title: "Los efectos de la contaminación del aire en la salud humana",
@@ -274,7 +269,6 @@ const INFOGRAFIAS: Infografia[] = [
     year: 2026,
     author: OCCAMM,
     pages: 1,
-    poster: { width: 2400, height: 3600 },
     summary:
       "Cómo afecta la contaminación del aire a la salud a corto y largo plazo, qué son las partículas PM10 y PM2.5, y su concentración promedio anual en cada estación de monitoreo de Monterrey.",
   },
@@ -286,7 +280,6 @@ const INFOGRAFIAS: Infografia[] = [
     year: 2025,
     author: OCCAMM,
     pages: 1,
-    poster: { width: 2400, height: 3600 },
     summary:
       "Los problemas que la contaminación del aire causa en la Zona Metropolitana de Monterrey, las soluciones que proponemos, el marco internacional y su costo en salud.",
   },
@@ -298,7 +291,6 @@ const INFOGRAFIAS: Infografia[] = [
     year: 2025,
     author: OCCAMM,
     pages: 1,
-    poster: { width: 2400, height: 3691 },
     summary:
       "Cifras mundiales de la contaminación del aire en 2021: muertes atribuibles por causa, población expuesta y el peso de las PM2.5 como factor de riesgo.",
   },
@@ -310,7 +302,6 @@ const INFOGRAFIAS: Infografia[] = [
     year: 2025,
     author: OCCAMM,
     pages: 1,
-    poster: { width: 2400, height: 3600 },
     summary:
       "La contaminación del aire en la Zona Metropolitana de Monterrey: cómo funciona una estación de monitoreo, los límites de la norma, las pérdidas económicas y en salud, y el derecho a un aire limpio.",
   },
