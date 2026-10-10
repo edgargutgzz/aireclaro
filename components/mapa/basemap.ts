@@ -12,9 +12,13 @@ import { BASEMAP_GROUND } from "./ground";
 // paid, keyed tile service to show its own readings.
 //
 // Refresh the extract (roads, names) every few months; the bbox covers every
-// sensor, Saltillo to the east of the metro, with margin:
+// sensor, Saltillo to the east of the metro, with margin. The file name
+// carries the build date because it is cached as immutable (next.config.mjs):
+// a refresh is a new name here, never an overwrite.
 //   pmtiles extract https://build.protomaps.com/<YYYYMMDD>.pmtiles \
-//     public/basemap/monterrey.pmtiles --bbox=-101.35,25.0,-99.55,26.25 --maxzoom=15
+//     public/basemap/monterrey-<YYYYMMDD>.pmtiles --bbox=-101.35,25.0,-99.55,26.25 --maxzoom=15
+const BASEMAP_FILE = "monterrey-20261009.pmtiles";
+
 export const BASEMAP_BOUNDS: [[number, number], [number, number]] = [
   [-101.35, 25.0],
   [-99.55, 26.25],
@@ -68,7 +72,7 @@ export function basemapStyle(): StyleSpecification {
     sources: {
       protomaps: {
         type: "vector",
-        url: `pmtiles://${origin}/basemap/monterrey.pmtiles`,
+        url: `pmtiles://${origin}/basemap/${BASEMAP_FILE}`,
         attribution:
           '<a href="https://protomaps.com">Protomaps</a> © <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
       },

@@ -9,6 +9,23 @@ const nextConfig = {
       { protocol: "https", hostname: "img.youtube.com" },
     ],
   },
+  // The self-hosted map basemap (components/mapa/basemap.ts). Vercel serves
+  // public files with max-age=0, which made a return visit re-check every
+  // tile. The PMTiles archive is dated in its name and never overwritten, so
+  // it is immutable; fonts and sprites change only with the Protomaps
+  // version, so a week.
+  async headers() {
+    return [
+      {
+        source: "/basemap/:file*.pmtiles",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/basemap/:dir(fonts|sprites)/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=604800" }],
+      },
+    ];
+  },
   // /editoriales and /recursos merged into /publicaciones (2026-10-08). The
   // slug pattern skips anything with a dot, so the covers in public/editoriales
   // and the documents' PDFs in public/recursos are left alone.
