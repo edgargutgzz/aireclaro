@@ -44,14 +44,14 @@ function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// A document (anything but a column) is its PDF, so the list opens that
-// directly. Its page stays online, unlinked from here, for search engines,
+// A document (anything but a column or an infographic) is its PDF, so the
+// list opens that directly. Its page stays online, unlinked from here, for search engines,
 // Google Scholar and "Cómo citar".
 function opensPdf(p: Publicacion): boolean {
-  return p.tipo !== "columna" && Boolean(p.file);
+  return p.tipo !== "columna" && p.tipo !== "infografia" && Boolean(p.file);
 }
 
-// An item opens its page here; a document, its PDF in a new tab; a column
+// An item opens its page here (an infographic too, its poster shown whole); a document, its PDF in a new tab; a column
 // that lives only on another site, that site in a new tab (marked ↗). Both
 // new tabs are announced to screen readers.
 function ItemLink({ p, className, children }: { p: Publicacion; className: string; children: React.ReactNode }) {
@@ -95,7 +95,7 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
         height={360}
         sizes="(min-width: 1024px) 300px, (min-width: 640px) 33vw, 100vw"
         preload={priority}
-        className="aspect-video w-full object-cover"
+        className={`aspect-video w-full object-cover ${p.poster ? "object-top" : ""}`}
       />
       <div className="flex flex-1 flex-col p-4">
         <Who p={p} />
@@ -106,7 +106,8 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
   );
 }
 
-// Every row opens the item (see ItemLink), its cover as a thumbnail.
+// Every row opens the item (see ItemLink), its cover as a thumbnail. A
+// poster (an infographic) shows its top, where its title is.
 export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
   return (
     <ItemLink
@@ -119,7 +120,7 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
         width={288}
         height={162}
         sizes="(min-width: 640px) 144px, 96px"
-        className="aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36"
+        className={`aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36 ${p.poster ? "object-top" : ""}`}
       />
       <div className="min-w-0">
         <Who p={p} />

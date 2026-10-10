@@ -34,6 +34,8 @@ const nextConfig = {
       { source: "/editoriales", destination: "/publicaciones?tipo=columna", permanent: true },
       { source: "/editoriales/:slug([^./]+)", destination: "/publicaciones/:slug", permanent: true },
       { source: "/recursos", destination: "/publicaciones", permanent: true },
+      // /infografias merged too (2026-10-10); its PDFs stay in public/infografias.
+      { source: "/infografias", destination: "/publicaciones?tipo=infografia", permanent: true },
       // The one column that lives only on its outlet's site has no page here.
       {
         source: "/publicaciones/observatorios-ciudadanos",

@@ -62,11 +62,10 @@ const PRINCIPALES = [
   { href: "/mapa", label: "Mapa" },
 ];
 
-// The reading pages: plain links, first on desktop, after the main pages on
-// mobile. A dropdown for two items would only add a click.
+// The reading page (columns, documents, infographics): a plain link, first
+// on desktop, after the main pages on mobile.
 const LECTURA = [
   { href: "/publicaciones", label: "Publicaciones" },
-  { href: "/infografias", label: "Infografías" },
 ];
 
 const NOSOTROS = [
