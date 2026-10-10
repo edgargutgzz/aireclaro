@@ -267,7 +267,16 @@ export default function Biblioteca() {
         </DialogShell>
       )}
 
-      <div className="mt-6 lg:mt-0">
+      {/* lg+, unfiltered: the results scroll on their own, filling the
+          screen under the navbar (pt-12 above), so the filters stay in view
+          beside the long list. At its end the page carries on to the footer.
+          Filtered, the list is short and the page scrolls as usual. -mx-1 px-1
+          keeps the focus rings from being clipped. */}
+      <div
+        className={`mt-6 lg:mt-0 ${
+          filtered ? "" : "lg:-mx-1 lg:h-[calc(100svh-var(--header-h)-3rem)] lg:overflow-y-auto lg:px-1 lg:pb-12"
+        }`}
+      >
         {/* Only once something is filtered: how many matched, and the way
             back. Unfiltered, the page opens straight on the content. The
             live region stays mounted so the counts are announced. */}
