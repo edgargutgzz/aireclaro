@@ -67,7 +67,7 @@ dependency noise (Node's `punycode` deprecation, a stale
 | `docs/architecture.md` | data model, ingestion boundary, domains + routing, map data flow, the GL marker field, API routes, URL-state model, `/datos`, `/publicaciones` |
 | `docs/methodology.md` | how readings are presented, data sources & their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license/citation status |
 | `docs/sima-data-pipeline.md` | SIMA tables, the monthly sync, views, the /datos charts' rules, rounding, the public download |
-| `docs/purpleair-data-pipeline.md` | PurpleAir tables (the sensor history, `estatus`), the hourly job, what the map shows |
+| `docs/mapa-data-pipeline.md` | the map's two sources: SIMA stations (live feed, 10-minute job) and PurpleAir sensors (the sensor history, `estatus`, the hourly job), what the map shows |
 | `.ai-style-guide.md` | the visual contract (tokens, spacing, component recipes) — consult for a new component or a token change |
 
 ## Hiding / showing a PurpleAir sensor
