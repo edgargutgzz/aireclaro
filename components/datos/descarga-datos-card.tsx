@@ -130,11 +130,7 @@ export default function DescargaDatosCard({
   const anioInicio = anio === "todos" ? FIRST_YEAR : Number(anio);
   const anioFin = anio === "todos" ? ultimoAnio : Number(anio);
   const mesFinal = anioFin === ultimoAnio ? ultimoMes : 12;
-  // Through the latest loaded date (the weekly sync leaves the current month
-  // partial), else through December 31.
-  const finExclusivo =
-    anioFin === ultimoAnio ? Date.parse(`${ultimaFecha}T00:00:00Z`) + 86_400_000 : Date.UTC(anioFin + 1, 0, 1);
-  const dias = (finExclusivo - Date.UTC(anioInicio, 0, 1)) / 86_400_000;
+  const dias = (Date.UTC(anioFin, mesFinal, 1) - Date.UTC(anioInicio, 0, 1)) / 86_400_000;
   const filas =
     (estacion === "todas" ? estaciones.length : 1) * (parametro === "todos" ? 2 : 1) * dias * 24;
   const mes = (m: number) => MONTHS_ES_FULL[m - 1].toLowerCase();
@@ -160,7 +156,7 @@ export default function DescargaDatosCard({
             <span className="px-2 text-gray-300" aria-hidden>
               ·
             </span>
-            <span className="font-medium text-gray-700">Actualización:</span> semanal
+            <span className="font-medium text-gray-700">Actualización:</span> mensual
           </div>
         </>
       }

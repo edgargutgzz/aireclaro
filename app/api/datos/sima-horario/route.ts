@@ -174,10 +174,10 @@ export async function GET(request: NextRequest) {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="${slug}.csv"`,
-      // The table changes weekly (sima-weekly-sync) and on the 1st
-      // (sima-monthly-sync). The /datos card adds &v=<latest date> to its
-      // link, so new days are a new URL (a fresh file right away); a day at
-      // the CDN spares repeat downloads the DB reads.
+      // The table only changes once a month (the sync cron, on the 6th). The
+      // /datos card adds &v=<latest month> to its link, so a new month is a
+      // new URL (a fresh file right away); a day at the CDN spares repeat
+      // downloads the DB reads.
       "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400",
     },
   });

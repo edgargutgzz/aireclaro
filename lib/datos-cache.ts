@@ -1,10 +1,10 @@
 import { unstable_cache } from "next/cache";
 import { createPublicClient } from "@/utils/supabase/public";
 
-// Everything /datos reads changes only when a SIMA sync cron runs
-// (app/api/cron/sima-monthly-sync for the charts, sima-weekly-sync for the
-// download's latest date), so its reads are cached across requests and each
-// cron clears them with revalidateTag(DATOS_CACHE_TAG) once it has written. The daily revalidate is only a safety net in case a
+// Everything /datos reads changes only when the monthly sync cron runs
+// (app/api/cron/sima-monthly-sync), so its reads are cached across requests
+// and the cron clears them with revalidateTag(DATOS_CACHE_TAG) once it has
+// written the new month. The daily revalidate is only a safety net in case a
 // run doesn't clear it. A fetcher that throws isn't cached, so a failed
 // query is retried on the next visit instead of being served for a day.
 export const DATOS_CACHE_TAG = "datos";
