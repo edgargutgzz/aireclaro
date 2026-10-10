@@ -51,7 +51,7 @@ const datasetSchema = {
   "@type": "Dataset",
   name: "Calidad del aire (PM2.5 y PM10) en la Zona Metropolitana de Monterrey",
   description:
-    "Mediciones horarias de PM2.5 y PM10 de las estaciones de monitoreo del SIMA en la Zona Metropolitana de Monterrey, publicadas por SINAICA (INECC). Una fila por estación, contaminante, fecha y hora, sin validación ni redondeo. Se actualiza cada mes.",
+    "Mediciones horarias de PM2.5 y PM10 de las estaciones de monitoreo del SIMA en la Zona Metropolitana de Monterrey, publicadas por SINAICA (INECC). Una fila por estación, contaminante, fecha y hora, sin validación ni redondeo. Se actualiza cada semana.",
   url: `${SITE_URL}/datos`,
   keywords: ["calidad del aire", "PM2.5", "PM10", "Monterrey", "Nuevo León", "SIMA", "SINAICA"],
   creator: ORGANIZATION_REF,

@@ -72,7 +72,7 @@ interactive piece is hand-built to the house tokens (`.ai-style-guide.md`).
 |---|---|
 | [`docs/architecture.md`](docs/architecture.md) | data model, ingestion boundary, domains + routing, map data flow, API routes, the URL-state model, `/datos`, `/publicaciones` |
 | [`docs/methodology.md`](docs/methodology.md) | how readings are presented, data sources and their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license & citation status |
-| [`docs/sima-data-pipeline.md`](docs/sima-data-pipeline.md) | SIMA tables, the monthly sync, the /datos charts' rules, rounding, the public download |
+| [`docs/sima-data-pipeline.md`](docs/sima-data-pipeline.md) | SIMA tables, the weekly + monthly syncs, the /datos charts' rules, rounding, the public download |
 | [`docs/mapa-data-pipeline.md`](docs/mapa-data-pipeline.md) | the map's two sources: SIMA stations (live feed, 10-minute job) and PurpleAir sensors (the sensor history, `estatus`, the hourly job), what the map shows |
 | [`.ai-style-guide.md`](.ai-style-guide.md) | the visual contract for the UI |
 | [`CLAUDE.md`](CLAUDE.md) | working guidance for AI coding agents |
