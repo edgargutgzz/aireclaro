@@ -1,27 +1,18 @@
-import { createPublicClient } from "@/utils/supabase/public";
-import { cachedDatos, fetchEstaciones } from "@/lib/datos-cache";
+import { fetchEstaciones, fetchUltimoMes } from "@/lib/datos-cache";
 import DescargaDatosCard from "@/components/datos/descarga-datos-card";
 
 // The raw-data download card. Only reads what the filter needs (the station
-// list and the latest loaded date); the file itself is built by
-// app/api/datos/sima-horario on download.
-const fetchUltimaFecha = cachedDatos(async (): Promise<string | null> => {
-  const { data, error } = await createPublicClient()
-    .from("sima_mediciones_finales")
-    .select("fecha")
-    .order("fecha", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw new Error(`Failed to load descarga de datos: ${error.message}`);
-  return data?.fecha ?? null;
-}, "ultima-fecha");
-
+// list and the latest month); the file itself is built by
+// app/api/datos/sima-horario on download. The latest month is the charts'
+// (the monthly sync's), not the table's newest date: the weekly sync keeps
+// the month in progress in the table for internal use, never published here.
 export default async function DescargaDatos() {
-  const [estaciones, ultimaFecha] = await Promise.all([
+  const [estaciones, ultimoMes] = await Promise.all([
     fetchEstaciones(),
-    fetchUltimaFecha().catch(() => null),
+    fetchUltimoMes().catch(() => null),
   ]);
-  if (!ultimaFecha) return null;
+  if (!ultimoMes) return null;
 
+  const ultimaFecha = `${ultimoMes.ano}-${String(ultimoMes.mes).padStart(2, "0")}`;
   return <DescargaDatosCard estaciones={estaciones} ultimaFecha={ultimaFecha} />;
 }

@@ -100,7 +100,7 @@ export default function DescargaDatosCard({
   ultimaFecha,
 }: {
   estaciones: Estacion[];
-  /** Latest date loaded in sima_mediciones_finales (YYYY-MM-DD). */
+  /** Latest month the monthly sync has published (YYYY-MM). */
   ultimaFecha: string;
 }) {
   const ultimoAnio = Number(ultimaFecha.slice(0, 4));
@@ -122,7 +122,7 @@ export default function DescargaDatosCard({
     anio,
     parametro,
     estacion,
-    v: ultimaFecha,
+    v: ultimaFecha.slice(0, 7),
   })}`;
 
   // Size hint: the row grid is complete (an empty hour is still a row), so

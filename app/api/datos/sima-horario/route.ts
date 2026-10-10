@@ -70,15 +70,19 @@ export async function GET(request: NextRequest) {
   }
 
   // Months to read: the chosen year (or every year), stopping at the latest
-  // loaded date, so months with no data yet cost no queries.
+  // month the monthly sync has published (the charts' month). The weekly
+  // sync keeps the month in progress in the table for internal use; it's
+  // never part of the public file.
   const { data: ultima, error: ultimaError } = await supabase
-    .from("sima_mediciones_finales")
-    .select("fecha")
-    .order("fecha", { ascending: false })
+    .from("sima_insalubres_mensual")
+    .select("ano, mes")
+    .eq("parametro", "PM2.5")
+    .order("ano", { ascending: false })
+    .order("mes", { ascending: false })
     .limit(1)
     .maybeSingle();
   if (ultimaError) return new Response("Error al leer las mediciones", { status: 502 });
-  const ultimoMes = ultima ? Number(ultima.fecha.slice(0, 4)) * 12 + Number(ultima.fecha.slice(5, 7)) - 1 : -1;
+  const ultimoMes = ultima ? ultima.ano * 12 + ultima.mes - 1 : -1;
   const months: { year: number; month: number }[] = [];
   for (let y = anio ?? FIRST_YEAR; y <= (anio ?? currentYear); y++) {
     for (let m = 1; m <= 12 && y * 12 + m - 1 <= ultimoMes; m++) months.push({ year: y, month: m });
