@@ -1,4 +1,5 @@
 import Ticker from "@/components/home/ticker";
+import LiveRefresh from "@/components/data/live-refresh";
 
 // The layout's `strip` slot (under the navbar) on the homepage only: the live
 // ticker. Every other route renders nothing here (default.tsx for hard loads,
@@ -6,5 +7,10 @@ import Ticker from "@/components/home/ticker";
 export const revalidate = 300;
 
 export default function HomeStrip() {
-  return <Ticker />;
+  return (
+    <>
+      <Ticker />
+      <LiveRefresh />
+    </>
+  );
 }

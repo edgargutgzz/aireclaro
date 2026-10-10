@@ -9,6 +9,7 @@ import { fetchWithFallback } from "@/utils/fetch";
 import { getSensorSnapshot } from "@/lib/sensor-snapshot";
 import { parseSensorParam } from "@/lib/map-url-state";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
+import LiveRefresh from "@/components/data/live-refresh";
 
 const BASE_TITLE = "Mapa";
 const BASE_DESCRIPTION =
@@ -105,6 +106,7 @@ export default async function Mapa() {
     <>
       <h1 className="sr-only">Mapa de calidad del aire en la Zona Metropolitana de Monterrey</h1>
       <MapaSensors sensors={sensors} data={data} />
+      <LiveRefresh />
     </>
   );
 }

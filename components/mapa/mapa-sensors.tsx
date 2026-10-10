@@ -202,6 +202,14 @@ export default function MapaSensors({
     if (def) setSelectedSensor(buildSelection(def, data));
   }, [isDesktop, linkedSensor, selectedSensor, sensors, data]);
 
+  // The picked station's card holds a copy of its reading (buildSelection), so
+  // when fresh readings arrive (LiveRefresh) the copy is rebuilt from them.
+  const firstDataRef = useRef(data);
+  useEffect(() => {
+    if (data === firstDataRef.current) return;
+    setSelectedSensor((s) => (s ? buildSelection(s.sensor, data) : s));
+  }, [data]);
+
   // One entry per municipality that actually has sensors, labelled with its
   // best spelling and counted so the list says how much each filter holds.
   // Two levels, state then municipality, so every sensor sits under a row:
