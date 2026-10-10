@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { statSync } from "node:fs";
-import path from "node:path";
 import { ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
@@ -73,14 +71,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
   return metadata;
-}
-
-// "PDF · 3.4 MB · 22 páginas", read from public/ at build time.
-function pdfFacts(p: Publicacion): string {
-  const bytes = statSync(path.join(process.cwd(), "public", p.file!)).size;
-  const size = bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.round(bytes / 1e3)} KB`;
-  const pages = p.pages ? ` · ${p.pages} ${p.pages === 1 ? "página" : "páginas"}` : "";
-  return `PDF · ${size}${pages}`;
 }
 
 function structuredData(p: Publicacion) {
@@ -206,9 +196,8 @@ export default async function PublicacionPage({ params }: Props) {
                 aviso="abre en una nueva pestaña"
                 className={PRIMARY_BUTTON}
               >
-                <FileText className="h-4 w-4" aria-hidden /> Abrir PDF
+                <FileText className="h-4 w-4" aria-hidden /> Abrir documento
               </EnlaceMedido>
-              <span className="text-xs text-gray-500">{pdfFacts(p)}</span>
             </div>
           )}
         </header>
