@@ -31,6 +31,9 @@ import {
 
 const YEARS = [...new Set(publicaciones.map((p) => p.year))];
 const FEATURED = 3;
+// Unfiltered, the list stops after this many rows until "Ver todas" is
+// pressed; a filter or search always shows every match.
+const PREVIEW = 12;
 
 const searchText = new Map(
   publicaciones.map((p) => [
@@ -148,7 +151,10 @@ export default function Biblioteca() {
   const filtered = Boolean(tipo || medio || anio || autor || q.trim());
   // Unfiltered, the newest lead as cards and the list carries on after them.
   const featured = filtered ? [] : results.slice(0, FEATURED);
-  const listed = filtered ? results : results.slice(FEATURED);
+  const rest = filtered ? results : results.slice(FEATURED);
+  const [showAll, setShowAll] = useState(false);
+  const hidden = filtered || showAll ? 0 : Math.max(0, rest.length - PREVIEW);
+  const listed = hidden > 0 ? rest.slice(0, PREVIEW) : rest;
   const byYear = YEARS.map((year) => ({ year, items: listed.filter((p) => p.year === year) })).filter(
     (g) => g.items.length > 0,
   );
@@ -267,16 +273,7 @@ export default function Biblioteca() {
         </DialogShell>
       )}
 
-      {/* lg+, unfiltered: the results scroll on their own, filling the
-          screen under the navbar (pt-12 above), so the filters stay in view
-          beside the long list. At its end the page carries on to the footer.
-          Filtered, the list is short and the page scrolls as usual. -mx-1 px-1
-          keeps the focus rings from being clipped. */}
-      <div
-        className={`mt-6 lg:mt-0 ${
-          filtered ? "" : "lg:-mx-1 lg:h-[calc(100svh-var(--header-h)-3rem)] lg:overflow-y-auto lg:px-1 lg:pb-12"
-        }`}
-      >
+      <div className="mt-6 lg:mt-0">
         {/* Only once something is filtered: how many matched, and the way
             back. Unfiltered, the page opens straight on the content. The
             live region stays mounted so the counts are announced. */}
@@ -337,6 +334,16 @@ export default function Biblioteca() {
               </ul>
             </section>
           ))
+        )}
+
+        {hidden > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="mt-6 flex h-10 w-full items-center justify-center rounded-xl bg-gray-100 px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            Ver todas las publicaciones ({hidden} más)
+          </button>
         )}
       </div>
     </div>
