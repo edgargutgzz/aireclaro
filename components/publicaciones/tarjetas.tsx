@@ -4,9 +4,10 @@ import { ArrowUpRight } from "lucide-react";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
-// The two ways a publication is listed: a card with its cover (the library's
-// "Lo más reciente", a page's "Más de…") and a row with a thumbnail (the
-// library's list). Shared so both pages show an item the same way.
+// The ways a publication is listed: a card with its cover (the library's
+// "Lo más reciente", a page's "Más de…"), a row with a thumbnail (the
+// library's list) and, for the one featured item, a wide card with its
+// summary. Shared so both pages show an item the same way.
 
 // Every item reads in three steps, the way opinion sections list columns:
 // who (the author, dark), what (the title, the largest), and where and when
@@ -126,6 +127,31 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
         <Who p={p} />
         <p className="mt-1 text-base font-semibold leading-snug text-gray-900">{p.title}</p>
         <WhereWhen p={p} className="mt-2" />
+      </div>
+    </ItemLink>
+  );
+}
+
+// The library's featured item: wider than the cards, its summary showing.
+export function PublicacionDestacada({ publicacion: p }: { publicacion: Publicacion }) {
+  return (
+    <ItemLink
+      p={p}
+      className={`group grid overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] ${FOCUS_RING}`}
+    >
+      <Image
+        src={p.image}
+        alt=""
+        width={640}
+        height={360}
+        sizes="(min-width: 1024px) 380px, (min-width: 640px) 40vw, 100vw"
+        preload
+        className={`aspect-video h-full w-full object-cover ${p.poster ? "object-top" : ""}`}
+      />
+      <div className="flex flex-col justify-center p-5 sm:p-6">
+        <Who p={p} />
+        <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-900 group-hover:text-gray-600 sm:text-2xl">{p.title}</p>
+        {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
       </div>
     </ItemLink>
   );
