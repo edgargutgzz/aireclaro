@@ -259,8 +259,8 @@ const DOCUMENTOS: Documento[] = [
   },
 ];
 
-// The infographics: posters, so each opens its own page, where the poster is
-// shown whole and the PDF is a download. Each `file` names both
+// The infographics: posters. The list opens their PDFs like the documents'
+// (the featured one, DESTACADA, opens its page, the poster shown whole). Each `file` names both
 // public/infografias/<file>.pdf and its poster .webp (2400px wide, taken
 // from the PDF).
 type Infografia = Documento & { poster: { width: number; height: number } };

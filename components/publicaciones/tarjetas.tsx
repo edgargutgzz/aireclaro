@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
-import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
+import { DESTACADA, formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The ways a publication is listed: a card with its cover (the library's
 // "Lo más reciente", a page's "Más de…"), a row with a thumbnail (the
@@ -45,14 +45,15 @@ function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// A document (anything but a column or an infographic) is its PDF, so the
-// list opens that directly. Its page stays online, unlinked from here, for search engines,
+// A document or an infographic (anything but a column) is its PDF, so the
+// list opens that directly. The featured item (DESTACADA) is the exception:
+// it opens its page, where the poster is shown whole. Its page stays online, unlinked from here, for search engines,
 // Google Scholar and "Cómo citar".
 function opensPdf(p: Publicacion): boolean {
-  return p.tipo !== "columna" && p.tipo !== "infografia" && Boolean(p.file);
+  return p.tipo !== "columna" && p.slug !== DESTACADA && Boolean(p.file);
 }
 
-// An item opens its page here (an infographic too, its poster shown whole); a document, its PDF in a new tab; a column
+// An item opens its page here; a document, its PDF in a new tab; a column
 // that lives only on another site, that site in a new tab (marked ↗). Both
 // new tabs are announced to screen readers.
 function ItemLink({ p, className, children }: { p: Publicacion; className: string; children: React.ReactNode }) {
