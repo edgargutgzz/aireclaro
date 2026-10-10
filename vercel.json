@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/sima-hourly-sync",
-      "schedule": "30 * * * *"
+      "schedule": "*/10 * * * *"
     },
     {
       "path": "/api/cron/purpleair-hourly-sync",
