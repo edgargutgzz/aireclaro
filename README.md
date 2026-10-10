@@ -63,7 +63,7 @@ pnpm build    # production build
 ## Stack
 
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS ·
-Mapbox GL · Supabase · deployed on Vercel. No UI component library — every
+MapLibre GL + self-hosted OpenStreetMap basemap (Protomaps) · Supabase · deployed on Vercel. No UI component library — every
 interactive piece is hand-built to the house tokens (`.ai-style-guide.md`).
 
 ## Documentation

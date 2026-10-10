@@ -84,11 +84,11 @@
 
 /* Map markers.
 
-   Sizing is width/height, never transform: mapbox rewrites
+   Sizing is width/height, never transform: MapLibre rewrites
    element.style.transform on every map move to position the marker, and an
    inline style beats this stylesheet, so anything transform-based here is
-   silently dead. That is why the hover grow lives on the dot, which mapbox
-   does not touch. The anchor half of mapbox's transform is translate(-50%,
+   silently dead. That is why the hover grow lives on the dot, which MapLibre
+   does not touch. The anchor half of MapLibre's transform is translate(-50%,
    -50%), a percentage of the element's own box, so the marker centres itself.
 
    One size at every zoom. Sizing by *zoom* was tried and taken back out:
@@ -135,13 +135,13 @@
   border-radius: 50%;
 }
 
-/* Mapbox gives the GL canvas tabindex="0" and focuses it on any map grab. That
+/* MapLibre gives the GL canvas tabindex="0" and focuses it on any map grab. That
    focus is silent under the mouse, but the next keypress flips :focus-visible on
    and paints a full-viewport blue ring that only clears by focusing something
    else — most visibly when Escape closes the estación card. The map's keyboard
    affordances aren't promoted here (the markers are their own focusable buttons,
    with the house ring above), so suppress the canvas ring. */
-.mapboxgl-canvas:focus {
+.maplibregl-canvas:focus {
   outline: none;
 }
 
@@ -161,7 +161,7 @@
   /* No background here: this element is only ever the selected station's
      DOM marker (createMarker adds --selected immediately on creation, see
      mapa-sensors.tsx) — every resting disc is a GL circle in the field
-     layer instead, painted by Mapbox, not this stylesheet. The opaque fill
+     layer instead, painted by MapLibre, not this stylesheet. The opaque fill
      lives on the --selected rule below.
 
      Discs are matte, no gloss. A highlight read as candy once forty of them

@@ -1,18 +1,9 @@
-// The map opens zoomed out over the metro, then one flyTo settles in on the
-// default sensor at zoom 13, the "standing beside it" framing. No locate-me,
-// this is an open-data map of the airshed, not a personal "air near me" readout.
-//
-// flyTo, not easeTo, for the ~5 zoom levels: flyTo runs the van Wijk-Nuij curve
-// that holds *perceived* zoom speed constant, where easeTo interpolates the
-// zoom number linearly and the view accelerates into the stop. 4.5s, not 3s:
-// three seconds over five levels read as a lunge. No custom easing on flyTo,
-// its curve is already tuned. A visitor who asked the OS for reduced motion
-// gets an instant jumpTo to the same framing.
+// The metro's centre: where the map opens when there is no station to open
+// on. It opens straight on its resting view, with no fly-in (see the map's
+// init effect in mapa-sensors.tsx).
 export const OPENING_CENTER: [number, number] = [-100.301, 25.685];
-export const OPENING_ZOOM = 8;
-export const OPENING_MOVE_MS = 4500;
 
-// The marker field is a single native Mapbox GL circle layer, not ~180 DOM
+// The marker field is a single native MapLibre GL circle layer, not ~180 DOM
 // markers: the GPU sizes every disc per zoom, resolves overlap/hit-testing
 // deterministically, and never rewrites an element transform on pan. The one
 // exception is the *selected* station, which stays a DOM marker so it can carry
@@ -92,7 +83,7 @@ export function makeSimaBadge(): ImageData {
 // reading as basemap furniture, which is what killed the last zoom-sizing
 // attempt.
 // radius = base * (hovered ? 1.14 : 1), evaluated per stop. The zoom
-// `interpolate` MUST stay top-level in the paint value — Mapbox silently
+// `interpolate` MUST stay top-level in the paint value — MapLibre (like Mapbox before it) silently
 // drops a layer whose zoom expression is nested inside `*` (this repo hit
 // that once already with an IDW layer), so the hover multiply is folded into
 // each stop's output instead of wrapping the whole interpolate.
@@ -153,16 +144,16 @@ export const FIELD_RADIUS = [
 // (separately) fixed FIELD_BADGE_SIZE/OFFSET to track every FIELD_RADIUS_STOPS
 // entry instead of a 2-point endpoint line — both looked right in their own
 // screenshots, but the badge was STILL landing close to the number, because
-// of a third, distinct bug: per Mapbox's own spec, "[icon-offset]'s] each
+// of a third, distinct bug: per the GL style spec, "[icon-offset]'s] each
 // component is multiplied by the value of icon-size to obtain the final
 // offset in pixels" (confirmed against the v8 style-spec source before
 // changing this again — this file has a real scar for shipping GL expression
 // assumptions unverified). FIELD_BADGE_OFFSET was passing an already
-// disc-radius-scaled pixel value, which Mapbox then scaled DOWN AGAIN by
+// disc-radius-scaled pixel value, which the renderer then scaled DOWN AGAIN by
 // icon-size (a fraction well under 1 in our range) — so the true on-screen
 // offset was only a fraction of what the code intended.
 //
-// Since icon-size already scales linearly with radius, and Mapbox multiplies
+// Since icon-size already scales linearly with radius, and the renderer multiplies
 // offset by icon-size for you, the offset the *code* supplies must be a flat
 // constant in the base asset's own coordinate space — the radius cancels out
 // algebraically once you solve for it, so it should never have been

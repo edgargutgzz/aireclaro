@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { ChevronRight, Layers, Wind, X } from "lucide-react";
-import mapboxgl, { Map, Marker } from "mapbox-gl";
+import { Map, Marker } from "maplibre-gl";
+import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
-import "mapbox-gl/dist/mapbox-gl.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
@@ -25,8 +26,6 @@ import {
 } from "./lib";
 import {
   OPENING_CENTER,
-  OPENING_ZOOM,
-  OPENING_MOVE_MS,
   FIELD_SOURCE,
   FIELD_LAYER,
   FIELD_LABEL_LAYER,
@@ -44,10 +43,8 @@ import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
 import { HealthRecommendations, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
-
-// Initialize Mapbox
-(mapboxgl as any).accessToken =
-  process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || "";
+import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
+import { BASEMAP_GROUND } from "./ground";
 
 // The station the estación card shows at rest, before any marker is picked:
 // SIMA "CE" — Monterrey: Obispado, the central government reference station.
@@ -93,18 +90,6 @@ function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefin
   return nearest ?? obispado;
 }
 
-// Subtle repaint of stock light-v11, applied on style.load. Tuned in small
-// increments — each value is a knob.
-//
-// Ground: near-white was most of why the map read washed out; one step off
-// white, a very light warm grey.
-const BASEMAP_GROUND = "#f2f1ef";
-// Water: light-v11's water is a barely-there pale blue. A step deeper and cooler
-// so the Río Santa Catarina and the dams read across the city. Cool vs the warm
-// ground is what separates land from water without either colour being loud.
-const BASEMAP_WATER = "#c9d6dd";
-const BASEMAP_WATERWAY = "#bcccd5"; // the thin river / arroyo centrelines
-
 export default function MapaSensors({
   sensors,
   data,
@@ -124,11 +109,6 @@ export default function MapaSensors({
   const activeSensorIdRef = useRef<number | null>(null);
   const activeColorRef = useRef<string>(PULSE_FALLBACK_COLOR);
   const selectedIdRef = useRef<number | null>(null);
-  // False until the opening camera settles (see revealLabels near the field
-  // layer setup) — gates the selected DOM marker's printed number so it
-  // doesn't appear on first paint while the field's GL numbers are still
-  // hidden during the flyTo. Both reveal in the same instant.
-  const labelsRevealedRef = useRef(false);
 
   // ---- Initial state from the URL (lib/map-url-state) ----------------------
   // Resolved once on mount. ?sensor= seeds the card selection and the opening
@@ -157,7 +137,13 @@ export default function MapaSensors({
   const [showFilters, setShowFilters] = useState(false);
   const [showLegend, setShowLegend] = useState(false); // mobile only — the air-quality legend as a bottom sheet
   const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
-  const [mapLoaded, setMapLoaded] = useState(false);
+  // Two readiness flags. `styleReady`: the style is parsed, so the marker
+  // field can be added and drawn; the stations don't wait on a single basemap
+  // tile. `basemapReady`: the first full set of basemap tiles has arrived,
+  // which only drives the "Cargando mapa" pill.
+  const [styleReady, setStyleReady] = useState(false);
+  const [basemapReady, setBasemapReady] = useState(false);
+  const [basemapSlow, setBasemapSlow] = useState(false);
   const [showOtros, setShowOtros] = useState(() => seedSource("otros"));
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
@@ -288,6 +274,11 @@ export default function MapaSensors({
     sensors.forEach((s) => m.set(String(s.sensor_id), s));
     return m;
   }, [sensors]);
+  // Read through a ref by the map callbacks below: every live refresh brings
+  // a new `sensors` array, and rebuilding those callbacks on it re-ran the
+  // field setup, which rebuilt the selected marker and restarted its pulse.
+  const sensorByIdRef = useRef(sensorById);
+  sensorByIdRef.current = sensorById;
 
   // All the per-sensor lookups below key on String(sensor_id): PurpleAir ids
   // are numbers, SIMA station ids are string codes ("SE", "NO", "Norte2"…).
@@ -441,8 +432,8 @@ export default function MapaSensors({
   // citizen field — latitude and provenance only, never the reading, so an
   // overlap is never biased toward one end of the scale.
   const buildFieldData = useCallback(
-    (readings: globalThis.Map<string, number | null>): GeoJSON.FeatureCollection => {
-      const features: GeoJSON.Feature[] = [];
+    (readings: globalThis.Map<string, number | null>): FeatureCollection => {
+      const features: Feature[] = [];
       for (const sensor of visibleSensorsRef.current) {
         const fid = String(sensor.sensor_id);
         if (!markerableIdsRef.current.has(fid)) continue;
@@ -466,7 +457,7 @@ export default function MapaSensors({
             nodata: !hasReading,
             // Higher wins circle draw order (SIMA always on top). Symbol
             // placement is the opposite convention -- with text-allow-overlap
-            // false, Mapbox gives *lower* symbol-sort-key priority in
+            // false, MapLibre gives *lower* symbol-sort-key priority in
             // collision resolution. Reusing sortKey as-is for both meant a
             // SIMA disc could draw on top of an overlapping citizen sensor
             // (e.g. SIMA "SE" and a PurpleAir sensor both sit at Cerro de la
@@ -492,11 +483,11 @@ export default function MapaSensors({
       const el = (selectedMarkerRef.current as any)?.getElement() as HTMLElement | undefined;
       const id = activeFidRef.current;
       if (!el || !id) return;
-      const sensor = sensorById.get(id);
+      const sensor = sensorByIdRef.current.get(id);
       if (!sensor) return;
       const pm25 = readings.get(id) ?? null;
       const has = pm25 != null && pm25 > 0.4;
-      const showNumber = has && labelsRevealedRef.current;
+      const showNumber = has;
       const dot = el.querySelector<HTMLElement>(".sensor-marker__dot");
       el.classList.toggle("sensor-marker--nodata", !has);
       if (dot) {
@@ -519,7 +510,7 @@ export default function MapaSensors({
       }
       el.setAttribute("aria-label", markerLabel(sensor, pm25));
     },
-    [sensorById],
+    [],
   );
 
   // Push a frame to the GL field: rebuild the source data, re-assert the
@@ -558,7 +549,7 @@ export default function MapaSensors({
     const el = (selectedMarkerRef.current as any)?.getElement() as HTMLElement | undefined;
     const id = activeFidRef.current;
     if (!m || !el || !id) return;
-    const sensor = sensorById.get(id);
+    const sensor = sensorByIdRef.current.get(id);
     if (!sensor) return;
     const diameter = fieldRadiusAt(m.getZoom()) * 2 * MARKER_LEAD_FACTOR;
     el.style.width = `${diameter}px`;
@@ -567,7 +558,7 @@ export default function MapaSensors({
     // rule would otherwise win over an inherited value (see globals.css).
     const dot = el.querySelector<HTMLElement>(".sensor-marker__dot");
     if (dot) dot.style.fontSize = `${diameter / 2.4}px`;
-  }, [sensorById]);
+  }, []);
 
   // Move the selection to whichever station is now active: hide that station's
   // flat GL disc (feature-state `selected`) and stand a single DOM marker in
@@ -592,7 +583,7 @@ export default function MapaSensors({
     selectedMarkerRef.current = null;
     if (activeId == null) return;
 
-    const sensor = sensorById.get(String(activeId));
+    const sensor = sensorByIdRef.current.get(String(activeId));
     if (!sensor) return;
     const isSima = sensor.source === "sima";
     const pm25 = frameReadingsRef.current.get(String(activeId)) ?? null;
@@ -621,102 +612,56 @@ export default function MapaSensors({
       .addTo(m);
     resizeSelectedMarker();
     paintSelectedMarker(frameReadingsRef.current);
-  }, [sensorById, paintSelectedMarker, resizeSelectedMarker]);
+  }, [paintSelectedMarker, resizeSelectedMarker]);
 
-  // Initialize map once, zoomed out; the opening flyTo below settles it in.
+  // Initialize the map once, already on its resting view: a shared ?sensor=
+  // link opens close (zoom 13) on the station it's about; a normal load opens
+  // on the metro field, centred on the default station so its pulse is in
+  // frame. No fly-in: it used to open at zoom 8 and fly in for 4.5 s, which
+  // fetched tiles for every zoom on the way and kept the numbers hidden until
+  // it landed (removed 2026-10-09 for load speed).
   useEffect(() => {
     if (map.current) return;
 
-    map.current = new Map({
-      container: mapContainer.current!,
-      // Classic Light: muted, flat, no 3D buildings / lighting / model assets,
-      // small style + streets-v8 tiles, so it loads fast and stays out of the
-      // way while the NOM-172 marker colours carry the read.
-      // Previous bespoke style: mapbox://styles/edgargutgzz/climactgb00cn01qw7amo9bbd
-      style: "mapbox://styles/mapbox/light-v11",
-      center: OPENING_CENTER,
-      zoom: OPENING_ZOOM,
-    });
-
-    // Set padding instantly, not as part of flyTo: interpolating it alongside
-    // the zoom looked like the map veering sideways partway through the fly-in.
-    // Card clearance on desktop, bottom sheet on mobile.
-    const initialIsMobile = window.innerWidth < 768;
-    (map.current as any).setPadding(
-      initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
-    );
-
-    map.current.on("style.load", () => {
-      const m = map.current as any;
-      // Classic Light labels follow the viewer's locale; pin to Spanish.
-      try {
-        m.setLanguage("es");
-      } catch {
-        // API shape shift — labels fall back to locale, harmless
-      }
-      // Repaint a few layers off stock light-v11 — see the BASEMAP_* knobs.
-      const paint = (id: string, prop: string, value: string | number) => {
-        try {
-          if (m.getLayer(id)) m.setPaintProperty(id, prop, value);
-        } catch {
-          // that layer isn't in this build — skip it
-        }
-      };
-      try {
-        // Ground: background-type layers, plus a "land" fill if this build has one.
-        for (const layer of m.getStyle()?.layers ?? []) {
-          if (layer.type === "background") {
-            m.setPaintProperty(layer.id, "background-color", BASEMAP_GROUND);
-          }
-        }
-        if (m.getLayer("land") && m.getLayer("land").type === "fill") {
-          m.setPaintProperty("land", "fill-color", BASEMAP_GROUND);
-        }
-        // Water: the river channel + dams, then the thin centrelines.
-        paint("water", "fill-color", BASEMAP_WATER);
-        paint("water-shadow", "fill-color", BASEMAP_WATER);
-        paint("waterway", "line-color", BASEMAP_WATERWAY);
-      } catch {
-        // upstream layer shape changed — basemap still renders, just paler
-      }
-    });
-
-    map.current.on("load", () => {
-      setMapLoaded(true);
-    });
-
-    return () => {
-      (map.current as any)?.remove();
-      map.current = null;
-      setMapLoaded(false);
-    };
-  }, []);
-
-  // Opening camera. Runs once. A shared ?sensor= link flies in close (zoom 13)
-  // to the station it's about. A normal load lands on the metro field, centred
-  // on the default station so its pulse is in frame — knowing which station the
-  // card speaks for matters, but going right to it doesn't. jumpTo under
-  // reduced motion. essential: true so a backgrounded tab doesn't drop the move.
-  const didOpeningFlyRef = useRef(false);
-  useEffect(() => {
-    if (!mapLoaded || !map.current || didOpeningFlyRef.current) return;
-    didOpeningFlyRef.current = true;
-
-    const urlSensor = initialSensorId != null
-      ? sensors.find((s) => String(s.sensor_id) === initialSensorId)
-      : undefined;
-    const focus = urlSensor
-      ? { center: [urlSensor.lon, urlSensor.lat] as [number, number], zoom: 13 }
+    const focus = linkedSensor
+      ? { center: [linkedSensor.lon, linkedSensor.lat] as [number, number], zoom: 13 }
       : defaultSelection
         ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 11 }
         : { center: OPENING_CENTER, zoom: 10.5 };
 
-    if (prefersReducedMotion()) {
-      (map.current as any).jumpTo(focus);
-      return;
-    }
-    (map.current as any).flyTo({ ...focus, duration: OPENING_MOVE_MS, essential: true });
-  }, [mapLoaded, sensors, initialSensorId, defaultSelection]);
+    const m = new Map({
+      container: mapContainer.current!,
+      // Self-hosted OpenStreetMap basemap, see basemap.ts. Panning is held to
+      // the extract's bounds, so the map never shows unmapped ground.
+      style: basemapStyle(),
+      center: focus.center,
+      zoom: focus.zoom,
+      maxBounds: BASEMAP_BOUNDS,
+    });
+    map.current = m;
+
+    // Card clearance on desktop, bottom sheet on mobile; the jump re-centres
+    // the focus inside the padded viewport.
+    const initialIsMobile = window.innerWidth < 768;
+    m.setPadding(
+      initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
+    );
+    m.jumpTo(focus);
+
+    m.on("style.load", () => setStyleReady(true));
+    m.on("load", () => setBasemapReady(true));
+    // A basemap that still hasn't arrived after 8 s says so, rather than
+    // leaving a blank ground that looks frozen.
+    const slowTimer = window.setTimeout(() => setBasemapSlow(true), 8000);
+
+    return () => {
+      window.clearTimeout(slowTimer);
+      m.remove();
+      map.current = null;
+      setStyleReady(false);
+      setBasemapReady(false);
+    };
+  }, []);
 
   // Stand up the GL marker field once the style is ready: one geojson source
   // and one circle layer, plus the hover/click handlers. No clustering — every
@@ -726,7 +671,7 @@ export default function MapaSensors({
   // than the old ink hairline + white ring + double shadow, and the selected
   // DOM marker keeps the lift + pulse.
   useEffect(() => {
-    if (!mapLoaded || !map.current) return;
+    if (!styleReady || !map.current) return;
     const m = map.current as any;
 
     try {
@@ -790,22 +735,9 @@ export default function MapaSensors({
       // room for its label goes unlabelled (still coloured, still in the
       // card and aria-label) rather than smearing digits over its neighbour's.
       // This is the standard technique every point-label map layer uses
-      // (Mapbox/Google POI labels). symbol-sort-key reuses the same
+      // (map/Google POI labels). symbol-sort-key reuses the same
       // provenance+latitude key the circle draw order uses, so which label
       // wins a collision is still never a function of the reading.
-      //
-      // Collision detection re-runs every frame the camera moves, and the
-      // opening flyTo moves it continuously for OPENING_MOVE_MS — so with the
-      // layer visible from the start, labels keep winning and losing
-      // collisions as the view pans/zooms through, which *looks* like a fade
-      // (the same "loading in" complaint) even with zero opacity animation in
-      // the paint expression. The layer starts hidden and is revealed once
-      // the opening camera actually stops, so the very first thing a visitor
-      // sees is the settled, final label set appearing all at once — not
-      // labels churning mid-flight. Only matters for this first camera move:
-      // once visible, later user-driven pans/zooms are the user's own
-      // gesture, not something they're watching happen to them, so the
-      // ordinary collision churn during those reads as normal map behaviour.
       if (!m.getLayer(FIELD_LABEL_LAYER)) {
         m.addLayer({
           id: FIELD_LABEL_LAYER,
@@ -814,32 +746,16 @@ export default function MapaSensors({
           layout: {
             "text-field": ["get", "label"] as any,
             "text-size": FIELD_LABEL_SIZE as any,
-            "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+            "text-font": [LABEL_FONT],
             "text-allow-overlap": false,
             "text-ignore-placement": false,
             "symbol-sort-key": ["get", "labelSortKey"] as any,
-            visibility: "none",
           },
           paint: {
             "text-color": ["get", "labelInk"] as any,
             "text-opacity": FIELD_LABEL_OPACITY as any,
           },
         });
-        const revealLabels = () => {
-          labelsRevealedRef.current = true;
-          try {
-            m.setLayoutProperty(FIELD_LABEL_LAYER, "visibility", "visible");
-          } catch {
-            // layer/map gone (unmount mid-timeout) — nothing to reveal
-          }
-          // The selected DOM marker's own number is gated by the same ref
-          // (paintSelectedMarker) — without this it would have shown from
-          // the very first paint while the field's numbers were still
-          // hidden, appearing to lead the rest by several seconds.
-          paintSelectedMarker(frameReadingsRef.current);
-        };
-        if (prefersReducedMotion()) revealLabels();
-        else window.setTimeout(revealLabels, OPENING_MOVE_MS);
       }
       // Landmark badge on every SIMA station (grey no-data ones included) —
       // hidden only while it's the selected station, whose DOM marker carries
@@ -906,7 +822,7 @@ export default function MapaSensors({
       const f = e.features?.[0];
       if (!f) return;
       const fid = String(f.id ?? (f.properties as any)?.fid);
-      const sensor = sensorById.get(fid);
+      const sensor = sensorByIdRef.current.get(fid);
       if (!sensor) return;
       if (window.innerWidth >= 768 && selectedIdRef.current === sensor.sensor_id) {
         setSelectedSensor(null);
@@ -932,16 +848,16 @@ export default function MapaSensors({
       m.off("click", FIELD_LAYER, onClick);
       m.off("zoom", resizeSelectedMarker);
     };
-  }, [mapLoaded, buildFieldData, updateField, syncActive, sensorById, resizeSelectedMarker, paintSelectedMarker]);
+  }, [styleReady, buildFieldData, updateField, syncActive, resizeSelectedMarker]);
 
   // Push a frame to the field: a filter change (visibleSensors) or a live-data
   // refresh (frameReadings). One setData, no marker churn — and not syncActive,
   // so the selected DOM marker's pulse doesn't restart (updateField repaints
   // its disc in place instead).
   useEffect(() => {
-    if (!mapLoaded) return;
+    if (!styleReady) return;
     updateField(frameReadings);
-  }, [mapLoaded, visibleSensors, markerableIds, frameReadings, updateField]);
+  }, [styleReady, visibleSensors, markerableIds, frameReadings, updateField]);
 
   // Drop the DOM selected marker when the component unmounts (the GL source and
   // layer go with map.remove() in the init effect's cleanup).
@@ -960,9 +876,9 @@ export default function MapaSensors({
   // re-runs it when only the pick changes (including desktop dropping to no
   // pick, which clears the pulse). No resize, no dimming of the rest.
   useEffect(() => {
-    if (!mapLoaded) return;
+    if (!styleReady) return;
     syncActive();
-  }, [mapLoaded, activeSensorId, syncActive]);
+  }, [styleReady, activeSensorId, syncActive]);
 
   // Filters can hide whatever is open: drop the selection rather than leave the
   // card describing a sensor that is no longer on the map.
@@ -999,10 +915,10 @@ export default function MapaSensors({
 
   // Clicking empty map: on desktop it dismisses the pick (back to a bare map);
   // on mobile it just collapses the sheet to peek, never dropping the card.
-  // Mapbox fires `click` only on a genuine click, not a drag/pan; a hit on the
+  // MapLibre fires `click` only on a genuine click, not a drag/pan; a hit on the
   // disc layer means the field handler already owns this click, so bail.
   useEffect(() => {
-    if (!mapLoaded || !map.current) return;
+    if (!styleReady || !map.current) return;
     const m = map.current as any;
     const handler = (e: any) => {
       if (m.getLayer(FIELD_LAYER) && m.queryRenderedFeatures(e.point, { layers: [FIELD_LAYER] }).length) return;
@@ -1011,7 +927,7 @@ export default function MapaSensors({
     };
     m.on("click", handler);
     return () => { m?.off("click", handler); };
-  }, [mapLoaded, closeCard, isDesktop]);
+  }, [styleReady, closeCard, isDesktop]);
 
   // Keyboard / screen-reader path into the field: the GL discs are canvas-drawn
   // and not tabbable, so every markerable station is also a visually-hidden
@@ -1078,7 +994,24 @@ export default function MapaSensors({
       <div
         ref={mapContainer}
         className="absolute left-0 top-0 h-full w-full"
+        style={{ backgroundColor: BASEMAP_GROUND }}
       />
+
+      {/* Basemap loading pill, until the first full set of tiles is in. The
+          stations draw before it (styleReady), so this only speaks for the
+          streets and names underneath. Mobile: top-right, opposite the
+          freshness pill; desktop: top-centre between the two columns. */}
+      {!basemapReady && (
+        <div
+          role="status"
+          className="glass pointer-events-none absolute right-4 top-4 z-[44] flex h-7 items-center gap-1.5 rounded-xl px-2.5 shadow-none md:left-1/2 md:right-auto md:top-6 md:h-10 md:-translate-x-1/2 md:gap-2 md:px-3.5 md:shadow-sm"
+        >
+          <span aria-hidden="true" className="h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 motion-reduce:animate-none" />
+          <span className="whitespace-nowrap text-[11px] font-medium text-gray-700 md:text-[13px]">
+            {basemapSlow ? "El mapa base tarda en cargar" : "Cargando mapa"}
+          </span>
+        </div>
+      )}
 
       {/* Keyboard / screen-reader equivalent for the GL marker field. */}
       <div className="sr-only">

@@ -81,7 +81,7 @@ every sensor; new location = new row with the same `sensor_id`).
 ## Environment variables
 
 ```
-NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN   # only the /mapa link card (api/og/mapa); the map itself is self-hosted
 NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 ```
