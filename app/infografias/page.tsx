@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
-import { statSync } from "node:fs";
-import path from "node:path";
 import Image from "next/image";
 import { pageMetadata } from "@/lib/metadata";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 
 // Laid out like /publicaciones: no visible header, the page opens on its
 // content in the same container (the navbar already names the section), and
-// each infographic is a card like the library's (cover, title, a quiet facts
-// line). The cover is the poster's top, where its title is; the card opens
+// each infographic is a card like the library's (cover, title, its year). The cover is the poster's top, where its title is; the card opens
 // the full PDF in a new tab, counted as a pdf_abierto event like the
 // library's documents. Newest first.
 
@@ -24,14 +21,6 @@ const INFOGRAFIAS = [
   { slug: "infografia_numeros", title: "La contaminación del aire a nivel mundial en números", year: 2025, height: 2461 },
   { slug: "infografia_contaminacion", title: "Panorama general de la contaminación del aire en la ZMM", year: 2025, height: 2400 },
 ];
-
-// "2026 · PDF · 35.3 MB", the size read from public/ at build time (some of
-// these PDFs are large, worth knowing before opening one on a phone).
-function facts(slug: string, year: number): string {
-  const bytes = statSync(path.join(process.cwd(), "public", "infografias", `${slug}.pdf`)).size;
-  const size = bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.round(bytes / 1e3)} KB`;
-  return `${year} · PDF · ${size}`;
-}
 
 export default function Infografias() {
   return (
@@ -58,7 +47,7 @@ export default function Infografias() {
               />
               <div className="flex flex-1 flex-col border-t border-gray-100 p-4">
                 <p className="text-lg font-semibold leading-snug text-gray-900 group-hover:text-gray-600">{title}</p>
-                <p className="mt-auto pt-4 text-xs text-gray-500">{facts(slug, year)}</p>
+                <p className="mt-auto pt-4 text-xs text-gray-500">{year}</p>
               </div>
             </EnlaceMedido>
           </li>
