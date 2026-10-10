@@ -35,8 +35,8 @@ export type Publicacion = {
   date?: string;
   /** Who wrote or signed it, as shown on the page. */
   author: string;
-  /** The people among the authors, one name each, for the Autoría filter
-   *  (organizations aren't listed). A column's come from its byline. */
+  /** The column's authors, one name each, from its byline, for the Autoría
+   *  filter. Only columns carry people; other documents keep just `author`. */
   people: string[];
   /** The author as cited ("Chavarría, U."), when it differs from `author`. */
   citeAuthor?: string;
@@ -59,7 +59,7 @@ export type Publicacion = {
 // The documents: all 16 from the old /recursos page. Credits, dates and
 // summaries come from each PDF itself.
 // Each `file` names both public/recursos/<file>.pdf and its cover .webp.
-type Documento = Omit<Publicacion, "file" | "image" | "editorial" | "transcripcion" | "people"> & { file: string; people?: string[] };
+type Documento = Omit<Publicacion, "file" | "image" | "editorial" | "transcripcion" | "people"> & { file: string };
 
 const DOCUMENTOS: Documento[] = [
   {
@@ -201,7 +201,6 @@ const DOCUMENTOS: Documento[] = [
     year: 2020,
     author: "Alfonso Martínez Muñoz, Horacio Villalón Mendoza y Selene Martínez Guajardo",
     citeAuthor: "Martínez Muñoz, A., Villalón Mendoza, H. y Martínez Guajardo, S.",
-    people: ["Alfonso Martínez Muñoz", "Horacio Villalón Mendoza", "Selene M. Guajardo"],
     pages: 104,
     summary:
       "Manual de mejores prácticas para reducir las emisiones de polvo y contaminantes en obras de construcción y demolición, desde el plan de gestión ambiental hasta el diseño y los materiales.",
@@ -225,7 +224,6 @@ const DOCUMENTOS: Documento[] = [
     year: 2020,
     author: "Cómo Vamos Nuevo León y OCCAMM",
     citeAuthor: "Martínez Muñoz, A., Armendáriz Olivo, A., Escalante Díaz del Campo, J. y Garza Rodríguez, L.",
-    people: ["Alfonso Martínez Muñoz", "Alan Armendáriz Olivo", "Jimena Escalante Díaz del Campo", "Lesly Garza Rodríguez"],
     pages: 22,
     summary:
       "Análisis de PM2.5, PM10, ozono y monóxido de carbono durante el confinamiento por COVID-19: del 31 de marzo al 17 de junio de 2020, el material particulado bajó en promedio 6.41 µg/m³ (finas) y 7.49 µg/m³ (gruesas).",
@@ -239,8 +237,6 @@ const DOCUMENTOS: Documento[] = [
     year: 2020,
     author: "Alfonso Martínez-Muñoz, Magali Hurtado-Díaz, Julio César Cruz y Horacio Riojas-Rodríguez",
     citeAuthor: "Martínez-Muñoz, A., Hurtado-Díaz, M., Cruz, J. C. y Riojas-Rodríguez, H.",
-    // Named as on /equipo (Horacio Riojas) and the other documents.
-    people: ["Alfonso Martínez Muñoz", "Magali Hurtado Díaz", "Julio César Cruz", "Horacio Riojas"],
     outlet: "Salud Pública de México",
     doi: "10.21149/11184",
     pages: 9,
@@ -305,7 +301,7 @@ export const publicaciones: Publicacion[] = [
   ...DOCUMENTOS.map(
     (d): Publicacion => ({
       ...d,
-      people: d.people ?? [],
+      people: [],
       file: `/recursos/${d.file}.pdf`,
       image: `/recursos/${d.file}.webp`,
     }),
@@ -325,12 +321,11 @@ export const PERSONAS = (() => {
 })();
 
 // Portraits (public/equipo), by the names in `people`: each columnist's from
-// their own columns, plus Horacio Riojas from /equipo. Shown only when every
-// person on an item has one (see `photos`), so a multi-author document never
-// shows one face as if that person led it.
+// their own columns. Shown only when every person on an item has one (see
+// `photos`), so a co-signed column never shows one face as if that person
+// led it.
 const PHOTOS = new Map<string, string>([
   ...editoriales.filter((e) => !e.author.includes(" y ")).map((e): [string, string] => [e.author, e.authorProfile]),
-  ["Horacio Riojas", "/equipo/horacio.webp"],
 ]);
 
 export function photos(p: Publicacion): { name: string; src: string }[] {
