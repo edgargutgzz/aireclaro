@@ -137,13 +137,9 @@ export default function MapaSensors({
   const [showFilters, setShowFilters] = useState(false);
   const [showLegend, setShowLegend] = useState(false); // mobile only — the air-quality legend as a bottom sheet
   const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
-  // Two readiness flags. `styleReady`: the style is parsed, so the marker
-  // field can be added and drawn; the stations don't wait on a single basemap
-  // tile. `basemapReady`: the first full set of basemap tiles has arrived,
-  // which only drives the "Cargando mapa" pill.
+  // The style is parsed, so the marker field can be added and drawn; the
+  // stations don't wait on a single basemap tile.
   const [styleReady, setStyleReady] = useState(false);
-  const [basemapReady, setBasemapReady] = useState(false);
-  const [basemapSlow, setBasemapSlow] = useState(false);
   const [showOtros, setShowOtros] = useState(() => seedSource("otros"));
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
@@ -649,17 +645,11 @@ export default function MapaSensors({
     m.jumpTo(focus);
 
     m.on("style.load", () => setStyleReady(true));
-    m.on("load", () => setBasemapReady(true));
-    // A basemap that still hasn't arrived after 8 s says so, rather than
-    // leaving a blank ground that looks frozen.
-    const slowTimer = window.setTimeout(() => setBasemapSlow(true), 8000);
 
     return () => {
-      window.clearTimeout(slowTimer);
       m.remove();
       map.current = null;
       setStyleReady(false);
-      setBasemapReady(false);
     };
   }, []);
 
@@ -996,22 +986,6 @@ export default function MapaSensors({
         className="absolute left-0 top-0 h-full w-full"
         style={{ backgroundColor: BASEMAP_GROUND }}
       />
-
-      {/* Basemap loading pill, until the first full set of tiles is in. The
-          stations draw before it (styleReady), so this only speaks for the
-          streets and names underneath. Mobile: top-right, opposite the
-          freshness pill; desktop: top-centre between the two columns. */}
-      {!basemapReady && (
-        <div
-          role="status"
-          className="glass pointer-events-none absolute right-4 top-4 z-[44] flex h-7 items-center gap-1.5 rounded-xl px-2.5 shadow-none md:left-1/2 md:right-auto md:top-6 md:h-10 md:-translate-x-1/2 md:gap-2 md:px-3.5 md:shadow-sm"
-        >
-          <span aria-hidden="true" className="h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 motion-reduce:animate-none" />
-          <span className="whitespace-nowrap text-[11px] font-medium text-gray-700 md:text-[13px]">
-            {basemapSlow ? "El mapa base tarda en cargar" : "Cargando mapa"}
-          </span>
-        </div>
-      )}
 
       {/* Keyboard / screen-reader equivalent for the GL marker field. */}
       <div className="sr-only">
