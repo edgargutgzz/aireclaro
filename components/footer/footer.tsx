@@ -52,9 +52,11 @@ export default function Footer() {
     <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
       {/* lg+: one row, the ways to reach us first (contact, socials), then
-          the three link columns. Below: the same order stacked, the link
-          columns two or three across. */}
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_auto_repeat(3,minmax(0,1fr))] lg:gap-8">
+          the three link columns, each as wide as its content and spread with
+          equal gaps (the last ends at the right edge, over the credit).
+          Below: the same order stacked, the link columns two or three
+          across. */}
+      <div className="grid gap-10 lg:flex lg:justify-between lg:gap-8">
         {/* Contact: email first (what most visitors need), the address as
             an envelope reads, Mexican format. <address> marks it as the
             site's contact info for screen readers and search engines. */}
