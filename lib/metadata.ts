@@ -48,10 +48,13 @@ export function pageMetadata({
 
 // The organization as an author/publisher/creator inside other structured
 // data (articles, the dataset). The full Organization entry is in the layout.
+// The Observatory as structured data: its official name, NGO type and
+// short names, the same everywhere so Google reads one entity (the full
+// record, with logo, address and profiles, is in app/layout.tsx).
 export const ORGANIZATION_REF = {
-  "@type": "Organization",
-  name: "Observatorio Ciudadano de la Calidad del Aire (OCCAMM)",
-  alternateName: SITE_NAME,
+  "@type": "NGO",
+  name: "Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey",
+  alternateName: ["OCCAMM", SITE_NAME],
   url: SITE_URL,
 };
 

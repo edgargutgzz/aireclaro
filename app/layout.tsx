@@ -7,7 +7,7 @@ import Analytics from "@/components/analytics";
 import { SITE_URL } from "@/lib/site";
 import { SOCIAL_LINKS } from "@/components/footer/footer";
 import JsonLd from "@/components/json-ld";
-import { OG_BASE, OG_IMAGES, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
+import { OG_BASE, OG_IMAGES, ORGANIZATION_REF, SITE_DESCRIPTION, SITE_NAME } from "@/lib/metadata";
 
 // Latin only: it covers all of Spanish (áéíóúñü¿¡); latin-ext was a whole
 // extra font file no page text uses.
@@ -48,22 +48,24 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
+// What Google's Knowledge Graph reads about the Observatory. The logo is the
+// square mark (panels show logos square); add the Wikidata item to sameAs
+// once it exists.
 const organizationSchema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Observatorio Ciudadano de la Calidad del Aire (OCCAMM)",
-  alternateName: SITE_NAME,
-  url: SITE_URL,
-  logo: `${SITE_URL}/navbar/occamm-logo.png`,
+  ...ORGANIZATION_REF,
+  logo: `${SITE_URL}/icon-512.png`,
   description:
     "Organización de la sociedad civil dedicada a monitorear y mejorar la calidad del aire en Nuevo León.",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Blvd. Antonio L. Rodríguez 2100",
+    streetAddress: "Blvd. Antonio L. Rodríguez 2100, Col. Rincón de Santa María",
+    postalCode: "64650",
     addressLocality: "Monterrey",
     addressRegion: "Nuevo León",
     addressCountry: "MX",
   },
+  email: "contacto@observatoriodelaire.com",
   contactPoint: {
     "@type": "ContactPoint",
     email: "contacto@observatoriodelaire.com",
