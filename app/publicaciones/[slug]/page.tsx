@@ -141,7 +141,7 @@ export default async function PublicacionPage({ params }: Props) {
   const fotos = photos(p);
 
   return (
-    <div className="px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
+    <div className="px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
       <JsonLd data={structuredData(p)} />
       <article className="mx-auto max-w-3xl">
         <Link

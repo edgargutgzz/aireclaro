@@ -77,7 +77,7 @@ export default function Datos() {
   return (
     <div className="min-h-screen">
       <JsonLd data={datasetSchema} />
-      <div className="mx-auto max-w-7xl px-6 pb-32 pt-10 lg:px-8 lg:pt-12">
+      <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
         <h1 className="sr-only">Datos de calidad del aire de la Zona Metropolitana de Monterrey</h1>
         {/* DiasInsalubres also renders its monthly summary card below it. */}
         <Suspense

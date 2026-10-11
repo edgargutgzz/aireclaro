@@ -31,7 +31,6 @@ const COLUMNAS = [
     titulo: "Publicaciones",
     links: [
       { href: "/publicaciones?tipo=columna", label: "Columnas" },
-      { href: "/publicaciones?tipo=informe", label: "Informes" },
       { href: "/publicaciones?tipo=infografia", label: "Infografías" },
     ],
   },
@@ -51,7 +50,7 @@ const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide t
 export default function Footer() {
   return (
     <footer className="bg-stone-100">
-      <div className="mx-auto max-w-7xl px-6 pt-24 pb-8 md:py-8 lg:px-8">
+      <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
       {/* lg+: one row of five columns (contact, the three link columns,
           socials). Below: contact, the link columns two or three across,
           then the socials. */}

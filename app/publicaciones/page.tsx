@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function Publicaciones() {
   return (
-    <div className="mx-auto max-w-7xl px-6 pb-32 pt-4 lg:px-8 lg:pt-12">
+    <div className="mx-auto max-w-7xl px-6 pb-24 pt-4 lg:px-8 lg:pb-32 lg:pt-12">
       <h1 className="sr-only">Publicaciones del Observatorio sobre la calidad del aire</h1>
       <Biblioteca />
     </div>
