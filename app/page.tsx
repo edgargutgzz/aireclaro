@@ -38,9 +38,11 @@ const websiteSchema = {
 
 export default function Home() {
   return (
-    <div className="flex min-h-below-header items-center">
+    // Ends like every page (pb-24 lg:pb-32 before the footer); centered in
+    // the screen below the navbar, so the gap above matches the one below.
+    <div className="flex min-h-below-header items-center pb-24 lg:pb-32">
       <JsonLd data={websiteSchema} />
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:px-8">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-16 lg:grid-cols-2 lg:px-8">
         <div className="flex flex-col gap-8">
           <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
             Trabajamos por una mejor{" "}
