@@ -51,10 +51,10 @@ export default function Footer() {
   return (
     <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
-      {/* lg+: one row, contact, the three link columns, socials (order-1
-          moves the socials last). Below: contact, socials, then the link
-          columns two or three across, so the ways to reach us come first. */}
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))_auto] lg:gap-8">
+      {/* lg+: one row, the ways to reach us first (contact, socials), then
+          the three link columns. Below: the same order stacked, the link
+          columns two or three across. */}
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_auto_repeat(3,minmax(0,1fr))] lg:gap-8">
         {/* Contact: email first (what most visitors need), the address as
             an envelope reads, Mexican format. <address> marks it as the
             site's contact info for screen readers and search engines. */}
@@ -85,7 +85,7 @@ export default function Footer() {
           </a>
         </address>
 
-        <div className="lg:order-1">
+        <div>
           <p className={EYEBROW}>Síguenos</p>
           <ul className="-ml-2.5 -mt-1.5 flex items-center gap-1">
             {SOCIAL_LINKS.map(({ href, label, Icon }) => (
