@@ -17,13 +17,45 @@ export const SOCIAL_LINKS = [
 const socialLinkClass =
   "flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-stone-200/70 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
+// The footer's site map, between the contact and the socials. Publicaciones
+// opens the library already filtered to each kind.
+const COLUMNAS = [
+  {
+    titulo: "Explora",
+    links: [
+      { href: "/datos", label: "Datos" },
+      { href: "/mapa", label: "Mapa" },
+    ],
+  },
+  {
+    titulo: "Publicaciones",
+    links: [
+      { href: "/publicaciones?tipo=columna", label: "Columnas" },
+      { href: "/publicaciones?tipo=informe", label: "Informes" },
+      { href: "/publicaciones?tipo=infografia", label: "Infografías" },
+    ],
+  },
+  {
+    titulo: "Nosotros",
+    links: [
+      { href: "/quienes-somos", label: "Quiénes somos" },
+      { href: "/equipo", label: "Equipo" },
+      { href: "/proyectos", label: "Proyectos" },
+      { href: "/adopta-sensor", label: "Adopta un sensor" },
+    ],
+  },
+];
+
 const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide text-gray-400";
 
 export default function Footer() {
   return (
     <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-24 pb-8 md:py-8 lg:px-8">
-      <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+      {/* lg+: one row of five columns (contact, the three link columns,
+          socials). Below: contact, the link columns two or three across,
+          then the socials. */}
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))_auto] lg:gap-8">
         {/* Contact: email first (what most visitors need), the address as
             an envelope reads, Mexican format. <address> marks it as the
             site's contact info for screen readers and search engines. */}
@@ -54,6 +86,26 @@ export default function Footer() {
           </a>
         </address>
 
+        <nav aria-label="Secciones del sitio" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:contents">
+          {COLUMNAS.map(({ titulo, links }) => (
+            <div key={titulo}>
+              <h2 className={EYEBROW}>{titulo}</h2>
+              <ul className="flex flex-col gap-2">
+                {links.map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className="rounded-xl text-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
         <div>
           <p className={EYEBROW}>Síguenos</p>
           <ul className="-ml-2.5 -mt-2.5 flex items-center gap-1">
@@ -74,14 +126,15 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mt-6 border-t border-gray-200 pt-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-10 border-t border-gray-200 pt-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-gray-400">
           &copy; {new Date().getFullYear()} Observatorio Ciudadano de la Calidad del Aire
         </p>
         <Link
           href="https://datacomun.com"
           target="_blank"
-          className="self-start flex items-center gap-1 rounded-xl border border-gray-200 bg-white px-3 py-1 text-xs text-gray-500 shadow-xs transition-all hover:border-gray-300 hover:shadow-sm whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 self-start whitespace-nowrap rounded-xl text-xs text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           Desarrollado por
           <span className="font-medium">
