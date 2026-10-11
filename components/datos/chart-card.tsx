@@ -44,7 +44,7 @@ export default function ChartCard({
             horizontal overflow. Classic flexbox gotcha, not specific to any
             one caller. */}
         <div className="min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-lg font-medium text-gray-700">{title}</h3>
           {/* div, not p: a caller's subtitle can carry its own block-level
               row (e.g. a year-over-year comparison line), which can't
               legally nest inside a p. */}
