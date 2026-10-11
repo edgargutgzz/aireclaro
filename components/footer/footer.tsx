@@ -136,11 +136,11 @@ export default function Footer() {
           href="https://datacomun.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 self-start whitespace-nowrap rounded-xl text-xs text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="flex items-center gap-1 self-start whitespace-nowrap rounded-xl text-xs text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           Desarrollado por
-          <span>
-            <span className="text-gray-500">data</span>
+          <span className="font-semibold">
+            <span className="text-slate-900">data</span>
             <span className="datacomun-comun">comun</span>
           </span>
           <span className="sr-only"> (abre en una nueva pestaña)</span>
