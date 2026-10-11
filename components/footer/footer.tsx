@@ -40,7 +40,6 @@ const COLUMNAS = [
       { href: "/quienes-somos", label: "Quiénes somos" },
       { href: "/equipo", label: "Equipo" },
       { href: "/proyectos", label: "Proyectos" },
-      { href: "/adopta-sensor", label: "Adopta un sensor" },
     ],
   },
 ];
