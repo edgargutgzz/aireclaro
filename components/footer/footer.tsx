@@ -108,7 +108,7 @@ export default function Footer() {
 
         <div>
           <p className={EYEBROW}>Síguenos</p>
-          <ul className="-ml-2.5 -mt-2.5 flex items-center gap-1">
+          <ul className="-ml-2.5 -mt-1.5 flex items-center gap-1">
             {SOCIAL_LINKS.map(({ href, label, Icon }) => (
               <li key={label}>
                 <a
