@@ -242,7 +242,7 @@ export default async function PublicacionPage({ params }: Props) {
       {related.items.length > 0 && (
         <section aria-labelledby="relacionadas" className="mx-auto mt-20 max-w-5xl border-t border-gray-200 pt-10">
           <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h2 id="relacionadas" className="text-lg font-semibold text-gray-900">
+            <h2 id="relacionadas" className="text-lg font-semibold text-gray-800">
               {related.title}
             </h2>
             {related.more && (

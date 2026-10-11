@@ -45,7 +45,7 @@ export default function QuienesSomos() {
         />
 
         <section className="flex flex-col gap-8 pt-10 md:pt-0">
-          <h2 className="text-2xl font-semibold text-gray-900 md:text-3xl">
+          <h2 className="text-2xl font-semibold text-gray-800 md:text-3xl">
             Líneas de Trabajo
           </h2>
           <ol className="flex flex-col gap-12 md:flex-row md:gap-8">

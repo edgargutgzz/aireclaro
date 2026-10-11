@@ -17,7 +17,7 @@ export default function Cita({ text }: { text: string }) {
   return (
     <section aria-labelledby="como-citar" className="rounded-2xl border border-gray-200 bg-white px-5 py-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 id="como-citar" className="text-sm font-semibold text-gray-900">
+        <h2 id="como-citar" className="text-sm font-semibold text-gray-800">
           Cómo citar
         </h2>
         <button

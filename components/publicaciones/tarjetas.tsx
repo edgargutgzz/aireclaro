@@ -100,7 +100,7 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
       />
       <div className="flex flex-1 flex-col p-4">
         <Who p={p} />
-        <p className="mt-1.5 text-lg font-semibold leading-snug text-gray-900 group-hover:text-gray-600">{p.title}</p>
+        <p className="mt-1.5 text-lg font-semibold leading-snug text-gray-800 group-hover:text-gray-600">{p.title}</p>
         <WhereWhen p={p} className="mt-auto pt-4" />
       </div>
     </ItemLink>
@@ -125,7 +125,7 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
       />
       <div className="min-w-0">
         <Who p={p} />
-        <p className="mt-1 text-base font-semibold leading-snug text-gray-900">{p.title}</p>
+        <p className="mt-1 text-base font-semibold leading-snug text-gray-800">{p.title}</p>
         <WhereWhen p={p} className="mt-2" />
       </div>
     </ItemLink>
@@ -150,7 +150,7 @@ export function PublicacionDestacada({ publicacion: p }: { publicacion: Publicac
       />
       <div className="flex flex-col justify-center p-5 sm:p-6">
         <Who p={p} />
-        <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-900 group-hover:text-gray-600 sm:text-2xl">{p.title}</p>
+        <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">{p.title}</p>
         {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
       </div>
     </ItemLink>
