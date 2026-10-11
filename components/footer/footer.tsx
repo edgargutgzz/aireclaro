@@ -63,7 +63,7 @@ export default function Footer() {
           <p className={EYEBROW}>Contacto</p>
           <a
             href="mailto:contacto@observatoriodelaire.com"
-            className="flex items-center gap-2 rounded-xl text-sm text-gray-700 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="flex items-center gap-2 rounded-xl text-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             <Mail className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
             contacto@observatoriodelaire.com
