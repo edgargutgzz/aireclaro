@@ -56,15 +56,10 @@ const GROUP_LABEL = "pb-1 text-xs font-semibold uppercase tracking-wider text-gr
 // The house focus ring, on every focusable item in the bar.
 const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// The two main pages: first on mobile, after the reading pages on desktop.
-const PRINCIPALES = [
-  { href: "/datos", label: "Datos" },
+// The main sections, in the same order on desktop and mobile.
+const SECCIONES = [
   { href: "/mapa", label: "Mapa" },
-];
-
-// The reading page (columns, documents, infographics): a plain link, first
-// on desktop, after the main pages on mobile.
-const LECTURA = [
+  { href: "/datos", label: "Datos" },
   { href: "/publicaciones", label: "Publicaciones" },
 ];
 
@@ -190,10 +185,9 @@ export default function Navbar() {
             preload
           />
         </Link>
-        {/* Desktop menu (lg+): Publicaciones, Infografías, Mapa, Datos, then the Nosotros dropdown last. */}
+        {/* Desktop menu (lg+): Mapa, Datos, Publicaciones, then the Nosotros dropdown last. */}
         <nav aria-label="Principal" className="hidden lg:flex lg:items-center lg:gap-10">
-          {/* Publicaciones, Infografías */}
-          {LECTURA.map((l) => (
+          {SECCIONES.map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -204,20 +198,6 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-          {/* Mapa, then Datos. */}
-          {PRINCIPALES.slice()
-            .reverse()
-            .map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                aria-current={current(l.href)}
-                className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-                onClick={handleLinkClick}
-              >
-                {l.label}
-              </Link>
-            ))}
 
           {/* Nosotros */}
           <div className="relative" onBlur={closeOnFocusOut("isSubmenuOpen")}>
@@ -279,7 +259,7 @@ export default function Navbar() {
             className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
           >
             {[
-              { titulo: "Explora", links: [...PRINCIPALES, ...LECTURA] },
+              { titulo: "Explora", links: SECCIONES },
               { titulo: "Nosotros", links: NOSOTROS },
             ].map((grupo) => (
               <div key={grupo.titulo} className="mt-8 first:mt-2">
