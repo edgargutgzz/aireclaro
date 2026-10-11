@@ -139,8 +139,8 @@ export default function Footer() {
           className="flex items-center gap-1 self-start whitespace-nowrap rounded-xl text-xs text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           Desarrollado por
-          <span className="font-medium">
-            <span className="text-slate-900">data</span>
+          <span>
+            <span className="text-gray-500">data</span>
             <span className="datacomun-comun">comun</span>
           </span>
           <span className="sr-only"> (abre en una nueva pestaña)</span>
