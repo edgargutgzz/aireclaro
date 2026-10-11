@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Mail, MapPin } from "lucide-react";
 import { AiFillInstagram, AiFillTikTok } from "react-icons/ai";
 import { FaFacebook, FaYoutube } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
@@ -19,20 +20,35 @@ export default function Footer() {
     <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-24 pb-8 md:py-8 lg:px-8">
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col gap-1">
-          <Link
+        {/* Contact: email first (what most visitors need), the address as
+            an envelope reads, Mexican format. <address> marks it as the
+            site's contact info for screen readers and search engines. */}
+        <address className="not-italic">
+          <p className="mb-3 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contacto</p>
+          <a
+            href="mailto:contacto@observatoriodelaire.com"
+            className="flex items-center gap-2 rounded-xl text-sm text-gray-700 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          >
+            <Mail className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+            contacto@observatoriodelaire.com
+          </a>
+          <a
             href="https://maps.app.goo.gl/uYj6u7VH1BzvbFJfA"
             target="_blank"
-            className="text-sm text-gray-500 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            rel="noopener noreferrer"
+            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-gray-500 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
-            Blvd. Antonio L. Rodríguez 2100, Rincón de Santa María, 64650,
-            Monterrey, N.L.
-            <span className="sr-only"> (abre en una nueva pestaña)</span>
-          </Link>
-          <p className="text-sm text-gray-500">
-            contacto@observatoriodelaire.com
-          </p>
-        </div>
+            <MapPin className="mt-1 h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+            <span>
+              Blvd. Antonio L. Rodríguez 2100
+              <br />
+              Col. Rincón de Santa María, C.P. 64650
+              <br />
+              Monterrey, N.L.
+              <span className="sr-only"> (abre en una nueva pestaña)</span>
+            </span>
+          </a>
+        </address>
 
         <div className="flex items-center gap-3">
           {SOCIAL_LINKS.map(({ href, label, Icon, size }) => (
