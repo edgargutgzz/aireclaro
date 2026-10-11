@@ -72,7 +72,7 @@ export default function Footer() {
             href="https://maps.app.goo.gl/uYj6u7VH1BzvbFJfA"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-gray-500 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             <MapPin className="mt-1 h-4 w-4 shrink-0 text-gray-400" aria-hidden />
             <span>
