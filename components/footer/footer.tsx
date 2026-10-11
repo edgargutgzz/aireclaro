@@ -129,7 +129,7 @@ export default function Footer() {
 
       <div className="mt-10 border-t border-gray-200 pt-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-gray-400">
-          &copy; {new Date().getFullYear()} Observatorio Ciudadano de la Calidad del Aire
+          &copy; {new Date().getFullYear()} Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey
         </p>
         <Link
           href="https://datacomun.com"
