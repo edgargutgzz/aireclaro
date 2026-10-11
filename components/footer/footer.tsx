@@ -1,30 +1,34 @@
 import Link from "next/link";
 import { Mail, MapPin } from "lucide-react";
-import { AiFillInstagram, AiFillTikTok } from "react-icons/ai";
-import { FaFacebook, FaYoutube } from "react-icons/fa";
-import { FaSquareXTwitter } from "react-icons/fa6";
+import { SiFacebook, SiInstagram, SiTiktok, SiX, SiYoutube } from "react-icons/si";
 
+// One icon set (Simple Icons, the brands' own marks) at one size, so the
+// five match in weight.
 export const SOCIAL_LINKS = [
-  { href: "https://www.instagram.com/observatoriomty/", label: "Instagram", Icon: AiFillInstagram, size: 18 },
-  { href: "https://www.facebook.com/observatoriomty", label: "Facebook", Icon: FaFacebook, size: 16 },
-  { href: "https://x.com/observatoriomty", label: "X", Icon: FaSquareXTwitter, size: 16 },
-  { href: "https://www.youtube.com/@observatoriomty", label: "YouTube", Icon: FaYoutube, size: 18 },
-  { href: "https://www.tiktok.com/@observatoriomty", label: "TikTok", Icon: AiFillTikTok, size: 18 },
+  { href: "https://www.instagram.com/observatoriomty/", label: "Instagram", Icon: SiInstagram },
+  { href: "https://www.facebook.com/observatoriomty", label: "Facebook", Icon: SiFacebook },
+  { href: "https://x.com/observatoriomty", label: "X", Icon: SiX },
+  { href: "https://www.youtube.com/@observatoriomty", label: "YouTube", Icon: SiYoutube },
+  { href: "https://www.tiktok.com/@observatoriomty", label: "TikTok", Icon: SiTiktok },
 ];
 
+// Quiet like the contact icons (gray, no box); the 36px target stays for
+// touch. The first icon's glyph lines up with the "Síguenos" label.
 const socialLinkClass =
-  "flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 shadow-xs transition-all hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+  "flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-stone-200/70 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+
+const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide text-gray-400";
 
 export default function Footer() {
   return (
     <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-24 pb-8 md:py-8 lg:px-8">
-      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
         {/* Contact: email first (what most visitors need), the address as
             an envelope reads, Mexican format. <address> marks it as the
             site's contact info for screen readers and search engines. */}
         <address className="not-italic">
-          <p className="mb-3 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Contacto</p>
+          <p className={EYEBROW}>Contacto</p>
           <a
             href="mailto:contacto@observatoriodelaire.com"
             className="flex items-center gap-2 rounded-xl text-sm text-gray-700 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
@@ -50,18 +54,23 @@ export default function Footer() {
           </a>
         </address>
 
-        <div className="flex items-center gap-3">
-          {SOCIAL_LINKS.map(({ href, label, Icon, size }) => (
-            <Link
-              key={label}
-              href={href}
-              target="_blank"
-              aria-label={`${label} (abre en una nueva pestaña)`}
-              className={socialLinkClass}
-            >
-              <Icon size={size} />
-            </Link>
-          ))}
+        <div>
+          <p className={EYEBROW}>Síguenos</p>
+          <ul className="-ml-2.5 -mt-2.5 flex items-center gap-1">
+            {SOCIAL_LINKS.map(({ href, label, Icon }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${label} (abre en una nueva pestaña)`}
+                  className={socialLinkClass}
+                >
+                  <Icon size={16} aria-hidden />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
