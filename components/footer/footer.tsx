@@ -51,39 +51,61 @@ export default function Footer() {
   return (
     <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
-      {/* lg+: one row of five columns (contact, the three link columns,
-          socials). Below: contact, the link columns two or three across,
-          then the socials. */}
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))_auto] lg:gap-8">
-        {/* Contact: email first (what most visitors need), the address as
-            an envelope reads, Mexican format. <address> marks it as the
-            site's contact info for screen readers and search engines. */}
-        <address className="not-italic">
-          <p className={EYEBROW}>Contacto</p>
-          <a
-            href="mailto:contacto@observatoriodelaire.com"
-            className="flex items-center gap-2 rounded-xl text-sm text-gray-700 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          >
-            <Mail className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
-            contacto@observatoriodelaire.com
-          </a>
-          <a
-            href="https://maps.app.goo.gl/uYj6u7VH1BzvbFJfA"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-gray-500 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          >
-            <MapPin className="mt-1 h-4 w-4 shrink-0 text-gray-400" aria-hidden />
-            <span>
-              Blvd. Antonio L. Rodríguez 2100
-              <br />
-              Col. Rincón de Santa María, C.P. 64650
-              <br />
-              Monterrey, N.L.
-              <span className="sr-only"> (abre en una nueva pestaña)</span>
-            </span>
-          </a>
-        </address>
+      {/* lg+: reach us on the left (contact, socials), the site map on the
+          right. Below: the same blocks stacked, the link columns two or three
+          across. */}
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] lg:gap-8">
+        {/* Ways to reach the Observatory, together: contact, then socials. */}
+        <div>
+          {/* Contact: email first (what most visitors need), the address as
+              an envelope reads, Mexican format. <address> marks it as the
+              site's contact info for screen readers and search engines. */}
+          <address className="not-italic">
+            <p className={EYEBROW}>Contacto</p>
+            <a
+              href="mailto:contacto@observatoriodelaire.com"
+              className="flex items-center gap-2 rounded-xl text-sm text-gray-700 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            >
+              <Mail className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+              contacto@observatoriodelaire.com
+            </a>
+            <a
+              href="https://maps.app.goo.gl/uYj6u7VH1BzvbFJfA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-gray-500 hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            >
+              <MapPin className="mt-1 h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+              <span>
+                Blvd. Antonio L. Rodríguez 2100
+                <br />
+                Col. Rincón de Santa María, C.P. 64650
+                <br />
+                Monterrey, N.L.
+                <span className="sr-only"> (abre en una nueva pestaña)</span>
+              </span>
+            </a>
+          </address>
+
+          <div className="mt-8">
+            <p className={EYEBROW}>Síguenos</p>
+            <ul className="-ml-2.5 -mt-1.5 flex items-center gap-1">
+              {SOCIAL_LINKS.map(({ href, label, Icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${label} (abre en una nueva pestaña)`}
+                    className={socialLinkClass}
+                  >
+                    <Icon size={16} aria-hidden />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <nav aria-label="Secciones del sitio" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:contents">
           {COLUMNAS.map(({ titulo, links }) => (
@@ -105,24 +127,6 @@ export default function Footer() {
           ))}
         </nav>
 
-        <div>
-          <p className={EYEBROW}>Síguenos</p>
-          <ul className="-ml-2.5 -mt-1.5 flex items-center gap-1">
-            {SOCIAL_LINKS.map(({ href, label, Icon }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${label} (abre en una nueva pestaña)`}
-                  className={socialLinkClass}
-                >
-                  <Icon size={16} aria-hidden />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
 
       <div className="mt-10 border-t border-gray-200 pt-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
