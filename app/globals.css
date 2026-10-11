@@ -365,6 +365,12 @@
   .h-below-header {
     height: calc(100svh - var(--header-h));
   }
+
+  /* At least the screen below the navbar: a block centered in it sits in
+     the middle of what's visible (the home hero). */
+  .min-h-below-header {
+    min-height: calc(100svh - var(--header-h));
+  }
 }
 
 /* Disclosure bodies ease in rather than appearing all at once. Open only: an

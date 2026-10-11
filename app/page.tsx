@@ -38,7 +38,7 @@ const websiteSchema = {
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center">
+    <div className="flex min-h-below-header items-center">
       <JsonLd data={websiteSchema} />
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:px-8">
         <div className="flex flex-col gap-8">
