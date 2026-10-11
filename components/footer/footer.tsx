@@ -23,8 +23,8 @@ const COLUMNAS = [
   {
     titulo: "Explora",
     links: [
-      { href: "/datos", label: "Datos" },
       { href: "/mapa", label: "Mapa" },
+      { href: "/datos", label: "Datos" },
     ],
   },
   {
