@@ -163,7 +163,7 @@ export default async function PublicacionPage({ params }: Props) {
             )}
             {tipoLabel(p.tipo)} · {displayDate(p)}
           </p>
-          <h1 className="mb-6 text-3xl font-bold text-gray-800 md:text-4xl">{p.title}</h1>
+          <h1 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">{p.title}</h1>
 
           {fotos.length > 0 ? (
             <div className="flex items-center gap-4">
@@ -242,7 +242,7 @@ export default async function PublicacionPage({ params }: Props) {
       {related.items.length > 0 && (
         <section aria-labelledby="relacionadas" className="mx-auto mt-20 max-w-5xl border-t border-gray-200 pt-10">
           <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h2 id="relacionadas" className="text-lg font-semibold text-gray-800">
+            <h2 id="relacionadas" className="text-lg font-semibold text-gray-900">
               {related.title}
             </h2>
             {related.more && (

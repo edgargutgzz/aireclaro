@@ -304,7 +304,7 @@ export default function Biblioteca() {
         {/* The featured item, the newest as cards, then the list grouped by year. */}
         {destacada && (
           <section aria-labelledby="publicaciones-destacada">
-            <h2 id="publicaciones-destacada" className="mb-3 text-sm font-semibold text-gray-800">
+            <h2 id="publicaciones-destacada" className="mb-3 text-sm font-semibold text-gray-900">
               Destacado
             </h2>
             <PublicacionDestacada publicacion={destacada} />
@@ -313,7 +313,7 @@ export default function Biblioteca() {
 
         {featured.length > 0 && (
           <section aria-labelledby="publicaciones-recientes" className={destacada ? "mt-8" : undefined}>
-            <h2 id="publicaciones-recientes" className="mb-3 text-sm font-semibold text-gray-800">
+            <h2 id="publicaciones-recientes" className="mb-3 text-sm font-semibold text-gray-900">
               Lo más reciente
             </h2>
             <ul className="grid gap-4 sm:grid-cols-3">
@@ -335,7 +335,7 @@ export default function Biblioteca() {
               aria-labelledby={`publicaciones-${year}`}
               className={i > 0 ? "mt-10" : featured.length > 0 ? "mt-8" : "mt-4"}
             >
-              <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-800">
+              <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-900">
                 {year}
               </h2>
               <ul className="overflow-hidden rounded-2xl border border-gray-200 bg-white">

@@ -55,7 +55,7 @@ export default function Equipo() {
               height={288}
               className="h-36 w-36 rounded-xl object-cover"
             />
-            <h2 className="pt-5 text-lg font-semibold">{persona.name}</h2>
+            <h2 className="pt-5 text-lg font-semibold text-gray-900">{persona.name}</h2>
             <p className="pt-1.5 text-sm leading-relaxed text-gray-600">
               {persona.puesto}
             </p>
