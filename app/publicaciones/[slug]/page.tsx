@@ -141,6 +141,7 @@ export default async function PublicacionPage({ params }: Props) {
   const outbound = p.editorial ? undefined : p.file;
   const related = relacionadas(p);
   const fotos = photos(p);
+  const column = p.tipo === "columna";
 
   return (
     <div className="px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
@@ -153,18 +154,24 @@ export default async function PublicacionPage({ params }: Props) {
           <ArrowLeft className="h-4 w-4" aria-hidden /> Publicaciones
         </Link>
         <header className="mb-12">
-          {/* Same order as the library: the newspaper first. */}
-          <p className="mb-4 text-sm text-gray-500">
-            {p.outlet && (
-              <>
-                <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-semibold text-gray-800 ${TEXT_LINK}`}>
-                  {p.outlet}
-                </Link>{" "}
-                ·{" "}
-              </>
-            )}
-            {tipoLabel(p.tipo)} · {displayDate(p)}
-          </p>
+          {/* A column reads like an opinion page: what it is, its title, who
+              wrote it, then where and when it ran (under the byline). A
+              document keeps one line on top: publisher, type, date. */}
+          {column ? (
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
+          ) : (
+            <p className="mb-4 text-sm text-gray-500">
+              {p.outlet && (
+                <>
+                  <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-semibold text-gray-800 ${TEXT_LINK}`}>
+                    {p.outlet}
+                  </Link>{" "}
+                  ·{" "}
+                </>
+              )}
+              {tipoLabel(p.tipo)} · {displayDate(p)}
+            </p>
+          )}
           <h1 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">{p.title}</h1>
 
           {fotos.length > 0 ? (
@@ -190,6 +197,21 @@ export default async function PublicacionPage({ params }: Props) {
             </div>
           ) : (
             <p className="text-gray-600">{p.author}</p>
+          )}
+
+          {column && (
+            <p className="mt-4 text-sm text-gray-500">
+              {p.outlet && (
+                <>
+                  Publicada en{" "}
+                  <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-medium text-gray-700 ${TEXT_LINK}`}>
+                    {p.outlet}
+                  </Link>{" "}
+                  ·{" "}
+                </>
+              )}
+              {displayDate(p)}
+            </p>
           )}
 
           {/* Only where the page has no full text to read; otherwise the
