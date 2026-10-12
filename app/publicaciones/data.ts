@@ -502,6 +502,12 @@ function nodeText(node: React.ReactNode): string {
   return "";
 }
 
+// A publication's link card (app/api/og/publicaciones/[slug]). d= is its
+// design version: bump it on any change, chat apps cache per image URL.
+export function linkCard(p: Publicacion) {
+  return { url: `/api/og/publicaciones/${p.slug}?d=7`, width: 1200, height: 630, alt: p.title };
+}
+
 export function pageUrl(p: Publicacion): string {
   return `${SITE_URL}/publicaciones/${p.slug}`;
 }
