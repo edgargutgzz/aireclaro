@@ -30,16 +30,12 @@ export function SectionCard({
   backdrop,
   headline,
   textWidth = WRAPPED.text,
-  wash = true,
   logo,
 }: {
   backdrop: ReactNode;
   headline: string[] | string;
   /** A wrapped headline's box, narrower when something stands on the right. */
   textWidth?: number;
-  /** False for a backdrop that should show whole, light enough behind the
-   *  headline on its own (a sky). */
-  wash?: boolean;
   logo: string | null;
 }) {
   const { width: W, height: H } = SECTION_CARD;
@@ -47,7 +43,6 @@ export function SectionCard({
   return (
     <div style={{ display: "flex", position: "relative", width: W, height: H, background: "#ffffff", fontFamily: "Inter" }}>
       {backdrop}
-      {wash ? (
       <div
         style={{
           position: "absolute",
@@ -58,7 +53,6 @@ export function SectionCard({
           backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.9) 55%, rgba(255,255,255,0) 100%)",
         }}
       />
-      ) : null}
       <div
         style={{
           position: "absolute",

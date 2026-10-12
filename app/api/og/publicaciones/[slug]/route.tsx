@@ -121,7 +121,7 @@ async function columnCard(p: Publicacion, requestUrl: string) {
 }
 
 // A document with its own card background (`fondo`): the picture fills the
-// whole card, the title straight on it (no wash).
+// whole card, the title over the section frame's white wash.
 async function backgroundCard(p: Publicacion, requestUrl: string, fondo: string) {
   const [logo, fonts] = await Promise.all([loadOgLogo(requestUrl, ogLogoAt(65)), loadInterFonts(p.title)]);
   const src = new URL(fondo, requestUrl).toString();
@@ -131,7 +131,6 @@ async function backgroundCard(p: Publicacion, requestUrl: string, fondo: string)
         // eslint-disable-next-line @next/next/no-img-element
         backdrop={<img src={src} width={W} height={H} alt="" style={{ position: "absolute", left: 0, top: 0 }} />}
         headline={p.title}
-        wash={false}
         logo={logo}
       />
     ),
