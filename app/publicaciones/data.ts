@@ -1,6 +1,7 @@
 import { editoriales, type Editorial } from "./editoriales";
 import { transcripciones, type Transcripcion } from "./transcripciones";
 import { SITE_URL } from "@/lib/site";
+import { EQUIPO } from "@/lib/equipo";
 
 // Everything the Observatory has published, in one list for /publicaciones:
 // the newspaper columns (./editoriales.ts) and the documents (below). Every
@@ -394,9 +395,16 @@ const PHOTOS = new Map<string, string>([
   ...editoriales.filter((e) => !e.author.includes(" y ")).map((e): [string, string] => [e.author, e.authorProfile]),
 ]);
 
-export function photos(p: Publicacion): { name: string; src: string }[] {
+// Each author's role, from /equipo's list (lib/equipo.ts), matched by
+// portrait file since bylines and /equipo spell some names differently
+// ("Lorenzo J. de Rosenzweig"). Authors not on the team have none.
+function puesto(src: string): string | undefined {
+  return EQUIPO.find((e) => `/equipo/${e.image}.webp` === src)?.puesto;
+}
+
+export function photos(p: Publicacion): { name: string; src: string; puesto?: string }[] {
   if (p.people.length === 0 || !p.people.every((name) => PHOTOS.has(name))) return [];
-  return p.people.map((name) => ({ name, src: PHOTOS.get(name)! }));
+  return p.people.map((name) => ({ name, src: PHOTOS.get(name)!, puesto: puesto(PHOTOS.get(name)!) }));
 }
 
 // Lowercase, accents dropped, so a search for "futbol" finds "fútbol".

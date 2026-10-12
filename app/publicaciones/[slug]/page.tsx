@@ -168,18 +168,25 @@ export default async function PublicacionPage({ params }: Props) {
           <h1 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">{p.title}</h1>
 
           {fotos.length > 0 ? (
-            <div className="flex items-center gap-4">
+            // The name, and under it a single author's role (from /equipo):
+            // why this voice is worth reading. Two authors: names only.
+            <div className="flex items-center gap-3">
               <Avatares fotos={fotos} />
-              <p className="font-medium text-gray-800">
-                {p.people.map((name, i) => (
-                  <span key={name}>
-                    {i > 0 && " y "}
-                    <Link href={`/publicaciones?autor=${urlKey(name)}`} className={TEXT_LINK}>
-                      {name}
-                    </Link>
-                  </span>
-                ))}
-              </p>
+              <div className="min-w-0">
+                <p className="font-medium text-gray-800">
+                  {p.people.map((name, i) => (
+                    <span key={name}>
+                      {i > 0 && " y "}
+                      <Link href={`/publicaciones?autor=${urlKey(name)}`} className={TEXT_LINK}>
+                        {name}
+                      </Link>
+                    </span>
+                  ))}
+                </p>
+                {fotos.length === 1 && fotos[0].puesto && (
+                  <p className="mt-0.5 text-sm leading-snug text-gray-500">{fotos[0].puesto}</p>
+                )}
+              </div>
             </div>
           ) : (
             <p className="text-gray-600">{p.author}</p>
