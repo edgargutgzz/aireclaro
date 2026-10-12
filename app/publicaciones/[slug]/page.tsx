@@ -53,11 +53,13 @@ function byline(p: Publicacion): string {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = getPublicacion((await params).slug);
   if (!p) return {};
+  // A column's title names its author, so a shared link says who wrote it.
+  // The image is its branded link card (app/api/og/publicaciones/[slug]).
   const metadata = pageMetadata({
-    title: p.title,
+    title: p.tipo === "columna" ? `${p.title}, por ${p.author}` : p.title,
     description: p.summary ?? `${byline(p)}, ${displayDate(p)}.`,
     path: `/publicaciones/${p.slug}`,
-    images: [{ url: p.image, alt: p.title }],
+    images: [{ url: `/api/og/publicaciones/${p.slug}?d=1`, width: 1200, height: 630, alt: p.title }],
   });
   // Google Scholar's tags, for the documents (the columns are news).
   if (p.tipo !== "columna" && p.file) {
