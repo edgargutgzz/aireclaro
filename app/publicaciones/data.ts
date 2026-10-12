@@ -282,6 +282,7 @@ const INFOGRAFIAS: Documento[] = [
     slug: "efectos-contaminacion-aire-salud",
     title: "Los efectos de la contaminación del aire en la salud humana",
     file: "infografia_salud",
+    fondo: "/og/infografia-salud.jpg",
     tipo: "infografia",
     year: 2026,
     author: OCCAMM,
@@ -509,7 +510,7 @@ function nodeText(node: React.ReactNode): string {
 // A publication's link card (app/api/og/publicaciones/[slug]). d= is its
 // design version: bump it on any change, chat apps cache per image URL.
 export function linkCard(p: Publicacion) {
-  return { url: `/api/og/publicaciones/${p.slug}?d=9`, width: 1200, height: 630, alt: p.title };
+  return { url: `/api/og/publicaciones/${p.slug}?d=10`, width: 1200, height: 630, alt: p.title };
 }
 
 // The link to share an item: a document's or infographic's /d/<slug>
