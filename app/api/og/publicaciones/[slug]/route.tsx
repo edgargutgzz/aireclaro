@@ -8,7 +8,7 @@ import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 // One publication's link card. A column's mirrors its page header (the
 // user's pick, 2026-10-12, not the section cards' frame): type, title, the
 // author's portrait and name, outlet and date, the cover peeking in below,
-// a small logo top right. A document or infographic keeps the section
+// no logo (user, 2026-10-12: the link and the site's icon carry it). A document or infographic keeps the section
 // cards' frame (lib/og-section-card): its title over white, its cover (a
 // page of text, which would fight the headline) standing on the right as a
 // page. The card renderer can't read .webp, so sharp re-encodes covers and
@@ -53,13 +53,11 @@ function meta(p: Publicacion): string {
 
 async function columnCard(p: Publicacion, requestUrl: string) {
   const fotos = photos(p);
-  const [logo, fonts, cover, ...portraits] = await Promise.all([
-    loadOgLogo(requestUrl, ogLogoAt(44)),
+  const [fonts, cover, ...portraits] = await Promise.all([
     loadInterFonts(EYEBROW + p.title + p.author + meta(p)),
     loadJpeg(p.image, requestUrl, BAND.width, BAND.height),
     ...fotos.map((f) => loadJpeg(f.src, requestUrl, PORTRAIT * 2, PORTRAIT * 2, true)),
   ]);
-  const logoSize = ogLogoAt(44);
 
   return new ImageResponse(
     (
@@ -74,13 +72,7 @@ async function columnCard(p: Publicacion, requestUrl: string) {
           fontFamily: "Inter",
         }}
       >
-        <div style={{ display: "flex", flexShrink: 0, justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", fontSize: 26, fontWeight: 600, letterSpacing: 1.5, color: "#6b7280" }}>{EYEBROW}</div>
-          {logo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={logo} width={logoSize.width} height={logoSize.height} alt="" />
-          ) : null}
-        </div>
+        <div style={{ display: "flex", flexShrink: 0, fontSize: 26, fontWeight: 600, letterSpacing: 1.5, color: "#6b7280" }}>{EYEBROW}</div>
         <div
           style={{
             display: "flex",
