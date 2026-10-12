@@ -512,6 +512,15 @@ export function linkCard(p: Publicacion) {
   return { url: `/api/og/publicaciones/${p.slug}?d=8`, width: 1200, height: 630, alt: p.title };
 }
 
+// The link to share an item: a document's or infographic's /d/<slug>
+// (app/d/[slug]: its link card, then the PDF), a column's own page, or the
+// outlet's page for a column that lives only there.
+export function shareUrl(p: Publicacion): string {
+  if (p.externalUrl) return p.externalUrl;
+  if (p.tipo !== "columna" && p.file) return `${SITE_URL}/d/${p.slug}`;
+  return pageUrl(p);
+}
+
 export function pageUrl(p: Publicacion): string {
   return `${SITE_URL}/publicaciones/${p.slug}`;
 }

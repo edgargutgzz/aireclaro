@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
-import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
+import Compartir from "@/components/publicaciones/compartir";
+import { formatDate, shareUrl, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The ways a publication is listed: a card with its cover (the library's
 // "Lo más reciente", a page's "Más de…"), a row with a thumbnail (the
@@ -135,34 +136,39 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
 // A library's featured item: wider than the cards, its summary showing.
 // Featured items sit side by side with different types, so each leads with
 // its type, a column too ("Columna de opinión"); a column's author, outlet
-// and date follow its summary.
+// and date follow its summary. A "Compartir" button sits in the top-right
+// corner, beside the link rather than inside it (a button can't nest in a
+// link).
 export function PublicacionDestacada({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
-    <ItemLink
-      p={p}
-      className={`group grid overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] ${FOCUS_RING}`}
-    >
-      <Image
-        src={p.image}
-        alt=""
-        width={640}
-        height={360}
-        sizes="(min-width: 1024px) 380px, (min-width: 640px) 40vw, 100vw"
-        preload={priority}
-        className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
-      />
-      <div className="flex flex-col justify-center p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
-        <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">{p.title}</p>
-        {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
-        {p.tipo === "columna" && (
-          <p className="mt-3 text-xs text-gray-500">
-            <span className="font-medium text-gray-600">{p.author}</span>
-            {" · "}
-            {[p.outlet, p.date ? formatDate(p.date) : String(p.year)].filter(Boolean).join(" · ")}
-          </p>
-        )}
-      </div>
-    </ItemLink>
+    <div className="relative">
+      <ItemLink
+        p={p}
+        className={`group grid overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] ${FOCUS_RING}`}
+      >
+        <Image
+          src={p.image}
+          alt=""
+          width={640}
+          height={360}
+          sizes="(min-width: 1024px) 380px, (min-width: 640px) 40vw, 100vw"
+          preload={priority}
+          className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
+        />
+        <div className="flex flex-col justify-center p-5 sm:p-6">
+          <p className="text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
+          <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">{p.title}</p>
+          {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
+          {p.tipo === "columna" && (
+            <p className="mt-3 text-xs text-gray-500">
+              <span className="font-medium text-gray-600">{p.author}</span>
+              {" · "}
+              {[p.outlet, p.date ? formatDate(p.date) : String(p.year)].filter(Boolean).join(" · ")}
+            </p>
+          )}
+        </div>
+      </ItemLink>
+      <Compartir url={shareUrl(p)} title={p.title} className="absolute right-3 top-3" />
+    </div>
   );
 }
