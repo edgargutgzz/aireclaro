@@ -74,7 +74,7 @@ const DOCUMENTOS: Documento[] = [
     author: OCCAMM,
     pages: 12,
     summary:
-      "Informe del Observatorio sobre su trabajo de 2025 a 2026 en tres ejes: la plataforma ciudadana Alerta Regia, la actualización de las normas NOM-043, NOM-085 y NOM-016, y la propuesta de una Comisión Ambiental Interestatal Coahuila-Nuevo León, con el uso de sus recursos y sus siguientes pasos.",
+      "Un año de trabajo del Observatorio en tres ejes: Alerta Regia, la actualización de normas oficiales y una comisión ambiental entre Coahuila y Nuevo León.",
   },
   {
     slug: "comentarios-programa-contingencias-2026",
