@@ -17,6 +17,11 @@ const LOGO = ogLogoAt(65);
 // phone preview). 1200x630.
 export const SECTION_CARD = { width: 1200, height: 630 };
 
+// A wrapped headline (a publication's title) gets a wider wash and text box
+// than the section cards' fixed lines, so a short title fits on one line:
+// WhatsApp shows about the left 1030px of the card, so 64 + 720 stays in view.
+const WRAPPED = { wash: 860, text: 720 };
+
 // A wrapped headline's size: the section cards' 76px while it fits in about
 // three lines, smaller for a long title so it stays clear of the logo.
 function wrappedSize(text: string): number {
@@ -27,14 +32,18 @@ export function SectionCard({
   backdrop,
   headline,
   byline,
+  textWidth = WRAPPED.text,
   logo,
 }: {
   backdrop: ReactNode;
   headline: string[] | string;
   byline?: string;
+  /** A wrapped headline's box, narrower when something stands on the right. */
+  textWidth?: number;
   logo: string | null;
 }) {
   const { width: W, height: H } = SECTION_CARD;
+  const wrapped = typeof headline === "string";
   return (
     <div style={{ display: "flex", position: "relative", width: W, height: H, background: "#ffffff", fontFamily: "Inter" }}>
       {backdrop}
@@ -43,7 +52,7 @@ export function SectionCard({
           position: "absolute",
           left: 0,
           top: 0,
-          width: 680,
+          width: wrapped ? WRAPPED.wash : 680,
           height: H,
           backgroundImage: "linear-gradient(90deg, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.9) 55%, rgba(255,255,255,0) 100%)",
         }}
@@ -57,7 +66,7 @@ export function SectionCard({
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          fontSize: typeof headline === "string" ? wrappedSize(headline) : 76,
+          fontSize: wrapped ? wrappedSize(headline) : 76,
           fontWeight: 700,
           color: "#111827",
           lineHeight: 1.04,
@@ -65,7 +74,7 @@ export function SectionCard({
         }}
       >
         {typeof headline === "string" ? (
-          <div style={{ display: "flex", width: 560 }}>{headline}</div>
+          <div style={{ display: "flex", width: textWidth }}>{headline}</div>
         ) : (
           headline.map((l) => (
             <div key={l} style={{ display: "flex" }}>
@@ -74,7 +83,7 @@ export function SectionCard({
           ))
         )}
         {byline ? (
-          <div style={{ display: "flex", width: 560, marginTop: 28, fontSize: 40, fontWeight: 600, letterSpacing: -0.5, color: "#4b5563" }}>
+          <div style={{ display: "flex", width: textWidth, marginTop: 28, fontSize: 40, fontWeight: 600, letterSpacing: -0.5, color: "#4b5563" }}>
             {byline}
           </div>
         ) : null}

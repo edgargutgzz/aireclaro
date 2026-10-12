@@ -72,6 +72,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
         }
         headline={p.title}
         byline={page ? undefined : p.author}
+        // Clear of the page: it starts 64 + 420 from the right edge.
+        textWidth={page ? W - PAGE.right - PAGE.width - 64 - 56 : undefined}
         logo={logo}
       />
     ),
