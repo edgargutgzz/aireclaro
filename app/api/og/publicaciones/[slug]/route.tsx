@@ -6,7 +6,8 @@ import { loadInterFonts } from "@/lib/og-fonts";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 
 // One publication's link card, in the section cards' frame
-// (lib/og-section-card): its own cover behind, its title as the headline,
+// (lib/og-section-card): its own cover behind, its title as the headline (a
+// column's author under it),
 // the logo as the signature. A column's cover (a picture) fills the card; a
 // document's or infographic's (a page of text, which would fight the
 // headline) stands on the right as a page, its top showing. The card
@@ -40,7 +41,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   const page = p.tipo !== "columna";
   const [logo, fonts, cover] = await Promise.all([
     loadOgLogo(request.url, ogLogoAt(65)),
-    loadInterFonts(p.title),
+    loadInterFonts(p.title + p.author),
     loadCover(p.image, request.url, page),
   ]);
 
@@ -70,6 +71,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
           )
         }
         headline={p.title}
+        byline={page ? undefined : p.author}
         logo={logo}
       />
     ),

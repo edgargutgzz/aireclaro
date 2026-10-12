@@ -12,7 +12,9 @@ const LOGO = ogLogoAt(65);
 // and the app prints the title and description under the image anyway.
 // Each route draws only its backdrop and headline: fixed lines, or (a
 // publication's title, app/api/og/publicaciones/[slug]) one string that
-// wraps over the wash at a size set by its length. 1200x630.
+// wraps over the wash at a size set by its length, with an optional byline
+// under it (a column's author, 40px: the smallest that still reads in a
+// phone preview). 1200x630.
 export const SECTION_CARD = { width: 1200, height: 630 };
 
 // A wrapped headline's size: the section cards' 76px while it fits in about
@@ -24,10 +26,12 @@ function wrappedSize(text: string): number {
 export function SectionCard({
   backdrop,
   headline,
+  byline,
   logo,
 }: {
   backdrop: ReactNode;
   headline: string[] | string;
+  byline?: string;
   logo: string | null;
 }) {
   const { width: W, height: H } = SECTION_CARD;
@@ -69,6 +73,11 @@ export function SectionCard({
             </div>
           ))
         )}
+        {byline ? (
+          <div style={{ display: "flex", width: 560, marginTop: 28, fontSize: 40, fontWeight: 600, letterSpacing: -0.5, color: "#4b5563" }}>
+            {byline}
+          </div>
+        ) : null}
       </div>
       {logo ? (
         // eslint-disable-next-line @next/next/no-img-element
