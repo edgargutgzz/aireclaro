@@ -17,8 +17,9 @@ export interface Editorial {
   date: string; // "2026-08-30"
   content?: React.ReactNode;
   pdfLink?: string;
-  /** For a column without `content`: the deck printed under its byline,
-   *  verbatim (the Este País one, which has none, is described instead). */
+  /** The deck printed under its byline, verbatim (the Este País one, which
+   *  has none, is described instead). Shown on a column without `content`
+   *  and on the featured card; otherwise only in the page's metadata. */
   summary?: string;
 }
 
@@ -26,13 +27,15 @@ export const editoriales: Editorial[] = [
   {
     title: "El riesgo no espera",
     slug: "el-riesgo-no-espera",
-    image: "/editoriales/11ene2026.webp",
+    image: "/editoriales/10oct2026.webp",
     imageAlt: "El riesgo no espera",
     author: "Ana Cristina García Luna",
     authorProfile: "/equipo/ana.webp",
     authorProfileAlt: "Ana Cristina García Luna",
     newspaper: "El Norte",
     date: "2026-10-10",
+    summary:
+      "La protección ambiental no puede esperar a que la contaminación se extienda para comenzar a actuar.",
     content: React.createElement(
       React.Fragment,
       null,

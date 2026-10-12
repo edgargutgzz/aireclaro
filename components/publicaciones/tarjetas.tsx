@@ -132,8 +132,8 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
   );
 }
 
-// The library's featured item: wider than the cards, its summary showing.
-export function PublicacionDestacada({ publicacion: p }: { publicacion: Publicacion }) {
+// A library's featured item: wider than the cards, its summary showing.
+export function PublicacionDestacada({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
     <ItemLink
       p={p}
@@ -145,7 +145,7 @@ export function PublicacionDestacada({ publicacion: p }: { publicacion: Publicac
         width={640}
         height={360}
         sizes="(min-width: 1024px) 380px, (min-width: 640px) 40vw, 100vw"
-        preload
+        preload={priority}
         className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
       />
       <div className="flex flex-col justify-center p-5 sm:p-6">

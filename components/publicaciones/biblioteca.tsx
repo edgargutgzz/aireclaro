@@ -5,7 +5,7 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import { DialogShell } from "@/components/mapa/info-dialog";
 import { PublicacionCard, PublicacionDestacada, PublicacionRow } from "@/components/publicaciones/tarjetas";
 import {
-  DESTACADA,
+  DESTACADAS,
   PERSONAS,
   TIPOS,
   normalize,
@@ -150,10 +150,12 @@ export default function Biblioteca() {
   }, [filters]);
 
   const filtered = Boolean(tipo || medio || anio || autor || q.trim());
-  // Unfiltered, the featured item (DESTACADA) leads, then the newest as
+  // Unfiltered, the featured items (DESTACADAS) lead, then the newest as
   // cards, and the list carries on after them; none is shown twice.
-  const destacada = filtered ? undefined : results.find((p) => p.slug === DESTACADA);
-  const pool = destacada ? results.filter((p) => p !== destacada) : results;
+  const destacadas = filtered
+    ? []
+    : DESTACADAS.map((slug) => results.find((p) => p.slug === slug)).filter((p): p is Publicacion => Boolean(p));
+  const pool = results.filter((p) => !destacadas.includes(p));
   const featured = filtered ? [] : pool.slice(0, FEATURED);
   const rest = filtered ? results : pool.slice(FEATURED);
   const [showAll, setShowAll] = useState(false);
@@ -302,24 +304,30 @@ export default function Biblioteca() {
         </div>
 
         {/* The featured item, the newest as cards, then the list grouped by year. */}
-        {destacada && (
+        {destacadas.length > 0 && (
           <section aria-labelledby="publicaciones-destacada">
             <h2 id="publicaciones-destacada" className="mb-3 text-sm font-semibold text-gray-800">
               Destacado
             </h2>
-            <PublicacionDestacada publicacion={destacada} />
+            <ul className="grid gap-4">
+              {destacadas.map((p, i) => (
+                <li key={p.slug}>
+                  <PublicacionDestacada publicacion={p} priority={i === 0} />
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
         {featured.length > 0 && (
-          <section aria-labelledby="publicaciones-recientes" className={destacada ? "mt-8" : undefined}>
+          <section aria-labelledby="publicaciones-recientes" className={destacadas.length > 0 ? "mt-8" : undefined}>
             <h2 id="publicaciones-recientes" className="mb-3 text-sm font-semibold text-gray-800">
               Lo más reciente
             </h2>
             <ul className="grid gap-4 sm:grid-cols-3">
               {featured.map((p, i) => (
                 <li key={p.slug}>
-                  <PublicacionCard publicacion={p} priority={i === 0 && !destacada} />
+                  <PublicacionCard publicacion={p} priority={i === 0 && destacadas.length === 0} />
                 </li>
               ))}
             </ul>

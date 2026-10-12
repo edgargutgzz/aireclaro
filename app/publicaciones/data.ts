@@ -371,10 +371,12 @@ if (new Set(publicaciones.map((p) => p.slug)).size !== publicaciones.length) {
   throw new Error("Two publications share a slug");
 }
 
-// The one item the library features above everything else (unfiltered): the
-// health infographic, the Observatory's most useful piece for a reader asking
-// what the air does to them. Change or empty it here.
-export const DESTACADA: string | undefined = "efectos-contaminacion-aire-salud";
+// The items the library features above everything else (unfiltered), in
+// order: the newest publication, then the health infographic, the
+// Observatory's most useful piece for a reader asking what the air does to
+// them. Change the second here.
+export const DESTACADA = "efectos-contaminacion-aire-salud";
+export const DESTACADAS: string[] = [...new Set([publicaciones[0].slug, DESTACADA])];
 
 // The Autoría filter's people, most published first (a fixed order, so the
 // list doesn't reshuffle as the other filters change its counts).
