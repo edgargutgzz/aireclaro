@@ -53,6 +53,9 @@ export type Publicacion = {
   pages?: number;
   doi?: string;
   image: string;
+  /** A full-bleed background for the link card (a .jpg in public/og, which
+   *  the card renderer reads as is), when the cover isn't the right picture. */
+  fondo?: string;
   /** Set for a column with its full text on the page: written `content`, or
    *  a `transcripcion` of its clipping (./transcripciones.ts). */
   editorial?: Editorial;
@@ -69,6 +72,7 @@ const DOCUMENTOS: Documento[] = [
     slug: "informe-de-impacto-2025-2026",
     title: "Informe de impacto 2025-2026",
     file: "2026-informe-impacto",
+    fondo: "/og/informe-impacto-2025-2026.jpg",
     tipo: "informe",
     year: 2026,
     author: OCCAMM,
@@ -505,7 +509,7 @@ function nodeText(node: React.ReactNode): string {
 // A publication's link card (app/api/og/publicaciones/[slug]). d= is its
 // design version: bump it on any change, chat apps cache per image URL.
 export function linkCard(p: Publicacion) {
-  return { url: `/api/og/publicaciones/${p.slug}?d=7`, width: 1200, height: 630, alt: p.title };
+  return { url: `/api/og/publicaciones/${p.slug}?d=8`, width: 1200, height: 630, alt: p.title };
 }
 
 export function pageUrl(p: Publicacion): string {

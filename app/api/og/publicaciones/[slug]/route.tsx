@@ -120,10 +120,30 @@ async function columnCard(p: Publicacion, requestUrl: string) {
   );
 }
 
+// A document with its own card background (`fondo`): the picture fills the
+// whole card, the title straight on it (no wash).
+async function backgroundCard(p: Publicacion, requestUrl: string, fondo: string) {
+  const [logo, fonts] = await Promise.all([loadOgLogo(requestUrl, ogLogoAt(65)), loadInterFonts(p.title)]);
+  const src = new URL(fondo, requestUrl).toString();
+  return new ImageResponse(
+    (
+      <SectionCard
+        // eslint-disable-next-line @next/next/no-img-element
+        backdrop={<img src={src} width={W} height={H} alt="" style={{ position: "absolute", left: 0, top: 0 }} />}
+        headline={p.title}
+        wash={false}
+        logo={logo}
+      />
+    ),
+    { width: W, height: H, fonts, headers: { "cache-control": CACHE } },
+  );
+}
+
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const p = getPublicacion((await params).slug);
   if (!p) return new Response("Not found", { status: 404 });
   if (p.tipo === "columna") return columnCard(p, request.url);
+  if (p.fondo) return backgroundCard(p, request.url, p.fondo);
   const [logo, fonts, cover] = await Promise.all([
     loadOgLogo(request.url, ogLogoAt(65)),
     loadInterFonts(p.title),
