@@ -24,6 +24,112 @@ export interface Editorial {
 
 export const editoriales: Editorial[] = [
   {
+    title: "El riesgo no espera",
+    slug: "el-riesgo-no-espera",
+    image: "/editoriales/11ene2026.webp",
+    imageAlt: "El riesgo no espera",
+    author: "Ana Cristina García Luna",
+    authorProfile: "/equipo/ana.webp",
+    authorProfileAlt: "Ana Cristina García Luna",
+    newspaper: "El Norte",
+    date: "2026-10-10",
+    content: React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(
+        "p",
+        null,
+        "Si necesitamos esperar a que varias estaciones de monitoreo registren simultáneamente contaminación para decidir que debemos proteger a la población, entonces no estamos previniendo el riesgo: estamos esperando a que se vuelva imposible ignorarlo.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Y mientras esperamos, alguien ya está respirando ese aire.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La discusión sobre el nuevo Programa de Respuesta a Contingencias Atmosféricas (PRCA) podría parecer un asunto técnico reservado para especialistas. No lo es. Nos enfrenta a una pregunta profundamente incómoda: ¿cuánto riesgo estamos dispuestos a tolerar antes de actuar para proteger la salud?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Escribo como científica, porque los datos deben servir para proteger la vida. Como arquitecta y urbanista, porque la contaminación y sus consecuencias no se distribuyen uniformemente en el territorio. Y como madre, porque detrás de cada medición hay personas que respiran: niños en las escuelas, adultos mayores, trabajadores y familias enteras.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Hoy Nuevo León ya cuenta con un inventario de emisiones, instrumento fundamental para identificar las fuentes de contaminación y orientar las estrategias de reducción. A partir de él deben desarrollarse modelos, escenarios y acciones permanentes que atiendan las causas estructurales del problema.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Pero conocer las causas no equivale a protegernos de sus consecuencias.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El PRCA tiene una responsabilidad distinta e inmediata: reconocer oportunamente los episodios críticos, alertar a la población y activar medidas que reduzcan la exposición y eviten que la contaminación se agrave. Por eso, sus criterios de activación importan tanto.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Un análisis del Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey, en colaboración con el Instituto Nacional de Salud Pública, examinó datos validados de 2023 a 2025 y simuló la activación de avisos y advertencias según el número de estaciones que registraran simultáneamente niveles críticos. Los resultados son alarmantes.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "En 2025, para partículas finas PM2.5, se habrían generado 17 avisos considerando una estación, pero solamente uno exigiendo cuatro. Una reducción del 94.1 por ciento. En las advertencias, el contraste es aún más grave: ocho frente a ninguna.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Que desaparezcan las alertas no significa que haya desaparecido la contaminación. Significa que hemos elevado el requisito para reconocerla y esa diferencia puede tener consecuencias sobre la salud.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La contaminación no responde a fronteras administrativas. Se concentra, se desplaza y afecta de manera desigual a los territorios y a quienes los habitan. Una condición crítica en una zona no deja de ser peligrosa porque otras estaciones todavía no registren el mismo fenómeno.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "No todas las personas respiran el mismo aire al mismo tiempo y tampoco tienen las mismas condiciones para protegerse. Aquí aparece una cuestión de justicia urbana: si conocemos el riesgo en un territorio, ¿por qué su población tendría que esperar a que también se manifieste en otros lugares para recibir una respuesta?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La alternativa no es declarar una contingencia metropolitana ante cualquier episodio localizado. Es construir una respuesta territorial, gradual y proporcional: alertar donde exista riesgo, intensificar las medidas cuando aumente y ampliarlas cuando se extienda.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "No se trata de declarar más contingencias, sino de proteger mejor y a tiempo. Un programa no debería juzgarse por cuántas alertas evita emitir, sino por su capacidad de reconocer oportunamente los riesgos y activar respuestas eficaces.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El inventario debe orientar la reducción permanente de emisiones. La modelación debe ayudarnos a decidir dónde intervenir. Pero mientras transformamos las causas, el PRCA debe responder a sus consecuencias inmediatas.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "Como científica, defiendo la evidencia. Como urbanista, su interpretación territorial. Como madre, me niego a normalizar que la protección de nuestra salud dependa de que la contaminación se extienda lo suficiente para justificar una alerta.",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "La contaminación no espera a cumplir requisitos administrativos para entrar a nuestros pulmones. ¿Por qué debería hacerlo nuestra respuesta?",
+      ),
+      React.createElement(
+        "p",
+        null,
+        "El riesgo no espera. La protección de nuestra salud tampoco debería hacerlo.",
+      ),
+      React.createElement("p", null, React.createElement("em", null, "La autora es arquitecta, urbanista e investigadora.")),
+    ),
+  },
+  {
     title: "Monterrey apesta",
     slug: "monterrey-apesta",
     image: "/editoriales/30ago2026.webp",
