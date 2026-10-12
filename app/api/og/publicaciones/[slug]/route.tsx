@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
-import { displayDate, getPublicacion, photos, type Publicacion } from "@/app/publicaciones/data";
+import { displayDate, getPublicacion, photos, readingMinutes, type Publicacion } from "@/app/publicaciones/data";
 import { loadOgLogo, ogLogoAt } from "@/lib/og-logo";
 import { loadInterFonts } from "@/lib/og-fonts";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
@@ -47,7 +47,8 @@ function titleSize(title: string): number {
 }
 
 function meta(p: Publicacion): string {
-  return [p.outlet, displayDate(p)].filter(Boolean).join(" · ");
+  const minutes = readingMinutes(p);
+  return [p.outlet, displayDate(p), minutes && `${minutes} min de lectura`].filter(Boolean).join(" · ");
 }
 
 async function columnCard(p: Publicacion, requestUrl: string) {

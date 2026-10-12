@@ -18,6 +18,7 @@ import {
   getPublicacion,
   pageUrl,
   photos,
+  readingMinutes,
   relacionadas,
   urlKey,
   publicaciones,
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: p.tipo === "columna" ? `${p.title}, por ${p.author}` : p.title,
     description: p.summary ?? `${byline(p)}, ${displayDate(p)}.`,
     path: `/publicaciones/${p.slug}`,
-    images: [{ url: `/api/og/publicaciones/${p.slug}?d=4`, width: 1200, height: 630, alt: p.title }],
+    images: [{ url: `/api/og/publicaciones/${p.slug}?d=5`, width: 1200, height: 630, alt: p.title }],
   });
   // Google Scholar's tags, for the documents (the columns are news).
   if (p.tipo !== "columna" && p.file) {
@@ -142,6 +143,7 @@ export default async function PublicacionPage({ params }: Props) {
   const related = relacionadas(p);
   const fotos = photos(p);
   const column = p.tipo === "columna";
+  const minutes = readingMinutes(p);
 
   return (
     <div className="px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
@@ -211,6 +213,7 @@ export default async function PublicacionPage({ params }: Props) {
                 </>
               )}
               {displayDate(p)}
+              {minutes && ` · ${minutes} min de lectura`}
             </p>
           )}
 

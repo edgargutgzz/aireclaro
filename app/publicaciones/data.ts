@@ -1,3 +1,4 @@
+import React from "react";
 import { editoriales, type Editorial } from "./editoriales";
 import { transcripciones, type Transcripcion } from "./transcripciones";
 import { SITE_URL } from "@/lib/site";
@@ -466,6 +467,27 @@ export function formatDate(date: string): string {
 // The date as the page shows it: a column's full date, a document's year.
 export function displayDate(p: Publicacion): string {
   return p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
+}
+
+// Minutes to read a column with its full text on the page, at 200 words a
+// minute (a common figure for Spanish reading speed), at least 1. Undefined
+// when the page has no text of its own.
+export function readingMinutes(p: Publicacion): number | undefined {
+  const text = p.editorial?.content
+    ? nodeText(p.editorial.content)
+    : p.transcripcion
+      ? [...(p.transcripcion.epigraph ?? []), ...p.transcripcion.paragraphs, p.transcripcion.note ?? ""].join(" ")
+      : undefined;
+  if (!text) return undefined;
+  return Math.max(1, Math.round(text.split(/\s+/).filter(Boolean).length / 200));
+}
+
+// A written column's text, from its React elements.
+function nodeText(node: React.ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(nodeText).join(" ");
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) return nodeText(node.props.children);
+  return "";
 }
 
 export function pageUrl(p: Publicacion): string {
