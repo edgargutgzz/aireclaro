@@ -138,7 +138,7 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
 // its type, a column too ("Columna de opinión"); a column's author, outlet
 // and date follow its summary. A "Compartir" button sits in the top-right
 // corner, beside the link rather than inside it (a button can't nest in a
-// link).
+// link). From sm the text starts below it (on phones it sits on the image).
 export function PublicacionDestacada({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
     <div className="relative">
@@ -155,7 +155,7 @@ export function PublicacionDestacada({ publicacion: p, priority = false }: { pub
           preload={priority}
           className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
         />
-        <div className="flex flex-col justify-center p-5 sm:p-6">
+        <div className="flex flex-col justify-center p-5 sm:px-6 sm:pb-6 sm:pt-16">
           <p className="text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
           <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">{p.title}</p>
           {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
