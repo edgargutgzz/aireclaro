@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { DialogShell } from "@/components/mapa/info-dialog";
-import { PublicacionCard, PublicacionDestacada, PublicacionRow } from "@/components/publicaciones/tarjetas";
+import { PublicacionDestacada, PublicacionRow } from "@/components/publicaciones/tarjetas";
 import {
   DESTACADAS,
   PERSONAS,
@@ -17,8 +17,8 @@ import {
 } from "@/app/publicaciones/data";
 
 // The /publicaciones library: search, type, outlet, author and year filters over every
-// publication, grouped by year, newest first. Unfiltered, the three newest
-// lead as image cards; every list row carries its cover as a thumbnail.
+// publication, grouped by year, newest first. Unfiltered, the featured items
+// lead as wide cards; every list row carries its cover as a thumbnail.
 // The filters show how many items each option would leave (counted against
 // the other active filters, the usual faceted-search rule): a list in the
 // sidebar from lg; below that, behind a "Filtros" button that opens them in a
@@ -31,7 +31,6 @@ import {
 // list, the URL narrows it.
 
 const YEARS = [...new Set(publicaciones.map((p) => p.year))];
-const FEATURED = 3;
 // Unfiltered, the list stops after this many rows until "Ver todas" is
 // pressed; a filter or search always shows every match.
 const PREVIEW = 12;
@@ -150,14 +149,12 @@ export default function Biblioteca() {
   }, [filters]);
 
   const filtered = Boolean(tipo || medio || anio || autor || q.trim());
-  // Unfiltered, the featured items (DESTACADAS) lead, then the newest as
-  // cards, and the list carries on after them; none is shown twice.
+  // Unfiltered, the featured items (DESTACADAS) lead and the list carries on
+  // after them; none is shown twice.
   const destacadas = filtered
     ? []
     : DESTACADAS.map((slug) => results.find((p) => p.slug === slug)).filter((p): p is Publicacion => Boolean(p));
-  const pool = results.filter((p) => !destacadas.includes(p));
-  const featured = filtered ? [] : pool.slice(0, FEATURED);
-  const rest = filtered ? results : pool.slice(FEATURED);
+  const rest = results.filter((p) => !destacadas.includes(p));
   const [showAll, setShowAll] = useState(false);
   const hidden = filtered || showAll ? 0 : Math.max(0, rest.length - PREVIEW);
   const listed = hidden > 0 ? rest.slice(0, PREVIEW) : rest;
@@ -303,7 +300,7 @@ export default function Biblioteca() {
           )}
         </div>
 
-        {/* The featured item, the newest as cards, then the list grouped by year. */}
+        {/* The featured items, then the list grouped by year. */}
         {destacadas.length > 0 && (
           <section aria-labelledby="publicaciones-destacada">
             <h2 id="publicaciones-destacada" className="mb-3 text-sm font-semibold text-gray-800">
@@ -319,21 +316,6 @@ export default function Biblioteca() {
           </section>
         )}
 
-        {featured.length > 0 && (
-          <section aria-labelledby="publicaciones-recientes" className={destacadas.length > 0 ? "mt-8" : undefined}>
-            <h2 id="publicaciones-recientes" className="mb-3 text-sm font-semibold text-gray-800">
-              Lo más reciente
-            </h2>
-            <ul className="grid gap-4 sm:grid-cols-3">
-              {featured.map((p, i) => (
-                <li key={p.slug}>
-                  <PublicacionCard publicacion={p} priority={i === 0 && destacadas.length === 0} />
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
         {results.length === 0 ? (
           <p className="mt-10 text-sm text-gray-600">No hay publicaciones con estos filtros.</p>
         ) : (
@@ -341,7 +323,7 @@ export default function Biblioteca() {
             <section
               key={year}
               aria-labelledby={`publicaciones-${year}`}
-              className={i > 0 ? "mt-10" : featured.length > 0 ? "mt-8" : "mt-4"}
+              className={i > 0 ? "mt-10" : destacadas.length > 0 ? "mt-8" : "mt-4"}
             >
               <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-800">
                 {year}
