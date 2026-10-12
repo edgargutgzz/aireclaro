@@ -59,12 +59,23 @@ export type Publicacion = {
   transcripcion?: Transcripcion;
 };
 
-// The documents: all 16 from the old /recursos page. Credits, dates and
+// The documents: the 16 from the old /recursos page, plus later ones. Credits, dates and
 // summaries come from each PDF itself.
 // Each `file` names both public/recursos/<file>.pdf and its cover .webp.
 type Documento = Omit<Publicacion, "file" | "image" | "editorial" | "transcripcion" | "people"> & { file: string };
 
 const DOCUMENTOS: Documento[] = [
+  {
+    slug: "informe-de-impacto-2025-2026",
+    title: "Informe de impacto 2025-2026",
+    file: "2026-informe-impacto",
+    tipo: "informe",
+    year: 2026,
+    author: OCCAMM,
+    pages: 12,
+    summary:
+      "Informe del Observatorio sobre su trabajo de 2025 a 2026 en tres ejes: la plataforma ciudadana Alerta Regia, la actualización de las normas NOM-043, NOM-085 y NOM-016, y la propuesta de una Comisión Ambiental Interestatal Coahuila-Nuevo León, con el uso de sus recursos y sus siguientes pasos.",
+  },
   {
     slug: "comentarios-programa-contingencias-2026",
     title: "Comentarios a propuesta 2026 del Programa de Respuesta a Contingencias Atmosféricas de la ZMM",
