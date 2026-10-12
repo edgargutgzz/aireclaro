@@ -1,18 +1,18 @@
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
-import { getPublicacion } from "@/app/publicaciones/data";
+import { displayDate, getPublicacion, photos, type Publicacion } from "@/app/publicaciones/data";
 import { loadOgLogo, ogLogoAt } from "@/lib/og-logo";
 import { loadInterFonts } from "@/lib/og-fonts";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 
-// One publication's link card, in the section cards' frame
-// (lib/og-section-card): its own cover behind, its title as the headline (a
-// column's author under it),
-// the logo as the signature. A column's cover (a picture) fills the card; a
-// document's or infographic's (a page of text, which would fight the
-// headline) stands on the right as a page, its top showing. The card
-// renderer can't read the covers' .webp, so sharp re-encodes the cover as a
-// JPEG first. With no cover the card still renders, on white. Wired in
+// One publication's link card. A column's mirrors its page header (the
+// user's pick, 2026-10-12, not the section cards' frame): type, title, the
+// author's portrait and name, outlet and date, the cover peeking in below,
+// a small logo top right. A document or infographic keeps the section
+// cards' frame (lib/og-section-card): its title over white, its cover (a
+// page of text, which would fight the headline) standing on the right as a
+// page. The card renderer can't read .webp, so sharp re-encodes covers and
+// portraits as JPEG first; a failed fetch just leaves that image out. Wired in
 // app/publicaciones/[slug]/page.tsx (d= is the design version: bump it on a
 // change, chat apps cache per image URL).
 const { width: W, height: H } = SECTION_CARD;
@@ -21,12 +21,18 @@ const CACHE = "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
 // A document's page on the right: 420x540, 64px from the edge, centered.
 const PAGE = { width: 420, height: 540, right: 64 };
 
-async function loadCover(path: string, requestUrl: string, page: boolean): Promise<string | null> {
+// The column card: page gray, 64px sides, the cover's band 1072 wide.
+const PAD = 64;
+const BAND = { width: W - 2 * PAD, height: 420 };
+const PORTRAIT = 88;
+const EYEBROW = "COLUMNA DE OPINIÓN";
+
+async function loadJpeg(path: string, requestUrl: string, width: number, height: number, top = false): Promise<string | null> {
   try {
     const res = await fetch(new URL(path, requestUrl));
     if (!res.ok) return null;
     const jpg = await sharp(Buffer.from(await res.arrayBuffer()))
-      .resize(page ? PAGE.width : W, page ? PAGE.height : H, { fit: "cover", position: page ? "top" : "centre" })
+      .resize(width, height, { fit: "cover", position: top ? "top" : "centre" })
       .jpeg({ quality: 82 })
       .toBuffer();
     return `data:image/jpeg;base64,${jpg.toString("base64")}`;
@@ -35,21 +41,106 @@ async function loadCover(path: string, requestUrl: string, page: boolean): Promi
   }
 }
 
+// The title's size by length: one line when short, up to three when long.
+function titleSize(title: string): number {
+  return title.length <= 24 ? 84 : title.length <= 48 ? 68 : 56;
+}
+
+function meta(p: Publicacion): string {
+  return [p.outlet, displayDate(p)].filter(Boolean).join(" · ");
+}
+
+async function columnCard(p: Publicacion, requestUrl: string) {
+  const fotos = photos(p);
+  const [logo, fonts, cover, ...portraits] = await Promise.all([
+    loadOgLogo(requestUrl, ogLogoAt(44)),
+    loadInterFonts(EYEBROW + p.title + p.author + meta(p)),
+    loadJpeg(p.image, requestUrl, BAND.width, BAND.height),
+    ...fotos.map((f) => loadJpeg(f.src, requestUrl, PORTRAIT * 2, PORTRAIT * 2, true)),
+  ]);
+  const logoSize = ogLogoAt(44);
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          width: W,
+          height: H,
+          padding: `52px ${PAD}px 0`,
+          background: "#f9fafb",
+          fontFamily: "Inter",
+        }}
+      >
+        <div style={{ display: "flex", flexShrink: 0, justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", fontSize: 26, fontWeight: 600, letterSpacing: 1.5, color: "#6b7280" }}>{EYEBROW}</div>
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo} width={logoSize.width} height={logoSize.height} alt="" />
+          ) : null}
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexShrink: 0,
+            width: BAND.width,
+            marginTop: 16,
+            fontSize: titleSize(p.title),
+            fontWeight: 700,
+            lineHeight: 1.08,
+            letterSpacing: -2,
+            color: "#111827",
+          }}
+        >
+          {p.title}
+        </div>
+        <div style={{ display: "flex", flexShrink: 0, alignItems: "center", marginTop: 28 }}>
+          {portraits.map((src, i) =>
+            src ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                src={src}
+                width={PORTRAIT}
+                height={PORTRAIT}
+                alt=""
+                style={{ borderRadius: 18, border: "3px solid #ffffff", marginLeft: i > 0 ? -24 : 0 }}
+              />
+            ) : null,
+          )}
+          <div style={{ display: "flex", flexDirection: "column", marginLeft: portraits.some(Boolean) ? 24 : 0 }}>
+            <div style={{ display: "flex", fontSize: 38, fontWeight: 600, color: "#1f2937" }}>{p.author}</div>
+            <div style={{ display: "flex", marginTop: 4, fontSize: 30, color: "#6b7280" }}>{meta(p)}</div>
+          </div>
+        </div>
+        {cover ? (
+          <div style={{ display: "flex", flexGrow: 1, flexShrink: 1, minHeight: 0, marginTop: 36, overflow: "hidden", borderRadius: "24px 24px 0 0" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={cover} width={BAND.width} height={BAND.height} alt="" style={{ flexShrink: 0 }} />
+          </div>
+        ) : null}
+      </div>
+    ),
+    { width: W, height: H, fonts, headers: { "cache-control": CACHE } },
+  );
+}
+
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const p = getPublicacion((await params).slug);
   if (!p) return new Response("Not found", { status: 404 });
-  const page = p.tipo !== "columna";
+  if (p.tipo === "columna") return columnCard(p, request.url);
   const [logo, fonts, cover] = await Promise.all([
     loadOgLogo(request.url, ogLogoAt(65)),
-    loadInterFonts(p.title + p.author),
-    loadCover(p.image, request.url, page),
+    loadInterFonts(p.title),
+    loadJpeg(p.image, request.url, PAGE.width, PAGE.height, true),
   ]);
 
   return new ImageResponse(
     (
       <SectionCard
         backdrop={
-          !cover ? null : page ? (
+          cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={cover}
@@ -65,15 +156,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
                 boxShadow: "0 12px 32px rgba(17,24,39,0.12)",
               }}
             />
-          ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={cover} width={W} height={H} alt="" style={{ position: "absolute", left: 0, top: 0 }} />
-          )
+          ) : null
         }
         headline={p.title}
-        byline={page ? undefined : p.author}
         // Clear of the page: it starts 64 + 420 from the right edge.
-        textWidth={page ? W - PAGE.right - PAGE.width - 64 - 56 : undefined}
+        textWidth={W - PAGE.right - PAGE.width - 64 - 56}
         logo={logo}
       />
     ),
