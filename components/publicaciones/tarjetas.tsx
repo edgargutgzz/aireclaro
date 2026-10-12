@@ -136,39 +136,43 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
 // A library's featured item: wider than the cards, its summary showing.
 // Featured items sit side by side with different types, so each leads with
 // its type, a column too ("Columna de opinión"); a column's author, outlet
-// and date follow its summary. A "Compartir" button sits in the top-right
-// corner, beside the link rather than inside it (a button can't nest in a
-// link). From sm the text starts below it (on phones it sits on the image).
+// and date follow its summary, and "Compartir" closes the last row. The
+// title is the link, stretched over the whole card (an ::after layer), so
+// the card stays one click target while the button, which can't nest in a
+// link, sits in the text above that layer.
 export function PublicacionDestacada({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
-    <div className="relative">
-      <ItemLink
-        p={p}
-        className={`group grid overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] ${FOCUS_RING}`}
-      >
-        <Image
-          src={p.image}
-          alt=""
-          width={640}
-          height={360}
-          sizes="(min-width: 1024px) 380px, (min-width: 640px) 40vw, 100vw"
-          preload={priority}
-          className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
-        />
-        <div className="flex flex-col justify-center p-5 sm:px-6 sm:pb-6 sm:pt-14">
-          <p className="text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
-          <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">{p.title}</p>
-          {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
-          {p.tipo === "columna" && (
-            <p className="mt-3 text-xs text-gray-500">
-              <span className="font-medium text-gray-600">{p.author}</span>
-              {" · "}
-              {[p.outlet, p.date ? formatDate(p.date) : String(p.year)].filter(Boolean).join(" · ")}
-            </p>
-          )}
+    <div className="group relative grid overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-gray-900/15 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <Image
+        src={p.image}
+        alt=""
+        width={640}
+        height={360}
+        sizes="(min-width: 1024px) 380px, (min-width: 640px) 40vw, 100vw"
+        preload={priority}
+        className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
+      />
+      <div className="flex flex-col justify-center p-5 sm:p-6">
+        <p className="text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
+        <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">
+          <ItemLink p={p} className="focus-visible:outline-none after:absolute after:inset-0 after:content-['']">
+            {p.title}
+          </ItemLink>
+        </p>
+        {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
+        <div className="mt-3 flex items-center justify-between gap-4">
+          <p className="min-w-0 text-xs text-gray-500">
+            {p.tipo === "columna" && (
+              <>
+                <span className="font-medium text-gray-600">{p.author}</span>
+                {" · "}
+                {[p.outlet, p.date ? formatDate(p.date) : String(p.year)].filter(Boolean).join(" · ")}
+              </>
+            )}
+          </p>
+          <Compartir url={shareUrl(p)} title={p.title} className="relative z-10 shrink-0" />
         </div>
-      </ItemLink>
-      <Compartir url={shareUrl(p)} title={p.title} className="absolute right-3 top-3" />
+      </div>
     </div>
   );
 }
