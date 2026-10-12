@@ -23,7 +23,7 @@ const WRAPPED = { wash: 860, text: 720 };
 // A wrapped headline's size: the section cards' 76px while it fits in about
 // three lines, smaller for a long title so it stays clear of the logo.
 function wrappedSize(text: string): number {
-  return text.length <= 36 ? 76 : text.length <= 70 ? 60 : 48;
+  return text.length <= 36 ? 76 : text.length <= 70 ? 60 : text.length <= 90 ? 48 : 42;
 }
 
 export function SectionCard({

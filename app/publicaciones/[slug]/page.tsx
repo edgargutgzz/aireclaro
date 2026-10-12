@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: p.tipo === "columna" ? `${p.title}, por ${p.author}` : p.title,
     description: p.summary ?? `${byline(p)}, ${displayDate(p)}.`,
     path: `/publicaciones/${p.slug}`,
-    images: [{ url: `/api/og/publicaciones/${p.slug}?d=6`, width: 1200, height: 630, alt: p.title }],
+    images: [{ url: `/api/og/publicaciones/${p.slug}?d=7`, width: 1200, height: 630, alt: p.title }],
   });
   // Google Scholar's tags, for the documents (the columns are news).
   if (p.tipo !== "columna" && p.file) {

@@ -18,8 +18,9 @@ import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 const { width: W, height: H } = SECTION_CARD;
 const CACHE = "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800";
 
-// A document's page on the right: 420x540, 64px from the edge, centered.
-const PAGE = { width: 420, height: 540, right: 64 };
+// A document's cover on the right, whole: covers are 16:9, so a 16:9
+// frame, 64px from the edge, centered.
+const PAGE = { width: 560, height: 315, right: 64 };
 
 // The column card: page gray, 64px sides, the cover's band 1072 wide.
 const PAD = 64;
@@ -126,7 +127,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   const [logo, fonts, cover] = await Promise.all([
     loadOgLogo(request.url, ogLogoAt(65)),
     loadInterFonts(p.title),
-    loadJpeg(p.image, request.url, PAGE.width, PAGE.height, true),
+    // An infographic's cover is the top of a tall poster: keep its top.
+    loadJpeg(p.image, request.url, PAGE.width * 2, PAGE.height * 2, p.tipo === "infografia"),
   ]);
 
   return new ImageResponse(
@@ -152,8 +154,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
           ) : null
         }
         headline={p.title}
-        // Clear of the page: it starts 64 + 420 from the right edge.
-        textWidth={W - PAGE.right - PAGE.width - 64 - 56}
+        // Clear of the cover: it starts 64 + 560 from the right edge.
+        textWidth={W - PAGE.right - PAGE.width - 64 - 48}
         logo={logo}
       />
     ),
