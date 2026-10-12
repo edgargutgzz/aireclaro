@@ -133,6 +133,9 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
 }
 
 // A library's featured item: wider than the cards, its summary showing.
+// Featured items sit side by side with different types, so each leads with
+// its type, a column too ("Columna de opinión"); a column's author, outlet
+// and date follow its summary.
 export function PublicacionDestacada({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
     <ItemLink
@@ -149,9 +152,16 @@ export function PublicacionDestacada({ publicacion: p, priority = false }: { pub
         className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
       />
       <div className="flex flex-col justify-center p-5 sm:p-6">
-        <Who p={p} />
+        <p className="text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
         <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">{p.title}</p>
         {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
+        {p.tipo === "columna" && (
+          <p className="mt-3 text-xs text-gray-500">
+            <span className="font-medium text-gray-600">{p.author}</span>
+            {" · "}
+            {[p.outlet, p.date ? formatDate(p.date) : String(p.year)].filter(Boolean).join(" · ")}
+          </p>
+        )}
       </div>
     </ItemLink>
   );
