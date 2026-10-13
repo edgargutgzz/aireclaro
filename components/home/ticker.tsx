@@ -37,7 +37,6 @@ export default async function Ticker() {
       <Strip
         aria="PM2.5 de sensores ciudadanos en vivo, mediana por municipio"
         href={CIUDADANOS_HREF}
-        corto="Ciudadanos"
         largo="Sensores ciudadanos"
         title="Las estaciones oficiales no se están actualizando. Mediana de los sensores ciudadanos de cada municipio."
         hora={horaDeLectura(municipios)}
@@ -77,7 +76,6 @@ export default async function Ticker() {
     <Strip
       aria="PM2.5 por estación oficial, en vivo"
       href="/mapa"
-      corto="Oficiales"
       largo="Estaciones oficiales"
       hora={horaDeLectura(stations)}
       items={items}
@@ -89,12 +87,11 @@ export default async function Ticker() {
 // discs are how the map shows the outage.
 const CIUDADANOS_HREF = "/mapa";
 
-// The source is in the label, short on phones: "Ciudadanos · 7:00 PM",
-// "Sensores ciudadanos · En vivo · 7:00 PM".
+// The label names the source and the hour, "Sensores ciudadanos · En vivo ·
+// 7:00 PM"; phones have room for "En vivo" only.
 function Strip({
   aria,
   href,
-  corto,
   largo,
   title,
   hora,
@@ -102,7 +99,6 @@ function Strip({
 }: {
   aria: string;
   href: string;
-  corto: string;
   largo: string;
   title?: string;
   hora: string;
@@ -119,9 +115,9 @@ function Strip({
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00a400]" />
         </span>
-        <span>
-          <span className="sm:hidden">{corto}</span>
-          <span className="hidden sm:inline">{largo} · En vivo</span> · {hora}
+        <span className="sm:hidden">En vivo</span>
+        <span className="hidden sm:inline">
+          {largo} · En vivo · {hora}
         </span>
       </Link>
       <TickerTrack items={items} />
