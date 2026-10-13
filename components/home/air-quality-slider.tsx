@@ -8,9 +8,10 @@ import Image from "next/image";
 
 const SIZES = "(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw";
 
-// The box is narrower than the 16:9 photos, so they're cropped. Both crop from
-// the left edge, where the Cerro de la Silla is, and by the same amount so the
-// two layers stay aligned under the divider.
+// The box is narrower than the 16:9 photos, so they're cropped. The clean photo
+// crops from the left edge, where the Cerro de la Silla is; the polluted one a
+// quarter in, which also brings its skyline closer to where the clean photo's
+// sits (the two weren't framed identically).
 
 // Movement needed before a touch gesture is judged horizontal (drag the
 // slider) or vertical (scroll the page).
@@ -158,7 +159,7 @@ export default function AirQualitySlider() {
         fill
         preload
         sizes={SIZES}
-        className="object-cover object-left"
+        className="object-cover object-[25%_50%]"
         draggable={false}
       />
 
