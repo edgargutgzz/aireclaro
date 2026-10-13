@@ -6,7 +6,9 @@ import { SIMA_OUTAGE_MIN_SILENT } from "@/lib/sima-outage";
 import TickerTrack, { type TickerItem } from "./ticker-track";
 
 // The homepage's live ticker under the navbar (app/@strip), about the live
-// readings on the map, one source at a time and named in the label:
+// readings on the map, one source at a time. The label doesn't name it: the
+// strip always shows the best reading we have, and each entry opens its
+// station or sensor on the map, where the source is shown.
 // - official stations: every metro station's PM2.5 this hour, dot in the map
 //   marker's color, worst first, each linking to its station on the map. A
 //   station with no fresh reading stays in the strip as a gray "sin
@@ -34,16 +36,7 @@ export default async function Ticker() {
     const items: TickerItem[] = municipios
       .sort((a, b) => b.pm25 - a.pm25 || a.nombre.localeCompare(b.nombre, "es"))
       .map((m) => ({ id: m.key, href: `/mapa?sensor=${m.sensorId}`, nombre: m.nombre, pm25: m.pm25, color: getMarkerFillHex(m.pm25) }));
-    return (
-      <Strip
-        aria="PM2.5 de sensores ciudadanos en vivo, mediana por municipio"
-        href="/mapa"
-        largo="Sensores ciudadanos"
-        title="Las estaciones oficiales no se están actualizando. Mediana de los sensores ciudadanos de cada municipio."
-        hora={horaDeLectura(municipios)}
-        items={items}
-      />
-    );
+    return <Strip hora={horaDeLectura(municipios)} items={items} />;
   }
   // No station with a reading at all and no citizen sensor either: we're not
   // receiving data, which doesn't mean the air has no reading. Hide the strip
@@ -73,39 +66,15 @@ export default async function Ticker() {
         : b.pm25 - a.pm25,
     );
 
-  return (
-    <Strip
-      aria="PM2.5 por estación oficial, en vivo"
-      href="/mapa"
-      largo="Estaciones SIMA"
-      hora={horaDeLectura(stations)}
-      items={items}
-    />
-  );
+  return <Strip hora={horaDeLectura(stations)} items={items} />;
 }
 
-// The label names the source and the hour, "Sensores ciudadanos · En vivo ·
-// 7:00 PM"; phones have room for "En vivo" only.
-function Strip({
-  aria,
-  href,
-  largo,
-  title,
-  hora,
-  items,
-}: {
-  aria: string;
-  href: string;
-  largo: string;
-  title?: string;
-  hora: string;
-  items: TickerItem[];
-}) {
+// The label, "En vivo · 7:00 PM"; phones have room for "En vivo" only.
+function Strip({ hora, items }: { hora: string; items: TickerItem[] }) {
   return (
-    <section aria-label={aria} className="flex h-10 items-stretch bg-white text-[13px]">
+    <section aria-label="PM2.5 en vivo" className="flex h-10 items-stretch bg-white text-[13px]">
       <Link
-        href={href}
-        title={title}
+        href="/mapa"
         className={`flex shrink-0 items-center gap-2 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-900 lg:px-8 ${FOCUS}`}
       >
         <span className="relative flex h-2 w-2" aria-hidden>
@@ -113,9 +82,7 @@ function Strip({
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00a400]" />
         </span>
         <span className="sm:hidden">En vivo</span>
-        <span className="hidden sm:inline">
-          {largo} · En vivo · {hora}
-        </span>
+        <span className="hidden sm:inline">En vivo · {hora}</span>
       </Link>
       <TickerTrack items={items} />
     </section>
