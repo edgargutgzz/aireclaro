@@ -3,9 +3,9 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 
-// The ticker's moving part. The stations run twice back to back and the strip
-// slides by half its width, so the loop is seamless. Every station links to
-// the map with that station selected.
+// The ticker's moving part. The items run twice back to back and the strip
+// slides by half its width, so the loop is seamless. Every item links to the
+// map (an official station with that station selected).
 //
 // Moving content needs a way to stop it (WCAG 2.2.2):
 // - mouse: it holds still while the pointer is over it, so a click lands;
@@ -18,6 +18,7 @@ import Link from "next/link";
 
 export interface TickerItem {
   id: string;
+  href: string;
   nombre: string;
   // null: no reading from the last 3 hours ("sin actualizar").
   pm25: number | null;
@@ -39,7 +40,7 @@ function Items({
       {items.map((item) => (
         <li key={item.id}>
           <Link
-            href={`/mapa?sensor=${item.id}`}
+            href={item.href}
             tabIndex={copy ? -1 : undefined}
             onClick={onStationClick}
             className="flex items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-1 text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
