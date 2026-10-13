@@ -76,7 +76,7 @@ export default async function Ticker() {
     <Strip
       aria="PM2.5 por estación oficial, en vivo"
       href="/mapa"
-      largo="Estaciones oficiales"
+      largo="Estaciones SIMA"
       hora={horaDeLectura(stations)}
       items={items}
     />
