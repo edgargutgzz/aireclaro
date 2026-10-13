@@ -50,6 +50,9 @@ export interface LiveMunicipio {
   nombre: string;
   // The median of its sensors' latest readings, rounded like the map's.
   pm25: number;
+  // The sensor whose reading is the median (or closest to it), the one the
+  // ticker opens on the map.
+  sensorId: number;
   timeStamp: string;
 }
 
@@ -77,22 +80,21 @@ function median(values: number[]): number {
 export async function getLiveMunicipios(): Promise<LiveMunicipio[]> {
   const [sensores, lecturas] = await Promise.all([fetchPurpleAirSensors(), fetchPurpleAirData()]);
   const porSensor = new Map(lecturas.map((r) => [r.sensor_id, r]));
-  const grupos = new Map<string, { pm25: number[]; timeStamp: string; nombre: string }>();
+  const grupos = new Map<string, { lecturas: { sensorId: number; pm25: number }[]; timeStamp: string; nombre: string }>();
   for (const s of sensores) {
     const r = porSensor.get(s.sensor_id);
     const key = municipioKey(s.municipio);
     if (!r || !key || estadoKey(s.estado) !== "nuevo leon" || getPM25Color(r.pm25) === null) continue;
-    const g = grupos.get(key) ?? { pm25: [] as number[], timeStamp: r.time_stamp, nombre: NOMBRE_CORTO[key] ?? s.municipio.trim() };
-    g.pm25.push(r.pm25);
+    const g = grupos.get(key) ?? { lecturas: [] as { sensorId: number; pm25: number }[], timeStamp: r.time_stamp, nombre: NOMBRE_CORTO[key] ?? s.municipio.trim() };
+    g.lecturas.push({ sensorId: s.sensor_id, pm25: r.pm25 });
     if (r.time_stamp > g.timeStamp) g.timeStamp = r.time_stamp;
     grupos.set(key, g);
   }
-  return [...grupos].map(([key, g]) => ({
-    key,
-    nombre: g.nombre,
-    pm25: Math.round(median(g.pm25)),
-    timeStamp: g.timeStamp,
-  }));
+  return [...grupos].map(([key, g]) => {
+    const m = median(g.lecturas.map((l) => l.pm25));
+    const centro = g.lecturas.reduce((a, b) => (Math.abs(b.pm25 - m) < Math.abs(a.pm25 - m) ? b : a));
+    return { key, nombre: g.nombre, pm25: Math.round(m), sensorId: centro.sensorId, timeStamp: g.timeStamp };
+  });
 }
 
 // "3:00 PM": the hour the latest of these readings belongs to, the map's own

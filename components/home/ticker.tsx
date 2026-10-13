@@ -13,7 +13,8 @@ import TickerTrack, { type TickerItem } from "./ticker-track";
 //   actualizar".
 // - citizen sensors, when the official network is out (the map's outage rule,
 //   most stations silent; SINAICA's Nuevo León feed often arrives hours late):
-//   one entry per municipality, the median of its sensors, worst first. Never
+//   one entry per municipality, the median of its sensors, worst first, each
+//   linking to the sensor at that median on the map. Never
 //   mixed with the stations: the two read differently, and low-cost sensors
 //   usually read higher.
 // With neither, the strip is hidden.
@@ -32,11 +33,11 @@ export default async function Ticker() {
   if (outage && municipios.length > 0) {
     const items: TickerItem[] = municipios
       .sort((a, b) => b.pm25 - a.pm25 || a.nombre.localeCompare(b.nombre, "es"))
-      .map((m) => ({ id: m.key, href: CIUDADANOS_HREF, nombre: m.nombre, pm25: m.pm25, color: getMarkerFillHex(m.pm25) }));
+      .map((m) => ({ id: m.key, href: `/mapa?sensor=${m.sensorId}`, nombre: m.nombre, pm25: m.pm25, color: getMarkerFillHex(m.pm25) }));
     return (
       <Strip
         aria="PM2.5 de sensores ciudadanos en vivo, mediana por municipio"
-        href={CIUDADANOS_HREF}
+        href="/mapa"
         largo="Sensores ciudadanos"
         title="Las estaciones oficiales no se están actualizando. Mediana de los sensores ciudadanos de cada municipio."
         hora={horaDeLectura(municipios)}
@@ -82,10 +83,6 @@ export default async function Ticker() {
     />
   );
 }
-
-// The plain map, official stations included: their gray "sin actualizar"
-// discs are how the map shows the outage.
-const CIUDADANOS_HREF = "/mapa";
 
 // The label names the source and the hour, "Sensores ciudadanos · En vivo ·
 // 7:00 PM"; phones have room for "En vivo" only.
