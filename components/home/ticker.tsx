@@ -85,8 +85,9 @@ export default async function Ticker() {
   );
 }
 
-// The map with only the citizen networks on (its Fuente filter).
-const CIUDADANOS_HREF = "/mapa?src=occamm,otros";
+// The plain map, official stations included: their gray "sin actualizar"
+// discs are how the map shows the outage.
+const CIUDADANOS_HREF = "/mapa";
 
 // The source is in the label, short on phones: "Ciudadanos · 7:00 PM",
 // "Sensores ciudadanos · En vivo · 7:00 PM".
