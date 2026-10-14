@@ -15,7 +15,7 @@ export const EQUIPO = [
   { name: "Carlos Gomez", image: "carlos", puesto: "Ecologista, Historiador y Director de Mundo Sustentable A.C." },
   { name: "Selene M. Guajardo", image: "selene", puesto: "Directora Ejecutiva del OCCAMM" },
   { name: "Yessica Guajardo", image: "yessica", puesto: "Asistente de Dirección del OCCAMM" },
-  { name: "Edgar Gutiérrez", image: "edgar", puesto: "Coordinador de Tecnología" },
+  { name: "Edgar Gutiérrez", image: "edgar", puesto: "Coordinador de Datos y Tecnología" },
   { name: "Gerardo Mejía", image: "gerardo", puesto: "Ex-Profesor del Departamento de Tecnologías Sostenibles del ITESM" },
   { name: "Cosijopii Montero", image: "cosijopii", puesto: "Director de Reforestación Extrema A.C." },
   { name: "Rodolfo Posadas", image: "rodolfo", puesto: "Responsable de Rehabilitación Cardiopulmonar en Doctors Hospital" },
