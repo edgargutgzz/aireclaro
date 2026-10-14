@@ -89,11 +89,13 @@ export default async function Mapa() {
       fetchWithFallback(SimaData, []),
     ]);
 
-  // Tag sensors
-  const taggedPurpleAirSensors = purpleAirSensors.map((sensor) => ({
-    ...sensor,
-    source: "purpleAir",
-  }));
+  // Citizen sensors only when they have a live reading: one without isn't
+  // drawn, so it isn't listed or counted in Capas either. SIMA stations all
+  // stay (a silent one is a gray disc).
+  const reporting = new Set(purpleAirData.map((r) => r.sensor_id));
+  const taggedPurpleAirSensors = purpleAirSensors
+    .filter((sensor) => reporting.has(sensor.sensor_id))
+    .map((sensor) => ({ ...sensor, source: "purpleAir" }));
 
   const taggedSimaSensors = simaSensors.map((sensor) => ({
     ...sensor,
