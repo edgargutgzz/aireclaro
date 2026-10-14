@@ -9,8 +9,6 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
-import SimaOutageNotice from "@/components/data/sima-outage-notice";
-import { SIMA_OUTAGE_MIN_SILENT } from "@/lib/sima-outage";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
 import { monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
@@ -350,20 +348,6 @@ export default function MapaSensors({
   }, [visibleSensors, data]);
   const cardSubject = selectedSensor ?? defaultSelection;
 
-  // Most official metro stations (FIN is Saltillo) without a reading at once:
-  // an outage. The notice (legend panel / mobile pill) shows only while the
-  // station on screen is one of those silent official stations, never for a
-  // citizen sensor.
-  const simaOutageAll = useMemo(() => {
-    const withReading = new Set(data.filter((d) => d.pm25 != null && d.pm25 > 0.4).map((d) => String(d.sensor_id)));
-    const silent = sensors.filter(
-      (s) => s.source === "sima" && String(s.sensor_id) !== "FIN" && !withReading.has(String(s.sensor_id)),
-    ).length;
-    return silent >= SIMA_OUTAGE_MIN_SILENT;
-  }, [sensors, data]);
-  const simaOutage =
-    simaOutageAll && cardSubject?.sensor.source === "sima" && !cardSubject.readingAt;
-
   // Null until mounted, so the server and the first client render agree on a
   // value that is by definition different on each; then re-read on a timer,
   // because a tab left open all afternoon should watch the badge go amber
@@ -382,9 +366,9 @@ export default function MapaSensors({
   // publish on their own schedules, so a dataset-wide "newest" would sit ahead
   // of one station and make a current reading look late.
   //
-  // Readings land hourly, so 90 minutes is one missed cycle plus slack, and
-  // six hours is a pipeline that has stopped rather than a run that is late.
-  // Past today the label picks up the day, so "11:00 AM" can never be
+  // Readings land hourly, so 90 minutes is one missed cycle plus slack; the
+  // feeds never hand the map anything older than 3 hours, so past that there
+  // is no reading at all ("nodata"), not an old one. Past today the label picks up the day, so "11:00 AM" can never be
   // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
     if (now === null) return null;
@@ -400,7 +384,7 @@ export default function MapaSensors({
     return {
       dateTime: reading.toISOString(),
       when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
-      status: age < 90 * 60 * 1000 ? "fresh" : age < 6 * 60 * 60 * 1000 ? "delayed" : "stale",
+      status: age < 90 * 60 * 1000 ? "fresh" : "delayed",
     };
   }, [cardSubject, latestReading, now]);
 
@@ -1029,14 +1013,9 @@ export default function MapaSensors({
           map, just under the top bar. It hides with the right-edge buttons once
           the sheet is expanded. Low-priority chrome, so it runs small and
           shadowless. Desktop pins the full badge to the foot of the left rail. */}
-      {sheetState === 'peek' && (freshness || simaOutage) && (
-        <div className="pointer-events-none absolute left-4 top-4 z-[45] flex max-w-[16rem] flex-col items-start gap-2 md:hidden">
-          {freshness && <FreshnessBadge freshness={freshness} compact />}
-          {simaOutage && (
-            <div className="glass pointer-events-auto rounded-xl px-2.5 py-2">
-              <SimaOutageNotice compact />
-            </div>
-          )}
+      {sheetState === 'peek' && freshness && (
+        <div className="pointer-events-none absolute left-4 top-4 z-[45] md:hidden">
+          <FreshnessBadge freshness={freshness} compact />
         </div>
       )}
 
@@ -1243,11 +1222,6 @@ export default function MapaSensors({
             <div className="flex items-center gap-2 border-t border-gray-100 px-5 py-3">
               <FreshnessDot status={freshness.status} />
               <FreshnessText freshness={freshness} />
-            </div>
-          )}
-          {simaOutage && (
-            <div className="border-t border-gray-100 px-5 py-3">
-              <SimaOutageNotice />
             </div>
           )}
         </div>

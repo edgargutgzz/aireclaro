@@ -7,7 +7,7 @@
 // site's live cutoff); there is no time to show, only that it hasn't updated
 // ("Sin actualizar", not "no data": the station may well be measuring).
 export type Freshness =
-  | { dateTime: string; when: string; status: "fresh" | "delayed" | "stale" }
+  | { dateTime: string; when: string; status: "fresh" | "delayed" }
   | { status: "nodata" };
 
 export function FreshnessDot({ status }: { status: Freshness["status"] }) {
@@ -19,7 +19,7 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
   return (
     <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
       {/* Only fresh data pulses. A dot that keeps ticking in amber or grey
-          reads as "working on it" when the truth is "this is old". */}
+          reads as "working on it" when the truth is "this is late". */}
       {status === "fresh" && (
         <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
       )}
