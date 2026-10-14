@@ -70,7 +70,12 @@ function toPm25(valor: unknown): number {
 
 // Every station's current hour from SIMA's map, by sensor_id.
 async function fetchSimaMap(): Promise<Map<string, Reading>> {
-  const res = await fetch(SIMA_MAP_URL, { signal: AbortSignal.timeout(30_000), cache: "no-store" });
+  const res = await fetch(SIMA_MAP_URL, {
+    // Say who we are, so SIMA can reach us instead of blocking an anonymous client.
+    headers: { "User-Agent": "ObservatorioDelAire/1.0 (+https://observatoriodelaire.com)" },
+    signal: AbortSignal.timeout(30_000),
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const html = await res.text();
   // The array is written on a single line, so the match stops at its end.
@@ -175,7 +180,12 @@ export async function GET(request: NextRequest) {
   const pendientes = estaciones.filter((e) => (written.get(e.sensor_id) ?? 0) < hourStartMs);
   const latest = new Map<string, Reading>();
 
-  if (pendientes.some((e) => SIMA_MAP_SENSORS.has(e.sensor_id))) {
+  // SIMA's page updates every station at once, so once any of them holds the
+  // current hour this hour's page has been read: no more requests until the
+  // next hour (a station missing from it, like NO3 with no PM2.5 monitor,
+  // would otherwise keep every run fetching). About 2-3 requests an hour.
+  const simaMapDone = [...SIMA_MAP_SENSORS].some((id) => (written.get(id) ?? 0) >= hourStartMs);
+  if (!simaMapDone) {
     try {
       for (const [sensorId, reading] of await fetchSimaMap()) latest.set(sensorId, reading);
     } catch (err) {
