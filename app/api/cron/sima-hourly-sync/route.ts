@@ -2,21 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/utils/supabase/service";
 import { monterreyNaiveHoursAgo, monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
 
-// The map's live SIMA feed: the latest PM2.5 hour SINAICA has published for
-// each station, appended to sima_mediciones. Separate from sima-monthly-sync,
-// which writes the finalized month into sima_mediciones_finales.
+// The map's live SIMA feed: each station's latest hourly PM2.5, appended to
+// sima_mediciones. Separate from sima-monthly-sync, which writes the
+// finalized month from SINAICA into sima_mediciones_finales.
 //
-// Runs every 10 minutes (vercel.json), because SINAICA publishes each hour at
-// no fixed minute (SIMA sends it on, usually somewhere in :15-:50, sometimes an
-// hour or more late): polling picks a new hour up within 10 minutes of it
-// appearing. Each hour is written once, stamped with the hour it belongs to
-// (time_stamp = SINAICA's `hora` as naive Monterrey wall-clock, "15:00:00"),
-// so a run only writes a station whose SINAICA hour is newer than its latest
-// row, and doesn't even ask SINAICA for one that already has the current hour.
+// The 15 Nuevo León stations are read straight from SIMA's own map
+// (aire.nl.gob.mx), which has each hour well before SINAICA does and keeps
+// updating when SIMA's link to SINAICA breaks. That page has no API: the map
+// frame embeds its data as JS arrays, and `arrayIMKTodo6` is the hourly PM2.5
+// concentration per station (the same number as SIMA's station report,
+// "Datos horarios de Concentraciones"), not the index the map's bubbles show.
+// Saltillo (FIN) isn't in SIMA's network, so it still comes from SINAICA.
 //
-// A station whose latest SINAICA hour is old is skipped, not written, so a
-// network that stops reporting (Nuevo León on 2026-10-05 from 10:00) goes
-// gray on the map instead of showing an old value as live.
+// Runs every 10 minutes (vercel.json), because a new hour appears at no fixed
+// minute: polling picks it up within 10 minutes. Each hour is written once,
+// stamped with the hour it belongs to (time_stamp = the reading's hour as
+// naive Monterrey wall-clock, "15:00:00"), so a run only writes a station
+// whose source hour is newer than its latest row.
+//
+// A station whose latest hour is old is skipped, not written, so a station
+// (or a whole network) that stops reporting goes gray on the map instead of
+// showing an old value as live.
 
 // The newest hour SINAICA has for a station can be this far behind the run
 // before it counts as stale (normal publishing lag is 0-1 h). Also how far
@@ -25,7 +31,66 @@ const MAX_LAG_MS = 3 * 60 * 60 * 1000;
 
 export const maxDuration = 120;
 
+const SIMA_MAP_URL = "https://aire.nl.gob.mx/airemapbing/airebing_icars_alt_ns_newNL_4.php";
 const SINAICA_URL = "https://sinaica.inecc.gob.mx/lib/libd/cnxn.php";
+
+// SIMA's station names on its map, to our sensor_id codes (the map's own
+// `locations` array pairs them the same way, except it calls SUR "S").
+const SIMA_MAP_STATIONS: Record<string, string> = {
+  centro: "CE",
+  este: "NE3",
+  noreste: "NE",
+  noreste2: "NE2",
+  noroeste: "NO",
+  noroeste2: "NO2",
+  noroeste3: "NO3",
+  norte: "N",
+  norte2: "N2",
+  sur: "SUR",
+  sureste: "SE",
+  sureste2: "SE2",
+  sureste3: "SE3",
+  suroeste: "SO",
+  suroeste2: "SO2",
+};
+const SIMA_MAP_SENSORS = new Set(Object.values(SIMA_MAP_STATIONS));
+
+interface Reading {
+  // The reading's hour, naive Monterrey wall-clock parsed as UTC (like `now`).
+  ms: number;
+  pm25: number;
+}
+
+function toPm25(valor: unknown): number {
+  const n = valor != null && valor !== "" ? Number(valor) : NaN;
+  // -9999 and other negatives mean no data.
+  return Number.isFinite(n) && n >= 0 ? n : NaN;
+}
+
+// Every station's current hour from SIMA's map, by sensor_id.
+async function fetchSimaMap(): Promise<Map<string, Reading>> {
+  const res = await fetch(SIMA_MAP_URL, { signal: AbortSignal.timeout(30_000), cache: "no-store" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const html = await res.text();
+  // The array is written on a single line, so the match stops at its end.
+  const match = html.match(/var\s+arrayIMKTodo6\s*=\s*(\[.*\])/);
+  if (!match) throw new Error("arrayIMKTodo6 not found");
+  const rows = JSON.parse(match[1]) as {
+    Estacion: string;
+    Parameter: string;
+    HrAveData: string | number | null;
+    Date: string;
+  }[];
+
+  const readings = new Map<string, Reading>();
+  for (const r of rows) {
+    const sensorId = SIMA_MAP_STATIONS[r.Estacion];
+    const pm25 = toPm25(r.HrAveData);
+    if (!sensorId || r.Parameter.trim() !== "PM2.5" || Number.isNaN(pm25)) continue;
+    readings.set(sensorId, { ms: parseMonterreyNaive(`${r.Date.slice(0, 13)}:00:00`).getTime(), pm25 });
+  }
+  return readings;
+}
 
 interface SinaicaRow {
   hora: string | number;
@@ -104,36 +169,48 @@ export async function GET(request: NextRequest) {
   const rows: { sensor_id: string; pm25: number; time_stamp: string }[] = [];
   const errors: string[] = [];
   const stale: string[] = [];
-  let consultadas = 0;
 
-  for (const estacion of estaciones) {
-    const latestWritten = written.get(estacion.sensor_id) ?? 0;
-    if (latestWritten >= hourStartMs) continue;
-    consultadas++;
+  // Stations not yet holding the current hour.
+  const pendientes = estaciones.filter((e) => (written.get(e.sensor_id) ?? 0) < hourStartMs);
+  const latest = new Map<string, Reading>();
+
+  if (pendientes.some((e) => SIMA_MAP_SENSORS.has(e.sensor_id))) {
     try {
-      let latest: { ms: number; valor: SinaicaRow["valor"] } | null = null;
+      for (const [sensorId, reading] of await fetchSimaMap()) latest.set(sensorId, reading);
+    } catch (err) {
+      errors.push(`aire.nl.gob.mx: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  for (const estacion of pendientes) {
+    if (SIMA_MAP_SENSORS.has(estacion.sensor_id)) continue;
+    try {
       for (const fecha of fechas) {
         for (const r of await fetchStationDay(estacion.sinaica_id, fecha)) {
-          // The reading's hour, in the same naive Monterrey terms as `now`.
           const ms = Date.parse(`${fecha}T00:00:00Z`) + Number(r.hora) * 3_600_000;
-          if (!latest || ms > latest.ms) latest = { ms, valor: r.valor };
+          const pm25 = toPm25(r.valor);
+          const prev = latest.get(estacion.sensor_id);
+          if (!Number.isNaN(pm25) && (!prev || ms > prev.ms)) latest.set(estacion.sensor_id, { ms, pm25 });
         }
         // Be polite to SINAICA's server between requests.
         await new Promise((resolve) => setTimeout(resolve, 300));
       }
-      const pm25 = latest?.valor != null && latest.valor !== "" ? Number(latest.valor) : NaN;
-      if (!latest || !Number.isFinite(pm25) || latest.ms <= latestWritten) continue;
-      if (nowMs - latest.ms > MAX_LAG_MS) {
-        stale.push(`${estacion.sensor_id} (${new Date(latest.ms).toISOString().slice(0, 13)})`);
-      } else {
-        rows.push({
-          sensor_id: estacion.sensor_id,
-          pm25: Math.round(pm25),
-          time_stamp: new Date(latest.ms).toISOString().slice(0, 19),
-        });
-      }
     } catch (err) {
       errors.push(`${estacion.sensor_id}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  for (const estacion of pendientes) {
+    const reading = latest.get(estacion.sensor_id);
+    if (!reading || reading.ms <= (written.get(estacion.sensor_id) ?? 0)) continue;
+    if (nowMs - reading.ms > MAX_LAG_MS) {
+      stale.push(`${estacion.sensor_id} (${new Date(reading.ms).toISOString().slice(0, 13)})`);
+    } else {
+      rows.push({
+        sensor_id: estacion.sensor_id,
+        pm25: Math.round(reading.pm25),
+        time_stamp: new Date(reading.ms).toISOString().slice(0, 19),
+      });
     }
   }
 
@@ -147,10 +224,10 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     now,
     estaciones: estaciones.length,
-    // Stations not yet holding the current hour, so asked of SINAICA.
-    consultadas,
+    // Stations not yet holding the current hour, so looked up.
+    pendientes: pendientes.length,
     rowsWritten: rows.length,
-    // Stations skipped because SINAICA's newest hour for them is too old.
+    // Stations skipped because their source's newest hour is too old.
     stale,
     errors,
   });
