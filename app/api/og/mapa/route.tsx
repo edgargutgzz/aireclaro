@@ -8,11 +8,17 @@ import { loadOgLogo, ogLogoAt } from "@/lib/og-logo";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 import { loadInterFonts } from "@/lib/og-fonts";
 
-// The /mapa link card: the metro area on the same Mapbox light style the map
-// uses, with every sensor reporting in the last few hours drawn as a disc in
-// its marker color -- a still of what the link opens. Mapbox's static image
-// is the base; the discs are placed here with the Web Mercator projection so
-// they can take the map's own marker treatment.
+// The /mapa link card: the metro area on the map's own basemap, with every
+// sensor reporting in the last few hours drawn as a disc in its marker color
+// -- a still of what the link opens. The base is a static render of the
+// self-hosted basemap (public/og/mapa-basemap.png, 1200x630, centered on
+// CENTER at ZOOM); the discs are placed here with the Web Mercator projection
+// so they can take the map's own marker treatment.
+//
+// Regenerate the PNG when the basemap's style or extract changes, or CENTER /
+// ZOOM / the card size do: render basemapStyle() (components/mapa/basemap.ts)
+// in MapLibre at 1200x630, CENTER, ZOOM, wait for "idle", screenshot, and
+// quantize to 256 colors.
 const { width: W, height: H } = SECTION_CARD;
 // Centered west of the metro so the metro sits right of the text panel.
 const CENTER: [number, number] = [-100.45, 25.69];
@@ -21,7 +27,7 @@ const CACHE = "public, max-age=0, s-maxage=900, stale-while-revalidate=3600";
 const GLYPHS =
   "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑ .,:/()%μg³ observatoriodelaire.com SIMA";
 
-// Mapbox static images use 512px tiles.
+// MapLibre uses 512px tiles.
 function project(lon: number, lat: number) {
   const world = 512 * 2 ** ZOOM;
   const x = ((lon + 180) / 360) * world;
@@ -34,8 +40,7 @@ type Reading = { sensor_id: number | string; pm25: number | null; time_stamp: st
 type Sensor = { sensor_id: number | string; lat: number; lon: number };
 
 export async function GET(request: Request) {
-  const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
-  const base = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/${CENTER[0]},${CENTER[1]},${ZOOM},0/${W}x${H}?access_token=${token}`;
+  const base = new URL("/og/mapa-basemap.png", request.url).href;
 
   const [pa, paData, sima, simaData, logo, fonts] = await Promise.all([
     PurpleAirSensors().catch(() => []),
