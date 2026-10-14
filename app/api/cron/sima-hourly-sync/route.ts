@@ -13,8 +13,9 @@ import { LIVE_HOURS } from "@/lib/live-readings";
 // frame embeds its data as JS arrays, and `arrayIMKTodo6` is the hourly PM2.5
 // concentration per station (the same number as SIMA's station report,
 // "Datos horarios de Concentraciones"), not the index the map's bubbles show.
-// Saltillo (FIN) isn't in SIMA's network, and Noroeste 3 (NO3) has no PM2.5
-// concentration on that page, so both still come from SINAICA.
+// Noroeste 3 (NO3) is missing from that list, so it's read from its own SIMA
+// station report instead. Saltillo (FIN) isn't in SIMA's network, so it
+// still comes from SINAICA.
 //
 // Runs every 10 minutes (vercel.json), because a new hour appears at no fixed
 // minute: polling picks it up within 10 minutes. Each hour is written once,
@@ -38,7 +39,7 @@ const SINAICA_URL = "https://sinaica.inecc.gob.mx/lib/libd/cnxn.php";
 
 // SIMA's station names on its map, to our sensor_id codes (the map's own
 // `locations` array pairs them the same way, except it calls SUR "S").
-// `noroeste3` (NO3) is left out: its PM2.5 is only on SINAICA.
+// `noroeste3` (NO3) is left out: the page has no hourly PM2.5 for it.
 const SIMA_MAP_STATIONS: Record<string, string> = {
   centro: "CE",
   este: "NE3",
@@ -57,6 +58,12 @@ const SIMA_MAP_STATIONS: Record<string, string> = {
 };
 const SIMA_MAP_SENSORS = new Set(Object.values(SIMA_MAP_STATIONS));
 
+// Stations read from their SIMA station report ("Datos" on SIMA's map), by
+// the report's own station name.
+const SIMA_REPORT_URL = "https://aire.nl.gob.mx/SIMA2017reportes/";
+const SIMA_REPORT_STATIONS: Record<string, string> = { NO3: "NOROESTE3" };
+const USER_AGENT = "ObservatorioDelAire/1.0 (+https://observatoriodelaire.com)";
+
 interface Reading {
   // The reading's hour, naive Monterrey wall-clock parsed as UTC (like `now`).
   ms: number;
@@ -73,7 +80,7 @@ function toPm25(valor: unknown): number {
 async function fetchSimaMap(): Promise<Map<string, Reading>> {
   const res = await fetch(SIMA_MAP_URL, {
     // Say who we are, so SIMA can reach us instead of blocking an anonymous client.
-    headers: { "User-Agent": "ObservatorioDelAire/1.0 (+https://observatoriodelaire.com)" },
+    headers: { "User-Agent": USER_AGENT },
     signal: AbortSignal.timeout(30_000),
     cache: "no-store",
   });
@@ -102,6 +109,24 @@ async function fetchSimaMap(): Promise<Map<string, Reading>> {
 interface SinaicaRow {
   hora: string | number;
   valor: string | number | null;
+}
+
+// One station's current hour from its SIMA station report. The report page
+// takes no station in its data request: opening the page selects the station
+// on SIMA's side (no cookie), and its data request (api_conc.php) then answers
+// for that station. So the two requests go back to back.
+async function fetchSimaReport(estacion: string): Promise<Reading | null> {
+  const init = { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(30_000), cache: "no-store" as const };
+  const page = await fetch(`${SIMA_REPORT_URL}ReporteDiariosimaIcars.php?estacion1=${estacion}`, init);
+  if (!page.ok) throw new Error(`HTTP ${page.status}`);
+  await page.text();
+  const res = await fetch(`${SIMA_REPORT_URL}api_conc.php?t=${Date.now()}`, init);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const rows = (await res.json()) as { Parameter: string; Date: string; HrAveData: number | string | null }[];
+  const r = rows.find((p) => p.Parameter.trim() === "PM2.5");
+  const pm25 = toPm25(r?.HrAveData);
+  if (!r || Number.isNaN(pm25)) return null;
+  return { ms: parseMonterreyNaive(`${r.Date.slice(0, 13)}:00:00`).getTime(), pm25 };
 }
 
 async function fetchStationDay(sinaicaId: number, fecha: string): Promise<SinaicaRow[]> {
@@ -196,6 +221,16 @@ export async function GET(request: NextRequest) {
 
   for (const estacion of pendientes) {
     if (SIMA_MAP_SENSORS.has(estacion.sensor_id)) continue;
+    const reporte = SIMA_REPORT_STATIONS[estacion.sensor_id];
+    if (reporte) {
+      try {
+        const reading = await fetchSimaReport(reporte);
+        if (reading) latest.set(estacion.sensor_id, reading);
+      } catch (err) {
+        errors.push(`${estacion.sensor_id} (aire.nl.gob.mx): ${err instanceof Error ? err.message : String(err)}`);
+      }
+      continue;
+    }
     try {
       for (const fecha of fechas) {
         for (const r of await fetchStationDay(estacion.sinaica_id, fecha)) {
