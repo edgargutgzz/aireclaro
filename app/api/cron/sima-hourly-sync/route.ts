@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/utils/supabase/service";
 import { monterreyNaiveHoursAgo, monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
 import { LIVE_HOURS } from "@/lib/live-readings";
+import { isValidPM25 } from "@/lib/air-quality";
 
 // The map's live SIMA feed: each station's latest hourly PM2.5, appended to
 // sima_mediciones. Separate from sima-monthly-sync, which writes the
@@ -14,7 +15,7 @@ import { LIVE_HOURS } from "@/lib/live-readings";
 // concentration per station (the same number as SIMA's station report,
 // "Datos horarios de Concentraciones"), not the index the map's bubbles show.
 // Noroeste 3 (NO3) is missing from that list, so it's read from its own SIMA
-// station report instead. Saltillo (FIN) isn't in SIMA's network, so it
+// station chart instead. Saltillo (FIN) isn't in SIMA's network, so it
 // still comes from SINAICA.
 //
 // Runs every 10 minutes (vercel.json), because a new hour appears at no fixed
@@ -58,8 +59,8 @@ const SIMA_MAP_STATIONS: Record<string, string> = {
 };
 const SIMA_MAP_SENSORS = new Set(Object.values(SIMA_MAP_STATIONS));
 
-// Stations read from their SIMA station report ("Datos" on SIMA's map), by
-// the report's own station name.
+// Stations read from their SIMA station chart ("Datos" on SIMA's map), by
+// the chart's own station name.
 const SIMA_REPORT_URL = "https://aire.nl.gob.mx/SIMA2017reportes/";
 const SIMA_REPORT_STATIONS: Record<string, string> = { NO3: "NOROESTE3" };
 const USER_AGENT = "ObservatorioDelAire/1.0 (+https://observatoriodelaire.com)";
@@ -111,22 +112,38 @@ interface SinaicaRow {
   valor: string | number | null;
 }
 
-// One station's current hour from its SIMA station report. The report page
-// takes no station in its data request: opening the page selects the station
-// on SIMA's side (no cookie), and its data request (api_conc.php) then answers
-// for that station. So the two requests go back to back.
+const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+
+// One station's latest hour from its SIMA station chart ("Datos" on SIMA's
+// map, then PM2.5): the page names the station in its URL and embeds the
+// day's hourly series (`arrayParamsTodo`, hours only) under a written date
+// ("14 de octubre de 2026"). An hour without data shows -9999 or 0, so the
+// latest valid hour is taken. SIMA can revise or blank out earlier hours of
+// the day; only the latest one is used.
 async function fetchSimaReport(estacion: string): Promise<Reading | null> {
-  const init = { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(30_000), cache: "no-store" as const };
-  const page = await fetch(`${SIMA_REPORT_URL}ReporteDiariosimaIcars.php?estacion1=${estacion}`, init);
-  if (!page.ok) throw new Error(`HTTP ${page.status}`);
-  await page.text();
-  const res = await fetch(`${SIMA_REPORT_URL}api_conc.php?t=${Date.now()}`, init);
+  const res = await fetch(`${SIMA_REPORT_URL}ReporteDiarioSimaC.php?estacion1=${estacion}&parametro1=PM2.5`, {
+    headers: { "User-Agent": USER_AGENT },
+    signal: AbortSignal.timeout(30_000),
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const rows = (await res.json()) as { Parameter: string; Date: string; HrAveData: number | string | null }[];
-  const r = rows.find((p) => p.Parameter.trim() === "PM2.5");
-  const pm25 = toPm25(r?.HrAveData);
-  if (!r || Number.isNaN(pm25)) return null;
-  return { ms: parseMonterreyNaive(`${r.Date.slice(0, 13)}:00:00`).getTime(), pm25 };
+  const html = await res.text();
+  const fecha = html.match(/Fecha del Reporte de Calidad del Aire:\s*<b>\s*[^,<]+,\s*(\d{1,2}) de (\w+) de (\d{4})/);
+  const mes = fecha ? MESES.indexOf(fecha[2].toLowerCase()) : -1;
+  if (!fecha || mes < 0) throw new Error("report date not found");
+  const dia = `${fecha[3]}-${String(mes + 1).padStart(2, "0")}-${fecha[1].padStart(2, "0")}`;
+  const match = html.match(/var\s+arrayParamsTodo\s*=\s*(\[.*\]);/);
+  if (!match) throw new Error("arrayParamsTodo not found");
+  const rows = JSON.parse(match[1]) as { Parameter: string; Date: string; HrAveData: number | string | null }[];
+
+  let latest: Reading | null = null;
+  for (const r of rows) {
+    const pm25 = toPm25(r.HrAveData);
+    if (r.Parameter.trim() !== "PM2.5" || !isValidPM25(pm25)) continue;
+    const ms = parseMonterreyNaive(`${dia} ${r.Date.slice(0, 2)}:00:00`).getTime();
+    if (!latest || ms > latest.ms) latest = { ms, pm25 };
+  }
+  return latest;
 }
 
 async function fetchStationDay(sinaicaId: number, fecha: string): Promise<SinaicaRow[]> {
