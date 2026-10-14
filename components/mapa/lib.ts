@@ -57,7 +57,7 @@ export function displayName(sensor: Sensor) {
 // actualizar"), and the quality band. `pm25` is the value for the frame on screen.
 export function markerLabel(sensor: Sensor, pm25: number | null) {
   const isSima = sensor.source === "sima";
-  const has = pm25 != null && pm25 > 0.4;
+  const has = pm25 != null;
   return [
     getSourceLabel(isSima, sensor.red),
     displayName(sensor),

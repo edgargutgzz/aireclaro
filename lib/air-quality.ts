@@ -42,8 +42,12 @@ export const getLevel = (pm25: number) =>
 // GL field's label layer, so the two treatments match.
 export const getMarkerNumberInk = (pm25: number): string => getLevel(pm25).numberInk;
 
+// A real reading: -9999 and small negatives (and anything up to 0.4, which
+// rounds to 0) are the feeds' no-data values.
+export const isValidPM25 = (pm25: number | null | undefined): pm25 is number => pm25 != null && pm25 > 0.4;
+
 export const getPM25Color = (pm25: number | null): { bg: string; text: string } | null => {
-  if (pm25 === null || pm25 <= 0.4) return null;
+  if (!isValidPM25(pm25)) return null;
   const level = getLevel(pm25);
   return { bg: level.color, text: level.ink };
 };
@@ -61,7 +65,7 @@ export const getPM25Color = (pm25: number | null): { bg: string; text: string } 
 // electric again, and raise this mix rather than re-darkening `ink`.
 export const MARKER_INK_MIX = 0.25;
 export const getMarkerFill = (pm25: number | null): string | null => {
-  if (pm25 === null || pm25 <= 0.4) return null;
+  if (!isValidPM25(pm25)) return null;
   const level = getLevel(pm25);
   return `color-mix(in srgb, ${level.color} ${Math.round((1 - MARKER_INK_MIX) * 100)}%, ${level.ink})`;
 };
@@ -91,7 +95,7 @@ export const mixColorInk = (color: string, ink: string, t: number = MARKER_INK_M
 };
 
 export const getMarkerFillHex = (pm25: number | null): string | null => {
-  if (pm25 === null || pm25 <= 0.4) return null;
+  if (!isValidPM25(pm25)) return null;
   const level = getLevel(pm25);
   return mixColorInk(level.color, level.ink);
 };
@@ -213,7 +217,7 @@ export interface QualityInfo {
 // same hue darkened to clear 4.5:1 on white. The card's quality headline uses
 // `textColor`.
 export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
-  if (pm25 === null || pm25 <= 0.4) return null;
+  if (!isValidPM25(pm25)) return null;
   if (pm25 <= 15) return {
     label: IMECA_LEVELS[0].label, color: IMECA_LEVELS[0].color, textColor: IMECA_LEVELS[0].ink,
     generalRec: "Disfruta las actividades al aire libre.",

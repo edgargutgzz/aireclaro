@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/utils/supabase/service";
 import { monterreyNaiveHoursAgo, monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
+import { LIVE_HOURS } from "@/lib/live-readings";
 
 // The map's live SIMA feed: each station's latest hourly PM2.5, appended to
 // sima_mediciones. Separate from sima-monthly-sync, which writes the
@@ -27,7 +28,7 @@ import { monterreyNaiveHoursAgo, monterreyNaiveNow, parseMonterreyNaive } from "
 // The newest hour SINAICA has for a station can be this far behind the run
 // before it counts as stale (normal publishing lag is 0-1 h). Also how far
 // back sima_mediciones is read for each station's latest written hour.
-const MAX_LAG_MS = 3 * 60 * 60 * 1000;
+const MAX_LAG_MS = LIVE_HOURS * 60 * 60 * 1000;
 
 export const maxDuration = 120;
 

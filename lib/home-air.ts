@@ -1,16 +1,11 @@
-import { cachedMapData } from "@/components/data/cache";
 import fetchPurpleAirData from "@/components/data/purple-air-data";
 import fetchPurpleAirSensors from "@/components/data/purple-air-sensors";
+import fetchSimaData from "@/components/data/sima-data";
 import { estadoKey, municipioKey } from "@/components/mapa/lib";
-import { createPublicClient } from "@/utils/supabase/public";
-import { getPM25Color } from "@/lib/air-quality";
-import { monterreyNaiveHoursAgo, monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
+import { parseMonterreyNaive } from "@/lib/monterrey-time";
 
 // Data for the homepage's live ticker (components/home/ticker.tsx): the
 // official stations, and the citizen sensors it switches to when they're out.
-
-// Older than this, a reading isn't "en vivo" anymore.
-const LIVE_MAX_AGE_MS = 3 * 60 * 60 * 1000;
 
 export interface LiveStation {
   sensorId: string;
@@ -18,31 +13,13 @@ export interface LiveStation {
   timeStamp: string;
 }
 
-// The last few hours of the map's hourly SIMA feed, cached like the map's own
-// reads.
-const fetchRecientes = cachedMapData(async () => {
-  const { data, error } = await createPublicClient()
-    .from("sima_mediciones")
-    .select("sensor_id, pm25, time_stamp")
-    .gte("time_stamp", monterreyNaiveHoursAgo(4))
-    .order("time_stamp", { ascending: false });
-  if (error) throw new Error(`Failed to load lecturas recientes: ${error.message}`);
-  return data ?? [];
-}, "home-recientes");
-
-// Each metro station's latest real reading (FIN is Saltillo; the map's own
-// no-data rule), kept only if it's from the last 3 hours.
+// Each metro station's latest live reading (FIN is Saltillo), from the map's
+// own SIMA feed.
 export async function getLiveStations(): Promise<LiveStation[]> {
-  const rows = await fetchRecientes();
-  const now = parseMonterreyNaive(monterreyNaiveNow()).getTime();
-  const latest = new Map<string, LiveStation>();
-  for (const r of rows) {
-    if (r.sensor_id === "FIN" || getPM25Color(r.pm25) === null || latest.has(r.sensor_id)) continue;
-    latest.set(r.sensor_id, { sensorId: r.sensor_id, pm25: r.pm25, timeStamp: r.time_stamp });
-  }
-  return [...latest.values()].filter(
-    (s) => now - parseMonterreyNaive(s.timeStamp).getTime() < LIVE_MAX_AGE_MS,
-  );
+  const rows = await fetchSimaData();
+  return rows
+    .filter((r) => r.sensor_id !== "FIN")
+    .map((r) => ({ sensorId: r.sensor_id, pm25: r.pm25, timeStamp: r.time_stamp }));
 }
 
 export interface LiveMunicipio {
@@ -84,7 +61,7 @@ export async function getLiveMunicipios(): Promise<LiveMunicipio[]> {
   for (const s of sensores) {
     const r = porSensor.get(s.sensor_id);
     const key = municipioKey(s.municipio);
-    if (!r || !key || estadoKey(s.estado) !== "nuevo leon" || getPM25Color(r.pm25) === null) continue;
+    if (!r || !key || estadoKey(s.estado) !== "nuevo leon") continue;
     const g = grupos.get(key) ?? { lecturas: [] as { sensorId: number; pm25: number }[], timeStamp: r.time_stamp, nombre: NOMBRE_CORTO[key] ?? s.municipio.trim() };
     g.lecturas.push({ sensorId: s.sensor_id, pm25: r.pm25 });
     if (r.time_stamp > g.timeStamp) g.timeStamp = r.time_stamp;

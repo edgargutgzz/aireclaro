@@ -4,7 +4,6 @@ import PurpleAirData from "@/components/data/purple-air-data";
 import SimaSensors from "@/components/data/sima-sensors";
 import SimaData from "@/components/data/sima-data";
 import { getMarkerFillHex } from "@/lib/air-quality";
-import { monterreyNaiveHoursAgo } from "@/lib/monterrey-time";
 import { loadOgLogo, ogLogoAt } from "@/lib/og-logo";
 import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 import { loadInterFonts } from "@/lib/og-fonts";
@@ -18,7 +17,6 @@ const { width: W, height: H } = SECTION_CARD;
 // Centered west of the metro so the metro sits right of the text panel.
 const CENTER: [number, number] = [-100.45, 25.69];
 const ZOOM = 10;
-const FRESH_HOURS = 3;
 const CACHE = "public, max-age=0, s-maxage=900, stale-while-revalidate=3600";
 const GLYPHS =
   "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑ .,:/()%μg³ observatoriodelaire.com SIMA";
@@ -48,19 +46,16 @@ export async function GET(request: Request) {
     loadInterFonts(GLYPHS),
   ]);
 
-  // time_stamp is naive Monterrey wall-clock, so the cutoff is built in the
-  // same naive terms (the server runs in UTC; a Date comparison would read
-  // every reading as six hours old and drop them all).
-  const cutoff = monterreyNaiveHoursAgo(FRESH_HOURS);
-  const latest = new Map<string, Reading>();
-  for (const r of [...(paData as Reading[]), ...(simaData as Reading[])]) {
-    if (!latest.has(String(r.sensor_id))) latest.set(String(r.sensor_id), r);
-  }
+  // Each sensor's latest live reading (lib/live-readings.ts), so anything
+  // missing or old simply isn't drawn.
+  const latest = new Map<string, Reading>(
+    [...(paData as Reading[]), ...(simaData as Reading[])].map((r) => [String(r.sensor_id), r]),
+  );
   const c = project(...CENTER);
   const dots = [...(pa as Sensor[]), ...(sima as Sensor[])]
     .map((s) => {
       const r = latest.get(String(s.sensor_id));
-      const fill = r && r.time_stamp >= cutoff ? getMarkerFillHex(r.pm25) : null;
+      const fill = r ? getMarkerFillHex(r.pm25) : null;
       const p = project(s.lon, s.lat);
       return { fill, x: p.x - c.x + W / 2, y: p.y - c.y + H / 2 };
     })

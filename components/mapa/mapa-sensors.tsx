@@ -11,7 +11,6 @@ import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMa
 import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
-import { monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
 import {
   PULSE_FALLBACK_COLOR,
   municipioKey,
@@ -54,7 +53,6 @@ import { BASEMAP_GROUND } from "./ground";
 // stale card. Rule decided 2026-10-06, after a SINAICA outage left Obispado
 // without data.
 const DEFAULT_SENSOR_ID = "CE";
-const DEFAULT_MAX_AGE_MS = 3 * 60 * 60 * 1000;
 
 // Analytics: a station the visitor picked (map tap or the station list). The
 // default card and ?sensor= links aren't picks, so they aren't counted.
@@ -69,13 +67,8 @@ function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefin
   const obispado = candidates.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
   if (!obispado) return undefined;
 
-  // Readings are naive Monterrey wall-clock; compare them in the same terms.
-  const now = parseMonterreyNaive(monterreyNaiveNow()).getTime();
-  const fresh = new Set(
-    data
-      .filter((d) => d.pm25 != null && d.pm25 > 0.4 && now - parseMonterreyNaive(d.time_stamp).getTime() < DEFAULT_MAX_AGE_MS)
-      .map((d) => String(d.sensor_id)),
-  );
+  // `data` holds only live, valid readings (lib/live-readings.ts).
+  const fresh = new Set(data.map((d) => String(d.sensor_id)));
   if (fresh.has(DEFAULT_SENSOR_ID)) return obispado;
 
   // Nearest by a flat-earth distance (fine at city scale), longitude scaled
@@ -296,7 +289,7 @@ export default function MapaSensors({
   const markerableIds = useMemo(() => {
     const ids = new Set<string>();
     for (const s of sensors) if (s.source === "sima") ids.add(String(s.sensor_id));
-    for (const d of data) if (d.pm25 != null && d.pm25 > 0.4) ids.add(String(d.sensor_id));
+    for (const d of data) ids.add(String(d.sensor_id));
     return ids;
   }, [sensors, data]);
 
@@ -315,9 +308,7 @@ export default function MapaSensors({
   // those are the only ones drawn: a total that included silent sensors would
   // never match the dots you can see.
   const capasSummary = useMemo(() => {
-    const reporting = new Set(
-      data.filter((d) => d.pm25 !== null && d.pm25 > 0.4).map((d) => d.sensor_id),
-    );
+    const reporting = new Set(data.map((d) => d.sensor_id));
     const mapped = sensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
     if (!mapped) return null;
     const shown = visibleSensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
@@ -419,7 +410,7 @@ export default function MapaSensors({
         if (!markerableIdsRef.current.has(fid)) continue;
         const isSima = sensor.source === "sima";
         const pm25 = readings.get(fid) ?? null;
-        const hasReading = pm25 != null && pm25 > 0.4;
+        const hasReading = pm25 != null;
         if (!hasReading && !isSima) continue;
         const lon = Number(sensor.lon);
         const lat = Number(sensor.lat);
@@ -466,7 +457,7 @@ export default function MapaSensors({
       const sensor = sensorByIdRef.current.get(id);
       if (!sensor) return;
       const pm25 = readings.get(id) ?? null;
-      const has = pm25 != null && pm25 > 0.4;
+      const has = pm25 != null;
       const showNumber = has;
       const dot = el.querySelector<HTMLElement>(".sensor-marker__dot");
       el.classList.toggle("sensor-marker--nodata", !has);
@@ -567,7 +558,7 @@ export default function MapaSensors({
     if (!sensor) return;
     const isSima = sensor.source === "sima";
     const pm25 = frameReadingsRef.current.get(String(activeId)) ?? null;
-    const has = pm25 != null && pm25 > 0.4;
+    const has = pm25 != null;
     const el = createMarker(
       has ? (pm25 as number) : 1,
       markerLabel(sensor, pm25),

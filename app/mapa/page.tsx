@@ -10,6 +10,7 @@ import { getSensorSnapshot } from "@/lib/sensor-snapshot";
 import { parseSensorParam } from "@/lib/map-url-state";
 import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 import LiveRefresh from "@/components/data/live-refresh";
+import type { Data } from "@/components/mapa/types";
 
 const BASE_TITLE = "Mapa";
 const BASE_DESCRIPTION =
@@ -100,7 +101,8 @@ export default async function Mapa() {
   }));
 
   const sensors = [...taggedPurpleAirSensors, ...taggedSimaSensors];
-  const data = [...purpleAirData, ...simaData];
+  // Data types SIMA's text codes as numbers, like Sensor; lookups key on String(sensor_id).
+  const data = [...purpleAirData, ...simaData] as Data[];
 
   return (
     <>
