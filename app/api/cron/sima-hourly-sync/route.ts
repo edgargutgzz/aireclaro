@@ -13,7 +13,8 @@ import { LIVE_HOURS } from "@/lib/live-readings";
 // frame embeds its data as JS arrays, and `arrayIMKTodo6` is the hourly PM2.5
 // concentration per station (the same number as SIMA's station report,
 // "Datos horarios de Concentraciones"), not the index the map's bubbles show.
-// Saltillo (FIN) isn't in SIMA's network, so it still comes from SINAICA.
+// Saltillo (FIN) isn't in SIMA's network, and Noroeste 3 (NO3) has no PM2.5
+// concentration on that page, so both still come from SINAICA.
 //
 // Runs every 10 minutes (vercel.json), because a new hour appears at no fixed
 // minute: polling picks it up within 10 minutes. Each hour is written once,
@@ -37,6 +38,7 @@ const SINAICA_URL = "https://sinaica.inecc.gob.mx/lib/libd/cnxn.php";
 
 // SIMA's station names on its map, to our sensor_id codes (the map's own
 // `locations` array pairs them the same way, except it calls SUR "S").
+// `noroeste3` (NO3) is left out: its PM2.5 is only on SINAICA.
 const SIMA_MAP_STATIONS: Record<string, string> = {
   centro: "CE",
   este: "NE3",
@@ -44,7 +46,6 @@ const SIMA_MAP_STATIONS: Record<string, string> = {
   noreste2: "NE2",
   noroeste: "NO",
   noroeste2: "NO2",
-  noroeste3: "NO3",
   norte: "N",
   norte2: "N2",
   sur: "SUR",
@@ -182,8 +183,8 @@ export async function GET(request: NextRequest) {
 
   // SIMA's page updates every station at once, so once any of them holds the
   // current hour this hour's page has been read: no more requests until the
-  // next hour (a station missing from it, like NO3 with no PM2.5 monitor,
-  // would otherwise keep every run fetching). About 2-3 requests an hour.
+  // next hour (a station missing from it that hour would otherwise keep every
+  // run fetching). About 2-3 requests an hour.
   const simaMapDone = [...SIMA_MAP_SENSORS].some((id) => (written.get(id) ?? 0) >= hourStartMs);
   if (!simaMapDone) {
     try {
