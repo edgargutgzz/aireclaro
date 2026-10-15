@@ -55,6 +55,7 @@ const organizationSchema = {
   "@context": "https://schema.org",
   ...ORGANIZATION_REF,
   logo: `${SITE_URL}/icon-512.png`,
+  foundingDate: "2017-06-09",
   description:
     "Organización de la sociedad civil dedicada a monitorear y mejorar la calidad del aire en Nuevo León.",
   address: {
