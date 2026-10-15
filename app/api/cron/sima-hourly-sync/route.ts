@@ -18,8 +18,10 @@ import { isValidPM25 } from "@/lib/air-quality";
 // station chart instead. Saltillo (FIN) isn't in SIMA's network, so it
 // still comes from SINAICA.
 //
-// Runs every 10 minutes (vercel.json), because a new hour appears at no fixed
-// minute: polling picks it up within 10 minutes. Each hour is written once,
+// Runs every 3 minutes (vercel.json), because a new hour appears at no fixed
+// minute: polling picks it up within 3 minutes. NO3 and FIN, which often
+// have no current hour, are asked only on about every third run (every ~10
+// minutes), so they don't send a request every 3 minutes. Each hour is written once,
 // stamped with the hour it belongs to (time_stamp = the reading's hour as
 // naive Monterrey wall-clock, "15:00:00"), so a run only writes a station
 // whose source hour is newer than its latest row.
@@ -236,7 +238,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  for (const estacion of pendientes) {
+  // The runs at :00, :12, :21, :30, :42, :51 (every ~10 minutes).
+  const slowRun = Number(now.slice(14, 16)) % 10 < 3;
+  for (const estacion of slowRun ? pendientes : []) {
     if (SIMA_MAP_SENSORS.has(estacion.sensor_id)) continue;
     const reporte = SIMA_REPORT_STATIONS[estacion.sensor_id];
     if (reporte) {
