@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 // so client state (map position, selected station) stays. It fires when the
 // visitor comes back to the tab, and every few minutes while the tab is
 // visible; a hidden tab doesn't fetch, the return catches it up. SIMA
-// readings land at any 10-minute mark and PurpleAir's at :01, so 5 minutes
+// readings land once an hour (job every 3 minutes) and PurpleAir's at :01, so 5 minutes
 // is plenty.
 
 const INTERVAL_MS = 5 * 60 * 1000;
