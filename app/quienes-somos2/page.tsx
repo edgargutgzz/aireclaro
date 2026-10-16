@@ -80,20 +80,25 @@ function Grupo({ title, personas, size }: { title: string; personas: Persona[]; 
 export default function QuienesSomos2() {
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
-      <header className="max-w-4xl">
-        <h1 className={LABEL}>Quiénes somos</h1>
-        <p className="mt-3 text-2xl font-medium leading-tight tracking-tight text-gray-900 md:text-4xl">{LEAD}</p>
+      {/* The homepage hero's pattern: a short heading over the lead as body
+          text, the photo beside them from lg, under them on mobile. */}
+      <header className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
+            Quiénes somos
+          </h1>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-gray-600 md:text-xl">{LEAD}</p>
+        </div>
+        <Image
+          src="/quienes-somos/portada.webp"
+          alt=""
+          width={2560}
+          height={1707}
+          sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
+          preload
+          className="aspect-[3/2] w-full rounded-2xl object-cover"
+        />
       </header>
-
-      <Image
-        src="/quienes-somos/portada.webp"
-        alt=""
-        width={2560}
-        height={1707}
-        sizes="(min-width: 1280px) 1216px, 100vw"
-        preload
-        className="mt-12 aspect-[2/1] w-full rounded-2xl object-cover object-[center_75%] md:mt-16 md:aspect-[21/9]"
-      />
 
       <div className="mt-16 md:mt-24">
         <Section title="Propósito">
