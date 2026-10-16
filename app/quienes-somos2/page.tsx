@@ -31,8 +31,8 @@ const juvenil = enGrupo(JUVENIL);
 // Hand-ordered so every row has at least one woman at both the 3- and the
 // 4-column grid (positions 2, 6, 8 and 11). Re-check when the list changes.
 const CIUDADANO = [
-  "lorenzo", "rosario", "adrian", "carlos",
-  "gerardo", "roberta", "cosijopii", "maria",
+  "lorenzo", "rosario", "gerardo", "carlos",
+  "adrian", "roberta", "cosijopii", "maria",
   "rodolfo", "horacio", "ana", "uriel",
 ];
 const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
