@@ -80,14 +80,13 @@ function Grupo({ title, personas, size }: { title: string; personas: Persona[]; 
 export default function QuienesSomos2() {
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
-      {/* The homepage hero's pattern: a short heading over the lead as body
-          text, the photo beside them from lg, under them on mobile. */}
+      {/* The lead beside the photo from lg, above it on mobile. */}
       <header className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
-          <h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-            Quiénes somos
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-gray-600 md:text-xl">{LEAD}</p>
+          {/* The heading stays for screen readers and search; the lead carries
+              the hero, in regular weight so a long sentence doesn't shout. */}
+          <h1 className="sr-only">Quiénes somos</h1>
+          <p className="max-w-xl text-2xl leading-snug tracking-tight text-gray-900 md:text-3xl">{LEAD}</p>
         </div>
         <Image
           src="/quienes-somos/portada.webp"
