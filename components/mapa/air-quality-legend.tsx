@@ -78,7 +78,9 @@ export function LegendDetail({ className = "" }: { className?: string }) {
   return (
     <div className={className}>
       <div className="mb-2 flex items-center gap-1">
-        <p className="text-[11px] leading-none text-gray-400">PM2.5 · μg/m³</p>
+        {/* Both sources are hourly averages (docs/mapa-data-pipeline.md); the
+            state's own map shows the índice instead, so its numbers differ. */}
+        <p className="text-[11px] leading-none text-gray-400">PM2.5 · μg/m³ · promedio de la última hora</p>
         <button
           type="button"
           onClick={() => setShowPM25Info(true)}
@@ -99,14 +101,9 @@ export function LegendDetail({ className = "" }: { className?: string }) {
           </p>
         </InfoDialog>
       )}
-      {/* More air under the note on mobile, where the level list runs right
-          up against it in the bottom sheet; the desktop rail keeps mt-3. Both
-          sources are hourly averages (docs/mapa-data-pipeline.md); the state's
-          own map shows the índice instead, so its numbers won't match ours. */}
+      {/* More air under the citation on mobile, where the level list runs right
+          up against it in the bottom sheet; the desktop rail keeps mt-3. */}
       <p className="mt-5 text-[11px] leading-relaxed text-gray-400 md:mt-3">
-        Promedio de la última hora.
-      </p>
-      <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
         Índice de Aire y Salud Mexicano&nbsp;{" "}
         <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
           NOM-172-SEMARNAT-2023
