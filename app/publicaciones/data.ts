@@ -84,6 +84,7 @@ const DOCUMENTOS: Documento[] = [
     slug: "comentarios-programa-contingencias-2026",
     title: "Comentarios a propuesta 2026 del Programa de Respuesta a Contingencias Atmosféricas de la ZMM",
     file: "2026-prca",
+    fondo: "/og/programa-contingencias-2026.jpg",
     tipo: "comunicado",
     year: 2026,
     author: OCCAMM,
@@ -510,7 +511,7 @@ function nodeText(node: React.ReactNode): string {
 // A publication's link card (app/api/og/publicaciones/[slug]). d= is its
 // design version: bump it on any change, chat apps cache per image URL.
 export function linkCard(p: Publicacion) {
-  return { url: `/api/og/publicaciones/${p.slug}?d=10`, width: 1200, height: 630, alt: p.title };
+  return { url: `/api/og/publicaciones/${p.slug}?d=11`, width: 1200, height: 630, alt: p.title };
 }
 
 // The link to share an item: a document's or infographic's /d/<slug>
