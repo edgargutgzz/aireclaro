@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { pageMetadata } from "@/lib/metadata";
 import { EQUIPO } from "@/lib/equipo";
 import { LINEAS, MISION, VISION } from "@/components/observatorio/quienes-somos-sections";
@@ -12,8 +10,7 @@ import { LINEAS, MISION, VISION } from "@/components/observatorio/quienes-somos-
 // Editorial layout: each section's title in a narrow left column, its content
 // on the right, sections split by a hairline. Text carries Misión, Visión and
 // the líneas (no stock photos); the only pictures are the city and the team,
-// every portrait in one crop. It closes on the work itself, so a reader can
-// check what the Observatory produces.
+// every portrait in one crop.
 
 const LEAD =
   "Somos una organización de la sociedad civil dedicada a generar esfuerzos colaborativos y fundamento técnico para mejorar la calidad del aire en Nuevo León.";
@@ -24,7 +21,6 @@ export const metadata: Metadata = {
 };
 
 const LABEL = "text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500";
-const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
 // By portrait key, in lib/equipo.ts's order.
 const OPERATIVO = ["selene", "yessica", "edgar"];
@@ -33,13 +29,6 @@ const enGrupo = (keys: string[]) => EQUIPO.filter((p) => keys.includes(p.image))
 const operativo = enGrupo(OPERATIVO);
 const juvenil = enGrupo(JUVENIL);
 const ciudadano = EQUIPO.filter((p) => ![...OPERATIVO, ...JUVENIL].includes(p.image));
-
-const TRABAJO = [
-  { href: "/publicaciones/informe-de-impacto-2025-2026", label: "Informe de impacto 2025-2026" },
-  { href: "/publicaciones", label: "Publicaciones" },
-  { href: "/datos", label: "Datos" },
-  { href: "/mapa", label: "Mapa" },
-];
 
 type Persona = (typeof EQUIPO)[number];
 
@@ -138,24 +127,6 @@ export default function QuienesSomos2() {
           </div>
         </Section>
 
-        <Section title="Nuestro trabajo">
-          <ul className="divide-y divide-gray-200 border-y border-gray-200">
-            {TRABAJO.map((item) => (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`group flex items-center justify-between gap-4 py-4 text-lg font-semibold text-gray-800 transition-colors hover:text-gray-600 ${FOCUS_RING}`}
-                >
-                  {item.label}
-                  <ArrowRight
-                    aria-hidden="true"
-                    className="h-5 w-5 shrink-0 text-gray-400 transition-transform group-hover:translate-x-0.5"
-                  />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Section>
       </div>
     </div>
   );
