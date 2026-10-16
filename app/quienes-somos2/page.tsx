@@ -32,8 +32,8 @@ const juvenil = enGrupo(JUVENIL);
 // every row at the 4-column grid; at 3 columns the third row has none.
 const CIUDADANO = [
   "lorenzo", "rosario", "gerardo", "ana",
-  "adrian", "roberta", "cosijopii", "carlos",
-  "rodolfo", "horacio", "maria", "uriel",
+  "adrian", "roberta", "uriel", "carlos",
+  "rodolfo", "horacio", "maria", "cosijopii",
 ];
 const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 
