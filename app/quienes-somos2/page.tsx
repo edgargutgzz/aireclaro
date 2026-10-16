@@ -79,26 +79,23 @@ function Grupo({ title, personas, size }: { title: string; personas: Persona[]; 
 
 export default function QuienesSomos2() {
   return (
-    <div className="mx-auto max-w-7xl px-6 pb-24 pt-4 lg:px-8 lg:pb-32 lg:pt-8">
-      {/* Hero: the photo carries the page's first impression, the text sits on
-          a scrim rising from the bottom so it stays legible on the bright sky. */}
-      <header className="relative flex min-h-[30rem] items-end overflow-hidden rounded-2xl bg-gray-900 md:min-h-[34rem]">
-        <Image
-          src="/quienes-somos/portada.webp"
-          alt=""
-          fill
-          sizes="(min-width: 1280px) 1216px, 100vw"
-          preload
-          className="object-cover object-[center_65%]"
-        />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
-        <div className="relative max-w-4xl p-6 md:p-12">
-          <h1 className="text-xs font-semibold uppercase leading-snug tracking-wide text-white/80">Quiénes somos</h1>
-          <p className="mt-3 text-2xl font-bold leading-tight text-white md:text-4xl">{LEAD}</p>
-        </div>
+    <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
+      <header className="max-w-4xl">
+        <h1 className={LABEL}>Quiénes somos</h1>
+        <p className="mt-3 text-2xl font-bold leading-tight text-gray-900 md:text-4xl">{LEAD}</p>
       </header>
 
-      <div className="mt-8 md:mt-12">
+      <Image
+        src="/quienes-somos/portada.webp"
+        alt=""
+        width={1280}
+        height={867}
+        sizes="(min-width: 1280px) 1216px, 100vw"
+        preload
+        className="mt-12 aspect-[2/1] w-full rounded-2xl object-cover object-[center_65%] md:mt-16 md:aspect-[21/9]"
+      />
+
+      <div className="mt-16 md:mt-24">
         <Section title="Propósito">
           <div className="grid gap-10 md:grid-cols-2">
             {[
