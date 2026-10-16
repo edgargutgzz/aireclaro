@@ -21,10 +21,15 @@ const LABEL = "text-xs font-semibold uppercase leading-snug tracking-wide text-g
 const SECTION_TITLE = "text-2xl font-semibold text-gray-800 md:text-3xl";
 const CARD = "overflow-hidden rounded-2xl border border-gray-200 bg-white";
 
-// By portrait key, in lib/equipo.ts's order.
+// By portrait key, in lib/equipo.ts's order. Guillermo Baillères and Andrea
+// Villarreal are in no group yet, so not on the draft.
 const OPERATIVO = ["selene", "yessica", "edgar"];
-const operativo = EQUIPO.filter((p) => OPERATIVO.includes(p.image));
-const consejo = EQUIPO.filter((p) => !OPERATIVO.includes(p.image));
+const JUVENIL = ["lucia", "juanpablo"];
+const SIN_GRUPO = ["guillermo", "andrea"];
+const enGrupo = (keys: string[]) => EQUIPO.filter((p) => keys.includes(p.image));
+const operativo = enGrupo(OPERATIVO);
+const juvenil = enGrupo(JUVENIL);
+const ciudadano = EQUIPO.filter((p) => ![...OPERATIVO, ...JUVENIL, ...SIN_GRUPO].includes(p.image));
 
 function Persona({ persona }: { persona: (typeof EQUIPO)[number] }) {
   return (
@@ -116,7 +121,8 @@ export default function QuienesSomos2() {
           <h2 className={SECTION_TITLE}>Equipo</h2>
           <div className="mt-8 flex flex-col gap-12">
             <Grupo title="Equipo operativo" personas={operativo} />
-            <Grupo title="Consejo" personas={consejo} />
+            <Grupo title="Consejo Ciudadano" personas={ciudadano} />
+            <Grupo title="Consejo Juvenil" personas={juvenil} />
           </div>
         </section>
       </div>
