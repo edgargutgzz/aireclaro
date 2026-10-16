@@ -20,11 +20,13 @@ import { isValidPM25 } from "@/lib/air-quality";
 //
 // Runs every 5 minutes from :00 to :30 (vercel.json), because a new hour
 // appears at no fixed minute: polling picks it up within 5 minutes. An hour
-// posted after :30 waits for the next :00 run. NO3 and FIN are asked on
-// every run too, until they hold the current hour. Each hour is written once,
-// stamped with the hour it belongs to (time_stamp = the reading's hour as
-// naive Monterrey wall-clock, "15:00:00"), so a run only writes a station
-// whose source hour is newer than its latest row.
+// posted after :30 waits for the next :00 run. Every run asks every
+// station, even one already holding the current hour, because SIMA can
+// change an hour's number after posting it. Each hour is one row, stamped
+// with the hour it belongs to (time_stamp = the reading's hour as naive
+// Monterrey wall-clock, "15:00:00"): a source hour newer than the station's
+// latest row is inserted, the same hour with a different number updates
+// that row (created_at keeps when the hour first arrived).
 //
 // A station whose latest hour is old is skipped, not written, so a station
 // (or a whole network) that stops reporting goes gray on the map instead of
@@ -184,7 +186,6 @@ export async function GET(request: NextRequest) {
 
   const now = monterreyNaiveNow();
   const nowMs = parseMonterreyNaive(now).getTime();
-  const hourStartMs = nowMs - (nowMs % 3_600_000);
   // In the first hours of the day, yesterday's last hours can still be the
   // newest SINAICA has (the 23:00 reading lands after midnight).
   const fechas = [now.slice(0, 10)];
@@ -199,7 +200,7 @@ export async function GET(request: NextRequest) {
       supabase.from("sima_sensores").select("sensor_id, sinaica_id").not("sinaica_id", "is", null),
       supabase
         .from("sima_mediciones")
-        .select("sensor_id, time_stamp")
+        .select("sensor_id, time_stamp, pm25")
         .gte("time_stamp", monterreyNaiveHoursAgo(MAX_LAG_MS / 3_600_000)),
     ]);
 
@@ -210,35 +211,27 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Each station's latest written hour.
-  const written = new Map<string, number>();
+  // Each station's latest written hour and its number.
+  const written = new Map<string, Reading>();
   for (const r of recientes ?? []) {
     const ms = parseMonterreyNaive(r.time_stamp).getTime();
-    if (ms > (written.get(r.sensor_id) ?? 0)) written.set(r.sensor_id, ms);
+    if (ms > (written.get(r.sensor_id)?.ms ?? 0)) written.set(r.sensor_id, { ms, pm25: Number(r.pm25) });
   }
 
   const rows: { sensor_id: string; pm25: number; time_stamp: string }[] = [];
+  const updates: { sensor_id: string; pm25: number; time_stamp: string }[] = [];
   const errors: string[] = [];
   const stale: string[] = [];
-
-  // Stations not yet holding the current hour.
-  const pendientes = estaciones.filter((e) => (written.get(e.sensor_id) ?? 0) < hourStartMs);
   const latest = new Map<string, Reading>();
 
-  // SIMA's page updates every station at once, so once any of them holds the
-  // current hour this hour's page has been read: no more requests until the
-  // next hour (a station missing from it that hour would otherwise keep every
-  // run fetching). About 2-3 requests an hour.
-  const simaMapDone = [...SIMA_MAP_SENSORS].some((id) => (written.get(id) ?? 0) >= hourStartMs);
-  if (!simaMapDone) {
-    try {
-      for (const [sensorId, reading] of await fetchSimaMap()) latest.set(sensorId, reading);
-    } catch (err) {
-      errors.push(`aire.nl.gob.mx: ${err instanceof Error ? err.message : String(err)}`);
-    }
+  // SIMA's page updates every station at once: one request for all of them.
+  try {
+    for (const [sensorId, reading] of await fetchSimaMap()) latest.set(sensorId, reading);
+  } catch (err) {
+    errors.push(`aire.nl.gob.mx: ${err instanceof Error ? err.message : String(err)}`);
   }
 
-  for (const estacion of pendientes) {
+  for (const estacion of estaciones) {
     if (SIMA_MAP_SENSORS.has(estacion.sensor_id)) continue;
     const reporte = SIMA_REPORT_STATIONS[estacion.sensor_id];
     if (reporte) {
@@ -266,17 +259,24 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  for (const estacion of pendientes) {
+  for (const estacion of estaciones) {
     const reading = latest.get(estacion.sensor_id);
-    if (!reading || reading.ms <= (written.get(estacion.sensor_id) ?? 0)) continue;
-    if (nowMs - reading.ms > MAX_LAG_MS) {
-      stale.push(`${estacion.sensor_id} (${new Date(reading.ms).toISOString().slice(0, 13)})`);
-    } else {
-      rows.push({
-        sensor_id: estacion.sensor_id,
-        pm25: Math.round(reading.pm25),
-        time_stamp: new Date(reading.ms).toISOString().slice(0, 19),
-      });
+    if (!reading) continue;
+    const prev = written.get(estacion.sensor_id);
+    const row = {
+      sensor_id: estacion.sensor_id,
+      pm25: Math.round(reading.pm25),
+      time_stamp: new Date(reading.ms).toISOString().slice(0, 19),
+    };
+    if (prev && reading.ms === prev.ms) {
+      // The same hour, revised by the source.
+      if (row.pm25 !== prev.pm25) updates.push(row);
+    } else if (!prev || reading.ms > prev.ms) {
+      if (nowMs - reading.ms > MAX_LAG_MS) {
+        stale.push(`${estacion.sensor_id} (${new Date(reading.ms).toISOString().slice(0, 13)})`);
+      } else {
+        rows.push(row);
+      }
     }
   }
 
@@ -284,15 +284,23 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.from("sima_mediciones").insert(rows);
     if (error) errors.push(`insert: ${error.message}`);
   }
+  for (const u of updates) {
+    const { error } = await supabase
+      .from("sima_mediciones")
+      .update({ pm25: u.pm25 })
+      .eq("sensor_id", u.sensor_id)
+      .eq("time_stamp", u.time_stamp);
+    if (error) errors.push(`update ${u.sensor_id}: ${error.message}`);
+  }
 
   if (errors.length > 0) console.error("sima-hourly-sync errors:", errors);
 
   return NextResponse.json({
     now,
     estaciones: estaciones.length,
-    // Stations not yet holding the current hour, so looked up.
-    pendientes: pendientes.length,
     rowsWritten: rows.length,
+    // Stations whose stored hour the source has since changed.
+    rowsUpdated: updates.map((u) => `${u.sensor_id} ${u.time_stamp.slice(11, 16)} → ${u.pm25}`),
     // Stations skipped because their source's newest hour is too old.
     stale,
     errors,
