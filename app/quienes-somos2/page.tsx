@@ -13,7 +13,7 @@ import { LINEAS, MISION, VISION } from "@/components/observatorio/quienes-somos-
 // every portrait in one crop.
 
 const LEAD =
-  "Somos una organización de la sociedad civil dedicada a generar esfuerzos colaborativos y fundamento técnico para mejorar la calidad del aire en Nuevo León.";
+  "Somos una organización de la sociedad civil dedicada a generar esfuerzos colaborativos y fundamento técnico para mejorar la calidad del aire en la Zona Metropolitana de Monterrey.";
 
 export const metadata: Metadata = {
   ...pageMetadata({ title: "Quiénes somos", description: LEAD, path: "/quienes-somos" }),
@@ -94,7 +94,7 @@ export default function QuienesSomos2() {
         </div>
       </header>
 
-      <div className="mt-16 md:mt-24">
+      <div className="mt-8 md:mt-12">
         <Section title="Propósito">
           <div className="grid gap-10 md:grid-cols-2">
             {[
