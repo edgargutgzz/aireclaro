@@ -18,9 +18,9 @@ import { isValidPM25 } from "@/lib/air-quality";
 // station chart instead. Saltillo (FIN) isn't in SIMA's network, so it
 // still comes from SINAICA.
 //
-// Runs every 5 minutes from :00 to :30 (vercel.json), because a new hour
+// Runs every 5 minutes from :05 to :30 (vercel.json), because a new hour
 // appears at no fixed minute: polling picks it up within 5 minutes. An hour
-// posted after :30 waits for the next :00 run. Every run asks every
+// posted after :30 waits for the next :05 run. Every run asks every
 // station, even one already holding the current hour, because SIMA can
 // change an hour's number after posting it. Each hour is one row, stamped
 // with the hour it belongs to (time_stamp = the reading's hour as naive
