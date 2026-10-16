@@ -104,7 +104,7 @@ export function LegendDetail({ className = "" }: { className?: string }) {
           sources are hourly averages (docs/mapa-data-pipeline.md); the state's
           own map shows the índice instead, so its numbers won't match ours. */}
       <p className="mt-5 text-[11px] leading-relaxed text-gray-400 md:mt-3">
-        Promedio de la última hora, no el índice del mapa estatal.
+        Promedio de la última hora.
       </p>
       <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
         Índice de Aire y Salud Mexicano&nbsp;{" "}
