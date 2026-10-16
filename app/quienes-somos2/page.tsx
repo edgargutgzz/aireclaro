@@ -21,15 +21,13 @@ const LABEL = "text-xs font-semibold uppercase leading-snug tracking-wide text-g
 const SECTION_TITLE = "text-2xl font-semibold text-gray-800 md:text-3xl";
 const CARD = "overflow-hidden rounded-2xl border border-gray-200 bg-white";
 
-// By portrait key, in lib/equipo.ts's order. Guillermo Baillères and Andrea
-// Villarreal are in no group yet, so not on the draft.
+// By portrait key, in lib/equipo.ts's order.
 const OPERATIVO = ["selene", "yessica", "edgar"];
-const JUVENIL = ["lucia", "juanpablo"];
-const SIN_GRUPO = ["guillermo", "andrea"];
+const JUVENIL = ["guillermo", "lucia", "juanpablo", "andrea"];
 const enGrupo = (keys: string[]) => EQUIPO.filter((p) => keys.includes(p.image));
 const operativo = enGrupo(OPERATIVO);
 const juvenil = enGrupo(JUVENIL);
-const ciudadano = EQUIPO.filter((p) => ![...OPERATIVO, ...JUVENIL, ...SIN_GRUPO].includes(p.image));
+const ciudadano = EQUIPO.filter((p) => ![...OPERATIVO, ...JUVENIL].includes(p.image));
 
 function Persona({ persona }: { persona: (typeof EQUIPO)[number] }) {
   return (
