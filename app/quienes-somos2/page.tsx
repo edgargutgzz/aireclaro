@@ -82,7 +82,7 @@ export default function QuienesSomos2() {
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
       <header className="max-w-4xl">
         <h1 className={LABEL}>Quiénes somos</h1>
-        <p className="mt-3 text-2xl font-bold leading-tight text-gray-900 md:text-4xl">{LEAD}</p>
+        <p className="mt-3 text-2xl font-medium leading-tight tracking-tight text-gray-900 md:text-4xl">{LEAD}</p>
       </header>
 
       <Image
