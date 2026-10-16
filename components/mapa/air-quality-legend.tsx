@@ -99,9 +99,16 @@ export function LegendDetail({ className = "" }: { className?: string }) {
           </p>
         </InfoDialog>
       )}
-      {/* More air under the citation on mobile, where the level list runs right
-          up against it in the bottom sheet; the desktop rail keeps mt-3. */}
+      {/* More air under the note on mobile, where the level list runs right
+          up against it in the bottom sheet; the desktop rail keeps mt-3. Both
+          sources are hourly averages (docs/mapa-data-pipeline.md); the state's
+          own map shows the índice instead, so its numbers won't match ours. */}
       <p className="mt-5 text-[11px] leading-relaxed text-gray-400 md:mt-3">
+        Cada lectura es el promedio de la última hora. El mapa del Gobierno de
+        Nuevo León muestra el índice, que se calcula de otra forma, por lo que
+        sus valores pueden no coincidir.
+      </p>
+      <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
         Índice de Aire y Salud Mexicano&nbsp;{" "}
         <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
           NOM-172-SEMARNAT-2023
