@@ -84,7 +84,7 @@ export default function QuienesSomos2() {
           text, the photo beside them from lg, under them on mobile. */}
       <header className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
-          <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-bold leading-[1.1] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
             Quiénes somos
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-gray-600 md:text-xl">{LEAD}</p>
