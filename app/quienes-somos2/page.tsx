@@ -80,11 +80,9 @@ function Grupo({ title, personas, size }: { title: string; personas: Persona[]; 
 export default function QuienesSomos2() {
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
-      {/* The heading stays for screen readers and search; the lead carries
-          the top, in regular weight so a long sentence doesn't shout. */}
       <header className="max-w-4xl">
-        <h1 className="sr-only">Quiénes somos</h1>
-        <p className="text-2xl leading-snug tracking-tight text-gray-900 md:text-4xl md:leading-tight">{LEAD}</p>
+        <h1 className={LABEL}>Quiénes somos</h1>
+        <p className="mt-3 text-2xl font-medium leading-tight tracking-tight text-gray-900 md:text-4xl">{LEAD}</p>
       </header>
 
       <Image
