@@ -28,12 +28,12 @@ const JUVENIL = ["guillermo", "lucia", "juanpablo", "andrea"];
 const enGrupo = (keys: string[]) => EQUIPO.filter((p) => keys.includes(p.image));
 const operativo = enGrupo(OPERATIVO);
 const juvenil = enGrupo(JUVENIL);
-// Hand-ordered so every row has at least one woman at both the 3- and the
-// 4-column grid (positions 2, 6, 8 and 11). Re-check when the list changes.
+// Hand-ordered (the user's picks). Women at positions 2, 4, 6 and 8, so the
+// last row has none at the 3- and 4-column grids.
 const CIUDADANO = [
-  "lorenzo", "rosario", "gerardo", "carlos",
+  "lorenzo", "rosario", "gerardo", "ana",
   "adrian", "roberta", "cosijopii", "maria",
-  "rodolfo", "horacio", "ana", "uriel",
+  "rodolfo", "horacio", "carlos", "uriel",
 ];
 const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 
