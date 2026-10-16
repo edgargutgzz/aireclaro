@@ -82,13 +82,13 @@ export default function QuienesSomos2() {
       </header>
 
       <Image
-        src="/quienes-somos/mision.webp"
+        src="/quienes-somos/portada.webp"
         alt=""
-        width={1200}
-        height={514}
+        width={1280}
+        height={867}
         sizes="(min-width: 1280px) 1216px, 100vw"
         preload
-        className="mt-12 aspect-[2/1] w-full rounded-2xl object-cover md:mt-16 md:aspect-[21/9]"
+        className="mt-12 aspect-[2/1] w-full rounded-2xl object-cover object-[center_65%] md:mt-16 md:aspect-[21/9]"
       />
 
       <div className="mt-16 md:mt-24">
