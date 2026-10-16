@@ -80,24 +80,22 @@ function Grupo({ title, personas, size }: { title: string; personas: Persona[]; 
 export default function QuienesSomos2() {
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
-      {/* The lead beside the photo from lg, above it on mobile. */}
-      <header className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-        <div>
-          {/* The heading stays for screen readers and search; the lead carries
-              the hero, in regular weight so a long sentence doesn't shout. */}
-          <h1 className="sr-only">Quiénes somos</h1>
-          <p className="max-w-xl text-2xl leading-snug tracking-tight text-gray-900 md:text-3xl">{LEAD}</p>
-        </div>
-        <Image
-          src="/quienes-somos/portada.webp"
-          alt=""
-          width={2560}
-          height={1707}
-          sizes="(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw"
-          preload
-          className="aspect-[3/2] w-full rounded-2xl object-cover"
-        />
+      {/* The heading stays for screen readers and search; the lead carries
+          the top, in regular weight so a long sentence doesn't shout. */}
+      <header className="max-w-4xl">
+        <h1 className="sr-only">Quiénes somos</h1>
+        <p className="text-2xl leading-snug tracking-tight text-gray-900 md:text-4xl md:leading-tight">{LEAD}</p>
       </header>
+
+      <Image
+        src="/quienes-somos/portada.webp"
+        alt=""
+        width={2560}
+        height={1707}
+        sizes="(min-width: 1280px) 1216px, 100vw"
+        preload
+        className="mt-12 aspect-[2/1] w-full rounded-2xl object-cover object-[center_75%] md:mt-16 md:aspect-[21/9]"
+      />
 
       <div className="mt-16 md:mt-24">
         <Section title="Propósito">
