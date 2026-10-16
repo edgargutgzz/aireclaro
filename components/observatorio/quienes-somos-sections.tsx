@@ -7,7 +7,13 @@ import FeatureCard from "@/components/observatorio/feature-card";
 // text sits on them), under a light tint so the white text stays legible.
 // `children` adds sections after the líneas, in the same rhythm.
 
-const LINEAS = [
+export const MISION =
+  "Fortalecer a la sociedad, al marco normativo, y a las instituciones para coadyuvar a resolver la problemática de la contaminación atmosférica en el Área Metropolitana de Monterrey.";
+
+export const VISION =
+  "Ser reconocidos internacionalmente como una organización que ha tenido una influencia significativa en el cambio de modelo de desarrollo del Área Metropolitana de Monterrey; en especial en cuanto a la calidad del aire se refiere.";
+
+export const LINEAS = [
   { image: "/quienes-somos/linea-1.webp", text: "Mejorar el marco normativo." },
   {
     image: "/quienes-somos/linea-2.webp",
@@ -21,13 +27,13 @@ export function QuienesSomosSections({ children }: { children?: ReactNode }) {
     <div className="flex flex-col gap-28 md:gap-48">
       <FeatureCard
         title="Misión"
-        description="Fortalecer a la sociedad, al marco normativo, y a las instituciones para coadyuvar a resolver la problemática de la contaminación atmosférica en el Área Metropolitana de Monterrey."
+        description={MISION}
         image="/quienes-somos/mision.webp"
         imageAlt="Misión"
       />
       <FeatureCard
         title="Visión"
-        description="Ser reconocidos internacionalmente como una organización que ha tenido una influencia significativa en el cambio de modelo de desarrollo del Área Metropolitana de Monterrey; en especial en cuanto a la calidad del aire se refiere."
+        description={VISION}
         image="/quienes-somos/vision.webp"
         imageAlt="Visión"
       />
