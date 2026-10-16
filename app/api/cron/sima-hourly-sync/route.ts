@@ -20,9 +20,10 @@ import { isValidPM25 } from "@/lib/air-quality";
 //
 // Runs every 5 minutes from :00 to :30 (vercel.json), because a new hour
 // appears at no fixed minute: polling picks it up within 5 minutes. An hour
-// posted after :30 waits for the next :00 run. NO3 and FIN, which often
-// have no current hour, are asked only on every other run (:00, :10, :20,
-// :30), so they don't send a request every 5 minutes. Each hour is written once,
+// posted after :30 waits for the next :00 run. NO3 is asked on every run
+// too. FIN, which often has no current hour, is asked only on every other
+// run (:00, :10, :20, :30), so it doesn't send a request every 5 minutes.
+// Each hour is written once,
 // stamped with the hour it belongs to (time_stamp = the reading's hour as
 // naive Monterrey wall-clock, "15:00:00"), so a run only writes a station
 // whose source hour is newer than its latest row.
@@ -239,11 +240,12 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // The runs at :00, :10, :20, :30.
+  // FIN (SINAICA) only on the runs at :00, :10, :20, :30; NO3 on every run.
   const slowRun = Number(now.slice(14, 16)) % 10 < 5;
-  for (const estacion of slowRun ? pendientes : []) {
+  for (const estacion of pendientes) {
     if (SIMA_MAP_SENSORS.has(estacion.sensor_id)) continue;
     const reporte = SIMA_REPORT_STATIONS[estacion.sensor_id];
+    if (!reporte && !slowRun) continue;
     if (reporte) {
       try {
         const reading = await fetchSimaReport(reporte);
