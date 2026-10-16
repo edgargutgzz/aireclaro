@@ -95,9 +95,6 @@ export default function QuienesSomos2() {
         <div className="relative max-w-4xl p-6 md:p-12">
           <h1 className="text-xs font-semibold uppercase leading-snug tracking-wide text-white/80">Quiénes somos</h1>
           <p className="mt-3 text-2xl font-bold leading-tight text-white md:text-4xl">{LEAD}</p>
-          <p className="mt-5 text-sm text-white/80">
-            Organización de la sociedad civil · Monterrey, Nuevo León · Desde 2017
-          </p>
         </div>
       </header>
 
