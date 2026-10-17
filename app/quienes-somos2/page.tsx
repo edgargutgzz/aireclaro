@@ -9,8 +9,8 @@ import { LINEAS, MISION, VISION } from "@/components/observatorio/quienes-somos-
 //
 // Editorial layout: each section's title in a narrow left column, its content
 // on the right, sections split by a hairline. Text carries Misión, Visión and
-// the líneas; one city photo is a banner under the Quiénes somos lead, and
-// every team portrait shares one square crop.
+// the líneas; one city photo opens the page as a banner carrying the lead,
+// and every team portrait shares one square crop.
 
 const LEAD =
   "Somos una organización de la sociedad civil dedicada a generar esfuerzos colaborativos y fundamento técnico para mejorar la calidad del aire en la Zona Metropolitana de Monterrey.";
@@ -39,11 +39,10 @@ const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 
 type Persona = (typeof EQUIPO)[number];
 
-// The first section carries the page's h1 and no hairline above it.
-function Section({ title, as: Heading = "h2", children }: { title: string; as?: "h1" | "h2"; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="grid gap-6 border-t border-gray-200 py-12 first:border-t-0 first:pt-0 md:grid-cols-[minmax(0,1fr)_minmax(0,3fr)] md:gap-12 md:py-16 md:first:pt-0">
-      <Heading className="text-lg font-semibold text-gray-800">{title}</Heading>
+    <section className="grid gap-6 border-t border-gray-200 py-12 md:grid-cols-[minmax(0,1fr)_minmax(0,3fr)] md:gap-12 md:py-16">
+      <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
       <div className="min-w-0">{children}</div>
     </section>
   );
@@ -82,20 +81,23 @@ export default function QuienesSomos2() {
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
       <div>
-        <Section title="Quiénes somos" as="h1">
-          <p className="max-w-3xl text-lg leading-relaxed text-gray-800 md:text-xl">{LEAD}</p>
-        </Section>
-
-        {/* Banner across the full width, cropped to keep the ridge and moon. */}
-        <Image
-          src="/quienes-somos/portada.webp"
-          alt=""
-          width={2560}
-          height={1707}
-          sizes="(min-width: 1280px) 1216px, 100vw"
-          preload
-          className="mb-12 aspect-[2/1] w-full rounded-2xl object-cover object-bottom md:mb-16 md:aspect-[3/1]"
-        />
+        {/* Banner with the lead over the ridge's dark silhouette, bottom left.
+            The page's h1 is for screen readers only. */}
+        <header className="relative mb-12 aspect-[4/5] overflow-hidden rounded-2xl sm:aspect-[3/2] md:mb-16 lg:aspect-[3/1]">
+          <Image
+            src="/quienes-somos/portada.webp"
+            alt=""
+            fill
+            sizes="(min-width: 1280px) 1216px, 100vw"
+            preload
+            className="object-cover object-bottom"
+          />
+          <div aria-hidden="true" className="absolute inset-0 bg-linear-to-t from-black/50 via-black/10 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-6 md:p-10">
+            <h1 className="sr-only">Quiénes somos</h1>
+            <p className="max-w-2xl text-lg leading-relaxed text-white md:text-xl">{LEAD}</p>
+          </div>
+        </header>
 
         <Section title="Propósito">
           <div className="grid gap-10 md:grid-cols-2">
