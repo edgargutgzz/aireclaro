@@ -9,7 +9,7 @@ import { LINEAS, MISION, VISION } from "@/components/observatorio/quienes-somos-
 //
 // Editorial layout: each section's title in a narrow left column, its content
 // on the right, sections split by a hairline. Text carries Misión, Visión and
-// the líneas (no stock photos); the only pictures are the city and the team,
+// the líneas (no stock photos); the only pictures are the team,
 // every portrait in one crop.
 
 const LEAD =
@@ -84,15 +84,6 @@ export default function QuienesSomos2() {
       <div>
         <Section title="Quiénes somos" as="h1">
           <p className="max-w-3xl text-lg leading-relaxed text-gray-800 md:text-xl">{LEAD}</p>
-          <Image
-            src="/quienes-somos/portada.webp"
-            alt=""
-            width={2560}
-            height={1707}
-            sizes="(min-width: 1280px) 900px, (min-width: 768px) 75vw, 100vw"
-            preload
-            className="mt-10 aspect-[3/2] w-full rounded-2xl object-cover"
-          />
         </Section>
 
         <Section title="Propósito">
