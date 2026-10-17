@@ -46,7 +46,7 @@ function Destacado({ text, phrase }: { text: string; phrase: string }) {
   return (
     <p className="mt-3 text-lg leading-relaxed text-gray-500">
       {before}
-      <strong className="font-semibold text-[#226caf]">{phrase}</strong>
+      <strong className="font-semibold text-gray-900">{phrase}</strong>
       {after}
     </p>
   );
