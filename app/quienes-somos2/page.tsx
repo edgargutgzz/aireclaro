@@ -9,8 +9,8 @@ import { LINEAS, MISION, VISION } from "@/components/observatorio/quienes-somos-
 //
 // Editorial layout: each section's title in a narrow left column, its content
 // on the right, sections split by a hairline. Text carries Misión, Visión and
-// the líneas; photos of the city open Quiénes somos, Misión and Visión, all in
-// one 3:2 crop, and every team portrait shares one square crop.
+// the líneas; one city photo sits beside the Quiénes somos lead, and every
+// team portrait shares one square crop.
 
 const LEAD =
   "Somos una organización de la sociedad civil dedicada a generar esfuerzos colaborativos y fundamento técnico para mejorar la calidad del aire en la Zona Metropolitana de Monterrey.";
@@ -100,18 +100,10 @@ export default function QuienesSomos2() {
         <Section title="Propósito">
           <div className="grid gap-10 md:grid-cols-2">
             {[
-              { title: "Misión", text: MISION, image: "/quienes-somos/mision.webp" },
-              { title: "Visión", text: VISION, image: "/quienes-somos/vision.webp" },
+              { title: "Misión", text: MISION },
+              { title: "Visión", text: VISION },
             ].map((item) => (
               <div key={item.title}>
-                <Image
-                  src={item.image}
-                  alt=""
-                  width={1200}
-                  height={1200}
-                  sizes="(min-width: 1280px) 440px, (min-width: 768px) 37vw, 100vw"
-                  className="mb-6 aspect-[3/2] w-full rounded-xl bg-gray-100 object-cover"
-                />
                 <h3 className={LABEL}>{item.title}</h3>
                 <p className="mt-3 text-lg leading-relaxed text-gray-800">{item.text}</p>
               </div>
