@@ -9,8 +9,8 @@ import { LINEAS, MISION, VISION } from "@/components/observatorio/quienes-somos-
 //
 // Editorial layout: each section's title in a narrow left column, its content
 // on the right, sections split by a hairline. Text carries Misión, Visión and
-// the líneas; one city photo sits beside the Quiénes somos lead, and every
-// team portrait shares one square crop.
+// the líneas; one city photo is a banner under the Quiénes somos lead, and
+// every team portrait shares one square crop.
 
 const LEAD =
   "Somos una organización de la sociedad civil dedicada a generar esfuerzos colaborativos y fundamento técnico para mejorar la calidad del aire en la Zona Metropolitana de Monterrey.";
@@ -83,19 +83,19 @@ export default function QuienesSomos2() {
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
       <div>
         <Section title="Quiénes somos" as="h1">
-          <div className="grid items-center gap-8 md:grid-cols-2 md:gap-10">
-            <p className="text-lg leading-relaxed text-gray-800 md:text-xl">{LEAD}</p>
-            <Image
-              src="/quienes-somos/portada.webp"
-              alt=""
-              width={2560}
-              height={1707}
-              sizes="(min-width: 1280px) 440px, (min-width: 768px) 37vw, 100vw"
-              preload
-              className="aspect-[3/2] w-full rounded-xl object-cover"
-            />
-          </div>
+          <p className="max-w-3xl text-lg leading-relaxed text-gray-800 md:text-xl">{LEAD}</p>
         </Section>
+
+        {/* Banner across the full width, cropped to keep the ridge and moon. */}
+        <Image
+          src="/quienes-somos/portada.webp"
+          alt=""
+          width={2560}
+          height={1707}
+          sizes="(min-width: 1280px) 1216px, 100vw"
+          preload
+          className="mb-12 aspect-[2/1] w-full rounded-2xl object-cover object-bottom md:mb-16 md:aspect-[3/1]"
+        />
 
         <Section title="Propósito">
           <div className="grid gap-10 md:grid-cols-2">
