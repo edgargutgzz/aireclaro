@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { pageMetadata } from "@/lib/metadata";
 import { EQUIPO } from "@/lib/equipo";
 import { LINEAS, MISION, VISION } from "@/components/observatorio/quienes-somos-sections";
+import { publicaciones } from "@/app/publicaciones/data";
 
 // Draft: Quiénes somos and Equipo on one page. Hidden while it's reviewed: no
 // nav link, not in the sitemap, noindex. /quienes-somos and /equipo stay live.
@@ -38,6 +40,30 @@ const CIUDADANO = [
 const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 
 type Persona = (typeof EQUIPO)[number];
+
+// Under the lead: what the Observatorio stands on, each figure linking to it.
+// Stations = the SIMA network minus FIN (Saltillo). Sensors = active PurpleAir
+// rows in purpleair_sensores minus the hidden ones (177 on 2026-10-16),
+// rounded down so it stays true as sensors come and go.
+const DATOS = [
+  { value: "2017", label: "Año de fundación" },
+  { value: "15", label: "Estaciones oficiales", href: "/mapa" },
+  { value: "170+", label: "Sensores ciudadanos", href: "/mapa" },
+  { value: String(publicaciones.length), label: "Publicaciones", href: "/publicaciones" },
+];
+
+// Misión and Visión are long sentences: the core phrase stands out, the rest
+// reads quieter.
+function Destacado({ text, phrase }: { text: string; phrase: string }) {
+  const [before, after] = text.split(phrase);
+  return (
+    <p className="mt-3 text-lg leading-relaxed text-gray-500">
+      {before}
+      <strong className="font-semibold text-gray-900">{phrase}</strong>
+      {after}
+    </p>
+  );
+}
 
 // The first section carries the page's h1 and no hairline above it.
 function Section({ title, as: Heading = "h2", children }: { title: string; as?: "h1" | "h2"; children: React.ReactNode }) {
@@ -84,17 +110,42 @@ export default function QuienesSomos2() {
       <div>
         <Section title="Quiénes somos" as="h1">
           <p className="max-w-3xl text-lg leading-relaxed text-gray-800 md:text-xl">{LEAD}</p>
+          <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
+            {DATOS.map((dato) => (
+              // dt first for the markup, shown under the figure.
+              <div key={dato.label} className="flex flex-col-reverse justify-end">
+                <dt className="mt-2 text-sm leading-snug text-gray-600">{dato.label}</dt>
+                <dd className="text-4xl font-semibold tabular-nums tracking-tight text-gray-900 md:text-5xl">
+                  {dato.href ? (
+                    <Link href={dato.href} className="underline-offset-4 hover:underline">
+                      {dato.value}
+                    </Link>
+                  ) : (
+                    dato.value
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </Section>
 
         <Section title="Propósito">
           <div className="grid gap-10 md:grid-cols-2">
             {[
-              { title: "Misión", text: MISION },
-              { title: "Visión", text: VISION },
+              {
+                title: "Misión",
+                text: MISION,
+                phrase: "Fortalecer a la sociedad, al marco normativo, y a las instituciones",
+              },
+              {
+                title: "Visión",
+                text: VISION,
+                phrase: "una influencia significativa en el cambio de modelo de desarrollo",
+              },
             ].map((item) => (
               <div key={item.title}>
                 <h3 className={LABEL}>{item.title}</h3>
-                <p className="mt-3 text-lg leading-relaxed text-gray-800">{item.text}</p>
+                <Destacado text={item.text} phrase={item.phrase} />
               </div>
             ))}
           </div>
