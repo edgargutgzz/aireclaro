@@ -31,11 +31,9 @@ const SENSITIVE_GROUPS = [
 // icon and the chevron, and nothing below it renders until it is opened. Plain
 // text on the card's own surface, no nested card or filled blocks.
 //
-// `defaultOpen` is what the mobile sheets pass. On desktop the card is already
-// on screen and the recommendations are one click below a reading the user
-// came for, so they stay collapsed; on mobile the sheet is opened deliberately,
-// scrolls anyway, and asking for a second tap to reach the advice is a tap the
-// small screen cannot afford. The chevron still collapses it either way.
+// It opens expanded on both the desktop card and the mobile sheet (the user's
+// call, 2026-10-18: the advice should be there as soon as a station is
+// picked); the chevron still collapses it.
 export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info: QualityInfo; onShowInfo: () => void; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   // useId() contains colons, which are not valid in an id fragment reference.

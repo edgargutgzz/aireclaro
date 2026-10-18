@@ -1207,10 +1207,10 @@ export default function MapaSensors({
                   />
                 </div>
 
-                {/* Recommendations — collapsed by default, not needed for a data-first platform */}
+                {/* Recommendations, open from the start (the chevron collapses them) */}
                 {sensorQuality && (
                   <div className="disclosure-in relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
-                    <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
+                    <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} defaultOpen />
                   </div>
                 )}
               </div>
