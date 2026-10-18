@@ -18,14 +18,14 @@ import {
 // The same coverage data as CoberturaEstacionesChart, drawn as one column
 // per station with the year running top to bottom (Jan 1 to the last synced
 // day): a day with data is filled with the grid view's "Con datos" blue, a
-// gap shows the gray track. Columns rest pale; the picked one takes the
-// full blue and a line marks the day under the pointer; the footer
+// gap shows the gray track. Every column is full blue until one is picked;
+// then the others fade and a line marks the day under the pointer; the footer
 // names the station and that day's state, there are no column labels.
 
 const COLOR_CUBIERTO_FILL = withOpacity(COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY);
 const TRACK = "#f3f4f6"; // gray-100
-// Only the blue fades, not the track, so a resting column's gaps still show.
-const RESTING_OPACITY = 0.4;
+// Only the blue fades, not the track, so a faded column's gaps still show.
+const FADED_OPACITY = 0.4;
 const AXIS_WIDTH = 36; // px, month labels
 const GAP_RATIO = 0.3; // share of each column's slot left as the gap
 
@@ -239,7 +239,7 @@ export default function CoberturaColumnasChart({
                       width={colWidth}
                       height={r.length * dayHeight}
                       fill={COLOR_CUBIERTO_FILL}
-                      fillOpacity={sel?.col === i ? 1 : RESTING_OPACITY}
+                      fillOpacity={!sel || sel.col === i ? 1 : FADED_OPACITY}
                     />
                   ))}
                 </g>
