@@ -91,6 +91,20 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
   );
 }
 
+// The context line every library row and featured card opens with: type
+// (dark) · outlet · date (a column's full date, a document's year), and ↗
+// for a column that lives on another site.
+function Contexto({ p }: { p: Publicacion }) {
+  const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
+  return (
+    <p className="text-xs text-gray-500">
+      <span className="font-semibold text-gray-700">{tipoLabel(p.tipo)}</span>
+      {p.outlet && ` · ${p.outlet}`} · {when}
+      {p.externalUrl && <ArrowUpRight className="ml-1 inline h-3.5 w-3.5 align-[-2px] text-gray-600" aria-hidden />}
+    </p>
+  );
+}
+
 // A library row, text first and the photo to its right, the way opinion
 // sections list their pieces: one context line, the same on every row
 // (type · outlet · date), the title, and for a column its one-line summary
@@ -98,18 +112,13 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
 // and title; its summary and credits are on its page. The whole row is the link; sharing is on the
 // item's page. A poster (an infographic) shows its top, where its title is.
 export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
-  const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
   return (
     <ItemLink
       p={p}
       className={`flex items-start gap-4 px-4 py-4 transition-colors hover:bg-gray-100/70 sm:gap-5 sm:px-5 ${FOCUS_RING} focus-visible:ring-inset`}
     >
       <div className="min-w-0 flex-1">
-        <p className="text-xs text-gray-500">
-          <span className="font-semibold text-gray-700">{tipoLabel(p.tipo)}</span>
-          {p.outlet && ` · ${p.outlet}`} · {when}
-          {p.externalUrl && <ArrowUpRight className="ml-1 inline h-3.5 w-3.5 align-[-2px] text-gray-600" aria-hidden />}
-        </p>
+        <Contexto p={p} />
         <p className="mt-1 text-base font-semibold leading-snug text-gray-800 text-pretty sm:text-[17px]">{p.title}</p>
         {p.tipo === "columna" && p.summary && <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-600">{p.summary}</p>}
         {p.tipo === "columna" && <p className="mt-2 truncate text-sm font-medium text-gray-700">{p.author}</p>}
@@ -126,11 +135,11 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
   );
 }
 
-// A library's featured item: wider than the cards, its summary showing.
-// Featured items sit side by side with different types, so each leads with
-// its type, a column too ("Columna de opinión"); a column's author, outlet
-// and date follow its summary. The title is the link, stretched over the
-// whole card (an ::after layer). Sharing is on the item's page.
+// A library's featured item: wider than the rows, photo first, its full
+// summary showing. It reads like a row (the same context line, title, and
+// a column's author last) so the library has one pattern. The title is the
+// link, stretched over the whole card (an ::after layer). Sharing is on the
+// item's page.
 export function PublicacionDestacada({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
     <div className="group relative grid overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-gray-900/15 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
@@ -144,20 +153,14 @@ export function PublicacionDestacada({ publicacion: p, priority = false }: { pub
         className={`aspect-video h-full w-full object-cover ${p.tipo === "infografia" ? "object-top" : ""}`}
       />
       <div className="flex flex-col justify-center p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase leading-snug tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
+        <Contexto p={p} />
         <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">
           <ItemLink p={p} className="focus-visible:outline-none after:absolute after:inset-0 after:content-['']">
             {p.title}
           </ItemLink>
         </p>
         {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
-        {p.tipo === "columna" && (
-          <p className="mt-3 text-xs text-gray-500">
-            <span className="font-medium text-gray-600">{p.author}</span>
-            {" · "}
-            {[p.outlet, p.date ? formatDate(p.date) : String(p.year)].filter(Boolean).join(" · ")}
-          </p>
-        )}
+        {p.tipo === "columna" && <p className="mt-3 text-sm font-medium text-gray-700">{p.author}</p>}
       </div>
     </div>
   );
