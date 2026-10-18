@@ -107,9 +107,8 @@ function Contexto({ p }: { p: Publicacion }) {
 
 // A library row, text first and the photo to its right, the way opinion
 // sections list their pieces: one context line, the same on every row
-// (type · outlet · date), the title, and for a column its one-line summary
-// where one is written and its author. A document shows just its type, year
-// and title; its summary and credits are on its page. The whole row is the link; sharing is on the
+// (type · outlet · date), the title, and for a column its author. Summaries
+// and a document's credits are on the item's page. The whole row is the link; sharing is on the
 // item's page. A poster (an infographic) shows its top, where its title is.
 export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
   return (
@@ -120,7 +119,6 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
       <div className="min-w-0 flex-1">
         <Contexto p={p} />
         <p className="mt-1 text-base font-semibold leading-snug text-gray-800 text-pretty sm:text-[17px]">{p.title}</p>
-        {p.tipo === "columna" && p.summary && <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-600">{p.summary}</p>}
         {p.tipo === "columna" && <p className="mt-2 truncate text-sm font-medium text-gray-700">{p.author}</p>}
       </div>
       <Image
