@@ -121,6 +121,7 @@ const DOCUMENTOS: Documento[] = [
     file: "2025-gasolina",
     tipo: "informe",
     year: 2025,
+    date: "2025-02-01",
     author: OCCAMM,
     pages: 19,
     summary:
