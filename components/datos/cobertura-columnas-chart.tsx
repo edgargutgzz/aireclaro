@@ -198,7 +198,7 @@ export default function CoberturaColumnasChart({
               role="img"
               aria-label={`Días con datos de ${POLLUTANT_LABEL[pollutant]} por estación en ${year}. Usa las flechas para recorrer estaciones y días.`}
               tabIndex={0}
-              className="block touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+              className="block cursor-crosshair touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
               onPointerMove={(e) => {
                 if (e.pointerType === "mouse") pick(e);
               }}
