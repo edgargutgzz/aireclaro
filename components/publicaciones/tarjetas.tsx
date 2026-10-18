@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 import Compartir from "@/components/publicaciones/compartir";
-import { OCCAMM, formatDate, shareUrl, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
+import { formatDate, shareUrl, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The ways a publication is listed: a card with its cover (the library's
 // "Lo más reciente", a page's "Más de…"), a row with a thumbnail (the
@@ -94,15 +94,10 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
 
 // A library row, text first and the photo to its right, the way opinion
 // sections list their pieces: one context line, the same on every row
-// (type · outlet · date), the title, a column's one-line summary where one
-// is written (a document's runs a paragraph; it's on its page), and who
-// signed it. The whole row is the link; sharing is on the
+// (type · outlet · date), the title, and for a column its one-line summary
+// where one is written and its author. A document shows just its type, year
+// and title; its summary and credits are on its page. The whole row is the link; sharing is on the
 // item's page. A poster (an infographic) shows its top, where its title is.
-function Firma({ p }: { p: Publicacion }) {
-  if (p.tipo === "columna") return <>{p.author}</>;
-  return <>{p.author === OCCAMM ? "OCCAMM" : (p.citeAuthor ?? p.author)}</>;
-}
-
 export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
   const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
   return (
@@ -118,9 +113,7 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
         </p>
         <p className="mt-1 text-base font-semibold leading-snug text-gray-800 text-pretty sm:text-[17px]">{p.title}</p>
         {p.tipo === "columna" && p.summary && <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-600">{p.summary}</p>}
-        <p className="mt-2 truncate text-sm font-medium text-gray-700">
-          <Firma p={p} />
-        </p>
+        {p.tipo === "columna" && <p className="mt-2 truncate text-sm font-medium text-gray-700">{p.author}</p>}
       </div>
       <Image
         src={p.image}
