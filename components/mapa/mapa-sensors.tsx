@@ -920,10 +920,14 @@ export default function MapaSensors({
   );
 
   // "Mi zona": ask for the location only now, round it, keep it in this
-  // browser, and move the map there.
+  // browser, and move the map there. Each tap is counted once, by outcome
+  // (Vercel Analytics `mi_zona` {resultado}); no position is ever sent.
   const goToZona = useCallback(() => {
+    const report = (resultado: "centrada" | "sin_permiso" | "no_disponible" | "fuera_del_area") =>
+      track("mi_zona", { resultado });
     if (!("geolocation" in navigator)) {
       setZonaStatus("unavailable");
+      report("no_disponible");
       return;
     }
     setZonaStatus("locating");
@@ -932,23 +936,30 @@ export default function MapaSensors({
         const zona = roundZona(pos.coords.longitude, pos.coords.latitude);
         if (!inBounds(zona, BASEMAP_BOUNDS)) {
           setZonaStatus("outside");
+          report("fuera_del_area");
           return;
         }
         saveZona(zona);
         setHasZona(true);
         setZonaStatus("centered");
+        report("centrada");
         const m = map.current as any;
         if (!m) return;
         const focus = { center: zona as [number, number], zoom: 13 };
         if (prefersReducedMotion()) m.jumpTo(focus);
         else m.easeTo(focus);
       },
-      (err) => setZonaStatus(err.code === err.PERMISSION_DENIED ? "denied" : "unavailable"),
+      (err) => {
+        const denied = err.code === err.PERMISSION_DENIED;
+        setZonaStatus(denied ? "denied" : "unavailable");
+        report(denied ? "sin_permiso" : "no_disponible");
+      },
       { enableHighAccuracy: false, timeout: 10_000, maximumAge: 10 * 60_000 },
     );
   }, []);
 
   const olvidarZona = useCallback(() => {
+    track("mi_zona", { resultado: "olvidada" });
     forgetZona();
     setHasZona(false);
     setZonaStatus("idle");
