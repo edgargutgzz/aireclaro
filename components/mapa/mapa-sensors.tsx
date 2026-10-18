@@ -8,7 +8,7 @@ import { track } from "@vercel/analytics";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
-import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
+import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
 import {
@@ -963,14 +963,14 @@ export default function MapaSensors({
     return () => window.clearTimeout(id);
   }, [zonaStatus]);
 
-  const zonaButtonClass =
-    "rounded-xl p-3 transition-colors duration-200 glass focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
-  const zonaButton = (
+  // Mobile: the 44px stack button; desktop: 40px, to sit level with the
+  // freshness pill beside it.
+  const zonaButton = (size: "stack" | "pill") => (
     <button
       type="button"
       onClick={goToZona}
       disabled={zonaStatus === "locating"}
-      className={zonaButtonClass}
+      className={`glass flex items-center justify-center rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${size === "stack" ? "p-3" : "h-10 w-10"}`}
       aria-label="Centrar en mi zona"
       title="Centrar en mi zona"
     >
@@ -1043,7 +1043,7 @@ export default function MapaSensors({
           className="fixed right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
           style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
         >
-          {zonaButton}
+          {zonaButton("stack")}
           <button
             onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
             className={`rounded-xl p-3 transition-colors duration-200 ${showLegend ? 'border border-gray-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
@@ -1064,7 +1064,7 @@ export default function MapaSensors({
       {/* Data freshness — mobile: a compact glass pill at the top-left of the
           map, just under the top bar. It hides with the right-edge buttons once
           the sheet is expanded. Low-priority chrome, so it runs small and
-          shadowless. Desktop pins the full badge to the foot of the left rail. */}
+          shadowless. Desktop puts the full badge bottom-right, beside "Mi zona". */}
       {sheetState === 'peek' && freshness && (
         <div className="pointer-events-none absolute left-4 top-4 z-[45] md:hidden">
           <FreshnessBadge freshness={freshness} compact />
@@ -1220,20 +1220,21 @@ export default function MapaSensors({
         })()}
         </div>{/* end card width wrapper */}
 
-        {/* "Mi zona", desktop: the button at the foot of the column, its
-            notice beside it. */}
+        {/* Foot of the column, desktop: the data-freshness pill and the "Mi
+            zona" button side by side, its notice to their left. */}
         <div className="flex items-center gap-2">
           <div role="status">{zonaAviso}</div>
-          <div className="pointer-events-auto">{zonaButton}</div>
+          {freshness && <FreshnessBadge freshness={freshness} />}
+          <div className="pointer-events-auto">{zonaButton("pill")}</div>
         </div>
       </div>
 
-      {/* Left column (desktop): the Capas panel, the air-quality legend, and
-          the data-freshness badge pinned at the foot of the rail. On mobile the
-          panel and legend are bottom sheets and freshness is the top-left pill,
-          so this column renders nothing there.
+      {/* Left column (desktop): the Capas panel and the air-quality legend
+          (freshness sits bottom-right, beside "Mi zona"). On mobile the panel
+          and legend are bottom sheets and freshness is the top-left pill, so
+          this column renders nothing there.
 
-          The column runs the whole height; the legend + badge sit at the bottom
+          The column runs the whole height; the legend sits at the bottom
           (md:mt-auto) and the panel grows into whatever is left over. */}
       <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-10 md:left-6 md:top-6 md:w-panel-filters">
         <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:flex">
@@ -1277,9 +1278,7 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* The air-quality scale sits at the foot of this rail on desktop, with
-            the data-freshness line folded in as its footer row — "how to read
-            the field" and "how current the field is" are one object. Same
+        {/* The air-quality scale sits at the foot of this rail on desktop. Same
             w-panel-filters width as the Capas panel; md:mt-auto pins it to the
             bottom whether the legend is open or shut. Desktop only: on mobile
             the legend floats bottom-left of the map and freshness is the
@@ -1288,12 +1287,6 @@ export default function MapaSensors({
           <div className="px-5 py-4">
             <AirQualityLegend collapsible />
           </div>
-          {freshness && (
-            <div className="flex items-center gap-2 border-t border-gray-100 px-5 py-3">
-              <FreshnessDot status={freshness.status} />
-              <FreshnessText freshness={freshness} />
-            </div>
-          )}
         </div>
       </div>
 
