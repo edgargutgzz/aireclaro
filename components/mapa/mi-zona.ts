@@ -1,8 +1,8 @@
 // "Mi zona": the map's opt-in "center on me" button. The browser asks for the
 // location only when the button is tapped (never on load). The position is
 // rounded to about 1 km and kept in this browser alone (never sent anywhere),
-// so later visits open on that area without asking again; "Olvidar" clears
-// it. Storage can be blocked (private windows), so every access is guarded.
+// so later visits open on that area without asking again. Storage can be
+// blocked (private windows), so every access is guarded.
 
 export type Zona = [lon: number, lat: number];
 
@@ -27,14 +27,6 @@ export function saveZona(zona: Zona): void {
   }
 }
 
-export function forgetZona(): void {
-  try {
-    window.localStorage.removeItem(KEY);
-  } catch {
-    // Nothing to forget.
-  }
-}
-
 // Two decimals of a degree: about 1 km here, enough to frame the area.
 export function roundZona(lon: number, lat: number): Zona {
   return [Math.round(lon * 100) / 100, Math.round(lat * 100) / 100];
@@ -44,11 +36,10 @@ export function inBounds([lon, lat]: Zona, [[west, south], [east, north]]: [[num
   return lon >= west && lon <= east && lat >= south && lat <= north;
 }
 
-// What the button's short notice says after a tap.
-export type ZonaStatus = "idle" | "locating" | "centered" | "denied" | "unavailable" | "outside";
+// A tap that works just moves the map; one that can't says why.
+export type ZonaStatus = "idle" | "locating" | "denied" | "unavailable" | "outside";
 
 export const ZONA_AVISO: Record<Exclude<ZonaStatus, "idle" | "locating">, string> = {
-  centered: "Centrado en tu zona. Solo se guarda en este navegador.",
   denied: "Sin permiso de ubicación. Puedes activarlo en tu navegador.",
   unavailable: "No pudimos obtener tu ubicación.",
   outside: "Tu ubicación está fuera del área del mapa.",

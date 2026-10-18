@@ -41,7 +41,7 @@ import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
 import { HealthRecommendations, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
-import { ZONA_AVISO, forgetZona, inBounds, readZona, roundZona, saveZona, type Zona, type ZonaStatus } from "./mi-zona";
+import { ZONA_AVISO, inBounds, readZona, roundZona, saveZona, type Zona, type ZonaStatus } from "./mi-zona";
 import { BASEMAP_GROUND } from "./ground";
 
 // The station the estación card shows at rest, before any marker is picked:
@@ -149,7 +149,6 @@ export default function MapaSensors({
   // "Mi zona" (./mi-zona.ts). A saved zona opens the map on it, unless a
   // ?sensor= link names a station.
   const savedZona = useRef<Zona | null>(linkedSensor ? null : readZona(BASEMAP_BOUNDS)).current;
-  const [hasZona, setHasZona] = useState(savedZona != null);
   const [zonaStatus, setZonaStatus] = useState<ZonaStatus>("idle");
 
   // Desktop drops the default-station card at rest: the right column is empty
@@ -940,8 +939,7 @@ export default function MapaSensors({
           return;
         }
         saveZona(zona);
-        setHasZona(true);
-        setZonaStatus("centered");
+        setZonaStatus("idle");
         report("centrada");
         const m = map.current as any;
         if (!m) return;
@@ -956,13 +954,6 @@ export default function MapaSensors({
       },
       { enableHighAccuracy: false, timeout: 10_000, maximumAge: 10 * 60_000 },
     );
-  }, []);
-
-  const olvidarZona = useCallback(() => {
-    track("mi_zona", { resultado: "olvidada" });
-    forgetZona();
-    setHasZona(false);
-    setZonaStatus("idle");
   }, []);
 
   // The notice after a tap fades on its own.
@@ -991,15 +982,6 @@ export default function MapaSensors({
   const zonaAviso = zonaStatus !== "idle" && zonaStatus !== "locating" && (
     <div className="glass pointer-events-auto flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] leading-snug text-gray-700">
       <span>{ZONA_AVISO[zonaStatus]}</span>
-      {zonaStatus === "centered" && hasZona && (
-        <button
-          type="button"
-          onClick={olvidarZona}
-          className="shrink-0 rounded-lg font-medium text-gray-900 underline decoration-gray-300 underline-offset-2 hover:decoration-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-        >
-          Olvidar
-        </button>
-      )}
     </div>
   );
 
