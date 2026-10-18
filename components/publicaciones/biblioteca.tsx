@@ -328,10 +328,10 @@ export default function Biblioteca() {
               <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-gray-800">
                 {year}
               </h2>
-              {/* Two columns from lg, so the rows don't leave half the width empty. */}
-              <ul className="grid overflow-hidden rounded-2xl border border-gray-200 bg-white lg:grid-cols-2">
+              {/* One column at every width: in two, a long title wrapped to four lines. */}
+              <ul className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
                 {items.map((p) => (
-                  <li key={p.slug} className="border-t border-gray-100 first:border-t-0 lg:odd:border-r lg:nth-2:border-t-0">
+                  <li key={p.slug} className="border-t border-gray-100 first:border-t-0">
                     <PublicacionRow publicacion={p} />
                   </li>
                 ))}
