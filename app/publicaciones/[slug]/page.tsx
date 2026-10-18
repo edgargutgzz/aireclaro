@@ -175,9 +175,11 @@ export default async function PublicacionPage({ params }: Props) {
               {tipoLabel(p.tipo)} · {displayDate(p)}
             </p>
           )}
-          <h1 className="mb-6 text-3xl font-bold text-gray-900 md:text-4xl">{p.title}</h1>
+          <h1 className={`text-3xl font-bold text-gray-900 md:text-4xl ${column ? "mb-6" : ""}`}>{p.title}</h1>
 
-          {fotos.length > 0 ? (
+          {/* Only a column has a byline; a document's credits are in its
+              citation. */}
+          {column && (fotos.length > 0 ? (
             // The name, and under it a single author's role (from /equipo):
             // why this voice is worth reading. Two authors: names only.
             <div className="flex items-center gap-3">
@@ -200,7 +202,7 @@ export default async function PublicacionPage({ params }: Props) {
             </div>
           ) : (
             <p className="text-gray-600">{p.author}</p>
-          )}
+          ))}
 
           {column && (
             <p className="mt-4 text-sm text-gray-500">
