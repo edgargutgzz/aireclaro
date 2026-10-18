@@ -142,6 +142,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Uriel Chavarría",
     newspaper: "El Norte",
     date: "2026-08-30",
+    summary:
+      "El hedor que vuelve a invadir la metrópoli es solo el síntoma de una contaminación continua de la que nadie se hace legalmente responsable.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -246,6 +248,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2026-07-12",
+    summary:
+      "La producción récord de combustóleo en la Refinería de Cadereyta en 2026 y su relación con las PM2.5 que respira la Zona Metropolitana de Monterrey.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -273,6 +277,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2026-04-15",
+    summary:
+      "La actualización del ICARS, de la norma de partículas y del programa de contingencias, y otros cambios en curso para proteger la salud frente al aire de Monterrey.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -343,6 +349,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Ana Cristina García Luna",
     newspaper: "El Norte",
     date: "2026-03-08",
+    summary:
+      "En 2025, al menos diez estaciones de monitoreo de la metrópoli no tuvieron datos suficientes para un promedio anual confiable de PM2.5, así que respiramos sin saber con certeza qué.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -441,6 +449,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Ana Cristina García Luna",
     newspaper: "El Norte",
     date: "2026-01-11",
+    summary:
+      "Un balance urbanístico al iniciar 2026: avances parciales como el Paseo Santa Lucía y una metrópoli fragmentada que sigue en deuda con la calidad de vida.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -556,6 +566,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2025-11-23",
+    summary:
+      "La basura molecular que respiramos, de la refinería de Cadereyta a los 3 millones de vehículos, y el costo que la metrópoli sigue cargando a su ciudadanía.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -611,6 +623,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2025-10-26",
+    summary:
+      "La nueva estimación del IHME sobre las muertes y los años de vida que la contaminación del aire costó a Nuevo León en 2023, cuando fue el quinto factor de riesgo para la salud del estado.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -701,6 +715,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2025-10-05",
+    summary:
+      "La seguridad hídrica de Monterrey como un reto sistémico que exige gestión regional, infraestructura bien mantenida y una gobernanza que articule a todos los sectores.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -801,6 +817,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "Consejo Cívico",
     date: "2025-09-07",
+    summary:
+      "En el Día Mundial del Aire Limpio, los ingredientes para mejorar el aire de Monterrey, empezando por aceptar que todos emitimos y tener la voluntad de cambiarlo.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -871,6 +889,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2025-07-08",
+    summary:
+      "Las decisiones que moldearon el ambiente de Monterrey, de Fundidora a la Refinería de Cadereyta, y la encrucijada entre su economía y un futuro sostenible.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -962,6 +982,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Ana Cristina García Luna",
     newspaper: "El Norte",
     date: "2025-06-06",
+    summary:
+      "La intención de Santa Catarina de vender áreas de cesión municipal, entre ellas áreas verdes, y por qué lo legal no siempre es legítimo.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1072,6 +1094,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Uriel Chavarría",
     newspaper: "El Norte",
     date: "2025-05-18",
+    summary:
+      "Cuatro jinetes sobre el aire, la tierra, el agua y el fuego de Monterrey: la refinería, Zinc Nacional, Ternium y multas que no frenan a quien contamina.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1162,6 +1186,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "El Norte",
     date: "2025-05-02",
+    summary:
+      "Más del 7% de las muertes de recién nacidos en Nuevo León en 2021 se atribuyó a las PM2.5, y lo que la Secretaría de Salud debe hacer para proteger a la población.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1237,6 +1263,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Selene M. Guajardo",
     newspaper: "ABC Noticias",
     date: "2025-04-30",
+    summary:
+      "Lo que dejó la Segunda Conferencia Global de Contaminación del Aire y Salud en Cartagena, Colombia, y la voz del Observatorio en ella.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1337,6 +1365,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Uriel Chavarría",
     newspaper: "El Norte",
     date: "2025-04-06",
+    summary:
+      "El olor a azufre que llega de la refinería de Cadereyta, las respuestas oficiales que lo minimizan y las medidas que no necesitan esperar un inventario.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1447,6 +1477,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Ana Cristina García Luna",
     newspaper: "El Norte",
     date: "2025-03-09",
+    summary:
+      "Lo que el aire de Monterrey hace a los pulmones de niños y adultos, y por qué la OMS lo considera el mayor riesgo ambiental para la salud.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1527,6 +1559,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Lorenzo J. de Rosenzweig",
     newspaper: "El Norte",
     date: "2025-03-07",
+    summary:
+      "En 2023 las PM10 superaron la norma diaria 213 días y las PM2.5 83 días en la metrópoli, un reto sistémico con muchas fuentes.",
     content: React.createElement(
       React.Fragment,
       null,
@@ -1751,6 +1785,8 @@ export const editoriales: Editorial[] = [
     authorProfileAlt: "Gabriel Todd",
     newspaper: "ABC Noticias",
     date: "2024-09-03",
+    summary:
+      "Doce paquetes temáticos, de la tecnología para el tráfico a la transparencia, como mínimo para aspirar a una ciudad razonable.",
     content: React.createElement(
       React.Fragment,
       null,

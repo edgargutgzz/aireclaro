@@ -8,6 +8,7 @@ import {
   DESTACADAS,
   PERSONAS,
   TIPOS,
+  fullText,
   normalize,
   publicaciones,
   tipoLabel,
@@ -35,10 +36,13 @@ const YEARS = [...new Set(publicaciones.map((p) => p.year))];
 // pressed; a filter or search always shows every match.
 const PREVIEW = 12;
 
+// Search reads the title, the credits, the summary and a column's full text,
+// so a topic finds the columns that discuss it (the text is already in this
+// bundle, with the rest of the data).
 const searchText = new Map(
   publicaciones.map((p) => [
     p.slug,
-    normalize([p.title, p.author, ...p.people, p.outlet, tipoLabel(p.tipo)].join(" ")),
+    normalize([p.title, p.author, ...p.people, p.outlet, tipoLabel(p.tipo), p.summary, fullText(p)].join(" ")),
   ]),
 );
 
@@ -203,7 +207,7 @@ export default function Biblioteca() {
                 type="search"
                 value={q}
                 onChange={(e) => set({ q: e.target.value })}
-                placeholder="Título, autor o medio"
+                placeholder="Tema, título, autor o medio"
                 className="w-full rounded-xl bg-gray-100 py-2.5 pl-9 pr-3 text-sm font-medium text-gray-700 transition-colors placeholder:font-normal placeholder:text-gray-500 hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
               />
             </div>

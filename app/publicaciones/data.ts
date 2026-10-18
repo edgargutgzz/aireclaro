@@ -456,15 +456,18 @@ export function displayDate(p: Publicacion): string {
   return p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
 }
 
+// A column's full text (written or transcribed); empty for a document.
+export function fullText(p: Publicacion): string {
+  if (p.editorial?.content) return nodeText(p.editorial.content);
+  if (p.transcripcion) return [...(p.transcripcion.epigraph ?? []), ...p.transcripcion.paragraphs, p.transcripcion.note ?? ""].join(" ");
+  return "";
+}
+
 // Minutes to read a column with its full text on the page, at 200 words a
 // minute (a common figure for Spanish reading speed), at least 1. Undefined
 // when the page has no text of its own.
 export function readingMinutes(p: Publicacion): number | undefined {
-  const text = p.editorial?.content
-    ? nodeText(p.editorial.content)
-    : p.transcripcion
-      ? [...(p.transcripcion.epigraph ?? []), ...p.transcripcion.paragraphs, p.transcripcion.note ?? ""].join(" ")
-      : undefined;
+  const text = fullText(p);
   if (!text) return undefined;
   return Math.max(1, Math.round(text.split(/\s+/).filter(Boolean).length / 200));
 }
