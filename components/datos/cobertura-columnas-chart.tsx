@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { MONTHS_ES, MONTHS_ES_FULL, type Pollutant } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSUFICIENTE, withOpacity } from "@/lib/datos-colors";
+import { BRAND_BLUE, BRAND_PURPLE, COLOR_INSUFICIENTE } from "@/lib/datos-colors";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import YearToggle from "@/components/datos/year-toggle";
@@ -20,14 +20,16 @@ import {
 
 // The same coverage data as CoberturaEstacionesChart, drawn as one column
 // per station with the year running top to bottom (Jan 1 to the last synced
-// day): a day with data is the grid view's "Con datos" blue, any other day
-// its "Datos insuficientes" gray. Every column is full blue until one is
-// picked; then the others fade, a line marks the day under the pointer and
+// day): a day with data is filled with the logo's blue-to-purple gradient
+// (top to bottom over the whole plot, so it only restates the date), any
+// other day the grid view's "Datos insuficientes" gray. Every column is
+// fully colored until one is picked; then the others fade, a line marks the day under the pointer and
 // a tooltip beside the column names the station and that day's state (there
 // are no column labels).
 
-const COLOR_CUBIERTO_FILL = withOpacity(COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY);
-// Only the blue fades, not the gray, so a faded column's gaps still show.
+// The legend swatch's version of the same gradient.
+const GRADIENT_CSS = `linear-gradient(${BRAND_BLUE}, ${BRAND_PURPLE})`;
+// Only the color fades, not the gray, so a faded column's gaps still show.
 const FADED_OPACITY = 0.4;
 const TOOLTIP_WIDTH = 208; // px, the card's w-52
 const TOOLTIP_HEIGHT = 104; // px, generous estimate of its rendered height
@@ -174,6 +176,7 @@ export default function CoberturaColumnasChart({
     return prior.length === 0 ? null : pctTotal - pctCobertura(estaciones, coberturaPorEstacion, prior);
   }, [allDates, year, dates, pctTotal, estaciones, coberturaPorEstacion]);
 
+  const gradientId = useId();
   const selEstacion = sel ? estaciones[sel.col] : null;
   const selFecha = sel?.day != null ? dates[sel.day] : null;
   const selCubierto = selEstacion && selFecha ? coberturaPorEstacion.get(selEstacion.sensorId)?.get(selFecha) : undefined;
@@ -208,7 +211,7 @@ export default function CoberturaColumnasChart({
         {/* The grid view's legend row. */}
         <div className="mb-4 flex items-center justify-end gap-4 text-xs text-gray-500 md:mb-6">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_CUBIERTO_FILL }} />
+            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundImage: GRADIENT_CSS }} />
             Con datos
           </span>
           <span className="flex items-center gap-1.5">
@@ -240,6 +243,12 @@ export default function CoberturaColumnasChart({
               onKeyDown={onKeyDown}
               onBlur={clear}
             >
+              <defs>
+                <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={0} y2={height}>
+                  <stop offset={0} stopColor={BRAND_BLUE} />
+                  <stop offset={1} stopColor={BRAND_PURPLE} />
+                </linearGradient>
+              </defs>
               {monthStarts.map((m) =>
                 m.day * dayHeight > height - 12 ? null : (
                   <text
@@ -262,7 +271,7 @@ export default function CoberturaColumnasChart({
                       y={r.start * dayHeight}
                       width={colWidth}
                       height={r.length * dayHeight}
-                      fill={r.cubierto ? COLOR_CUBIERTO_FILL : COLOR_INSUFICIENTE}
+                      fill={r.cubierto ? `url(#${gradientId})` : COLOR_INSUFICIENTE}
                       fillOpacity={!r.cubierto || !sel || sel.col === i ? 1 : FADED_OPACITY}
                     />
                   ))}
@@ -297,7 +306,7 @@ export default function CoberturaColumnasChart({
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">{formatFecha(selFecha)}</span>
               <span className="text-sm font-semibold text-gray-800">{selEstacion.nombre}</span>
-              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CUBIERTO : "rgb(107,114,128)" }}>
+              <span className="text-sm font-semibold" style={{ color: selCubierto ? BRAND_BLUE : "rgb(107,114,128)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
               </span>
               <span className="text-xs text-gray-500">
