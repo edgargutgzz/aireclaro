@@ -1,7 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The ways a publication is listed: a card with its cover (the library's
@@ -36,30 +34,16 @@ function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
       {where && <span className="font-medium text-gray-600">{where}</span>}
       {where && " · "}
       {when}
-      {p.externalUrl && <ArrowUpRight className="ml-1 inline h-3.5 w-3.5 align-[-2px] text-gray-600" aria-hidden />}
     </p>
   );
 }
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// An item opens its page here (a document's page carries its summary, its
-// PDF, "Cómo citar" and "Compartir"); a column that lives only on another
-// site opens that site in a new tab (marked ↗), announced to screen readers.
+// Every item opens its page here (it carries the full text, or the summary
+// and a button to the PDF or the outlet's site, "Cómo citar" and
+// "Compartir").
 function ItemLink({ p, className, children }: { p: Publicacion; className: string; children: React.ReactNode }) {
-  if (p.externalUrl) {
-    return (
-      <EnlaceMedido
-        href={p.externalUrl}
-        evento="enlace_externo"
-        publicacion={p.slug}
-        aviso={`abre ${p.outlet} en una nueva pestaña`}
-        className={className}
-      >
-        {children}
-      </EnlaceMedido>
-    );
-  }
   return (
     <Link href={`/publicaciones/${p.slug}`} className={className}>
       {children}
@@ -92,15 +76,13 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
 }
 
 // The context line every library row and featured card opens with: type
-// (dark) · outlet · date (a column's full date, a document's year), and ↗
-// for a column that lives on another site.
+// (dark) · outlet · date (a column's full date, a document's year).
 function Contexto({ p }: { p: Publicacion }) {
   const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
   return (
     <p className="text-xs text-gray-500">
       <span className="font-semibold text-gray-700">{tipoLabel(p.tipo)}</span>
       {p.outlet && ` · ${p.outlet}`} · {when}
-      {p.externalUrl && <ArrowUpRight className="ml-1 inline h-3.5 w-3.5 align-[-2px] text-gray-600" aria-hidden />}
     </p>
   );
 }

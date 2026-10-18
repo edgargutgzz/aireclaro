@@ -6,8 +6,8 @@ import { track } from "@vercel/analytics";
 // column) and so is invisible to page-view analytics: it records a Vercel
 // Analytics event on click instead, with the publication's slug so each one
 // can be counted on its own. Opens in a new tab, said to screen readers.
-//   pdf_abierto     {publicacion}  a document's PDF (library list or its page)
-//   enlace_externo  {publicacion}  a column that lives on another site
+//   pdf_abierto     {publicacion}  a document's PDF, from its page
+//   enlace_externo  {publicacion}  "Leer en <medio>" on a column that lives on another site
 export default function EnlaceMedido({
   href,
   evento,

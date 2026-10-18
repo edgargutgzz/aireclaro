@@ -515,11 +515,10 @@ export function linkCard(p: Publicacion) {
 }
 
 // The link to share an item: its page here (the library opens every item's
-// page, a document's too), or the outlet's page for a column that lives only
-// there. A document's older /d/<slug> links (app/d/[slug]: its card, then
+// page). A document's older /d/<slug> links (app/d/[slug]: its card, then
 // the PDF) keep working for links already shared.
 export function shareUrl(p: Publicacion): string {
-  return p.externalUrl ?? pageUrl(p);
+  return pageUrl(p);
 }
 
 export function pageUrl(p: Publicacion): string {

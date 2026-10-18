@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/publicaciones`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/quienes-somos`, changeFrequency: "yearly", priority: 0.5 },
     { url: `${BASE}/equipo`, changeFrequency: "yearly", priority: 0.4 },
-    ...publicaciones.filter((p) => !p.externalUrl).map((p) => ({
+    ...publicaciones.map((p) => ({
       url: `${BASE}/publicaciones/${p.slug}`,
       lastModified: p.date,
       changeFrequency: "yearly" as const,

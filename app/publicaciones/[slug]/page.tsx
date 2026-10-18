@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, FileText } from "lucide-react";
 import {
   OCCAMM,
   citation,
@@ -30,8 +30,9 @@ import {
 } from "../data";
 
 // One page per publication, all static, and the library opens each one: a
-// column shows its full text; a document, its summary and a button to its
-// PDF. Every page can be shared from its header and ends with a citation,
+// column shows its full text (one that lives on its outlet's site, the Este
+// País column, its summary and a button there); a document, its summary and
+// a button to its PDF. Every page can be shared from its header and ends with a citation,
 // so a link to it is something people can cite. It opens with a way back to
 // the library (many readers arrive from search or a shared link) and ends
 // with more by the same author. The newspaper and the authors link to their
@@ -41,11 +42,8 @@ import {
 
 export const dynamicParams = false;
 
-// No page for an item that lives only on another site (the Este País
-// column): the list links straight to it, and next.config.mjs redirects its
-// slug there.
 export function generateStaticParams() {
-  return publicaciones.filter((p) => !p.externalUrl).map((p) => ({ slug: p.slug }));
+  return publicaciones.map((p) => ({ slug: p.slug }));
 }
 
 type Props = { params: Promise<{ slug: string }> };
@@ -141,8 +139,8 @@ export default async function PublicacionPage({ params }: Props) {
   const p = getPublicacion((await params).slug);
   if (!p) notFound();
 
-  // Without full text on the page, the PDF is the read.
-  const outbound = p.editorial ? undefined : p.file;
+  // Without full text on the page, the PDF (or the outlet's page) is the read.
+  const outbound = p.editorial ? undefined : (p.file ?? p.externalUrl);
   const related = relacionadas(p);
   const fotos = photos(p);
   const column = p.tipo === "columna";
@@ -234,12 +232,20 @@ export default async function PublicacionPage({ params }: Props) {
             <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
               <EnlaceMedido
                 href={outbound}
-                evento="pdf_abierto"
+                evento={p.externalUrl ? "enlace_externo" : "pdf_abierto"}
                 publicacion={p.slug}
                 aviso="abre en una nueva pestaña"
                 className={PRIMARY_BUTTON}
               >
-                <FileText className="h-4 w-4" aria-hidden /> Abrir documento
+                {p.externalUrl ? (
+                  <>
+                    Leer en {p.outlet} <ArrowUpRight className="h-4 w-4" aria-hidden />
+                  </>
+                ) : (
+                  <>
+                    <FileText className="h-4 w-4" aria-hidden /> Abrir documento
+                  </>
+                )}
               </EnlaceMedido>
               {!column && <Compartir url={shareUrl(p)} title={p.title} className="h-10 px-4 text-sm" />}
             </div>

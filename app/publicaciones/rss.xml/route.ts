@@ -20,7 +20,7 @@ function pubDate(date: string | undefined, year: number): string {
 export function GET() {
   const items = publicaciones
     .map((p) => {
-      const link = p.externalUrl ?? pageUrl(p);
+      const link = pageUrl(p);
       const description = p.summary ?? [p.author, p.outlet].filter(Boolean).join(", ");
       return `    <item>
       <title>${escape(p.title)}</title>
