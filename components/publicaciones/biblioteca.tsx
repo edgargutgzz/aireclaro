@@ -149,12 +149,12 @@ export default function Biblioteca() {
   }, [filters]);
 
   const filtered = Boolean(tipo || medio || anio || autor || q.trim());
-  // Unfiltered, the featured items (DESTACADAS) lead and the list carries on
-  // after them; none is shown twice.
+  // Unfiltered, the featured items (DESTACADAS) lead. They also keep their
+  // place in the year lists, which stay the complete index.
   const destacadas = filtered
     ? []
     : DESTACADAS.map((slug) => results.find((p) => p.slug === slug)).filter((p): p is Publicacion => Boolean(p));
-  const rest = results.filter((p) => !destacadas.includes(p));
+  const rest = results;
   const [showAll, setShowAll] = useState(false);
   const hidden = filtered || showAll ? 0 : Math.max(0, rest.length - PREVIEW);
   const listed = hidden > 0 ? rest.slice(0, PREVIEW) : rest;
