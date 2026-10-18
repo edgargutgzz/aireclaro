@@ -94,8 +94,9 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
 
 // A library row, text first and the photo to its right, the way opinion
 // sections list their pieces: one context line, the same on every row
-// (type · outlet · date), the title, its one-line summary where one is
-// written, and who signed it. The whole row is the link; sharing is on the
+// (type · outlet · date), the title, a column's one-line summary where one
+// is written (a document's runs a paragraph; it's on its page), and who
+// signed it. The whole row is the link; sharing is on the
 // item's page. A poster (an infographic) shows its top, where its title is.
 function Firma({ p }: { p: Publicacion }) {
   if (p.tipo === "columna") return <>{p.author}</>;
@@ -116,7 +117,7 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
           {p.externalUrl && <ArrowUpRight className="ml-1 inline h-3.5 w-3.5 align-[-2px] text-gray-600" aria-hidden />}
         </p>
         <p className="mt-1 text-base font-semibold leading-snug text-gray-800 text-pretty sm:text-[17px]">{p.title}</p>
-        {p.summary && <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-600">{p.summary}</p>}
+        {p.tipo === "columna" && p.summary && <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-600">{p.summary}</p>}
         <p className="mt-2 truncate text-sm font-medium text-gray-700">
           <Firma p={p} />
         </p>
