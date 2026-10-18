@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { MONTHS_ES, MONTHS_ES_FULL, type Pollutant } from "@/lib/dias-insalubres-aggregate";
-import { BRAND_BLUE, BRAND_PURPLE, COLOR_INSUFICIENTE } from "@/lib/datos-colors";
+import { COLOR_INSUFICIENTE } from "@/lib/datos-colors";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import YearToggle from "@/components/datos/year-toggle";
@@ -20,15 +20,29 @@ import {
 
 // The same coverage data as CoberturaEstacionesChart, drawn as one column
 // per station with the year running top to bottom (Jan 1 to the last synced
-// day): a day with data is filled with the logo's blue-to-purple gradient
+// day): a day with data is filled with a teal-blue-violet-pink gradient
 // (top to bottom over the whole plot, so it only restates the date), any
 // other day the grid view's "Datos insuficientes" gray. Every column is
 // fully colored until one is picked; then the others fade, a line marks the day under the pointer and
 // a tooltip beside the column names the station and that day's state (there
 // are no column labels).
 
+// Pixel-sampled from the user's reference design (2026-10-18), top to
+// bottom along its highlighted column.
+const GRADIENT_STOPS: [number, string][] = [
+  [0, "#53b2d2"],
+  [0.1, "#4fa5d5"],
+  [0.3, "#5988de"],
+  [0.43, "#6875e4"],
+  [0.56, "#7d63eb"],
+  [0.71, "#9a5bd6"],
+  [0.86, "#bc57b4"],
+  [1, "#d95598"],
+];
 // The legend swatch's version of the same gradient.
-const GRADIENT_CSS = `linear-gradient(${BRAND_BLUE}, ${BRAND_PURPLE})`;
+const GRADIENT_CSS = `linear-gradient(${GRADIENT_STOPS.map(([o, c]) => `${c} ${o * 100}%`).join(", ")})`;
+// The tooltip's "Con datos": the gradient's blue.
+const COLOR_CON_DATOS = "#5988de";
 // Only the color fades, not the gray, so a faded column's gaps still show.
 const FADED_OPACITY = 0.4;
 const TOOLTIP_WIDTH = 208; // px, the card's w-52
@@ -245,8 +259,9 @@ export default function CoberturaColumnasChart({
             >
               <defs>
                 <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={0} y2={height}>
-                  <stop offset={0} stopColor={BRAND_BLUE} />
-                  <stop offset={1} stopColor={BRAND_PURPLE} />
+                  {GRADIENT_STOPS.map(([offset, color]) => (
+                    <stop key={offset} offset={offset} stopColor={color} />
+                  ))}
                 </linearGradient>
               </defs>
               {monthStarts.map((m) =>
@@ -306,7 +321,7 @@ export default function CoberturaColumnasChart({
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">{formatFecha(selFecha)}</span>
               <span className="text-sm font-semibold text-gray-800">{selEstacion.nombre}</span>
-              <span className="text-sm font-semibold" style={{ color: selCubierto ? BRAND_BLUE : "rgb(107,114,128)" }}>
+              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS : "rgb(107,114,128)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
               </span>
               <span className="text-xs text-gray-500">
