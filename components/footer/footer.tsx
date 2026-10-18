@@ -17,25 +17,22 @@ export const SOCIAL_LINKS = [
 const socialLinkClass =
   "flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-stone-200/70 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// The footer's site map, between the contact and the socials. Publicaciones
-// opens the library already filtered to each kind.
+// The footer's site map, between the contact and the socials: the navbar's
+// sections under two headers.
 const COLUMNAS = [
   {
     titulo: "Explora",
     links: [
       { href: "/mapa", label: "Mapa" },
       { href: "/datos", label: "Datos" },
-      { href: "/proyectos", label: "Proyectos" },
-      { href: "/quienes-somos", label: "Quiénes somos" },
+      { href: "/publicaciones", label: "Publicaciones" },
     ],
   },
   {
-    titulo: "Publicaciones",
+    titulo: "Observatorio",
     links: [
-      { href: "/publicaciones?tipo=columna", label: "Columnas" },
-      { href: "/publicaciones?tipo=infografia", label: "Infografías" },
-      { href: "/publicaciones?tipo=investigacion", label: "Investigaciones" },
-      { href: "/publicaciones?tipo=comunicado", label: "Comunicados" },
+      { href: "/proyectos", label: "Proyectos" },
+      { href: "/quienes-somos", label: "Quiénes somos" },
     ],
   },
 ];
