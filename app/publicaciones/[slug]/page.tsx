@@ -169,7 +169,7 @@ export default async function PublicacionPage({ params }: Props) {
           {column && (fotos.length > 0 ? (
             // The name, and under it a single author's role (from /equipo):
             // why this voice is worth reading. Two authors: names only.
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex items-center gap-4">
               <Avatares fotos={fotos} />
               <div className="min-w-0">
                 <p className="font-medium text-gray-800">

@@ -7,15 +7,15 @@ import Image from "next/image";
 export default function Avatares({ fotos }: { fotos: { name: string; src: string }[] }) {
   if (fotos.length === 0) return null;
   return (
-    <span className="flex shrink-0 -space-x-3" aria-hidden="true">
+    <span className="flex shrink-0 -space-x-4" aria-hidden="true">
       {fotos.map((f) => (
         <Image
           key={f.name}
           src={f.src}
           alt=""
-          width={96}
-          height={96}
-          className="h-12 w-12 rounded-xl object-cover ring-2 ring-white"
+          width={128}
+          height={128}
+          className="h-16 w-16 rounded-xl object-cover ring-2 ring-white"
         />
       ))}
     </span>
