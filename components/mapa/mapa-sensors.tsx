@@ -1061,12 +1061,17 @@ export default function MapaSensors({
         </div>
       )}
 
-      {/* Data freshness — mobile: a compact glass pill at the top-left of the
-          map, just under the top bar. It hides with the right-edge buttons once
-          the sheet is expanded. Low-priority chrome, so it runs small and
-          shadowless. Desktop puts the full badge bottom-right, beside "Mi zona". */}
+      {/* Data freshness — mobile: a compact glass pill at the bottom-left of
+          the map, above the peeking sheet, centred on the Capas button across
+          from it (+0.5rem: the 28px pill against the 44px button). It hides
+          with the right-edge buttons once the sheet is expanded. Low-priority
+          chrome, so it runs small and shadowless. Desktop puts the full badge
+          bottom-right, beside "Mi zona". */}
       {sheetState === 'peek' && freshness && (
-        <div className="pointer-events-none absolute left-4 top-4 z-[45] md:hidden">
+        <div
+          className="pointer-events-none fixed left-4 z-[45] md:hidden"
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 7rem)' }}
+        >
           <FreshnessBadge freshness={freshness} compact />
         </div>
       )}
@@ -1159,12 +1164,13 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* "Mi zona" notice, mobile: left of the button stack. */}
+      {/* "Mi zona" notice, mobile: left of the button stack, above the
+          freshness pill. */}
       {sheetState === 'peek' && (
         <div
           role="status"
           className="pointer-events-none fixed left-4 right-[5.5rem] z-[45] md:hidden"
-          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 9.5rem)' }}
         >
           {zonaAviso}
         </div>
