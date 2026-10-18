@@ -8,8 +8,8 @@ import { Check, Share2 } from "lucide-react";
 // the link, the way "Cómo citar" copies its citation (./cita.tsx). The link
 // is the item's share link (app/publicaciones/data.ts shareUrl): a
 // document's /d/<slug> carries its card and opens the PDF. `soloIcono` is
-// the compact square version for the library's document rows, where a
-// labeled button on every row would crowd the list.
+// the borderless icon for the library's rows, where a labeled, bordered
+// button on every row would crowd the list.
 export default function Compartir({
   url,
   title,
@@ -46,7 +46,7 @@ export default function Compartir({
         type="button"
         onClick={share}
         title={copied ? undefined : "Copiar enlace"}
-        className={`flex h-8 w-8 items-center justify-center rounded-xl border border-gray-200 bg-white/95 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${className}`}
+        className={`flex h-8 w-8 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-200/70 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${className}`}
       >
         <Icono className="h-3.5 w-3.5" aria-hidden />
         {copied && (

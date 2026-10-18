@@ -112,7 +112,9 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
 // shares it (shareUrl: a document's /d/<slug>, the only link to it with a
 // card; a column's page). A poster (an infographic) shows its top, where its
 // title is. The title is the link, stretched over the row like the featured
-// card's, so the share button can sit beside it outside the link.
+// card's, so the share button can sit outside the link: at the end of the
+// who line, which every item has, leaving the title the full width. Its
+// negative margins keep the 32px target from pushing the title down.
 export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
   return (
     <div className="relative flex items-start gap-4 px-4 py-4 transition-colors hover:bg-gray-100/70 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-inset has-[a:focus-visible]:ring-gray-900/15 sm:px-5">
@@ -125,7 +127,10 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
         className={`aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36 ${p.tipo === "infografia" ? "object-top" : ""}`}
       />
       <div className="min-w-0 flex-1">
-        <Who p={p} />
+        <div className="flex items-center justify-between gap-3">
+          <Who p={p} />
+          <Compartir url={shareUrl(p)} title={p.title} soloIcono className="relative z-10 -my-2 -mr-2 shrink-0" />
+        </div>
         <p className="mt-1 text-base font-semibold leading-snug text-gray-800">
           <ItemLink p={p} className="focus-visible:outline-none after:absolute after:inset-0 after:content-['']">
             {p.title}
@@ -133,7 +138,6 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
         </p>
         <WhereWhen p={p} className="mt-2" />
       </div>
-      <Compartir url={shareUrl(p)} title={p.title} soloIcono className="relative z-10 shrink-0 self-center" />
     </div>
   );
 }
