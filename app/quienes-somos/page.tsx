@@ -45,19 +45,6 @@ const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 
 type Persona = (typeof EQUIPO)[number];
 
-// Misión and Visión are long sentences: the core phrase stands out, the rest
-// reads quieter.
-function Destacado({ text, phrase }: { text: string; phrase: string }) {
-  const [before, after] = text.split(phrase);
-  return (
-    <p className="mt-3 text-lg leading-relaxed text-gray-500">
-      {before}
-      <strong className="font-semibold text-gray-900">{phrase}</strong>
-      {after}
-    </p>
-  );
-}
-
 // The first section carries the page's h1 and no hairline above it.
 function Section({ title, id, as: Heading = "h2", children }: { title: string; id?: string; as?: "h1" | "h2"; children: React.ReactNode }) {
   return (
@@ -108,20 +95,12 @@ export default function QuienesSomos() {
         <Section title="Propósito">
           <div className="grid gap-10 md:grid-cols-2">
             {[
-              {
-                title: "Misión",
-                text: MISION,
-                phrase: "Fortalecer a la sociedad, al marco normativo, y a las instituciones",
-              },
-              {
-                title: "Visión",
-                text: VISION,
-                phrase: "una influencia significativa en el cambio de modelo de desarrollo",
-              },
+              { title: "Misión", text: MISION },
+              { title: "Visión", text: VISION },
             ].map((item) => (
               <div key={item.title}>
                 <h3 className={LABEL}>{item.title}</h3>
-                <Destacado text={item.text} phrase={item.phrase} />
+                <p className="mt-3 text-lg leading-relaxed text-gray-700">{item.text}</p>
               </div>
             ))}
           </div>
