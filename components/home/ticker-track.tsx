@@ -20,7 +20,7 @@ export interface TickerItem {
   id: string;
   href: string;
   nombre: string;
-  // null: no reading from the last 3 hours ("sin lectura reciente").
+  // null: no reading from the last 3 hours ("no disponible").
   pm25: number | null;
   // The map marker's own fill for this reading; null draws the map's gray.
   color: string | null;
@@ -52,7 +52,7 @@ function Items({
             />
             {item.nombre}
             {item.pm25 === null ? (
-              <span className="text-gray-400">sin lectura reciente</span>
+              <span className="text-gray-400">no disponible</span>
             ) : (
               <>
                 <span className="font-mono font-semibold text-gray-900">{item.pm25}</span>

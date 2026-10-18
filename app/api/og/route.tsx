@@ -12,7 +12,7 @@ const CACHE = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
 // Subset to the glyphs this card can actually print so the font fetch stays
 // tiny (see lib/og-font.ts).
 const GLYPHS =
-  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com Actualizado Buena Aceptable Mala Muy Extremadamente Sin lectura reciente PM2.5 μg/m³ Zona Metropolitana de Monterrey Nuevo León";
+  "Observatorio del Aire abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 áéíóúÁÉÍÓÚñÑüÜ .,:;·—–/()%°μg³² - observatoriodelaire.com Actualizado Buena Aceptable Mala Muy Extremadamente No disponible PM2.5 μg/m³ Zona Metropolitana de Monterrey Nuevo León";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
   const accent = quality?.color ?? "#d1d5db";
   const ink = quality?.textColor ?? "#6b7280";
-  const label = quality?.label ?? "Sin lectura reciente";
+  const label = quality?.label ?? "No disponible";
   const name = snapshot?.name ?? "Zona Metropolitana de Monterrey";
   const municipio = snapshot?.municipio ?? "Nuevo León";
   const pm = snapshot?.pm25 != null ? roundPM25(snapshot.pm25) : null;

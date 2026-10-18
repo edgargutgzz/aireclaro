@@ -45,7 +45,7 @@ export default async function Ticker() {
   if (estaciones.length === 0 || stations.length === 0) return null;
 
   // Every metro station, always: one without a reading from the last 3 hours
-  // shows as a gray "sin lectura reciente" dot, like its gray disc on the map, so a
+  // shows as a gray "no disponible" dot, like its gray disc on the map, so a
   // gap is visible instead of the strip going quiet. Stations with data first,
   // worst first; then the silent ones, by name.
   const lecturas = new Map(stations.map((s) => [s.sensorId, s.pm25]));
