@@ -129,6 +129,9 @@ function TranscripcionText({ t }: { t: NonNullable<Publicacion["transcripcion"]>
 const TEXT_LINK =
   "rounded underline decoration-gray-300 underline-offset-2 hover:decoration-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
+const PROSE =
+  "prose prose-lg prose-headings:font-semibold prose-headings:text-gray-800 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600 prose-strong:font-semibold prose-strong:text-gray-800 prose-li:text-gray-700 prose-li:mb-2 prose-img:rounded-xl prose-img:shadow-md max-w-none";
+
 const PRIMARY_BUTTON =
   "inline-flex h-10 items-center gap-1.5 rounded-xl bg-gray-800 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
@@ -153,32 +156,19 @@ export default async function PublicacionPage({ params }: Props) {
         >
           <ArrowLeft className="h-4 w-4" aria-hidden /> Publicaciones
         </Link>
-        <header className="mb-12">
-          {/* A column reads like an opinion page: what it is, its title, who
-              wrote it, then where and when it ran (under the byline). A
-              document keeps one line on top: publisher, type, date. */}
-          {column ? (
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
-          ) : (
-            <p className="mb-4 text-sm text-gray-500">
-              {p.outlet && (
-                <>
-                  <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-semibold text-gray-800 ${TEXT_LINK}`}>
-                    {p.outlet}
-                  </Link>{" "}
-                  ·{" "}
-                </>
-              )}
-              {tipoLabel(p.tipo)} · {displayDate(p)}
-            </p>
-          )}
-          <h1 className={`text-3xl font-bold text-gray-900 md:text-4xl ${column ? "mb-6" : ""}`}>{p.title}</h1>
+        {/* Columns and documents share one page: type, title, (a column's
+            byline), where and when, the actions, the image, then the text.
+            A column's text is the column itself; a document's is its summary,
+            and "Abrir documento" sits beside "Compartir". */}
+        <header className="mb-10">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
+          <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{p.title}</h1>
 
           {/* Only a column has a byline. */}
           {column && (fotos.length > 0 ? (
             // The name, and under it a single author's role (from /equipo):
             // why this voice is worth reading. Two authors: names only.
-            <div className="flex items-center gap-3">
+            <div className="mt-6 flex items-center gap-3">
               <Avatares fotos={fotos} />
               <div className="min-w-0">
                 <p className="font-medium text-gray-800">
@@ -197,37 +187,25 @@ export default async function PublicacionPage({ params }: Props) {
               </div>
             </div>
           ) : (
-            <p className="text-gray-600">{p.author}</p>
+            <p className="mt-6 text-gray-600">{p.author}</p>
           ))}
 
-          {column && (
-            <p className="mt-4 text-sm text-gray-500">
-              {p.outlet && (
-                <>
-                  Publicada en{" "}
-                  <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-medium text-gray-700 ${TEXT_LINK}`}>
-                    {p.outlet}
-                  </Link>{" "}
-                  ·{" "}
-                </>
-              )}
-              {displayDate(p)}
-              {minutes && ` · ${minutes} min de lectura`}
-            </p>
-          )}
+          <p className="mt-4 text-sm text-gray-500">
+            {p.outlet && (
+              <>
+                {column ? "Publicada en " : ""}
+                <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-medium text-gray-700 ${TEXT_LINK}`}>
+                  {p.outlet}
+                </Link>{" "}
+                ·{" "}
+              </>
+            )}
+            {displayDate(p)}
+            {minutes && ` · ${minutes} min de lectura`}
+          </p>
 
-          {column && (
-            <div className="mt-6">
-              <Compartir url={shareUrl(p)} title={p.title} />
-            </div>
-          )}
-
-          {/* Only where the page has no full text to read; otherwise the
-              summary stays in the metadata (Google, link previews). */}
-          {p.summary && !p.editorial && <p className="mt-8 text-lg leading-relaxed text-gray-700">{p.summary}</p>}
-
-          {outbound && (
-            <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+            {outbound && (
               <EnlaceMedido
                 href={outbound}
                 evento={p.externalUrl ? "enlace_externo" : "pdf_abierto"}
@@ -245,41 +223,42 @@ export default async function PublicacionPage({ params }: Props) {
                   </>
                 )}
               </EnlaceMedido>
-              {!column && <Compartir url={shareUrl(p)} title={p.title} className="h-10 px-4 text-sm" />}
-            </div>
-          )}
+            )}
+            <Compartir url={shareUrl(p)} title={p.title} className="h-10 px-4 text-sm" />
+          </div>
         </header>
 
-        {p.editorial ? (
-          <>
+        {outbound ? (
+          // The cover (a document's first page), as a preview that also
+          // opens it.
+          <a href={outbound} target="_blank" rel="noopener noreferrer" tabIndex={-1} aria-hidden="true">
             <Image
               src={p.image}
-              alt={p.editorial.imageAlt}
+              alt=""
               width={1200}
               height={675}
               sizes="(min-width: 768px) 768px, 100vw"
               preload
               className="mb-12 w-full rounded-xl shadow-md"
             />
-            <div className="prose prose-lg prose-headings:font-semibold prose-headings:text-gray-800 prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600 prose-strong:font-semibold prose-strong:text-gray-800 prose-li:text-gray-700 prose-li:mb-2 prose-img:rounded-xl prose-img:shadow-md max-w-none">
-              {p.editorial.content ?? (p.transcripcion && <TranscripcionText t={p.transcripcion} />)}
-            </div>
-          </>
-        ) : (
-          // The cover (a document's first page, a column's clipping), as a
-          // preview that also opens it.
-          <a href={outbound} target="_blank" rel="noopener noreferrer" tabIndex={-1} aria-hidden="true">
-            <Image
-              src={p.image}
-              alt=""
-              width={1024}
-              height={576}
-              sizes="(min-width: 768px) 768px, 100vw"
-              preload
-              className="w-full rounded-xl shadow-md"
-            />
           </a>
+        ) : (
+          <Image
+            src={p.image}
+            alt={p.editorial?.imageAlt ?? ""}
+            width={1200}
+            height={675}
+            sizes="(min-width: 768px) 768px, 100vw"
+            preload
+            className="mb-12 w-full rounded-xl shadow-md"
+          />
         )}
+
+        <div className={PROSE}>
+          {p.editorial
+            ? (p.editorial.content ?? (p.transcripcion && <TranscripcionText t={p.transcripcion} />))
+            : p.summary && <p>{p.summary}</p>}
+        </div>
 
       </article>
 
