@@ -1,5 +1,5 @@
 // The Observatory's team: name, portrait (public/equipo/<image>.webp) and
-// role. One list for /equipo and for the columnists' bylines on
+// role. One list for the team on /quienes-somos and for the columnists' bylines on
 // /publicaciones/[slug] (app/publicaciones/data.ts), so a role reads the same
 // in both places.
 export const EQUIPO = [

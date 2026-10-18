@@ -65,7 +65,6 @@ const SECCIONES = [
 
 const NOSOTROS = [
   { href: "/quienes-somos", label: "Quiénes somos" },
-  { href: "/equipo", label: "Equipo" },
   // Tucked in here (last, least prominent) until the page is ready to go
   // back to the top level.
   { href: "/proyectos", label: "Proyectos" },

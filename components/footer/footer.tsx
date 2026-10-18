@@ -38,7 +38,6 @@ const COLUMNAS = [
     titulo: "Nosotros",
     links: [
       { href: "/quienes-somos", label: "Quiénes somos" },
-      { href: "/equipo", label: "Equipo" },
       { href: "/proyectos", label: "Proyectos" },
     ],
   },

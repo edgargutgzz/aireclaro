@@ -34,6 +34,9 @@ const nextConfig = {
       { source: "/editoriales", destination: "/publicaciones?tipo=columna", permanent: true },
       { source: "/editoriales/:slug([^./]+)", destination: "/publicaciones/:slug", permanent: true },
       { source: "/recursos", destination: "/publicaciones", permanent: true },
+      // The team joined Quiénes somos (2026-10-18); the draft's URL too.
+      { source: "/equipo", destination: "/quienes-somos#equipo", permanent: true },
+      { source: "/quienes-somos2", destination: "/quienes-somos", permanent: true },
       // /infografias merged too (2026-10-10); its PDFs stay in public/infografias.
       { source: "/infografias", destination: "/publicaciones?tipo=infografia", permanent: true },
       // The columns' newspaper-clipping PDFs, removed 2026-10-08 once each

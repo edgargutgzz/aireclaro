@@ -387,7 +387,7 @@ const PHOTOS = new Map<string, string>([
   ...editoriales.filter((e) => !e.author.includes(" y ")).map((e): [string, string] => [e.author, e.authorProfile]),
 ]);
 
-// Each author's role, from /equipo's list (lib/equipo.ts), matched by
+// Each author's role, from the team list (lib/equipo.ts, shown on /quienes-somos), matched by
 // portrait file since bylines and /equipo spell some names differently
 // ("Lorenzo J. de Rosenzweig"). Authors not on the team have none.
 function puesto(src: string): string | undefined {
