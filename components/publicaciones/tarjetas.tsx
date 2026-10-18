@@ -109,8 +109,34 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
 }
 
 // Every row opens the item (see ItemLink), its cover as a thumbnail. A
-// poster (an infographic) shows its top, where its title is.
+// poster (an infographic) shows its top, where its title is. A document's
+// row also shares it (its /d/<slug>, the only link to it with a card): the
+// title is then the link, stretched over the row like the featured card's,
+// so the share button can sit beside it outside the link.
 export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
+  if (opensPdf(p)) {
+    return (
+      <div className="relative flex items-start gap-4 px-4 py-4 transition-colors hover:bg-gray-100/70 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-inset has-[a:focus-visible]:ring-gray-900/15 sm:px-5">
+        <Image
+          src={p.image}
+          alt=""
+          width={288}
+          height={162}
+          sizes="(min-width: 640px) 144px, 96px"
+          className={`aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36 ${p.tipo === "infografia" ? "object-top" : ""}`}
+        />
+        <div className="min-w-0 flex-1">
+          <Who p={p} />
+          <p className="mt-1 text-base font-semibold leading-snug text-gray-800">
+            <ItemLink p={p} className="focus-visible:outline-none after:absolute after:inset-0 after:content-['']">
+              {p.title}
+            </ItemLink>
+          </p>
+        </div>
+        <Compartir url={shareUrl(p)} title={p.title} soloIcono className="relative z-10 shrink-0 self-center" />
+      </div>
+    );
+  }
   return (
     <ItemLink
       p={p}

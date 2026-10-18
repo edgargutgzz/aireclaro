@@ -7,8 +7,20 @@ import { Check, Share2 } from "lucide-react";
 // phone, the system share sheet (WhatsApp and the rest); elsewhere, copies
 // the link, the way "Cómo citar" copies its citation (./cita.tsx). The link
 // is the item's share link (app/publicaciones/data.ts shareUrl): a
-// document's /d/<slug> carries its card and opens the PDF.
-export default function Compartir({ url, title, className = "" }: { url: string; title: string; className?: string }) {
+// document's /d/<slug> carries its card and opens the PDF. `soloIcono` is
+// the compact square version for the library's document rows, where a
+// labeled button on every row would crowd the list.
+export default function Compartir({
+  url,
+  title,
+  soloIcono = false,
+  className = "",
+}: {
+  url: string;
+  title: string;
+  soloIcono?: boolean;
+  className?: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   const share = async () => {
@@ -25,13 +37,30 @@ export default function Compartir({ url, title, className = "" }: { url: string;
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const Icono = copied ? Check : Share2;
+  if (soloIcono) {
+    return (
+      <button
+        type="button"
+        onClick={share}
+        title={copied ? "Enlace copiado" : "Compartir"}
+        className={`flex h-8 w-8 items-center justify-center rounded-xl border border-gray-200 bg-white/95 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${className}`}
+      >
+        <Icono className="h-3.5 w-3.5" aria-hidden />
+        <span className="sr-only" aria-live="polite">
+          {copied ? "Enlace copiado" : `Compartir ${title}`}
+        </span>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={share}
       className={`flex h-8 items-center gap-1.5 rounded-xl border border-gray-200 bg-white/95 px-3 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${className}`}
     >
-      {copied ? <Check className="h-3.5 w-3.5" aria-hidden /> : <Share2 className="h-3.5 w-3.5" aria-hidden />}
+      <Icono className="h-3.5 w-3.5" aria-hidden />
       <span aria-live="polite">{copied ? "Enlace copiado" : "Compartir"}</span>
       <span className="sr-only">{title}</span>
     </button>
