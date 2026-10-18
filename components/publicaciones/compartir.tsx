@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Check, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// "Compartir" on a library item (its Destacado card and its own page): on a
+// "Compartir" on a publication's own page: on a
 // phone, the system share sheet (WhatsApp and the rest); elsewhere, copies
 // the link, the way "Cómo citar" copies its citation (./cita.tsx). The link
 // is the item's share link (app/publicaciones/data.ts shareUrl): its page,

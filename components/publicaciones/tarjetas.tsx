@@ -2,8 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
-import Compartir from "@/components/publicaciones/compartir";
-import { formatDate, shareUrl, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
+import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The ways a publication is listed: a card with its cover (the library's
 // "Lo más reciente", a page's "Más de…"), a row with a thumbnail (the
@@ -130,10 +129,8 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
 // A library's featured item: wider than the cards, its summary showing.
 // Featured items sit side by side with different types, so each leads with
 // its type, a column too ("Columna de opinión"); a column's author, outlet
-// and date follow its summary, and "Compartir" closes the last row. The
-// title is the link, stretched over the whole card (an ::after layer), so
-// the card stays one click target while the button, which can't nest in a
-// link, sits in the text above that layer.
+// and date follow its summary. The title is the link, stretched over the
+// whole card (an ::after layer). Sharing is on the item's page.
 export function PublicacionDestacada({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
     <div className="group relative grid overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-gray-900/15 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
@@ -154,18 +151,13 @@ export function PublicacionDestacada({ publicacion: p, priority = false }: { pub
           </ItemLink>
         </p>
         {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
-        <div className="mt-3 flex items-center justify-between gap-4">
-          <p className="min-w-0 text-xs text-gray-500">
-            {p.tipo === "columna" && (
-              <>
-                <span className="font-medium text-gray-600">{p.author}</span>
-                {" · "}
-                {[p.outlet, p.date ? formatDate(p.date) : String(p.year)].filter(Boolean).join(" · ")}
-              </>
-            )}
+        {p.tipo === "columna" && (
+          <p className="mt-3 text-xs text-gray-500">
+            <span className="font-medium text-gray-600">{p.author}</span>
+            {" · "}
+            {[p.outlet, p.date ? formatDate(p.date) : String(p.year)].filter(Boolean).join(" · ")}
           </p>
-          <Compartir url={shareUrl(p)} title={p.title} className="relative z-10 shrink-0" />
-        </div>
+        )}
       </div>
     </div>
   );
