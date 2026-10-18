@@ -34,6 +34,8 @@ const COLUMNAS = [
     links: [
       { href: "/publicaciones?tipo=columna", label: "Columnas" },
       { href: "/publicaciones?tipo=infografia", label: "Infografías" },
+      { href: "/publicaciones?tipo=investigacion", label: "Investigaciones" },
+      { href: "/publicaciones?tipo=comunicado", label: "Comunicados" },
     ],
   },
 ];
