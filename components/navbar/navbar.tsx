@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
+import { BarChart3, BookOpen, FolderOpen, Map as MapIcon, Users } from "lucide-react";
 
 // The site's one navbar, on every page including the map. Copied from
 // observatoriodelaire.com's navbar (components/navbar.tsx there), markup and
@@ -44,12 +45,13 @@ const CURRENT = "underline decoration-2 underline-offset-8";
 const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
 // Every section, in the same order on desktop and mobile; Quiénes somos last.
+// The icons are for the mobile menu's tiles only.
 const SECCIONES = [
-  { href: "/mapa", label: "Mapa" },
-  { href: "/datos", label: "Datos" },
-  { href: "/publicaciones", label: "Publicaciones" },
-  { href: "/proyectos", label: "Proyectos" },
-  { href: "/quienes-somos", label: "Quiénes somos" },
+  { href: "/mapa", label: "Mapa", Icon: MapIcon },
+  { href: "/datos", label: "Datos", Icon: BarChart3 },
+  { href: "/publicaciones", label: "Publicaciones", Icon: BookOpen },
+  { href: "/proyectos", label: "Proyectos", Icon: FolderOpen },
+  { href: "/quienes-somos", label: "Quiénes somos", Icon: Users },
 ];
 
 export default function Navbar() {
@@ -154,7 +156,9 @@ export default function Navbar() {
 
         {/* Mobile / tablet menu: a full-screen panel under the bar (inside
             menuRef, so a tap on a link isn't read as a tap outside): every
-            link visible at once, in the desktop order. */}
+            section as a square tile (icon above, name below), two across in
+            the desktop order; an odd last tile runs the full width. The
+            current page's tile is dark. */}
         {isOpen && (
           <nav
             id="menu-movil"
@@ -162,16 +166,21 @@ export default function Navbar() {
             style={{ top: panelTop }}
             className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
           >
-            <ul className="mt-2">
-              {SECCIONES.map((l) => (
-                <li key={l.href}>
+            <ul className="mt-4 grid grid-cols-2 gap-3">
+              {SECCIONES.map(({ href, label, Icon }) => (
+                <li key={href} className="last:odd:col-span-2">
                   <Link
-                    href={l.href}
-                    aria-current={current(l.href)}
-                    className={`block w-fit py-2.5 text-lg ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                    href={href}
+                    aria-current={current(href)}
+                    className={`flex aspect-square h-full w-full flex-col justify-between rounded-2xl border p-4 text-base font-medium transition-colors ${FOCUS} ${
+                      isCurrent(href)
+                        ? "border-gray-900 bg-gray-900 text-white"
+                        : "border-stone-200 bg-white text-gray-800 active:bg-stone-100"
+                    } [li:last-child:nth-child(odd)_&]:aspect-auto [li:last-child:nth-child(odd)_&]:min-h-24`}
                     onClick={handleLinkClick}
                   >
-                    {l.label}
+                    <Icon aria-hidden="true" className={`h-6 w-6 ${isCurrent(href) ? "text-white" : "text-gray-500"}`} />
+                    {label}
                   </Link>
                 </li>
               ))}
