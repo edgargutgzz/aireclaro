@@ -4,6 +4,7 @@ import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import Avatares from "@/components/publicaciones/avatares";
 import Cita from "@/components/publicaciones/cita";
+import Compartir from "@/components/publicaciones/compartir";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 import { PublicacionCard } from "@/components/publicaciones/tarjetas";
 import Image from "next/image";
@@ -21,19 +22,20 @@ import {
   photos,
   readingMinutes,
   relacionadas,
+  shareUrl,
   urlKey,
   publicaciones,
   tipoLabel,
   type Publicacion,
 } from "../data";
 
-// One page per publication, all static. A column shows its full text; a
-// document shows its summary and opens its PDF (the library links documents
-// straight to the PDF, so their pages are mainly for search engines, Google
-// Scholar and anyone citing them). Every page ends with a
-// citation, so a link to it is something people can cite. It opens with a way back to the library (many
-// readers arrive from search or a shared link) and ends with more by the
-// same author. The newspaper and the authors link to their library filters.
+// One page per publication, all static, and the library opens each one: a
+// column shows its full text; a document, its summary and a button to its
+// PDF. Every page can be shared from its header and ends with a citation,
+// so a link to it is something people can cite. It opens with a way back to
+// the library (many readers arrive from search or a shared link) and ends
+// with more by the same author. The newspaper and the authors link to their
+// library filters.
 // /editoriales/[slug] redirects here
 // (next.config.mjs); any slug not in ../data is a static 404.
 
@@ -218,6 +220,12 @@ export default async function PublicacionPage({ params }: Props) {
             </p>
           )}
 
+          {column && (
+            <div className="mt-6">
+              <Compartir url={shareUrl(p)} title={p.title} />
+            </div>
+          )}
+
           {/* Only where the page has no full text to read; otherwise the
               summary stays in the metadata (Google, link previews). */}
           {p.summary && !p.editorial && <p className="mt-8 text-lg leading-relaxed text-gray-700">{p.summary}</p>}
@@ -233,6 +241,7 @@ export default async function PublicacionPage({ params }: Props) {
               >
                 <FileText className="h-4 w-4" aria-hidden /> Abrir documento
               </EnlaceMedido>
+              {!column && <Compartir url={shareUrl(p)} title={p.title} className="h-10 px-4 text-sm" />}
             </div>
           )}
         </header>

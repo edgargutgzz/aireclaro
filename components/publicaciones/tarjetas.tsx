@@ -3,19 +3,17 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 import Compartir from "@/components/publicaciones/compartir";
-import { formatDate, shareUrl, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
+import { OCCAMM, formatDate, shareUrl, tipoLabel, type Publicacion } from "@/app/publicaciones/data";
 
 // The ways a publication is listed: a card with its cover (the library's
 // "Lo más reciente", a page's "Más de…"), a row with a thumbnail (the
 // library's list) and, for the one featured item, a wide card with its
 // summary. Shared so both pages show an item the same way.
 
-// Every item reads in three steps, the way opinion sections list columns:
-// who (the author, dark), what (the title, the largest), and where and when
-// (quiet, last). A column: "Uriel Chavarría" / title / "El Norte · 16 feb
-// 2025". A document: its type ("Informe") on top and its title, nothing
-// more (its credits, often long organization names, are on its page).
-// Portraits are for the publication's own page only.
+// A card or a featured item reads in three steps: who (the author, dark;
+// a document's type), what (the title, the largest), and where and when
+// (quiet, last). The library's rows follow their own order (see
+// PublicacionRow). Portraits are for the publication's own page only.
 
 // The style guide's eyebrow label (uppercase, tracked), in gray-500 rather
 // than its gray-400 because a name carries information: set apart from the
@@ -46,24 +44,10 @@ function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
 
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// A document or an infographic (anything but a column) is its PDF, so the
-// list opens that directly. Its page stays online, unlinked from here, for search engines,
-// Google Scholar and "Cómo citar".
-function opensPdf(p: Publicacion): boolean {
-  return p.tipo !== "columna" && Boolean(p.file);
-}
-
-// An item opens its page here; a document, its PDF in a new tab; a column
-// that lives only on another site, that site in a new tab (marked ↗). Both
-// new tabs are announced to screen readers.
+// An item opens its page here (a document's page carries its summary, its
+// PDF, "Cómo citar" and "Compartir"); a column that lives only on another
+// site opens that site in a new tab (marked ↗), announced to screen readers.
 function ItemLink({ p, className, children }: { p: Publicacion; className: string; children: React.ReactNode }) {
-  if (opensPdf(p)) {
-    return (
-      <EnlaceMedido href={p.file!} evento="pdf_abierto" publicacion={p.slug} aviso="PDF, abre en una nueva pestaña" className={className}>
-        {children}
-      </EnlaceMedido>
-    );
-  }
   if (p.externalUrl) {
     return (
       <EnlaceMedido
@@ -108,36 +92,44 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
   );
 }
 
-// Every row opens the item (see ItemLink), its cover as a thumbnail, and
-// shares it (shareUrl: a document's /d/<slug>, the only link to it with a
-// card; a column's page). A poster (an infographic) shows its top, where its
-// title is. Laid out like the featured card: the title is the link,
-// stretched over the row, and "Compartir" closes the last line, right of a
-// column's outlet and date, outside the link.
+// A library row, text first and the photo to its right, the way opinion
+// sections list their pieces: one context line, the same on every row
+// (type · outlet · date), the title, its one-line summary where one is
+// written, and who signed it. The whole row is the link; sharing is on the
+// item's page. A poster (an infographic) shows its top, where its title is.
+function Firma({ p }: { p: Publicacion }) {
+  if (p.tipo === "columna") return <>{p.author}</>;
+  return <>{p.author === OCCAMM ? "OCCAMM" : (p.citeAuthor ?? p.author)}</>;
+}
+
 export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion }) {
+  const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
   return (
-    <div className="relative flex items-start gap-4 px-4 py-4 transition-colors hover:bg-gray-100/70 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-inset has-[a:focus-visible]:ring-gray-900/15 sm:px-5">
+    <ItemLink
+      p={p}
+      className={`flex items-start gap-4 px-4 py-4 transition-colors hover:bg-gray-100/70 sm:gap-5 sm:px-5 ${FOCUS_RING} focus-visible:ring-inset`}
+    >
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-gray-500">
+          <span className="font-semibold text-gray-700">{tipoLabel(p.tipo)}</span>
+          {p.outlet && ` · ${p.outlet}`} · {when}
+          {p.externalUrl && <ArrowUpRight className="ml-1 inline h-3.5 w-3.5 align-[-2px] text-gray-600" aria-hidden />}
+        </p>
+        <p className="mt-1 text-base font-semibold leading-snug text-gray-800 text-pretty sm:text-[17px]">{p.title}</p>
+        {p.summary && <p className="mt-1 line-clamp-2 text-sm leading-snug text-gray-600">{p.summary}</p>}
+        <p className="mt-2 truncate text-sm font-medium text-gray-700">
+          <Firma p={p} />
+        </p>
+      </div>
       <Image
         src={p.image}
         alt=""
-        width={288}
-        height={162}
-        sizes="(min-width: 640px) 144px, 96px"
-        className={`aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-36 ${p.tipo === "infografia" ? "object-top" : ""}`}
+        width={336}
+        height={189}
+        sizes="(min-width: 640px) 168px, 96px"
+        className={`aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-[168px] ${p.tipo === "infografia" ? "object-top" : ""}`}
       />
-      <div className="min-w-0 flex-1">
-        <Who p={p} />
-        <p className="mt-1 text-base font-semibold leading-snug text-gray-800">
-          <ItemLink p={p} className="focus-visible:outline-none after:absolute after:inset-0 after:content-['']">
-            {p.title}
-          </ItemLink>
-        </p>
-        <div className="mt-2 flex items-center justify-between gap-4">
-          <WhereWhen p={p} className="min-w-0" />
-          <Compartir url={shareUrl(p)} title={p.title} className="relative z-10 ml-auto shrink-0" />
-        </div>
-      </div>
-    </div>
+    </ItemLink>
   );
 }
 

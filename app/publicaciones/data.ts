@@ -514,13 +514,12 @@ export function linkCard(p: Publicacion) {
   return { url: `/api/og/publicaciones/${p.slug}?d=18`, width: 1200, height: 630, alt: p.title };
 }
 
-// The link to share an item: a document's or infographic's /d/<slug>
-// (app/d/[slug]: its link card, then the PDF), a column's own page, or the
-// outlet's page for a column that lives only there.
+// The link to share an item: its page here (the library opens every item's
+// page, a document's too), or the outlet's page for a column that lives only
+// there. A document's older /d/<slug> links (app/d/[slug]: its card, then
+// the PDF) keep working for links already shared.
 export function shareUrl(p: Publicacion): string {
-  if (p.externalUrl) return p.externalUrl;
-  if (p.tipo !== "columna" && p.file) return `${SITE_URL}/d/${p.slug}`;
-  return pageUrl(p);
+  return p.externalUrl ?? pageUrl(p);
 }
 
 export function pageUrl(p: Publicacion): string {
