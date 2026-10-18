@@ -7,6 +7,7 @@ import {
   COLOR_CUBIERTO,
   COLOR_CUBIERTO_FILL_OPACITY,
   COLOR_INSALUBRE,
+  COLOR_INSUFICIENTE,
   COLOR_SALUDABLE,
   withOpacity,
 } from "@/lib/datos-colors";
@@ -79,10 +80,6 @@ const COLOR_CUBIERTO_FILL = withOpacity(
   COLOR_CUBIERTO,
   COLOR_CUBIERTO_FILL_OPACITY,
 );
-// A plain gray fill (a data-quality gap, not a health-severity color) --
-// lighter than gray-300 by request, but not all the way to gray-200, which
-// sat almost invisibly on the station card's own bg-gray-50.
-const COLOR_INSUFICIENTE = "#dbdfe3";
 // Applied only to a date with no synced row at all (future, or just past
 // the monthly cron's cutoff) -- a real gap (a row that exists with
 // cubierto=false) stays solid, since that IS a known fact about the

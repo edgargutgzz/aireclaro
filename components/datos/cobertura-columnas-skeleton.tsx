@@ -1,7 +1,7 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
-// Mirrors CoberturaColumnasChart's shell: header, the 520/560px plot, the
-// two-line footer.
+// Mirrors CoberturaColumnasChart's shell: header, legend row, the
+// 520/560px plot.
 export default function CoberturaColumnasSkeleton() {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
@@ -13,11 +13,11 @@ export default function CoberturaColumnasSkeleton() {
         <SkeletonBlock className="h-8 w-56 rounded-xl" />
       </div>
       <div className="px-5 pb-6 pt-5 md:pt-6">
-        <SkeletonBlock className="h-[520px] w-full rounded-xl sm:h-[560px]" />
-        <div className="mt-4 flex flex-col gap-1.5">
-          <SkeletonBlock className="h-4 w-56" />
-          <SkeletonBlock className="h-4 w-64" />
+        <div className="mb-4 flex items-center justify-end gap-4 md:mb-6">
+          <SkeletonBlock className="h-3 w-20" />
+          <SkeletonBlock className="h-3 w-28" />
         </div>
+        <SkeletonBlock className="h-[520px] w-full rounded-xl sm:h-[560px]" />
       </div>
     </div>
   );

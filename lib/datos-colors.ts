@@ -31,6 +31,10 @@ export const COLOR_CUBIERTO = "#3b82f6"; // Tailwind blue-500
 // COLOR_SALUDABLE_FILL_OPACITY on purpose so a bump here doesn't also
 // wash out the días insalubres chart's bars.
 export const COLOR_CUBIERTO_FILL_OPACITY = 0.68;
+// The cobertura charts' "Datos insuficientes" gray (a data-quality gap, not
+// a health-severity color): lighter than gray-300, but not all the way to
+// gray-200, which sat almost invisibly on a gray-50 card.
+export const COLOR_INSUFICIENTE = "#dbdfe3";
 export const COLOR_INSALUBRE = "#ef4444"; // Tailwind red-500
 export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 
