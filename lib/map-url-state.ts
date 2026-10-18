@@ -93,31 +93,3 @@ export function writeFilterParams(state: {
 
   replaceIfChanged(url);
 }
-
-// ---- remembered Ubicación ------------------------------------------------------
-
-// The visitor's own Ubicación filter, kept in their browser (never sent
-// anywhere): the municipios they hid last time. A visit with no filter or
-// station in its URL opens on it, so someone who narrowed the map to their
-// municipio finds it there again, with no location prompt. Storage can be
-// blocked (private windows), so every access is guarded and falls back to
-// "nothing saved".
-const SAVED_HIDE_KEY = "mapa-ubicacion";
-
-export function readSavedHide(): string[] {
-  try {
-    const raw = window.localStorage.getItem(SAVED_HIDE_KEY);
-    return raw ? raw.split(",").map((s) => s.trim()).filter(Boolean) : [];
-  } catch {
-    return [];
-  }
-}
-
-export function saveHide(keys: string[]): void {
-  try {
-    if (keys.length) window.localStorage.setItem(SAVED_HIDE_KEY, keys.join(","));
-    else window.localStorage.removeItem(SAVED_HIDE_KEY);
-  } catch {
-    // Storage blocked: the filter just isn't remembered.
-  }
-}
