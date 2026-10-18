@@ -160,21 +160,6 @@ export default function MapaSensors({
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  // Desktop opens with the default station already picked — the card is up with
-  // its X and the pulse is on Obispado, exactly the state a click produces. It's
-  // seeded here rather than in the useState initializer so it stays desktop-only
-  // (the flag can't be read during SSR) and one-shot: once it has fired, closing
-  // the card leaves the map bare and this never re-seeds. Skipped when a
-  // ?sensor= link or an earlier pick already set the subject.
-  const didSeedDefaultRef = useRef(false);
-  useEffect(() => {
-    if (didSeedDefaultRef.current || !isDesktop) return;
-    didSeedDefaultRef.current = true;
-    if (linkedSensor || selectedSensor) return;
-    const def = pickDefaultSensor(sensors, data);
-    if (def) setSelectedSensor(buildSelection(def, data));
-  }, [isDesktop, linkedSensor, selectedSensor, sensors, data]);
-
   // The picked station's card holds a copy of its reading (buildSelection), so
   // when fresh readings arrive (LiveRefresh) the copy is rebuilt from them.
   const firstDataRef = useRef(data);
@@ -1098,9 +1083,9 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column. Opens with the default station (Obispado) picked;
-          the X / Escape / a click on empty map close it, and then the column is
-          empty and the map stands alone until another marker is picked. */}
+      {/* Desktop right column. Empty at rest (the map stands alone); a picked
+          marker or a ?sensor= link opens its card, and the X / Escape / a
+          click on empty map close it. */}
       <div className="pointer-events-none absolute bottom-10 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
         {/* flex-1 so the wrapper takes the full column height; that bounds the
