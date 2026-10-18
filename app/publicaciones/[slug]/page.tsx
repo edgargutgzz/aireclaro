@@ -158,8 +158,9 @@ export default async function PublicacionPage({ params }: Props) {
         </Link>
         {/* Columns and documents share one page: type, title, (a column's
             byline), where and when, the actions, the image, then the text.
-            A column's text is the column itself; a document's is its summary,
-            and "Abrir documento" sits beside "Compartir". */}
+            A column's text is the column itself; a document has none (its
+            summary stays in the metadata, for Google and link previews), and
+            "Abrir documento" sits beside "Compartir". */}
         <header className="mb-10">
           <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500">{tipoLabel(p.tipo)}</p>
           <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{p.title}</h1>
@@ -239,7 +240,7 @@ export default async function PublicacionPage({ params }: Props) {
               height={675}
               sizes="(min-width: 768px) 768px, 100vw"
               preload
-              className="mb-12 w-full rounded-xl shadow-md"
+              className="w-full rounded-xl shadow-md"
             />
           </a>
         ) : (
@@ -254,11 +255,11 @@ export default async function PublicacionPage({ params }: Props) {
           />
         )}
 
-        <div className={PROSE}>
-          {p.editorial
-            ? (p.editorial.content ?? (p.transcripcion && <TranscripcionText t={p.transcripcion} />))
-            : p.summary && <p>{p.summary}</p>}
-        </div>
+        {p.editorial && (
+          <div className={PROSE}>
+            {p.editorial.content ?? (p.transcripcion && <TranscripcionText t={p.transcripcion} />)}
+          </div>
+        )}
 
       </article>
 
