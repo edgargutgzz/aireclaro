@@ -3,7 +3,6 @@ import { ORGANIZATION_REF, pageMetadata } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import Avatares from "@/components/publicaciones/avatares";
-import Cita from "@/components/publicaciones/cita";
 import Compartir from "@/components/publicaciones/compartir";
 import EnlaceMedido from "@/components/publicaciones/enlace-medido";
 import { PublicacionCard } from "@/components/publicaciones/tarjetas";
@@ -14,7 +13,6 @@ import { Fragment } from "react";
 import { ArrowLeft, ArrowUpRight, FileText } from "lucide-react";
 import {
   OCCAMM,
-  citation,
   displayDate,
   getPublicacion,
   linkCard,
@@ -32,9 +30,8 @@ import {
 // One page per publication, all static, and the library opens each one: a
 // column shows its full text (one that lives on its outlet's site, the Este
 // País column, its summary and a button there); a document, its summary and
-// a button to its PDF. Every page can be shared from its header and ends with a citation,
-// so a link to it is something people can cite. It opens with a way back to
-// the library (many readers arrive from search or a shared link) and ends
+// a button to its PDF. Every page can be shared from its header. It opens
+// with a way back to the library (many readers arrive from search or a shared link) and ends
 // with more by the same author. The newspaper and the authors link to their
 // library filters.
 // /editoriales/[slug] redirects here
@@ -177,8 +174,7 @@ export default async function PublicacionPage({ params }: Props) {
           )}
           <h1 className={`text-3xl font-bold text-gray-900 md:text-4xl ${column ? "mb-6" : ""}`}>{p.title}</h1>
 
-          {/* Only a column has a byline; a document's credits are in its
-              citation. */}
+          {/* Only a column has a byline. */}
           {column && (fotos.length > 0 ? (
             // The name, and under it a single author's role (from /equipo):
             // why this voice is worth reading. Two authors: names only.
@@ -284,10 +280,6 @@ export default async function PublicacionPage({ params }: Props) {
             />
           </a>
         )}
-
-        <div className="mt-16">
-          <Cita text={citation(p)} />
-        </div>
 
       </article>
 

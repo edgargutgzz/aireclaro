@@ -41,8 +41,6 @@ export type Publicacion = {
   /** The column's authors, one name each, from its byline, for the Autoría
    *  filter. Only columns carry people; other documents keep just `author`. */
   people: string[];
-  /** The author as cited ("Chavarría, U."), when it differs from `author`. */
-  citeAuthor?: string;
   /** Where it was published (newspaper, journal), if not by the Observatory. */
   outlet?: string;
   summary?: string;
@@ -99,7 +97,6 @@ const DOCUMENTOS: Documento[] = [
     tipo: "comunicado",
     year: 2025,
     author: "Organizaciones de salud y sociedad civil de América Latina y el Caribe, entre ellas el OCCAMM",
-    citeAuthor: "Organizaciones de salud y sociedad civil de América Latina y el Caribe",
     pages: 32,
     summary:
       "Documento de posición regional, firmado por decenas de organizaciones de salud y sociedad civil, sobre los efectos del cambio climático en la salud y las acciones que piden a los gobiernos.",
@@ -146,7 +143,6 @@ const DOCUMENTOS: Documento[] = [
     year: 2024,
     date: "2024-07-05",
     author: "Nueve organizaciones civiles de Nuevo León, entre ellas el OCCAMM",
-    citeAuthor: "Consejo Cívico de Nuevo León et al.",
     pages: 4,
     summary:
       "Propuesta de un fideicomiso público-privado, con participación ciudadana, para proteger las cuencas hidrológicas y las zonas de recarga de acuíferos de Nuevo León.",
@@ -171,7 +167,6 @@ const DOCUMENTOS: Documento[] = [
     tipo: "boletin",
     year: 2023,
     author: "Organizaciones ambientales de México, entre ellas el OCCAMM",
-    citeAuthor: "Organizaciones ambientales de México",
     pages: 3,
     summary:
       "Investigación colaborativa sobre partidos de fútbol profesional jugados con contaminación por encima de las recomendaciones de la OMS; en Monterrey, 18 de 41 partidos superaron el valor para PM2.5.",
@@ -184,7 +179,6 @@ const DOCUMENTOS: Documento[] = [
     year: 2023,
     date: "2023-10-23",
     author: "52 organizaciones de la sociedad civil, entre ellas el OCCAMM",
-    citeAuthor: "52 organizaciones de la sociedad civil",
     pages: 3,
     summary:
       "A 30 años de su entrada en vigor, las organizaciones firmantes piden actualizar la norma que fija los límites de emisión de partículas de la industria, sin cambios desde 1993.",
@@ -219,7 +213,6 @@ const DOCUMENTOS: Documento[] = [
     tipo: "manual",
     year: 2020,
     author: "Alfonso Martínez Muñoz, Horacio Villalón Mendoza y Selene Martínez Guajardo",
-    citeAuthor: "Martínez Muñoz, A., Villalón Mendoza, H. y Martínez Guajardo, S.",
     pages: 104,
     summary:
       "Manual de mejores prácticas para reducir las emisiones de polvo y contaminantes en obras de construcción y demolición, desde el plan de gestión ambiental hasta el diseño y los materiales.",
@@ -242,7 +235,6 @@ const DOCUMENTOS: Documento[] = [
     tipo: "informe",
     year: 2020,
     author: "Cómo Vamos Nuevo León y OCCAMM",
-    citeAuthor: "Martínez Muñoz, A., Armendáriz Olivo, A., Escalante Díaz del Campo, J. y Garza Rodríguez, L.",
     pages: 22,
     summary:
       "Análisis de PM2.5, PM10, ozono y monóxido de carbono durante el confinamiento por COVID-19: del 31 de marzo al 17 de junio de 2020, el material particulado bajó en promedio 6.41 µg/m³ (finas) y 7.49 µg/m³ (gruesas).",
@@ -255,7 +247,6 @@ const DOCUMENTOS: Documento[] = [
     tipo: "investigacion",
     year: 2020,
     author: "Alfonso Martínez-Muñoz, Magali Hurtado-Díaz, Julio César Cruz y Horacio Riojas-Rodríguez",
-    citeAuthor: "Martínez-Muñoz, A., Hurtado-Díaz, M., Cruz, J. C. y Riojas-Rodríguez, H.",
     outlet: "Salud Pública de México",
     doi: "10.21149/11184",
     pages: 9,
@@ -336,7 +327,6 @@ function fromEditorial(e: Editorial): Publicacion {
     date: e.date,
     author: e.author,
     people: e.author.split(" y ").map((name) => name.trim()),
-    citeAuthor: citeName(e.author),
     outlet: e.newspaper,
     summary: e.summary,
     file: external ? undefined : e.pdfLink,
@@ -345,23 +335,6 @@ function fromEditorial(e: Editorial): Publicacion {
     editorial: e.content || transcripciones[e.slug] ? e : undefined,
     transcripcion: transcripciones[e.slug],
   };
-}
-
-// Column bylines as cited (surnames first, the way APA lists them).
-const CITE_NAMES: Record<string, string> = {
-  "Uriel Chavarría": "Chavarría, U.",
-  "Selene M. Guajardo": "Martínez Guajardo, S.",
-  "Lorenzo J. de Rosenzweig": "de Rosenzweig, L. J.",
-  "Ana Cristina García Luna": "García Luna, A. C.",
-  "Gabriel Todd": "Todd, G.",
-  "Alberto E. Garza Santos": "Garza Santos, A. E.",
-};
-
-function citeName(byline: string): string {
-  return byline
-    .split(" y ")
-    .map((name) => CITE_NAMES[name.trim()] ?? name.trim())
-    .join(" y ");
 }
 
 // Newest first. Within a year, the dated items come before those that only
@@ -472,10 +445,6 @@ export function tipoLabel(tipo: Tipo): string {
 
 // "2026-08-30" → "30 ago 2026".
 const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-const MONTHS_LONG = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
-];
 
 export function formatDate(date: string): string {
   const [y, m, d] = date.split("-").map(Number);
@@ -523,19 +492,4 @@ export function shareUrl(p: Publicacion): string {
 
 export function pageUrl(p: Publicacion): string {
   return `${SITE_URL}/publicaciones/${p.slug}`;
-}
-
-// APA style, in Spanish: a column carries its full date ("2025, 16 de
-// febrero"), a document its year. A paper links its DOI, everything else
-// this site's page for it.
-export function citation(p: Publicacion): string {
-  const author = p.citeAuthor ?? p.author;
-  let when = String(p.year);
-  if (p.tipo === "columna" && p.date) {
-    const [, m, d] = p.date.split("-").map(Number);
-    when = `${p.year}, ${d} de ${MONTHS_LONG[m - 1]}`;
-  }
-  const outlet = p.outlet ? ` ${p.outlet}.` : "";
-  const link = p.doi ? `https://doi.org/${p.doi}` : pageUrl(p);
-  return `${author} (${when}). ${p.title}.${outlet} ${link}`;
 }

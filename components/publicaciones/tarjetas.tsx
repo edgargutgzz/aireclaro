@@ -41,8 +41,7 @@ function WhereWhen({ p, className }: { p: Publicacion; className: string }) {
 const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
 // Every item opens its page here (it carries the full text, or the summary
-// and a button to the PDF or the outlet's site, "Cómo citar" and
-// "Compartir").
+// and a button to the PDF or the outlet's site and "Compartir").
 function ItemLink({ p, className, children }: { p: Publicacion; className: string; children: React.ReactNode }) {
   return (
     <Link href={`/publicaciones/${p.slug}`} className={className}>

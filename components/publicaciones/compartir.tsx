@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 // "Compartir" on a publication's own page: on a
 // phone, the system share sheet (WhatsApp and the rest); elsewhere, copies
-// the link, the way "Cómo citar" copies its citation (./cita.tsx). The link
+// the link. The link
 // is the item's share link (app/publicaciones/data.ts shareUrl): its page,
 // whose link card names it.
 export default function Compartir({ url, title, className = "" }: { url: string; title: string; className?: string }) {
