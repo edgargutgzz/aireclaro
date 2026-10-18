@@ -316,10 +316,10 @@
 
 /* The navbar's height, in one place: the bar is set to exactly this
    (h-header on its row) and the map fills what's left (h-below-header), so
-   the two can't drift. Values match the bar's natural size so nothing moved
-   when it was pinned (2026-10-03): 82px below lg, 76px at lg. */
+   the two can't drift. 72px below lg (was 82px, trimmed 2026-10-18),
+   76px at lg. */
 :root {
-  --header-h: 82px;
+  --header-h: 72px;
 }
 
 @media (min-width: 1024px) {
