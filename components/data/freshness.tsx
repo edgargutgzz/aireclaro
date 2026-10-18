@@ -1,5 +1,5 @@
-// How current the reading on screen is: a colour dot plus the "Actualizado
-// <time>" text. Three states, because a dot that is only ever green cannot tell
+// How current the reading on screen is: a colour dot plus the reading's
+// time. Three states, because a dot that is only ever green cannot tell
 // you anything — and the timestamp, not the colour, is what actually carries
 // the state. The value itself (floored hour, day label past today, status
 // bucket) is computed in mapa-sensors.tsx where the sensor data lives.
@@ -28,10 +28,10 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
   );
 }
 
-// The label is the quiet half and the time is the information, so they do not
-// share one weight and one colour. "Actualizado" is never the dot's only
-// companion — a bare colour cannot say how old "old" is. `compact` just drops
-// the type a notch for the mobile map pill, which should sit quietly.
+// The time is the information, shown beside the dot with no label (a bare
+// colour cannot say how old "old" is); screen readers still hear
+// "Actualizado". `compact` just drops the type a notch for the mobile map
+// pill, which should sit quietly.
 export function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
   if (freshness.status === "nodata") {
     return (
@@ -42,7 +42,7 @@ export function FreshnessText({ freshness, compact = false }: { freshness: Fresh
   }
   return (
     <span className={`whitespace-nowrap text-gray-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
-      Actualizado{" "}
+      <span className="sr-only">Actualizado </span>
       <time dateTime={freshness.dateTime} className="font-medium text-gray-700">
         {freshness.when}
       </time>
