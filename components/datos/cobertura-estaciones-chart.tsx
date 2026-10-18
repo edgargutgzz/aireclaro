@@ -17,7 +17,7 @@ import HorizontalScrollFade from "@/components/datos/horizontal-scroll-fade";
 import { tooltipPositionStyle } from "@/components/datos/svg-chart-utils";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 
-interface Estacion {
+export interface Estacion {
   sensorId: string;
   nombre: string;
 }
@@ -31,7 +31,22 @@ export type CoberturaCompacta = Record<
   { fechas: string[]; porEstacion: Record<string, string> }
 >;
 
-const POLLUTANT_LABEL: Record<Pollutant, string> = {
+// Unpacks one pollutant's compact grid into station -> date -> cubierto
+// (a date with no row is left out, so .get() is undefined = unknown).
+// Shared with the column view (cobertura-columnas-chart.tsx).
+export function decodeCobertura({ fechas, porEstacion: codigos }: CoberturaCompacta["PM2.5"]) {
+  const porEstacion = new Map<string, Map<string, boolean>>();
+  for (const [sensorId, codigo] of Object.entries(codigos)) {
+    const porFecha = new Map<string, boolean>();
+    for (let i = 0; i < fechas.length; i++) {
+      if (codigo[i] !== "-") porFecha.set(fechas[i], codigo[i] === "1");
+    }
+    porEstacion.set(sensorId, porFecha);
+  }
+  return { dates: fechas, coberturaPorEstacion: porEstacion };
+}
+
+export const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
   pm10: "PM10",
 };
@@ -97,7 +112,7 @@ const WEEKDAY_FULL = [
   "Domingo",
 ];
 
-function infoTab(pollutant: Pollutant): InfoTab {
+export function infoTab(pollutant: Pollutant): InfoTab {
   return {
     id: "metodologia",
     label: "Metodología",
@@ -435,18 +450,10 @@ export default function CoberturaEstacionesChart({
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
   const parametro = pollutant === "pm25" ? "PM2.5" : "PM10";
 
-  const { dates: allDates, coberturaPorEstacion } = useMemo(() => {
-    const { fechas, porEstacion: codigos } = cobertura[parametro];
-    const porEstacion = new Map<string, Map<string, boolean>>();
-    for (const [sensorId, codigo] of Object.entries(codigos)) {
-      const porFecha = new Map<string, boolean>();
-      for (let i = 0; i < fechas.length; i++) {
-        if (codigo[i] !== "-") porFecha.set(fechas[i], codigo[i] === "1");
-      }
-      porEstacion.set(sensorId, porFecha);
-    }
-    return { dates: fechas, coberturaPorEstacion: porEstacion };
-  }, [cobertura, parametro]);
+  const { dates: allDates, coberturaPorEstacion } = useMemo(
+    () => decodeCobertura(cobertura[parametro]),
+    [cobertura, parametro],
+  );
 
   const years = useMemo(
     () => [...new Set(allDates.map((d) => Number(d.slice(0, 4))))].sort(),

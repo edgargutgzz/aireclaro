@@ -9,6 +9,8 @@ import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton"
 import DiasInsalubresShareSkeleton from "@/components/datos/dias-insalubres-share-skeleton";
 import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
 import CoberturaEstacionesSkeleton from "@/components/datos/cobertura-estaciones-skeleton";
+import CoberturaColumnas from "@/components/datos/cobertura-columnas";
+import CoberturaColumnasSkeleton from "@/components/datos/cobertura-columnas-skeleton";
 import PromedioAnualEstacion from "@/components/datos/promedio-anual-estacion";
 import PromedioAnualSkeleton from "@/components/datos/promedio-anual-skeleton";
 import DescargaDatos from "@/components/datos/descarga-datos";
@@ -95,6 +97,11 @@ export default function Datos() {
         <div className="mt-16">
           <Suspense fallback={<CoberturaEstacionesSkeleton />}>
             <CoberturaEstaciones />
+          </Suspense>
+        </div>
+        <div className="mt-16">
+          <Suspense fallback={<CoberturaColumnasSkeleton />}>
+            <CoberturaColumnas />
           </Suspense>
         </div>
         <div className="mt-16">
