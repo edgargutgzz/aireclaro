@@ -1,7 +1,6 @@
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 
-// Shared by the /datos charts' year switcher -- extracted before the copies
-// in dias-insalubres-chart.tsx and cobertura-estaciones-chart.tsx could
+// The /datos charts' year switcher, shared so per-chart copies can't
 // drift. The pill markup itself lives in SegmentedToggle.
 export default function YearToggle({
   years,

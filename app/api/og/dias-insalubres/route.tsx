@@ -8,7 +8,7 @@ import {
   type MonthlySummary,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE } from "@/lib/datos-colors";
+import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE, COLOR_INSUFICIENTE } from "@/lib/datos-colors";
 import { fetchCoberturaCompacta } from "@/components/datos/cobertura-estaciones";
 import type { CoberturaCompacta } from "@/components/datos/cobertura-estaciones-chart";
 import { loadGoogleFont } from "@/lib/og-font";
@@ -365,7 +365,6 @@ function linkCard(options: ImageOptions, year: number, logo: string | null, cobe
   );
 }
 
-// The coverage chart's own gap colors (components/datos/cobertura-estaciones-chart.tsx).
-const COLOR_INSUFICIENTE = "#dbdfe3";
+// Faded fill for a date with no synced row yet (the old calendar grid's).
 const NO_DATA_FILL_OPACITY = 0.4;
 
