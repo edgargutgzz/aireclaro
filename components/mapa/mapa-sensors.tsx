@@ -38,7 +38,7 @@ import {
 } from "./field-layer";
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
-import { HealthRecommendations, StationReading } from "./station-card";
+import { GroupRecommendations, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { ZONA_AVISO, inBounds, readZona, roundZona, saveZona, type Zona, type ZonaStatus } from "./mi-zona";
@@ -1207,10 +1207,10 @@ export default function MapaSensors({
                   />
                 </div>
 
-                {/* Recommendations, open from the start (the chevron collapses them) */}
+                {/* The sensitive groups' advice, collapsed (the general advice is in the reading). */}
                 {sensorQuality && (
                   <div className="disclosure-in relative z-[1] mt-5 border-t border-gray-100 px-5 pb-5 pt-5">
-                    <HealthRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} defaultOpen />
+                    <GroupRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
                   </div>
                 )}
               </div>
@@ -1360,7 +1360,7 @@ export default function MapaSensors({
 
               {quality && (
                 <div className="relative z-[1] border-t border-gray-100 pt-5">
-                  <HealthRecommendations info={quality} onShowInfo={() => setCuidarmeQuality(quality)} defaultOpen />
+                  <GroupRecommendations info={quality} onShowInfo={() => setCuidarmeQuality(quality)} />
                 </div>
               )}
             </div>

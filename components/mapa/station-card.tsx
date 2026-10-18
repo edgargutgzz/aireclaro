@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope } from "lucide-react";
 import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { getSourceIcon, getSourceLabel } from "./lib";
@@ -27,15 +27,12 @@ const SENSITIVE_GROUPS = [
   { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
 
-// The whole block is a disclosure: the header row carries the label, its info
-// icon and the chevron, and nothing below it renders until it is opened. Plain
-// text on the card's own surface, no nested card or filled blocks.
-//
-// It opens expanded on both the desktop card and the mobile sheet (the user's
-// call, 2026-10-18: the advice should be there as soon as a station is
-// picked); the chevron still collapses it.
-export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }: { info: QualityInfo; onShowInfo: () => void; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
+// The advice for each sensitive group, behind a disclosure (the general
+// advice already sits in the reading, StationReading). The header row carries
+// the label, its info icon and the chevron; nothing below it renders until it
+// is opened. Collapsed on the desktop card and the mobile sheet alike.
+export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; onShowInfo: () => void }) {
+  const [open, setOpen] = useState(false);
   // useId() contains colons, which are not valid in an id fragment reference.
   const bodyId = `health-recs-${useId().replace(/:/g, "")}`;
 
@@ -73,7 +70,7 @@ export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }:
             style={{ backgroundColor: info.color, boxShadow: `inset 0 0 0 1px ${info.textColor}` }}
           />
           <span className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-            Recomendaciones de salud
+            Recomendaciones por grupo
           </span>
           <ChevronRight aria-hidden="true" className={`ml-auto h-4 w-4 flex-shrink-0 text-gray-400 transition-[color,transform] duration-200 group-hover:text-gray-600 ${open ? 'rotate-90' : ''}`} />
         </button>
@@ -84,7 +81,7 @@ export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }:
           type="button"
           onClick={onShowInfo}
           className="-my-1 -mr-1 -translate-y-px flex-shrink-0 rounded-xl p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
-          aria-label="Más información sobre recomendaciones de salud"
+          aria-label="Más información sobre las recomendaciones de salud"
         >
           <Info aria-hidden="true" className="h-3 w-3" />
         </button>
@@ -109,15 +106,8 @@ export function HealthRecommendations({ info, onShowInfo, defaultOpen = false }:
         {/* No colour on the card itself. The tie to the current reading is
             the disc on the header row above, present open or closed. */}
         <div className="disclosure-in mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white">
-          <div className="px-4 py-3.5">
-            <div className="mb-1 flex items-center gap-3">
-              <UsersRound aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
-              <p className="text-sm font-semibold text-gray-800">Población General</p>
-            </div>
-            <p className="ml-7 text-sm leading-relaxed text-gray-500">{info.generalRec}</p>
-          </div>
           {SENSITIVE_GROUPS.map((g) => (
-            <div key={g.key} className="border-t border-gray-100 px-4 py-3.5">
+            <div key={g.key} className="border-t border-gray-100 px-4 py-3.5 first:border-t-0">
               <div className="mb-1 flex items-center gap-3">
                 <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-gray-400" />
                 <p className="text-sm font-semibold text-gray-800">{g.label}</p>
@@ -178,7 +168,9 @@ export function StationReading({
         </button>
       </div>
 
-      {/* The current reading: the band label, then the µg/m³ value. */}
+      {/* The current reading: the band label, then the µg/m³ value, and
+          under it the advice for everyone, as one more line of the reading
+          (the groups' advice is behind GroupRecommendations below). */}
       <div>
         <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">Calidad del Aire</p>
         <div className="flex items-baseline justify-between gap-3">
@@ -191,6 +183,7 @@ export function StationReading({
             </span>
           )}
         </div>
+        {quality && <p className="mt-3 text-sm leading-relaxed text-gray-600">{quality.generalRec}</p>}
       </div>
     </>
   );
