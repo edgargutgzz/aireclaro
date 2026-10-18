@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { MONTHS_ES, type Pollutant } from "@/lib/dias-insalubres-aggregate";
+import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, withOpacity } from "@/lib/datos-colors";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import YearToggle from "@/components/datos/year-toggle";
@@ -16,24 +17,12 @@ import {
 
 // The same coverage data as CoberturaEstacionesChart, drawn as one column
 // per station with the year running top to bottom (Jan 1 to the last synced
-// day): a day with data is filled, a gap shows the gray track. The fill is a
-// vertical gradient over the whole plot, so its color only restates the
-// date, it encodes nothing of its own. Picking a column brings it forward
+// day): a day with data is filled with the grid view's "Con datos" blue, a
+// gap shows the gray track. Picking a column brings it forward
 // (the others fade) and a line marks the day under the pointer; the footer
 // names the station and that day's state, there are no column labels.
 
-// Gradient stops pixel-sampled from the reference design (2026-10-18),
-// top to bottom.
-const GRADIENT_STOPS: [number, string][] = [
-  [0, "#53b2d2"],
-  [0.1, "#4fa5d5"],
-  [0.3, "#5988de"],
-  [0.43, "#6875e4"],
-  [0.56, "#7d63eb"],
-  [0.7, "#9a5bd6"],
-  [0.86, "#bc57b4"],
-  [1, "#d6569b"],
-];
+const COLOR_CUBIERTO_FILL = withOpacity(COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY);
 const TRACK = "#f3f4f6"; // gray-100
 const FADED_OPACITY = 0.3;
 const AXIS_WIDTH = 36; // px, month labels
@@ -166,7 +155,6 @@ export default function CoberturaColumnasChart({
     return Math.round((total / (n * dates.length)) * 100);
   }, [estaciones, coberturaPorEstacion, dates, n]);
 
-  const gradientId = useId();
   const selEstacion = sel ? estaciones[sel.col] : null;
   const selFecha = sel?.day != null ? dates[sel.day] : null;
   const selCubierto = selEstacion && selFecha ? coberturaPorEstacion.get(selEstacion.sensorId)?.get(selFecha) : undefined;
@@ -226,14 +214,6 @@ export default function CoberturaColumnasChart({
               onKeyDown={onKeyDown}
               onBlur={clear}
             >
-              <defs>
-                <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={0} y2={height}>
-                  {GRADIENT_STOPS.map(([offset, color]) => (
-                    <stop key={offset} offset={offset} stopColor={color} />
-                  ))}
-                </linearGradient>
-              </defs>
-
               {monthStarts.map((m) =>
                 m.day * dayHeight > height - 12 ? null : (
                   <text
@@ -257,7 +237,7 @@ export default function CoberturaColumnasChart({
                       y={r.start * dayHeight}
                       width={colWidth}
                       height={r.length * dayHeight}
-                      fill={`url(#${gradientId})`}
+                      fill={COLOR_CUBIERTO_FILL}
                     />
                   ))}
                 </g>
