@@ -8,8 +8,11 @@ import SegmentedToggle from "@/components/datos/segmented-toggle";
 import YearToggle from "@/components/datos/year-toggle";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
 import {
+  CoberturaSubtitle,
   POLLUTANT_LABEL,
   decodeCobertura,
+  pctCobertura,
+  priorYearDates,
   infoTab,
   type CoberturaCompacta,
   type Estacion,
@@ -161,14 +164,15 @@ export default function CoberturaColumnasChart({
   // at another date).
   useEffect(() => setSel(null), [year, parametro]);
 
-  const pctTotal = useMemo(() => {
-    if (n === 0 || dates.length === 0) return 0;
-    const total = estaciones.reduce(
-      (sum, e) => sum + dates.filter((f) => coberturaPorEstacion.get(e.sensorId)?.get(f) === true).length,
-      0,
-    );
-    return Math.round((total / (n * dates.length)) * 100);
-  }, [estaciones, coberturaPorEstacion, dates, n]);
+  // The grid view's header numbers, same helpers.
+  const pctTotal = useMemo(
+    () => pctCobertura(estaciones, coberturaPorEstacion, dates),
+    [estaciones, coberturaPorEstacion, dates],
+  );
+  const delta = useMemo(() => {
+    const prior = priorYearDates(allDates, year, dates);
+    return prior.length === 0 ? null : pctTotal - pctCobertura(estaciones, coberturaPorEstacion, prior);
+  }, [allDates, year, dates, pctTotal, estaciones, coberturaPorEstacion]);
 
   const selEstacion = sel ? estaciones[sel.col] : null;
   const selFecha = sel?.day != null ? dates[sel.day] : null;
@@ -186,11 +190,7 @@ export default function CoberturaColumnasChart({
     <ChartCard
       infoTab={infoTab(pollutant)}
       title="Días con datos por estación"
-      subtitle={
-        <>
-          {pctTotal}% de días con datos de {POLLUTANT_LABEL[pollutant]} en {year}
-        </>
-      }
+      subtitle={<CoberturaSubtitle pct={pctTotal} delta={delta} pollutant={pollutant} year={year} />}
       headerRight={
         <>
           <SegmentedToggle

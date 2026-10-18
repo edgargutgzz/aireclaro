@@ -47,6 +47,95 @@ export function decodeCobertura({ fechas, porEstacion: codigos }: CoberturaCompa
   return { dates: fechas, coberturaPorEstacion: porEstacion };
 }
 
+// Share of station-days with data over `dates` (rounded %), every station
+// counted. Shared with the column view.
+export function pctCobertura(
+  estaciones: Estacion[],
+  coberturaPorEstacion: Map<string, Map<string, boolean>>,
+  dates: string[],
+) {
+  if (dates.length === 0 || estaciones.length === 0) return 0;
+  let cubierto = 0;
+  for (const estacion of estaciones) {
+    const porFecha = coberturaPorEstacion.get(estacion.sensorId);
+    for (const fecha of dates) {
+      if (porFecha?.get(fecha) === true) cubierto += 1;
+    }
+  }
+  return Math.round((cubierto / (dates.length * estaciones.length)) * 100);
+}
+
+// Same calendar window (Jan 1 through the last synced date's month-day)
+// in the prior year, not full-year vs. partial-year -- shared by the
+// chart-level delta and each station's own (EstacionCalendario does the
+// identical per-station math with the same dates). Empty when the prior
+// year doesn't have a synced row for every date in that window -- e.g.
+// right after the cron starts, or the one-off Feb 29 in a leap-year window
+// when the prior year isn't a leap year.
+export function priorYearDates(allDates: string[], year: number | null, realDates: string[]) {
+  if (year === null || realDates.length === 0) return [];
+  const windowEnd = realDates[realDates.length - 1].slice(5); // "MM-DD"
+  const pd = allDates.filter(
+    (d) => d.startsWith(String(year - 1)) && d.slice(5) <= windowEnd,
+  );
+  return pd.length >= realDates.length ? pd : [];
+}
+
+// The chart header's two-line subtitle ("85% de cobertura de PM2.5 en
+// 2026" / "30% mayor cobertura que en el mismo periodo de 2025"), shared
+// by both cobertura views.
+export function CoberturaSubtitle({
+  pct,
+  delta,
+  pollutant,
+  year,
+}: {
+  pct: number;
+  delta: number | null;
+  pollutant: Pollutant;
+  year: number;
+}) {
+  return (
+    <div className="md:flex md:items-center md:gap-3">
+      <div>
+        <span>{pct}%</span> de cobertura de {POLLUTANT_LABEL[pollutant]} en {year}
+      </div>
+      {/* Always mounted, just hidden via `invisible` when there's no
+          prior-year comparison (2025 has no 2024 data to compare
+          against) -- conditionally mounting this whole block made the
+          header's height jump depending on which year was selected,
+          the same bug días insalubres' own header already fixed
+          (2026-09-27 feedback: switching years "looks wonky"). */}
+      <div className={`contents ${delta !== null ? "" : "invisible"}`}>
+        <div className="hidden h-4 w-px bg-gray-200 md:block" />
+        <p className="mt-2 text-xs md:mt-0 md:text-sm">
+          {/* "%" here reads as a point delta (pct's own unit), not a
+              relative change -- flagged 2026-09-27, kept as requested.
+              Green/red (not COLOR_CUBIERTO's blue) mirrors días
+              insalubres' own comparison line -- more coverage is the good
+              direction here, same green/red-for-bad convention. */}
+          <span
+            className="whitespace-nowrap"
+            style={{
+              color:
+                (delta ?? 0) > 0
+                  ? COLOR_SALUDABLE
+                  : (delta ?? 0) < 0
+                    ? COLOR_INSALUBRE
+                    : undefined,
+            }}
+          >
+            {delta === 0
+              ? "Misma cobertura"
+              : `${Math.abs(delta ?? 0)}% ${(delta ?? 0) > 0 ? "mayor" : "menor"} cobertura`}
+          </span>{" "}
+          que en el mismo periodo de {year - 1}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export const POLLUTANT_LABEL: Record<Pollutant, string> = {
   pm25: "PM2.5",
   pm10: "PM10",
@@ -525,52 +614,23 @@ export default function CoberturaEstacionesChart({
     return WEEKDAY_COL_WIDTH + todayCell.col * (cell + GAP) + cell / 2;
   }, [cells, year, todayStr, cell]);
 
-  const pctCobertura = useMemo(() => {
-    if (realDates.length === 0 || estaciones.length === 0) return 0;
-    let cubierto = 0;
-    for (const estacion of estaciones) {
-      const porFecha = coberturaPorEstacion.get(estacion.sensorId);
-      for (const fecha of realDates) {
-        if (porFecha?.get(fecha) === true) cubierto += 1;
-      }
-    }
-    return Math.round(
-      (cubierto / (realDates.length * estaciones.length)) * 100,
-    );
-  }, [realDates, estaciones, coberturaPorEstacion]);
-
-  // Same calendar window (Jan 1 through the last synced date's month-day)
-  // in the prior year, not full-year vs. partial-year -- shared by the
-  // chart-level delta below and each station's own (EstacionCalendario
-  // does the identical per-station math with the same dates). Empty when
-  // the prior year doesn't have a synced row for every date in that window
-  // -- e.g. right after the cron starts, or the one-off Feb 29 in a
-  // leap-year window when the prior year isn't a leap year.
-  const priorDates = useMemo(() => {
-    if (year === null || realDates.length === 0) return [];
-    const windowEnd = realDates[realDates.length - 1].slice(5); // "MM-DD"
-    const pd = allDates.filter(
-      (d) => d.startsWith(String(year - 1)) && d.slice(5) <= windowEnd,
-    );
-    return pd.length >= realDates.length ? pd : [];
-  }, [allDates, year, realDates]);
-
+  const pctTotal = useMemo(
+    () => pctCobertura(estaciones, coberturaPorEstacion, realDates),
+    [realDates, estaciones, coberturaPorEstacion],
+  );
+  const priorDates = useMemo(
+    () => priorYearDates(allDates, year, realDates),
+    [allDates, year, realDates],
+  );
   // Same-period-last-year comparison, mirroring días insalubres' subtitle
   // line.
-  const priorYearPctDelta = useMemo(() => {
-    if (priorDates.length === 0) return null;
-    let cubierto = 0;
-    for (const estacion of estaciones) {
-      const porFecha = coberturaPorEstacion.get(estacion.sensorId);
-      for (const fecha of priorDates) {
-        if (porFecha?.get(fecha) === true) cubierto += 1;
-      }
-    }
-    const priorPct = Math.round(
-      (cubierto / (priorDates.length * estaciones.length)) * 100,
-    );
-    return pctCobertura - priorPct;
-  }, [priorDates, estaciones, coberturaPorEstacion, pctCobertura]);
+  const priorYearPctDelta = useMemo(
+    () =>
+      priorDates.length === 0
+        ? null
+        : pctTotal - pctCobertura(estaciones, coberturaPorEstacion, priorDates),
+    [priorDates, estaciones, coberturaPorEstacion, pctTotal],
+  );
 
   if (allDates.length === 0) {
     return (
@@ -585,45 +645,9 @@ export default function CoberturaEstacionesChart({
       infoTab={infoTab(pollutant)}
       title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
       subtitle={
-        <div className="md:flex md:items-center md:gap-3">
-          <div>
-            <span>{pctCobertura}%</span> de cobertura de{" "}
-            {POLLUTANT_LABEL[pollutant]} en {year}
-          </div>
-          {/* Always mounted, just hidden via `invisible` when there's no
-              prior-year comparison (2025 has no 2024 data to compare
-              against) -- conditionally mounting this whole block made the
-              header's height jump depending on which year was selected,
-              the same bug días insalubres' own header already fixed
-              (2026-09-27 feedback: switching years "looks wonky"). */}
-          <div className={`contents ${priorYearPctDelta !== null ? "" : "invisible"}`}>
-            <div className="hidden h-4 w-px bg-gray-200 md:block" />
-            <p className="mt-2 text-xs md:mt-0 md:text-sm">
-              {/* "%" here reads as a point delta (pctCobertura's own
-                  unit), not a relative change -- flagged 2026-09-27,
-                  kept as requested. Green/red (not COLOR_CUBIERTO's blue,
-                  unlike the grid/tooltip above) mirrors días insalubres'
-                  own comparison line -- more coverage is the good
-                  direction here, same green/red-for-bad convention. */}
-              <span
-                className="whitespace-nowrap"
-                style={{
-                  color:
-                    (priorYearPctDelta ?? 0) > 0
-                      ? COLOR_SALUDABLE
-                      : (priorYearPctDelta ?? 0) < 0
-                        ? COLOR_INSALUBRE
-                        : undefined,
-                }}
-              >
-                {priorYearPctDelta === 0
-                  ? "Misma cobertura"
-                  : `${Math.abs(priorYearPctDelta ?? 0)}% ${(priorYearPctDelta ?? 0) > 0 ? "mayor" : "menor"} cobertura`}
-              </span>{" "}
-              que en el mismo periodo de {(year ?? 1) - 1}
-            </p>
-          </div>
-        </div>
+        year !== null && (
+          <CoberturaSubtitle pct={pctTotal} delta={priorYearPctDelta} pollutant={pollutant} year={year} />
+        )
       }
       headerRight={
         <>
