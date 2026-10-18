@@ -34,19 +34,30 @@ export default function Compartir({
     }
     navigator.clipboard.writeText(url);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const Icono = copied ? Check : Share2;
   if (soloIcono) {
+    // With no label of its own, the copy is confirmed by a hint chip (the
+    // style guide's dark tooltip) beside the button.
     return (
       <button
         type="button"
         onClick={share}
-        title={copied ? "Enlace copiado" : "Compartir"}
+        title={copied ? undefined : "Copiar enlace"}
         className={`flex h-8 w-8 items-center justify-center rounded-xl border border-gray-200 bg-white/95 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${className}`}
       >
         <Icono className="h-3.5 w-3.5" aria-hidden />
+        {copied && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute right-full top-1/2 mr-2 flex -translate-y-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-gray-900 px-2.5 py-1 text-xs font-medium text-white"
+          >
+            <Check className="h-3 w-3" />
+            Enlace copiado
+          </span>
+        )}
         <span className="sr-only" aria-live="polite">
           {copied ? "Enlace copiado" : `Compartir ${title}`}
         </span>
