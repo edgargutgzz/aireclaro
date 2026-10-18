@@ -2,14 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { ChevronRight, Layers, Wind, X } from "lucide-react";
-import { Map, Marker } from "maplibre-gl";
+import { LngLatBounds, Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
-import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
+import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams, readSavedHide, saveHide } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
 import {
   PULSE_FALLBACK_COLOR,
@@ -107,8 +107,15 @@ export default function MapaSensors({
   // conflicting ?src= / ?hide= in the same URL: its station's source and
   // municipio are forced visible so the clear-selection effect can't drop the
   // very sensor the link is about.
+  // A URL with no station or filter of its own opens on the Ubicación the
+  // visitor left last time (lib/map-url-state readSavedHide); a shared link
+  // always shows what it says.
   const initialSensorId = useRef(readSensorParam()).current;
-  const initialFilters = useRef(readFilterParams()).current;
+  const initialFilters = useRef((() => {
+    const fromUrl = readFilterParams();
+    if (initialSensorId != null || fromUrl.src || fromUrl.hide.length) return fromUrl;
+    return { src: null, hide: readSavedHide() };
+  })()).current;
   const linkedSensor = initialSensorId != null
     ? sensors.find((s) => String(s.sensor_id) === initialSensorId)
     : undefined;
@@ -579,11 +586,22 @@ export default function MapaSensors({
   useEffect(() => {
     if (map.current) return;
 
+    // A Ubicación filter on load (restored or from the URL) frames the
+    // stations it leaves, instead of the metro view.
+    const frame = !linkedSensor && hiddenMunicipios.length && visibleSensors.length
+      ? visibleSensors.reduce(
+          (b, s) => b.extend([s.lon, s.lat]),
+          new LngLatBounds([visibleSensors[0].lon, visibleSensors[0].lat], [visibleSensors[0].lon, visibleSensors[0].lat]),
+        )
+      : null;
+
     const focus = linkedSensor
       ? { center: [linkedSensor.lon, linkedSensor.lat] as [number, number], zoom: 13 }
-      : defaultSelection
-        ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 11 }
-        : { center: OPENING_CENTER, zoom: 10.5 };
+      : frame
+        ? { center: frame.getCenter().toArray() as [number, number], zoom: 11 }
+        : defaultSelection
+          ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 11 }
+          : { center: OPENING_CENTER, zoom: 10.5 };
 
     const m = new Map({
       container: mapContainer.current!,
@@ -603,6 +621,7 @@ export default function MapaSensors({
       initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
     );
     m.jumpTo(focus);
+    if (frame) m.fitBounds(frame, { padding: 48, maxZoom: 13, animate: false });
 
     m.on("style.load", () => setStyleReady(true));
 
@@ -853,6 +872,14 @@ export default function MapaSensors({
   useEffect(() => {
     writeFilterParams({ showOccamm, showOtros, showSima, hiddenMunicipios });
   }, [showOccamm, showOtros, showSima, hiddenMunicipios]);
+
+  // Remember the Ubicación the visitor sets (not one that arrived in a
+  // shared link or was restored), for their next visit.
+  const ubicacionSeedRef = useRef(hiddenMunicipios);
+  useEffect(() => {
+    if (hiddenMunicipios === ubicacionSeedRef.current) return;
+    saveHide(hiddenMunicipios);
+  }, [hiddenMunicipios]);
 
   // Close the estación card. **Desktop only** — the right column goes empty and
   // the map stands alone. On mobile there is no "close": the sheet always rests
