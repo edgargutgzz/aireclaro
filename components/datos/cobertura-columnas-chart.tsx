@@ -29,7 +29,7 @@ const AXIS_WIDTH = 36; // px, month labels
 const GAP_RATIO = 0.3; // share of each column's slot left as the gap
 
 function plotHeight(width: number) {
-  return width < 640 ? 520 : 720;
+  return width < 640 ? 520 : 560;
 }
 
 // "6 abr"
