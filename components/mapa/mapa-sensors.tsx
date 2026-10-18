@@ -1173,7 +1173,7 @@ export default function MapaSensors({
       {/* Desktop right column. Empty at rest (the map stands alone); a picked
           marker or a ?sensor= link opens its card, and the X / Escape / a
           click on empty map close it. */}
-      <div className="pointer-events-none absolute bottom-10 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
+      <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
         {/* flex-1 so the wrapper takes the full column height; that bounds the
             card, so its own overflow-y-auto body scrolls instead of the card
@@ -1236,7 +1236,7 @@ export default function MapaSensors({
 
           The column runs the whole height; the legend sits at the bottom
           (md:mt-auto) and the panel grows into whatever is left over. */}
-      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-10 md:left-6 md:top-6 md:w-panel-filters">
+      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-14 md:left-6 md:top-6 md:w-panel-filters">
         <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:flex">
           {/* The header carries the filter state, in the same "label · summary"
               idiom the rows inside the panel already use. gray-500 rather than
