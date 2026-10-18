@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { MONTHS_ES, MONTHS_ES_FULL, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_INSUFICIENTE } from "@/lib/datos-colors";
 import ChartCard from "@/components/datos/chart-card";
@@ -20,29 +20,29 @@ import {
 
 // The same coverage data as CoberturaEstacionesChart, drawn as one column
 // per station with the year running top to bottom (Jan 1 to the last synced
-// day): a day with data is blue, darker the longer its unbroken streak,
-// any other day the grid view's "Datos insuficientes" gray. Every column is
+// day): a day with data is filled with a teal-blue-violet-pink gradient
+// (top to bottom over the whole plot, so it only restates the date), any
+// other day the grid view's "Datos insuficientes" gray. Every column is
 // fully colored until one is picked; then the others fade, a line marks the day under the pointer and
 // a tooltip beside the column names the station and that day's state (there
 // are no column labels).
 
-// A day with data is colored by the length of the unbroken streak it
-// belongs to (counted within the year shown), one blue hue, light to dark:
-// a station that keeps dropping out reads pale and broken, a steady one
-// dark and solid. Steps set from the real streak lengths (2026-10-18:
-// PM2.5 2026 median 5 days, longest 107; 90+ would almost never show).
-// Tailwind blue-300 is the lightest so a short streak never passes for the
-// gap gray.
-const STREAK_STEPS: { min: number; label: string; color: string }[] = [
-  { min: 1, label: "1 a 6", color: "#93c5fd" }, // blue-300
-  { min: 7, label: "7 a 29", color: "#3b82f6" }, // blue-500
-  { min: 30, label: "30 a 59", color: "#1d4ed8" }, // blue-700
-  { min: 60, label: "60 o más", color: "#1e3a8a" }, // blue-900
+// Pixel-sampled from the user's reference design (2026-10-18), top to
+// bottom along its highlighted column.
+const GRADIENT_STOPS: [number, string][] = [
+  [0, "#53b2d2"],
+  [0.1, "#4fa5d5"],
+  [0.3, "#5988de"],
+  [0.43, "#6875e4"],
+  [0.56, "#7d63eb"],
+  [0.71, "#9a5bd6"],
+  [0.86, "#bc57b4"],
+  [1, "#d95598"],
 ];
-
-function streakColor(days: number) {
-  return [...STREAK_STEPS].reverse().find((s) => days >= s.min)!.color;
-}
+// The legend swatch's version of the same gradient.
+const GRADIENT_CSS = `linear-gradient(${GRADIENT_STOPS.map(([o, c]) => `${c} ${o * 100}%`).join(", ")})`;
+// The tooltip's "Con datos": the gradient's blue.
+const COLOR_CON_DATOS = "#5988de";
 // Only the color fades, not the gray, so a faded column's gaps still show.
 const FADED_OPACITY = 0.4;
 const TOOLTIP_WIDTH = 208; // px, the card's w-52
@@ -190,14 +190,10 @@ export default function CoberturaColumnasChart({
     return prior.length === 0 ? null : pctTotal - pctCobertura(estaciones, coberturaPorEstacion, prior);
   }, [allDates, year, dates, pctTotal, estaciones, coberturaPorEstacion]);
 
+  const gradientId = useId();
   const selEstacion = sel ? estaciones[sel.col] : null;
   const selFecha = sel?.day != null ? dates[sel.day] : null;
   const selCubierto = selEstacion && selFecha ? coberturaPorEstacion.get(selEstacion.sensorId)?.get(selFecha) : undefined;
-  // The streak the picked day belongs to (its length), for the tooltip.
-  const selRacha =
-    sel?.day != null && selCubierto
-      ? runs[sel.col].find((r) => r.cubierto && sel.day! >= r.start && sel.day! < r.start + r.length)?.length
-      : undefined;
 
   if (allDates.length === 0 || year === null) {
     return (
@@ -226,17 +222,11 @@ export default function CoberturaColumnasChart({
       }
     >
       <div className="px-5 pb-6 pt-5 md:pt-6">
-        {/* The grid view's legend row, with the streak scale in place of
-            its single "Con datos" swatch; wraps on a phone. */}
-        <div className="mb-4 flex flex-wrap items-center justify-end gap-x-4 gap-y-2 text-xs text-gray-500 md:mb-6">
+        {/* The grid view's legend row. */}
+        <div className="mb-4 flex items-center justify-end gap-4 text-xs text-gray-500 md:mb-6">
           <span className="flex items-center gap-1.5">
-            Días seguidos con datos:
-            {STREAK_STEPS.map((step) => (
-              <span key={step.min} className="ml-1.5 flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: step.color }} />
-                {step.label}
-              </span>
-            ))}
+            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundImage: GRADIENT_CSS }} />
+            Con datos
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: COLOR_INSUFICIENTE }} />
@@ -267,6 +257,13 @@ export default function CoberturaColumnasChart({
               onKeyDown={onKeyDown}
               onBlur={clear}
             >
+              <defs>
+                <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={0} y2={height}>
+                  {GRADIENT_STOPS.map(([offset, color]) => (
+                    <stop key={offset} offset={offset} stopColor={color} />
+                  ))}
+                </linearGradient>
+              </defs>
               {monthStarts.map((m) =>
                 m.day * dayHeight > height - 12 ? null : (
                   <text
@@ -289,7 +286,7 @@ export default function CoberturaColumnasChart({
                       y={r.start * dayHeight}
                       width={colWidth}
                       height={r.length * dayHeight}
-                      fill={r.cubierto ? streakColor(r.length) : COLOR_INSUFICIENTE}
+                      fill={r.cubierto ? `url(#${gradientId})` : COLOR_INSUFICIENTE}
                       fillOpacity={!r.cubierto || !sel || sel.col === i ? 1 : FADED_OPACITY}
                     />
                   ))}
@@ -324,17 +321,8 @@ export default function CoberturaColumnasChart({
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">{formatFecha(selFecha)}</span>
               <span className="text-sm font-semibold text-gray-800">{selEstacion.nombre}</span>
-              <span
-                className="text-sm font-semibold"
-                // The streak's own blue, except blue-300, too light to read
-                // as text on white: the next step's blue-500 instead.
-                style={{ color: selRacha ? streakColor(Math.max(selRacha, STREAK_STEPS[1].min)) : "rgb(107,114,128)" }}
-              >
-                {selCubierto === true
-                  ? `Con datos · ${selRacha} ${selRacha === 1 ? "día seguido" : "días seguidos"}`
-                  : selCubierto === false
-                    ? "Datos insuficientes"
-                    : "Sin registro"}
+              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS : "rgb(107,114,128)" }}>
+                {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
               </span>
               <span className="text-xs text-gray-500">
                 {pctCubierto(coberturaPorEstacion.get(selEstacion.sensorId), dates)}% de días con datos en {year}
