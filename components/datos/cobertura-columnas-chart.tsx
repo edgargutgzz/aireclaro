@@ -206,7 +206,7 @@ export default function CoberturaColumnasChart({
   return (
     <ChartCard
       infoTab={infoTab(pollutant)}
-      title="Días con datos por estación"
+      title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
       subtitle={<CoberturaSubtitle pct={pctTotal} delta={delta} pollutant={pollutant} year={year} />}
       headerRight={
         <>
