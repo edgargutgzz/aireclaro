@@ -18,37 +18,14 @@ import {
 // The same coverage data as CoberturaEstacionesChart, drawn as one column
 // per station with the year running top to bottom (Jan 1 to the last synced
 // day): a day with data is filled with the grid view's "Con datos" blue, a
-// gap shows the gray track. Picking a column brings it forward
-// (the others fade) and a line marks the day under the pointer; the footer
+// gap shows the gray track. Columns rest pale; the picked one takes the
+// full blue and a line marks the day under the pointer; the footer
 // names the station and that day's state, there are no column labels.
 
-// Two looks for the plot area, light (the card's white) and dark (trial
-// 2026-10-18, under the light one on /datos). The dark one's background,
-// track and day line are pixel-sampled from the reference design; its blue
-// is the light version's rendered color (blue-500 at the grid's fill
-// opacity over white) as a solid, since the same rgba over black would
-// render a much darker blue.
-const THEMES = {
-  light: {
-    body: undefined,
-    fill: withOpacity(COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY),
-    track: "#f3f4f6", // gray-100
-    line: "#6b7280", // gray-500
-    label: "fill-gray-400",
-    name: "text-gray-800",
-    text: "text-gray-500",
-  },
-  dark: {
-    body: "#141413",
-    fill: "#7aaaf9",
-    track: "#1b1b1a",
-    line: "#8a898a",
-    label: "fill-gray-500",
-    name: "text-white",
-    text: "text-gray-400",
-  },
-};
-const FADED_OPACITY = 0.3;
+const COLOR_CUBIERTO_FILL = withOpacity(COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY);
+const TRACK = "#f3f4f6"; // gray-100
+// Only the blue fades, not the track, so a resting column's gaps still show.
+const RESTING_OPACITY = 0.4;
 const AXIS_WIDTH = 36; // px, month labels
 const GAP_RATIO = 0.3; // share of each column's slot left as the gap
 
@@ -75,13 +52,10 @@ interface Seleccion {
 export default function CoberturaColumnasChart({
   estaciones,
   cobertura,
-  dark = false,
 }: {
   estaciones: Estacion[];
   cobertura: CoberturaCompacta;
-  dark?: boolean;
 }) {
-  const theme = THEMES[dark ? "dark" : "light"];
   const [pollutant, setPollutant] = useState<Pollutant>("pm25");
   const parametro = pollutant === "pm25" ? "PM2.5" : "PM10";
   const { dates: allDates, coberturaPorEstacion } = useMemo(
@@ -216,7 +190,7 @@ export default function CoberturaColumnasChart({
         </>
       }
     >
-      <div className="px-5 pb-6 pt-5 md:pt-6" style={{ backgroundColor: theme.body }}>
+      <div className="px-5 pb-6 pt-5 md:pt-6">
         <div ref={setNode} style={{ height }}>
           {width > 0 && (
             <svg
@@ -247,7 +221,7 @@ export default function CoberturaColumnasChart({
                     key={m.label}
                     x={0}
                     y={m.day * dayHeight + 10}
-                    className={`${theme.label} text-[11px] font-medium`}
+                    className="fill-gray-400 text-[11px] font-medium"
                   >
                     {m.label}
                   </text>
@@ -255,8 +229,8 @@ export default function CoberturaColumnasChart({
               )}
 
               {estaciones.map((e, i) => (
-                <g key={e.sensorId} opacity={sel && sel.col !== i ? FADED_OPACITY : 1}>
-                  <rect x={colX(i)} y={0} width={colWidth} height={height} fill={theme.track} />
+                <g key={e.sensorId}>
+                  <rect x={colX(i)} y={0} width={colWidth} height={height} fill={TRACK} />
                   {runs[i].map((r) => (
                     <rect
                       key={r.start}
@@ -264,7 +238,8 @@ export default function CoberturaColumnasChart({
                       y={r.start * dayHeight}
                       width={colWidth}
                       height={r.length * dayHeight}
-                      fill={theme.fill}
+                      fill={COLOR_CUBIERTO_FILL}
+                      fillOpacity={sel?.col === i ? 1 : RESTING_OPACITY}
                     />
                   ))}
                 </g>
@@ -276,7 +251,7 @@ export default function CoberturaColumnasChart({
                   x2={width}
                   y1={(sel.day + 0.5) * dayHeight}
                   y2={(sel.day + 0.5) * dayHeight}
-                  stroke={theme.line}
+                  stroke="#6b7280"
                   strokeWidth={1.5}
                 />
               )}
@@ -286,12 +261,12 @@ export default function CoberturaColumnasChart({
 
         {/* Two lines always, so picking a column doesn't move the page. */}
         <div className="mt-4 text-sm" aria-live="polite">
-          <p className={theme.text}>
-            <span className={`font-medium ${theme.name}`}>{selEstacion ? selEstacion.nombre : "Todas las estaciones"}</span>
+          <p className="text-gray-500">
+            <span className="font-medium text-gray-800">{selEstacion ? selEstacion.nombre : "Todas las estaciones"}</span>
             {" · "}
             {selEstacion ? pctCubierto(coberturaPorEstacion.get(selEstacion.sensorId), dates) : pctTotal}% de días con datos
           </p>
-          <p className={theme.text}>
+          <p className="text-gray-500">
             {selFecha
               ? `${formatDia(selFecha)}: ${selCubierto === true ? "con datos" : selCubierto === false ? "datos insuficientes" : "sin registro"}`
               : "Selecciona una columna para ver cada estación"}

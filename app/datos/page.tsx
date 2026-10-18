@@ -104,12 +104,6 @@ export default function Datos() {
             <CoberturaColumnas />
           </Suspense>
         </div>
-        {/* Dark trial of the same view (2026-10-18), to compare. */}
-        <div className="mt-16">
-          <Suspense fallback={<CoberturaColumnasSkeleton />}>
-            <CoberturaColumnas dark />
-          </Suspense>
-        </div>
         <div className="mt-16">
           <Suspense fallback={<PromedioAnualSkeleton />}>
             <PromedioAnualEstacion />
