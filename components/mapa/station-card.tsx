@@ -70,7 +70,7 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
             style={{ backgroundColor: info.color, boxShadow: `inset 0 0 0 1px ${info.textColor}` }}
           />
           <span className="truncate text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
-            Recomendaciones por grupo
+            Recomendaciones por grupo sensible
           </span>
           <ChevronRight aria-hidden="true" className={`ml-auto h-4 w-4 flex-shrink-0 text-gray-400 transition-[color,transform] duration-200 group-hover:text-gray-600 ${open ? 'rotate-90' : ''}`} />
         </button>
