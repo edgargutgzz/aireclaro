@@ -61,7 +61,7 @@ export function markerLabel(sensor: Sensor, pm25: number | null) {
   return [
     getSourceLabel(isSima, sensor.red),
     displayName(sensor),
-    has ? `${roundPM25(pm25)} μg/m³ PM2.5` : "sin actualizar",
+    has ? `${roundPM25(pm25)} μg/m³ PM2.5` : "sin lectura reciente",
     has ? getQualityInfo(pm25)?.label : null,
   ]
     .filter(Boolean)

@@ -6,12 +6,13 @@ import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { getSourceIcon, getSourceLabel } from "./lib";
 
-// The card's big quality line. With no reading for the moment on screen — a
-// SIMA station that didn't report that hour — it reads "No disponible" in the
-// quiet gray treatment, not the huge coloured headline.
+// The card's big quality line. With no reading from the last 3 hours (the
+// site's live cutoff) it reads "Sin lectura reciente" in the quiet gray
+// treatment, not the huge coloured headline: it says what we know, not why
+// (the station may well be measuring, its reading just hasn't arrived).
 export function QualityHeadline({ info, fallbackColor }: { info: QualityInfo | null; fallbackColor?: string }) {
   if (!info) {
-    return <span className="min-w-0 flex-1 truncate text-lg font-medium text-gray-400">No disponible</span>;
+    return <span className="min-w-0 flex-1 truncate text-lg font-medium text-gray-400">Sin lectura reciente</span>;
   }
   return (
     <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: info.textColor ?? fallbackColor }}>

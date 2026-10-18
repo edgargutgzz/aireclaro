@@ -344,7 +344,7 @@ export default function MapaSensors({
 
   // The freshness readout reports the reading on screen: the card's station
   // (picked, else the default), else the newest anywhere in the live set; a
-  // card station without a reading reads "Sin actualizar". Sensors
+  // card station without a reading says it has none from the last 3 hours. Sensors
   // publish on their own schedules, so a dataset-wide "newest" would sit ahead
   // of one station and make a current reading look late.
   //
