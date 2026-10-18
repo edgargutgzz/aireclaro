@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown } from "lucide-react";
 
 // The site's one navbar, on every page including the map. Copied from
 // observatoriodelaire.com's navbar (components/navbar.tsx there), markup and
@@ -38,36 +37,19 @@ function CloseIcon() {
 }
 
 // The current page's item is underlined (no width change, so the bar doesn't
-// shift between pages) and announced as aria-current="page"; a dropdown's
-// button is underlined when one of its pages is current.
+// shift between pages) and announced as aria-current="page".
 const CURRENT = "underline decoration-2 underline-offset-8";
-
-// Desktop dropdowns read like the mobile menu (the validated design): the
-// bar's own background and plain links, no group label (the button already
-// names the group). It opens right under its button, anchored to its right
-// edge (-mr-6/px-6) since Nosotros is the bar's last item and a left-anchored
-// panel would run past the page margin; outlined so it stands apart from the bar.
-const DROPDOWN =
-  "absolute right-0 top-full mt-3 -mr-6 min-w-56 rounded-2xl border border-stone-200 bg-stone-50 px-6 py-2 shadow-sm";
-
-// The small gray label over each group of links in the mobile menu.
-const GROUP_LABEL = "pb-1 text-xs font-semibold uppercase tracking-wider text-gray-500";
 
 // The house focus ring, on every focusable item in the bar.
 const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
-// The main sections, in the same order on desktop and mobile.
+// Every section, in the same order on desktop and mobile; Quiénes somos last.
 const SECCIONES = [
   { href: "/mapa", label: "Mapa" },
   { href: "/datos", label: "Datos" },
   { href: "/publicaciones", label: "Publicaciones" },
-];
-
-const NOSOTROS = [
-  { href: "/quienes-somos", label: "Quiénes somos" },
-  // Tucked in here (last, least prominent) until the page is ready to go
-  // back to the top level.
   { href: "/proyectos", label: "Proyectos" },
+  { href: "/quienes-somos", label: "Quiénes somos" },
 ];
 
 export default function Navbar() {
@@ -75,15 +57,10 @@ export default function Navbar() {
   const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   const current = (href: string) => (isCurrent(href) ? "page" : undefined);
   // Menu state
-  const [menuState, setMenuState] = useState({
-    isOpen: false,
-    isSubmenuOpen: false,
-  });
+  const [isOpen, setIsOpen] = useState(false);
 
   // Ref for detecting clicks outside of menu
   const menuRef = useRef<HTMLDivElement>(null);
-  // The dropdown's button, so Escape can hand focus back to it.
-  const nosotrosButtonRef = useRef<HTMLButtonElement>(null);
 
   // The bar's bottom edge, where the mobile panel starts, measured on open so
   // the panel lines up wherever the bar sits.
@@ -93,42 +70,17 @@ export default function Navbar() {
   // Toggles the mobile menu open/closed state
   const toggleMobileMenu = () => {
     setPanelTop(headerRef.current?.getBoundingClientRect().bottom ?? 0);
-    setMenuState((prev) => ({
-      ...prev,
-      isOpen: !prev.isOpen,
-    }));
-  };
-
-  // Toggles the submenu open/closed state (Nosotros)
-  const toggleSubmenu = () => {
-    setMenuState((prev) => ({
-      ...prev,
-      isSubmenuOpen: !prev.isSubmenuOpen,
-    }));
+    setIsOpen((open) => !open);
   };
 
   // Effect to close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuState({
-          isOpen: false,
-          isSubmenuOpen: false,
-        });
-      }
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) setIsOpen(false);
     };
 
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        // Focus inside the open dropdown returns to its button.
-        const active = document.activeElement;
-        const button = nosotrosButtonRef.current;
-        if (button && active && button.parentElement?.contains(active)) button.focus();
-        setMenuState({
-          isOpen: false,
-          isSubmenuOpen: false,
-        });
-      }
+      if (event.key === "Escape") setIsOpen(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -143,28 +95,15 @@ export default function Navbar() {
   // scroller is <main> (components/main-content.tsx), plus the document
   // itself for iOS Safari's rubber-banding.
   useEffect(() => {
-    if (!menuState.isOpen) return;
+    if (!isOpen) return;
     const scrollers = [document.getElementById("contenido"), document.documentElement];
     const previous = scrollers.map((el) => el?.style.overflow ?? "");
     scrollers.forEach((el) => el && (el.style.overflow = "hidden"));
     return () => scrollers.forEach((el, i) => el && (el.style.overflow = previous[i]));
-  }, [menuState.isOpen]);
-
-  // Tabbing out of an open dropdown closes it.
-  const closeOnFocusOut =
-    (key: "isSubmenuOpen") => (event: React.FocusEvent<HTMLDivElement>) => {
-      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-        setMenuState((prev) => (prev[key] ? { ...prev, [key]: false } : prev));
-      }
-    };
+  }, [isOpen]);
 
   // Handles link clicks
-  const handleLinkClick = () => {
-    setMenuState({
-      isOpen: false,
-      isSubmenuOpen: false,
-    });
-  };
+  const handleLinkClick = () => setIsOpen(false);
 
   return (
     <header ref={headerRef} className="relative z-50 bg-stone-50 border-stone-200">
@@ -184,7 +123,7 @@ export default function Navbar() {
             preload
           />
         </Link>
-        {/* Desktop menu (lg+): Mapa, Datos, Publicaciones, then the Nosotros dropdown last. */}
+        {/* Desktop menu (lg+). */}
         <nav aria-label="Principal" className="hidden lg:flex lg:items-center lg:gap-10">
           {SECCIONES.map((l) => (
             <Link
@@ -197,39 +136,6 @@ export default function Navbar() {
               {l.label}
             </Link>
           ))}
-
-          {/* Nosotros */}
-          <div className="relative" onBlur={closeOnFocusOut("isSubmenuOpen")}>
-            <button
-              ref={nosotrosButtonRef}
-              onClick={toggleSubmenu}
-              aria-expanded={menuState.isSubmenuOpen}
-              className={`flex items-center hover:text-gray-500 ${FOCUS} ${NOSOTROS.some((l) => isCurrent(l.href)) ? CURRENT : ""}`}
-            >
-              Nosotros
-              <ChevronDown
-                className={`ml-1 h-4 transition-transform ${menuState.isSubmenuOpen ? "rotate-180" : "rotate-0"}`}
-              />
-            </button>
-            {menuState.isSubmenuOpen && (
-              <div className={DROPDOWN}>
-                <ul>
-                  {NOSOTROS.map((l) => (
-                    <li key={l.href}>
-                      <Link
-                        href={l.href}
-                        aria-current={current(l.href)}
-                        className={`block w-fit py-2 hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-                        onClick={handleLinkClick}
-                      >
-                        {l.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
         </nav>
 
         {/* Menu Icon for mobile and tablet */}
@@ -237,50 +143,39 @@ export default function Navbar() {
           {/* p-2/-m-2: a 44px tap target around the 28px icon, same position. */}
           <button
             onClick={toggleMobileMenu}
-            aria-label={menuState.isOpen ? "Cerrar menú" : "Abrir menú"}
-            aria-expanded={menuState.isOpen}
+            aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={isOpen}
             aria-controls="menu-movil"
             className={`-m-2 p-2 ${FOCUS}`}
           >
-            {menuState.isOpen ? <CloseIcon /> : <MenuIcon />}
+            {isOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
         </div>
 
         {/* Mobile / tablet menu: a full-screen panel under the bar (inside
-            menuRef, so a tap on a link isn't read as a tap outside). No
-            accordions: every link visible at once, each group under a small gray
-            label (Explora, Nosotros) so both look alike. */}
-        {menuState.isOpen && (
+            menuRef, so a tap on a link isn't read as a tap outside): every
+            link visible at once, in the desktop order. */}
+        {isOpen && (
           <nav
             id="menu-movil"
             aria-label="Principal"
             style={{ top: panelTop }}
             className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
           >
-            {[
-              { titulo: "Explora", links: SECCIONES },
-              { titulo: "Nosotros", links: NOSOTROS },
-            ].map((grupo) => (
-              <div key={grupo.titulo} className="mt-8 first:mt-2">
-                <h2 className={GROUP_LABEL}>
-                  {grupo.titulo}
-                </h2>
-                <ul>
-                  {grupo.links.map((l) => (
-                    <li key={l.href}>
-                      <Link
-                        href={l.href}
-                        aria-current={current(l.href)}
-                        className={`block w-fit py-2.5 text-lg ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
-                        onClick={handleLinkClick}
-                      >
-                        {l.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            <ul className="mt-2">
+              {SECCIONES.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    aria-current={current(l.href)}
+                    className={`block w-fit py-2.5 text-lg ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+                    onClick={handleLinkClick}
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </nav>
         )}
       </div>
