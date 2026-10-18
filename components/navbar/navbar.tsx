@@ -158,7 +158,7 @@ export default function Navbar() {
             menuRef, so a tap on a link isn't read as a tap outside): every
             section as a square tile (icon above, name below), two across in
             the desktop order; an odd last tile runs the full width. The
-            current page's tile is dark. */}
+            current page's tile has a dark border. */}
         {isOpen && (
           <nav
             id="menu-movil"
@@ -174,12 +174,12 @@ export default function Navbar() {
                     aria-current={current(href)}
                     className={`flex aspect-square h-full w-full flex-col justify-between rounded-2xl border p-4 text-base font-medium transition-colors ${FOCUS} ${
                       isCurrent(href)
-                        ? "border-gray-900 bg-gray-900 text-white"
+                        ? "border-gray-900 bg-white text-gray-800"
                         : "border-stone-200 bg-white text-gray-800 active:bg-stone-100"
                     } [li:last-child:nth-child(odd)_&]:aspect-auto [li:last-child:nth-child(odd)_&]:min-h-24`}
                     onClick={handleLinkClick}
                   >
-                    <Icon aria-hidden="true" className={`h-6 w-6 ${isCurrent(href) ? "text-white" : "text-gray-500"}`} />
+                    <Icon aria-hidden="true" className="h-6 w-6 text-gray-500" />
                     {label}
                   </Link>
                 </li>
