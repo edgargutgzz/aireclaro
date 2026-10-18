@@ -25,6 +25,8 @@ const COLUMNAS = [
     links: [
       { href: "/mapa", label: "Mapa" },
       { href: "/datos", label: "Datos" },
+      { href: "/proyectos", label: "Proyectos" },
+      { href: "/quienes-somos", label: "Quiénes somos" },
     ],
   },
   {
@@ -32,13 +34,6 @@ const COLUMNAS = [
     links: [
       { href: "/publicaciones?tipo=columna", label: "Columnas" },
       { href: "/publicaciones?tipo=infografia", label: "Infografías" },
-    ],
-  },
-  {
-    titulo: "Nosotros",
-    links: [
-      { href: "/quienes-somos", label: "Quiénes somos" },
-      { href: "/proyectos", label: "Proyectos" },
     ],
   },
 ];
@@ -50,10 +45,9 @@ export default function Footer() {
     <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
       {/* lg+: one row, the ways to reach us first (contact, socials), then
-          the three link columns, each as wide as its content and spread with
+          the two link columns, each as wide as its content and spread with
           equal gaps (the last ends at the right edge, over the credit).
-          Below: the same order stacked, the link columns two or three
-          across. */}
+          Below: the same order stacked, the link columns two across. */}
       <div className="grid gap-10 lg:flex lg:justify-between lg:gap-8">
         {/* Contact: email first (what most visitors need), the address as
             an envelope reads, Mexican format. <address> marks it as the
@@ -104,7 +98,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        <nav aria-label="Secciones del sitio" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:contents">
+        <nav aria-label="Secciones del sitio" className="grid grid-cols-2 gap-8 lg:contents">
           {COLUMNAS.map(({ titulo, links }) => (
             <div key={titulo}>
               <h2 className={EYEBROW}>{titulo}</h2>

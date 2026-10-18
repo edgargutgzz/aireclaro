@@ -69,7 +69,7 @@ export default async function Ticker() {
   return <Strip hora={horaDeLectura(stations)} items={items} />;
 }
 
-// The label, "En vivo · 7:00 PM"; phones have room for "En vivo" only.
+// The label: the live dot and the reading's time ("7:00 PM").
 function Strip({ hora, items }: { hora: string; items: TickerItem[] }) {
   return (
     <section aria-label="PM2.5 en vivo" className="flex h-10 items-stretch bg-white text-[13px]">
@@ -81,8 +81,8 @@ function Strip({ hora, items }: { hora: string; items: TickerItem[] }) {
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00a400]" />
         </span>
-        <span className="sm:hidden">En vivo</span>
-        <span className="hidden sm:inline">En vivo · {hora}</span>
+        <span className="sr-only">PM2.5, lectura de las </span>
+        {hora}
       </Link>
       <TickerTrack items={items} />
     </section>
