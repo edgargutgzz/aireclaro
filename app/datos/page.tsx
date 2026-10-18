@@ -99,13 +99,6 @@ export default function Datos() {
             <PromedioAnualEstacion />
           </Suspense>
         </div>
-        {/* #descarga: the card's anchor for links from elsewhere; scroll-mt
-            leaves a little air above it. */}
-        <div id="descarga" className="mt-16 scroll-mt-6">
-          <Suspense fallback={<DescargaDatosSkeleton />}>
-            <DescargaDatos />
-          </Suspense>
-        </div>
         {/* The monthly summary card (renders its own mt-16). */}
         <Suspense
           fallback={
@@ -116,6 +109,13 @@ export default function Datos() {
         >
           <DiasInsalubresResumen />
         </Suspense>
+        {/* #descarga: the card's anchor for links from elsewhere; scroll-mt
+            leaves a little air above it. */}
+        <div id="descarga" className="mt-16 scroll-mt-6">
+          <Suspense fallback={<DescargaDatosSkeleton />}>
+            <DescargaDatos />
+          </Suspense>
+        </div>
       </div>
     </div>
   );
