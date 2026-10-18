@@ -18,21 +18,19 @@ const fetchChartData = cachedDatos(
 );
 
 export default async function DiasInsalubres() {
-  const chartData = await fetchChartData();
+  return <DiasInsalubresChart data={await fetchChartData()} />;
+}
 
-  // The monthly summary card: latest month with data (both pollutants)
-  // vs. the same month a year earlier; no card until there's such a month.
+// The monthly summary card, at the foot of /datos: latest month with data
+// (both pollutants) vs. the same month a year earlier; no card until
+// there's such a month. Same cached read as the chart.
+export async function DiasInsalubresResumen() {
+  const chartData = await fetchChartData();
   const year = Math.max(0, ...chartData.pm25.map((d) => d.ano));
   const summary = year > 0 ? monthlySummary(chartData, year) : null;
-
-  return (
-    <>
-      <DiasInsalubresChart data={chartData} />
-      {summary && (
-        <div className="mt-16">
-          <DiasInsalubresShare summary={summary} />
-        </div>
-      )}
-    </>
-  );
+  return summary ? (
+    <div className="mt-16">
+      <DiasInsalubresShare summary={summary} />
+    </div>
+  ) : null;
 }

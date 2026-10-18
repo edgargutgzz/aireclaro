@@ -4,7 +4,7 @@ import { fetchUltimoMes } from "@/lib/datos-cache";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import { Suspense } from "react";
-import DiasInsalubres from "@/components/datos/dias-insalubres";
+import DiasInsalubres, { DiasInsalubresResumen } from "@/components/datos/dias-insalubres";
 import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton";
 import DiasInsalubresShareSkeleton from "@/components/datos/dias-insalubres-share-skeleton";
 import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
@@ -81,17 +81,7 @@ export default function Datos() {
       <JsonLd data={datasetSchema} />
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
         <h1 className="sr-only">Datos de calidad del aire de la Zona Metropolitana de Monterrey</h1>
-        {/* DiasInsalubres also renders its monthly summary card below it. */}
-        <Suspense
-          fallback={
-            <>
-              <DiasInsalubresSkeleton />
-              <div className="mt-16">
-                <DiasInsalubresShareSkeleton />
-              </div>
-            </>
-          }
-        >
+        <Suspense fallback={<DiasInsalubresSkeleton />}>
           <DiasInsalubres />
         </Suspense>
         <div className="mt-16">
@@ -116,6 +106,16 @@ export default function Datos() {
             <DescargaDatos />
           </Suspense>
         </div>
+        {/* The monthly summary card (renders its own mt-16). */}
+        <Suspense
+          fallback={
+            <div className="mt-16">
+              <DiasInsalubresShareSkeleton />
+            </div>
+          }
+        >
+          <DiasInsalubresResumen />
+        </Suspense>
       </div>
     </div>
   );
