@@ -1061,42 +1061,36 @@ export default function MapaSensors({
       {/* Mobile map controls — a right-edge stack, hidden when the sheet is
           expanded. The air-quality legend sits on top of the Capas button as a
           matching icon button; each opens its own bottom sheet. Desktop carries
-          the legend at the foot of the left rail instead. */}
+          the legend at the foot of the left rail instead. The data-freshness
+          pill shares the Capas button's row, at the left edge, so the two are
+          centred on each other by the layout (items-center), not by matched
+          offsets. Low-priority chrome, so it runs small and shadowless.
+          Desktop puts the full badge bottom-right, beside "Mi zona". */}
       {sheetState === 'peek' && (
         <div
-          className="fixed right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
+          className="pointer-events-none fixed left-4 right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
           style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
         >
-          {zonaButton("stack")}
-          <button
-            onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
-            className={`rounded-xl p-3 transition-colors duration-200 ${showLegend ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
-            aria-label="Calidad del aire"
-          >
-            <Wind className={`h-5 w-5 ${showLegend ? 'text-neutral-900' : 'text-neutral-700'}`} />
-          </button>
-          <button
-            onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
-            className={`rounded-xl p-3 transition-colors duration-200 ${showFilters ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
-            aria-label="Capas"
-          >
-            <Layers className={`h-5 w-5 ${showFilters ? 'text-neutral-900' : 'text-neutral-700'}`} />
-          </button>
-        </div>
-      )}
-
-      {/* Data freshness — mobile: a compact glass pill at the bottom-left of
-          the map, above the peeking sheet, centred on the Capas button across
-          from it (+0.5rem: the 28px pill against the 44px button). It hides
-          with the right-edge buttons once the sheet is expanded. Low-priority
-          chrome, so it runs small and shadowless. Desktop puts the full badge
-          bottom-right, beside "Mi zona". */}
-      {sheetState === 'peek' && freshness && (
-        <div
-          className="pointer-events-none fixed left-4 z-[45] md:hidden"
-          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 7rem)' }}
-        >
-          <FreshnessBadge freshness={freshness} compact />
+          <div className="pointer-events-auto flex flex-col items-end gap-3">
+            {zonaButton("stack")}
+            <button
+              onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
+              className={`rounded-xl p-3 transition-colors duration-200 ${showLegend ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
+              aria-label="Calidad del aire"
+            >
+              <Wind className={`h-5 w-5 ${showLegend ? 'text-neutral-900' : 'text-neutral-700'}`} />
+            </button>
+          </div>
+          <div className="flex w-full items-center justify-between">
+            {freshness ? <FreshnessBadge freshness={freshness} compact /> : <span />}
+            <button
+              onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
+              className={`pointer-events-auto rounded-xl p-3 transition-colors duration-200 ${showFilters ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
+              aria-label="Capas"
+            >
+              <Layers className={`h-5 w-5 ${showFilters ? 'text-neutral-900' : 'text-neutral-700'}`} />
+            </button>
+          </div>
         </div>
       )}
 
