@@ -96,7 +96,7 @@ export function CoberturaSubtitle({
           the same bug días insalubres' own header already fixed
           (2026-09-27 feedback: switching years "looks wonky"). */}
       <div className={`contents ${delta !== null ? "" : "invisible"}`}>
-        <div className="hidden h-4 w-px bg-gray-200 md:block" />
+        <div className="hidden h-4 w-px bg-stone-200 md:block" />
         <p className="mt-2 text-xs md:mt-0 md:text-sm">
           {/* "%" here reads as a point delta (pct's own unit), not a
               relative change -- flagged 2026-09-27, kept as requested.
@@ -324,7 +324,7 @@ export default function CoberturaEstacionesChart({
 
   if (allDates.length === 0 || year === null) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 py-12 text-center text-sm text-gray-500">
+      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white px-5 py-12 text-center text-sm text-stone-500">
         Sin datos de cobertura por el momento.
       </div>
     );
@@ -343,13 +343,13 @@ export default function CoberturaEstacionesChart({
             onChange={setPollutant}
             ariaLabel="Contaminante"
           />
-          <div className="h-5 w-px bg-gray-200" />
+          <div className="h-5 w-px bg-stone-200" />
           <YearToggle years={years} year={year} onChange={setSelectedYear} />
         </>
       }
     >
       <div className="px-5 pb-6 pt-5 md:pt-6">
-        <div className="mb-4 flex items-center justify-end gap-4 text-xs text-gray-500 md:mb-6">
+        <div className="mb-4 flex items-center justify-end gap-4 text-xs text-stone-500 md:mb-6">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-[2px]" style={{ backgroundImage: GRADIENT_CSS }} />
             Con datos
@@ -367,7 +367,7 @@ export default function CoberturaEstacionesChart({
               role="img"
               aria-label={`Días con datos de ${POLLUTANT_LABEL[pollutant]} por estación en ${year}. Usa las flechas para recorrer estaciones y días.`}
               tabIndex={0}
-              className="block cursor-crosshair touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+              className="block cursor-crosshair touch-pan-y outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
               onPointerMove={(e) => {
                 if (e.pointerType === "mouse") pick(e);
               }}
@@ -396,7 +396,7 @@ export default function CoberturaEstacionesChart({
                     key={m.label}
                     x={0}
                     y={m.day * dayHeight + 10}
-                    className="fill-gray-400 text-[11px] font-medium"
+                    className="fill-stone-400 text-[11px] font-medium"
                   >
                     {m.label}
                   </text>
@@ -425,7 +425,7 @@ export default function CoberturaEstacionesChart({
                   x2={width}
                   y1={(sel.day + 0.5) * dayHeight}
                   y2={(sel.day + 0.5) * dayHeight}
-                  stroke="#6b7280"
+                  stroke="#79716b"
                   strokeWidth={1.5}
                 />
               )}
@@ -445,12 +445,12 @@ export default function CoberturaEstacionesChart({
                 left: tooltipLeft(colX(sel!.col), colWidth, width),
               }}
             >
-              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">{formatFecha(selFecha)}</span>
-              <span className="text-sm font-semibold text-gray-800">{selEstacion.nombre}</span>
-              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS : "rgb(107,114,128)" }}>
+              <span className="text-[10px] font-medium uppercase tracking-wide text-stone-400">{formatFecha(selFecha)}</span>
+              <span className="text-sm font-semibold text-stone-800">{selEstacion.nombre}</span>
+              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS : "rgb(121,113,107)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-stone-500">
                 {pctCubierto(coberturaPorEstacion.get(selEstacion.sensorId), dates)}% de días con datos en {year}
               </span>
             </div>

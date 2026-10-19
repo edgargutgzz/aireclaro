@@ -15,7 +15,7 @@ export const SOCIAL_LINKS = [
 // Quiet like the contact icons (gray, no box); the 36px target stays for
 // touch. The first icon's glyph lines up with the "Síguenos" label.
 const socialLinkClass =
-  "flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+  "flex h-9 w-9 items-center justify-center rounded-xl text-stone-500 transition-colors hover:bg-stone-200/70 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
 // The footer's site map, between the contact and the socials: the navbar's
 // sections under two headers.
@@ -37,12 +37,11 @@ const COLUMNAS = [
   },
 ];
 
-const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide text-gray-600";
+const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide text-stone-600";
 
-// `warm`: the home page's stone trial (see MainContent).
-export default function Footer({ warm = false }: { warm?: boolean }) {
+export default function Footer() {
   return (
-    <footer className={warm ? "bg-stone-100" : "bg-gray-100"}>
+    <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
       {/* lg+: one row, the ways to reach us first (contact, socials), then
           the two link columns, each as wide as its content and spread with
@@ -56,18 +55,18 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
           <p className={EYEBROW}>Contacto</p>
           <a
             href="mailto:contacto@observatoriodelaire.com"
-            className="flex items-center gap-2 rounded-xl text-sm text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="flex items-center gap-2 rounded-xl text-sm text-stone-600 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           >
-            <Mail className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+            <Mail className="h-4 w-4 shrink-0 text-stone-400" aria-hidden />
             contacto@observatoriodelaire.com
           </a>
           <a
             href="https://maps.app.goo.gl/uYj6u7VH1BzvbFJfA"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-stone-600 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           >
-            <MapPin className="mt-1 h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+            <MapPin className="mt-1 h-4 w-4 shrink-0 text-stone-400" aria-hidden />
             <span>
               Blvd. Antonio L. Rodríguez 2100
               <br />
@@ -89,7 +88,7 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${label} (abre en una nueva pestaña)`}
-                  className={`${socialLinkClass} ${warm ? "hover:bg-stone-200/70" : "hover:bg-gray-200/70"}`}
+                  className={socialLinkClass}
                 >
                   <Icon size={16} aria-hidden />
                 </a>
@@ -107,7 +106,7 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
                   <li key={href}>
                     <Link
                       href={href}
-                      className="rounded-xl text-sm text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                      className="rounded-xl text-sm text-stone-600 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                     >
                       {label}
                     </Link>
@@ -120,15 +119,15 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
 
       </div>
 
-      <div className={`mt-10 flex flex-col gap-6 border-t pt-4 sm:flex-row sm:items-center sm:justify-between ${warm ? "border-stone-200" : "border-gray-200"}`}>
-        <p className="text-xs text-gray-600">
+      <div className="mt-10 flex flex-col gap-6 border-t border-stone-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs text-stone-600">
           &copy; {new Date().getFullYear()} Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey
         </p>
         <Link
           href="https://datacomun.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="self-start whitespace-nowrap rounded-xl text-xs text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="self-start whitespace-nowrap rounded-xl text-xs text-stone-600 transition-colors hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
         >
           {/* Quiet like the © line: the site speaks for the Observatory. */}
           Desarrollado por datacomun

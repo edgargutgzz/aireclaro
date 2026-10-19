@@ -32,9 +32,9 @@ export const COLOR_CUBIERTO = "#3b82f6"; // Tailwind blue-500
 // wash out the días insalubres chart's bars.
 export const COLOR_CUBIERTO_FILL_OPACITY = 0.68;
 // The cobertura charts' "Datos insuficientes" gray (a data-quality gap, not
-// a health-severity color): lighter than gray-300, but not all the way to
-// gray-200, which sat almost invisibly on a gray-50 card.
-export const COLOR_INSUFICIENTE = "#dbdfe3";
+// a health-severity color): lighter than stone-300, but not all the way to
+// stone-200, which sat almost invisibly on a stone-50 card.
+export const COLOR_INSUFICIENTE = "#dedcda";
 export const COLOR_INSALUBRE = "#ef4444"; // Tailwind red-500
 export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 
@@ -51,9 +51,9 @@ export const BRAND_PURPLE = "#743479";
 // dentro de la norma, blue = data coverage here (COLOR_CUBIERTO), the
 // orange/yellow family = air-quality levels on the map. The current year is
 // Tailwind violet-500 -- the same Tailwind 500 family as the bars' red and
-// green; past years recede to light gray (Tailwind gray-300).
+// green; past years recede to light gray (Tailwind stone-300).
 export const COLOR_YEAR_CURRENT = "#8b5cf6"; // Tailwind violet-500
-export const COLOR_YEAR_PAST = "#d1d5db"; // Tailwind gray-300
+export const COLOR_YEAR_PAST = "#d6d3d1"; // Tailwind stone-300
 
 export function withOpacity(hex: string, opacity: number): string {
   const int = parseInt(hex.slice(1), 16);

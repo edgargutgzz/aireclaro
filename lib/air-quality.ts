@@ -19,7 +19,7 @@
 // printed PM2.5 number takes straight on the mixed fill (getMarkerFillHex).
 // `#283240` clears the house's own 3:1 floor for large bold non-body text
 // (see `ink` above) on every level's fill — the tightest case is Muy mala's
-// red at ~3.2:1, still a real margin — while reading lighter than gray-800
+// red at ~3.2:1, still a real margin — while reading lighter than stone-800
 // (#1f2937, ~3.7:1 on that same case), which read too close to near-black.
 // Extremadamente mala's deep purple still takes white; no ink survives that
 // fill at a useful contrast.
@@ -175,7 +175,7 @@ export const createMarker = (
   el.appendChild(dot);
 
   // Government (SIMA) badge: the Landmark mark the Capas panel and estación
-  // card already use for "gobierno", on its own neutral gray-600 ground so it
+  // card already use for "gobierno", on its own neutral stone-600 ground so it
   // never has to hold contrast against the five air-quality fills. Sits on
   // __dot to scale with the selected disc. Decorative — network is in aria-label.
   if (isSima) {

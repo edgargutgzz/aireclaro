@@ -5,8 +5,8 @@ import SkeletonBlock from "@/components/datos/skeleton-block";
 // streams in.
 export default function DiasInsalubresShareSkeleton() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="flex flex-col gap-2 border-b border-gray-100 px-5 pb-3 pt-4">
+    <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+      <div className="flex flex-col gap-2 border-b border-stone-100 px-5 pb-3 pt-4">
         <SkeletonBlock className="h-5 w-[28rem] max-w-full" />
         <SkeletonBlock className="h-4 w-96 max-w-full" />
       </div>

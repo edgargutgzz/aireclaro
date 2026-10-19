@@ -31,7 +31,7 @@ const WEEKDAY_FULL = [
 // Same gray already used for "data-quality gap" states elsewhere in /datos
 // (cobertura's own "datos insuficientes" cells) -- a day with no reporting
 // station isn't a health-severity read, so it doesn't borrow red or green.
-const COLOR_SIN_DATOS = "#dbdfe3";
+const COLOR_SIN_DATOS = "#dedcda";
 
 // Responsive, not fixed: at the card's real narrow-mobile width (~390px,
 // minus the page's own side padding and the card's px-5), 7 fixed cells
@@ -167,22 +167,22 @@ export default function DiasInsalubresMonthDetail({
     <div ref={measureRef} className="w-full">
       <button
         onClick={onBack}
-        className="mb-4 flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+        className="mb-4 flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
       >
         <ArrowLeft className="h-4 w-4" />
         Volver a los meses
       </button>
 
-      <h4 className="mb-4 text-sm font-medium text-gray-700">
+      <h4 className="mb-4 text-sm font-medium text-stone-700">
         {MONTHS_ES_FULL[mesNumero - 1]} {ano}
       </h4>
 
       {error && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-stone-500">
           No se pudo cargar el detalle de este mes.{" "}
           <button
             onClick={() => setRetryKey((k) => k + 1)}
-            className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           >
             Reintentar
           </button>
@@ -191,7 +191,7 @@ export default function DiasInsalubresMonthDetail({
 
       {!error && !days && (
         <div
-          className="w-full animate-pulse rounded-xl bg-gray-100"
+          className="w-full animate-pulse rounded-xl bg-stone-100"
           style={{ maxWidth: gridWidth, height: 280 }}
         />
       )}
@@ -202,7 +202,7 @@ export default function DiasInsalubresMonthDetail({
             {WEEKDAY_SHORT.map((w) => (
               <div
                 key={w}
-                className="text-center text-[11px] font-medium text-gray-400"
+                className="text-center text-[11px] font-medium text-stone-400"
                 style={{ width: cell + GAP }}
               >
                 {w}
@@ -239,7 +239,7 @@ export default function DiasInsalubresMonthDetail({
                     c.day.estado === "sin-datos"
                       ? futuro
                         ? FUTURE_TEXT_COLOR
-                        : "rgb(107,114,128)"
+                        : "rgb(121,113,107)"
                       : "white",
                   // No onClick here -- unlike the bar chart's month cells,
                   // a day cell only ever shows its hover tooltip, so a
@@ -277,7 +277,7 @@ export default function DiasInsalubresMonthDetail({
                 cell / 2,
               )}
             >
-              <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
+              <span className="text-[10px] font-medium uppercase tracking-wide text-stone-400">
                 {WEEKDAY_FULL[tooltip.row]} {tooltip.day.dia} de{" "}
                 {MONTHS_ES_FULL[mesNumero - 1]}
               </span>

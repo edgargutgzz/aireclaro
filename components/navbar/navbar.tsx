@@ -42,7 +42,7 @@ function CloseIcon() {
 const CURRENT = "underline decoration-2 underline-offset-8";
 
 // The house focus ring, on every focusable item in the bar.
-const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
 // Every section, in the same order on desktop and mobile; Quiénes somos last.
 // The icons are for the mobile menu's tiles only.
@@ -57,9 +57,6 @@ const SECCIONES = [
 export default function Navbar() {
   const pathname = usePathname();
   const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
-  // Home tries the warm stone neutrals (2026-10-19 trial, with MainContent
-  // and the footer); every other page stays gray.
-  const warm = pathname === "/";
   const current = (href: string) => (isCurrent(href) ? "page" : undefined);
   // Menu state
   const [isOpen, setIsOpen] = useState(false);
@@ -111,7 +108,7 @@ export default function Navbar() {
   const handleLinkClick = () => setIsOpen(false);
 
   return (
-    <header ref={headerRef} className={`relative z-50 ${warm ? "bg-stone-50" : "bg-gray-50"}`}>
+    <header ref={headerRef} className="relative z-50 bg-stone-50">
       <div
         className="h-header mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
         ref={menuRef}
@@ -135,7 +132,7 @@ export default function Navbar() {
               key={l.href}
               href={l.href}
               aria-current={current(l.href)}
-              className={`block hover:text-gray-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+              className={`block hover:text-stone-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
               onClick={handleLinkClick}
             >
               {l.label}
@@ -167,7 +164,7 @@ export default function Navbar() {
             id="menu-movil"
             aria-label="Principal"
             style={{ top: panelTop }}
-            className={`fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain px-6 pb-10 pt-2 lg:hidden ${warm ? "bg-stone-50" : "bg-gray-50"}`}
+            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
           >
             <ul className="mt-4 grid grid-cols-2 gap-3">
               {SECCIONES.map(({ href, label, Icon }) => (
@@ -177,12 +174,12 @@ export default function Navbar() {
                     aria-current={current(href)}
                     className={`flex aspect-square h-full w-full flex-col justify-between rounded-2xl border p-4 text-base font-medium transition-colors ${FOCUS} ${
                       isCurrent(href)
-                        ? "border-gray-900 bg-white text-gray-800"
-                        : "border-gray-200 bg-white text-gray-800 active:bg-gray-100"
+                        ? "border-stone-900 bg-white text-stone-800"
+                        : "border-stone-200 bg-white text-stone-800 active:bg-stone-100"
                     } [li:last-child:nth-child(odd)_&]:aspect-auto [li:last-child:nth-child(odd)_&]:min-h-24`}
                     onClick={handleLinkClick}
                   >
-                    <Icon aria-hidden="true" className="h-6 w-6 text-gray-500" />
+                    <Icon aria-hidden="true" className="h-6 w-6 text-stone-500" />
                     {label}
                   </Link>
                 </li>

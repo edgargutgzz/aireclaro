@@ -32,7 +32,7 @@ export default function FeatureCard({
         />
       </div>
       <div className="flex flex-col justify-center md:w-1/2 md:px-12">
-        <h2 className="pt-6 text-2xl font-semibold text-gray-800 md:text-3xl">{title}</h2>
+        <h2 className="pt-6 text-2xl font-semibold text-stone-800 md:text-3xl">{title}</h2>
         <p className="pt-2 text-base md:pt-4 md:text-lg">{description}</p>
         {children}
       </div>

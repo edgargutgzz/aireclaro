@@ -34,9 +34,9 @@ export default function ChartCard({
   return (
     // Opaque, not glass -- per the style guide, translucency is reserved for
     // floating chrome over the map; a chart card is a reading surface, like
-    // a dialog, and stays opaque white on a gray-200 hairline.
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <div className="flex flex-col gap-3 border-b border-gray-100 px-5 pb-3 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+    // a dialog, and stays opaque white on a stone-200 hairline.
+    <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+      <div className="flex flex-col gap-3 border-b border-stone-100 px-5 pb-3 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
         {/* min-w-0: a flex item's default min-width is auto, not 0 -- without
             this, a child with wide unwrapped content (a long title, or the
             year-over-year comparison line) can force this whole item wider
@@ -44,11 +44,11 @@ export default function ChartCard({
             horizontal overflow. Classic flexbox gotcha, not specific to any
             one caller. */}
         <div className="min-w-0">
-          <h3 className="text-lg font-medium text-gray-700">{title}</h3>
+          <h3 className="text-lg font-medium text-stone-700">{title}</h3>
           {/* div, not p: a caller's subtitle can carry its own block-level
               row (e.g. a year-over-year comparison line), which can't
               legally nest inside a p. */}
-          {subtitle && <div className="mt-1 text-xs text-gray-500 md:text-sm">{subtitle}</div>}
+          {subtitle && <div className="mt-1 text-xs text-stone-500 md:text-sm">{subtitle}</div>}
         </div>
         {/* One line of controls that never wraps: below lg it sits under
             the title and slides sideways when it doesn't fit (bleeding to
@@ -67,10 +67,10 @@ export default function ChartCard({
                     onClick={() => setInfoOpen((o) => !o)}
                     aria-expanded={infoOpen}
                     aria-controls={panelId}
-                    className={`flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                    className={`flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
                       infoOpen
-                        ? "bg-gray-800 text-white hover:bg-gray-700"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
+                        ? "bg-stone-800 text-white hover:bg-stone-700"
+                        : "bg-stone-100 text-stone-600 hover:bg-stone-200/70 hover:text-stone-700"
                     }`}
                   >
                     <InfoIcon className="h-3.5 w-3.5" aria-hidden />
@@ -85,8 +85,8 @@ export default function ChartCard({
       {infoTab && infoOpen && (
         // The same panel box the old bottom-row tabs opened.
         <div className="px-5 pt-4">
-          <div id={panelId} className="rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
-            <div className="text-sm leading-relaxed text-gray-600">{infoTab.body}</div>
+          <div id={panelId} className="rounded-2xl border border-stone-100 bg-stone-50 px-5 py-4">
+            <div className="text-sm leading-relaxed text-stone-600">{infoTab.body}</div>
           </div>
         </div>
       )}

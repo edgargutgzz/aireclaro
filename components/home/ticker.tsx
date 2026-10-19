@@ -22,7 +22,7 @@ import TickerTrack, { type TickerItem } from "./ticker-track";
 // With neither, the strip is hidden.
 
 // Inset ring, square: the links are full-height sections of a straight strip.
-const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15";
+const FOCUS = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15";
 
 export default async function Ticker() {
   const [stations, estaciones, municipios] = await Promise.all([
@@ -75,7 +75,7 @@ function Strip({ hora, items }: { hora: string; items: TickerItem[] }) {
     <section aria-label="PM2.5 en vivo" className="flex h-10 items-stretch bg-white text-[13px]">
       <Link
         href="/mapa"
-        className={`flex shrink-0 items-center gap-2 px-4 text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-900 lg:px-8 ${FOCUS}`}
+        className={`flex shrink-0 items-center gap-2 px-4 text-xs font-semibold uppercase tracking-wider text-stone-500 hover:text-stone-900 lg:px-8 ${FOCUS}`}
       >
         <span className="relative flex h-2 w-2" aria-hidden>
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />

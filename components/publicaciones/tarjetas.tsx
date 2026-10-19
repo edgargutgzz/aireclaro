@@ -8,7 +8,7 @@ import { formatDate, tipoLabel, type Publicacion } from "@/app/publicaciones/dat
 // date), the title, and a column's author. Portraits are for the
 // publication's own page only.
 
-const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+const FOCUS_RING = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
 // Every item opens its page here (it carries the full text, or the summary
 // and a button to the PDF or the outlet's site and "Compartir").
@@ -24,7 +24,7 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
   return (
     <ItemLink
       p={p}
-      className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md ${FOCUS_RING}`}
+      className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white transition-shadow hover:shadow-md ${FOCUS_RING}`}
     >
       <Image
         src={p.image}
@@ -37,8 +37,8 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
       />
       <div className="flex flex-1 flex-col p-4">
         <Contexto p={p} />
-        <p className="mt-1.5 text-lg font-semibold leading-snug text-gray-800 group-hover:text-gray-600">{p.title}</p>
-        {p.tipo === "columna" && <p className="mt-auto truncate pt-3 text-sm font-medium text-gray-700">{p.author}</p>}
+        <p className="mt-1.5 text-lg font-semibold leading-snug text-stone-800 group-hover:text-stone-600">{p.title}</p>
+        {p.tipo === "columna" && <p className="mt-auto truncate pt-3 text-sm font-medium text-stone-700">{p.author}</p>}
       </div>
     </ItemLink>
   );
@@ -49,8 +49,8 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
 function Contexto({ p }: { p: Publicacion }) {
   const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
   return (
-    <p className="text-xs text-gray-500">
-      <span className="font-semibold text-gray-700">{tipoLabel(p.tipo)}</span>
+    <p className="text-xs text-stone-500">
+      <span className="font-semibold text-stone-700">{tipoLabel(p.tipo)}</span>
       {p.outlet && ` · ${p.outlet}`} · {when}
     </p>
   );
@@ -65,12 +65,12 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
   return (
     <ItemLink
       p={p}
-      className={`flex items-start gap-4 px-4 py-4 transition-colors hover:bg-gray-100/70 sm:gap-5 sm:px-5 ${FOCUS_RING} focus-visible:ring-inset`}
+      className={`flex items-start gap-4 px-4 py-4 transition-colors hover:bg-stone-100/70 sm:gap-5 sm:px-5 ${FOCUS_RING} focus-visible:ring-inset`}
     >
       <div className="min-w-0 flex-1">
         <Contexto p={p} />
-        <p className="mt-1 text-base font-semibold leading-snug text-gray-800 text-pretty sm:text-[17px]">{p.title}</p>
-        {p.tipo === "columna" && <p className="mt-2 truncate text-sm font-medium text-gray-700">{p.author}</p>}
+        <p className="mt-1 text-base font-semibold leading-snug text-stone-800 text-pretty sm:text-[17px]">{p.title}</p>
+        {p.tipo === "columna" && <p className="mt-2 truncate text-sm font-medium text-stone-700">{p.author}</p>}
       </div>
       <Image
         src={p.image}
@@ -91,7 +91,7 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
 // item's page.
 export function PublicacionDestacada({ publicacion: p, priority = false }: { publicacion: Publicacion; priority?: boolean }) {
   return (
-    <div className="group relative grid overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow hover:shadow-md has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-gray-900/15 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+    <div className="group relative grid overflow-hidden rounded-2xl border border-stone-200 bg-white transition-shadow hover:shadow-md has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-stone-900/15 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       <Image
         src={p.image}
         alt=""
@@ -103,13 +103,13 @@ export function PublicacionDestacada({ publicacion: p, priority = false }: { pub
       />
       <div className="flex flex-col justify-center p-5 sm:p-6">
         <Contexto p={p} />
-        <p className="mt-1.5 text-xl font-semibold leading-snug text-gray-800 group-hover:text-gray-600 sm:text-2xl">
+        <p className="mt-1.5 text-xl font-semibold leading-snug text-stone-800 group-hover:text-stone-600 sm:text-2xl">
           <ItemLink p={p} className="focus-visible:outline-none after:absolute after:inset-0 after:content-['']">
             {p.title}
           </ItemLink>
         </p>
-        {p.summary && <p className="mt-3 text-sm leading-relaxed text-gray-600">{p.summary}</p>}
-        {p.tipo === "columna" && <p className="mt-3 text-sm font-medium text-gray-700">{p.author}</p>}
+        {p.summary && <p className="mt-3 text-sm leading-relaxed text-stone-600">{p.summary}</p>}
+        {p.tipo === "columna" && <p className="mt-3 text-sm font-medium text-stone-700">{p.author}</p>}
       </div>
     </div>
   );

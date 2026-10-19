@@ -12,17 +12,17 @@ export default function SegmentedToggle<T extends string | number>({
   ariaLabel?: string;
 }) {
   return (
-    <div role="group" aria-label={ariaLabel} className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+    <div role="group" aria-label={ariaLabel} className="flex items-center gap-1 rounded-xl bg-stone-100 p-1">
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
           aria-pressed={value === o.value}
-          className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+          className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
             value === o.value
-              ? "bg-white text-gray-800 shadow-sm hover:shadow"
-              : "text-gray-500 hover:text-gray-700"
+              ? "bg-white text-stone-800 shadow-sm hover:shadow"
+              : "text-stone-500 hover:text-stone-700"
           }`}
         >
           {o.label}

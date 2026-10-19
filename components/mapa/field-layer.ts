@@ -22,7 +22,7 @@ export const FIELD_LABEL_LAYER = "sensor-field-labels";
 export const SIMA_BADGE_LAYER = "sensor-field-sima-badge";
 export const SIMA_BADGE_IMAGE = "sima-badge";
 
-// The SIMA badge as an ImageData: gray-500 disc, white casing ring, white
+// The SIMA badge as an ImageData: stone-500 disc, white casing ring, white
 // Landmark glyph — pixel-for-pixel the `.sensor-marker__badge` the DOM markers
 // use, so a selected station's DOM badge and the field badge match. Drawn at 2×
 // for retina; `addImage` is told `pixelRatio: 2`.
@@ -42,7 +42,7 @@ export function makeSimaBadge(): ImageData {
   ctx.fill();
   ctx.beginPath();
   ctx.arc(c, c, rDisc, 0, Math.PI * 2);
-  ctx.fillStyle = "#6b7280"; // gray-500 — as light as the white glyph clears 3:1
+  ctx.fillStyle = "#79716b"; // stone-500 — as light as the white glyph clears 3:1
   ctx.fill();
   ctx.save();
   ctx.translate(c, c);

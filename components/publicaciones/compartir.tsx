@@ -32,7 +32,7 @@ export default function Compartir({ url, title, className = "" }: { url: string;
       type="button"
       onClick={share}
       className={cn(
-        "flex h-8 items-center gap-1.5 rounded-xl border border-gray-200 bg-white/95 px-3 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15",
+        "flex h-8 items-center gap-1.5 rounded-xl border border-stone-200 bg-white/95 px-3 text-xs font-medium text-stone-700 transition-colors hover:bg-stone-100 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15",
         className,
       )}
     >

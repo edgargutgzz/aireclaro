@@ -188,13 +188,13 @@ export default function AirQualitySlider() {
         {/* Handle. Keyboard focus shows here as a solid outline: the
             translucent house ring disappears over photos (same exception as
             the map's selected station). */}
-        <div className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-white/90 shadow-lg backdrop-blur-sm group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-gray-900">
+        <div className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-white/90 shadow-lg backdrop-blur-sm group-focus-visible:outline-2 group-focus-visible:outline-offset-2 group-focus-visible:outline-stone-900">
           <svg
             width="16"
             height="16"
             viewBox="0 0 16 16"
             fill="none"
-            className="text-gray-600"
+            className="text-stone-600"
           >
             <path d="M2 8L6 4V12L2 8Z" fill="currentColor" />
             <path d="M14 8L10 12V4L14 8Z" fill="currentColor" />

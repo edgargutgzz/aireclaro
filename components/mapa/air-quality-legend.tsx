@@ -26,7 +26,7 @@ export function ScaleBar({ className = "", labels = "thresholds" }: { className?
         // Collapsed state: the two ends carry the direction and the worst case,
         // which need no unit to read. The exact breaks, the μg/m³ and the NOM
         // citation all wait for the expanded list.
-        <span className="mt-1 flex justify-between text-[11px] font-medium leading-none text-gray-500">
+        <span className="mt-1 flex justify-between text-[11px] font-medium leading-none text-stone-500">
           <span className="whitespace-nowrap">{IMECA_LEVELS[0].label}</span>
           {/* Abbreviated here only: the full "Extremadamente mala" is the axis
               end, not a value, and the expanded list spells it out. */}
@@ -37,7 +37,7 @@ export function ScaleBar({ className = "", labels = "thresholds" }: { className?
           {IMECA_LEVELS.slice(0, -1).map((level, i) => (
             <span
               key={level.limit}
-              className="absolute -translate-x-1/2 text-[10px] font-medium leading-none text-gray-500"
+              className="absolute -translate-x-1/2 text-[10px] font-medium leading-none text-stone-500"
               style={{ left: `${((i + 1) / count) * 100}%` }}
             >
               {level.limit}
@@ -61,8 +61,8 @@ function LevelList() {
             className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
             style={{ backgroundColor: level.color, boxShadow: `inset 0 0 0 1px ${level.ink}` }}
           />
-          <span className="min-w-0 flex-1 truncate text-sm text-gray-700">{level.label}</span>
-          <span className="flex-shrink-0 text-sm text-gray-500">{level.bounds}</span>
+          <span className="min-w-0 flex-1 truncate text-sm text-stone-700">{level.label}</span>
+          <span className="flex-shrink-0 text-sm text-stone-500">{level.bounds}</span>
         </li>
       ))}
     </ul>
@@ -80,11 +80,11 @@ export function LegendDetail({ className = "" }: { className?: string }) {
       <div className="mb-2 flex items-center gap-1">
         {/* Both sources are hourly averages (docs/mapa-data-pipeline.md); the
             state's own map shows the índice instead, so its numbers differ. */}
-        <p className="text-[11px] leading-none text-gray-400">PM2.5 · μg/m³ · promedio de la última hora</p>
+        <p className="text-[11px] leading-none text-stone-400">PM2.5 · μg/m³ · promedio de la última hora</p>
         <button
           type="button"
           onClick={() => setShowPM25Info(true)}
-          className="-my-1 flex-shrink-0 rounded-xl p-1 text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="-my-1 flex-shrink-0 rounded-xl p-1 text-stone-400 transition-colors hover:text-stone-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           aria-label="Qué es PM2.5"
         >
           <Info aria-hidden="true" className="h-3 w-3" />
@@ -93,7 +93,7 @@ export function LegendDetail({ className = "" }: { className?: string }) {
       <LevelList />
       {showPM25Info && (
         <InfoDialog title="PM2.5" onClose={() => setShowPM25Info(false)}>
-          <p className="text-sm leading-relaxed text-gray-600">
+          <p className="text-sm leading-relaxed text-stone-600">
             Partículas en suspensión en el aire con un diámetro de 2.5
             micrómetros o menos, unas 30 veces más delgadas que un cabello
             humano. Evaden las defensas de la nariz y la garganta, por lo que son
@@ -103,7 +103,7 @@ export function LegendDetail({ className = "" }: { className?: string }) {
       )}
       {/* More air under the citation on mobile, where the level list runs right
           up against it in the bottom sheet; the desktop rail keeps mt-3. */}
-      <p className="mt-5 text-[11px] leading-relaxed text-gray-400 md:mt-3">
+      <p className="mt-5 text-[11px] leading-relaxed text-stone-400 md:mt-3">
         Índice de Aire y Salud Mexicano&nbsp;{" "}
         <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
           NOM-172-SEMARNAT-2023
@@ -125,11 +125,11 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
   if (!collapsible) {
     return (
       <div className={className}>
-        <p className="text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+        <p className="text-xs font-medium uppercase leading-none tracking-wide text-stone-400">
           Calidad del aire
         </p>
         <ScaleBar className="mt-3" />
-        <LegendDetail className="mt-3 border-t border-gray-100 pt-3" />
+        <LegendDetail className="mt-3 border-t border-stone-100 pt-3" />
       </div>
     );
   }
@@ -146,9 +146,9 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={detailId}
-        className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
+        className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
       >
-        <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-gray-400">
+        <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-stone-400">
           Calidad del aire
         </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
@@ -159,13 +159,13 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
             panel points its chevron down, so this one points the other way. */}
         <ChevronRight
           aria-hidden="true"
-          className={`h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200 ${open ? "-rotate-90" : ""}`}
+          className={`h-4 w-4 flex-shrink-0 text-stone-400 transition-transform duration-200 ${open ? "-rotate-90" : ""}`}
         />
       </button>
       {/* Kept mounted so aria-controls always resolves; `hidden` keeps the shut
           content out of the tab order. */}
       <div id={detailId} hidden={!open}>
-        <LegendDetail className="disclosure-in-up mb-3 border-b border-gray-100 pb-3" />
+        <LegendDetail className="disclosure-in-up mb-3 border-b border-stone-100 pb-3" />
       </div>
     </div>
   );

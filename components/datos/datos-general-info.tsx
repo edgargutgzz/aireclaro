@@ -20,7 +20,7 @@ export const GENERAL_TABS: InfoTab[] = [
           href="http://aire.nl.gob.mx"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          className="font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900"
         >
           Sistema Integral de Monitoreo Ambiental (SIMA)
         </a>{" "}
@@ -40,7 +40,7 @@ export const GENERAL_TABS: InfoTab[] = [
           href="https://www.dof.gob.mx/nota_detalle.php?codigo=5633855&fecha=27/10/2021"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          className="font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900"
         >
           NOM-025-SSA1-2021
         </a>
@@ -75,7 +75,7 @@ export const GENERAL_TABS: InfoTab[] = [
           href="/infografias/infografia_salud.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-gray-700 underline underline-offset-2 hover:text-gray-900"
+          className="font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900"
         >
           infografía
         </a>

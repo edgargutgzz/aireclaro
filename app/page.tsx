@@ -45,11 +45,11 @@ export default function Home() {
       <JsonLd data={websiteSchema} />
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-16 lg:grid-cols-2 lg:px-8">
         <div className="flex flex-col gap-8">
-          <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-gray-900 md:text-6xl lg:text-7xl">
+          <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-stone-900 md:text-6xl lg:text-7xl">
             Trabajamos por una mejor{" "}
             <span className="text-[#226caf]">calidad del aire.</span>
           </h1>
-          <p className="max-w-lg text-lg leading-relaxed text-gray-600 md:text-xl">
+          <p className="max-w-lg text-lg leading-relaxed text-stone-700 md:text-xl">
             Somos una organización de la sociedad civil dedicada a generar
             esfuerzos colaborativos y fundamento técnico para mejorar la calidad
             del aire en la Zona Metropolitana de Monterrey.

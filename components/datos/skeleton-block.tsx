@@ -7,6 +7,6 @@ export default function SkeletonBlock({
   className?: string;
 }) {
   return (
-    <div className={`animate-pulse rounded-xl bg-gray-200 ${className}`} />
+    <div className={`animate-pulse rounded-xl bg-stone-200 ${className}`} />
   );
 }

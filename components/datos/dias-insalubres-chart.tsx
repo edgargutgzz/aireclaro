@@ -205,7 +205,7 @@ function MonthTooltipCard({
       className="pointer-events-none absolute z-10 grid w-[11rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
       style={positionStyle}
     >
-      <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+      <span className="text-xs font-medium uppercase tracking-wide text-stone-400">
         {MONTHS_ES_FULL[month.mesNumero - 1]} {month.ano}
       </span>
       <div className="flex gap-4">
@@ -216,9 +216,9 @@ function MonthTooltipCard({
           >
             {month.insalubres}
           </span>
-          <span className="text-xs text-gray-500">insalubres</span>
+          <span className="text-xs text-stone-500">insalubres</span>
         </div>
-        <div className="w-px bg-gray-100" />
+        <div className="w-px bg-stone-100" />
         <div className="flex flex-col gap-0.5">
           <span
             className="text-2xl font-bold leading-none"
@@ -226,14 +226,14 @@ function MonthTooltipCard({
           >
             {month.saludables}
           </span>
-          <span className="text-xs text-gray-500">saludables</span>
+          <span className="text-xs text-stone-500">saludables</span>
         </div>
       </div>
-      <div className="border-t border-gray-100 pt-2 text-xs text-gray-500">
+      <div className="border-t border-stone-100 pt-2 text-xs text-stone-500">
         {pct}% de días insalubres
       </div>
       {month.diasTotales > 0 && (
-        <div className="flex items-center gap-0.5 border-t border-gray-100 pt-2 text-xs font-medium text-gray-500">
+        <div className="flex items-center gap-0.5 border-t border-stone-100 pt-2 text-xs font-medium text-stone-500">
           Ver detalle por día
           <ChevronRight className="h-3.5 w-3.5" />
         </div>
@@ -329,7 +329,7 @@ function StackedBarsChart({
                 dominantBaseline="middle"
                 fontSize={12}
                 fontWeight={500}
-                fill="rgb(107,114,128)"
+                fill="rgb(121,113,107)"
               >
                 {t}
               </text>
@@ -549,7 +549,7 @@ function YearLinesChart({
               dominantBaseline="middle"
               fontSize={12}
               fontWeight={500}
-              fill="rgb(107,114,128)"
+              fill="rgb(121,113,107)"
             >
               {t}
             </text>
@@ -682,7 +682,7 @@ function YearLinesChart({
             POINT_R,
           )}
         >
-          <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+          <span className="text-xs font-medium uppercase tracking-wide text-stone-400">
             {MONTHS_ES_FULL[hoveredIdx]}
           </span>
           {lines.map((l) => {
@@ -690,16 +690,16 @@ function YearLinesChart({
             const t = l.totales[hoveredIdx];
             return (
               <div key={l.ano} className="flex items-center justify-between gap-3 text-xs">
-                <span className="flex items-center gap-1.5 text-gray-500">
+                <span className="flex items-center gap-1.5 text-stone-500">
                   <span className="h-2 w-2 rounded-full" style={{ backgroundColor: l.color }} />
                   {l.ano}
                 </span>
-                <span className="text-gray-500">
+                <span className="text-stone-500">
                   {v === null ? (
                     "Sin datos"
                   ) : (
                     <>
-                      <span className="text-sm font-semibold text-gray-800">{v}</span> de {t} días
+                      <span className="text-sm font-semibold text-stone-800">{v}</span> de {t} días
                     </>
                   )}
                 </span>
@@ -889,7 +889,7 @@ export default function DiasInsalubresChart({
   // promedio anual and cobertura had already closed).
   if (years.length === 0) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 py-12 text-center text-sm text-gray-500">
+      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white px-5 py-12 text-center text-sm text-stone-500">
         Sin datos de días sobre la norma por el momento.
       </div>
     );
@@ -945,15 +945,15 @@ export default function DiasInsalubresChart({
         <>
           {SHOW_PM10_TAB && (
             <>
-              <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+              <div className="flex items-center gap-1 rounded-xl bg-stone-100 p-1">
                 {(["pm25", "pm10"] as const).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPollutant(p)}
-                    className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                    className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
                       pollutant === p
-                        ? "bg-white text-gray-800 shadow-sm hover:shadow"
-                        : "text-gray-500 hover:text-gray-700"
+                        ? "bg-white text-stone-800 shadow-sm hover:shadow"
+                        : "text-stone-500 hover:text-stone-700"
                     }`}
                   >
                     {POLLUTANT_LABEL[p]}
@@ -962,7 +962,7 @@ export default function DiasInsalubresChart({
               </div>
               {/* Separates the pollutant toggle from the year toggle -- two
                   independent choices, not one flat row of four options. */}
-              <div className="h-5 w-px bg-gray-200" />
+              <div className="h-5 w-px bg-stone-200" />
             </>
           )}
           {/* The year toggle only applies to the bars; in the comparison it
@@ -976,7 +976,7 @@ export default function DiasInsalubresChart({
             <YearToggle years={years} year={year} onChange={setSelectedYear} />
           </div>
           <div
-            className={`h-5 w-px shrink-0 bg-gray-200 ${compare ? "invisible" : ""}`}
+            className={`h-5 w-px shrink-0 bg-stone-200 ${compare ? "invisible" : ""}`}
             aria-hidden
           />
           <div className="flex items-center gap-2">
@@ -985,10 +985,10 @@ export default function DiasInsalubresChart({
               onClick={() => setCompare((c) => !c)}
               aria-pressed={compare}
               title={compare ? "Volver a la vista por año" : "Comparar años"}
-              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+              className={`flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
                 compare
-                  ? "bg-gray-800 text-white hover:bg-gray-700"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200/70 hover:text-gray-700"
+                  ? "bg-stone-800 text-white hover:bg-stone-700"
+                  : "bg-stone-100 text-stone-600 hover:bg-stone-200/70 hover:text-stone-700"
               }`}
             >
               <LineChart className="h-3.5 w-3.5" aria-hidden />
@@ -1008,8 +1008,8 @@ export default function DiasInsalubresChart({
             actual cause of the left/right mismatch reported. Reverted.) */}
         {compare ? (
           <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 md:mb-6">
-            <span className="text-xs text-gray-400">Días sobre la norma</span>
-            <div className="flex items-center gap-4 text-xs text-gray-500">
+            <span className="text-xs text-stone-400">Días sobre la norma</span>
+            <div className="flex items-center gap-4 text-xs text-stone-500">
               {yearLines.map((l) => (
                 <span key={l.ano} className="flex items-center gap-1.5">
                   <span className="h-0.5 w-3 rounded-full" style={{ backgroundColor: l.color }} />
@@ -1027,9 +1027,9 @@ export default function DiasInsalubresChart({
               says that, so this would just be a stray leftover label
               (2026-09-27 feedback). */}
           {!drilledMonth && (
-            <span className="text-xs text-gray-400">Días del mes</span>
+            <span className="text-xs text-stone-400">Días del mes</span>
           )}
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center gap-4 text-xs text-stone-500">
             <span className="flex items-center gap-1.5">
               <span
                 className="h-2 w-2 rounded-[2px]"
@@ -1050,7 +1050,7 @@ export default function DiasInsalubresChart({
                 dead weight in that view. */}
             {drilledMonth && (
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-[2px] bg-[#dbdfe3]" />
+                <span className="h-2 w-2 rounded-[2px] bg-[#dedcda]" />
                 Sin datos
               </span>
             )}
@@ -1066,7 +1066,7 @@ export default function DiasInsalubresChart({
             </div>
           ) : (
             <div
-              className="flex items-center justify-center text-center text-sm text-gray-500"
+              className="flex items-center justify-center text-center text-sm text-stone-500"
               style={{ height: chartHeight }}
             >
               La comparación entre años estará disponible con la próxima actualización de datos.

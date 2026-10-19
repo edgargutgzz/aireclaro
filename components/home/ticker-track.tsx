@@ -43,19 +43,19 @@ function Items({
             href={item.href}
             tabIndex={copy ? -1 : undefined}
             onClick={onStationClick}
-            className="flex items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-1 text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
+            className="flex items-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-1 text-stone-600 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
           >
             <span
-              className={`h-2 w-2 shrink-0 rounded-full ring-1 ring-inset ring-black/10 ${item.color ? "" : "bg-[#9ca3af]/50"}`}
+              className={`h-2 w-2 shrink-0 rounded-full ring-1 ring-inset ring-black/10 ${item.color ? "" : "bg-[#a6a09b]/50"}`}
               style={item.color ? { backgroundColor: item.color } : undefined}
               aria-hidden
             />
             {item.nombre}
             {item.pm25 === null ? (
-              <span className="text-gray-400">no disponible</span>
+              <span className="text-stone-400">no disponible</span>
             ) : (
               <>
-                <span className="font-mono font-semibold text-gray-900">{item.pm25}</span>
+                <span className="font-mono font-semibold text-stone-900">{item.pm25}</span>
                 <span className="sr-only">µg/m³</span>
               </>
             )}

@@ -159,11 +159,11 @@ export default function SelectMenu<T extends string>({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
-        className={`relative w-full rounded-xl bg-gray-100 py-2.5 pl-3 pr-9 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${className}`}
+        className={`relative w-full rounded-xl bg-stone-100 py-2.5 pl-3 pr-9 text-left text-sm font-medium text-stone-700 transition-colors hover:bg-stone-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${className}`}
       >
         <span className="block truncate">{selected?.label}</span>
         <ChevronDown
-          className={`pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 transition-transform ${
+          className={`pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 transition-transform ${
             open ? "rotate-180" : ""
           }`}
           aria-hidden
@@ -193,11 +193,11 @@ export default function SelectMenu<T extends string>({
                 onClick={() => pick(i)}
                 onPointerMove={() => setActive(i)}
                 className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm transition-colors ${
-                  i === active ? "bg-gray-100/70" : ""
-                } ${isSelected ? "font-medium text-gray-800" : "text-gray-600"}`}
+                  i === active ? "bg-stone-100/70" : ""
+                } ${isSelected ? "font-medium text-stone-800" : "text-stone-600"}`}
               >
                 <span className="truncate">{o.label}</span>
-                {isSelected && <Check className="h-4 w-4 shrink-0 text-gray-500" aria-hidden />}
+                {isSelected && <Check className="h-4 w-4 shrink-0 text-stone-500" aria-hidden />}
               </li>
             );
           })}

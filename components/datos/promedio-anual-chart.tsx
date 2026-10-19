@@ -164,7 +164,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
 
   return (
     <div className="grid gap-2.5">
-      <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400">
+      <span className="text-[10px] font-medium uppercase tracking-wide text-stone-400">
         Trimestres ({validCount}/4 válidos)
       </span>
       <div className="flex h-1.5 gap-0.5 overflow-hidden rounded-full">
@@ -175,7 +175,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
               key={t}
               className="flex-1"
               style={{
-                backgroundColor: r?.valido ? COLOR_CUBIERTO_FILL : "#d1d5db",
+                backgroundColor: r?.valido ? COLOR_CUBIERTO_FILL : "#d6d3d1",
               }}
             />
           );
@@ -328,7 +328,7 @@ function TooltipCard({
       className="pointer-events-none absolute z-10 grid w-[17rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
       style={positionStyle}
     >
-      <span className="text-xs font-medium uppercase tracking-wide text-gray-400">
+      <span className="text-xs font-medium uppercase tracking-wide text-stone-400">
         {bar.nombre}
       </span>
       {/* Number + its own caption, gap-1.5 (not the tighter gap-0.5 tried
@@ -344,13 +344,13 @@ function TooltipCard({
           <span className="text-2xl font-bold leading-none" style={{ color }}>
             {Math.round(bar.promedio)}
           </span>
-          <span className="text-sm font-medium text-gray-400">
+          <span className="text-sm font-medium text-stone-400">
             {POLLUTANT_LABEL[pollutant]} µg/m³
           </span>
         </div>
-        <span className="text-xs text-gray-500">Promedio anual</span>
+        <span className="text-xs text-stone-500">Promedio anual</span>
       </div>
-      <div className="border-t border-gray-100 pt-2">
+      <div className="border-t border-stone-100 pt-2">
         <TrimestreBreakdown rows={bar.rows} />
       </div>
     </div>
@@ -459,7 +459,7 @@ function BarsChart({
                 dominantBaseline="middle"
                 fontSize={12}
                 fontWeight={500}
-                fill="rgb(107,114,128)"
+                fill="rgb(121,113,107)"
               >
                 {t}
               </text>
@@ -727,7 +727,7 @@ export default function PromedioAnualChart({
   // since real data exists).
   if (years.length === 0) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 py-12 text-center text-sm text-gray-500">
+      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white px-5 py-12 text-center text-sm text-stone-500">
         Sin datos de promedio anual por el momento.
       </div>
     );
@@ -773,7 +773,7 @@ export default function PromedioAnualChart({
               anual de {POLLUTANT_LABEL[pollutant]} en {year}
             </div>
             <div className={`contents ${sinDatosCount > 0 ? "" : "invisible"}`}>
-              <div className="hidden h-4 w-px bg-gray-200 md:block" />
+              <div className="hidden h-4 w-px bg-stone-200 md:block" />
               <p className="mt-2 text-xs md:mt-0 md:text-sm">
                 <span>{sinDatosCount}</span>{" "}
                 {sinDatosCount === 1 ? "estación" : "estaciones"} sin datos
@@ -785,15 +785,15 @@ export default function PromedioAnualChart({
       }
       headerRight={
         <>
-          <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+          <div className="flex items-center gap-1 rounded-xl bg-stone-100 p-1">
             {(["pm25", "pm10"] as const).map((p) => (
               <button
                 key={p}
                 onClick={() => setPollutant(p)}
-                className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15 ${
+                className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
                   pollutant === p
-                    ? "bg-white text-gray-800 shadow-sm hover:shadow"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-white text-stone-800 shadow-sm hover:shadow"
+                    : "text-stone-500 hover:text-stone-700"
                 }`}
               >
                 {POLLUTANT_LABEL[p]}
@@ -803,7 +803,7 @@ export default function PromedioAnualChart({
           {/* Separates the pollutant toggle from the year toggle -- two
               independent choices, not one flat row (same recipe días
               insalubres/cobertura already use). */}
-          <div className="h-5 w-px bg-gray-200" />
+          <div className="h-5 w-px bg-stone-200" />
           <YearToggle years={years} year={year} onChange={setSelectedYear} />
         </>
       }
@@ -820,10 +820,10 @@ export default function PromedioAnualChart({
             was the rest of the "feels less fluid switching years" gap
             (2026-09-28 feedback). */}
         <div className="mb-4 flex items-center justify-between md:mb-6">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-stone-400">
             {POLLUTANT_LABEL[pollutant]} (µg/m³)
           </span>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center gap-4 text-xs text-stone-500">
             <span className="flex items-center gap-1.5">
               <span
                 className="h-2 w-2 rounded-[2px]"
@@ -846,7 +846,7 @@ export default function PromedioAnualChart({
           // same chartHeight as the real bars so the card's total height
           // doesn't change switching to/from a year that has data.
           <div
-            className="flex items-center justify-center rounded-xl bg-gray-50 text-center text-sm text-gray-400"
+            className="flex items-center justify-center rounded-xl bg-stone-50 text-center text-sm text-stone-400"
             style={{ height: chartHeight }}
           >
             El promedio anual de {year} estará disponible cuando termine el año.
@@ -868,7 +868,7 @@ export default function PromedioAnualChart({
           </div>
         ) : (
           <div
-            className="flex items-center justify-center rounded-xl bg-gray-50 text-sm text-gray-400"
+            className="flex items-center justify-center rounded-xl bg-stone-50 text-sm text-stone-400"
             style={{ height: chartHeight }}
           >
             Sin datos suficientes todavía

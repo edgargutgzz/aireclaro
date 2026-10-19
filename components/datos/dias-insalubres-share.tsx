@@ -63,7 +63,7 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
             cells on their LAST baseline (items-baseline-last), so the big
             number sits on the "Límite" line, which table cells can't do. */}
         <div role="table" aria-label={title}>
-          <div role="row" className={`grid ${cols} pb-4 text-xs text-gray-400 md:pb-6`}>
+          <div role="row" className={`grid ${cols} pb-4 text-xs text-stone-400 md:pb-6`}>
             <div role="columnheader">
               <span className="sr-only">Contaminante</span>
             </div>
@@ -77,19 +77,19 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
             <div
               key={r.pollutant}
               role="row"
-              className={`grid ${cols} items-baseline-last border-t border-gray-100 py-4 md:py-6`}
+              className={`grid ${cols} items-baseline-last border-t border-stone-100 py-4 md:py-6`}
             >
               <div role="rowheader">
-                <div className="text-sm font-medium text-gray-700 md:text-base">{POLLUTANT_LABEL[r.pollutant]}</div>
+                <div className="text-sm font-medium text-stone-700 md:text-base">{POLLUTANT_LABEL[r.pollutant]}</div>
                 {/* The one limit both years' numbers in this row count against. */}
-                <div className="mt-1 text-xs text-gray-400">Límite: {r.limit} µg/m³</div>
+                <div className="mt-1 text-xs text-stone-400">Límite: {r.limit} µg/m³</div>
               </div>
               {years.map((y) => (
                 <div
                   key={y}
                   role="cell"
                   className="text-4xl font-semibold leading-none tabular-nums md:text-6xl"
-                  style={{ color: y === year ? COLOR_INSALUBRE : "#9ca3af" }}
+                  style={{ color: y === year ? COLOR_INSALUBRE : "#a6a09b" }}
                 >
                   {y === year ? r.current : r.prior}
                 </div>

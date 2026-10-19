@@ -16,10 +16,10 @@
    lib/air-quality.ts. */
 @layer base {
   * {
-    @apply border-gray-200;
+    @apply border-stone-200;
   }
   body {
-    @apply bg-gray-50 text-gray-800;
+    @apply bg-stone-50 text-stone-800;
   }
   /* Browsers default a real <button> to cursor:default, not pointer -- only
      <a href> gets the hand automatically. Every clickable button across the
@@ -84,12 +84,12 @@
    fill with no shape behind it — each pairing clears 4.5:1 on its own fill,
    so no outline stroke is needed. */
 
-/* The one deliberate departure from the house ring. ring-gray-900/15 is tuned
+/* The one deliberate departure from the house ring. ring-stone-900/15 is tuned
    for a known light surface; over arbitrary map imagery it disappears. A solid
-   gray-900 outline is the only thing that holds at 3:1 over satellite, park
+   stone-900 outline is the only thing that holds at 3:1 over satellite, park
    green and highway gray alike. Do not "correct" this to the house token. */
 .sensor-marker:focus-visible {
-  outline: 2px solid #111827;
+  outline: 2px solid #1c1917;
   outline-offset: 3px;
   border-radius: 50%;
 }
@@ -114,7 +114,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--marker-number, #111827);
+  color: var(--marker-number, #1c1917);
   font-variant-numeric: tabular-nums;
   text-shadow: var(--marker-number-shadow, 0 1px 1px rgba(255, 255, 255, 0.4));
   /* No background here: this element is only ever the selected station's
@@ -188,10 +188,10 @@
    five fills). Instead a small badge sits on the disc's upper-right, mostly
    over it but breaking the edge so it reads as attached and floating: the
    Landmark glyph the Capas panel and estación card already use for "gobierno",
-   on its own neutral `gray-500` ground with the same white casing ring the
-   marker carries. Kept well off `gray-800`, which punched a black hole in the
-   saturated disc; `gray-500` is as light as it goes before the white 10px
-   glyph loses its 3:1 edge (white on `gray-400` is ~2.5:1).
+   on its own neutral `stone-500` ground with the same white casing ring the
+   marker carries. Kept well off `stone-800`, which punched a black hole in the
+   saturated disc; `stone-500` is as light as it goes before the white 10px
+   glyph loses its 3:1 edge (white on `stone-400` is ~2.5:1).
    It rides only the ~15 spatially spread SIMA markers, so it does not pile up
    in the basin. Child of __dot, so it scales and lifts with the selected disc
    and stays pinned to the corner. Network is still named on the card, in Capas
@@ -221,7 +221,7 @@
   width: 0.9em;
   height: 0.9em;
   border-radius: 50%;
-  background: #6b7280;
+  background: #79716b;
   color: #fff;
   box-shadow:
     0 0 0 1.5px #fff,

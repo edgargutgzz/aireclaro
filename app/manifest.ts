@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Calidad del aire en tiempo real en Monterrey y Zona Metropolitana",
     start_url: "/mapa",
     display: "standalone",
-    background_color: "#f9fafb",
-    theme_color: "#f9fafb",
+    background_color: "#fafaf9",
+    theme_color: "#fafaf9",
     icons: [
       {
         src: "/icon-192.png",

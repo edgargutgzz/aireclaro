@@ -14,7 +14,7 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
   const dot =
     status === "fresh" ? "bg-green-500" :
     status === "delayed" ? "bg-amber-500" :
-    "bg-gray-400";
+    "bg-stone-400";
 
   return (
     <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
@@ -35,15 +35,15 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
 export function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
   if (freshness.status === "nodata") {
     return (
-      <span className={`whitespace-nowrap font-medium text-gray-700 ${compact ? "text-[11px]" : "text-[13px]"}`}>
+      <span className={`whitespace-nowrap font-medium text-stone-700 ${compact ? "text-[11px]" : "text-[13px]"}`}>
         No disponible
       </span>
     );
   }
   return (
-    <span className={`whitespace-nowrap text-gray-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
+    <span className={`whitespace-nowrap text-stone-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
       <span className="sr-only">Actualizado </span>
-      <time dateTime={freshness.dateTime} className="font-medium text-gray-700">
+      <time dateTime={freshness.dateTime} className="font-medium text-stone-700">
         {freshness.when}
       </time>
     </span>
