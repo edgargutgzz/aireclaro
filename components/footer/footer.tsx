@@ -37,7 +37,7 @@ const COLUMNAS = [
   },
 ];
 
-const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide text-gray-400";
+const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide text-gray-600";
 
 // `warm`: the home page's stone trial (see MainContent).
 export default function Footer({ warm = false }: { warm?: boolean }) {
@@ -56,7 +56,7 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
           <p className={EYEBROW}>Contacto</p>
           <a
             href="mailto:contacto@observatoriodelaire.com"
-            className="flex items-center gap-2 rounded-xl text-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="flex items-center gap-2 rounded-xl text-sm text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             <Mail className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
             contacto@observatoriodelaire.com
@@ -65,7 +65,7 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
             href="https://maps.app.goo.gl/uYj6u7VH1BzvbFJfA"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
           >
             <MapPin className="mt-1 h-4 w-4 shrink-0 text-gray-400" aria-hidden />
             <span>
@@ -107,7 +107,7 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
                   <li key={href}>
                     <Link
                       href={href}
-                      className="rounded-xl text-sm text-gray-500 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+                      className="rounded-xl text-sm text-gray-600 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
                     >
                       {label}
                     </Link>
@@ -121,14 +121,14 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
       </div>
 
       <div className={`mt-10 flex flex-col gap-6 border-t pt-4 sm:flex-row sm:items-center sm:justify-between ${warm ? "border-stone-200" : "border-gray-200"}`}>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-600">
           &copy; {new Date().getFullYear()} Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey
         </p>
         <Link
           href="https://datacomun.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="self-start whitespace-nowrap rounded-xl text-xs text-gray-400 transition-colors hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
+          className="self-start whitespace-nowrap rounded-xl text-xs text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15"
         >
           {/* Quiet like the © line: the site speaks for the Observatory. */}
           Desarrollado por datacomun
