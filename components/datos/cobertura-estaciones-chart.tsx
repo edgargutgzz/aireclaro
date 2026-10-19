@@ -9,6 +9,7 @@ import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import YearToggle from "@/components/datos/year-toggle";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
+import { roundedRectPath } from "@/components/datos/svg-chart-utils";
 
 export interface Estacion {
   sensorId: string;
@@ -392,12 +393,12 @@ export default function CoberturaEstacionesChart({
                     <stop key={offset} offset={offset} stopColor={color} />
                   ))}
                 </linearGradient>
-                {/* Each bar's rounded outline (rx 4, the promedio anual bars'
-                    radius), clipping the runs inside it so only the bar's two
-                    ends round, not every run. */}
+                {/* Each bar's outline, clipping the runs inside it: square at
+                    its baseline (Jan 1), rounded only at its tip, with the
+                    días insalubres bars' 4px radius. */}
                 {estaciones.map((e, i) => (
                   <clipPath key={e.sensorId} id={`${gradientId}-fila-${i}`}>
-                    <rect x={0} y={rowY(i)} width={width} height={rowHeight} rx={4} />
+                    <path d={roundedRectPath(0, rowY(i), width, rowHeight, { tr: 4, br: 4 })} />
                   </clipPath>
                 ))}
               </defs>
