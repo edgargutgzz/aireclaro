@@ -152,8 +152,9 @@ export function infoTab(pollutant: Pollutant): InfoTab {
 // (left to right over the whole plot, so it only restates the date), any
 // other day the "Datos insuficientes" gray. Every row is
 // fully colored until one is picked; then the others fade, a line marks the day under the pointer and
-// a tooltip beside the row names the station and that day's state (there
-// are no row labels).
+// a tooltip beside the row names the station and that day's state. Each
+// row's station name sits just above its bar, at every width, so the year
+// keeps the full width of the plot.
 
 // Pixel-sampled from the user's reference design (2026-10-18), start to
 // end along its highlighted column.
@@ -177,7 +178,8 @@ const TOOLTIP_WIDTH = 208; // px, the card's w-52
 const TOOLTIP_HEIGHT = 104; // px, generous estimate of its rendered height
 const TOOLTIP_GAP = 10; // px from the row
 const AXIS_HEIGHT = 20; // px, month labels above the plot
-const GAP_RATIO = 0.3; // share of each row's slot left as the gap
+const LABEL_HEIGHT = 16; // px, the station name's band at the top of each row's slot
+const BAR_GAP = 6; // px left under each bar before the next row's name
 
 function plotHeight(width: number) {
   return width < 640 ? 520 : 560;
@@ -245,9 +247,9 @@ export default function CoberturaEstacionesChart({
   const height = plotHeight(width);
   const n = estaciones.length;
   const slot = n > 0 ? Math.max(0, height - AXIS_HEIGHT) / n : 0;
-  const rowHeight = slot * (1 - GAP_RATIO);
+  const rowHeight = Math.max(0, slot - LABEL_HEIGHT - BAR_GAP);
   const dayWidth = dates.length > 0 ? width / dates.length : 0;
-  const rowY = (i: number) => AXIS_HEIGHT + i * slot + (slot - rowHeight) / 2;
+  const rowY = (i: number) => AXIS_HEIGHT + i * slot + LABEL_HEIGHT;
 
   // Each station's row as runs of consecutive same-state days, one rect
   // each. The gray is drawn only in the gaps, not under the blue, so a
@@ -406,6 +408,13 @@ export default function CoberturaEstacionesChart({
 
               {estaciones.map((e, i) => (
                 <g key={e.sensorId}>
+                  <text
+                    x={0}
+                    y={rowY(i) - 5}
+                    className={`text-[11px] font-medium ${sel?.row === i ? "fill-neutral-800" : "fill-neutral-500"}`}
+                  >
+                    {e.nombre}
+                  </text>
                   {runs[i].map((r) => (
                     <rect
                       key={r.start}
