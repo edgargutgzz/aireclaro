@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { BookOpen } from "lucide-react";
 import { MONTHS_ES, MONTHS_ES_FULL, type Pollutant } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE, COLOR_INSUFICIENTE, COLOR_SALUDABLE, withOpacity } from "@/lib/datos-colors";
+import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE, COLOR_INSUFICIENTE, COLOR_POR_VENIR, COLOR_SALUDABLE, withOpacity } from "@/lib/datos-colors";
 import type { InfoTab } from "@/components/datos/info-tabs";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
@@ -241,9 +241,9 @@ export default function CoberturaEstacionesChart({
   const height = AXIS_HEIGHT + n * slot;
   const rowHeight = BAR_HEIGHT;
   // Every year runs on the same Jan 1 to Dec 31 axis, so a month sits in the
-  // same place whichever year is picked; a year in progress just stops short
-  // (blank, not gray: the rest of the year isn't missing data, it hasn't
-  // happened yet).
+  // same place whichever year is picked; a year in progress runs on in a
+  // lighter track (COLOR_POR_VENIR, not the gray: the rest of the year isn't
+  // missing data, it hasn't happened yet).
   const daysInYear = year !== null && (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 366 : 365;
   const dayWidth = width / daysInYear;
   const rowY = (i: number) => AXIS_HEIGHT + i * slot + LABEL_HEIGHT;
@@ -410,6 +410,15 @@ export default function CoberturaEstacionesChart({
                   >
                     {e.nombre}
                   </text>
+                  {dates.length < daysInYear && (
+                    <rect
+                      x={dates.length * dayWidth}
+                      y={rowY(i)}
+                      width={(daysInYear - dates.length) * dayWidth}
+                      height={rowHeight}
+                      fill={COLOR_POR_VENIR}
+                    />
+                  )}
                   {runs[i].map((r) => (
                     <rect
                       key={r.start}

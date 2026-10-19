@@ -35,6 +35,9 @@ export const COLOR_CUBIERTO_FILL_OPACITY = 0.68;
 // a health-severity color): lighter than stone-300, but not all the way to
 // stone-200, which sat almost invisibly on a stone-50 card.
 export const COLOR_INSUFICIENTE = "#dedcda";
+// Cobertura's days of a year in progress that haven't happened yet: a
+// lighter track than COLOR_INSUFICIENTE, since nothing is missing there.
+export const COLOR_POR_VENIR = "#f5f5f4"; // Tailwind stone-100
 export const COLOR_INSALUBRE = "#ef4444"; // Tailwind red-500
 export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 
