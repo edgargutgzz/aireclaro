@@ -158,6 +158,9 @@ export function infoTab(pollutant: Pollutant): InfoTab {
 // keeps the full width of the plot, with the station's % of days with data
 // at the other end of that line.
 
+// The tooltip's "Con datos" text: the bars' blue a step darker (Tailwind
+// blue-600, 5.2:1 on white), since blue-500 text is only 3.7:1.
+const COLOR_CON_DATOS_TEXTO = "#2563eb";
 // Only the color fades, not the gray, so a faded row's gaps still show.
 const FADED_OPACITY = 0.4;
 const TOOLTIP_WIDTH = 208; // px, the card's w-52
@@ -441,7 +444,7 @@ export default function CoberturaEstacionesChart({
                   x2={(sel.day + 0.5) * dayWidth}
                   y1={AXIS_HEIGHT}
                   y2={height}
-                  stroke="#79716b"
+                  stroke="#737373"
                   strokeWidth={1.5}
                 />
               )}
@@ -462,7 +465,7 @@ export default function CoberturaEstacionesChart({
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">{formatFecha(selFecha)}</span>
               <span className="text-sm font-semibold text-neutral-800">{selEstacion.nombre}</span>
-              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CUBIERTO : "rgb(115,115,115)" }}>
+              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS_TEXTO : "rgb(115,115,115)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
               </span>
               <span className="text-xs text-neutral-500">
