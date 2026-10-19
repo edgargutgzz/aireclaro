@@ -1120,13 +1120,12 @@ export default function MapaSensors({
           <p className="text-base font-medium text-neutral-700">Capas</p>
         </div>
         <div
-          /* A plain block, not a flex column: the one child is the filter card,
-             which carries overflow-hidden to clip its own rounded corners. As a
-             flex item it would resolve to min-height:0 and a flex parent would
-             shrink the card to fit and clip its rows instead of letting them
-             overflow and scroll here. The desktop panel body is a plain block
-             for the same reason. */
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5"
+          /* A plain block, not a flex column: as a flex item the list would
+             resolve to min-height:0 and shrink to fit instead of overflowing
+             and scrolling here. The desktop panel body is a plain block for
+             the same reason. No side padding: the list's rows run edge to
+             edge and carry the 20px text rail themselves. */
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <LayersFilterContent
@@ -1283,8 +1282,9 @@ export default function MapaSensors({
             /* Only the body scrolls, so the "Capas" header stays in place, and
                overscroll-contain stops a scroll that reaches the end from
                panning the map underneath. flex-1 min-h-0 takes whatever the
-               column has left after the legend + badge. */
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6 pt-3">
+               column has left after the legend + badge. No padding: the
+               list sits flush, like the estación card's sections. */
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               <LayersFilterContent
                 showOtros={showOtros}
                 setShowOtros={setShowOtros}

@@ -66,7 +66,7 @@ export function LayersFilterContent({
   // chevron, or, for the rows that carry neither, this spacer. Without it the
   // counts landed on different rails depending on which section they were in,
   // and read as a ragged column rather than one list.
-  const trailingSlot = <span aria-hidden="true" className="mr-2 h-7 w-7 flex-shrink-0" />;
+  const trailingSlot = <span aria-hidden="true" className="mr-3 h-7 w-7 flex-shrink-0" />;
   const [showCitizenGroup, setShowCitizenGroup] = useState(false);
   const [openEstados, setOpenEstados] = useState<string[]>([]);
   // One section open at a time: two expanded sections is how a filter panel
@@ -122,7 +122,7 @@ export function LayersFilterContent({
         type="button"
         onClick={() => toggleSection(name)}
         aria-expanded={openSection === name}
-        className="flex min-w-0 flex-1 items-center gap-1.5 py-3.5 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+        className="flex min-w-0 flex-1 items-center gap-1.5 py-3.5 pl-5 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
       >
         <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</p>
         <span className="min-w-0 flex-1 truncate text-xs leading-none text-neutral-500">· {summary}</span>
@@ -132,7 +132,7 @@ export function LayersFilterContent({
         type="button"
         onClick={info?.onClick}
         disabled={!info}
-        className={`mr-2 flex-shrink-0 rounded-xl p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${info ? 'text-neutral-400 hover:bg-stone-100 hover:text-neutral-600' : 'invisible'}`}
+        className={`mr-3 flex-shrink-0 rounded-xl p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${info ? 'text-neutral-400 hover:bg-stone-100 hover:text-neutral-600' : 'invisible'}`}
         aria-label={info?.ariaLabel ?? ""}
         aria-hidden={!info}
         tabIndex={info ? undefined : -1}
@@ -142,8 +142,13 @@ export function LayersFilterContent({
     </div>
   );
 
+  // Flush with its panel, like the estación card's sections: no box of its
+  // own, rows run edge to edge, content starts on the panel's 20px text rail
+  // (pl-5) and the trailing controls end on the right one (mr-3 + their own
+  // padding). Nested rows start under their parent's label (20px rail + 18px
+  // box + 12px gap = pl-12.5).
   return (
-    <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+    <div className="border-t border-stone-100">
       {/* Fuente first — the network is the primary cut, and it drives the
           Ubicación counts below. */}
       <div>
@@ -159,7 +164,7 @@ export function LayersFilterContent({
                 role="checkbox"
                 aria-checked={showSima}
                 onClick={() => setShowSima((v) => !v)}
-                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
+                className={`flex min-w-0 flex-1 items-center gap-3 pl-5 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
               >
                 <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
                 <span className={`min-w-0 flex-1 truncate text-sm font-medium ${showSima ? 'text-neutral-800' : 'text-neutral-400'}`}>Estaciones de Gobierno</span>
@@ -173,7 +178,7 @@ export function LayersFilterContent({
                 role="checkbox"
                 aria-checked={citizenState === 'indeterminate' ? 'mixed' : citizenState === 'checked'}
                 onClick={toggleCitizenGroup}
-                className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
+                className={`flex min-w-0 flex-1 items-center gap-3 pl-5 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
               >
                 <LayerCheckbox state={citizenState} size={boxSize} />
                 <span className={`min-w-0 flex-1 truncate text-sm font-medium ${citizenState === 'unchecked' ? 'text-neutral-400' : 'text-neutral-800'}`}>Sensores Ciudadanos</span>
@@ -182,7 +187,7 @@ export function LayersFilterContent({
               <button
                 type="button"
                 onClick={() => setShowCitizenGroup((v) => !v)}
-                className="mr-2 flex-shrink-0 rounded-xl p-1.5 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                className="mr-3 flex-shrink-0 rounded-xl p-1.5 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                 aria-expanded={showCitizenGroup}
                 aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
               >
@@ -197,7 +202,7 @@ export function LayersFilterContent({
                     role="checkbox"
                     aria-checked={showOccamm}
                     onClick={() => setShowOccamm((v) => !v)}
-                    className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
+                    className={`flex pl-12.5 min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
                   >
                     <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
                     <span className={`min-w-0 flex-1 truncate text-sm ${showOccamm ? 'text-neutral-600' : 'text-neutral-400'}`}>OCCAMM</span>
@@ -206,7 +211,7 @@ export function LayersFilterContent({
                   <button
                     type="button"
                     onClick={onShowOccammInfo}
-                    className="mr-2 flex-shrink-0 rounded-xl p-2 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                    className="mr-3 flex-shrink-0 rounded-xl p-2 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                     aria-label="Más información sobre OCCAMM"
                   >
                     <Info className="h-3 w-3" />
@@ -220,7 +225,7 @@ export function LayersFilterContent({
                     role="checkbox"
                     aria-checked={showOtros}
                     onClick={() => setShowOtros((v) => !v)}
-                    className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
+                    className={`flex pl-12.5 min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
                   >
                     <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
                     <span className={`min-w-0 flex-1 truncate text-sm ${showOtros ? 'text-neutral-600' : 'text-neutral-400'}`}>Otros</span>
@@ -257,7 +262,7 @@ export function LayersFilterContent({
                       onClick={() => setHiddenMunicipios((prev) => state === 'checked'
                         ? [...prev, ...keys.filter((k) => !prev.includes(k))]
                         : prev.filter((k) => !keys.includes(k)))}
-                      className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
+                      className={`flex min-w-0 flex-1 items-center gap-3 pl-5 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
                     >
                       <LayerCheckbox state={state} size={boxSize} />
                       <span className={`min-w-0 flex-1 truncate text-sm font-medium ${state === 'unchecked' ? 'text-neutral-400' : 'text-neutral-800'}`}>
@@ -268,7 +273,7 @@ export function LayersFilterContent({
                     <button
                       type="button"
                       onClick={() => setOpenEstados((prev) => open ? prev.filter((k) => k !== estado.key) : [...prev, estado.key])}
-                      className="mr-2 flex-shrink-0 rounded-xl p-1.5 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                      className="mr-3 flex-shrink-0 rounded-xl p-1.5 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                       aria-expanded={open}
                       aria-label={open ? `Ocultar municipios de ${estado.label}` : `Mostrar municipios de ${estado.label}`}
                     >
@@ -286,7 +291,7 @@ export function LayersFilterContent({
                               role="checkbox"
                               aria-checked={on}
                               onClick={() => setHiddenMunicipios((prev) => on ? [...prev, m.key] : prev.filter((k) => k !== m.key))}
-                              className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
+                              className={`flex pl-12.5 min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
                             >
                               <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
                               <span className={`min-w-0 flex-1 truncate text-sm ${on ? 'text-neutral-600' : 'text-neutral-400'}`}>{m.label}</span>
