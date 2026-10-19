@@ -169,10 +169,13 @@ const TOOLTIP_GAP = 10; // px from the row
 const AXIS_HEIGHT = 32; // px, month labels above the plot, with room before the first station name
 const LABEL_HEIGHT = 16; // px, the station name's band at the top of each row's slot
 const BAR_HEIGHT = 16; // px, each station's bar
-const BAR_GAP = 10; // px left under each bar before the next row's name
+// px left under each bar before the next row's name: roomier from md up.
+function barGap(width: number) {
+  return width < 768 ? 10 : 16;
+}
 // The plot grows with the station list instead of squeezing the rows into a
-// fixed height: 15 stations = 662px (the skeleton mirrors that number).
-const SLOT = LABEL_HEIGHT + BAR_HEIGHT + BAR_GAP;
+// fixed height: 15 stations = 662px, 752px from md (the skeleton mirrors
+// both numbers).
 
 // Below the picked row, or above it near the bottom; clamped inside the plot.
 function tooltipTop(rowTop: number, rowHeight: number, plotHeight: number) {
@@ -234,7 +237,8 @@ export default function CoberturaEstacionesChart({
   }, [node]);
 
   const n = estaciones.length;
-  const height = AXIS_HEIGHT + n * SLOT;
+  const slot = LABEL_HEIGHT + BAR_HEIGHT + barGap(width);
+  const height = AXIS_HEIGHT + n * slot;
   const rowHeight = BAR_HEIGHT;
   // Every year runs on the same Jan 1 to Dec 31 axis, so a month sits in the
   // same place whichever year is picked; a year in progress just stops short
@@ -242,7 +246,7 @@ export default function CoberturaEstacionesChart({
   // happened yet).
   const daysInYear = year !== null && (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 366 : 365;
   const dayWidth = width / daysInYear;
-  const rowY = (i: number) => AXIS_HEIGHT + i * SLOT + LABEL_HEIGHT;
+  const rowY = (i: number) => AXIS_HEIGHT + i * slot + LABEL_HEIGHT;
 
   // Each station's row as runs of consecutive same-state days, one rect
   // each. The gray is drawn only in the gaps, not under the blue, so a
@@ -291,7 +295,7 @@ export default function CoberturaEstacionesChart({
     const y = e.clientY - rect.top - AXIS_HEIGHT;
     if (y < 0 || dayWidth === 0) return setSel(null);
     setSel({
-      row: Math.min(n - 1, Math.floor(y / SLOT)),
+      row: Math.min(n - 1, Math.floor(y / slot)),
       // Past the last synced day there's no date to read: the row is still
       // picked, with no day line or tooltip.
       day: Math.floor(x / dayWidth) < dates.length ? Math.max(0, Math.floor(x / dayWidth)) : null,
