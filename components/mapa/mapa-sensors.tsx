@@ -1062,7 +1062,7 @@ export default function MapaSensors({
           expanded. The air-quality legend sits on top of the Capas button as a
           matching icon button; each opens its own bottom sheet. Desktop carries
           the legend at the foot of the left rail instead. The data-freshness
-          pill sits right beside the Capas button in one row, bottom edges
+          pill shares the Capas button's row, at the left edge, bottom edges
           level (items-end). Low-priority chrome, so it runs small and
           shadowless. Desktop puts it
           bottom-right, beside "Mi zona". */}
@@ -1081,8 +1081,8 @@ export default function MapaSensors({
               <Wind className={`h-5 w-5 ${showLegend ? 'text-neutral-900' : 'text-neutral-700'}`} />
             </button>
           </div>
-          <div className="flex items-end gap-3">
-            {freshness && <FreshnessBadge freshness={freshness} compact />}
+          <div className="flex w-full items-end justify-between">
+            {freshness ? <FreshnessBadge freshness={freshness} compact /> : <span />}
             <button
               onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
               className={`pointer-events-auto rounded-xl p-3 transition-colors duration-200 ${showFilters ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
