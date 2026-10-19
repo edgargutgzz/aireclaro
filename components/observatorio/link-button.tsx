@@ -12,7 +12,7 @@ export default function LinkButton({ href, label, video }: LinkButtonProps) {
   return (
     <Link
       href={href}
-      className="flex items-center rounded-xl bg-stone-100 px-4 py-2.5 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+      className="flex items-center rounded-xl bg-stone-100 px-4 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-stone-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
       {...(external && { target: "_blank", rel: "noopener noreferrer" })}
     >
       {video && <Youtube className="mr-2 h-4 w-4 text-red-500" aria-hidden />}

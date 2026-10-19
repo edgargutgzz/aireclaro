@@ -38,9 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Compartir({ params }: Props) {
   const p = getPublicacion((await params).slug)!;
   return (
-    <div className="px-6 py-16 text-center text-sm text-stone-600">
+    <div className="px-6 py-16 text-center text-sm text-neutral-600">
       <meta httpEquiv="refresh" content={`0; url=${p.file}`} />
-      <a href={p.file} className="font-medium text-stone-800 underline decoration-stone-300 underline-offset-2">
+      <a href={p.file} className="font-medium text-neutral-800 underline decoration-neutral-300 underline-offset-2">
         Abrir {p.title}
       </a>
     </div>

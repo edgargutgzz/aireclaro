@@ -132,7 +132,7 @@ export default function Navbar() {
               key={l.href}
               href={l.href}
               aria-current={current(l.href)}
-              className={`block hover:text-stone-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
+              className={`block hover:text-neutral-500 ${FOCUS} ${isCurrent(l.href) ? CURRENT : ""}`}
               onClick={handleLinkClick}
             >
               {l.label}
@@ -174,12 +174,12 @@ export default function Navbar() {
                     aria-current={current(href)}
                     className={`flex aspect-square h-full w-full flex-col justify-between rounded-2xl border p-4 text-base font-medium transition-colors ${FOCUS} ${
                       isCurrent(href)
-                        ? "border-stone-900 bg-white text-stone-800"
-                        : "border-stone-200 bg-white text-stone-800 active:bg-stone-100"
+                        ? "border-stone-900 bg-white text-neutral-800"
+                        : "border-stone-200 bg-white text-neutral-800 active:bg-stone-100"
                     } [li:last-child:nth-child(odd)_&]:aspect-auto [li:last-child:nth-child(odd)_&]:min-h-24`}
                     onClick={handleLinkClick}
                   >
-                    <Icon aria-hidden="true" className="h-6 w-6 text-stone-500" />
+                    <Icon aria-hidden="true" className="h-6 w-6 text-neutral-500" />
                     {label}
                   </Link>
                 </li>

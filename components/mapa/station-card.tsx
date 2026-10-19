@@ -11,7 +11,7 @@ import { getSourceIcon, getSourceLabel } from "./lib";
 // not the huge coloured headline.
 export function QualityHeadline({ info, fallbackColor }: { info: QualityInfo | null; fallbackColor?: string }) {
   if (!info) {
-    return <span className="min-w-0 flex-1 truncate text-lg font-medium text-stone-400">No disponible</span>;
+    return <span className="min-w-0 flex-1 truncate text-lg font-medium text-neutral-400">No disponible</span>;
   }
   return (
     <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: info.textColor ?? fallbackColor }}>
@@ -69,10 +69,10 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
             className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
             style={{ backgroundColor: info.color, boxShadow: `inset 0 0 0 1px ${info.textColor}` }}
           />
-          <span className="truncate text-xs font-medium uppercase leading-none tracking-wide text-stone-400">
+          <span className="truncate text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">
             Recomendaciones por grupo sensible
           </span>
-          <ChevronRight aria-hidden="true" className={`ml-auto h-4 w-4 flex-shrink-0 text-stone-400 transition-[color,transform] duration-200 group-hover:text-stone-600 ${open ? 'rotate-90' : ''}`} />
+          <ChevronRight aria-hidden="true" className={`ml-auto h-4 w-4 flex-shrink-0 text-neutral-400 transition-[color,transform] duration-200 group-hover:text-neutral-600 ${open ? 'rotate-90' : ''}`} />
         </button>
         {/* p-1 with a matching negative margin: the glyph keeps its optical
             position, but the control gets a real hit area instead of a bare
@@ -80,7 +80,7 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
         <button
           type="button"
           onClick={onShowInfo}
-          className="-my-1 -mr-1 -translate-y-px flex-shrink-0 rounded-xl p-1 text-stone-400 transition-colors hover:text-stone-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          className="-my-1 -mr-1 -translate-y-px flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           aria-label="Más información sobre las recomendaciones de salud"
         >
           <Info aria-hidden="true" className="h-3 w-3" />
@@ -109,10 +109,10 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
           {SENSITIVE_GROUPS.map((g) => (
             <div key={g.key} className="border-t border-stone-100 px-4 py-3.5 first:border-t-0">
               <div className="mb-1 flex items-center gap-3">
-                <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-stone-400" />
-                <p className="text-sm font-semibold text-stone-800">{g.label}</p>
+                <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400" />
+                <p className="text-sm font-semibold text-neutral-800">{g.label}</p>
               </div>
-              <p className="ml-7 text-sm leading-relaxed text-stone-500">{info.sensitiveRecs[g.key]}</p>
+              <p className="ml-7 text-sm leading-relaxed text-neutral-500">{info.sensitiveRecs[g.key]}</p>
             </div>
           ))}
         </div>
@@ -153,17 +153,17 @@ export function StationReading({
           underneath closes the group off from the reading below: a card or a
           filled row is too much furniture for a single line. */}
       <div className="flex items-center justify-between gap-3 border-b border-stone-100 pb-5">
-        <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-stone-500">
-          <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-stone-400" />
+        <span className="flex min-w-0 items-center gap-1.5 text-sm leading-none text-neutral-500">
+          <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
           <span className="truncate">{getSourceLabel(isSima, sensor.red)}</span>
         </span>
         <button
           type="button"
           onClick={onCopyCoords}
-          className={`-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-xl p-1 text-sm leading-none text-stone-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${copyInteractionClass}`}
+          className={`-my-1 -mr-1 flex flex-shrink-0 items-center gap-1 rounded-xl p-1 text-sm leading-none text-neutral-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${copyInteractionClass}`}
           aria-label="Copiar coordenadas"
         >
-          {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-stone-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-stone-400" />}
+          {copied ? <Check aria-hidden="true" className="h-3.5 w-3.5 text-neutral-400" /> : <Copy aria-hidden="true" className="h-3.5 w-3.5 text-neutral-400" />}
           <span>{copied ? 'Copiado' : 'Coordenadas'}</span>
         </button>
       </div>
@@ -172,18 +172,18 @@ export function StationReading({
           under it the advice for everyone, as one more line of the reading
           (the groups' advice is behind GroupRecommendations below). */}
       <div>
-        <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-stone-400">Calidad del Aire</p>
+        <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del Aire</p>
         <div className="flex items-baseline justify-between gap-3">
           <QualityHeadline info={quality} fallbackColor={subject.textColor} />
-          {/* The chips' idiom: the number is the value and carries stone-700,
+          {/* The chips' idiom: the number is the value and carries neutral-700,
               the unit is the quiet half. */}
           {pm25 !== null && (
-            <span className="flex-shrink-0 whitespace-nowrap text-sm text-stone-500">
-              <span className="font-medium text-stone-700">{roundPM25(pm25)}</span> μg/m³ PM2.5
+            <span className="flex-shrink-0 whitespace-nowrap text-sm text-neutral-500">
+              <span className="font-medium text-neutral-700">{roundPM25(pm25)}</span> μg/m³ PM2.5
             </span>
           )}
         </div>
-        {quality && <p className="mt-3 text-sm leading-relaxed text-stone-600">{quality.generalRec}</p>}
+        {quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
       </div>
     </>
   );

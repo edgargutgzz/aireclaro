@@ -164,7 +164,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
 
   return (
     <div className="grid gap-2.5">
-      <span className="text-[10px] font-medium uppercase tracking-wide text-stone-400">
+      <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
         Trimestres ({validCount}/4 válidos)
       </span>
       <div className="flex h-1.5 gap-0.5 overflow-hidden rounded-full">
@@ -259,7 +259,7 @@ function ReferenceLine({
         x2={right}
         y1={y}
         y2={y}
-        stroke="rgb(156,163,175)"
+        stroke="rgb(166,160,155)"
         strokeWidth={1}
         strokeDasharray="4 4"
       />
@@ -270,7 +270,7 @@ function ReferenceLine({
         height={HEIGHT}
         rx={4}
         fill="#ffffff"
-        stroke="rgb(209,213,219)"
+        stroke="rgb(214,211,209)"
       />
       <text
         ref={textRef}
@@ -280,7 +280,7 @@ function ReferenceLine({
         dominantBaseline="middle"
         fontSize={11}
         fontWeight={500}
-        fill="rgb(75,85,99)"
+        fill="rgb(82,82,82)"
       >
         {value}
       </text>
@@ -328,7 +328,7 @@ function TooltipCard({
       className="pointer-events-none absolute z-10 grid w-[17rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
       style={positionStyle}
     >
-      <span className="text-xs font-medium uppercase tracking-wide text-stone-400">
+      <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
         {bar.nombre}
       </span>
       {/* Number + its own caption, gap-1.5 (not the tighter gap-0.5 tried
@@ -344,11 +344,11 @@ function TooltipCard({
           <span className="text-2xl font-bold leading-none" style={{ color }}>
             {Math.round(bar.promedio)}
           </span>
-          <span className="text-sm font-medium text-stone-400">
+          <span className="text-sm font-medium text-neutral-400">
             {POLLUTANT_LABEL[pollutant]} µg/m³
           </span>
         </div>
-        <span className="text-xs text-stone-500">Promedio anual</span>
+        <span className="text-xs text-neutral-500">Promedio anual</span>
       </div>
       <div className="border-t border-stone-100 pt-2">
         <TrimestreBreakdown rows={bar.rows} />
@@ -449,7 +449,7 @@ function BarsChart({
                 x2={plotRight}
                 y1={y}
                 y2={y}
-                stroke="rgb(243,244,246)"
+                stroke="rgb(245,245,244)"
                 strokeWidth={1}
               />
               <text
@@ -459,7 +459,7 @@ function BarsChart({
                 dominantBaseline="middle"
                 fontSize={12}
                 fontWeight={500}
-                fill="rgb(121,113,107)"
+                fill="rgb(115,115,115)"
               >
                 {t}
               </text>
@@ -505,7 +505,7 @@ function BarsChart({
                 textAnchor="middle"
                 fontSize={12}
                 fontWeight={500}
-                fill="rgb(75,85,99)"
+                fill="rgb(82,82,82)"
               >
                 {truncateStationLabel(b.nombre, stationColWidth)}
               </text>
@@ -727,7 +727,7 @@ export default function PromedioAnualChart({
   // since real data exists).
   if (years.length === 0) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white px-5 py-12 text-center text-sm text-stone-500">
+      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white px-5 py-12 text-center text-sm text-neutral-500">
         Sin datos de promedio anual por el momento.
       </div>
     );
@@ -792,8 +792,8 @@ export default function PromedioAnualChart({
                 onClick={() => setPollutant(p)}
                 className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
                   pollutant === p
-                    ? "bg-white text-stone-800 shadow-sm hover:shadow"
-                    : "text-stone-500 hover:text-stone-700"
+                    ? "bg-white text-neutral-800 shadow-sm hover:shadow"
+                    : "text-neutral-500 hover:text-neutral-700"
                 }`}
               >
                 {POLLUTANT_LABEL[p]}
@@ -820,10 +820,10 @@ export default function PromedioAnualChart({
             was the rest of the "feels less fluid switching years" gap
             (2026-09-28 feedback). */}
         <div className="mb-4 flex items-center justify-between md:mb-6">
-          <span className="text-xs text-stone-400">
+          <span className="text-xs text-neutral-400">
             {POLLUTANT_LABEL[pollutant]} (µg/m³)
           </span>
-          <div className="flex items-center gap-4 text-xs text-stone-500">
+          <div className="flex items-center gap-4 text-xs text-neutral-500">
             <span className="flex items-center gap-1.5">
               <span
                 className="h-2 w-2 rounded-[2px]"
@@ -846,7 +846,7 @@ export default function PromedioAnualChart({
           // same chartHeight as the real bars so the card's total height
           // doesn't change switching to/from a year that has data.
           <div
-            className="flex items-center justify-center rounded-xl bg-stone-50 text-center text-sm text-stone-400"
+            className="flex items-center justify-center rounded-xl bg-stone-50 text-center text-sm text-neutral-400"
             style={{ height: chartHeight }}
           >
             El promedio anual de {year} estará disponible cuando termine el año.
@@ -868,7 +868,7 @@ export default function PromedioAnualChart({
           </div>
         ) : (
           <div
-            className="flex items-center justify-center rounded-xl bg-stone-50 text-sm text-stone-400"
+            className="flex items-center justify-center rounded-xl bg-stone-50 text-sm text-neutral-400"
             style={{ height: chartHeight }}
           >
             Sin datos suficientes todavía

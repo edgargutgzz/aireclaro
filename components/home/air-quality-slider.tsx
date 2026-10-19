@@ -194,7 +194,7 @@ export default function AirQualitySlider() {
             height="16"
             viewBox="0 0 16 16"
             fill="none"
-            className="text-stone-600"
+            className="text-neutral-600"
           >
             <path d="M2 8L6 4V12L2 8Z" fill="currentColor" />
             <path d="M14 8L10 12V4L14 8Z" fill="currentColor" />

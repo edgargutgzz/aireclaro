@@ -44,11 +44,11 @@ export default function ChartCard({
             horizontal overflow. Classic flexbox gotcha, not specific to any
             one caller. */}
         <div className="min-w-0">
-          <h3 className="text-lg font-medium text-stone-700">{title}</h3>
+          <h3 className="text-lg font-medium text-neutral-700">{title}</h3>
           {/* div, not p: a caller's subtitle can carry its own block-level
               row (e.g. a year-over-year comparison line), which can't
               legally nest inside a p. */}
-          {subtitle && <div className="mt-1 text-xs text-stone-500 md:text-sm">{subtitle}</div>}
+          {subtitle && <div className="mt-1 text-xs text-neutral-500 md:text-sm">{subtitle}</div>}
         </div>
         {/* One line of controls that never wraps: below lg it sits under
             the title and slides sideways when it doesn't fit (bleeding to
@@ -70,7 +70,7 @@ export default function ChartCard({
                     className={`flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
                       infoOpen
                         ? "bg-stone-800 text-white hover:bg-stone-700"
-                        : "bg-stone-100 text-stone-600 hover:bg-stone-200/70 hover:text-stone-700"
+                        : "bg-stone-100 text-neutral-600 hover:bg-stone-200/70 hover:text-neutral-700"
                     }`}
                   >
                     <InfoIcon className="h-3.5 w-3.5" aria-hidden />
@@ -86,7 +86,7 @@ export default function ChartCard({
         // The same panel box the old bottom-row tabs opened.
         <div className="px-5 pt-4">
           <div id={panelId} className="rounded-2xl border border-stone-100 bg-stone-50 px-5 py-4">
-            <div className="text-sm leading-relaxed text-stone-600">{infoTab.body}</div>
+            <div className="text-sm leading-relaxed text-neutral-600">{infoTab.body}</div>
           </div>
         </div>
       )}

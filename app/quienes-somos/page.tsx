@@ -26,7 +26,7 @@ const LINEAS = [
 
 export const metadata: Metadata = pageMetadata({ title: "Quiénes somos", description: LEAD, path: "/quienes-somos" });
 
-const LABEL = "text-xs font-semibold uppercase leading-snug tracking-wide text-stone-500";
+const LABEL = "text-xs font-semibold uppercase leading-snug tracking-wide text-neutral-500";
 
 // By portrait key, in lib/equipo.ts's order.
 const OPERATIVO = ["selene", "yessica", "edgar"];
@@ -49,7 +49,7 @@ type Persona = (typeof EQUIPO)[number];
 function Section({ title, id, as: Heading = "h2", children }: { title: string; id?: string; as?: "h1" | "h2"; children: React.ReactNode }) {
   return (
     <section id={id} className="grid gap-6 border-t border-stone-200 py-12 first:border-t-0 first:pt-0 md:grid-cols-[minmax(0,1fr)_minmax(0,3fr)] md:gap-12 md:py-16 md:first:pt-0">
-      <Heading className="text-lg font-semibold text-stone-800">{title}</Heading>
+      <Heading className="text-lg font-semibold text-neutral-800">{title}</Heading>
       <div className="min-w-0">{children}</div>
     </section>
   );
@@ -73,10 +73,10 @@ function Grupo({ title, personas, size }: { title: string; personas: Persona[]; 
               sizes={size === "lg" ? "(min-width: 1024px) 280px, 45vw" : "(min-width: 1024px) 200px, 45vw"}
               className="aspect-square w-full rounded-xl bg-stone-100 object-cover"
             />
-            <p className={`mt-3 font-semibold leading-snug text-stone-800 ${size === "lg" ? "text-base" : "text-sm"}`}>
+            <p className={`mt-3 font-semibold leading-snug text-neutral-800 ${size === "lg" ? "text-base" : "text-sm"}`}>
               {persona.name}
             </p>
-            <p className="mt-1 text-sm leading-snug text-stone-600">{persona.puesto}</p>
+            <p className="mt-1 text-sm leading-snug text-neutral-600">{persona.puesto}</p>
           </li>
         ))}
       </ul>
@@ -89,7 +89,7 @@ export default function QuienesSomos() {
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
       <div>
         <Section title="Quiénes somos" as="h1">
-          <p className="max-w-3xl text-lg leading-relaxed text-stone-800 md:text-xl">{LEAD}</p>
+          <p className="max-w-3xl text-lg leading-relaxed text-neutral-800 md:text-xl">{LEAD}</p>
         </Section>
 
         <Section title="Propósito">
@@ -100,7 +100,7 @@ export default function QuienesSomos() {
             ].map((item) => (
               <div key={item.title}>
                 <h3 className={LABEL}>{item.title}</h3>
-                <p className="mt-3 text-lg leading-relaxed text-stone-700">{item.text}</p>
+                <p className="mt-3 text-lg leading-relaxed text-neutral-700">{item.text}</p>
               </div>
             ))}
           </div>
@@ -110,10 +110,10 @@ export default function QuienesSomos() {
           <ol className="divide-y divide-stone-200 border-y border-stone-200">
             {LINEAS.map((linea, i) => (
               <li key={linea} className="flex items-baseline gap-6 py-5">
-                <span aria-hidden="true" className="w-8 shrink-0 text-2xl font-semibold tabular-nums text-stone-300">
+                <span aria-hidden="true" className="w-8 shrink-0 text-2xl font-semibold tabular-nums text-neutral-300">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <p className="text-xl font-semibold leading-snug text-stone-800">{linea}</p>
+                <p className="text-xl font-semibold leading-snug text-neutral-800">{linea}</p>
               </li>
             ))}
           </ol>

@@ -19,7 +19,7 @@
     @apply border-stone-200;
   }
   body {
-    @apply bg-stone-50 text-stone-800;
+    @apply bg-stone-50 text-neutral-800;
   }
   /* Browsers default a real <button> to cursor:default, not pointer -- only
      <a href> gets the hand automatically. Every clickable button across the
@@ -114,7 +114,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--marker-number, #1c1917);
+  color: var(--marker-number, #171717);
   font-variant-numeric: tabular-nums;
   text-shadow: var(--marker-number-shadow, 0 1px 1px rgba(255, 255, 255, 0.4));
   /* No background here: this element is only ever the selected station's

@@ -75,7 +75,7 @@ function Strip({ hora, items }: { hora: string; items: TickerItem[] }) {
     <section aria-label="PM2.5 en vivo" className="flex h-10 items-stretch bg-white text-[13px]">
       <Link
         href="/mapa"
-        className={`flex shrink-0 items-center gap-2 px-4 text-xs font-semibold uppercase tracking-wider text-stone-500 hover:text-stone-900 lg:px-8 ${FOCUS}`}
+        className={`flex shrink-0 items-center gap-2 px-4 text-xs font-semibold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 lg:px-8 ${FOCUS}`}
       >
         <span className="relative flex h-2 w-2" aria-hidden>
           <span className="absolute inline-flex h-full w-full rounded-full bg-[#00e400] opacity-60 motion-safe:animate-ping" />

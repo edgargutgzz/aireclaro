@@ -127,10 +127,10 @@ function TranscripcionText({ t }: { t: NonNullable<Publicacion["transcripcion"]>
 }
 
 const TEXT_LINK =
-  "rounded underline decoration-stone-300 underline-offset-2 hover:decoration-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
+  "rounded underline decoration-neutral-300 underline-offset-2 hover:decoration-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
 const PROSE =
-  "prose prose-stone prose-lg prose-headings:font-semibold prose-headings:text-stone-800 prose-p:text-stone-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-stone-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-stone-600 prose-strong:font-semibold prose-strong:text-stone-800 prose-li:text-stone-700 prose-li:mb-2 prose-img:rounded-xl prose-img:shadow-md max-w-none";
+  "prose prose-neutral prose-lg prose-headings:font-semibold prose-headings:text-neutral-800 prose-p:text-neutral-700 prose-p:leading-relaxed prose-p:mb-6 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-4 prose-blockquote:border-stone-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-neutral-600 prose-strong:font-semibold prose-strong:text-neutral-800 prose-li:text-neutral-700 prose-li:mb-2 prose-img:rounded-xl prose-img:shadow-md max-w-none";
 
 const PRIMARY_BUTTON =
   "inline-flex h-10 items-center gap-1.5 rounded-xl bg-stone-800 px-4 text-sm font-medium text-white transition-colors hover:bg-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
@@ -152,7 +152,7 @@ export default async function PublicacionPage({ params }: Props) {
       <article className="mx-auto max-w-3xl">
         <Link
           href="/publicaciones"
-          className="mb-8 inline-flex items-center gap-1.5 rounded-xl text-sm font-medium text-stone-600 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          className="mb-8 inline-flex items-center gap-1.5 rounded-xl text-sm font-medium text-neutral-600 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden /> Publicaciones
         </Link>
@@ -162,8 +162,8 @@ export default async function PublicacionPage({ params }: Props) {
             summary stays in the metadata, for Google and link previews), and
             "Abrir documento" sits beside "Compartir". */}
         <header className="mb-10">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-stone-500">{tipoLabel(p.tipo)}</p>
-          <h1 className="text-3xl font-bold text-stone-900 md:text-4xl">{p.title}</h1>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-neutral-500">{tipoLabel(p.tipo)}</p>
+          <h1 className="text-3xl font-bold text-neutral-900 md:text-4xl">{p.title}</h1>
 
           {/* Only a column has a byline. */}
           {column && (fotos.length > 0 ? (
@@ -172,7 +172,7 @@ export default async function PublicacionPage({ params }: Props) {
             <div className="mt-6 flex items-center gap-4">
               <Avatares fotos={fotos} />
               <div className="min-w-0">
-                <p className="font-medium text-stone-800">
+                <p className="font-medium text-neutral-800">
                   {p.people.map((name, i) => (
                     <span key={name}>
                       {i > 0 && " y "}
@@ -183,19 +183,19 @@ export default async function PublicacionPage({ params }: Props) {
                   ))}
                 </p>
                 {fotos.length === 1 && fotos[0].puesto && (
-                  <p className="mt-0.5 text-sm leading-snug text-stone-500">{fotos[0].puesto}</p>
+                  <p className="mt-0.5 text-sm leading-snug text-neutral-500">{fotos[0].puesto}</p>
                 )}
               </div>
             </div>
           ) : (
-            <p className="mt-6 text-stone-600">{p.author}</p>
+            <p className="mt-6 text-neutral-600">{p.author}</p>
           ))}
 
-          <p className="mt-4 text-sm text-stone-500">
+          <p className="mt-4 text-sm text-neutral-500">
             {p.outlet && (
               <>
                 {column ? "Publicada en " : ""}
-                <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-medium text-stone-700 ${TEXT_LINK}`}>
+                <Link href={`/publicaciones?medio=${urlKey(p.outlet)}`} className={`font-medium text-neutral-700 ${TEXT_LINK}`}>
                   {p.outlet}
                 </Link>{" "}
                 ·{" "}
@@ -266,11 +266,11 @@ export default async function PublicacionPage({ params }: Props) {
       {related.items.length > 0 && (
         <section aria-labelledby="relacionadas" className="mx-auto mt-20 max-w-5xl border-t border-stone-200 pt-10">
           <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <h2 id="relacionadas" className="text-lg font-semibold text-stone-800">
+            <h2 id="relacionadas" className="text-lg font-semibold text-neutral-800">
               {related.title}
             </h2>
             {related.more && (
-              <Link href={related.more.href} className={`text-sm font-medium text-stone-700 ${TEXT_LINK}`}>
+              <Link href={related.more.href} className={`text-sm font-medium text-neutral-700 ${TEXT_LINK}`}>
                 {related.more.label}
               </Link>
             )}

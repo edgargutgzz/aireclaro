@@ -37,8 +37,8 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
       />
       <div className="flex flex-1 flex-col p-4">
         <Contexto p={p} />
-        <p className="mt-1.5 text-lg font-semibold leading-snug text-stone-800 group-hover:text-stone-600">{p.title}</p>
-        {p.tipo === "columna" && <p className="mt-auto truncate pt-3 text-sm font-medium text-stone-700">{p.author}</p>}
+        <p className="mt-1.5 text-lg font-semibold leading-snug text-neutral-800 group-hover:text-neutral-600">{p.title}</p>
+        {p.tipo === "columna" && <p className="mt-auto truncate pt-3 text-sm font-medium text-neutral-700">{p.author}</p>}
       </div>
     </ItemLink>
   );
@@ -49,8 +49,8 @@ export function PublicacionCard({ publicacion: p, priority = false }: { publicac
 function Contexto({ p }: { p: Publicacion }) {
   const when = p.tipo === "columna" && p.date ? formatDate(p.date) : String(p.year);
   return (
-    <p className="text-xs text-stone-500">
-      <span className="font-semibold text-stone-700">{tipoLabel(p.tipo)}</span>
+    <p className="text-xs text-neutral-500">
+      <span className="font-semibold text-neutral-700">{tipoLabel(p.tipo)}</span>
       {p.outlet && ` · ${p.outlet}`} · {when}
     </p>
   );
@@ -69,8 +69,8 @@ export function PublicacionRow({ publicacion: p }: { publicacion: Publicacion })
     >
       <div className="min-w-0 flex-1">
         <Contexto p={p} />
-        <p className="mt-1 text-base font-semibold leading-snug text-stone-800 text-pretty sm:text-[17px]">{p.title}</p>
-        {p.tipo === "columna" && <p className="mt-2 truncate text-sm font-medium text-stone-700">{p.author}</p>}
+        <p className="mt-1 text-base font-semibold leading-snug text-neutral-800 text-pretty sm:text-[17px]">{p.title}</p>
+        {p.tipo === "columna" && <p className="mt-2 truncate text-sm font-medium text-neutral-700">{p.author}</p>}
       </div>
       <Image
         src={p.image}
@@ -103,13 +103,13 @@ export function PublicacionDestacada({ publicacion: p, priority = false }: { pub
       />
       <div className="flex flex-col justify-center p-5 sm:p-6">
         <Contexto p={p} />
-        <p className="mt-1.5 text-xl font-semibold leading-snug text-stone-800 group-hover:text-stone-600 sm:text-2xl">
+        <p className="mt-1.5 text-xl font-semibold leading-snug text-neutral-800 group-hover:text-neutral-600 sm:text-2xl">
           <ItemLink p={p} className="focus-visible:outline-none after:absolute after:inset-0 after:content-['']">
             {p.title}
           </ItemLink>
         </p>
-        {p.summary && <p className="mt-3 text-sm leading-relaxed text-stone-600">{p.summary}</p>}
-        {p.tipo === "columna" && <p className="mt-3 text-sm font-medium text-stone-700">{p.author}</p>}
+        {p.summary && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{p.summary}</p>}
+        {p.tipo === "columna" && <p className="mt-3 text-sm font-medium text-neutral-700">{p.author}</p>}
       </div>
     </div>
   );

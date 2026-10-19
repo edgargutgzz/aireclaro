@@ -124,15 +124,15 @@ export function LayersFilterContent({
         aria-expanded={openSection === name}
         className="flex min-w-0 flex-1 items-center gap-1.5 py-3.5 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
       >
-        <p className="text-xs font-medium uppercase leading-none tracking-wide text-stone-400">{label}</p>
-        <span className="min-w-0 flex-1 truncate text-xs leading-none text-stone-500">· {summary}</span>
-        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-stone-400 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
+        <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</p>
+        <span className="min-w-0 flex-1 truncate text-xs leading-none text-neutral-500">· {summary}</span>
+        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
       </button>
       <button
         type="button"
         onClick={info?.onClick}
         disabled={!info}
-        className={`mr-2 flex-shrink-0 rounded-xl p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${info ? 'text-stone-400 hover:bg-stone-100 hover:text-stone-600' : 'invisible'}`}
+        className={`mr-2 flex-shrink-0 rounded-xl p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${info ? 'text-neutral-400 hover:bg-stone-100 hover:text-neutral-600' : 'invisible'}`}
         aria-label={info?.ariaLabel ?? ""}
         aria-hidden={!info}
         tabIndex={info ? undefined : -1}
@@ -162,8 +162,8 @@ export function LayersFilterContent({
                 className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
               >
                 <LayerCheckbox state={showSima ? 'checked' : 'unchecked'} size={boxSize} />
-                <span className={`min-w-0 flex-1 truncate text-sm font-medium ${showSima ? 'text-stone-800' : 'text-stone-400'}`}>Estaciones de Gobierno</span>
-                <span className="flex-shrink-0 text-xs text-stone-500">{sourceCounts.gobierno}</span>
+                <span className={`min-w-0 flex-1 truncate text-sm font-medium ${showSima ? 'text-neutral-800' : 'text-neutral-400'}`}>Estaciones de Gobierno</span>
+                <span className="flex-shrink-0 text-xs text-neutral-500">{sourceCounts.gobierno}</span>
               </button>
               {trailingSlot}
             </div>
@@ -176,13 +176,13 @@ export function LayersFilterContent({
                 className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
               >
                 <LayerCheckbox state={citizenState} size={boxSize} />
-                <span className={`min-w-0 flex-1 truncate text-sm font-medium ${citizenState === 'unchecked' ? 'text-stone-400' : 'text-stone-800'}`}>Sensores Ciudadanos</span>
-                <span className="flex-shrink-0 text-xs text-stone-500">{sourceCounts.ciudadanos}</span>
+                <span className={`min-w-0 flex-1 truncate text-sm font-medium ${citizenState === 'unchecked' ? 'text-neutral-400' : 'text-neutral-800'}`}>Sensores Ciudadanos</span>
+                <span className="flex-shrink-0 text-xs text-neutral-500">{sourceCounts.ciudadanos}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setShowCitizenGroup((v) => !v)}
-                className="mr-2 flex-shrink-0 rounded-xl p-1.5 text-stone-400 transition-colors hover:bg-stone-200/70 hover:text-stone-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                className="mr-2 flex-shrink-0 rounded-xl p-1.5 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                 aria-expanded={showCitizenGroup}
                 aria-label={showCitizenGroup ? "Ocultar OCCAMM y Otros" : "Mostrar OCCAMM y Otros"}
               >
@@ -200,13 +200,13 @@ export function LayersFilterContent({
                     className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
                   >
                     <LayerCheckbox state={showOccamm ? 'checked' : 'unchecked'} size={boxSize} />
-                    <span className={`min-w-0 flex-1 truncate text-sm ${showOccamm ? 'text-stone-600' : 'text-stone-400'}`}>OCCAMM</span>
-                    <span className="flex-shrink-0 text-xs text-stone-500">{sourceCounts.occamm}</span>
+                    <span className={`min-w-0 flex-1 truncate text-sm ${showOccamm ? 'text-neutral-600' : 'text-neutral-400'}`}>OCCAMM</span>
+                    <span className="flex-shrink-0 text-xs text-neutral-500">{sourceCounts.occamm}</span>
                   </button>
                   <button
                     type="button"
                     onClick={onShowOccammInfo}
-                    className="mr-2 flex-shrink-0 rounded-xl p-2 text-stone-400 transition-colors hover:bg-stone-200/70 hover:text-stone-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                    className="mr-2 flex-shrink-0 rounded-xl p-2 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                     aria-label="Más información sobre OCCAMM"
                   >
                     <Info className="h-3 w-3" />
@@ -223,8 +223,8 @@ export function LayersFilterContent({
                     className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
                   >
                     <LayerCheckbox state={showOtros ? 'checked' : 'unchecked'} size={boxSize} />
-                    <span className={`min-w-0 flex-1 truncate text-sm ${showOtros ? 'text-stone-600' : 'text-stone-400'}`}>Otros</span>
-                    <span className="flex-shrink-0 text-xs text-stone-500">{sourceCounts.otros}</span>
+                    <span className={`min-w-0 flex-1 truncate text-sm ${showOtros ? 'text-neutral-600' : 'text-neutral-400'}`}>Otros</span>
+                    <span className="flex-shrink-0 text-xs text-neutral-500">{sourceCounts.otros}</span>
                   </button>
                   {trailingSlot}
                 </div>
@@ -260,15 +260,15 @@ export function LayersFilterContent({
                       className={`flex min-w-0 flex-1 items-center gap-3 pl-4 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${rowPadding}`}
                     >
                       <LayerCheckbox state={state} size={boxSize} />
-                      <span className={`min-w-0 flex-1 truncate text-sm font-medium ${state === 'unchecked' ? 'text-stone-400' : 'text-stone-800'}`}>
+                      <span className={`min-w-0 flex-1 truncate text-sm font-medium ${state === 'unchecked' ? 'text-neutral-400' : 'text-neutral-800'}`}>
                         {estado.label}
                       </span>
-                      <span className="flex-shrink-0 text-xs text-stone-500">{estado.count}</span>
+                      <span className="flex-shrink-0 text-xs text-neutral-500">{estado.count}</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setOpenEstados((prev) => open ? prev.filter((k) => k !== estado.key) : [...prev, estado.key])}
-                      className="mr-2 flex-shrink-0 rounded-xl p-1.5 text-stone-400 transition-colors hover:bg-stone-200/70 hover:text-stone-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                      className="mr-2 flex-shrink-0 rounded-xl p-1.5 text-neutral-400 transition-colors hover:bg-stone-200/70 hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                       aria-expanded={open}
                       aria-label={open ? `Ocultar municipios de ${estado.label}` : `Mostrar municipios de ${estado.label}`}
                     >
@@ -289,8 +289,8 @@ export function LayersFilterContent({
                               className={`ml-11 flex min-w-0 flex-1 items-center gap-3 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${subRowPadding}`}
                             >
                               <LayerCheckbox state={on ? 'checked' : 'unchecked'} size={boxSize} />
-                              <span className={`min-w-0 flex-1 truncate text-sm ${on ? 'text-stone-600' : 'text-stone-400'}`}>{m.label}</span>
-                              <span className="flex-shrink-0 text-xs text-stone-500">{m.count}</span>
+                              <span className={`min-w-0 flex-1 truncate text-sm ${on ? 'text-neutral-600' : 'text-neutral-400'}`}>{m.label}</span>
+                              <span className="flex-shrink-0 text-xs text-neutral-500">{m.count}</span>
                             </button>
                             {trailingSlot}
                           </div>

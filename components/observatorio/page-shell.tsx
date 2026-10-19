@@ -14,7 +14,7 @@ export default function PageShell({
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8 lg:pb-32 lg:pt-40">
       <div className="flex flex-col text-center">
         <h1 className="text-md md:text-lg">{title}</h1>
-        <p className="pt-4 text-2xl font-bold text-stone-900 md:px-20 md:pt-6 md:text-4xl md:leading-tight">
+        <p className="pt-4 text-2xl font-bold text-neutral-900 md:px-20 md:pt-6 md:text-4xl md:leading-tight">
           {lead}
         </p>
       </div>

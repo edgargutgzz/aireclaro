@@ -85,7 +85,7 @@ const ESTADO_COLOR: Record<DayStatus["estado"], string> = {
 // 40% instead of a second solid color: still visibly separate from a real
 // gap, subtle enough not to read as its own new legend category.
 const FUTURE_FILL_OPACITY = 0.4;
-const FUTURE_TEXT_COLOR = "rgb(163,169,175)";
+const FUTURE_TEXT_COLOR = "rgb(161,161,161)"; // neutral-400
 
 function isFuture(fecha: string, todayStr: string) {
   return fecha > todayStr;
@@ -167,22 +167,22 @@ export default function DiasInsalubresMonthDetail({
     <div ref={measureRef} className="w-full">
       <button
         onClick={onBack}
-        className="mb-4 flex items-center gap-1.5 text-sm font-medium text-stone-600 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+        className="mb-4 flex items-center gap-1.5 text-sm font-medium text-neutral-600 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
       >
         <ArrowLeft className="h-4 w-4" />
         Volver a los meses
       </button>
 
-      <h4 className="mb-4 text-sm font-medium text-stone-700">
+      <h4 className="mb-4 text-sm font-medium text-neutral-700">
         {MONTHS_ES_FULL[mesNumero - 1]} {ano}
       </h4>
 
       {error && (
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-neutral-500">
           No se pudo cargar el detalle de este mes.{" "}
           <button
             onClick={() => setRetryKey((k) => k + 1)}
-            className="font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+            className="font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           >
             Reintentar
           </button>
@@ -202,7 +202,7 @@ export default function DiasInsalubresMonthDetail({
             {WEEKDAY_SHORT.map((w) => (
               <div
                 key={w}
-                className="text-center text-[11px] font-medium text-stone-400"
+                className="text-center text-[11px] font-medium text-neutral-400"
                 style={{ width: cell + GAP }}
               >
                 {w}
@@ -239,7 +239,7 @@ export default function DiasInsalubresMonthDetail({
                     c.day.estado === "sin-datos"
                       ? futuro
                         ? FUTURE_TEXT_COLOR
-                        : "rgb(121,113,107)"
+                        : "rgb(115,115,115)"
                       : "white",
                   // No onClick here -- unlike the bar chart's month cells,
                   // a day cell only ever shows its hover tooltip, so a
@@ -277,7 +277,7 @@ export default function DiasInsalubresMonthDetail({
                 cell / 2,
               )}
             >
-              <span className="text-[10px] font-medium uppercase tracking-wide text-stone-400">
+              <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
                 {WEEKDAY_FULL[tooltip.row]} {tooltip.day.dia} de{" "}
                 {MONTHS_ES_FULL[mesNumero - 1]}
               </span>

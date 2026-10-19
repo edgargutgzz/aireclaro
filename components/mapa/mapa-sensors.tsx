@@ -414,7 +414,7 @@ export default function MapaSensors({
             fid,
             fill: hasReading ? getMarkerFillHex(pm25)! : "#a6a09b",
             label: hasReading ? Math.round(pm25 as number).toString() : "",
-            labelInk: hasReading ? getMarkerNumberInk(pm25 as number) : "#1c1917",
+            labelInk: hasReading ? getMarkerNumberInk(pm25 as number) : "#171717",
             isSima,
             nodata: !hasReading,
             // Higher wins circle draw order (SIMA always on top). Symbol
@@ -975,12 +975,12 @@ export default function MapaSensors({
       title="Centrar en mi zona"
     >
       {zonaStatus === "locating"
-        ? <LoaderCircle aria-hidden="true" className="h-5 w-5 animate-spin text-stone-700 motion-reduce:animate-none" />
-        : <LocateFixed aria-hidden="true" className="h-5 w-5 text-stone-700" />}
+        ? <LoaderCircle aria-hidden="true" className="h-5 w-5 animate-spin text-neutral-700 motion-reduce:animate-none" />
+        : <LocateFixed aria-hidden="true" className="h-5 w-5 text-neutral-700" />}
     </button>
   );
   const zonaAviso = zonaStatus !== "idle" && zonaStatus !== "locating" && (
-    <div className="glass pointer-events-auto flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] leading-snug text-stone-700">
+    <div className="glass pointer-events-auto flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] leading-snug text-neutral-700">
       <span>{ZONA_AVISO[zonaStatus]}</span>
     </div>
   );
@@ -1049,14 +1049,14 @@ export default function MapaSensors({
             className={`rounded-xl p-3 transition-colors duration-200 ${showLegend ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
             aria-label="Calidad del aire"
           >
-            <Wind className={`h-5 w-5 ${showLegend ? 'text-stone-900' : 'text-stone-700'}`} />
+            <Wind className={`h-5 w-5 ${showLegend ? 'text-neutral-900' : 'text-neutral-700'}`} />
           </button>
           <button
             onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
             className={`rounded-xl p-3 transition-colors duration-200 ${showFilters ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
             aria-label="Capas"
           >
-            <Layers className={`h-5 w-5 ${showFilters ? 'text-stone-900' : 'text-stone-700'}`} />
+            <Layers className={`h-5 w-5 ${showFilters ? 'text-neutral-900' : 'text-neutral-700'}`} />
           </button>
         </div>
       )}
@@ -1099,7 +1099,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
-          <p className="text-base font-medium text-stone-700">Capas</p>
+          <p className="text-base font-medium text-neutral-700">Capas</p>
         </div>
         <div
           /* A plain block, not a flex column: the one child is the filter card,
@@ -1152,7 +1152,7 @@ export default function MapaSensors({
           onClick={() => setShowLegend(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
-          <p className="text-base font-medium text-stone-700">Calidad del aire</p>
+          <p className="text-base font-medium text-neutral-700">Calidad del aire</p>
         </div>
         <div
           /* Plain block, not a flex column — see the Capas sheet body above. */
@@ -1192,12 +1192,12 @@ export default function MapaSensors({
           return (
             <div className="glass pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl">
               <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
-                <span className="min-w-0 flex-1 truncate text-base font-medium text-stone-700">{displayName(sensor)}</span>
+                <span className="min-w-0 flex-1 truncate text-base font-medium text-neutral-700">{displayName(sensor)}</span>
                 <button
                   type="button"
                   onClick={closeCard}
                   aria-label="Cerrar"
-                  className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-stone-400 transition-colors hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                  className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                 >
                   <X aria-hidden="true" className="h-4 w-4" />
                 </button>
@@ -1209,7 +1209,7 @@ export default function MapaSensors({
                     pm25={pm25}
                     copied={copied}
                     onCopyCoords={() => copyCoords(sensor.lat, sensor.lon)}
-                    copyInteractionClass="hover:text-stone-700"
+                    copyInteractionClass="hover:text-neutral-700"
                   />
                 </div>
 
@@ -1245,8 +1245,8 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-14 md:left-6 md:top-6 md:w-panel-filters">
         <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:flex">
           {/* The header carries the filter state, in the same "label · summary"
-              idiom the rows inside the panel already use. stone-500 rather than
-              the rows' stone-300: at 13px on this material that is the first
+              idiom the rows inside the panel already use. neutral-500 rather than
+              the rows' neutral-300: at 13px on this material that is the first
               value that clears 4.5:1, and it still reads as subordinate to
               the label beside it. */}
           <button
@@ -1254,11 +1254,11 @@ export default function MapaSensors({
             aria-expanded={showFiltrosContent}
             className="flex w-full flex-shrink-0 items-center gap-1.5 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
           >
-            <span className="flex-shrink-0 text-base font-medium text-stone-700">Capas</span>
+            <span className="flex-shrink-0 text-base font-medium text-neutral-700">Capas</span>
             {capasSummary && (
-              <span className="min-w-0 flex-1 truncate text-[13px] text-stone-500">· {capasSummary}</span>
+              <span className="min-w-0 flex-1 truncate text-[13px] text-neutral-500">· {capasSummary}</span>
             )}
-            <ChevronRight className={`ml-auto h-4 w-4 flex-shrink-0 text-stone-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
+            <ChevronRight className={`ml-auto h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
           </button>
           {showFiltrosContent && (
             /* Only the body scrolls, so the "Capas" header stays in place, and
@@ -1336,7 +1336,7 @@ export default function MapaSensors({
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
           <div className="flex items-baseline justify-between gap-3">
-            <span className="min-w-0 flex-1 truncate text-base font-medium text-stone-700">
+            <span className="min-w-0 flex-1 truncate text-base font-medium text-neutral-700">
               {name}
             </span>
             <div className="flex flex-shrink-0 items-baseline gap-2">
@@ -1384,7 +1384,7 @@ export default function MapaSensors({
           tech, no focus handling and no Escape. */}
       {cuidarmeQuality && (
         <InfoDialog title="Recomendaciones de salud" onClose={() => setCuidarmeQuality(null)}>
-          <p className="text-sm leading-relaxed text-stone-600">
+          <p className="text-sm leading-relaxed text-neutral-600">
             Recomendaciones oficiales según el Índice de Aire y Salud Mexicano{" "}
             <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
               NOM-172-SEMARNAT-2023
@@ -1397,7 +1397,7 @@ export default function MapaSensors({
       {/* OCCAMM info popup */}
       {showOccammInfo && (
         <InfoDialog title="Red OCCAMM" onClose={() => setShowOccammInfo(false)}>
-          <p className="text-sm leading-relaxed text-stone-600">
+          <p className="text-sm leading-relaxed text-neutral-600">
             Red de sensores del{" "}
             <DialogLink href="/quienes-somos">
               Observatorio Ciudadano de la Calidad del Aire

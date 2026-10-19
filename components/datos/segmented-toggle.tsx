@@ -21,8 +21,8 @@ export default function SegmentedToggle<T extends string | number>({
           aria-pressed={value === o.value}
           className={`rounded-xl px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
             value === o.value
-              ? "bg-white text-stone-800 shadow-sm hover:shadow"
-              : "text-stone-500 hover:text-stone-700"
+              ? "bg-white text-neutral-800 shadow-sm hover:shadow"
+              : "text-neutral-500 hover:text-neutral-700"
           }`}
         >
           {o.label}

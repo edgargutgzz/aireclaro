@@ -44,16 +44,16 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
               aria-controls={panelId}
               className={`flex w-full items-center justify-between gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 sm:inline-flex sm:w-auto sm:justify-start ${
                 isActive
-                  ? "border-stone-300 bg-stone-50 text-stone-800 hover:bg-stone-100"
-                  : "border-stone-200 bg-white text-stone-700 hover:bg-stone-50"
+                  ? "border-stone-300 bg-stone-50 text-neutral-800 hover:bg-stone-100"
+                  : "border-stone-200 bg-white text-neutral-700 hover:bg-stone-50"
               }`}
             >
               <span className="flex items-center gap-1.5">
-                <Icon className="h-3.5 w-3.5 text-stone-400" />
+                <Icon className="h-3.5 w-3.5 text-neutral-400" />
                 {tab.label}
               </span>
               <ChevronDown
-                className={`h-3.5 w-3.5 text-stone-400 transition-transform ${isActive ? "rotate-180" : ""}`}
+                className={`h-3.5 w-3.5 text-neutral-400 transition-transform ${isActive ? "rotate-180" : ""}`}
               />
             </button>
           );
@@ -63,7 +63,7 @@ export default function InfoTabs({ tabs }: { tabs: InfoTab[] }) {
         <div id={panelId} className="mt-3 rounded-2xl border border-stone-100 bg-stone-50 px-5 py-4">
           {/* div, not p: a body can hold its own block-level markup (e.g. a
               multi-paragraph tab), which can't legally nest inside a p. */}
-          <div className="text-sm leading-relaxed text-stone-600">{tabs.find((t) => t.id === activeTab)?.body}</div>
+          <div className="text-sm leading-relaxed text-neutral-600">{tabs.find((t) => t.id === activeTab)?.body}</div>
         </div>
       )}
     </div>

@@ -97,7 +97,7 @@ function writeParams(state: Filters): void {
   }
 }
 
-const labelClass = "text-xs font-medium text-stone-500";
+const labelClass = "text-xs font-medium text-neutral-500";
 
 type FacetOption<T extends string> = { value: T; label: string; count: number };
 
@@ -201,14 +201,14 @@ export default function Biblioteca() {
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" aria-hidden />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" aria-hidden />
               <input
                 id="publicaciones-buscar"
                 type="search"
                 value={q}
                 onChange={(e) => set({ q: e.target.value })}
                 placeholder="Tema, título, autor o medio"
-                className="w-full rounded-xl bg-stone-100 py-2.5 pl-9 pr-3 text-sm font-medium text-stone-700 transition-colors placeholder:font-normal placeholder:text-stone-500 hover:bg-stone-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                className="w-full rounded-xl bg-stone-100 py-2.5 pl-9 pr-3 text-sm font-medium text-neutral-700 transition-colors placeholder:font-normal placeholder:text-neutral-500 hover:bg-stone-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
               />
             </div>
             {/* Below lg the filters live behind this button (the usual mobile
@@ -217,7 +217,7 @@ export default function Biblioteca() {
               type="button"
               onClick={() => setFiltersOpen(true)}
               aria-haspopup="dialog"
-              className="flex shrink-0 items-center gap-1.5 rounded-xl bg-stone-100 px-3.5 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 lg:hidden"
+              className="flex shrink-0 items-center gap-1.5 rounded-xl bg-stone-100 px-3.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-stone-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 lg:hidden"
             >
               <SlidersHorizontal className="h-4 w-4" aria-hidden />
               Filtros
@@ -242,14 +242,14 @@ export default function Biblioteca() {
           className="flex max-h-[85svh] w-[90%] max-w-md flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white p-6 shadow-xl"
         >
           <div className="flex flex-shrink-0 items-start justify-between gap-4 pb-4">
-            <h2 id={filtersTitleId} className="text-base font-medium text-stone-800">
+            <h2 id={filtersTitleId} className="text-base font-medium text-neutral-800">
               Filtros
             </h2>
             <button
               type="button"
               onClick={() => setFiltersOpen(false)}
               aria-label="Cerrar"
-              className="-mr-2 -mt-1 flex-shrink-0 rounded-xl p-2 text-stone-500 transition-colors hover:bg-stone-50 hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+              className="-mr-2 -mt-1 flex-shrink-0 rounded-xl p-2 text-neutral-500 transition-colors hover:bg-stone-50 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
             >
               <X className="h-4 w-4" />
             </button>
@@ -264,7 +264,7 @@ export default function Biblioteca() {
               <button
                 type="button"
                 onClick={() => setFilters((f) => ({ ...NO_FILTERS, q: f.q }))}
-                className="rounded-xl text-sm font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                className="rounded-xl text-sm font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
               >
                 Quitar filtros
               </button>
@@ -284,11 +284,11 @@ export default function Biblioteca() {
         {/* Only once something is filtered: how many matched, and the way
             back. Unfiltered, the page opens straight on the content. The
             live region stays mounted so the counts are announced. */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-stone-600" aria-live="polite">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-neutral-600" aria-live="polite">
           {filtered && (
             <>
               <p>
-                <span className="font-semibold text-stone-800">
+                <span className="font-semibold text-neutral-800">
                   {results.length} de {publicaciones.length}
                 </span>{" "}
                 publicaciones
@@ -296,7 +296,7 @@ export default function Biblioteca() {
               <button
                 type="button"
                 onClick={() => setFilters(NO_FILTERS)}
-                className="rounded-xl font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                className="rounded-xl font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
               >
                 Quitar filtros
               </button>
@@ -307,7 +307,7 @@ export default function Biblioteca() {
         {/* The featured items, then the list grouped by year. */}
         {destacadas.length > 0 && (
           <section aria-labelledby="publicaciones-destacada">
-            <h2 id="publicaciones-destacada" className="mb-3 text-sm font-semibold text-stone-800">
+            <h2 id="publicaciones-destacada" className="mb-3 text-sm font-semibold text-neutral-800">
               Destacado
             </h2>
             <ul className="grid gap-4">
@@ -321,7 +321,7 @@ export default function Biblioteca() {
         )}
 
         {results.length === 0 ? (
-          <p className="mt-10 text-sm text-stone-600">No hay publicaciones con estos filtros.</p>
+          <p className="mt-10 text-sm text-neutral-600">No hay publicaciones con estos filtros.</p>
         ) : (
           byYear.map(({ year, items }, i) => (
             <section
@@ -329,7 +329,7 @@ export default function Biblioteca() {
               aria-labelledby={`publicaciones-${year}`}
               className={i > 0 ? "mt-10" : destacadas.length > 0 ? "mt-8" : "mt-4"}
             >
-              <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-stone-800">
+              <h2 id={`publicaciones-${year}`} className="mb-3 text-sm font-semibold text-neutral-800">
                 {year}
               </h2>
               {/* One column at every width: in two, a long title wrapped to four lines. */}
@@ -348,7 +348,7 @@ export default function Biblioteca() {
           <button
             type="button"
             onClick={() => setShowAll(true)}
-            className="mt-6 flex h-10 w-full items-center justify-center rounded-xl bg-stone-100 px-4 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+            className="mt-6 flex h-10 w-full items-center justify-center rounded-xl bg-stone-100 px-4 text-sm font-medium text-neutral-700 transition-colors hover:bg-stone-200/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           >
             Ver todas las publicaciones ({hidden} más)
           </button>
@@ -397,14 +397,14 @@ function Facet<T extends string>({
                 disabled={empty}
                 className={`flex w-full items-center justify-between gap-3 rounded-xl px-3 py-1.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
                   current
-                    ? "bg-stone-900/[0.08] font-semibold text-stone-900"
+                    ? "bg-stone-900/[0.08] font-semibold text-neutral-900"
                     : empty
-                      ? "text-stone-400"
-                      : "text-stone-600 hover:bg-stone-100 hover:text-stone-800"
+                      ? "text-neutral-400"
+                      : "text-neutral-600 hover:bg-stone-100 hover:text-neutral-800"
                 }`}
               >
                 <span className="min-w-0 truncate">{o.label}</span>
-                <span className={`shrink-0 text-xs ${empty ? "text-stone-400" : "text-stone-500"}`}>{o.count}</span>
+                <span className={`shrink-0 text-xs ${empty ? "text-neutral-400" : "text-neutral-500"}`}>{o.count}</span>
               </button>
             </li>
           );
@@ -414,7 +414,7 @@ function Facet<T extends string>({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="mt-1 rounded-xl px-3 py-1.5 text-xs font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          className="mt-1 rounded-xl px-3 py-1.5 text-xs font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
         >
           {moreLabel} ({options.length - 1})
         </button>

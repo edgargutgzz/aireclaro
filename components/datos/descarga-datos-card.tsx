@@ -38,7 +38,7 @@ const INFO_TAB: InfoTab = {
           href="https://sinaica.inecc.gob.mx"
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900"
+          className="font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900"
         >
           Sistema Nacional de Información de la Calidad del Aire (SINAICA)
         </a>
@@ -47,42 +47,42 @@ const INFO_TAB: InfoTab = {
       <p>Cada fila representa una medición horaria de un contaminante en una estación.</p>
       <ul className="list-disc space-y-1 pl-5">
         <li>
-          <span className="font-medium text-stone-700">fecha:</span> día de la medición.
+          <span className="font-medium text-neutral-700">fecha:</span> día de la medición.
         </li>
         <li>
-          <span className="font-medium text-stone-700">hora:</span> hora de la medición (0 a 23).
+          <span className="font-medium text-neutral-700">hora:</span> hora de la medición (0 a 23).
         </li>
         <li>
-          <span className="font-medium text-stone-700">sensor_id:</span> clave de la estación en SINAICA.
+          <span className="font-medium text-neutral-700">sensor_id:</span> clave de la estación en SINAICA.
         </li>
         <li>
-          <span className="font-medium text-stone-700">estacion:</span> nombre de la estación.
+          <span className="font-medium text-neutral-700">estacion:</span> nombre de la estación.
         </li>
         <li>
-          <span className="font-medium text-stone-700">parametro:</span> contaminante medido, PM2.5 o PM10.
+          <span className="font-medium text-neutral-700">parametro:</span> contaminante medido, PM2.5 o PM10.
         </li>
         <li>
-          <span className="font-medium text-stone-700">valor:</span> concentración en µg/m³. Vacío si la
+          <span className="font-medium text-neutral-700">valor:</span> concentración en µg/m³. Vacío si la
           estación no reportó esa hora.
         </li>
         <li>
-          <span className="font-medium text-stone-700">val:</span> indicador de validez reportado por SINAICA.
+          <span className="font-medium text-neutral-700">val:</span> indicador de validez reportado por SINAICA.
         </li>
       </ul>
       <p>
-        <span className="font-medium text-stone-700">Licencia:</span> esta compilación se publica bajo{" "}
+        <span className="font-medium text-neutral-700">Licencia:</span> esta compilación se publica bajo{" "}
         <a
           href={DATA_LICENSE.deedUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-medium text-stone-700 underline underline-offset-2 hover:text-stone-900"
+          className="font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900"
         >
           {DATA_LICENSE.name}
         </a>
         . Las mediciones son de SINAICA (INECC); al usarlas, cita a SINAICA como fuente original.
       </p>
       <p>
-        <span className="font-medium text-stone-700">Cómo citar:</span> {DATA_CITATION}
+        <span className="font-medium text-neutral-700">Cómo citar:</span> {DATA_CITATION}
       </p>
     </div>
   ),
@@ -151,12 +151,12 @@ export default function DescargaDatosCard({
             Metropolitana de Monterrey.
           </div>
           <div className="mt-1">
-            <span className="font-medium text-stone-700">Periodo:</span> {mes(1)} {FIRST_YEAR} a {mes(ultimoMes)}{" "}
+            <span className="font-medium text-neutral-700">Periodo:</span> {mes(1)} {FIRST_YEAR} a {mes(ultimoMes)}{" "}
             {ultimoAnio}
-            <span className="px-2 text-stone-300" aria-hidden>
+            <span className="px-2 text-neutral-300" aria-hidden>
               ·
             </span>
-            <span className="font-medium text-stone-700">Actualización:</span> mensual
+            <span className="font-medium text-neutral-700">Actualización:</span> mensual
           </div>
         </>
       }
@@ -195,7 +195,7 @@ export default function DescargaDatosCard({
             <ArrowDownToLine className="h-4 w-4" aria-hidden />
             Descargar CSV
           </a>
-          <p className="text-xs text-stone-500">
+          <p className="text-xs text-neutral-500">
             {filas.toLocaleString("es-MX")} mediciones, {periodo}
           </p>
         </div>
@@ -218,7 +218,7 @@ function Field({
   htmlFor?: string;
   children: React.ReactNode;
 }) {
-  const labelClass = "text-xs font-medium text-stone-500";
+  const labelClass = "text-xs font-medium text-neutral-500";
   return (
     <div className="flex flex-col gap-1.5">
       {htmlFor ? (

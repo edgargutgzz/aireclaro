@@ -324,7 +324,7 @@ export default function CoberturaEstacionesChart({
 
   if (allDates.length === 0 || year === null) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white px-5 py-12 text-center text-sm text-stone-500">
+      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white px-5 py-12 text-center text-sm text-neutral-500">
         Sin datos de cobertura por el momento.
       </div>
     );
@@ -349,7 +349,7 @@ export default function CoberturaEstacionesChart({
       }
     >
       <div className="px-5 pb-6 pt-5 md:pt-6">
-        <div className="mb-4 flex items-center justify-end gap-4 text-xs text-stone-500 md:mb-6">
+        <div className="mb-4 flex items-center justify-end gap-4 text-xs text-neutral-500 md:mb-6">
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-[2px]" style={{ backgroundImage: GRADIENT_CSS }} />
             Con datos
@@ -396,7 +396,7 @@ export default function CoberturaEstacionesChart({
                     key={m.label}
                     x={0}
                     y={m.day * dayHeight + 10}
-                    className="fill-stone-400 text-[11px] font-medium"
+                    className="fill-neutral-400 text-[11px] font-medium"
                   >
                     {m.label}
                   </text>
@@ -445,12 +445,12 @@ export default function CoberturaEstacionesChart({
                 left: tooltipLeft(colX(sel!.col), colWidth, width),
               }}
             >
-              <span className="text-[10px] font-medium uppercase tracking-wide text-stone-400">{formatFecha(selFecha)}</span>
-              <span className="text-sm font-semibold text-stone-800">{selEstacion.nombre}</span>
-              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS : "rgb(121,113,107)" }}>
+              <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">{formatFecha(selFecha)}</span>
+              <span className="text-sm font-semibold text-neutral-800">{selEstacion.nombre}</span>
+              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS : "rgb(115,115,115)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
               </span>
-              <span className="text-xs text-stone-500">
+              <span className="text-xs text-neutral-500">
                 {pctCubierto(coberturaPorEstacion.get(selEstacion.sensorId), dates)}% de días con datos en {year}
               </span>
             </div>

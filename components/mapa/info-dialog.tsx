@@ -12,7 +12,7 @@ export function DialogLink({ href, children }: { href: string; children: React.R
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="rounded-xs font-medium text-stone-700 underline underline-offset-2 transition-colors hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+      className="rounded-xs font-medium text-neutral-700 underline underline-offset-2 transition-colors hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
     >
       {children}
       <span className="sr-only"> (abre en una nueva pestaña)</span>
@@ -110,7 +110,7 @@ export function DialogShell({
       onClick={(event) => {
         if (pressedOutside.current && isOutside(event)) onCloseRef.current();
       }}
-      className={`info-dialog fixed inset-0 m-auto text-stone-800 focus:outline-none ${className}`}
+      className={`info-dialog fixed inset-0 m-auto text-neutral-800 focus:outline-none ${className}`}
     >
       {children}
     </dialog>
@@ -137,7 +137,7 @@ export function InfoDialog({
       labelledBy={titleId}
       /* Not glass. The map panels are chrome and float in the workspace; this
          surface carries paragraphs, and even at /90 the map's colour bled
-         through enough to drop the stone-500 body copy under 4.5:1. Opaque
+         through enough to drop the neutral-500 body copy under 4.5:1. Opaque
          white on a visible stone-200 hairline; the scrim's blur does the
          "floating above the map" work on its own. */
       className="flex max-h-[85svh] w-[85%] max-w-md flex-col overflow-hidden rounded-3xl border border-stone-200 bg-white p-8 shadow-xl"
@@ -147,15 +147,15 @@ export function InfoDialog({
           out of reach is worse than none. Long content is exactly when you
           need it. */}
       <div className="flex flex-shrink-0 items-start justify-between gap-4 pb-6">
-        <h2 id={titleId} className="text-base font-medium text-stone-800">{title}</h2>
+        <h2 id={titleId} className="text-base font-medium text-neutral-800">{title}</h2>
         <button
           type="button"
           onClick={onClose}
           aria-label="Cerrar"
-          /* stone-500, not stone-400: with no footer button left, this icon is
-             the only visible way out, and stone-400 on white is 2.54:1 against
+          /* neutral-500, not neutral-400: with no footer button left, this icon is
+             the only visible way out, and neutral-400 on white is 2.54:1 against
              the 3:1 WCAG asks of anything identifying a control. */
-          className="-mr-2 -mt-1 flex-shrink-0 rounded-xl p-2 text-stone-500 transition-colors hover:bg-stone-50 hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          className="-mr-2 -mt-1 flex-shrink-0 rounded-xl p-2 text-neutral-500 transition-colors hover:bg-stone-50 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
         >
           <X className="h-4 w-4" />
         </button>
@@ -206,8 +206,8 @@ export function InfoSection({
         aria-controls={panelId}
         className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
       >
-        <p className="text-sm font-semibold text-stone-700">{title}</p>
-        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-stone-400 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
+        <p className="text-sm font-semibold text-neutral-700">{title}</p>
+        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
       </button>
       {/* Hidden rather than unmounted, so aria-controls always points at a
           real element. The hidden attribute takes the body and its links out
@@ -216,7 +216,7 @@ export function InfoSection({
       <div
         id={panelId}
         hidden={!open}
-        className="disclosure-in border-t border-stone-100 bg-stone-50 px-4 py-3.5 text-sm leading-relaxed text-stone-600"
+        className="disclosure-in border-t border-stone-100 bg-stone-50 px-4 py-3.5 text-sm leading-relaxed text-neutral-600"
       >
         {children}
       </div>

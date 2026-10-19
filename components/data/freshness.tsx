@@ -35,15 +35,15 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
 export function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
   if (freshness.status === "nodata") {
     return (
-      <span className={`whitespace-nowrap font-medium text-stone-700 ${compact ? "text-[11px]" : "text-[13px]"}`}>
+      <span className={`whitespace-nowrap font-medium text-neutral-700 ${compact ? "text-[11px]" : "text-[13px]"}`}>
         No disponible
       </span>
     );
   }
   return (
-    <span className={`whitespace-nowrap text-stone-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
+    <span className={`whitespace-nowrap text-neutral-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
       <span className="sr-only">Actualizado </span>
-      <time dateTime={freshness.dateTime} className="font-medium text-stone-700">
+      <time dateTime={freshness.dateTime} className="font-medium text-neutral-700">
         {freshness.when}
       </time>
     </span>

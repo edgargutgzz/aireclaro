@@ -99,7 +99,7 @@ export default function DownloadImageMenu({
         aria-haspopup="menu"
         aria-expanded={open}
         title="Descargar imagen"
-        className="flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors bg-stone-100 text-stone-600 hover:bg-stone-200/70 hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+        className="flex h-8 shrink-0 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-colors bg-stone-100 text-neutral-600 hover:bg-stone-200/70 hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
       >
         <ArrowDownToLine className="h-3.5 w-3.5" aria-hidden />
         Descargar
@@ -115,11 +115,11 @@ export default function DownloadImageMenu({
           {/* Heading + option read as one phrase ("Descargar imagen para compartir en
               WhatsApp"), and the button itself carries the download icon,
               so what a click does is said before it happens. */}
-          <p className="px-3 pb-1 pt-2 text-xs font-medium text-stone-400 sm:whitespace-nowrap">Descargar imagen para compartir en:</p>
+          <p className="px-3 pb-1 pt-2 text-xs font-medium text-neutral-400 sm:whitespace-nowrap">Descargar imagen para compartir en:</p>
           {GROUPS.map((group, i) => (
             <div key={group.options[0].format} className={i > 0 ? "mt-1 border-t border-stone-100 pt-1" : ""}>
               {group.title && (
-                <p className="px-3 pb-0.5 pt-2 text-sm font-medium text-stone-700">{group.title}</p>
+                <p className="px-3 pb-0.5 pt-2 text-sm font-medium text-neutral-700">{group.title}</p>
               )}
               {group.options.map((o) => (
                 <a
@@ -132,7 +132,7 @@ export default function DownloadImageMenu({
                     group.title ? "pl-6" : "pl-3"
                   }`}
                 >
-                  <span className={`text-sm ${group.title ? "text-stone-600" : "font-medium text-stone-700"}`}>
+                  <span className={`text-sm ${group.title ? "text-neutral-600" : "font-medium text-neutral-700"}`}>
                     {o.label}
                   </span>
                 </a>
