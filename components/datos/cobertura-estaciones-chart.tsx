@@ -165,11 +165,11 @@ const TOOLTIP_HEIGHT = 104; // px, generous estimate of its rendered height
 const TOOLTIP_GAP = 10; // px from the row
 const AXIS_HEIGHT = 20; // px, month labels above the plot
 const LABEL_HEIGHT = 16; // px, the station name's band at the top of each row's slot
+const BAR_HEIGHT = 16; // px, each station's bar
 const BAR_GAP = 10; // px left under each bar before the next row's name
-
-function plotHeight(width: number) {
-  return width < 640 ? 520 : 560;
-}
+// The plot grows with the station list instead of squeezing the rows into a
+// fixed height: 15 stations = 650px (the skeleton mirrors that number).
+const SLOT = LABEL_HEIGHT + BAR_HEIGHT + BAR_GAP;
 
 // Below the picked row, or above it near the bottom; clamped inside the plot.
 function tooltipTop(rowTop: number, rowHeight: number, plotHeight: number) {
@@ -230,12 +230,11 @@ export default function CoberturaEstacionesChart({
     return () => ro.disconnect();
   }, [node]);
 
-  const height = plotHeight(width);
   const n = estaciones.length;
-  const slot = n > 0 ? Math.max(0, height - AXIS_HEIGHT) / n : 0;
-  const rowHeight = Math.max(0, slot - LABEL_HEIGHT - BAR_GAP);
+  const height = AXIS_HEIGHT + n * SLOT;
+  const rowHeight = BAR_HEIGHT;
   const dayWidth = dates.length > 0 ? width / dates.length : 0;
-  const rowY = (i: number) => AXIS_HEIGHT + i * slot + LABEL_HEIGHT;
+  const rowY = (i: number) => AXIS_HEIGHT + i * SLOT + LABEL_HEIGHT;
 
   // Each station's row as runs of consecutive same-state days, one rect
   // each. The gray is drawn only in the gaps, not under the blue, so a
@@ -270,9 +269,9 @@ export default function CoberturaEstacionesChart({
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top - AXIS_HEIGHT;
-    if (y < 0 || slot === 0 || dayWidth === 0) return setSel(null);
+    if (y < 0 || dayWidth === 0) return setSel(null);
     setSel({
-      row: Math.min(n - 1, Math.floor(y / slot)),
+      row: Math.min(n - 1, Math.floor(y / SLOT)),
       day: Math.min(dates.length - 1, Math.max(0, Math.floor(x / dayWidth))),
     });
   };
