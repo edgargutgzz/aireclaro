@@ -42,7 +42,7 @@ export function makeSimaBadge(): ImageData {
   ctx.fill();
   ctx.beginPath();
   ctx.arc(c, c, rDisc, 0, Math.PI * 2);
-  ctx.fillStyle = "#79716b"; // stone-500 — as light as the white glyph clears 3:1
+  ctx.fillStyle = "#737373"; // neutral-500, white glyph clears 3:1 (4.7:1)
   ctx.fill();
   ctx.save();
   ctx.translate(c, c);

@@ -12,14 +12,14 @@ function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
   if (state === 'unchecked') {
     return (
       <div
-        style={{ width: size, height: size, borderRadius: 4, border: '1.5px solid #79716b', flexShrink: 0 }}
+        style={{ width: size, height: size, borderRadius: 4, border: '1.5px solid #737373', flexShrink: 0 }}
       />
     );
   }
   return (
     <div
       className="flex items-center justify-center shadow-sm"
-      style={{ width: size, height: size, borderRadius: 4, backgroundColor: '#79716b', flexShrink: 0 }}
+      style={{ width: size, height: size, borderRadius: 4, backgroundColor: '#737373', flexShrink: 0 }}
     >
       {state === 'checked' ? (
         <Check className="text-white" style={{ width: size - 6, height: size - 6 }} strokeWidth={3} />
