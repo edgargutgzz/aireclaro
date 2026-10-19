@@ -56,13 +56,8 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="relative flex items-center justify-center">
-          {/* Decorative blobs */}
-          <div className="absolute -right-6 -top-6 h-72 w-72 rounded-full bg-blue-200/50 blur-3xl" />
-          <div className="absolute -bottom-8 -left-8 h-64 w-64 rounded-full bg-teal-200/50 blur-3xl" />
-          <div className="relative z-10 w-full">
-            <AirQualitySlider />
-          </div>
+        <div className="w-full">
+          <AirQualitySlider />
         </div>
       </div>
     </div>
