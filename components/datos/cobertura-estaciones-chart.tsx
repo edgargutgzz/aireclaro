@@ -179,7 +179,7 @@ const TOOLTIP_HEIGHT = 104; // px, generous estimate of its rendered height
 const TOOLTIP_GAP = 10; // px from the row
 const AXIS_HEIGHT = 20; // px, month labels above the plot
 const LABEL_HEIGHT = 16; // px, the station name's band at the top of each row's slot
-const BAR_GAP = 6; // px left under each bar before the next row's name
+const BAR_GAP = 10; // px left under each bar before the next row's name
 
 function plotHeight(width: number) {
   return width < 640 ? 520 : 560;
