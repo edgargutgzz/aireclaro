@@ -146,7 +146,7 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={detailId}
-        className="flex w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+        className="flex min-h-6 w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
       >
         <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">
           Calidad del aire

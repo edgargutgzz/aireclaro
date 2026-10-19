@@ -1266,11 +1266,14 @@ export default function MapaSensors({
               idiom the rows inside the panel already use, and the legend
               card's uppercase label below it, so the two stacked cards read
               as one set. The panel is "Sensores" on screen (it picks which
-              sensors show); "Capas" stays its name in code. */}
+              sensors show); "Capas" stays its name in code. The two
+              closed cards stand at the same 56px: min-h-14 here, the legend's
+              min-h-6 row inside its py-4 (its bar + end labels run ~23px,
+              this row's chevron only 16px). */}
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
             aria-expanded={showFiltrosContent}
-            className="flex w-full flex-shrink-0 items-center gap-1.5 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+            className="flex min-h-14 w-full flex-shrink-0 items-center gap-1.5 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
           >
             <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Sensores</span>
             {capasSummary && (
