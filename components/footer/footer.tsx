@@ -42,7 +42,7 @@ const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide t
 
 export default function Footer() {
   return (
-    <footer className="bg-stone-100">
+    <footer className="border-t border-stone-200 bg-stone-50">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
       {/* lg+: one row, the two link columns first (the site's sections:
           this is a data platform), then the ways to reach us (contact,
