@@ -155,8 +155,8 @@ export function infoTab(pollutant: Pollutant): InfoTab {
 // fully colored until one is picked; then the others fade, a line marks the day under the pointer and
 // a tooltip beside the row names the station and that day's state. Each
 // row's station name sits just above its bar, at every width, so the year
-// keeps the full width of the plot, with the station's % of days with data
-// at the other end of that line.
+// keeps the full width of the plot. The station's % of days with data shows
+// only in the tooltip, so the rows stay quiet until one is picked.
 
 // The tooltip's "Con datos" text: the bars' blue a step darker (Tailwind
 // blue-600, 5.2:1 on white), since blue-500 text is only 3.7:1.
@@ -164,7 +164,7 @@ const COLOR_CON_DATOS_TEXTO = "#2563eb";
 // Only the color fades, not the gray, so a faded row's gaps still show.
 const FADED_OPACITY = 0.4;
 const TOOLTIP_WIDTH = 208; // px, the card's w-52
-const TOOLTIP_HEIGHT = 88; // px, generous estimate of its rendered height (date, station, state)
+const TOOLTIP_HEIGHT = 104; // px, generous estimate of its rendered height
 const TOOLTIP_GAP = 10; // px from the row
 const AXIS_HEIGHT = 32; // px, month labels above the plot, with room before the first station name
 const LABEL_HEIGHT = 16; // px, the station name's band at the top of each row's slot
@@ -264,14 +264,6 @@ export default function CoberturaEstacionesChart({
         });
         return out;
       }),
-    [estaciones, coberturaPorEstacion, dates],
-  );
-
-  // Each station's share of the year's days with data, printed at the end
-  // of its name line so the weak stations show without hovering (and in a
-  // screenshot).
-  const pctPorEstacion = useMemo(
-    () => estaciones.map((e) => pctCubierto(coberturaPorEstacion.get(e.sensorId), dates)),
     [estaciones, coberturaPorEstacion, dates],
   );
 
@@ -418,14 +410,6 @@ export default function CoberturaEstacionesChart({
                   >
                     {e.nombre}
                   </text>
-                  <text
-                    x={width}
-                    y={rowY(i) - 5}
-                    textAnchor="end"
-                    className={`text-[11px] font-medium tabular-nums ${sel?.row === i ? "fill-neutral-800" : "fill-neutral-500"}`}
-                  >
-                    {pctPorEstacion[i]}%
-                  </text>
                   {runs[i].map((r) => (
                     <rect
                       key={r.start}
@@ -471,6 +455,9 @@ export default function CoberturaEstacionesChart({
               <span className="text-sm font-semibold text-neutral-800">{selEstacion.nombre}</span>
               <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS_TEXTO : "rgb(115,115,115)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
+              </span>
+              <span className="text-xs text-neutral-500">
+                {pctCubierto(coberturaPorEstacion.get(selEstacion.sensorId), dates)}% de días con datos en {year}
               </span>
             </div>
           )}
