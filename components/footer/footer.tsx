@@ -15,7 +15,7 @@ export const SOCIAL_LINKS = [
 // Quiet like the contact icons (gray, no box); the 36px target stays for
 // touch. The first icon's glyph lines up with the "Síguenos" label.
 const socialLinkClass =
-  "flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-200/70 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
+  "flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/15";
 
 // The footer's site map, between the contact and the socials: the navbar's
 // sections under two headers.
@@ -39,9 +39,10 @@ const COLUMNAS = [
 
 const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide text-gray-400";
 
-export default function Footer() {
+// `warm`: the home page's stone trial (see MainContent).
+export default function Footer({ warm = false }: { warm?: boolean }) {
   return (
-    <footer className="bg-gray-100">
+    <footer className={warm ? "bg-stone-100" : "bg-gray-100"}>
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
       {/* lg+: one row, the ways to reach us first (contact, socials), then
           the two link columns, each as wide as its content and spread with
@@ -88,7 +89,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`${label} (abre en una nueva pestaña)`}
-                  className={socialLinkClass}
+                  className={`${socialLinkClass} ${warm ? "hover:bg-stone-200/70" : "hover:bg-gray-200/70"}`}
                 >
                   <Icon size={16} aria-hidden />
                 </a>

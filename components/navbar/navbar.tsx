@@ -57,6 +57,9 @@ const SECCIONES = [
 export default function Navbar() {
   const pathname = usePathname();
   const isCurrent = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  // Home tries the warm stone neutrals (2026-10-19 trial, with MainContent
+  // and the footer); every other page stays gray.
+  const warm = pathname === "/";
   const current = (href: string) => (isCurrent(href) ? "page" : undefined);
   // Menu state
   const [isOpen, setIsOpen] = useState(false);
@@ -108,7 +111,7 @@ export default function Navbar() {
   const handleLinkClick = () => setIsOpen(false);
 
   return (
-    <header ref={headerRef} className="relative z-50 bg-gray-50 border-gray-200">
+    <header ref={headerRef} className={`relative z-50 ${warm ? "bg-stone-50" : "bg-gray-50"}`}>
       <div
         className="h-header mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
         ref={menuRef}
@@ -164,7 +167,7 @@ export default function Navbar() {
             id="menu-movil"
             aria-label="Principal"
             style={{ top: panelTop }}
-            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-gray-50 px-6 pb-10 pt-2 lg:hidden"
+            className={`fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain px-6 pb-10 pt-2 lg:hidden ${warm ? "bg-stone-50" : "bg-gray-50"}`}
           >
             <ul className="mt-4 grid grid-cols-2 gap-3">
               {SECCIONES.map(({ href, label, Icon }) => (
