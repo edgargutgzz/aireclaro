@@ -120,7 +120,7 @@ export default function Footer({ warm = false }: { warm?: boolean }) {
 
       </div>
 
-      <div className="mt-10 border-t border-gray-200 pt-4 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className={`mt-10 flex flex-col gap-6 border-t pt-4 sm:flex-row sm:items-center sm:justify-between ${warm ? "border-stone-200" : "border-gray-200"}`}>
         <p className="text-xs text-gray-400">
           &copy; {new Date().getFullYear()} Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey
         </p>
