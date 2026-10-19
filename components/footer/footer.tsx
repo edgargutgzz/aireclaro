@@ -13,10 +13,10 @@ export const SOCIAL_LINKS = [
 ];
 
 // Like every footer link: neutral-600 at rest (quieter than the navbar's
-// neutral-800), lighter on hover as in the navbar, no box; the 36px target
-// stays for touch. The first icon's glyph lines up with the "Síguenos" label.
+// neutral-800), darker on hover (lighter would drop under 4.5:1 on the
+// footer), no box; the 36px target stays for touch. The first icon's glyph lines up with the "Síguenos" label.
 const socialLinkClass =
-  "flex h-9 w-9 items-center justify-center rounded-xl text-neutral-600 transition-colors hover:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
+  "flex h-9 w-9 items-center justify-center rounded-xl text-neutral-600 transition-colors hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
 // The footer's site map, between the contact and the socials: the navbar's
 // sections under two headers.
@@ -56,7 +56,7 @@ export default function Footer() {
           <p className={EYEBROW}>Contacto</p>
           <a
             href="mailto:contacto@observatoriodelaire.com"
-            className="flex items-center gap-2 rounded-xl text-sm text-neutral-600 hover:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+            className="flex items-center gap-2 rounded-xl text-sm text-neutral-600 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           >
             <Mail className="h-4 w-4 shrink-0 text-neutral-400" aria-hidden />
             contacto@observatoriodelaire.com
@@ -65,7 +65,7 @@ export default function Footer() {
             href="https://maps.app.goo.gl/uYj6u7VH1BzvbFJfA"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-neutral-600 hover:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+            className="mt-2 flex items-start gap-2 rounded-xl text-sm leading-relaxed text-neutral-600 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           >
             <MapPin className="mt-1 h-4 w-4 shrink-0 text-neutral-400" aria-hidden />
             <span>
@@ -107,7 +107,7 @@ export default function Footer() {
                   <li key={href}>
                     <Link
                       href={href}
-                      className="rounded-xl text-sm text-neutral-600 hover:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                      className="rounded-xl text-sm text-neutral-600 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
                     >
                       {label}
                     </Link>
@@ -128,7 +128,7 @@ export default function Footer() {
           href="https://datacomun.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="self-start whitespace-nowrap rounded-xl text-xs text-neutral-600 transition-colors hover:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          className="self-start whitespace-nowrap rounded-xl text-xs text-neutral-600 transition-colors hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
         >
           {/* Quiet like the © line: the site speaks for the Observatory. */}
           Desarrollado por datacomun
