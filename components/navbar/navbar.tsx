@@ -108,7 +108,7 @@ export default function Navbar() {
   const handleLinkClick = () => setIsOpen(false);
 
   return (
-    <header ref={headerRef} className="relative z-50 bg-stone-50 border-stone-200">
+    <header ref={headerRef} className="relative z-50 bg-gray-50 border-gray-200">
       <div
         className="h-header mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
         ref={menuRef}
@@ -164,7 +164,7 @@ export default function Navbar() {
             id="menu-movil"
             aria-label="Principal"
             style={{ top: panelTop }}
-            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-stone-50 px-6 pb-10 pt-2 lg:hidden"
+            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto overscroll-contain bg-gray-50 px-6 pb-10 pt-2 lg:hidden"
           >
             <ul className="mt-4 grid grid-cols-2 gap-3">
               {SECCIONES.map(({ href, label, Icon }) => (
@@ -175,7 +175,7 @@ export default function Navbar() {
                     className={`flex aspect-square h-full w-full flex-col justify-between rounded-2xl border p-4 text-base font-medium transition-colors ${FOCUS} ${
                       isCurrent(href)
                         ? "border-gray-900 bg-white text-gray-800"
-                        : "border-stone-200 bg-white text-gray-800 active:bg-stone-100"
+                        : "border-gray-200 bg-white text-gray-800 active:bg-gray-100"
                     } [li:last-child:nth-child(odd)_&]:aspect-auto [li:last-child:nth-child(odd)_&]:min-h-24`}
                     onClick={handleLinkClick}
                   >
