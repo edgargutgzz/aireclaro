@@ -41,7 +41,7 @@ import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
 import { GroupRecommendations, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
-import { ZONA_AVISO, inBounds, readZona, roundZona, saveZona, type Zona, type ZonaStatus } from "./mi-zona";
+import { ZONA_AVISO, clearZona, inBounds, readZona, roundZona, saveZona, type Zona, type ZonaStatus } from "./mi-zona";
 import { BASEMAP_GROUND } from "./ground";
 
 // The station the estación card shows at rest, before any marker is picked:
@@ -62,6 +62,14 @@ function trackStationOpen(sensor: Sensor) {
     estacion: sensor.nombre_display || sensor.nombre,
     fuente: sensor.source,
   });
+}
+
+// The view a normal load opens on (and "Mi zona" returns to when forgotten):
+// the metro field, centred on the default station so its pulse is in frame.
+function restingFocus(defaultSelection: SelectedSensor | null) {
+  return defaultSelection
+    ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 11 }
+    : { center: OPENING_CENTER, zoom: 10.5 };
 }
 
 function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefined {
@@ -150,6 +158,9 @@ export default function MapaSensors({
   // ?sensor= link names a station.
   const savedZona = useRef<Zona | null>(linkedSensor ? null : readZona(BASEMAP_BOUNDS)).current;
   const [zonaStatus, setZonaStatus] = useState<ZonaStatus>("idle");
+  // Whether a zona is remembered (even if a ?sensor= link opened elsewhere):
+  // the button shows pressed, and its next tap forgets it.
+  const [zonaOn, setZonaOn] = useState(() => readZona(BASEMAP_BOUNDS) !== null);
 
   // Desktop drops the default-station card at rest: the right column is empty
   // and the map stands alone until a marker is picked. Mobile still rests its
@@ -589,9 +600,7 @@ export default function MapaSensors({
       ? { center: [linkedSensor.lon, linkedSensor.lat] as [number, number], zoom: 13 }
       : savedZona
         ? { center: savedZona as [number, number], zoom: 13 }
-      : defaultSelection
-        ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 11 }
-        : { center: OPENING_CENTER, zoom: 10.5 };
+        : restingFocus(defaultSelection);
 
     const m = new Map({
       container: mapContainer.current!,
@@ -919,11 +928,24 @@ export default function MapaSensors({
   );
 
   // "Mi zona": ask for the location only now, round it, keep it in this
-  // browser, and move the map there. Each tap is counted once, by outcome
-  // (Vercel Analytics `mi_zona` {resultado}); no position is ever sent.
+  // browser, and move the map there. With a zona remembered, the tap forgets
+  // it and returns to the normal opening view. Each tap is counted once, by
+  // outcome (Vercel Analytics `mi_zona` {resultado}); no position is ever sent.
   const goToZona = useCallback(() => {
-    const report = (resultado: "centrada" | "sin_permiso" | "no_disponible" | "fuera_del_area") =>
+    const report = (resultado: "centrada" | "olvidada" | "sin_permiso" | "no_disponible" | "fuera_del_area") =>
       track("mi_zona", { resultado });
+    if (zonaOn) {
+      clearZona();
+      setZonaOn(false);
+      setZonaStatus("idle");
+      report("olvidada");
+      const m = map.current as any;
+      if (!m) return;
+      const focus = restingFocus(defaultSelection);
+      if (prefersReducedMotion()) m.jumpTo(focus);
+      else m.easeTo(focus);
+      return;
+    }
     if (!("geolocation" in navigator)) {
       setZonaStatus("unavailable");
       report("no_disponible");
@@ -939,6 +961,7 @@ export default function MapaSensors({
           return;
         }
         saveZona(zona);
+        setZonaOn(true);
         setZonaStatus("idle");
         report("centrada");
         const m = map.current as any;
@@ -954,7 +977,7 @@ export default function MapaSensors({
       },
       { enableHighAccuracy: false, timeout: 10_000, maximumAge: 10 * 60_000 },
     );
-  }, []);
+  }, [zonaOn, defaultSelection]);
 
   // The notice after a tap fades on its own.
   useEffect(() => {
@@ -970,13 +993,14 @@ export default function MapaSensors({
       type="button"
       onClick={goToZona}
       disabled={zonaStatus === "locating"}
-      className={`glass flex items-center justify-center rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${size === "stack" ? "p-3" : "h-10 w-10"}`}
-      aria-label="Centrar en mi zona"
-      title="Centrar en mi zona"
+      aria-pressed={zonaOn}
+      className={`flex items-center justify-center rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${zonaOn ? "border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md" : "glass"} ${size === "stack" ? "p-3" : "h-10 w-10"}`}
+      aria-label={zonaOn ? "Olvidar mi zona" : "Centrar en mi zona"}
+      title={zonaOn ? "Olvidar mi zona" : "Centrar en mi zona"}
     >
       {zonaStatus === "locating"
         ? <LoaderCircle aria-hidden="true" className="h-5 w-5 animate-spin text-neutral-700 motion-reduce:animate-none" />
-        : <LocateFixed aria-hidden="true" className="h-5 w-5 text-neutral-700" />}
+        : <LocateFixed aria-hidden="true" className={`h-5 w-5 ${zonaOn ? "text-neutral-900" : "text-neutral-700"}`} />}
     </button>
   );
   const zonaAviso = zonaStatus !== "idle" && zonaStatus !== "locating" && (

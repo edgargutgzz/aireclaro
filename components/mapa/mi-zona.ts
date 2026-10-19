@@ -1,8 +1,9 @@
 // "Mi zona": the map's opt-in "center on me" button. The browser asks for the
 // location only when the button is tapped (never on load). The position is
 // rounded to about 1 km and kept in this browser alone (never sent anywhere),
-// so later visits open on that area without asking again. Storage can be
-// blocked (private windows), so every access is guarded.
+// so later visits open on that area without asking again. Tapping the button
+// again forgets it (the browser's own permission stays the user's to reset).
+// Storage can be blocked (private windows), so every access is guarded.
 
 export type Zona = [lon: number, lat: number];
 
@@ -24,6 +25,14 @@ export function saveZona(zona: Zona): void {
     window.localStorage.setItem(KEY, `${zona[0]},${zona[1]}`);
   } catch {
     // Storage blocked: the zona just isn't remembered.
+  }
+}
+
+export function clearZona(): void {
+  try {
+    window.localStorage.removeItem(KEY);
+  } catch {
+    // Storage blocked: nothing was remembered.
   }
 }
 
