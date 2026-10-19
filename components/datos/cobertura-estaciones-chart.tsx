@@ -162,12 +162,12 @@ const FADED_OPACITY = 0.4;
 const TOOLTIP_WIDTH = 208; // px, the card's w-52
 const TOOLTIP_HEIGHT = 104; // px, generous estimate of its rendered height
 const TOOLTIP_GAP = 10; // px from the row
-const AXIS_HEIGHT = 20; // px, month labels above the plot
+const AXIS_HEIGHT = 32; // px, month labels above the plot, with room before the first station name
 const LABEL_HEIGHT = 16; // px, the station name's band at the top of each row's slot
 const BAR_HEIGHT = 16; // px, each station's bar
 const BAR_GAP = 10; // px left under each bar before the next row's name
 // The plot grows with the station list instead of squeezing the rows into a
-// fixed height: 15 stations = 650px (the skeleton mirrors that number).
+// fixed height: 15 stations = 662px (the skeleton mirrors that number).
 const SLOT = LABEL_HEIGHT + BAR_HEIGHT + BAR_GAP;
 
 // Below the picked row, or above it near the bottom; clamped inside the plot.

@@ -1,7 +1,7 @@
 import SkeletonBlock from "@/components/datos/skeleton-block";
 
 // Mirrors CoberturaEstacionesChart's shell: header, legend row, the
-// plot (650px: 15 stations x 42px rows + the 20px month axis).
+// plot (662px: 15 stations x 42px rows + the 32px month axis).
 export default function CoberturaEstacionesSkeleton() {
   return (
     <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
@@ -17,7 +17,7 @@ export default function CoberturaEstacionesSkeleton() {
           <SkeletonBlock className="h-3 w-20" />
           <SkeletonBlock className="h-3 w-28" />
         </div>
-        <SkeletonBlock className="h-[650px] w-full rounded-xl" />
+        <SkeletonBlock className="h-[662px] w-full rounded-xl" />
       </div>
     </div>
   );
