@@ -1,37 +1,25 @@
 @import "tailwindcss";
 /* Tailwind v4: keep driving theme/content from the existing JS config
    (tailwind.config.ts) rather than a CSS-native @theme block -- it's
-   already down to 3 colors + 3 panel widths, small enough that
+   already down to 3 panel widths, small enough that
    the bridge costs nothing and there's no reason to force a rewrite. */
 @config "../tailwind.config.ts";
 
 /* `prose` for long-form text (the editorial article pages). */
 @plugin "@tailwindcss/typography";
 
-/* ── House CSS-variable tokens ──────────────────────────────────────────────
-   HSL channel triplets consumed via `hsl(var(--x))` in tailwind.config.ts.
-   The app is light-only (.ai-style-guide.md §3): there is a `:root` block
-   only, no `.dark`. Originally shadcn/ui's full token bridge (~20 variables);
-   trimmed 2026-09-19 when shadcn was removed project-wide down to just the
-   three still actually consumed (the global `body`/`*` reset below). The
-   `--radius` override of rounded-lg/md/sm went 2026-10-03, so every radius
-   class is stock Tailwind. Every other shadcn color
-   variable (card, popover, primary, secondary, muted, accent, destructive,
-   input, ring, chart-1..5) had zero real usage anywhere, JSX or CSS, and
-   was deleted rather than kept "just in case." The air-quality scale is not
-   a token here; it lives in lib/air-quality.ts. */
-:root {
-  --background: 210 20% 98%; /* gray-50  #f9fafb */
-  --foreground: 215 28% 17%; /* gray-800 #1f2937 */
-  --border: 220 13% 91%; /* gray-200 #e5e7eb */
-}
-
+/* Base colors are stock Tailwind classes: the old shadcn token bridge
+   (--background/--foreground/--border as HSL triplets) was removed
+   2026-10-19. Its foreground was Tailwind 3's gray-800 (#1f2937), so
+   inherited text (the navbar links) rendered a different gray from every
+   gray-* class on Tailwind 4. The air-quality scale lives in
+   lib/air-quality.ts. */
 @layer base {
   * {
-    @apply border-border;
+    @apply border-gray-200;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gray-50 text-gray-800;
   }
   /* Browsers default a real <button> to cursor:default, not pointer -- only
      <a href> gets the hand automatically. Every clickable button across the

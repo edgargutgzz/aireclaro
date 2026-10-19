@@ -17,15 +17,6 @@ const config: Config = {
         "panel-filters": "380px",
         "panel-lg": "460px",
       },
-      // House CSS-variable tokens (app/globals.css). Was shadcn/ui's full
-      // token bridge (~20 colors); trimmed 2026-09-19 when shadcn was
-      // removed project-wide down to the three still actually consumed --
-      // see the comment in globals.css for what got cut and why.
-      colors: {
-        border: "hsl(var(--border))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-      },
     },
   },
 };
