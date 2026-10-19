@@ -233,7 +233,12 @@ export default function CoberturaEstacionesChart({
   const n = estaciones.length;
   const height = AXIS_HEIGHT + n * SLOT;
   const rowHeight = BAR_HEIGHT;
-  const dayWidth = dates.length > 0 ? width / dates.length : 0;
+  // Every year runs on the same Jan 1 to Dec 31 axis, so a month sits in the
+  // same place whichever year is picked; a year in progress just stops short
+  // (blank, not gray: the rest of the year isn't missing data, it hasn't
+  // happened yet).
+  const daysInYear = year !== null && (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 366 : 365;
+  const dayWidth = width / daysInYear;
   const rowY = (i: number) => AXIS_HEIGHT + i * SLOT + LABEL_HEIGHT;
 
   // Each station's row as runs of consecutive same-state days, one rect
@@ -263,10 +268,14 @@ export default function CoberturaEstacionesChart({
     [estaciones, coberturaPorEstacion, dates],
   );
 
+  // All twelve months, from the calendar, not from the synced dates.
   const monthStarts = useMemo(
     () =>
-      dates.flatMap((f, i) => (f.endsWith("-01") ? [{ day: i, label: MONTHS_ES[Number(f.slice(5, 7)) - 1] }] : [])),
-    [dates],
+      MONTHS_ES.map((label, m) => ({
+        day: year === null ? 0 : (Date.UTC(year, m, 1) - Date.UTC(year, 0, 1)) / 86_400_000,
+        label,
+      })),
+    [year],
   );
 
   const [sel, setSel] = useState<Seleccion | null>(null);
@@ -280,7 +289,9 @@ export default function CoberturaEstacionesChart({
     if (y < 0 || dayWidth === 0) return setSel(null);
     setSel({
       row: Math.min(n - 1, Math.floor(y / SLOT)),
-      day: Math.min(dates.length - 1, Math.max(0, Math.floor(x / dayWidth))),
+      // Past the last synced day there's no date to read: the row is still
+      // picked, with no day line or tooltip.
+      day: Math.floor(x / dayWidth) < dates.length ? Math.max(0, Math.floor(x / dayWidth)) : null,
     });
   };
 
