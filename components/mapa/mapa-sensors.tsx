@@ -68,8 +68,8 @@ function trackStationOpen(sensor: Sensor) {
 // the metro field, centred on the default station so its pulse is in frame.
 function restingFocus(defaultSelection: SelectedSensor | null) {
   return defaultSelection
-    ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 11 }
-    : { center: OPENING_CENTER, zoom: 10.5 };
+    ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 10.5 }
+    : { center: OPENING_CENTER, zoom: 10 };
 }
 
 function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefined {
