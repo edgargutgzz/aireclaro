@@ -42,11 +42,8 @@ const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide t
 
 export default function Footer() {
   return (
-    <footer className="bg-stone-50">
-      <div className="mx-auto max-w-7xl px-6 pb-8 lg:px-8">
-      {/* The top rule sits inside the padding, so it runs only as wide as the
-          content, like the divider above the credit. */}
-      <div className="border-t border-stone-200 pt-12">
+    <footer className="border-t border-stone-200 bg-stone-50">
+      <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
       {/* lg+: one row, the two link columns first (the site's sections:
           this is a data platform), then the ways to reach us (contact,
           socials), each as wide as its content and spread with equal gaps
@@ -138,7 +135,6 @@ export default function Footer() {
           Desarrollado por datacomun
           <span className="sr-only"> (abre en una nueva pestaña)</span>
         </Link>
-      </div>
       </div>
       </div>
     </footer>
