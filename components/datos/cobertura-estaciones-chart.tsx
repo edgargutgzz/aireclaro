@@ -392,6 +392,14 @@ export default function CoberturaEstacionesChart({
                     <stop key={offset} offset={offset} stopColor={color} />
                   ))}
                 </linearGradient>
+                {/* Each bar's rounded outline (rx 4, the promedio anual bars'
+                    radius), clipping the runs inside it so only the bar's two
+                    ends round, not every run. */}
+                {estaciones.map((e, i) => (
+                  <clipPath key={e.sensorId} id={`${gradientId}-fila-${i}`}>
+                    <rect x={0} y={rowY(i)} width={width} height={rowHeight} rx={4} />
+                  </clipPath>
+                ))}
               </defs>
               {monthStarts.map((m) =>
                 m.day * dayWidth > width - 24 ? null : (
@@ -415,6 +423,7 @@ export default function CoberturaEstacionesChart({
                   >
                     {e.nombre}
                   </text>
+                  <g clipPath={`url(#${gradientId}-fila-${i})`}>
                   {runs[i].map((r) => (
                     <rect
                       key={r.start}
@@ -426,6 +435,7 @@ export default function CoberturaEstacionesChart({
                       fillOpacity={!r.cubierto || !sel || sel.row === i ? 1 : FADED_OPACITY}
                     />
                   ))}
+                  </g>
                 </g>
               ))}
 
