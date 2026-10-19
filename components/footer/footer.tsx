@@ -44,11 +44,32 @@ export default function Footer() {
   return (
     <footer className="bg-stone-100">
       <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
-      {/* lg+: one row, the ways to reach us first (contact, socials), then
-          the two link columns, each as wide as its content and spread with
-          equal gaps (the last ends at the right edge, over the credit).
-          Below: the same order stacked, the link columns two across. */}
+      {/* lg+: one row, the two link columns first (the site's sections:
+          this is a data platform), then the ways to reach us (contact,
+          socials), each as wide as its content and spread with equal gaps
+          (the last ends at the right edge, over the credit). Below: the same
+          order stacked, the link columns two across. */}
       <div className="grid gap-10 lg:flex lg:justify-between lg:gap-8">
+        <nav aria-label="Secciones del sitio" className="grid grid-cols-2 gap-8 lg:contents">
+          {COLUMNAS.map(({ titulo, links }) => (
+            <div key={titulo}>
+              <h2 className={EYEBROW}>{titulo}</h2>
+              <ul className="flex flex-col gap-2">
+                {links.map(({ href, label }) => (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className="rounded-xl text-sm text-neutral-600 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
         {/* Contact: email first (what most visitors need), the address as
             an envelope reads, Mexican format. <address> marks it as the
             site's contact info for screen readers and search engines. */}
@@ -97,26 +118,6 @@ export default function Footer() {
             ))}
           </ul>
         </div>
-
-        <nav aria-label="Secciones del sitio" className="grid grid-cols-2 gap-8 lg:contents">
-          {COLUMNAS.map(({ titulo, links }) => (
-            <div key={titulo}>
-              <h2 className={EYEBROW}>{titulo}</h2>
-              <ul className="flex flex-col gap-2">
-                {links.map(({ href, label }) => (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      className="rounded-xl text-sm text-neutral-600 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </nav>
 
       </div>
 
