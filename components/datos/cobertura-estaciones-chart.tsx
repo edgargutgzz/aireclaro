@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { BookOpen } from "lucide-react";
 import { MONTHS_ES, MONTHS_ES_FULL, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE, COLOR_INSUFICIENTE, COLOR_SALUDABLE, withOpacity } from "@/lib/datos-colors";
@@ -9,7 +9,6 @@ import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
 import YearToggle from "@/components/datos/year-toggle";
 import { useDismissTooltip } from "@/components/datos/use-dismiss-tooltip";
-import { roundedRectPath } from "@/components/datos/svg-chart-utils";
 
 export interface Estacion {
   sensorId: string;
@@ -305,7 +304,6 @@ export default function CoberturaEstacionesChart({
     return prior.length === 0 ? null : pctTotal - pctCobertura(estaciones, coberturaPorEstacion, prior);
   }, [allDates, year, dates, pctTotal, estaciones, coberturaPorEstacion]);
 
-  const clipId = useId();
   const selEstacion = sel ? estaciones[sel.row] : null;
   const selFecha = sel?.day != null ? dates[sel.day] : null;
   const selCubierto = selEstacion && selFecha ? coberturaPorEstacion.get(selEstacion.sensorId)?.get(selFecha) : undefined;
@@ -371,16 +369,6 @@ export default function CoberturaEstacionesChart({
               onKeyDown={onKeyDown}
               onBlur={clear}
             >
-              <defs>
-                {/* Each bar's outline, clipping the runs inside it: square at
-                    its baseline (Jan 1), rounded only at its tip, with the
-                    días insalubres bars' 4px radius. */}
-                {estaciones.map((e, i) => (
-                  <clipPath key={e.sensorId} id={`${clipId}-fila-${i}`}>
-                    <path d={roundedRectPath(0, rowY(i), width, rowHeight, { tr: 4, br: 4 })} />
-                  </clipPath>
-                ))}
-              </defs>
               {monthStarts.map((m) =>
                 m.day * dayWidth > width - 24 ? null : (
                   <text
@@ -403,7 +391,6 @@ export default function CoberturaEstacionesChart({
                   >
                     {e.nombre}
                   </text>
-                  <g clipPath={`url(#${clipId}-fila-${i})`}>
                   {runs[i].map((r) => (
                     <rect
                       key={r.start}
@@ -417,7 +404,6 @@ export default function CoberturaEstacionesChart({
                       }
                     />
                   ))}
-                  </g>
                 </g>
               ))}
 
