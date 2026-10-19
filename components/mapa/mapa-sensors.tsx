@@ -314,7 +314,7 @@ export default function MapaSensors({
     const mapped = sensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
     if (!mapped) return null;
     const shown = visibleSensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
-    return shown === mapped ? "Todos los sensores" : `${shown} de ${mapped} sensores`;
+    return shown === mapped ? "Todos" : `${shown} de ${mapped}`;
   }, [sensors, visibleSensors, data]);
 
   // The newest reading anywhere in the data set, which is what the freshness
@@ -1086,7 +1086,7 @@ export default function MapaSensors({
             <button
               onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
               className={`pointer-events-auto rounded-xl p-3 transition-colors duration-200 ${showFilters ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
-              aria-label="Capas"
+              aria-label="Sensores"
             >
               <Layers className={`h-5 w-5 ${showFilters ? 'text-neutral-900' : 'text-neutral-700'}`} />
             </button>
@@ -1117,7 +1117,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
-          <p className="text-base font-medium text-neutral-700">Capas</p>
+          <p className="text-base font-medium text-neutral-700">Sensores</p>
         </div>
         <div
           /* A plain block, not a flex column: as a flex item the list would
@@ -1263,18 +1263,18 @@ export default function MapaSensors({
       <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-14 md:left-6 md:top-6 md:w-panel-filters">
         <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:mt-auto md:flex">
           {/* The header carries the filter state, in the same "label · summary"
-              idiom the rows inside the panel already use. neutral-500 rather than
-              the rows' neutral-300: at 13px on this material that is the first
-              value that clears 4.5:1, and it still reads as subordinate to
-              the label beside it. */}
+              idiom the rows inside the panel already use, and the legend
+              card's uppercase label below it, so the two stacked cards read
+              as one set. The panel is "Sensores" on screen (it picks which
+              sensors show); "Capas" stays its name in code. */}
           <button
             onClick={() => setShowFiltrosContent((v) => !v)}
             aria-expanded={showFiltrosContent}
-            className="flex w-full flex-shrink-0 items-center gap-1.5 px-5 pt-4 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+            className="flex w-full flex-shrink-0 items-center gap-1.5 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
           >
-            <span className="flex-shrink-0 text-base font-medium text-neutral-700">Capas</span>
+            <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Sensores</span>
             {capasSummary && (
-              <span className="min-w-0 flex-1 truncate text-[13px] text-neutral-500">· {capasSummary}</span>
+              <span className="min-w-0 flex-1 truncate text-xs leading-none text-neutral-500">· {capasSummary}</span>
             )}
             <ChevronRight className={`ml-auto h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
           </button>
