@@ -1264,10 +1264,11 @@ export default function MapaSensors({
           and legend are bottom sheets and freshness is the top-left pill, so
           this column renders nothing there.
 
-          The column runs the whole height; the legend sits at the bottom
-          (md:mt-auto) and the panel grows into whatever is left over. */}
+          The column runs the whole height; the pair sits at the bottom, the
+          panel stacked right on top of the legend (md:mt-auto on the panel),
+          and an open panel grows up into whatever is left over. */}
       <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-14 md:left-6 md:top-6 md:w-panel-filters">
-        <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:flex">
+        <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:mt-auto md:flex">
           {/* The header carries the filter state, in the same "label · summary"
               idiom the rows inside the panel already use. neutral-500 rather than
               the rows' neutral-300: at 13px on this material that is the first
@@ -1309,11 +1310,11 @@ export default function MapaSensors({
         </div>
 
         {/* The air-quality scale sits at the foot of this rail on desktop. Same
-            w-panel-filters width as the Capas panel; md:mt-auto pins it to the
-            bottom whether the legend is open or shut. Desktop only: on mobile
+            w-panel-filters width as the Capas panel, which sits right above
+            it, open or shut. Desktop only: on mobile
             the legend floats bottom-left of the map and freshness is the
             top-left pill. */}
-        <div className="glass pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl md:mt-auto md:block">
+        <div className="glass pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl md:block">
           <div className="px-5 py-4">
             <AirQualityLegend collapsible />
           </div>
