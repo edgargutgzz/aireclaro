@@ -164,7 +164,7 @@ const COLOR_CON_DATOS_TEXTO = "#2563eb";
 // Only the color fades, not the gray, so a faded row's gaps still show.
 const FADED_OPACITY = 0.4;
 const TOOLTIP_WIDTH = 208; // px, the card's w-52
-const TOOLTIP_HEIGHT = 104; // px, generous estimate of its rendered height
+const TOOLTIP_HEIGHT = 88; // px, generous estimate of its rendered height (date, station, state)
 const TOOLTIP_GAP = 10; // px from the row
 const AXIS_HEIGHT = 32; // px, month labels above the plot, with room before the first station name
 const LABEL_HEIGHT = 16; // px, the station name's band at the top of each row's slot
@@ -467,9 +467,6 @@ export default function CoberturaEstacionesChart({
               <span className="text-sm font-semibold text-neutral-800">{selEstacion.nombre}</span>
               <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS_TEXTO : "rgb(115,115,115)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
-              </span>
-              <span className="text-xs text-neutral-500">
-                {pctPorEstacion[sel!.row]}% de días con datos en {year}
               </span>
             </div>
           )}
