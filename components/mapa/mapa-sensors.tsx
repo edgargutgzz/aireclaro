@@ -1063,7 +1063,8 @@ export default function MapaSensors({
           matching icon button; each opens its own bottom sheet. Desktop carries
           the legend at the foot of the left rail instead. The data-freshness
           pill sits right beside the Capas button in one row, so the layout
-          centres the two (items-center) and the pill takes the button's height. Desktop puts it
+          centres the two (items-center). Low-priority chrome, so it runs
+          small and shadowless. Desktop puts it
           bottom-right, beside "Mi zona". */}
       {sheetState === 'peek' && (
         <div
@@ -1081,7 +1082,7 @@ export default function MapaSensors({
             </button>
           </div>
           <div className="flex items-center gap-3">
-            {freshness && <FreshnessBadge freshness={freshness} />}
+            {freshness && <FreshnessBadge freshness={freshness} compact />}
             <button
               onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
               className={`pointer-events-auto rounded-xl p-3 transition-colors duration-200 ${showFilters ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
