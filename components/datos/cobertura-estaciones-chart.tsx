@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useCallback, useEffect, useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { BookOpen } from "lucide-react";
 import { MONTHS_ES, MONTHS_ES_FULL, type Pollutant } from "@/lib/dias-insalubres-aggregate";
 import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE, COLOR_INSUFICIENTE, COLOR_POR_VENIR, COLOR_SALUDABLE, withOpacity } from "@/lib/datos-colors";
@@ -242,8 +242,8 @@ export default function CoberturaEstacionesChart({
   const rowHeight = BAR_HEIGHT;
   // Every year runs on the same Jan 1 to Dec 31 axis, so a month sits in the
   // same place whichever year is picked; a year in progress runs on in a
-  // lighter track (COLOR_POR_VENIR, not the gray: the rest of the year isn't
-  // missing data, it hasn't happened yet).
+  // hatched track (COLOR_POR_VENIR diagonal lines, not the gray: the rest of
+  // the year isn't missing data, it hasn't happened yet).
   const daysInYear = year !== null && (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 366 : 365;
   const dayWidth = width / daysInYear;
   const rowY = (i: number) => AXIS_HEIGHT + i * slot + LABEL_HEIGHT;
@@ -276,6 +276,8 @@ export default function CoberturaEstacionesChart({
       })),
     [year],
   );
+
+  const porVenirId = useId();
 
   const [sel, setSel] = useState<Seleccion | null>(null);
   const clear = useCallback(() => setSel(null), []);
@@ -388,6 +390,12 @@ export default function CoberturaEstacionesChart({
               onKeyDown={onKeyDown}
               onBlur={clear}
             >
+              <defs>
+                <pattern id={porVenirId} width={5} height={5} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <line x1={0} y1={0} x2={0} y2={5} stroke={COLOR_POR_VENIR} strokeWidth={1.5} />
+                </pattern>
+              </defs>
+
               {monthStarts.map((m) =>
                 m.day * dayWidth > width - 24 ? null : (
                   <text
@@ -416,7 +424,7 @@ export default function CoberturaEstacionesChart({
                       y={rowY(i)}
                       width={(daysInYear - dates.length) * dayWidth}
                       height={rowHeight}
-                      fill={COLOR_POR_VENIR}
+                      fill={`url(#${porVenirId})`}
                     />
                   )}
                   {runs[i].map((r) => (
