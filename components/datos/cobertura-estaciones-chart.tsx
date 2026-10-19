@@ -155,7 +155,8 @@ export function infoTab(pollutant: Pollutant): InfoTab {
 // fully colored until one is picked; then the others fade, a line marks the day under the pointer and
 // a tooltip beside the row names the station and that day's state. Each
 // row's station name sits just above its bar, at every width, so the year
-// keeps the full width of the plot.
+// keeps the full width of the plot, with the station's % of days with data
+// at the other end of that line.
 
 // Only the color fades, not the gray, so a faded row's gaps still show.
 const FADED_OPACITY = 0.4;
@@ -251,6 +252,14 @@ export default function CoberturaEstacionesChart({
         });
         return out;
       }),
+    [estaciones, coberturaPorEstacion, dates],
+  );
+
+  // Each station's share of the year's days with data, printed at the end
+  // of its name line so the weak stations show without hovering (and in a
+  // screenshot).
+  const pctPorEstacion = useMemo(
+    () => estaciones.map((e) => pctCubierto(coberturaPorEstacion.get(e.sensorId), dates)),
     [estaciones, coberturaPorEstacion, dates],
   );
 
@@ -391,6 +400,14 @@ export default function CoberturaEstacionesChart({
                   >
                     {e.nombre}
                   </text>
+                  <text
+                    x={width}
+                    y={rowY(i) - 5}
+                    textAnchor="end"
+                    className={`text-[11px] font-medium tabular-nums ${sel?.row === i ? "fill-neutral-800" : "fill-neutral-500"}`}
+                  >
+                    {pctPorEstacion[i]}%
+                  </text>
                   {runs[i].map((r) => (
                     <rect
                       key={r.start}
@@ -438,7 +455,7 @@ export default function CoberturaEstacionesChart({
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
               </span>
               <span className="text-xs text-neutral-500">
-                {pctCubierto(coberturaPorEstacion.get(selEstacion.sensorId), dates)}% de días con datos en {year}
+                {pctPorEstacion[sel!.row]}% de días con datos en {year}
               </span>
             </div>
           )}
