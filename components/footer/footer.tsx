@@ -121,7 +121,7 @@ export default function Footer() {
 
       </div>
 
-      <div className="mt-10 flex flex-col gap-6 lg:mt-14 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-10 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-neutral-600">
           &copy; {new Date().getFullYear()} Observatorio Ciudadano de la Calidad del Aire del Área Metropolitana de Monterrey
         </p>
