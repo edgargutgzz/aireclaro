@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { BookOpen } from "lucide-react";
 import { MONTHS_ES, MONTHS_ES_FULL, type Pollutant } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_INSALUBRE, COLOR_INSUFICIENTE, COLOR_SALUDABLE } from "@/lib/datos-colors";
+import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE, COLOR_INSUFICIENTE, COLOR_SALUDABLE, withOpacity } from "@/lib/datos-colors";
 import type { InfoTab } from "@/components/datos/info-tabs";
 import ChartCard from "@/components/datos/chart-card";
 import SegmentedToggle from "@/components/datos/segmented-toggle";
@@ -149,30 +149,15 @@ export function infoTab(pollutant: Pollutant): InfoTab {
 
 // Cobertura de estaciones, drawn as one row
 // per station with the year running left to right (Jan 1 to the last synced
-// day): a day with data is filled with a teal-blue-violet-pink gradient
-// (left to right over the whole plot, so it only restates the date), any
-// other day the "Datos insuficientes" gray. Every row is
+// day): a day with data is filled with the /datos "has data" blue
+// (COLOR_CUBIERTO, Tailwind blue-500 at the same reduced opacity the
+// días insalubres bars' 500s use), any other day the "Datos insuficientes"
+// gray. Every row is
 // fully colored until one is picked; then the others fade, a line marks the day under the pointer and
 // a tooltip beside the row names the station and that day's state. Each
 // row's station name sits just above its bar, at every width, so the year
 // keeps the full width of the plot.
 
-// Pixel-sampled from the user's reference design (2026-10-18), start to
-// end along its highlighted column.
-const GRADIENT_STOPS: [number, string][] = [
-  [0, "#53b2d2"],
-  [0.1, "#4fa5d5"],
-  [0.3, "#5988de"],
-  [0.43, "#6875e4"],
-  [0.56, "#7d63eb"],
-  [0.71, "#9a5bd6"],
-  [0.86, "#bc57b4"],
-  [1, "#d95598"],
-];
-// The legend swatch's version of the same gradient.
-const GRADIENT_CSS = `linear-gradient(to right, ${GRADIENT_STOPS.map(([o, c]) => `${c} ${o * 100}%`).join(", ")})`;
-// The tooltip's "Con datos": the gradient's blue.
-const COLOR_CON_DATOS = "#5988de";
 // Only the color fades, not the gray, so a faded row's gaps still show.
 const FADED_OPACITY = 0.4;
 const TOOLTIP_WIDTH = 208; // px, the card's w-52
@@ -321,7 +306,7 @@ export default function CoberturaEstacionesChart({
     return prior.length === 0 ? null : pctTotal - pctCobertura(estaciones, coberturaPorEstacion, prior);
   }, [allDates, year, dates, pctTotal, estaciones, coberturaPorEstacion]);
 
-  const gradientId = useId();
+  const clipId = useId();
   const selEstacion = sel ? estaciones[sel.row] : null;
   const selFecha = sel?.day != null ? dates[sel.day] : null;
   const selCubierto = selEstacion && selFecha ? coberturaPorEstacion.get(selEstacion.sensorId)?.get(selFecha) : undefined;
@@ -355,7 +340,7 @@ export default function CoberturaEstacionesChart({
       <div className="px-5 pb-6 pt-5 md:pt-6">
         <div className="mb-4 flex items-center justify-end gap-4 text-xs text-neutral-500 md:mb-6">
           <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundImage: GRADIENT_CSS }} />
+            <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: withOpacity(COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY) }} />
             Con datos
           </span>
           <span className="flex items-center gap-1.5">
@@ -388,16 +373,11 @@ export default function CoberturaEstacionesChart({
               onBlur={clear}
             >
               <defs>
-                <linearGradient id={gradientId} gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={width} y2={0}>
-                  {GRADIENT_STOPS.map(([offset, color]) => (
-                    <stop key={offset} offset={offset} stopColor={color} />
-                  ))}
-                </linearGradient>
                 {/* Each bar's outline, clipping the runs inside it: square at
                     its baseline (Jan 1), rounded only at its tip, with the
                     días insalubres bars' 4px radius. */}
                 {estaciones.map((e, i) => (
-                  <clipPath key={e.sensorId} id={`${gradientId}-fila-${i}`}>
+                  <clipPath key={e.sensorId} id={`${clipId}-fila-${i}`}>
                     <path d={roundedRectPath(0, rowY(i), width, rowHeight, { tr: 4, br: 4 })} />
                   </clipPath>
                 ))}
@@ -424,7 +404,7 @@ export default function CoberturaEstacionesChart({
                   >
                     {e.nombre}
                   </text>
-                  <g clipPath={`url(#${gradientId}-fila-${i})`}>
+                  <g clipPath={`url(#${clipId}-fila-${i})`}>
                   {runs[i].map((r) => (
                     <rect
                       key={r.start}
@@ -432,8 +412,10 @@ export default function CoberturaEstacionesChart({
                       y={rowY(i)}
                       width={r.length * dayWidth}
                       height={rowHeight}
-                      fill={r.cubierto ? `url(#${gradientId})` : COLOR_INSUFICIENTE}
-                      fillOpacity={!r.cubierto || !sel || sel.row === i ? 1 : FADED_OPACITY}
+                      fill={r.cubierto ? COLOR_CUBIERTO : COLOR_INSUFICIENTE}
+                      fillOpacity={
+                        !r.cubierto ? 1 : COLOR_CUBIERTO_FILL_OPACITY * (!sel || sel.row === i ? 1 : FADED_OPACITY)
+                      }
                     />
                   ))}
                   </g>
@@ -467,7 +449,7 @@ export default function CoberturaEstacionesChart({
             >
               <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">{formatFecha(selFecha)}</span>
               <span className="text-sm font-semibold text-neutral-800">{selEstacion.nombre}</span>
-              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS : "rgb(115,115,115)" }}>
+              <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CUBIERTO : "rgb(115,115,115)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}
               </span>
               <span className="text-xs text-neutral-500">
