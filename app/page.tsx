@@ -41,7 +41,7 @@ export default function Home() {
     // Ends like every page (pb-24 lg:pb-32 before the footer), centered in
     // the screen below the navbar. That bottom padding lifts the centered
     // hero; lg:pt-8 brings it back down a little on desktop.
-    <div className="flex min-h-below-header items-center pb-24 lg:pb-32 lg:pt-8">
+    <div className="flex min-h-below-header items-center bg-stone-50 pb-24 lg:pb-32 lg:pt-8">
       <JsonLd data={websiteSchema} />
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-16 lg:grid-cols-2 lg:px-8">
         <div className="flex flex-col gap-8">
