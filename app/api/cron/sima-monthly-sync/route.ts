@@ -10,8 +10,7 @@ import { DEFAULT_PARAMS, iso, syncMedicionesFinales } from "@/lib/sima-finales-s
 
 // Pulls SINAICA's hourly readings for the month that just closed (PM2.5 and
 // PM10 by default) into sima_mediciones_finales (lib/sima-finales-sync.ts),
-// then recomputes the /datos tables from it. The weekly sync keeps the
-// current month's readings in the table meanwhile, without the recompute.
+// then recomputes the /datos tables from it.
 
 export const maxDuration = 120;
 
@@ -80,8 +79,7 @@ export async function GET(request: NextRequest) {
   let promediosError: string | undefined;
   if (rowsWritten > 0) {
     try {
-      // Closed months only: the weekly sync keeps the month in progress in
-      // the table, and the charts don't show a partial month.
+      // Closed months only: the charts don't show a partial month.
       const inicioMesActual = iso(new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)));
       promedios = (await fetchPromediosDiarios(supabase)).filter((p) => p.fecha < inicioMesActual);
     } catch (err) {

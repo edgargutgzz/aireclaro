@@ -70,9 +70,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Months to read: the chosen year (or every year), stopping at the latest
-  // month the monthly sync has published (the charts' month). The weekly
-  // sync keeps the month in progress in the table for internal use; it's
-  // never part of the public file.
+  // month the monthly sync has published (the charts' month).
   const { data: ultima, error: ultimaError } = await supabase
     .from("sima_insalubres_mensual")
     .select("ano, mes")

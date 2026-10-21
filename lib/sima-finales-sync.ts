@@ -1,10 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Pulls SINAICA's hourly readings for [fechaInit, fechaFin) for the 15
-// Monterrey metro SIMA stations into sima_mediciones_finales. Shared by the
-// monthly sync (the closed month, then the /datos precomputes) and the weekly
-// sync (the month so far, table only). Request shape mirrors the proven
-// month-window fetch from the sibling `sinaica` project.
+// Monterrey metro SIMA stations into sima_mediciones_finales, for the monthly
+// sync (the closed month, then the /datos precomputes). Request shape mirrors
+// the proven month-window fetch from the sibling `sinaica` project.
 
 const SINAICA_URL = "https://sinaica.inecc.gob.mx/lib/libd/cnxn.php";
 export const DEFAULT_PARAMS = ["PM2.5", "PM10"];
