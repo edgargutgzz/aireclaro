@@ -26,11 +26,10 @@ export const COLOR_SALUDABLE_FILL_OPACITY = 0.55;
 // trimester-validity bar needed the identical color and shouldn't
 // re-declare the literal hex a second time.
 export const COLOR_CUBIERTO = "#3b82f6"; // Tailwind blue-500
-// Cobertura's grid cells read as flatter/smaller shapes than días insalubres'
-// bars, so they want a more solid fill -- kept separate from
-// COLOR_SALUDABLE_FILL_OPACITY on purpose so a bump here doesn't also
-// wash out the días insalubres chart's bars.
-export const COLOR_CUBIERTO_FILL_OPACITY = 0.68;
+// Full strength: at 68% the blue rendered as a washed-out #7aaaf9 that read
+// as pastel (2026-10-20). Kept separate from COLOR_SALUDABLE_FILL_OPACITY
+// so the días insalubres bars keep their own softer fill.
+export const COLOR_CUBIERTO_FILL_OPACITY = 1;
 // The cobertura charts' "Datos insuficientes" gray (a data-quality gap, not
 // a health-severity color): lighter than stone-300, but not all the way to
 // stone-200, which sat almost invisibly on a stone-50 card.
