@@ -17,12 +17,8 @@
 // rebuild (2026-09-19) dropped marks' borders entirely in favor of the
 // dataviz skill's own separator (a surface gap between marks, not a
 // stroke), so only the fill opacities remain.
-// Every /datos fill (green, red, blue) renders at this one strength, so no
-// color looks louder than the others; 80% since 2026-10-20 (was 55% green,
-// 65% red, 68% blue, which read as pastel).
-const FILL_OPACITY = 0.8;
 export const COLOR_SALUDABLE = "#22c55e"; // Tailwind green-500
-export const COLOR_SALUDABLE_FILL_OPACITY = FILL_OPACITY;
+export const COLOR_SALUDABLE_FILL_OPACITY = 0.55;
 // Blue, not green, for a data-COMPLETENESS reading (coverage/validity) --
 // so it doesn't get skimmed as "good air quality," which green means
 // everywhere else on /datos. Originally cobertura-only (its "Con datos"
@@ -30,7 +26,11 @@ export const COLOR_SALUDABLE_FILL_OPACITY = FILL_OPACITY;
 // trimester-validity bar needed the identical color and shouldn't
 // re-declare the literal hex a second time.
 export const COLOR_CUBIERTO = "#3b82f6"; // Tailwind blue-500
-export const COLOR_CUBIERTO_FILL_OPACITY = FILL_OPACITY;
+// Cobertura's grid cells read as flatter/smaller shapes than días insalubres'
+// bars, so they want a more solid fill -- kept separate from
+// COLOR_SALUDABLE_FILL_OPACITY on purpose so a bump here doesn't also
+// wash out the días insalubres chart's bars.
+export const COLOR_CUBIERTO_FILL_OPACITY = 0.68;
 // The cobertura charts' "Datos insuficientes" gray (a data-quality gap, not
 // a health-severity color): lighter than stone-300, but not all the way to
 // stone-200, which sat almost invisibly on a stone-50 card.
@@ -40,7 +40,7 @@ export const COLOR_INSUFICIENTE = "#dedcda";
 // can't be read as COLOR_INSUFICIENTE (nothing is missing there).
 export const COLOR_POR_VENIR = "#e7e5e4"; // Tailwind stone-200
 export const COLOR_INSALUBRE = "#ef4444"; // Tailwind red-500
-export const COLOR_INSALUBRE_FILL_OPACITY = FILL_OPACITY;
+export const COLOR_INSALUBRE_FILL_OPACITY = 0.65;
 
 // The logo's own colors, pixel-sampled from public/navbar/occamm-logo.png
 // (OCCAMM lettering / "Observatorio del Aire" lettering). Brand accents

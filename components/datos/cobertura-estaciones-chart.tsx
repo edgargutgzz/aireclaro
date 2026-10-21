@@ -149,8 +149,8 @@ export function infoTab(pollutant: Pollutant): InfoTab {
 // Cobertura de estaciones, drawn as one row
 // per station with the year running left to right (Jan 1 to the last synced
 // day): a day with data is filled with the /datos "has data" blue
-// (COLOR_CUBIERTO, Tailwind blue-500 at COLOR_CUBIERTO_FILL_OPACITY), any
-// other day the "Datos insuficientes"
+// (COLOR_CUBIERTO, Tailwind blue-500 at the same reduced opacity the
+// días insalubres bars' 500s use), any other day the "Datos insuficientes"
 // gray. Every row is
 // fully colored until one is picked; then the others fade, a line marks the day under the pointer and
 // a tooltip beside the row names the station and that day's state. Each

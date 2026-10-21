@@ -138,9 +138,12 @@ interface StationBar {
 // per trimester, painted blue (valid) or gray (not), left to right in
 // calendar order. Blue, not green -- this is a data-COMPLETENESS reading
 // (validity), not a health-quality one, same reasoning as cobertura's own
-// "has data" blue (see COLOR_CUBIERTO in lib/datos-colors.ts), at
-// COLOR_CUBIERTO_FILL_OPACITY so it renders the same shade as cobertura's
-// own "Con datos" cells, not just the same hex. The header states the X/4
+// "has data" blue (see COLOR_CUBIERTO in lib/datos-colors.ts). At
+// COLOR_CUBIERTO_FILL_OPACITY, not full strength -- matching the hex alone
+// wasn't enough: cobertura's own "Con datos" cells render that blue at 68%
+// over white, a visibly softer shade than this bar's original full-strength
+// fill (2026-09-28 feedback, after checking the actual rendered colors
+// side by side, not just the shared token). The header states the X/4
 // count on its own now (the "mín. 75% días" rule dropped 2026-09-28 --
 // already explained in the Metodología tab, redundant here), so the bar
 // itself carries no text -- reads as "how much of the year cleared the

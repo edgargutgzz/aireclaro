@@ -363,7 +363,7 @@ function StackedBarsChart({
                     insalubresIsTip ? { tl: BAR_RADIUS, tr: BAR_RADIUS } : {},
                   )}
                   fill={COLOR_INSALUBRE}
-                  fillOpacity={isHovered ? 1 : COLOR_INSALUBRE_FILL_OPACITY}
+                  fillOpacity={isHovered ? 0.85 : COLOR_INSALUBRE_FILL_OPACITY}
                   style={{ transition: "fill-opacity 120ms ease" }}
                 />
               )}
@@ -377,7 +377,7 @@ function StackedBarsChart({
                     { tl: BAR_RADIUS, tr: BAR_RADIUS },
                   )}
                   fill={COLOR_SALUDABLE}
-                  fillOpacity={isHovered ? 1 : COLOR_SALUDABLE_FILL_OPACITY}
+                  fillOpacity={isHovered ? 0.85 : COLOR_SALUDABLE_FILL_OPACITY}
                   style={{ transition: "fill-opacity 120ms ease" }}
                 />
               )}
