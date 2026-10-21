@@ -11,14 +11,13 @@ export type Freshness =
   | { status: "nodata" };
 
 export function FreshnessDot({ status }: { status: Freshness["status"] }) {
-  const dot =
-    status === "fresh" ? "bg-green-500" :
-    status === "delayed" ? "bg-amber-500" :
-    "bg-stone-400";
+  // Late and missing share the grey: the time (or "No disponible") beside
+  // the dot tells them apart.
+  const dot = status === "fresh" ? "bg-green-500" : "bg-stone-400";
 
   return (
     <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
-      {/* Only fresh data pulses. A dot that keeps ticking in amber or grey
+      {/* Only fresh data pulses. A dot that keeps ticking in grey
           reads as "working on it" when the truth is "this is late". */}
       {status === "fresh" && (
         <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
