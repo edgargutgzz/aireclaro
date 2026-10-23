@@ -43,6 +43,7 @@ export function LayersFilterContent({
   setHiddenMunicipios,
   onShowOccammInfo,
   onShowFuenteInfo,
+  expanded = false,
 }: {
   showOtros: boolean;
   setShowOtros: Dispatch<SetStateAction<boolean>>;
@@ -56,6 +57,9 @@ export function LayersFilterContent({
   setHiddenMunicipios: Dispatch<SetStateAction<string[]>>;
   onShowOccammInfo: () => void;
   onShowFuenteInfo: () => void;
+  // Both sections always open, their rows plain headings: the desktop panel,
+  // where the second click to reach a filter was one too many (2026-10-23).
+  expanded?: boolean;
 }) {
   // Fixed sizes: `compact` was passed false at both call sites, and shrinking
   // rows on mobile is the wrong direction for touch targets anyway.
@@ -74,6 +78,7 @@ export function LayersFilterContent({
   const [openSection, setOpenSection] = useState<'ubicacion' | 'fuente' | null>('fuente');
   const toggleSection = (name: 'ubicacion' | 'fuente') =>
     setOpenSection((current) => (current === name ? null : name));
+  const isOpen = (name: 'ubicacion' | 'fuente') => expanded || openSection === name;
   const citizenState: CheckState =
     showOtros && showOccamm ? 'checked' :
     !showOtros && !showOccamm ? 'unchecked' : 'indeterminate';
@@ -117,17 +122,24 @@ export function LayersFilterContent({
     summary: string,
     info?: { onClick: () => void; ariaLabel: string },
   ) => (
-    <div className="flex items-center transition-colors hover:bg-stone-50">
-      <button
-        type="button"
-        onClick={() => toggleSection(name)}
-        aria-expanded={openSection === name}
-        className="flex min-w-0 flex-1 items-center gap-1.5 py-3.5 pl-5 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
-      >
-        <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</p>
-        <span className="min-w-0 flex-1 truncate text-xs leading-none text-neutral-500">· {summary}</span>
-        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
-      </button>
+    <div className={`flex items-center ${expanded ? '' : 'transition-colors hover:bg-stone-50'}`}>
+      {expanded ? (
+        <h3 className="flex min-w-0 flex-1 items-center gap-1.5 py-3.5 pl-5 pr-2">
+          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</span>
+          <span className="min-w-0 flex-1 truncate text-xs font-normal leading-none text-neutral-500">· {summary}</span>
+        </h3>
+      ) : (
+        <button
+          type="button"
+          onClick={() => toggleSection(name)}
+          aria-expanded={openSection === name}
+          className="flex min-w-0 flex-1 items-center gap-1.5 py-3.5 pl-5 pr-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+        >
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</p>
+          <span className="min-w-0 flex-1 truncate text-xs leading-none text-neutral-500">· {summary}</span>
+          <ChevronRight className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${openSection === name ? 'rotate-90' : ''}`} />
+        </button>
+      )}
       <button
         type="button"
         onClick={info?.onClick}
@@ -156,7 +168,7 @@ export function LayersFilterContent({
           onClick: onShowFuenteInfo,
           ariaLabel: "Más información sobre las fuentes de datos",
         })}
-        {openSection === 'fuente' && (
+        {isOpen('fuente') && (
           <div className="disclosure-in border-t border-stone-100 bg-stone-50/60">
             <div className="flex items-center transition-colors hover:bg-stone-100/70">
               <button
@@ -245,7 +257,7 @@ export function LayersFilterContent({
           reading near Saltillo isn't taken for a Monterrey number. */}
       <div className="border-t border-stone-100">
         {sectionRow('ubicacion', 'Ubicación', ubicacionSummary)}
-        {openSection === 'ubicacion' && (
+        {isOpen('ubicacion') && (
           <div className="disclosure-in border-t border-stone-100 bg-stone-50/60">
             {estados.map((estado, i) => {
               const keys = estado.municipios.map((m) => m.key);
