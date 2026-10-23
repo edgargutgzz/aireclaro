@@ -29,7 +29,7 @@ export const metadata: Metadata = pageMetadata({ title: "Quiénes somos", descri
 const LABEL = "text-xs font-semibold uppercase leading-snug tracking-wide text-neutral-500";
 
 // By portrait key, in lib/equipo.ts's order.
-const OPERATIVO = ["selene", "yessica", "edgar"];
+const OPERATIVO = ["selene", "yessica", "edgar", "lucina"];
 const JUVENIL = ["guillermo", "lucia", "juanpablo", "andrea"];
 const enGrupo = (keys: string[]) => EQUIPO.filter((p) => keys.includes(p.image));
 const operativo = enGrupo(OPERATIVO);
