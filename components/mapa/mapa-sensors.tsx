@@ -1301,7 +1301,6 @@ export default function MapaSensors({
                 setHiddenMunicipios={setHiddenMunicipios}
                 onShowOccammInfo={() => setShowOccammInfo(true)}
                 onShowFuenteInfo={() => setShowFuenteInfo(true)}
-                expanded
               />
             </div>
           )}
