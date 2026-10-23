@@ -8,7 +8,7 @@ export const EQUIPO = [
   { name: "Lucía Barrera", image: "lucia", puesto: "Miembro del Consejo Juvenil del OCCAMM" },
   { name: "Uriel Chavarría", image: "uriel", puesto: "Coord. Médico de Transplante Pulmonar del Hospital Universitario de la UANL" },
   { name: "Juan Pablo Chávez", image: "juanpablo", puesto: "Miembro del Consejo Juvenil del OCCAMM" },
-  { name: "Roberta Clariond", image: "roberta", puesto: "Profesora de la Escuela de Ciencias Sociales y Gobierno del ITESM" },
+  { name: "Roberta Clariond", image: "roberta", puesto: "Presidenta de Locam" },
   { name: "María Enriquez", image: "maria", puesto: "Presidenta del Comité Ecológico Integral" },
   { name: "Adrian Fernandez", image: "adrian", puesto: "Director Ejecutivo y Fundador de la Iniciativa Climática de México" },
   { name: "Ana Cristina García Luna", image: "ana", puesto: "Profesora e investigadora en el área de arquitectura, urbanismo y sustentabilidad" },

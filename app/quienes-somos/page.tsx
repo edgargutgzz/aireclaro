@@ -34,11 +34,11 @@ const JUVENIL = ["guillermo", "lucia", "juanpablo", "andrea"];
 const enGrupo = (keys: string[]) => EQUIPO.filter((p) => keys.includes(p.image));
 const operativo = enGrupo(OPERATIVO);
 const juvenil = enGrupo(JUVENIL);
-// Hand-ordered (the user's picks). Women at positions 2, 4, 6 and 11: one in
-// every row at the 4-column grid; at 3 columns the third row has none.
+// Hand-ordered (the user's picks). Roberta first (2026-10-23);
+// the rest keep their earlier order.
 const CIUDADANO = [
-  "lorenzo", "rosario", "gerardo", "ana",
-  "adrian", "roberta", "uriel", "carlos",
+  "roberta", "lorenzo", "rosario", "gerardo",
+  "ana", "adrian", "uriel", "carlos",
   "rodolfo", "horacio", "maria", "cosijopii",
 ];
 const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
