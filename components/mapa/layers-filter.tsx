@@ -157,7 +157,7 @@ export function LayersFilterContent({
           ariaLabel: "Más información sobre las fuentes de datos",
         })}
         {openSection === 'fuente' && (
-          <div className="disclosure-in md:animate-none! border-t border-stone-100 bg-stone-50/60">
+          <div className="disclosure-in border-t border-stone-100 bg-stone-50/60">
             <div className="flex items-center transition-colors hover:bg-stone-100/70">
               <button
                 type="button"
@@ -195,7 +195,7 @@ export function LayersFilterContent({
               </button>
             </div>
             {showCitizenGroup && (
-              <div role="group" aria-label="Redes de sensores ciudadanos" className="disclosure-in md:animate-none! flex flex-col">
+              <div role="group" aria-label="Redes de sensores ciudadanos" className="disclosure-in flex flex-col">
                 <div className="flex items-center border-t border-stone-100 transition-colors hover:bg-stone-100/70">
                   <button
                     type="button"
@@ -246,7 +246,7 @@ export function LayersFilterContent({
       <div className="border-t border-stone-100">
         {sectionRow('ubicacion', 'Ubicación', ubicacionSummary)}
         {openSection === 'ubicacion' && (
-          <div className="disclosure-in md:animate-none! border-t border-stone-100 bg-stone-50/60">
+          <div className="disclosure-in border-t border-stone-100 bg-stone-50/60">
             {estados.map((estado, i) => {
               const keys = estado.municipios.map((m) => m.key);
               const hidden = keys.filter((k) => hiddenMunicipios.includes(k)).length;
@@ -281,7 +281,7 @@ export function LayersFilterContent({
                     </button>
                   </div>
                   {open && (
-                    <div role="group" aria-label={`Municipios de ${estado.label}`} className="disclosure-in md:animate-none! flex flex-col">
+                    <div role="group" aria-label={`Municipios de ${estado.label}`} className="disclosure-in flex flex-col">
                       {estado.municipios.map((m) => {
                         const on = !hiddenMunicipios.includes(m.key);
                         return (
