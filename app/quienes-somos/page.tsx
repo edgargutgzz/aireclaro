@@ -56,13 +56,12 @@ function Section({ title, id, as: Heading = "h2", children }: { title: string; i
 }
 
 // One portrait treatment for everyone: a square crop, the same radius, name
-// and role under it. `size` only changes how many fit a row.
-function Grupo({ title, personas, size }: { title: string; personas: Persona[]; size: "lg" | "sm" }) {
-  const cols = size === "lg" ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
+// and role under it, the same size in every group.
+function Grupo({ title, personas }: { title: string; personas: Persona[] }) {
   return (
     <div>
       <h3 className={LABEL}>{title}</h3>
-      <ul className={`mt-5 grid gap-x-6 gap-y-8 ${cols}`}>
+      <ul className="mt-5 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
         {personas.map((persona) => (
           <li key={persona.image}>
             <Image
@@ -70,10 +69,10 @@ function Grupo({ title, personas, size }: { title: string; personas: Persona[]; 
               alt=""
               width={480}
               height={480}
-              sizes={size === "lg" ? "(min-width: 1024px) 280px, 45vw" : "(min-width: 1024px) 200px, 45vw"}
+              sizes="(min-width: 1024px) 200px, 45vw"
               className="aspect-square w-full rounded-xl bg-stone-100 object-cover"
             />
-            <p className={`mt-3 font-semibold leading-snug text-neutral-800 ${size === "lg" ? "text-base" : "text-sm"}`}>
+            <p className="mt-3 text-sm font-semibold leading-snug text-neutral-800">
               {persona.name}
             </p>
             <p className="mt-1 text-sm leading-snug text-neutral-600">{persona.puesto}</p>
@@ -121,9 +120,9 @@ export default function QuienesSomos() {
 
         <Section title="Equipo" id="equipo">
           <div className="flex flex-col gap-14">
-            <Grupo title="Equipo operativo" personas={operativo} size="lg" />
-            <Grupo title="Consejo Ciudadano" personas={ciudadano} size="sm" />
-            <Grupo title="Consejo Juvenil" personas={juvenil} size="sm" />
+            <Grupo title="Equipo operativo" personas={operativo} />
+            <Grupo title="Consejo Ciudadano" personas={ciudadano} />
+            <Grupo title="Consejo Juvenil" personas={juvenil} />
           </div>
         </Section>
 
