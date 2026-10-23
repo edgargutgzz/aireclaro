@@ -38,7 +38,7 @@ const juvenil = enGrupo(JUVENIL);
 // the rest keep their earlier order.
 const CIUDADANO = [
   "roberta", "lorenzo", "rosario", "gerardo",
-  "ana", "adrian", "uriel", "carlos",
+  "carlos", "adrian", "uriel", "ana",
   "rodolfo", "horacio", "maria", "cosijopii",
 ];
 const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
