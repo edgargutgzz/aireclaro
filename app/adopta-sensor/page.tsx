@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/metadata";
+import { pageMetadata, sectionCard } from "@/lib/metadata";
 import FeatureCard from "@/components/observatorio/feature-card";
 import LinkButton from "@/components/observatorio/link-button";
 import PageShell from "@/components/observatorio/page-shell";
@@ -15,6 +15,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Adopta un sensor",
   description: LEAD,
   path: "/adopta-sensor",
+  images: sectionCard("adopta-sensor", "Adopta un sensor, Observatorio del Aire"),
 });
 
 const PASOS = [

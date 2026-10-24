@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { pageMetadata } from "@/lib/metadata";
+import { pageMetadata, sectionCard } from "@/lib/metadata";
 
 // The Observatory's projects, side by side (redesigned 2026-10-24 for the two
 // it keeps): a left-aligned header like /quienes-somos, then one card per
@@ -10,7 +10,7 @@ import { pageMetadata } from "@/lib/metadata";
 
 const LEAD = "Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en Nuevo León.";
 
-export const metadata: Metadata = pageMetadata({ title: "Proyectos", description: LEAD, path: "/proyectos" });
+export const metadata: Metadata = pageMetadata({ title: "Proyectos", description: LEAD, path: "/proyectos", images: sectionCard("proyectos", "Proyectos del Observatorio del Aire") });
 
 type Project = {
   title: string;

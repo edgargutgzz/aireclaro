@@ -13,6 +13,12 @@ export const OG_IMAGES: OgImages = [
 
 export const OG_BASE = { type: "website", locale: "es_MX" } as const;
 
+// A section's own link card (app/api/og/seccion/[slug]). d= is the design
+// version: bump it on any change, chat apps cache the card per image URL.
+export function sectionCard(slug: string, alt: string): OgImages {
+  return [{ url: `/api/og/seccion/${slug}?d=1`, width: 1200, height: 630, alt }];
+}
+
 // Next inherits a layout's openGraph untouched when a page sets none, and
 // replaces it wholesale when the page sets one. So every page builds its card
 // here, or a shared link unfurls with the homepage's title and description.

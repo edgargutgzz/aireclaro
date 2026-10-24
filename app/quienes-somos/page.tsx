@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { pageMetadata } from "@/lib/metadata";
+import { pageMetadata, sectionCard } from "@/lib/metadata";
 import { EQUIPO } from "@/lib/equipo";
 
 // Quiénes somos and the team on one page (approved 2026-10-18; /equipo
@@ -24,7 +24,7 @@ const LINEAS = [
   "Fortalecer a la sociedad civil.",
 ];
 
-export const metadata: Metadata = pageMetadata({ title: "Quiénes somos", description: LEAD, path: "/quienes-somos" });
+export const metadata: Metadata = pageMetadata({ title: "Quiénes somos", description: LEAD, path: "/quienes-somos", images: sectionCard("quienes-somos", "Quiénes somos, Observatorio del Aire") });
 
 const LABEL = "text-xs font-semibold uppercase leading-snug tracking-wide text-neutral-500";
 
