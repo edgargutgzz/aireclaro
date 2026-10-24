@@ -45,7 +45,8 @@ const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 
 // Each logo links to the ally's site. The logo carries the name, so it's the alt.
 // Logos in public/alianzas/, trimmed to the mark on a transparent background.
-// Heights are per logo so a wide wordmark and a squarer one read the same size.
+// Heights are per logo so each covers about the same area (height ∝ 1/√aspect):
+// a wide wordmark sits shorter, a square badge taller.
 const ALIANZAS = [
   {
     name: "Alianza del Aire Nuevo León",
@@ -61,7 +62,7 @@ const ALIANZAS = [
     logo: "/alianzas/consejo-civico.webp",
     width: 652,
     height: 277,
-    className: "h-16",
+    className: "h-13",
   },
   {
     name: "Pronatura Noreste",
@@ -69,7 +70,7 @@ const ALIANZAS = [
     logo: "/alianzas/pronatura-noreste.webp",
     width: 540,
     height: 454,
-    className: "h-20",
+    className: "h-18",
   },
   {
     name: "Comité Ecológico Integral",
@@ -165,14 +166,14 @@ export default function QuienesSomos() {
         </Section>
 
         <Section title="Alianzas" id="alianzas">
-          <ul className="flex flex-wrap items-center gap-x-12 gap-y-8">
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
             {ALIANZAS.map((aliado) => (
               <li key={aliado.name}>
                 <a
                   href={aliado.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-lg transition-opacity hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-800"
+                  className="flex h-24 items-center justify-center rounded-lg transition-opacity hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-800"
                 >
                   <Image
                     src={aliado.logo}
