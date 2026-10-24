@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/utils/supabase/service";
 import { monterreyNaiveHoursAgo, monterreyNaiveNow, parseMonterreyNaive } from "@/lib/monterrey-time";
-import { LIVE_HOURS } from "@/lib/live-readings";
 import { isValidPM25 } from "@/lib/air-quality";
 
 // The map's live SIMA feed: each station's latest hourly PM2.5, appended to
@@ -28,14 +27,14 @@ import { isValidPM25 } from "@/lib/air-quality";
 // latest row is inserted, the same hour with a different number updates
 // that row (created_at keeps when the hour first arrived).
 //
-// A station whose latest hour is old is skipped, not written, so a station
-// (or a whole network) that stops reporting goes gray on the map instead of
-// showing an old value as live.
+// A station whose latest hour is old is skipped, not written, so an old value
+// is never stamped as a new hour.
 
 // The newest hour SINAICA has for a station can be this far behind the run
 // before it counts as stale (normal publishing lag is 0-1 h). Also how far
-// back sima_mediciones is read for each station's latest written hour.
-const MAX_LAG_MS = LIVE_HOURS * 60 * 60 * 1000;
+// back sima_mediciones is read for each station's latest written hour. Its own
+// 3 hours, wider than the map's live window: a late hour is still written.
+const MAX_LAG_MS = 3 * 60 * 60 * 1000;
 
 export const maxDuration = 120;
 

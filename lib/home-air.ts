@@ -51,7 +51,7 @@ function median(values: number[]): number {
 
 // The ticker's fallback when the official network is out: citizen sensors in
 // Nuevo León, one entry per municipality, the median of its sensors' latest
-// readings (the map's PurpleAir feed, already limited to the last 3 hours and
+// readings (the map's PurpleAir feed, already limited to live readings and
 // the map's hidden sensors). A median, so one faulty sensor can't lead the
 // strip; every sensor is still on the map.
 export async function getLiveMunicipios(): Promise<LiveMunicipio[]> {

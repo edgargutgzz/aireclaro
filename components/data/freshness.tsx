@@ -3,8 +3,8 @@
 // you anything — and the timestamp, not the colour, is what actually carries
 // the state. The value itself (floored hour, day label past today, status
 // bucket) is computed in mapa-sensors.tsx where the sensor data lives.
-// "nodata": the station on screen has no reading from the last 3 hours (the
-// site's live cutoff); there is no time to show ("No disponible", the same
+// "nodata": the station on screen has no live reading (the site's 90-minute
+// cutoff, lib/live-readings.ts); there is no time to show ("No disponible", the same
 // words as the card's headline and the ticker).
 export type Freshness =
   | { dateTime: string; when: string; status: "fresh" | "delayed" }

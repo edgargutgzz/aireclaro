@@ -20,7 +20,7 @@ export interface TickerItem {
   id: string;
   href: string;
   nombre: string;
-  // null: no reading from the last 3 hours ("no disponible").
+  // null: no live reading ("no disponible").
   pm25: number | null;
   // The map marker's own fill for this reading; null draws the map's gray.
   color: string | null;

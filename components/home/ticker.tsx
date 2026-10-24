@@ -44,7 +44,7 @@ export default async function Ticker() {
   // station.
   if (estaciones.length === 0 || stations.length === 0) return null;
 
-  // Every metro station, always: one without a reading from the last 3 hours
+  // Every metro station, always: one without a live reading (lib/live-readings.ts)
   // shows as a gray "no disponible" dot, like its gray disc on the map, so a
   // gap is visible instead of the strip going quiet. Stations with data first,
   // worst first; then the silent ones, by name.

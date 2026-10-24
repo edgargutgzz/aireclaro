@@ -48,8 +48,8 @@ import { BASEMAP_GROUND } from "./ground";
 // SIMA "CE" — Monterrey: Obispado, the central government reference station.
 // The card shows this one station's own reading; there is no median fallback,
 // so if it's filtered out (Capas → gobierno off) the card is simply empty.
-// When Obispado has no reading from the last 3 hours (the cutoff the hourly
-// SIMA job and the homepage ticker use), the default is instead the PurpleAir
+// When Obispado has no live reading (lib/live-readings.ts, the cutoff the
+// homepage ticker uses too), the default is instead the PurpleAir
 // sensor nearest to it that has one, so the map never opens on an empty or
 // stale card. Rule decided 2026-10-06, after a SINAICA outage left Obispado
 // without data.
@@ -355,13 +355,14 @@ export default function MapaSensors({
 
   // The freshness readout reports the reading on screen: the card's station
   // (picked, else the default), else the newest anywhere in the live set; a
-  // card station without a reading says it has none from the last 3 hours. Sensors
+  // card station without a reading says it has none live. Sensors
   // publish on their own schedules, so a dataset-wide "newest" would sit ahead
   // of one station and make a current reading look late.
   //
-  // Readings land hourly, so 90 minutes is one missed cycle plus slack; the
-  // feeds never hand the map anything older than 3 hours, so past that there
-  // is no reading at all ("nodata"), not an old one. Past today the label picks up the day, so "11:00 AM" can never be
+  // 90 minutes is the same cutoff as the feeds (lib/live-readings.ts), which
+  // never hand the map anything older, so past it there is no reading at all
+  // ("nodata"). "delayed" only covers the few minutes between a reading
+  // aging out here and the next refresh dropping it. Past today the label picks up the day, so "11:00 AM" can never be
   // yesterday's 11:00 AM wearing a green dot.
   const freshness = useMemo<Freshness | null>(() => {
     if (now === null) return null;

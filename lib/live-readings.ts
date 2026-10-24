@@ -3,9 +3,13 @@ import { isValidPM25 } from "@/lib/air-quality";
 import { monterreyNaiveHoursAgo } from "@/lib/monterrey-time";
 
 // The site's one "is this live?" rule: a reading counts only if it's from the
-// last 3 hours. The SIMA job, the map (both sources), its default card, the
-// homepage ticker and the /mapa link card all go through it.
-export const LIVE_HOURS = 3;
+// last 90 minutes, i.e. the latest hour that should be posted by now is there.
+// SIMA posts hour H by about H:25 (measured 2026-10-19), so 90 minutes after
+// the reading's hour is the moment the next one is overdue; PurpleAir writes
+// every hour at :01. Older = gray disc on the map, "sin actualizar" in the
+// ticker (user's call 2026-10-24, was 3 hours). The map (both sources), its
+// default card, the homepage ticker and the /mapa link card all go through it.
+export const LIVE_MINUTES = 90;
 
 export interface LiveReading<Id extends string | number> {
   id: number;
@@ -14,7 +18,7 @@ export interface LiveReading<Id extends string | number> {
   time_stamp: string;
 }
 
-// Each sensor's latest reading from the last LIVE_HOURS, dropped if that
+// Each sensor's latest reading from the last LIVE_MINUTES, dropped if that
 // reading is no data (-9999, small negatives): a sensor here always has a
 // value to draw, and one missing has nothing current. A time window, not a row
 // limit, so a sensor lagging behind the others is still found (a limit(30)
@@ -27,7 +31,7 @@ export async function fetchLiveReadings<Id extends string | number>(
   const { data, error } = await createPublicClient()
     .from(table)
     .select("id, sensor_id, pm25, time_stamp")
-    .gte("time_stamp", monterreyNaiveHoursAgo(LIVE_HOURS))
+    .gte("time_stamp", monterreyNaiveHoursAgo(LIVE_MINUTES / 60))
     .order("time_stamp", { ascending: false });
 
   if (error) throw new Error(`Failed to fetch ${table}: ${error.message}`);
