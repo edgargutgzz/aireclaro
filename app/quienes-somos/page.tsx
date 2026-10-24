@@ -47,7 +47,24 @@ const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 // Logos in public/alianzas/, trimmed to the mark on a transparent background.
 // Heights are per logo so each covers about the same area (height ∝ 1/√aspect):
 // a wide wordmark sits shorter, a square badge taller.
+// Chipinque and Pronatura first (the user's pick, 2026-10-24).
 const ALIANZAS = [
+  {
+    name: "Reserva Natural Chipinque",
+    url: "https://www.chipinque.org.mx/",
+    logo: "/alianzas/reserva-chipinque.webp",
+    width: 900,
+    height: 247,
+    className: "h-10",
+  },
+  {
+    name: "Pronatura Noreste",
+    url: "https://pronaturanoreste.org/",
+    logo: "/alianzas/pronatura-noreste.webp",
+    width: 540,
+    height: 454,
+    className: "h-18",
+  },
   {
     name: "Alianza del Aire Nuevo León",
     url: "https://www.alianzadelaire.org/",
@@ -65,28 +82,12 @@ const ALIANZAS = [
     className: "h-13",
   },
   {
-    name: "Pronatura Noreste",
-    url: "https://pronaturanoreste.org/",
-    logo: "/alianzas/pronatura-noreste.webp",
-    width: 540,
-    height: 454,
-    className: "h-18",
-  },
-  {
     name: "Comité Ecológico Integral",
     url: "https://comiteecologicointegral.org/",
     logo: "/alianzas/comite-ecologico-integral.webp",
     width: 320,
     height: 320,
     className: "h-20",
-  },
-  {
-    name: "Reserva Natural Chipinque",
-    url: "https://www.chipinque.org.mx/",
-    logo: "/alianzas/reserva-chipinque.webp",
-    width: 900,
-    height: 247,
-    className: "h-10",
   },
   {
     name: "Pueblo Bicicletero",
