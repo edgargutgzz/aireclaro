@@ -80,6 +80,14 @@ const ALIANZAS = [
     height: 320,
     className: "h-20",
   },
+  {
+    name: "Reserva Natural Chipinque",
+    url: "https://www.chipinque.org.mx/",
+    logo: "/alianzas/reserva-chipinque.webp",
+    width: 900,
+    height: 247,
+    className: "h-10",
+  },
 ];
 
 type Persona = (typeof EQUIPO)[number];
@@ -166,14 +174,14 @@ export default function QuienesSomos() {
         </Section>
 
         <Section title="Alianzas" id="alianzas">
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {ALIANZAS.map((aliado) => (
               <li key={aliado.name}>
                 <a
                   href={aliado.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-24 items-center justify-center rounded-lg transition-opacity hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-800"
+                  className="flex h-28 items-center justify-center rounded-xl border border-stone-200 bg-white px-5 transition-colors hover:border-stone-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                 >
                   <Image
                     src={aliado.logo}
@@ -181,7 +189,7 @@ export default function QuienesSomos() {
                     width={aliado.width}
                     height={aliado.height}
                     sizes="250px"
-                    className={`${aliado.className} w-auto`}
+                    className={`${aliado.className} w-auto max-w-full object-contain`}
                   />
                 </a>
               </li>
