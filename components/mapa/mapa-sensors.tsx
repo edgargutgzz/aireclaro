@@ -979,11 +979,19 @@ export default function MapaSensors({
     );
   }, [zonaOn, defaultSelection]);
 
-  // The notice after a tap fades on its own.
+  // The notice after a tap fades on its own, and goes at once on a tap on it
+  // or as soon as the map moves, so it can never sit on the map (reported
+  // stuck on a phone after declining the location prompt, 2026-10-24).
   useEffect(() => {
     if (zonaStatus === "idle" || zonaStatus === "locating") return;
     const id = window.setTimeout(() => setZonaStatus("idle"), 6000);
-    return () => window.clearTimeout(id);
+    const m = map.current as any;
+    const dismiss = () => setZonaStatus("idle");
+    m?.on("movestart", dismiss);
+    return () => {
+      window.clearTimeout(id);
+      m?.off("movestart", dismiss);
+    };
   }, [zonaStatus]);
 
   // Mobile: the 44px stack button; desktop: 40px, to sit level with the
@@ -1004,9 +1012,13 @@ export default function MapaSensors({
     </button>
   );
   const zonaAviso = zonaStatus !== "idle" && zonaStatus !== "locating" && (
-    <div className="glass pointer-events-auto flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] leading-snug text-neutral-700">
+    <button
+      type="button"
+      onClick={() => setZonaStatus("idle")}
+      className="glass pointer-events-auto flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13px] leading-snug text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+    >
       <span>{ZONA_AVISO[zonaStatus]}</span>
-    </div>
+    </button>
   );
 
   // Escape dismisses a picked sensor too — desktop only, matching the X (mobile
