@@ -44,13 +44,24 @@ const CIUDADANO = [
 const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 
 // Each logo links to the ally's site. The logo carries the name, so it's the alt.
+// Logos in public/alianzas/, trimmed to the mark on a transparent background.
+// Heights are per logo so a wide wordmark and a squarer one read the same size.
 const ALIANZAS = [
   {
     name: "Alianza del Aire Nuevo León",
     url: "https://www.alianzadelaire.org/",
     logo: "/alianzas/alianza-del-aire.webp",
-    width: 996,
-    height: 586,
+    width: 1557,
+    height: 305,
+    className: "h-12",
+  },
+  {
+    name: "Consejo Cívico",
+    url: "https://consejocivico.org.mx/",
+    logo: "/alianzas/consejo-civico.webp",
+    width: 652,
+    height: 277,
+    className: "h-16",
   },
 ];
 
@@ -152,8 +163,8 @@ export default function QuienesSomos() {
                     alt={aliado.name}
                     width={aliado.width}
                     height={aliado.height}
-                    sizes="160px"
-                    className="h-20 w-auto"
+                    sizes="250px"
+                    className={`${aliado.className} w-auto`}
                   />
                 </a>
               </li>
