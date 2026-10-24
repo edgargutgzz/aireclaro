@@ -505,7 +505,7 @@ function nodeText(node: React.ReactNode): string {
 // A publication's link card (app/api/og/publicaciones/[slug]). d= is its
 // design version: bump it on any change, chat apps cache per image URL.
 export function linkCard(p: Publicacion) {
-  return { url: `/api/og/publicaciones/${p.slug}?d=34`, width: 1200, height: 630, alt: p.title };
+  return { url: `/api/og/publicaciones/${p.slug}?d=35`, width: 1200, height: 630, alt: p.title };
 }
 
 // The link to share an item: its page here (the library opens every item's
