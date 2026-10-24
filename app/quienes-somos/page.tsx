@@ -63,6 +63,14 @@ const ALIANZAS = [
     height: 277,
     className: "h-16",
   },
+  {
+    name: "Pronatura Noreste",
+    url: "https://pronaturanoreste.org/",
+    logo: "/alianzas/pronatura-noreste.webp",
+    width: 540,
+    height: 454,
+    className: "h-20",
+  },
 ];
 
 type Persona = (typeof EQUIPO)[number];
