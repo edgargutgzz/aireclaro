@@ -71,6 +71,14 @@ const ALIANZAS = [
     height: 454,
     className: "h-20",
   },
+  {
+    name: "Comité Ecológico Integral",
+    url: "https://comiteecologicointegral.org/",
+    logo: "/alianzas/comite-ecologico-integral.webp",
+    width: 320,
+    height: 320,
+    className: "h-20",
+  },
 ];
 
 type Persona = (typeof EQUIPO)[number];
