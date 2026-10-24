@@ -330,8 +330,7 @@ const VIDEOS: Publicacion[] = [
     date: "2023-11-03",
     author: "David Castillo y Selene M. Guajardo",
     people: [],
-    summary:
-      "Documental en el que especialistas en salud y medio ambiente explican, con bases científicas, qué respiramos en la Zona Metropolitana de Monterrey y cómo la contaminación del aire afecta la salud de la población.",
+    summary: "Especialistas en salud explican qué respiramos en Monterrey y cómo nos afecta.",
     video: "X1UfphH4pLc",
     image: "/recursos/caballo-de-troya.webp",
   },
