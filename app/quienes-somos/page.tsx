@@ -88,6 +88,14 @@ const ALIANZAS = [
     height: 247,
     className: "h-10",
   },
+  {
+    name: "Pueblo Bicicletero",
+    url: "https://pueblobicicletero.org/",
+    logo: "/alianzas/pueblo-bicicletero.webp",
+    width: 600,
+    height: 362,
+    className: "h-14",
+  },
 ];
 
 type Persona = (typeof EQUIPO)[number];
