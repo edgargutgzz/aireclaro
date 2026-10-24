@@ -41,14 +41,6 @@ const PROJECTS: Project[] = [
       { href: "/adopta-sensor", label: "Visitar" },
     ],
   },
-  {
-    title: "Impactos del Cambio Climático y de la Contaminación del Aire en la Salud",
-    description:
-      "El proyecto estudia cómo la contaminación del aire y el cambio climático impactan la salud de la población, destacando la importancia de la adaptación y mitigación en las zonas metropolitanas de México.",
-    tag: "Investigación",
-    image: "/proyectos/impactos.webp",
-    links: [],
-  },
 ];
 
 export default function Proyectos() {
