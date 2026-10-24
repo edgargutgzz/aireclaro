@@ -43,6 +43,17 @@ const CIUDADANO = [
 ];
 const ciudadano = CIUDADANO.map((key) => EQUIPO.find((p) => p.image === key)!);
 
+// Each logo links to the ally's site. The logo carries the name, so it's the alt.
+const ALIANZAS = [
+  {
+    name: "Alianza del Aire Nuevo León",
+    url: "https://www.alianzadelaire.org/",
+    logo: "/alianzas/alianza-del-aire.webp",
+    width: 996,
+    height: 586,
+  },
+];
+
 type Persona = (typeof EQUIPO)[number];
 
 // The first section carries the page's h1 and no hairline above it.
@@ -124,6 +135,30 @@ export default function QuienesSomos() {
             <Grupo title="Consejo Ciudadano" personas={ciudadano} />
             <Grupo title="Consejo Juvenil" personas={juvenil} />
           </div>
+        </Section>
+
+        <Section title="Alianzas" id="alianzas">
+          <ul className="flex flex-wrap items-center gap-x-12 gap-y-8">
+            {ALIANZAS.map((aliado) => (
+              <li key={aliado.name}>
+                <a
+                  href={aliado.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-lg transition-opacity hover:opacity-75 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-800"
+                >
+                  <Image
+                    src={aliado.logo}
+                    alt={aliado.name}
+                    width={aliado.width}
+                    height={aliado.height}
+                    sizes="160px"
+                    className="h-20 w-auto"
+                  />
+                </a>
+              </li>
+            ))}
+          </ul>
         </Section>
 
       </div>
