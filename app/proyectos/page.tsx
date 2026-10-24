@@ -42,14 +42,6 @@ const PROJECTS: Project[] = [
     ],
   },
   {
-    title: "Red Espesies",
-    description:
-      "Somos colaboradores para afrontar determinantes sociales y ambientales desde la salud, protegiendo los derechos de la naturaleza.",
-    tag: "Red colaborativa",
-    image: "/proyectos/red-espesies.webp",
-    links: [{ href: "https://saludplanetaria.espm.mx/", label: "Visitar" }],
-  },
-  {
     title: "Impactos del Cambio Climático y de la Contaminación del Aire en la Salud",
     description:
       "El proyecto estudia cómo la contaminación del aire y el cambio climático impactan la salud de la población, destacando la importancia de la adaptación y mitigación en las zonas metropolitanas de México.",
