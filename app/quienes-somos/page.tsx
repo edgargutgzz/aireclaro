@@ -97,6 +97,14 @@ const ALIANZAS = [
     height: 362,
     className: "h-14",
   },
+  {
+    name: "Red ESPESIES",
+    url: "https://www.redespesies.mx/",
+    logo: "/alianzas/red-espesies.webp",
+    width: 588,
+    height: 563,
+    className: "h-20",
+  },
 ];
 
 type Persona = (typeof EQUIPO)[number];
