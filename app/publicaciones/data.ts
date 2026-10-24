@@ -330,7 +330,7 @@ const VIDEOS: Publicacion[] = [
     date: "2023-11-03",
     author: "David Castillo y Selene M. Guajardo",
     people: [],
-    summary: "Especialistas en salud explican qué respiramos en Monterrey y cómo nos afecta.",
+    summary: "Especialistas en salud explican qué respiramos en la Zona Metropolitana de Monterrey y cómo nos afecta.",
     video: "X1UfphH4pLc",
     image: "/recursos/caballo-de-troya.webp",
   },
