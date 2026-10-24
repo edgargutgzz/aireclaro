@@ -53,7 +53,7 @@ const ALIANZAS = [
     logo: "/alianzas/alianza-del-aire.webp",
     width: 1557,
     height: 305,
-    className: "h-12",
+    className: "h-9",
   },
   {
     name: "Consejo Cívico",
