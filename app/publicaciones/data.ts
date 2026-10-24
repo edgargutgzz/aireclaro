@@ -18,6 +18,7 @@ export const TIPOS = [
   { value: "infografia", label: "Infografía" },
   { value: "informe", label: "Informe" },
   { value: "investigacion", label: "Investigación" },
+  { value: "documental", label: "Documental" },
   { value: "comunicado", label: "Comunicado" },
   { value: "boletin", label: "Boletín de prensa" },
   { value: "manual", label: "Manual" },
@@ -58,6 +59,8 @@ export type Publicacion = {
    *  a `transcripcion` of its clipping (./transcripciones.ts). */
   editorial?: Editorial;
   transcripcion?: Transcripcion;
+  /** A video's YouTube id: its page plays it in place of the cover. */
+  video?: string;
 };
 
 // The documents: the 16 from the old /recursos page, plus later ones. Credits, dates and
@@ -317,6 +320,23 @@ const INFOGRAFIAS: Documento[] = [
   },
 ];
 
+// The videos, played on their own page. Covers live in public/recursos.
+const VIDEOS: Publicacion[] = [
+  {
+    slug: "caballo-de-troya",
+    title: "Caballo de Troya",
+    tipo: "documental",
+    year: 2023,
+    date: "2023-11-03",
+    author: "David Castillo y Selene M. Guajardo",
+    people: [],
+    summary:
+      "Documental en el que especialistas en salud y medio ambiente explican, con bases científicas, qué respiramos en la Zona Metropolitana de Monterrey y cómo la contaminación del aire afecta la salud de la población.",
+    video: "X1UfphH4pLc",
+    image: "/recursos/caballo-de-troya.webp",
+  },
+];
+
 function fromEditorial(e: Editorial): Publicacion {
   const external = e.pdfLink && !e.pdfLink.startsWith("/");
   return {
@@ -357,6 +377,7 @@ export const publicaciones: Publicacion[] = [
       image: `/infografias/${d.file}.webp`,
     }),
   ),
+  ...VIDEOS,
 ].sort((a, b) => b.year - a.year || (b.date ?? "").localeCompare(a.date ?? ""));
 
 if (new Set(publicaciones.map((p) => p.slug)).size !== publicaciones.length) {
@@ -364,12 +385,14 @@ if (new Set(publicaciones.map((p) => p.slug)).size !== publicaciones.length) {
 }
 
 // The items the library features above everything else (unfiltered), in
-// order: the Observatory's latest impact report, the newest publication,
-// then the health infographic, its most useful piece for a reader asking
-// what the air does to them. A slug listed twice shows once.
+// order: the Observatory's latest impact report, its documentary (the
+// user's pick, 2026-10-24), the newest publication, then the health
+// infographic, its most useful piece for a reader asking what the air does
+// to them. A slug listed twice shows once.
 export const INFORME_DESTACADO = "informe-de-impacto-2025-2026";
+export const DOCUMENTAL_DESTACADO = "caballo-de-troya";
 export const DESTACADA = "efectos-contaminacion-aire-salud";
-export const DESTACADAS: string[] = [...new Set([INFORME_DESTACADO, publicaciones[0].slug, DESTACADA])];
+export const DESTACADAS: string[] = [...new Set([INFORME_DESTACADO, DOCUMENTAL_DESTACADO, publicaciones[0].slug, DESTACADA])];
 
 // The Autoría filter's people, most published first (a fixed order, so the
 // list doesn't reshuffle as the other filters change its counts).

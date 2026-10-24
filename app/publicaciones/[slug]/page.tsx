@@ -88,6 +88,16 @@ function structuredData(p: Publicacion) {
   if (p.tipo === "columna") {
     return { ...common, "@type": "Article", author: { "@type": "Person", name: p.author }, publisher: ORGANIZATION_REF };
   }
+  if (p.video) {
+    return {
+      ...common,
+      "@type": "VideoObject",
+      thumbnailUrl: `${SITE_URL}${p.image}`,
+      uploadDate: p.date ?? String(p.year),
+      embedUrl: `https://www.youtube-nocookie.com/embed/${p.video}`,
+      publisher: ORGANIZATION_REF,
+    };
+  }
   return {
     ...common,
     "@type": p.doi ? "ScholarlyArticle" : "Report",
@@ -229,7 +239,17 @@ export default async function PublicacionPage({ params }: Props) {
           </div>
         </header>
 
-        {outbound ? (
+        {p.video ? (
+          // A video plays here, from YouTube's privacy-enhanced domain.
+          <iframe
+            src={`https://www.youtube-nocookie.com/embed/${p.video}`}
+            title={p.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            className="aspect-video w-full rounded-xl shadow-md"
+          />
+        ) : outbound ? (
           // The cover (a document's first page), as a preview that also
           // opens it.
           <a href={outbound} target="_blank" rel="noopener noreferrer" tabIndex={-1} aria-hidden="true">

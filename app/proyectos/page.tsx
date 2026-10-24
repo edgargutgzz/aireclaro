@@ -57,16 +57,6 @@ const PROJECTS: Project[] = [
     image: "/proyectos/impactos.webp",
     links: [],
   },
-  {
-    title: "Caballo de Troya",
-    description:
-      "Caballo de Troya es un documental que explora la calidad del aire en la ciudad, revelando el impacto de la contaminación atmosférica en la salud de sus habitantes.",
-    tag: "Documental",
-    image: "/proyectos/caballo-troya.webp",
-    links: [
-      { href: "https://www.youtube.com/watch?v=X1UfphH4pLc&t=2s", label: "Visitar" },
-    ],
-  },
 ];
 
 export default function Proyectos() {
