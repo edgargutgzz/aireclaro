@@ -5,9 +5,11 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { pageMetadata, sectionCard } from "@/lib/metadata";
 import Section from "@/components/observatorio/section";
 
-// The Observatory's projects in the same editorial rows as /quienes-somos: the
-// page's title and lead first, then one row per project (name on the left;
-// description, link and its picture on the right). No cards, no type labels.
+// The Observatory's projects in the same editorial rows as /quienes-somos,
+// one row per project (name on the left; description, link and its picture on
+// the right). No visible header: like /datos and /publicaciones, the page
+// opens on its content. The h1 stays for search engines and screen readers;
+// the lead is the description for Google and link previews.
 
 const LEAD = "Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en la Zona Metropolitana de Monterrey.";
 
@@ -46,10 +48,8 @@ const PROJECTS: Project[] = [
 export default function Proyectos() {
   return (
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
+      <h1 className="sr-only">Proyectos del Observatorio del Aire</h1>
       <div>
-        <Section title="Proyectos" as="h1">
-          <p className="max-w-3xl text-lg leading-relaxed text-neutral-800 md:text-xl">{LEAD}</p>
-        </Section>
 
         {PROJECTS.map((project) => {
           const external = project.href.startsWith("http");
