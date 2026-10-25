@@ -50,7 +50,6 @@ export default function Proyectos() {
     <div className="mx-auto max-w-7xl px-6 pb-24 pt-12 lg:px-8 lg:pb-32 lg:pt-20">
       <h1 className="sr-only">Proyectos del Observatorio del Aire</h1>
       <div>
-
         {PROJECTS.map((project) => {
           const external = project.href.startsWith("http");
           return (
