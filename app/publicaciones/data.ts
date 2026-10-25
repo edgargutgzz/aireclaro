@@ -385,13 +385,13 @@ if (new Set(publicaciones.map((p) => p.slug)).size !== publicaciones.length) {
 
 // The items the library features above everything else (unfiltered), in
 // order: the Observatory's latest impact report, its documentary (the
-// user's pick, 2026-10-24), the newest publication, then the health
-// infographic, its most useful piece for a reader asking what the air does
-// to them. A slug listed twice shows once.
+// user's pick, 2026-10-24), then the health infographic, its most useful
+// piece for a reader asking what the air does to them. The newest column is
+// no longer featured (user, 2026-10-24); it leads the year list.
 export const INFORME_DESTACADO = "informe-de-impacto-2025-2026";
 export const DOCUMENTAL_DESTACADO = "caballo-de-troya";
 export const DESTACADA = "efectos-contaminacion-aire-salud";
-export const DESTACADAS: string[] = [...new Set([INFORME_DESTACADO, DOCUMENTAL_DESTACADO, publicaciones[0].slug, DESTACADA])];
+export const DESTACADAS: string[] = [INFORME_DESTACADO, DOCUMENTAL_DESTACADO, DESTACADA];
 
 // The Autoría filter's people, most published first (a fixed order, so the
 // list doesn't reshuffle as the other filters change its counts).
