@@ -4,9 +4,8 @@ import { fetchUltimoMes } from "@/lib/datos-cache";
 import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import { Suspense } from "react";
-import DiasInsalubres, { DiasInsalubresResumen } from "@/components/datos/dias-insalubres";
+import DiasInsalubres from "@/components/datos/dias-insalubres";
 import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton";
-import DiasInsalubresShareSkeleton from "@/components/datos/dias-insalubres-share-skeleton";
 import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
 import CoberturaEstacionesSkeleton from "@/components/datos/cobertura-estaciones-skeleton";
 import PromedioAnualEstacion from "@/components/datos/promedio-anual-estacion";
@@ -92,16 +91,9 @@ export default function Datos() {
             <PromedioAnualEstacion />
           </Suspense>
         </div>
-        {/* The monthly summary card (renders its own mt-16). */}
-        <Suspense
-          fallback={
-            <div className="mt-16">
-              <DiasInsalubresShareSkeleton />
-            </div>
-          }
-        >
-          <DiasInsalubresResumen />
-        </Suspense>
+        {/* The monthly summary card (DiasInsalubresResumen, with
+            DiasInsalubresShareSkeleton as its fallback) is hidden since
+            2026-10-25; the component stays. */}
         {/* #descarga: the card's anchor for links from elsewhere; scroll-mt
             leaves a little air above it. */}
         <div id="descarga" className="mt-16 scroll-mt-6">
