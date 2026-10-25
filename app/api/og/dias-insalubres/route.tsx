@@ -8,13 +8,10 @@ import {
   type MonthlySummary,
   type Pollutant,
 } from "@/lib/dias-insalubres-aggregate";
-import { COLOR_CUBIERTO, COLOR_CUBIERTO_FILL_OPACITY, COLOR_INSALUBRE, COLOR_INSUFICIENTE } from "@/lib/datos-colors";
-import { fetchCoberturaCompacta } from "@/components/datos/cobertura-estaciones";
-import type { CoberturaCompacta } from "@/components/datos/cobertura-estaciones-chart";
+import { COLOR_INSALUBRE, COLOR_INSALUBRE_FILL_OPACITY, COLOR_SALUDABLE, COLOR_SALUDABLE_FILL_OPACITY } from "@/lib/datos-colors";
 import { loadGoogleFont } from "@/lib/og-font";
 import { loadOgLogo, OG_BRAND_BLUE, ogLogoAt } from "@/lib/og-logo";
 import { isShareFormat, SHARE_FORMATS } from "@/lib/share-image-formats";
-import { SECTION_CARD, SectionCard } from "@/lib/og-section-card";
 
 // The downloadable, branded version of the /datos monthly summary card
 // (components/datos/dias-insalubres-share.tsx, via its download menu) --
@@ -48,7 +45,7 @@ const GLYPHS =
 type ImageOptions = ConstructorParameters<typeof ImageResponse>[1];
 
 // The link-preview size every chat app and social network unfurls.
-const LINK_CARD = SECTION_CARD;
+const LINK_CARD = { width: 1200, height: 630 };
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -108,7 +105,12 @@ export async function GET(request: Request) {
   const { mes, rows: rowsOut, hasPrior, headline: headlineLines } = summary;
   const mesNombre = MONTHS_ES_FULL[mes - 1];
 
-  if (isLinkCard) return linkCard(options, year, logo, await fetchCoberturaCompacta().catch(() => null));
+  if (isLinkCard) {
+    const months = chartData.pm25
+      .filter((m) => m.ano === year && m.diasTotales > 0)
+      .sort((a, b) => a.mesNumero - b.mesNumero);
+    return linkCard(options, months, request.url);
+  }
 
   // This year's number is always red: any day of polluted air is bad news,
   // even in a month with fewer of them than a year earlier (the headline
@@ -308,63 +310,58 @@ function messageCard(options: ImageOptions, fontSize: number, message: string) {
   );
 }
 
-// The /datos link card, built like the /mapa one: the coverage chart's
-// calendars (one per station, weeks as columns, weekdays as rows, this year,
-// PM2.5) stacked on the right as the backdrop, in the chart's own colors --
-// blue for a day with valid data, gray for a known gap, faded gray for a day
-// not synced yet. It introduces the data section, so it states no figure.
-function linkCard(options: ImageOptions, year: number, logo: string | null, cobertura: CoberturaCompacta | null) {
-  const { width: W, height: H } = SECTION_CARD;
-  const CELL = 14;
-  const GAP = 3;
-  const PITCH = CELL + GAP;
-  const STATION_GAP = 26;
-  const STATIONS = 4;
-  const jan1 = Date.UTC(year, 0, 1);
-  // Monday-first weekday of Jan 1, so each column is one calendar week.
-  const lead = (new Date(jan1).getUTCDay() + 6) % 7;
-  const days = (Date.UTC(year + 1, 0, 1) - jan1) / 86_400_000;
-  const weeks = Math.ceil((lead + days) / 7);
-  const gridW = weeks * PITCH - GAP;
-  const left = W - 56 - gridW;
-  const blockH = 7 * PITCH - GAP;
-  const top = (H - (STATIONS * blockH + (STATIONS - 1) * STATION_GAP)) / 2;
-
-  const { fechas, porEstacion } = cobertura?.["PM2.5"] ?? { fechas: [], porEstacion: {} };
-  const index = new Map(fechas.map((f, i) => [f, i]));
-  const codes = Object.values(porEstacion).slice(0, STATIONS);
-
-  const backdrop = (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
-      {codes.map((code, s) =>
-        Array.from({ length: days }, (_, d) => {
-          const fecha = new Date(jan1 + d * 86_400_000).toISOString().slice(0, 10);
-          const i = index.get(fecha);
-          const c = i === undefined ? "-" : code[i];
-          const pos = lead + d;
-          return (
-            <rect
-              key={`${s}-${d}`}
-              x={left + Math.floor(pos / 7) * PITCH}
-              y={top + s * (blockH + STATION_GAP) + (pos % 7) * PITCH}
-              width={CELL}
-              height={CELL}
-              rx={2.5}
-              fill={c === "1" ? COLOR_CUBIERTO : COLOR_INSUFICIENTE}
-              fillOpacity={c === "1" ? COLOR_CUBIERTO_FILL_OPACITY : c === "0" ? 1 : NO_DATA_FILL_OPACITY}
-            />
-          );
-        }),
-      )}
-    </svg>
-  );
+// The /datos link card (redesigned 2026-10-24 with the other section cards:
+// picture only, white logo top-left, no text). The picture is the page's own
+// días insalubres chart: one stacked bar per month of the year with data,
+// sobre la norma (red, the limit in force each day, as the chart's default
+// view) under dentro de la norma (green), in the chart's colors on stone.
+// The bars run off the bottom edge on purpose, but no further than keeps
+// every month's red in view (the lowest red is 2 days tall at this scale).
+function linkCard(options: ImageOptions, months: MonthData[], requestUrl: string) {
+  const W = 1200;
+  const H = 630;
+  const left = 32;
+  const right = 1168;
+  const top = 120;
+  const baseline = 660;
+  const radius = 9;
+  const stackGap = 4;
+  const col = (right - left) / Math.max(months.length, 1);
+  const bw = col * 0.78;
+  const unit = (baseline - top) / 31;
+  // Rounded only at the outer tip of the stack, as on /datos.
+  const tip = (x: number, y: number, w: number, h: number) =>
+    `M${x},${y + h} L${x},${y + radius} Q${x},${y} ${x + radius},${y} L${x + w - radius},${y} Q${x + w},${y} ${x + w},${y + radius} L${x + w},${y + h} Z`;
+  const logo = new URL("/og/occamm-logo-white.png", requestUrl).href;
 
   return new ImageResponse(
-    <SectionCard backdrop={backdrop} headline={["Datos de", "calidad del aire"]} logo={logo} />,
+    (
+      <div style={{ display: "flex", position: "relative", width: W, height: H, background: "#f5f5f4" }}>
+        <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
+          {months.map((m, i) => {
+            const x = left + i * col + (col - bw) / 2;
+            const ins = m.diasInsalubres * unit;
+            const sal = (m.diasTotales - m.diasInsalubres) * unit;
+            const gap = ins > 0 && sal > 0 ? stackGap : 0;
+            return (
+              <g key={m.mesNumero}>
+                {ins > 0 &&
+                  (sal > 0 ? (
+                    <rect x={x} y={baseline - ins} width={bw} height={ins} fill={COLOR_INSALUBRE} fillOpacity={COLOR_INSALUBRE_FILL_OPACITY} />
+                  ) : (
+                    <path d={tip(x, baseline - ins, bw, ins)} fill={COLOR_INSALUBRE} fillOpacity={COLOR_INSALUBRE_FILL_OPACITY} />
+                  ))}
+                {sal > 0 && (
+                  <path d={tip(x, baseline - ins - gap - sal, bw, sal)} fill={COLOR_SALUDABLE} fillOpacity={COLOR_SALUDABLE_FILL_OPACITY} />
+                )}
+              </g>
+            );
+          })}
+        </svg>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logo} width={238} height={44} alt="" style={{ position: "absolute", left: 56, top: 48 }} />
+      </div>
+    ),
     options,
   );
 }
-
-// Faded fill for a date with no synced row yet (the old calendar grid's).
-const NO_DATA_FILL_OPACITY = 0.4;
-

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { pageMetadata } from "@/lib/metadata";
+import { pageMetadata, sectionCard } from "@/lib/metadata";
 import Biblioteca from "@/components/publicaciones/biblioteca";
 
 // Every publication in one library (./data.ts). Replaces /editoriales and
@@ -9,15 +9,14 @@ import Biblioteca from "@/components/publicaciones/biblioteca";
 // sits close under the navbar (pt-4). The h1 stays for search engines and
 // screen readers; the description is for Google and link previews.
 
-const DESCRIPTION = "Columnas de opinión, informes y estudios del Observatorio sobre la calidad del aire en Monterrey.";
+const DESCRIPTION = "Columnas de opinión, informes y estudios del Observatorio sobre la calidad del aire en la Zona Metropolitana de Monterrey.";
 
-// The link card is app/api/og/publicaciones (d= is its design version: bump
-// it on any change, chat apps cache per image URL); the RSS feed is ./rss.xml.
+// The link card is sectionCard (lib/metadata.ts); the RSS feed is ./rss.xml.
 const base = pageMetadata({
   title: "Publicaciones",
   description: DESCRIPTION,
   path: "/publicaciones",
-  images: [{ url: "/api/og/publicaciones?d=4", width: 1200, height: 630, alt: "Publicaciones del Observatorio del Aire" }],
+  images: sectionCard("publicaciones", "Publicaciones del Observatorio del Aire"),
 });
 
 export const metadata: Metadata = {

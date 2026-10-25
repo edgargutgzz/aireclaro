@@ -8,7 +8,7 @@ import { pageMetadata, sectionCard } from "@/lib/metadata";
 // it keeps): a left-aligned header like /quienes-somos, then one card per
 // project. The whole card is the link; its last line says where it goes.
 
-const LEAD = "Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en Nuevo León.";
+const LEAD = "Conoce los proyectos en los que estamos trabajando para mejorar la calidad del aire en la Zona Metropolitana de Monterrey.";
 
 export const metadata: Metadata = pageMetadata({ title: "Proyectos", description: LEAD, path: "/proyectos", images: sectionCard("proyectos", "Proyectos del Observatorio del Aire") });
 

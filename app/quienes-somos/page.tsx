@@ -24,7 +24,11 @@ const LINEAS = [
   "Fortalecer a la sociedad civil.",
 ];
 
-export const metadata: Metadata = pageMetadata({ title: "Quiénes somos", description: LEAD, path: "/quienes-somos", images: sectionCard("quienes-somos", "Quiénes somos, Observatorio del Aire") });
+// The search and link-preview description: what the page holds, shorter than
+// the lead.
+const DESCRIPTION = "Conoce al equipo, la misión y las alianzas del Observatorio.";
+
+export const metadata: Metadata = pageMetadata({ title: "Quiénes somos", description: DESCRIPTION, path: "/quienes-somos", images: sectionCard("quienes-somos", "Quiénes somos, Observatorio del Aire") });
 
 const LABEL = "text-xs font-semibold uppercase leading-snug tracking-wide text-neutral-500";
 
