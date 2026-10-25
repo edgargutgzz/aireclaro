@@ -19,8 +19,6 @@ type Project = {
   title: string;
   description: string;
   image: string;
-  /** Where the 4:3 crop of the square image sits. */
-  imagePosition?: string;
   href: string;
   cta: string;
 };
@@ -38,8 +36,7 @@ const PROJECTS: Project[] = [
     title: "Adopta un sensor",
     description:
       "Adopta un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.",
-    image: "/proyectos/adopta-sensor.webp",
-    imagePosition: "object-top",
+    image: "/adopta-sensor/paso1.webp",
     href: "/adopta-sensor",
     cta: "Cómo adoptar un sensor",
   },
@@ -79,7 +76,7 @@ export default function Proyectos() {
                   width={1080}
                   height={1080}
                   sizes="(min-width: 1280px) 420px, (min-width: 768px) 35vw, 100vw"
-                  className={`aspect-[4/3] w-full rounded-xl bg-stone-100 object-cover ${project.imagePosition ?? ""}`}
+                  className="aspect-[4/3] w-full rounded-xl bg-stone-100 object-cover"
                 />
               </div>
             </Section>
