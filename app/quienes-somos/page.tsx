@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { pageMetadata, sectionCard } from "@/lib/metadata";
 import { EQUIPO } from "@/lib/equipo";
+import Section from "@/components/observatorio/section";
 
 // Quiénes somos and the team on one page (approved 2026-10-18; /equipo
 // redirects to #equipo). Editorial layout: each section's title in a narrow left column, its content
@@ -112,16 +113,6 @@ const ALIANZAS = [
 ];
 
 type Persona = (typeof EQUIPO)[number];
-
-// The first section carries the page's h1 and no hairline above it.
-function Section({ title, id, as: Heading = "h2", children }: { title: string; id?: string; as?: "h1" | "h2"; children: React.ReactNode }) {
-  return (
-    <section id={id} className="grid gap-6 border-t border-stone-200 py-12 first:border-t-0 first:pt-0 md:grid-cols-[minmax(0,1fr)_minmax(0,3fr)] md:gap-12 md:py-16 md:first:pt-0">
-      <Heading className="text-lg font-semibold text-neutral-800">{title}</Heading>
-      <div className="min-w-0">{children}</div>
-    </section>
-  );
-}
 
 // One portrait treatment for everyone: a square crop, the same radius, name
 // and role under it, the same size in every group.
