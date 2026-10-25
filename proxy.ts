@@ -8,6 +8,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // which now render www.observatoriodelaire.com/mapa.
 const CANONICAL_ORIGIN = "https://www.observatoriodelaire.com";
 const LEGACY_HOSTS = new Set(["aireclaro.com", "www.aireclaro.com"]);
+const LEGACY_TAG = "utm_source";
 // The project's default Vercel address serves the same site; send pages to the
 // canonical domain so search engines see one copy. /api stays reachable there
 // (crons and anything wired to the Vercel URL).
@@ -40,8 +41,11 @@ export function proxy(req: NextRequest) {
   const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
 
   if (LEGACY_HOSTS.has(host)) {
-    const path = pathname === "/" ? "/mapa" : pathname;
-    return NextResponse.redirect(`${CANONICAL_ORIGIN}${path}${search}`, 308);
+    const url = new URL(`${CANONICAL_ORIGIN}${pathname === "/" ? "/mapa" : pathname}${search}`);
+    // Tagged so the landing page can count it (components/analytics.tsx): a
+    // redirect passes on the visitor's referrer, never aireclaro.com.
+    if (!url.searchParams.has(LEGACY_TAG)) url.searchParams.set(LEGACY_TAG, "aireclaro");
+    return NextResponse.redirect(url, 308);
   }
 
   if (host === VERCEL_HOST && !pathname.startsWith("/api/")) {
