@@ -150,7 +150,7 @@ export default function DescargaDatosCard({
   return (
     <ChartCard
       title="Descargar datos"
-      subtitle="Archivo CSV con una fila por estación, contaminante, fecha y hora."
+      subtitle={`Mediciones horarias de PM2.5 y PM10 de las ${estaciones.length} estaciones del SIMA.`}
       infoTab={DICCIONARIO}
     >
       <div className="flex flex-col gap-5 px-5 py-5 lg:flex-row lg:flex-wrap lg:items-end">
