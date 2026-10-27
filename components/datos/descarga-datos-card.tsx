@@ -143,7 +143,7 @@ export default function DescargaDatosCard({
 
   return (
     <ChartCard
-      title="Datos abiertos"
+      title="Descargar datos"
       subtitle={
         <>
           <div>
