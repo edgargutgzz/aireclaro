@@ -26,7 +26,7 @@ export default function DatosHeader({ periodo }: { periodo: { corto: string; lar
             ...(periodo
               ? [
                   {
-                    label: "Periodo",
+                    label: "Datos disponibles",
                     valor: (
                       <>
                         <span className="lg:hidden">{periodo.corto}</span>
