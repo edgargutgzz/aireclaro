@@ -5,8 +5,9 @@ import type { InfoTab } from "@/components/datos/info-tabs";
 
 // The "learn more" tabs that apply to every /datos chart (where the data
 // comes from, the norm every chart applies, what PM2.5/PM10 are, what they
-// do to health), shown once in the "Datos abiertos" card at the foot of /datos instead of repeated under
-// each chart. Each chart keeps only its own methodology.
+// do to health), shown once in the /datos header panel
+// (components/datos/datos-header.tsx) instead of repeated under each chart.
+// Each chart keeps only its own methodology.
 export const GENERAL_TABS: InfoTab[] = [
   {
     id: "fuente",

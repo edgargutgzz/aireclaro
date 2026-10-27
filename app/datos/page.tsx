@@ -78,7 +78,7 @@ export default function Datos() {
     <div className="min-h-screen">
       <JsonLd data={datasetSchema} />
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
-        <Suspense fallback={<div className="mb-8 h-[121px] border-b border-stone-200" />}>
+        <Suspense fallback={<div className="mb-6 h-[106px] rounded-2xl border border-stone-200 bg-white" />}>
           <ActualizacionMensual />
         </Suspense>
         <Suspense fallback={<DiasInsalubresSkeleton />}>
