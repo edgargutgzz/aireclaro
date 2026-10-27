@@ -12,6 +12,6 @@ const nombreMes = (ano: number, m: number) =>
 // month) and hands it to the header panel (components/datos/datos-header.tsx).
 export default async function ActualizacionMensual() {
   const ultimo = await fetchUltimoMes().catch(() => null);
-  const periodo = ultimo ? `ene ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes)} ${ultimo.ano}` : null;
+  const periodo = ultimo ? `Ene ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes)} ${ultimo.ano}` : null;
   return <DatosHeader periodo={periodo} />;
 }

@@ -17,23 +17,21 @@ export default function DatosHeader({ periodo }: { periodo: string | null }) {
 
   return (
     <header className="mb-6 overflow-hidden rounded-2xl border border-stone-200 bg-white">
-      <div className="px-5 pb-3 pt-4">
+      {/* Title on the left, the two facts as label-over-value stats on the
+          right (from lg; stacked under the title before). */}
+      <div className="flex flex-col gap-3 px-5 pb-3 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
         <h1 className="text-xl font-semibold text-neutral-800">Calidad del aire en la Zona Metropolitana de Monterrey</h1>
-        <p className="mt-1 text-xs text-neutral-500 md:text-sm">
-          {periodo && (
-            <>
-              <span className="whitespace-nowrap">
-                Periodo <span className="font-medium text-neutral-700">{periodo}</span>
-              </span>{" "}
-              <span className="px-1 text-neutral-300" aria-hidden>
-                ·
-              </span>{" "}
-            </>
-          )}
-          <span className="whitespace-nowrap">
-            Actualización <span className="font-medium text-neutral-700">mensual</span>
-          </span>
-        </p>
+        <dl className="flex shrink-0 divide-x divide-stone-200">
+          {[
+            ...(periodo ? [{ label: "Periodo", valor: periodo }] : []),
+            { label: "Actualización", valor: "Mensual" },
+          ].map(({ label, valor }) => (
+            <div key={label} className="px-5 first:pl-0 last:pr-0">
+              <dt className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</dt>
+              <dd className="mt-1.5 whitespace-nowrap text-sm font-medium text-neutral-700">{valor}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
       <nav aria-label="Sobre los datos" className="overflow-x-auto lg:overflow-visible">
         <div className="flex w-max gap-6 px-5">
