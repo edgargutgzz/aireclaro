@@ -1,6 +1,5 @@
 import { fetchUltimoMes } from "@/lib/datos-cache";
 import { monterreyNaiveNow } from "@/lib/monterrey-time";
-import { NOTAS_MENSUALES } from "@/lib/datos-notas";
 
 const FIRST_YEAR = 2025; // the first month /datos has, January 2025
 const TZ = "America/Monterrey";
@@ -14,8 +13,8 @@ const nombreMes = (ano: number, m: number) =>
 const idx = (ano: number, mes: number) => ano * 12 + mes - 1;
 const desde = (i: number) => ({ ano: Math.floor(i / 12), mes: (i % 12) + 1 });
 
-// The block that opens /datos: which month the last update added, when, its
-// one-sentence note, and the run of published months (the new one dark, the
+// The block that opens /datos: which month the last update added, when, and
+// the run of published months (the new one dark, the
 // next one dashed), so the monthly rhythm is visible. The publish date is the newest
 // month's insert time (lib/datos-cache.ts). The next update is the month
 // after publishing, or the current month once that one is late, so it never
@@ -37,7 +36,6 @@ export default async function ActualizacionMensual() {
   const mesesPublicados = iUltimo - idx(FIRST_YEAR, 1) + 1;
   const titulo = `Datos de ${nombreMes(ultimo.ano, ultimo.mes)} de ${ultimo.ano}`;
 
-  const nota = NOTAS_MENSUALES[`${ultimo.ano}-${String(ultimo.mes).padStart(2, "0")}`];
   const years = Array.from({ length: ultimo.ano + (ultimo.mes === 12 ? 1 : 0) - FIRST_YEAR + 1 }, (_, i) => FIRST_YEAR + i);
 
   return (
@@ -52,7 +50,6 @@ export default async function ActualizacionMensual() {
         <div className="mt-1 text-xs text-neutral-500 md:text-sm">
           Publicados el {fecha.format(publicado)}. Próxima actualización: {proxima}.
         </div>
-        {nota && <p className="mt-3 max-w-prose text-sm leading-relaxed text-neutral-600">{nota}</p>}
       </div>
       <div
         role="img"
