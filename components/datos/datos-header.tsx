@@ -73,7 +73,7 @@ export default function DatosHeader({ periodo }: { periodo: string | null }) {
       </nav>
       {tab && (
         <div id={panelId} className="border-t border-stone-100 bg-stone-50/60 px-5 py-4">
-          <div className="max-w-3xl text-sm leading-relaxed text-neutral-600">{tab.body}</div>
+          <div className="text-sm leading-relaxed text-neutral-600">{tab.body}</div>
         </div>
       )}
     </header>
