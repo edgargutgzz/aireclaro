@@ -3,13 +3,13 @@
 import { useId, useState } from "react";
 import { GENERAL_TABS } from "@/components/datos/datos-general-info";
 
-// The dashboard's top panel, laid out like a chart card's header: title,
-// what the data is and its period/cadence on the left, the "about the data"
+// The dashboard's top panel, laid out like a chart card's header: title and
+// the data's period/cadence on the left, the "about the data"
 // buttons (source, methodology, pollutants, health) on the right in the chart
 // headers' tinted h-8 shape. A button opens its text inside the panel, dark
 // while open, the same as a chart's Metodología. Below lg the buttons sit
 // under the title and wrap.
-export default function DatosHeader({ descripcion, periodo }: { descripcion: string; periodo: string | null }) {
+export default function DatosHeader({ periodo }: { periodo: string | null }) {
   const [abierta, setAbierta] = useState<string | null>(null);
   const panelId = useId();
   const tab = GENERAL_TABS.find((t) => t.id === abierta);
@@ -19,7 +19,6 @@ export default function DatosHeader({ descripcion, periodo }: { descripcion: str
       <div className="flex flex-col gap-3 px-5 py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
         <div className="min-w-0">
           <h1 className="text-xl font-semibold text-neutral-800">Calidad del aire en la Zona Metropolitana de Monterrey</h1>
-          <p className="mt-1 text-xs text-neutral-500 md:text-sm">{descripcion}</p>
           <p className="mt-1 text-xs text-neutral-500 md:text-sm">
             {periodo && (
               <>
