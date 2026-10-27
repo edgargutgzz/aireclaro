@@ -1,4 +1,3 @@
-import { CalendarRange, RefreshCw } from "lucide-react";
 import { fetchUltimoMes } from "@/lib/datos-cache";
 import { monterreyNaiveNow } from "@/lib/monterrey-time";
 
@@ -12,8 +11,7 @@ const nombreMes = (ano: number, m: number) =>
 const idx = (ano: number, mes: number) => ano * 12 + mes - 1;
 const desde = (i: number) => ({ ano: Math.floor(i / 12), mes: (i % 12) + 1 });
 
-// What opens /datos: the period the data covers and how often it's updated,
-// as two labeled facts. The next update is the month after the newest
+// What opens /datos: the period the data covers and how often it's updated. The next update is the month after the newest
 // month was published (its insert time, lib/datos-cache.ts), or the current
 // month once that one is late, so it never names a month already past.
 export default async function ActualizacionMensual() {
@@ -28,28 +26,21 @@ export default async function ActualizacionMensual() {
   const siguiente = desde(Math.max(idx(pubAno, pubMes), idx(hoyAno, hoyMes) - 1) + 1);
   const proxima = nombreMes(siguiente.ano, siguiente.mes) + (siguiente.ano !== hoyAno ? ` de ${siguiente.ano}` : "");
 
-  const periodo = `Enero de ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes)} de ${ultimo.ano}`;
-
   const hechos = [
-    { icon: CalendarRange, label: "Periodo", valor: periodo },
-    { icon: RefreshCw, label: "Actualización", valor: `Cada mes, la próxima en ${proxima}` },
+    { label: "Periodo", valor: `Enero de ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes)} de ${ultimo.ano}` },
+    { label: "Actualización", valor: `Mensual, la próxima en ${proxima}` },
   ];
 
+  // Facts on the page itself, not a card: label over value, a hairline
+  // between them from sm (stacked on a phone).
   return (
-    <section aria-label="Periodo y actualización de los datos" className="mb-16 rounded-2xl border border-stone-200 bg-white px-5 py-5">
-      <dl className="flex flex-col gap-4 sm:flex-row sm:gap-12">
-        {hechos.map(({ icon: Icon, label, valor }) => (
-          <div key={label} className="flex items-start gap-3 sm:items-center">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-stone-100">
-              <Icon className="h-4 w-4 text-neutral-500" aria-hidden />
-            </div>
-            <div>
-              <dt className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</dt>
-              <dd className="mt-1.5 text-base font-medium text-neutral-700">{valor}</dd>
-            </div>
-          </div>
-        ))}
-      </dl>
-    </section>
+    <dl className="mb-8 flex flex-col gap-4 sm:flex-row sm:gap-0 sm:divide-x sm:divide-stone-200">
+      {hechos.map(({ label, valor }) => (
+        <div key={label} className="sm:px-8 sm:first:pl-0">
+          <dt className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</dt>
+          <dd className="mt-2 text-base font-medium text-neutral-700">{valor}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }

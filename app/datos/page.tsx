@@ -79,7 +79,7 @@ export default function Datos() {
       <JsonLd data={datasetSchema} />
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
         <h1 className="sr-only">Datos de calidad del aire de la Zona Metropolitana de Monterrey</h1>
-        <Suspense fallback={<div className="mb-16 h-64 rounded-2xl border border-stone-200 bg-white" />}>
+        <Suspense fallback={<div className="mb-8 h-11" />}>
           <ActualizacionMensual />
         </Suspense>
         <Suspense fallback={<DiasInsalubresSkeleton />}>
