@@ -45,10 +45,10 @@ export default function DatosHeader({ periodo }: { periodo: { corto: string; lar
           ))}
         </dl>
       </div>
-      {/* The "about the data" tabs: their own tinted strip at the card's foot. */}
+      {/* The "about the data" tabs, below a hairline at the card's foot. */}
       <nav
         aria-label="Sobre los datos"
-        className="overflow-x-auto border-t border-stone-100 bg-stone-50/60 lg:overflow-visible"
+        className="overflow-x-auto border-t border-stone-100 lg:overflow-visible"
       >
         <div className="flex w-max items-center gap-6 px-5">
           {GENERAL_TABS.map(({ id, label, icon: Icon }) => {
