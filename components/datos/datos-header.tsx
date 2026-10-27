@@ -19,7 +19,7 @@ export default function DatosHeader({ periodo }: { periodo: { corto: string; lar
     <header className="mb-6 overflow-hidden rounded-2xl border border-stone-200 bg-white">
       {/* Title on the left, the two facts as label-over-value stats on the
           right (from lg; stacked under the title before). */}
-      <div className="flex flex-col gap-3 px-5 pb-4 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
+      <div className="flex flex-col gap-3 px-5 pb-4 pt-4 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
         <h1 className="text-xl font-semibold text-neutral-800">Calidad del Aire en la Zona Metropolitana de Monterrey</h1>
         <dl className="flex shrink-0 divide-x divide-stone-200">
           {[
@@ -60,7 +60,7 @@ export default function DatosHeader({ periodo }: { periodo: { corto: string; lar
                 onClick={() => setAbierta(open ? null : id)}
                 aria-expanded={open}
                 aria-controls={panelId}
-                className={`flex items-center gap-1.5 whitespace-nowrap border-b-2 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
+                className={`flex items-center gap-1.5 whitespace-nowrap border-b-2 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${
                   open
                     ? "border-stone-800 text-neutral-900"
                     : "border-transparent text-neutral-500 hover:text-neutral-800"
