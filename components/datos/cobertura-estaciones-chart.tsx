@@ -340,7 +340,7 @@ export default function CoberturaEstacionesChart({
   return (
     <ChartCard
       infoTab={infoTab(pollutant)}
-      title="Cobertura de estaciones"
+      title="Cobertura de Estaciones"
       subtitle={<CoberturaSubtitle pct={pctTotal} delta={delta} pollutant={pollutant} year={year} />}
       headerRight={
         <>

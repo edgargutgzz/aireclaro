@@ -900,8 +900,8 @@ export default function DiasInsalubresChart({
       infoTab={infoTab(pollutant, compare, year)}
       title={
         compare
-          ? "Comparación de días sobre la norma de salud"
-          : "Días sobre la norma de salud"
+          ? "Comparación de Días sobre la Norma de Salud"
+          : "Días sobre la Norma de Salud"
       }
       subtitle={
         compare ? (
