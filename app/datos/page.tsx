@@ -5,6 +5,7 @@ import { SITE_URL } from "@/lib/site";
 import JsonLd from "@/components/json-ld";
 import { Suspense } from "react";
 import DiasInsalubres from "@/components/datos/dias-insalubres";
+import DatosActualizacion from "@/components/datos/datos-actualizacion";
 import DiasInsalubresSkeleton from "@/components/datos/dias-insalubres-skeleton";
 import CoberturaEstaciones from "@/components/datos/cobertura-estaciones";
 import CoberturaEstacionesSkeleton from "@/components/datos/cobertura-estaciones-skeleton";
@@ -78,6 +79,9 @@ export default function Datos() {
       <JsonLd data={datasetSchema} />
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
         <h1 className="sr-only">Datos de calidad del aire de la Zona Metropolitana de Monterrey</h1>
+        <Suspense fallback={<div className="mb-4 h-5" />}>
+          <DatosActualizacion />
+        </Suspense>
         <Suspense fallback={<DiasInsalubresSkeleton />}>
           <DiasInsalubres />
         </Suspense>
