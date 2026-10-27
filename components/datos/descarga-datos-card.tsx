@@ -88,9 +88,9 @@ const INFO_TAB: InfoTab = {
   ),
 };
 
-// The foot of /datos, one card for everything about the data itself: what it
-// is and what period it covers ("Periodo · Actualización", labelled facts,
-// INEGI style), the raw-data download, and the shared "learn more" tabs
+// The foot of /datos: the raw-data download (what the data is and its period
+// live in the page header, components/datos/actualizacion-mensual.tsx) and
+// the shared "learn more" tabs
 // (source, methodology, pollutants, health) plus the CSV's Diccionario.
 // The download is a few filters that build the URL of
 // app/api/datos/sima-horario and a same-origin <a download>, so the browser
@@ -144,22 +144,7 @@ export default function DescargaDatosCard({
   return (
     <ChartCard
       title="Descargar datos"
-      subtitle={
-        <>
-          <div>
-            Mediciones horarias de PM2.5 y PM10 de las {estaciones.length} estaciones del SIMA en la Zona
-            Metropolitana de Monterrey.
-          </div>
-          <div className="mt-1">
-            <span className="font-medium text-neutral-700">Periodo:</span> {mes(1)} {FIRST_YEAR} a {mes(ultimoMes)}{" "}
-            {ultimoAnio}
-            <span className="px-2 text-neutral-300" aria-hidden>
-              ·
-            </span>
-            <span className="font-medium text-neutral-700">Actualización:</span> mensual
-          </div>
-        </>
-      }
+      subtitle="Archivo CSV con una fila por estación, contaminante, fecha y hora."
     >
       <div className="flex flex-col gap-5 px-5 py-5 lg:flex-row lg:flex-wrap lg:items-end">
         <Field label="Año">
