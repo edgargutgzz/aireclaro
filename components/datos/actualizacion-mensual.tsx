@@ -13,8 +13,7 @@ const idx = (ano: number, mes: number) => ano * 12 + mes - 1;
 const desde = (i: number) => ({ ano: Math.floor(i / 12), mes: (i % 12) + 1 });
 
 // What opens /datos: the period the data covers and how often it's updated,
-// as two labeled facts over a bar of the covered months (one segment per
-// month, the next one dashed). The next update is the month after the newest
+// as two labeled facts. The next update is the month after the newest
 // month was published (its insert time, lib/datos-cache.ts), or the current
 // month once that one is late, so it never names a month already past.
 export default async function ActualizacionMensual() {
@@ -29,8 +28,6 @@ export default async function ActualizacionMensual() {
   const siguiente = desde(Math.max(idx(pubAno, pubMes), idx(hoyAno, hoyMes) - 1) + 1);
   const proxima = nombreMes(siguiente.ano, siguiente.mes) + (siguiente.ano !== hoyAno ? ` de ${siguiente.ano}` : "");
 
-  const inicio = idx(FIRST_YEAR, 1);
-  const meses = Array.from({ length: idx(ultimo.ano, ultimo.mes) - inicio + 1 }, (_, i) => desde(inicio + i));
   const periodo = `Enero de ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes)} de ${ultimo.ano}`;
 
   const hechos = [
@@ -53,19 +50,6 @@ export default async function ActualizacionMensual() {
           </div>
         ))}
       </dl>
-      {/* The covered months, one segment each, then the coming one dashed;
-          years under their January. Decorative: the facts above say it. */}
-      <div aria-hidden className="mt-5 flex gap-0.5">
-        {meses.map((m) => (
-          <div key={`${m.ano}-${m.mes}`} className="min-w-0 flex-1">
-            <div className="h-2 rounded-[2px] bg-stone-300" />
-            {m.mes === 1 && <div className="mt-2 text-xs leading-none text-neutral-500">{m.ano}</div>}
-          </div>
-        ))}
-        <div className="min-w-0 flex-1">
-          <div className="h-2 rounded-[2px] border border-dashed border-stone-400" />
-        </div>
-      </div>
     </section>
   );
 }
