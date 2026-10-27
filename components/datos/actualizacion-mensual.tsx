@@ -5,7 +5,6 @@ const FIRST_YEAR = 2025; // the first month /datos has, January 2025
 const TZ = "America/Monterrey";
 const INICIALES = ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
 
-const fecha = new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric", timeZone: TZ });
 const nombreMes = (ano: number, m: number) =>
   new Intl.DateTimeFormat("es-MX", { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(ano, m - 1, 1)));
 
@@ -48,7 +47,7 @@ export default async function ActualizacionMensual() {
           {titulo}
         </h2>
         <div className="mt-1 text-xs text-neutral-500 md:text-sm">
-          Publicados el {fecha.format(publicado)}. Próxima actualización: {proxima}.
+          Próxima actualización: {proxima}.
         </div>
       </div>
       <div
