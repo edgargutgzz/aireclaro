@@ -164,7 +164,7 @@ function TrimestreBreakdown({ rows }: { rows: TrimestreRow[] }) {
 
   return (
     <div className="grid gap-2.5">
-      <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+      <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-500">
         Trimestres ({validCount}/4 válidos)
       </span>
       <div className="flex h-1.5 gap-0.5 overflow-hidden rounded-full">
@@ -328,7 +328,7 @@ function TooltipCard({
       className="pointer-events-none absolute z-10 grid w-[17rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
       style={positionStyle}
     >
-      <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+      <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
         {bar.nombre}
       </span>
       {/* Number + its own caption, gap-1.5 (not the tighter gap-0.5 tried
@@ -344,7 +344,7 @@ function TooltipCard({
           <span className="text-2xl font-bold leading-none" style={{ color }}>
             {Math.round(bar.promedio)}
           </span>
-          <span className="text-sm font-medium text-neutral-400">
+          <span className="text-sm font-medium text-neutral-500">
             {POLLUTANT_LABEL[pollutant]} µg/m³
           </span>
         </div>
@@ -820,7 +820,7 @@ export default function PromedioAnualChart({
             was the rest of the "feels less fluid switching years" gap
             (2026-09-28 feedback). */}
         <div className="mb-4 flex items-center justify-between md:mb-6">
-          <span className="text-xs text-neutral-400">
+          <span className="text-xs text-neutral-500">
             {POLLUTANT_LABEL[pollutant]} (µg/m³)
           </span>
           <div className="flex items-center gap-4 text-xs text-neutral-500">
@@ -846,7 +846,7 @@ export default function PromedioAnualChart({
           // same chartHeight as the real bars so the card's total height
           // doesn't change switching to/from a year that has data.
           <div
-            className="flex items-center justify-center rounded-xl bg-stone-50 text-center text-sm text-neutral-400"
+            className="flex items-center justify-center rounded-xl bg-stone-50 text-center text-sm text-neutral-500"
             style={{ height: chartHeight }}
           >
             El promedio anual de {year} estará disponible cuando termine el año.
@@ -868,7 +868,7 @@ export default function PromedioAnualChart({
           </div>
         ) : (
           <div
-            className="flex items-center justify-center rounded-xl bg-stone-50 text-sm text-neutral-400"
+            className="flex items-center justify-center rounded-xl bg-stone-50 text-sm text-neutral-500"
             style={{ height: chartHeight }}
           >
             Sin datos suficientes todavía

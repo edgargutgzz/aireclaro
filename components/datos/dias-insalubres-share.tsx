@@ -63,7 +63,7 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
             cells on their LAST baseline (items-baseline-last), so the big
             number sits on the "Límite" line, which table cells can't do. */}
         <div role="table" aria-label={title}>
-          <div role="row" className={`grid ${cols} pb-4 text-xs text-neutral-400 md:pb-6`}>
+          <div role="row" className={`grid ${cols} pb-4 text-xs text-neutral-500 md:pb-6`}>
             <div role="columnheader">
               <span className="sr-only">Contaminante</span>
             </div>
@@ -82,7 +82,7 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
               <div role="rowheader">
                 <div className="text-sm font-medium text-neutral-700 md:text-base">{POLLUTANT_LABEL[r.pollutant]}</div>
                 {/* The one limit both years' numbers in this row count against. */}
-                <div className="mt-1 text-xs text-neutral-400">Límite: {r.limit} µg/m³</div>
+                <div className="mt-1 text-xs text-neutral-500">Límite: {r.limit} µg/m³</div>
               </div>
               {years.map((y) => (
                 <div

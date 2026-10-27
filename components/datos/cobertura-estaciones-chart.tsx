@@ -468,7 +468,7 @@ export default function CoberturaEstacionesChart({
                 left: Math.min(Math.max(0, ((sel?.day ?? 0) + 0.5) * dayWidth - TOOLTIP_WIDTH / 2), Math.max(0, width - TOOLTIP_WIDTH)),
               }}
             >
-              <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">{formatFecha(selFecha)}</span>
+              <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-500">{formatFecha(selFecha)}</span>
               <span className="text-sm font-semibold text-neutral-800">{selEstacion.nombre}</span>
               <span className="text-sm font-semibold" style={{ color: selCubierto ? COLOR_CON_DATOS_TEXTO : "rgb(115,115,115)" }}>
                 {selCubierto === true ? "Con datos" : selCubierto === false ? "Datos insuficientes" : "Sin registro"}

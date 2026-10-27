@@ -205,7 +205,7 @@ function MonthTooltipCard({
       className="pointer-events-none absolute z-10 grid w-[11rem] gap-2 rounded-xl border border-black/[0.08] bg-white/95 px-4 py-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.1)] backdrop-blur-[6px]"
       style={positionStyle}
     >
-      <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+      <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
         {MONTHS_ES_FULL[month.mesNumero - 1]} {month.ano}
       </span>
       <div className="flex gap-4">
@@ -682,7 +682,7 @@ function YearLinesChart({
             POINT_R,
           )}
         >
-          <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+          <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
             {MONTHS_ES_FULL[hoveredIdx]}
           </span>
           {lines.map((l) => {
@@ -1008,7 +1008,7 @@ export default function DiasInsalubresChart({
             actual cause of the left/right mismatch reported. Reverted.) */}
         {compare ? (
           <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 md:mb-6">
-            <span className="text-xs text-neutral-400">Días sobre la norma</span>
+            <span className="text-xs text-neutral-500">Días sobre la norma</span>
             <div className="flex items-center gap-4 text-xs text-neutral-500">
               {yearLines.map((l) => (
                 <span key={l.ano} className="flex items-center gap-1.5">
@@ -1027,7 +1027,7 @@ export default function DiasInsalubresChart({
               says that, so this would just be a stray leftover label
               (2026-09-27 feedback). */}
           {!drilledMonth && (
-            <span className="text-xs text-neutral-400">Días del mes</span>
+            <span className="text-xs text-neutral-500">Días del mes</span>
           )}
           <div className="flex items-center gap-4 text-xs text-neutral-500">
             <span className="flex items-center gap-1.5">

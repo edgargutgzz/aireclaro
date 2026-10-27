@@ -202,7 +202,7 @@ export default function DiasInsalubresMonthDetail({
             {WEEKDAY_SHORT.map((w) => (
               <div
                 key={w}
-                className="text-center text-[11px] font-medium text-neutral-400"
+                className="text-center text-[11px] font-medium text-neutral-500"
                 style={{ width: cell + GAP }}
               >
                 {w}
@@ -277,7 +277,7 @@ export default function DiasInsalubresMonthDetail({
                 cell / 2,
               )}
             >
-              <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+              <span className="text-[10px] font-medium uppercase tracking-wide text-neutral-500">
                 {WEEKDAY_FULL[tooltip.row]} {tooltip.day.dia} de{" "}
                 {MONTHS_ES_FULL[mesNumero - 1]}
               </span>

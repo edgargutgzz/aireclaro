@@ -27,7 +27,7 @@ export default function DatosHeader({ periodo }: { periodo: string | null }) {
             { label: "Actualización", valor: "Mensual" },
           ].map(({ label, valor }) => (
             <div key={label} className="px-5 first:pl-0 last:pr-0">
-              <dt className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</dt>
+              <dt className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{label}</dt>
               <dd className="mt-1.5 whitespace-nowrap text-sm font-medium text-neutral-700">{valor}</dd>
             </div>
           ))}

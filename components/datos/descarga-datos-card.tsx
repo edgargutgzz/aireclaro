@@ -53,7 +53,7 @@ const DICCIONARIO: InfoTab = {
           <li key={c.nombre} className="rounded-xl border border-stone-200 bg-white px-3.5 py-3">
             <div className="flex items-baseline justify-between gap-3">
               <span className="font-mono text-[13px] font-medium text-neutral-800">{c.nombre}</span>
-              <span className="truncate font-mono text-xs text-neutral-400">{c.ejemplo}</span>
+              <span className="truncate font-mono text-xs text-neutral-500">{c.ejemplo}</span>
             </div>
             <p className="mt-1.5 text-[13px] leading-snug text-neutral-600">{c.descripcion}</p>
           </li>

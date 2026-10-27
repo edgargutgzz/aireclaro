@@ -115,7 +115,7 @@ export default function DownloadImageMenu({
           {/* Heading + option read as one phrase ("Descargar imagen para compartir en
               WhatsApp"), and the button itself carries the download icon,
               so what a click does is said before it happens. */}
-          <p className="px-3 pb-1 pt-2 text-xs font-medium text-neutral-400 sm:whitespace-nowrap">Descargar imagen para compartir en:</p>
+          <p className="px-3 pb-1 pt-2 text-xs font-medium text-neutral-500 sm:whitespace-nowrap">Descargar imagen para compartir en:</p>
           {GROUPS.map((group, i) => (
             <div key={group.options[0].format} className={i > 0 ? "mt-1 border-t border-stone-100 pt-1" : ""}>
               {group.title && (
