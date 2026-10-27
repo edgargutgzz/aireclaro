@@ -18,7 +18,7 @@ export default async function ActualizacionMensual() {
 
   const descripcion = `Mediciones horarias de PM2.5 y PM10 de ${
     estaciones ? `las ${estaciones.length} estaciones` : "las estaciones"
-  } del SIMA en la Zona Metropolitana de Monterrey.`;
+  } del SIMA.`;
   const periodo = ultimo ? `ene ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes)} ${ultimo.ano}` : null;
 
   return <DatosHeader descripcion={descripcion} periodo={periodo} />;
