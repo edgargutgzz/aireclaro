@@ -20,7 +20,7 @@ export default function DatosHeader({ periodo }: { periodo: string | null }) {
       {/* Title on the left, the two facts as label-over-value stats on the
           right (from lg; stacked under the title before). */}
       <div className="flex flex-col gap-3 px-5 pb-3 pt-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
-        <h1 className="text-xl font-semibold text-neutral-800">Calidad del aire en la Zona Metropolitana de Monterrey</h1>
+        <h1 className="text-xl font-semibold text-neutral-800">Calidad del Aire en la Zona Metropolitana de Monterrey</h1>
         <dl className="flex shrink-0 divide-x divide-stone-200">
           {[
             ...(periodo ? [{ label: "Periodo", valor: periodo }] : []),
