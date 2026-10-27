@@ -34,14 +34,12 @@ export const fetchEstaciones = cachedDatos(async (): Promise<Estacion[]> => {
 }, "estaciones");
 
 // The latest month the /datos data runs through (PM2.5's, which every chart
-// shares since one cron run writes them all). Read by the update line, the
-// download card and the /datos link card's image URL. updated_at is set when
-// the row is first inserted (re-syncs upsert without touching it), so the
-// newest month's is the day that month was published.
-export const fetchUltimoMes = cachedDatos(async (): Promise<{ ano: number; mes: number; updated_at: string } | null> => {
+// shares since one cron run writes them all). Read by the period facts, the
+// download card and the /datos link card's image URL.
+export const fetchUltimoMes = cachedDatos(async (): Promise<{ ano: number; mes: number } | null> => {
   const { data, error } = await createPublicClient()
     .from("sima_insalubres_mensual")
-    .select("ano, mes, updated_at")
+    .select("ano, mes")
     .eq("parametro", "PM2.5")
     .order("ano", { ascending: false })
     .order("mes", { ascending: false })
