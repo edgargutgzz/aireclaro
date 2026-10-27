@@ -40,7 +40,7 @@ const COLUMNAS: { nombre: string; ejemplo: string; descripcion: string }[] = [
 const LINK = "font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900";
 
 // The card header's Diccionario (the same button and panel as a chart's
-// Metodología): one small card per column (name, an example value, what it
+// Cómo se calcula): one small card per column (name, an example value, what it
 // means), then source, license and citation in a quieter footer.
 const DICCIONARIO: InfoTab = {
   id: "diccionario",

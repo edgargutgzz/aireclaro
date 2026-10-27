@@ -30,7 +30,7 @@ export default function DiasInsalubresShare({ summary }: { summary: MonthlySumma
 
   const infoTab: InfoTab = {
     id: "norma",
-    label: "Metodología",
+    label: "Cómo se calcula",
     icon: BookOpen,
     body: (
       <>
