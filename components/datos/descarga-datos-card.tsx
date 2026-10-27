@@ -25,73 +25,59 @@ const PARAMETRO_OPTIONS: { value: Parametro; label: string }[] = [
   { value: "PM10", label: "PM10" },
 ];
 
-// The CSV's columns, in file order.
-const COLUMNAS: { nombre: string; descripcion: string }[] = [
-  { nombre: "fecha", descripcion: "Día de la medición." },
-  { nombre: "hora", descripcion: "Hora de la medición, de 0 a 23." },
-  { nombre: "sensor_id", descripcion: "Clave de la estación en SINAICA." },
-  { nombre: "estacion", descripcion: "Nombre de la estación." },
-  { nombre: "parametro", descripcion: "Contaminante medido, PM2.5 o PM10." },
-  { nombre: "valor", descripcion: "Concentración en µg/m³. Vacío si la estación no reportó esa hora." },
-  { nombre: "val", descripcion: "Indicador de validez reportado por SINAICA." },
+// The CSV's columns, in file order, each with a value from a real row
+// (Guadalupe, 2026-01-12 03:00).
+const COLUMNAS: { nombre: string; ejemplo: string; descripcion: string }[] = [
+  { nombre: "fecha", ejemplo: "2026-01-12", descripcion: "Día de la medición." },
+  { nombre: "hora", ejemplo: "3", descripcion: "Hora de la medición, de 0 a 23." },
+  { nombre: "sensor_id", ejemplo: "SE", descripcion: "Clave de la estación en SINAICA." },
+  { nombre: "estacion", ejemplo: "Guadalupe", descripcion: "Nombre de la estación." },
+  { nombre: "parametro", ejemplo: "PM2.5", descripcion: "Contaminante medido, PM2.5 o PM10." },
+  { nombre: "valor", ejemplo: "4.09", descripcion: "Concentración en µg/m³. Vacío si la estación no reportó esa hora." },
+  { nombre: "val", ejemplo: "1", descripcion: "Indicador de validez reportado por SINAICA." },
 ];
 
 const LINK = "font-medium text-neutral-700 underline underline-offset-2 hover:text-neutral-900";
 
 // The card header's Diccionario (the same button and panel as a chart's
-// Metodología): the columns as a table, then source, license and citation.
+// Metodología): one small card per column (name, an example value, what it
+// means), then source, license and citation in a quieter footer.
 const DICCIONARIO: InfoTab = {
   id: "diccionario",
   label: "Diccionario",
   icon: BookOpen,
   body: (
-    <div className="space-y-4">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-stone-200 text-xs font-medium uppercase tracking-wide text-neutral-400">
-              <th className="py-2 pr-6 font-medium">Columna</th>
-              <th className="py-2 font-medium">Descripción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {COLUMNAS.map((c) => (
-              <tr key={c.nombre} className="border-b border-stone-200/60 last:border-0">
-                <td className="whitespace-nowrap py-2 pr-6 align-top font-mono text-[13px] text-neutral-700">
-                  {c.nombre}
-                </td>
-                <td className="py-2">{c.descripcion}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div>
+      <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {COLUMNAS.map((c) => (
+          <li key={c.nombre} className="rounded-xl border border-stone-200 bg-white px-3.5 py-3">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-mono text-[13px] font-medium text-neutral-800">{c.nombre}</span>
+              <span className="truncate font-mono text-xs text-neutral-400">{c.ejemplo}</span>
+            </div>
+            <p className="mt-1.5 text-[13px] leading-snug text-neutral-600">{c.descripcion}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 space-y-1.5 border-t border-stone-200 pt-4 text-xs leading-relaxed text-neutral-500">
+        <p>
+          <span className="font-medium text-neutral-700">Fuente:</span> estaciones del SIMA, obtenidas del{" "}
+          <a href="https://sinaica.inecc.gob.mx" target="_blank" rel="noopener noreferrer" className={LINK}>
+            Sistema Nacional de Información de la Calidad del Aire (SINAICA)
+          </a>
+          .
+        </p>
+        <p>
+          <span className="font-medium text-neutral-700">Licencia:</span> esta compilación se publica bajo{" "}
+          <a href={DATA_LICENSE.deedUrl} target="_blank" rel="noopener noreferrer" className={LINK}>
+            {DATA_LICENSE.name}
+          </a>
+          . Las mediciones son de SINAICA (INECC); al usarlas, cita a SINAICA como fuente original.
+        </p>
+        <p>
+          <span className="font-medium text-neutral-700">Cómo citar:</span> {DATA_CITATION}
+        </p>
       </div>
-      <dl className="space-y-2">
-        <div>
-          <dt className="inline font-medium text-neutral-700">Fuente: </dt>
-          <dd className="inline">
-            estaciones del SIMA, obtenidas del{" "}
-            <a href="https://sinaica.inecc.gob.mx" target="_blank" rel="noopener noreferrer" className={LINK}>
-              Sistema Nacional de Información de la Calidad del Aire (SINAICA)
-            </a>
-            .
-          </dd>
-        </div>
-        <div>
-          <dt className="inline font-medium text-neutral-700">Licencia: </dt>
-          <dd className="inline">
-            esta compilación se publica bajo{" "}
-            <a href={DATA_LICENSE.deedUrl} target="_blank" rel="noopener noreferrer" className={LINK}>
-              {DATA_LICENSE.name}
-            </a>
-            . Las mediciones son de SINAICA (INECC); al usarlas, cita a SINAICA como fuente original.
-          </dd>
-        </div>
-        <div>
-          <dt className="inline font-medium text-neutral-700">Cómo citar: </dt>
-          <dd className="inline">{DATA_CITATION}</dd>
-        </div>
-      </dl>
     </div>
   ),
 };
