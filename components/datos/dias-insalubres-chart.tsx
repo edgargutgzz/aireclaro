@@ -103,7 +103,7 @@ function infoTab(pollutant: Pollutant, compare: boolean, year: number | null): I
   const fin = year !== null ? limitOf(`${year}-12-31`) : desde;
   return {
     id: "norma",
-    label: "Metodología",
+    label: "Cómo se calcula",
     icon: BookOpen,
     body: compare ? (
       <>
@@ -900,8 +900,8 @@ export default function DiasInsalubresChart({
       infoTab={infoTab(pollutant, compare, year)}
       title={
         compare
-          ? "Comparación de días sobre la norma de salud en la Zona Metropolitana de Monterrey"
-          : "Días sobre la norma de salud en la Zona Metropolitana de Monterrey"
+          ? "Comparación de días sobre la norma de salud"
+          : "Días sobre la norma de salud"
       }
       subtitle={
         compare ? (

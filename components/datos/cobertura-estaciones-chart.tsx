@@ -133,7 +133,7 @@ export const POLLUTANT_LABEL: Record<Pollutant, string> = {
 export function infoTab(pollutant: Pollutant): InfoTab {
   return {
     id: "metodologia",
-    label: "Metodología",
+    label: "Cómo se calcula",
     icon: BookOpen,
     body: (
       <>
@@ -340,7 +340,7 @@ export default function CoberturaEstacionesChart({
   return (
     <ChartCard
       infoTab={infoTab(pollutant)}
-      title="Cobertura de estaciones en la Zona Metropolitana de Monterrey"
+      title="Cobertura de estaciones"
       subtitle={<CoberturaSubtitle pct={pctTotal} delta={delta} pollutant={pollutant} year={year} />}
       headerRight={
         <>

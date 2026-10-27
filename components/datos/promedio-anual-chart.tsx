@@ -98,7 +98,7 @@ function infoTab(pollutant: Pollutant): InfoTab {
     // (the trimester rule) tab (2026-09-28 request: match how 1 and 2
     // already word this panel, one tab).
     id: "metodologia",
-    label: "Metodología",
+    label: "Cómo se calcula",
     icon: BookOpen,
     body: (
       <>
@@ -736,7 +736,7 @@ export default function PromedioAnualChart({
   return (
     <ChartCard
       infoTab={infoTab(pollutant)}
-      title="Promedio anual por estación en la Zona Metropolitana de Monterrey"
+      title="Promedio anual por estación"
       // Leads with the headline number, plain (no bold/color) -- matches
       // días insalubres ("{totalInsalubres} días de aire insalubre por
       // PM2.5 en 2026") and cobertura ("{pctCobertura}% de cobertura de
