@@ -7,10 +7,10 @@ const nombreMes = (ano: number, m: number) =>
     .format(new Date(Date.UTC(ano, m - 1, 1)))
     .replace(".", "");
 
-// The dashboard's header bar: title and what the data is on the left, the
-// period and update cadence as chips on the right (the same tinted h-8 shape
-// as the chart header controls). Station count and last month come from the
-// data. Below lg the chips wrap under the title.
+// The dashboard's header: title, what the data is, then the period and update
+// cadence as chips (the chart header controls' tinted h-8 shape), one block
+// over a hairline that anchors it above the charts. Station count and last
+// month come from the data.
 export default async function ActualizacionMensual() {
   const [estaciones, ultimo] = await Promise.all([
     fetchEstaciones().catch(() => null),
@@ -26,7 +26,7 @@ export default async function ActualizacionMensual() {
   ].filter(Boolean) as { label: string; valor: string }[];
 
   return (
-    <header className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between lg:gap-6">
+    <header className="mb-8 border-b border-stone-200 pb-6">
       <div className="min-w-0">
         <h1 className="text-xl font-semibold text-neutral-800">Datos de calidad del aire</h1>
         <p className="mt-1 text-sm text-neutral-500">
@@ -34,7 +34,7 @@ export default async function ActualizacionMensual() {
           SIMA en la Zona Metropolitana de Monterrey.
         </p>
       </div>
-      <dl className="flex flex-wrap gap-2">
+      <dl className="mt-4 flex flex-wrap gap-2">
         {chips.map(({ label, valor }) => (
           <div key={label} className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl bg-stone-100 px-3 text-[13px]">
             <dt className="text-neutral-500">{label}</dt>
