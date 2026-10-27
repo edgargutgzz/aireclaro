@@ -3,38 +3,45 @@ import { fetchEstaciones, fetchUltimoMes } from "@/lib/datos-cache";
 const FIRST_YEAR = 2025; // the first month /datos has, January 2025
 
 const nombreMes = (ano: number, m: number) =>
-  new Intl.DateTimeFormat("es-MX", { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(ano, m - 1, 1)));
+  new Intl.DateTimeFormat("es-MX", { month: "short", timeZone: "UTC" })
+    .format(new Date(Date.UTC(ano, m - 1, 1)))
+    .replace(".", "");
 
-// The page header under the title: what the data is, then the period it
-// covers and how often it's updated. The facts sit on the page, not in a
-// card: label over value, a hairline between them from sm (stacked on a
-// phone). Station count and last month are read from the data.
+// The dashboard's header bar: title and what the data is on the left, the
+// period and update cadence as chips on the right (the same tinted h-8 shape
+// as the chart header controls). Station count and last month come from the
+// data. Below lg the chips wrap under the title.
 export default async function ActualizacionMensual() {
   const [estaciones, ultimo] = await Promise.all([
     fetchEstaciones().catch(() => null),
     fetchUltimoMes().catch(() => null),
   ]);
-  if (!ultimo) return null;
 
-  const hechos = [
-    { label: "Periodo", valor: `Enero de ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes)} de ${ultimo.ano}` },
-    { label: "Actualización", valor: "Mensual" },
-  ];
+  const chips = [
+    ultimo && {
+      label: "Periodo",
+      valor: `ene ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes)} ${ultimo.ano}`,
+    },
+    { label: "Actualización", valor: "mensual" },
+  ].filter(Boolean) as { label: string; valor: string }[];
 
   return (
-    <>
-      <p className="mt-3 max-w-3xl text-base leading-relaxed text-neutral-600 md:text-lg">
-        Mediciones horarias de PM2.5 y PM10 de {estaciones ? `las ${estaciones.length} estaciones` : "las estaciones"} del SIMA
-        en la Zona Metropolitana de Monterrey.
-      </p>
-      <dl className="mt-6 flex flex-col gap-4 sm:flex-row sm:gap-0 sm:divide-x sm:divide-stone-200">
-        {hechos.map(({ label, valor }) => (
-          <div key={label} className="sm:px-8 sm:first:pl-0">
-            <dt className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">{label}</dt>
-            <dd className="mt-2 text-base font-medium text-neutral-700">{valor}</dd>
+    <header className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between lg:gap-6">
+      <div className="min-w-0">
+        <h1 className="text-xl font-semibold text-neutral-800">Datos de calidad del aire</h1>
+        <p className="mt-1 text-sm text-neutral-500">
+          Mediciones horarias de PM2.5 y PM10 de {estaciones ? `las ${estaciones.length} estaciones` : "las estaciones"} del
+          SIMA en la Zona Metropolitana de Monterrey.
+        </p>
+      </div>
+      <dl className="flex flex-wrap gap-2">
+        {chips.map(({ label, valor }) => (
+          <div key={label} className="flex h-8 items-center gap-1.5 whitespace-nowrap rounded-xl bg-stone-100 px-3 text-[13px]">
+            <dt className="text-neutral-500">{label}</dt>
+            <dd className="font-medium text-neutral-700">{valor}</dd>
           </div>
         ))}
       </dl>
-    </>
+    </header>
   );
 }

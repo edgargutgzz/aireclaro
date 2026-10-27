@@ -78,12 +78,9 @@ export default function Datos() {
     <div className="min-h-screen">
       <JsonLd data={datasetSchema} />
       <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 lg:px-8 lg:pb-32 lg:pt-12">
-        <header className="mb-10">
-          <h1 className="text-2xl font-bold text-neutral-900 md:text-4xl">Datos de calidad del aire</h1>
-          <Suspense fallback={<div className="h-28" />}>
-            <ActualizacionMensual />
-          </Suspense>
-        </header>
+        <Suspense fallback={<div className="mb-6 h-14" />}>
+          <ActualizacionMensual />
+        </Suspense>
         <Suspense fallback={<DiasInsalubresSkeleton />}>
           <DiasInsalubres />
         </Suspense>
