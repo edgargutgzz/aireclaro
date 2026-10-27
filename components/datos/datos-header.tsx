@@ -10,7 +10,7 @@ import { GENERAL_TABS } from "@/components/datos/datos-general-info";
 // is darker and underlined, and its text opens right under the bar.
 // Clicking the open tab closes it. Below lg the bar scrolls sideways; from lg it's a plain row (no scroller,
 // which made hovers flicker before).
-export default function DatosHeader({ periodo }: { periodo: string | null }) {
+export default function DatosHeader({ periodo }: { periodo: { corto: string; largo: string } | null }) {
   const [abierta, setAbierta] = useState<string | null>(null);
   const panelId = useId();
   const tab = GENERAL_TABS.find((t) => t.id === abierta);
@@ -23,7 +23,19 @@ export default function DatosHeader({ periodo }: { periodo: string | null }) {
         <h1 className="text-xl font-semibold text-neutral-800">Calidad del Aire en la Zona Metropolitana de Monterrey</h1>
         <dl className="flex shrink-0 divide-x divide-stone-200">
           {[
-            ...(periodo ? [{ label: "Periodo", valor: periodo }] : []),
+            ...(periodo
+              ? [
+                  {
+                    label: "Periodo",
+                    valor: (
+                      <>
+                        <span className="lg:hidden">{periodo.corto}</span>
+                        <span className="hidden lg:inline">{periodo.largo}</span>
+                      </>
+                    ),
+                  },
+                ]
+              : []),
             { label: "Actualización", valor: "Mensual" },
           ].map(({ label, valor }) => (
             <div key={label} className="px-5 first:pl-0 last:pr-0">
