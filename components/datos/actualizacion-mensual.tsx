@@ -16,8 +16,8 @@ export default async function ActualizacionMensual() {
   // share a phone-width row.
   const periodo = ultimo
     ? {
-        corto: `Ene ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes, "short")} ${ultimo.ano}`,
-        largo: `Enero ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes, "long")} ${ultimo.ano}`,
+        corto: `ene ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes, "short")} ${ultimo.ano}`,
+        largo: `enero ${FIRST_YEAR} a ${nombreMes(ultimo.ano, ultimo.mes, "long")} ${ultimo.ano}`,
       }
     : null;
   return <DatosHeader periodo={periodo} />;
