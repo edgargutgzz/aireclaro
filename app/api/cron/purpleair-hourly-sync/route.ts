@@ -5,47 +5,53 @@ import { monterreyNaiveNow } from "@/lib/monterrey-time";
 // The map's live PurpleAir feed: every hour, each device's 60-minute PM2.5
 // average (plus temperature and humidity), appended to purpleair_mediciones.
 // A device that hasn't reported in the last hour gets no row, so it ages out
-// of the map's live window on its own. Ported from the standalone
-// `aireclaro-purpleair` Render job with the same request pattern -- one
-// GET /v1/sensors/{id} per device, same fields, same key -- so usage on the
-// (legacy) API key doesn't change.
+// of the map's live window on its own.
 //
-// Fixed in the port:
+// One request for every device (GET /v1/sensors with show_only), as
+// PurpleAir's API use guidelines ask: real-time endpoints take any number of
+// sensors, and too many requests can cost API access. Until 2026-10-30 the job
+// kept the old Render job's pattern of one request per device (~186 an hour).
+//
 // - purpleair_sensores has rows that share a sensor_id (a device moved and
-//   re-added under a new name). Each device is requested and written once,
-//   not once per row.
+//   re-added under a new name). Each device is requested and written once.
 // - Only "activo" rows are polled; "historico" (a moved/renamed device's old
-//   row) is a manual call. The job never writes estatus (it used to flip
-//   activo/inactivo hourly, which the 3 h live window made redundant).
+//   row) is a manual call. The job never writes estatus.
 // - A reading is written only when the device reported in the last hour.
-// - A device with no last_seen is skipped instead of ending the run.
+// - A device with no last_seen or no PM2.5 value is skipped.
 
 export const maxDuration = 300;
 
 const PURPLEAIR_URL = "https://api.purpleair.com/v1/sensors";
 const FIELDS = "pm2.5_60minute,temperature,humidity,last_seen";
 const STALE_AFTER_MS = 60 * 60 * 1000;
-// Requests in flight at once. Same requests as the old sequential loop, just
-// overlapped so ~270 devices fit comfortably in maxDuration.
-const CONCURRENCY = 4;
+// The whole run is one request now, so a transient failure would lose the
+// hour: retry a couple of times before giving up.
+const ATTEMPTS = 3;
+const RETRY_DELAY_MS = 10_000;
 
-interface PurpleAirSensor {
-  last_seen?: number;
-  humidity?: number | null;
-  temperature?: number | null;
-  stats?: { "pm2.5_60minute"?: number | null };
-}
+type SensorRow = Record<string, number | null>;
 
-async function fetchSensor(sensorId: number, apiKey: string): Promise<PurpleAirSensor | null> {
-  const res = await fetch(`${PURPLEAIR_URL}/${sensorId}?fields=${FIELDS}`, {
-    headers: { "X-API-Key": apiKey },
-    signal: AbortSignal.timeout(20_000),
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
+// GET /v1/sensors answers { fields: [...], data: [[...], ...] }: one array per
+// device, in the order `fields` names. Mapped back to objects by field name.
+async function fetchSensors(sensorIds: number[], apiKey: string): Promise<SensorRow[]> {
+  const url = `${PURPLEAIR_URL}?fields=${FIELDS}&show_only=${sensorIds.join(",")}`;
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: { "X-API-Key": apiKey },
+        signal: AbortSignal.timeout(60_000),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 200)}`);
+      const body = (await res.json()) as { fields?: string[]; data?: (number | null)[][] };
+      const fields = body.fields ?? [];
+      return (body.data ?? []).map((row) => Object.fromEntries(fields.map((f, i) => [f, row[i] ?? null])));
+    } catch (err) {
+      lastError = err;
+      if (attempt < ATTEMPTS) await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+    }
   }
-  const data = (await res.json()) as { sensor?: PurpleAirSensor };
-  return data.sensor ?? null;
+  throw lastError;
 }
 
 function fahrenheitToCelsius(f: number | null | undefined) {
@@ -91,34 +97,33 @@ export async function GET(request: NextRequest) {
   let stale = 0;
   const errors: string[] = [];
 
-  let next = 0;
-  async function worker() {
-    while (next < deviceIds.length) {
-      const sensorId = deviceIds[next++];
-      try {
-        const sensor = await fetchSensor(sensorId, apiKey!);
-        if (!sensor || typeof sensor.last_seen !== "number") continue;
-
-        if (Date.now() - sensor.last_seen * 1000 > STALE_AFTER_MS) {
-          stale++;
-          continue;
-        }
-
-        const pm25 = sensor.stats?.["pm2.5_60minute"];
-        if (typeof pm25 !== "number") continue;
-        rows.push({
-          sensor_id: sensorId,
-          pm25,
-          temperature: fahrenheitToCelsius(sensor.temperature),
-          humidity: sensor.humidity ?? null,
-          time_stamp: timeStamp,
-        });
-      } catch (err) {
-        errors.push(`${sensorId}: ${err instanceof Error ? err.message : String(err)}`);
-      }
-    }
+  let sensors: SensorRow[] = [];
+  try {
+    sensors = await fetchSensors(deviceIds, apiKey);
+  } catch (err) {
+    errors.push(`request: ${err instanceof Error ? err.message : String(err)}`);
   }
-  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+
+  for (const sensor of sensors) {
+    const sensorId = sensor.sensor_index;
+    const lastSeen = sensor.last_seen;
+    if (typeof sensorId !== "number" || typeof lastSeen !== "number") continue;
+
+    if (Date.now() - lastSeen * 1000 > STALE_AFTER_MS) {
+      stale++;
+      continue;
+    }
+
+    const pm25 = sensor["pm2.5_60minute"];
+    if (typeof pm25 !== "number") continue;
+    rows.push({
+      sensor_id: sensorId,
+      pm25,
+      temperature: fahrenheitToCelsius(sensor.temperature),
+      humidity: sensor.humidity ?? null,
+      time_stamp: timeStamp,
+    });
+  }
 
   if (rows.length > 0) {
     const { error } = await supabase.from("purpleair_mediciones").insert(rows);
@@ -130,6 +135,9 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     timeStamp,
     devices: deviceIds.length,
+    // Devices PurpleAir returned; one missing from the answer (deleted,
+    // private, silent for over a week) simply gets no row.
+    returned: sensors.length,
     // Devices that haven't reported in the last hour.
     stale,
     rowsWritten: rows.length,
