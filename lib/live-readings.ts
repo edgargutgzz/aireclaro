@@ -1,6 +1,7 @@
 import { createPublicClient } from "@/utils/supabase/public";
 import { isValidPM25 } from "@/lib/air-quality";
 import { monterreyNaiveHoursAgo } from "@/lib/monterrey-time";
+import { correctPurpleAirReadings } from "@/lib/purpleair-correction";
 
 // The site's one "is this live?" rule: a reading counts only if it's from the
 // last 90 minutes, i.e. the latest hour that should be posted by now is there.
@@ -28,17 +29,25 @@ export interface LiveReading<Id extends string | number> {
 export async function fetchLiveReadings<Id extends string | number>(
   table: "sima_mediciones" | "purpleair_mediciones",
 ): Promise<LiveReading<Id>[]> {
+  const isPurpleAir = table === "purpleair_mediciones";
   const { data, error } = await createPublicClient()
     .from(table)
-    .select("id, sensor_id, pm25, time_stamp")
+    .select(isPurpleAir ? "id, sensor_id, pm25, time_stamp, humidity" : "id, sensor_id, pm25, time_stamp")
     .gte("time_stamp", monterreyNaiveHoursAgo(LIVE_MINUTES / 60))
     .order("time_stamp", { ascending: false });
 
   if (error) throw new Error(`Failed to fetch ${table}: ${error.message}`);
 
-  const latest = new Map<Id, LiveReading<Id>>();
-  for (const r of (data ?? []) as LiveReading<Id>[]) {
+  type Row = LiveReading<Id> & { humidity?: number | null };
+  const latest = new Map<Id, Row>();
+  for (const r of (data ?? []) as unknown as Row[]) {
     if (!latest.has(r.sensor_id)) latest.set(r.sensor_id, r);
   }
-  return [...latest.values()].filter((r) => isValidPM25(r.pm25));
+  const valid = [...latest.values()].filter((r) => isValidPM25(r.pm25));
+  // Citizen sensors are shown EPA-corrected (lib/purpleair-correction.ts);
+  // validity is judged on the raw value, before the correction.
+  if (!isPurpleAir) return valid;
+  return correctPurpleAirReadings(valid.map((r) => ({ ...r, humidity: r.humidity ?? null }))).map(
+    ({ humidity: _humidity, ...r }) => r,
+  );
 }

@@ -1,4 +1,6 @@
 import { createPublicClient } from "@/utils/supabase/public";
+import { isValidPM25 } from "@/lib/air-quality";
+import { correctPurpleAirReadings } from "@/lib/purpleair-correction";
 
 // PurpleAir ids are integers, SIMA station ids are text codes ("CE").
 export type SensorSnapshot = {
@@ -56,7 +58,7 @@ export async function getSensorSnapshot(
     .maybeSingle();
 
   if (purpleAir.data) {
-    const reading = await latestReading(supabase, "purpleair_mediciones", sensorId);
+    const reading = await latestPurpleAirReading(supabase, sensorId);
     return {
       sensorId,
       source: "purpleAir",
@@ -83,4 +85,31 @@ async function latestReading(
     .limit(1)
     .maybeSingle();
   return data;
+}
+
+// A citizen sensor's latest reading, EPA-corrected like the map's
+// (lib/purpleair-correction.ts). A device with no humidity takes the median
+// of every sensor's humidity in that same hourly run, as the map does.
+async function latestPurpleAirReading(
+  supabase: ReturnType<typeof createPublicClient>,
+  sensorId: number,
+) {
+  const { data } = await supabase
+    .from("purpleair_mediciones")
+    .select("pm25, humidity, time_stamp")
+    .eq("sensor_id", sensorId)
+    .order("time_stamp", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!data || !isValidPM25(data.pm25)) return data;
+
+  let batch = [data];
+  if (data.humidity == null) {
+    const { data: run } = await supabase
+      .from("purpleair_mediciones")
+      .select("pm25, humidity, time_stamp")
+      .eq("time_stamp", data.time_stamp);
+    batch = [data, ...(run ?? [])];
+  }
+  return correctPurpleAirReadings(batch)[0];
 }
