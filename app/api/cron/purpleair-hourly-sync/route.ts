@@ -22,9 +22,10 @@ import { monterreyNaiveNow } from "@/lib/monterrey-time";
 export const maxDuration = 300;
 
 const PURPLEAIR_URL = "https://api.purpleair.com/v1/sensors";
-// pm2.5_60minute is both halves of the sensor averaged; _a and _b are each
-// half on its own, kept so the site can drop an hour where they disagree (a
-// failed half, lib/purpleair-correction.ts).
+// pm2.5_60minute is PurpleAir's combined value: both halves averaged when
+// they agree, often one half alone when they don't (not always the right one).
+// _a and _b are each half on its own, kept so the site can drop an hour where
+// they disagree (a failed half, lib/purpleair-correction.ts).
 const FIELDS = "pm2.5_60minute,pm2.5_60minute_a,pm2.5_60minute_b,temperature,humidity,last_seen";
 const STALE_AFTER_MS = 60 * 60 * 1000;
 // The whole run is one request now, so a transient failure would lose the
