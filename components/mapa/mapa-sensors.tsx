@@ -1472,9 +1472,10 @@ export default function MapaSensors({
                     ciudadanos, escuelas y organizaciones independientes.
                   </p>
                   <p className="mt-2">
-                    Al ser de bajo costo, no están calibrados como las estaciones
-                    oficiales y pueden sobreestimar las PM2.5 cuando hay mucha
-                    humedad.
+                    Al ser de bajo costo, pueden sobreestimar las PM2.5 cuando hay
+                    mucha humedad. Por eso, sus lecturas se ajustan con la fórmula
+                    de corrección de la EPA de EE. UU. Su precisión y
+                    disponibilidad no están garantizadas.
                   </p>
                 </>
               ),
