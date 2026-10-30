@@ -56,3 +56,17 @@ function median(values: number[]): number | null {
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
+
+// Each PurpleAir has two laser counters (channels A and B). An hour where they
+// disagree by more than 5 µg/m³ AND more than 70% usually means one half has
+// failed, so it isn't shown. The rule's shape is Barkjohn et al. 2021 §3.2.3
+// ("valid if the difference between channels A and B was less than 5 µg m⁻³
+// or 61 %", for 24-h data); 70% is the hourly threshold of the EPA's Fire and
+// Smoke Map. A row without both channels (older rows, one-channel sensors)
+// passes.
+export function channelsDisagree(a: number | null | undefined, b: number | null | undefined): boolean {
+  if (a == null || b == null) return false;
+  const diff = Math.abs(a - b);
+  const mean = (a + b) / 2;
+  return diff > 5 && (mean <= 0 || diff / mean > 0.7);
+}

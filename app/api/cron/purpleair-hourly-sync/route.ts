@@ -22,7 +22,10 @@ import { monterreyNaiveNow } from "@/lib/monterrey-time";
 export const maxDuration = 300;
 
 const PURPLEAIR_URL = "https://api.purpleair.com/v1/sensors";
-const FIELDS = "pm2.5_60minute,temperature,humidity,last_seen";
+// pm2.5_60minute is both halves of the sensor averaged; _a and _b are each
+// half on its own, kept so the site can drop an hour where they disagree (a
+// failed half, lib/purpleair-correction.ts).
+const FIELDS = "pm2.5_60minute,pm2.5_60minute_a,pm2.5_60minute_b,temperature,humidity,last_seen";
 const STALE_AFTER_MS = 60 * 60 * 1000;
 // The whole run is one request now, so a transient failure would lose the
 // hour: retry a couple of times before giving up.
@@ -90,6 +93,8 @@ export async function GET(request: NextRequest) {
   const rows: {
     sensor_id: number;
     pm25: number;
+    pm25_a: number | null;
+    pm25_b: number | null;
     temperature: number | null;
     humidity: number | null;
     time_stamp: string;
@@ -119,6 +124,8 @@ export async function GET(request: NextRequest) {
     rows.push({
       sensor_id: sensorId,
       pm25,
+      pm25_a: sensor["pm2.5_60minute_a"] ?? null,
+      pm25_b: sensor["pm2.5_60minute_b"] ?? null,
       temperature: fahrenheitToCelsius(sensor.temperature),
       humidity: sensor.humidity ?? null,
       time_stamp: timeStamp,

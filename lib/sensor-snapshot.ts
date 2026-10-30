@@ -1,6 +1,6 @@
 import { createPublicClient } from "@/utils/supabase/public";
 import { isValidPM25 } from "@/lib/air-quality";
-import { correctPurpleAirReadings } from "@/lib/purpleair-correction";
+import { channelsDisagree, correctPurpleAirReadings } from "@/lib/purpleair-correction";
 
 // PurpleAir ids are integers, SIMA station ids are text codes ("CE").
 export type SensorSnapshot = {
@@ -96,18 +96,20 @@ async function latestPurpleAirReading(
 ) {
   const { data } = await supabase
     .from("purpleair_mediciones")
-    .select("pm25, humidity, time_stamp")
+    .select("pm25, humidity, pm25_a, pm25_b, time_stamp")
     .eq("sensor_id", sensorId)
     .order("time_stamp", { ascending: false })
     .limit(1)
     .maybeSingle();
   if (!data || !isValidPM25(data.pm25)) return data;
+  // Same as the map: an hour whose two channels disagree isn't shown.
+  if (channelsDisagree(data.pm25_a, data.pm25_b)) return { ...data, pm25: null };
 
   let batch = [data];
   if (data.humidity == null) {
     const { data: run } = await supabase
       .from("purpleair_mediciones")
-      .select("pm25, humidity, time_stamp")
+      .select("pm25, humidity, pm25_a, pm25_b, time_stamp")
       .eq("time_stamp", data.time_stamp);
     batch = [data, ...(run ?? [])];
   }
