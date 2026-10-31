@@ -44,15 +44,16 @@ import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { ZONA_AVISO, clearZona, inBounds, readZona, roundZona, saveZona, type Zona, type ZonaStatus } from "./mi-zona";
 import { BASEMAP_GROUND } from "./ground";
 
-// The station the estación card shows at rest, before any marker is picked:
-// SIMA "CE" — Monterrey: Obispado, the central government reference station.
-// The card shows this one station's own reading; there is no median fallback,
-// so if it's filtered out (Capas → gobierno off) the card is simply empty.
-// When Obispado has no live reading (lib/live-readings.ts, the cutoff the
-// homepage ticker uses too), the default is instead the PurpleAir
-// sensor nearest to it that has one, so the map never opens on an empty or
-// stale card. Rule decided 2026-10-06, after a SINAICA outage left Obispado
-// without data.
+// The station the estación card shows at rest, before any marker is picked
+// (the mobile sheet; desktop opens without a card): the official station with
+// the highest live PM2.5 right now, FIN excluded (it's Saltillo). Rule decided
+// 2026-10-31: people open this page to learn how the air is, and the worst
+// official reading is the one to act on. Ties go to the first name
+// alphabetically, so the pick doesn't flicker. When no official station has a
+// live reading (lib/live-readings.ts), the default is the PurpleAir sensor
+// nearest to Obispado ("CE", the central reference station) that has one, so
+// the map never opens on an empty or stale card (fallback since a SINAICA
+// outage, 2026-10-06). Filtered out (Capas) → the card is simply empty.
 const DEFAULT_SENSOR_ID = "CE";
 
 // Analytics: a station the visitor picked (map tap or the station list). The
@@ -73,19 +74,23 @@ function restingFocus(defaultSelection: SelectedSensor | null) {
 }
 
 function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefined {
+  // `data` holds only live, valid readings (lib/live-readings.ts).
+  const pm25 = new globalThis.Map(data.map((d) => [String(d.sensor_id), d.pm25]));
+  const name = (s: Sensor) => s.nombre_display || s.nombre;
+  const worst = candidates
+    .filter((s) => s.source === "sima" && String(s.sensor_id) !== "FIN" && Number.isFinite(pm25.get(String(s.sensor_id))))
+    .sort((a, b) => pm25.get(String(b.sensor_id))! - pm25.get(String(a.sensor_id))! || name(a).localeCompare(name(b), "es"))[0];
+  if (worst) return worst;
+
   const obispado = candidates.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
   if (!obispado) return undefined;
-
-  // `data` holds only live, valid readings (lib/live-readings.ts).
-  const fresh = new Set(data.map((d) => String(d.sensor_id)));
-  if (fresh.has(DEFAULT_SENSOR_ID)) return obispado;
 
   // Nearest by a flat-earth distance (fine at city scale), longitude scaled
   // by the latitude so east-west and north-south count alike.
   const k = Math.cos((obispado.lat * Math.PI) / 180);
   const dist = (s: Sensor) => Math.hypot((s.lon - obispado.lon) * k, s.lat - obispado.lat);
   const nearest = candidates
-    .filter((s) => s.source === "purpleAir" && fresh.has(String(s.sensor_id)))
+    .filter((s) => s.source === "purpleAir" && pm25.has(String(s.sensor_id)))
     .sort((a, b) => dist(a) - dist(b))[0];
   return nearest ?? obispado;
 }
@@ -330,11 +335,12 @@ export default function MapaSensors({
     return newest ? new Date(newest) : null;
   }, [data]);
 
-  // The station the card falls back to when nothing is picked: Obispado (CE),
-  // or the nearest PurpleAir sensor when Obispado has no recent reading (see
-  // pickDefaultSensor), built the same way a click builds a selection. Null
-  // only if Obispado is filtered out or absent from the feed. `cardSubject` is
-  // what every card consumer reads — the explicit pick, else this.
+  // The station the card falls back to when nothing is picked: the worst
+  // official station, or the PurpleAir sensor nearest Obispado when none has a
+  // recent reading (see pickDefaultSensor), built the same way a click builds
+  // a selection. Null only if no official station is live and Obispado is
+  // filtered out or absent from the feed. `cardSubject` is what every card
+  // consumer reads — the explicit pick, else this.
   const defaultSelection = useMemo<SelectedSensor | null>(() => {
     const def = pickDefaultSensor(visibleSensors, data);
     return def ? buildSelection(def, data) : null;
@@ -384,7 +390,7 @@ export default function MapaSensors({
 
   // The marker that wears the pulse: the card's station. On desktop that is the
   // explicit pick only (empty right column and no pulse at rest); on mobile the
-  // sheet still rests on Obispado, so the fallback carries. Mirrored into refs
+  // sheet still rests on the default station, so the fallback carries. Mirrored into refs
   // so the map event handlers read the current value without being rebuilt on
   // each pick.
   const pulseSubject = isDesktop ? selectedSensor : cardSubject;
@@ -874,7 +880,7 @@ export default function MapaSensors({
 
   // Close the estación card. **Desktop only** — the right column goes empty and
   // the map stands alone. On mobile there is no "close": the sheet always rests
-  // on a station (a pick, else the default Obispado); the most a mobile gesture
+  // on a station (a pick, else the default station); the most a mobile gesture
   // does is collapse it back to `peek`.
   const closeCard = useCallback(() => {
     setSelectedSensor(null);
@@ -1342,7 +1348,7 @@ export default function MapaSensors({
       />
 
       {/* Bottom sheet — mobile twin of the desktop card. At rest it peeks the
-          default station (Obispado); tapping a marker swaps the subject and the
+          default station (the worst official one); tapping a marker swaps the subject and the
           grabber toggles peek/mid. There is no close on mobile — the sheet
           always rests on a station (that's a desktop-only affordance). */}
       {(() => {
