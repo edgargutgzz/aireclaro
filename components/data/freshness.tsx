@@ -50,8 +50,8 @@ export function FreshnessText({ freshness, compact = false }: { freshness: Fresh
 }
 
 // The dot + text in a glass pill, on the map beside its control buttons.
-// Desktop (default) has no height of its own: self-stretch takes the row's, so
-// it matches the 40px "Mi zona" button beside it. `compact` is the mobile pill
+// Desktop (default) is 40px tall, the height of the map's other desktop
+// controls, at the foot of the right column. `compact` is the mobile pill
 // beside the Capas button: a fixed 28px, shrunk and shadowless so it reads as
 // a quiet status line rather than a control, centred on the button by its row.
 export function FreshnessBadge({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
@@ -60,7 +60,7 @@ export function FreshnessBadge({ freshness, compact = false }: { freshness: Fres
       className={
         compact
           ? "glass flex h-7 flex-shrink-0 items-center gap-1.5 rounded-xl px-2.5 shadow-none"
-          : "glass flex flex-shrink-0 items-center gap-2 self-stretch rounded-xl px-3.5"
+          : "glass flex h-10 flex-shrink-0 items-center gap-2 rounded-xl px-3.5"
       }
     >
       <FreshnessDot status={freshness.status} />

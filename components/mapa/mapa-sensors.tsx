@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { ChevronRight, Layers, LoaderCircle, LocateFixed, Wind, X } from "lucide-react";
+import { ChevronRight, Layers, Wind, X } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -41,7 +41,6 @@ import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
 import { GroupRecommendations, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
-import { ZONA_AVISO, clearZona, inBounds, readZona, roundZona, saveZona, type Zona, type ZonaStatus } from "./mi-zona";
 import { BASEMAP_GROUND } from "./ground";
 
 // The station the estación card shows at rest, before any marker is picked
@@ -65,7 +64,7 @@ function trackStationOpen(sensor: Sensor) {
   });
 }
 
-// The view a normal load opens on (and "Mi zona" returns to when forgotten):
+// The view a normal load opens on:
 // the metro field, centred on the default station so its pulse is in frame.
 function restingFocus(defaultSelection: SelectedSensor | null) {
   return defaultSelection
@@ -158,14 +157,6 @@ export default function MapaSensors({
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
-
-  // "Mi zona" (./mi-zona.ts). A saved zona opens the map on it, unless a
-  // ?sensor= link names a station.
-  const savedZona = useRef<Zona | null>(linkedSensor ? null : readZona(BASEMAP_BOUNDS)).current;
-  const [zonaStatus, setZonaStatus] = useState<ZonaStatus>("idle");
-  // Whether a zona is remembered (even if a ?sensor= link opened elsewhere):
-  // the button shows pressed, and its next tap forgets it.
-  const [zonaOn, setZonaOn] = useState(() => readZona(BASEMAP_BOUNDS) !== null);
 
   // Desktop drops the default-station card at rest: the right column is empty
   // and the map stands alone until a marker is picked. Mobile still rests its
@@ -605,9 +596,7 @@ export default function MapaSensors({
 
     const focus = linkedSensor
       ? { center: [linkedSensor.lon, linkedSensor.lat] as [number, number], zoom: 13 }
-      : savedZona
-        ? { center: savedZona as [number, number], zoom: 13 }
-        : restingFocus(defaultSelection);
+      : restingFocus(defaultSelection);
 
     const m = new Map({
       container: mapContainer.current!,
@@ -934,100 +923,6 @@ export default function MapaSensors({
     [],
   );
 
-  // "Mi zona": ask for the location only now, round it, keep it in this
-  // browser, and move the map there. With a zona remembered, the tap forgets
-  // it and returns to the normal opening view. Each tap is counted once, by
-  // outcome (Vercel Analytics `mi_zona` {resultado}); no position is ever sent.
-  const goToZona = useCallback(() => {
-    const report = (resultado: "centrada" | "olvidada" | "sin_permiso" | "no_disponible" | "fuera_del_area") =>
-      track("mi_zona", { resultado });
-    if (zonaOn) {
-      clearZona();
-      setZonaOn(false);
-      setZonaStatus("idle");
-      report("olvidada");
-      const m = map.current as any;
-      if (!m) return;
-      const focus = restingFocus(defaultSelection);
-      if (prefersReducedMotion()) m.jumpTo(focus);
-      else m.easeTo(focus);
-      return;
-    }
-    if (!("geolocation" in navigator)) {
-      setZonaStatus("unavailable");
-      report("no_disponible");
-      return;
-    }
-    setZonaStatus("locating");
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const zona = roundZona(pos.coords.longitude, pos.coords.latitude);
-        if (!inBounds(zona, BASEMAP_BOUNDS)) {
-          setZonaStatus("outside");
-          report("fuera_del_area");
-          return;
-        }
-        saveZona(zona);
-        setZonaOn(true);
-        setZonaStatus("idle");
-        report("centrada");
-        const m = map.current as any;
-        if (!m) return;
-        const focus = { center: zona as [number, number], zoom: 13 };
-        if (prefersReducedMotion()) m.jumpTo(focus);
-        else m.easeTo(focus);
-      },
-      (err) => {
-        const denied = err.code === err.PERMISSION_DENIED;
-        setZonaStatus(denied ? "denied" : "unavailable");
-        report(denied ? "sin_permiso" : "no_disponible");
-      },
-      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 10 * 60_000 },
-    );
-  }, [zonaOn, defaultSelection]);
-
-  // The notice after a tap fades on its own, and goes at once on a tap on it
-  // or as soon as the map moves, so it can never sit on the map (reported
-  // stuck on a phone after declining the location prompt, 2026-10-24).
-  useEffect(() => {
-    if (zonaStatus === "idle" || zonaStatus === "locating") return;
-    const id = window.setTimeout(() => setZonaStatus("idle"), 6000);
-    const m = map.current as any;
-    const dismiss = () => setZonaStatus("idle");
-    m?.on("movestart", dismiss);
-    return () => {
-      window.clearTimeout(id);
-      m?.off("movestart", dismiss);
-    };
-  }, [zonaStatus]);
-
-  // Mobile: the 44px stack button; desktop: 40px, to sit level with the
-  // freshness pill beside it.
-  const zonaButton = (size: "stack" | "pill") => (
-    <button
-      type="button"
-      onClick={goToZona}
-      disabled={zonaStatus === "locating"}
-      aria-pressed={zonaOn}
-      className={`flex items-center justify-center rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${zonaOn ? "border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md" : "glass"} ${size === "stack" ? "p-3" : "h-10 w-10"}`}
-      aria-label={zonaOn ? "Olvidar mi zona" : "Centrar en mi zona"}
-      title={zonaOn ? "Olvidar mi zona" : "Centrar en mi zona"}
-    >
-      {zonaStatus === "locating"
-        ? <LoaderCircle aria-hidden="true" className="h-5 w-5 animate-spin text-neutral-700 motion-reduce:animate-none" />
-        : <LocateFixed aria-hidden="true" className={`h-5 w-5 ${zonaOn ? "text-neutral-900" : "text-neutral-700"}`} />}
-    </button>
-  );
-  const zonaAviso = zonaStatus !== "idle" && zonaStatus !== "locating" && (
-    <button
-      type="button"
-      onClick={() => setZonaStatus("idle")}
-      className="glass pointer-events-auto flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13px] leading-snug text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-    >
-      <span>{ZONA_AVISO[zonaStatus]}</span>
-    </button>
-  );
-
   // Escape dismisses a picked sensor too — desktop only, matching the X (mobile
   // has no close), and only when a dialog isn't open (it owns Escape first).
   useEffect(() => {
@@ -1083,15 +978,13 @@ export default function MapaSensors({
           the legend at the foot of the left rail instead. The data-freshness
           pill shares the Capas button's row, at the left edge, bottom edges
           level (items-end). Low-priority chrome, so it runs small and
-          shadowless. Desktop puts it
-          bottom-right, beside "Mi zona". */}
+          shadowless. Desktop puts it bottom-right. */}
       {sheetState === 'peek' && (
         <div
           className="pointer-events-none fixed left-4 right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
           style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
         >
           <div className="pointer-events-auto flex flex-col items-end gap-3">
-            {zonaButton("stack")}
             <button
               onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
               className={`rounded-xl p-3 transition-colors duration-200 ${showLegend ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
@@ -1200,18 +1093,6 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* "Mi zona" notice, mobile: left of the button stack, above the
-          freshness pill. */}
-      {sheetState === 'peek' && (
-        <div
-          role="status"
-          className="pointer-events-none fixed left-4 right-[5.5rem] z-[45] md:hidden"
-          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 9.5rem)' }}
-        >
-          {zonaAviso}
-        </div>
-      )}
-
       {/* Desktop right column. Empty at rest (the map stands alone); a picked
           marker or a ?sensor= link opens its card, and the X / Escape / a
           click on empty map close it. */}
@@ -1262,17 +1143,12 @@ export default function MapaSensors({
         })()}
         </div>{/* end card width wrapper */}
 
-        {/* Foot of the column, desktop: the data-freshness pill and the "Mi
-            zona" button side by side, its notice to their left. */}
-        <div className="flex items-center gap-2">
-          <div role="status">{zonaAviso}</div>
-          {freshness && <FreshnessBadge freshness={freshness} />}
-          <div className="pointer-events-auto">{zonaButton("pill")}</div>
-        </div>
+        {/* Foot of the column, desktop: the data-freshness pill. */}
+        {freshness && <FreshnessBadge freshness={freshness} />}
       </div>
 
       {/* Left column (desktop): the Capas panel and the air-quality legend
-          (freshness sits bottom-right, beside "Mi zona"). On mobile the panel
+          (freshness sits bottom-right). On mobile the panel
           and legend are bottom sheets and freshness is the top-left pill, so
           this column renders nothing there.
 
