@@ -24,7 +24,7 @@ const COLUMNAS = [
   {
     titulo: "Explora",
     links: [
-      { href: "/mapa", label: "Mapa" },
+      { href: "/mapa", label: "Calidad del aire" },
       { href: "/datos", label: "Datos" },
       { href: "/publicaciones", label: "Publicaciones" },
     ],
