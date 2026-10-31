@@ -5,7 +5,7 @@ import { SITE_URL } from "@/lib/site";
 import AirQualitySlider from "@/components/home/air-quality-slider";
 
 // Homepage. The hero is ported from observatoriodelaire.com's homepage. The map
-// lives at /mapa; proxy.ts sends embeds and legacy map links that still point
+// lives at /calidad-del-aire; proxy.ts sends embeds and legacy map links that still point
 // at / over there.
 // The homepage keeps the layout's title and link card (the slogan alone); it
 // adds a longer description for search results, where Google tends to replace

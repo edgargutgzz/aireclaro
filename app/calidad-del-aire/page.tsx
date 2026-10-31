@@ -30,7 +30,7 @@ export async function generateMetadata({
   const base = pageMetadata({
     title: BASE_TITLE,
     description: BASE_DESCRIPTION,
-    path: "/mapa",
+    path: "/calidad-del-aire",
     images: [{ url: "/api/og/mapa?d=5", width: 1200, height: 630, alt: "Mapa de calidad del aire" }],
   });
 
@@ -56,12 +56,12 @@ export async function generateMetadata({
       : `Lectura de calidad del aire en tiempo real para ${where} en el Observatorio del Aire.`;
 
   const ogImage = `/api/og?sensor=${snapshot.sensorId}`;
-  const pageUrl = `/mapa?sensor=${snapshot.sensorId}`;
+  const pageUrl = `/calidad-del-aire?sensor=${snapshot.sensorId}`;
 
   return {
     title,
     description,
-    alternates: { canonical: "/mapa" },
+    alternates: { canonical: "/calidad-del-aire" },
     openGraph: {
       title,
       description,

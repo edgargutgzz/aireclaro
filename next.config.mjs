@@ -34,6 +34,9 @@ const nextConfig = {
       { source: "/editoriales", destination: "/publicaciones?tipo=columna", permanent: true },
       { source: "/editoriales/:slug([^./]+)", destination: "/publicaciones/:slug", permanent: true },
       { source: "/recursos", destination: "/publicaciones", permanent: true },
+      // The map moved to /calidad-del-aire (2026-10-31); shared ?sensor= links
+      // keep their query.
+      { source: "/mapa", destination: "/calidad-del-aire", permanent: true },
       // The team joined Quiénes somos (2026-10-18); the draft's URL too.
       { source: "/equipo", destination: "/quienes-somos#equipo", permanent: true },
       { source: "/quienes-somos2", destination: "/quienes-somos", permanent: true },

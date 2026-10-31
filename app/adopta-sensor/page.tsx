@@ -34,7 +34,7 @@ const PASOS = [
   },
   {
     text: "Consulta los registros de tu sensor hora con hora en nuestro mapa de calidad del aire.",
-    link: "/mapa",
+    link: "/calidad-del-aire",
   },
 ];
 

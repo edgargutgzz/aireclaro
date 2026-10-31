@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "Observatorio del Aire",
     description:
       "Calidad del aire en tiempo real en Monterrey y Zona Metropolitana",
-    start_url: "/mapa",
+    start_url: "/calidad-del-aire",
     display: "standalone",
     background_color: "#fafaf9",
     theme_color: "#fafaf9",

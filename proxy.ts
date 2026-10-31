@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // carries across as-is, except the bare domain, which lands on the map
 // (that's what people know aireclaro.com for). That includes partner iframes
 // of https://www.aireclaro.com (e.g. sanpedroparques.mx/calidad-del-aire),
-// which now render www.observatoriodelaire.com/mapa.
+// which now render www.observatoriodelaire.com/calidad-del-aire.
 const CANONICAL_ORIGIN = "https://www.observatoriodelaire.com";
 const LEGACY_HOSTS = new Set(["aireclaro.com", "www.aireclaro.com"]);
 const LEGACY_TAG = "utm_source";
@@ -41,7 +41,7 @@ export function proxy(req: NextRequest) {
   const host = (req.headers.get("host") ?? "").split(":")[0].toLowerCase();
 
   if (LEGACY_HOSTS.has(host)) {
-    const url = new URL(`${CANONICAL_ORIGIN}${pathname === "/" ? "/mapa" : pathname}${search}`);
+    const url = new URL(`${CANONICAL_ORIGIN}${pathname === "/" ? "/calidad-del-aire" : pathname}${search}`);
     // Tagged so the landing page can count it (components/analytics.tsx): a
     // redirect passes on the visitor's referrer, never aireclaro.com.
     if (!url.searchParams.has(LEGACY_TAG)) url.searchParams.set(LEGACY_TAG, "aireclaro");
@@ -57,7 +57,7 @@ export function proxy(req: NextRequest) {
   if (!hasMapState && !isEmbedded(req)) return NextResponse.next();
 
   const url = req.nextUrl.clone();
-  url.pathname = "/mapa";
+  url.pathname = "/calidad-del-aire";
   return NextResponse.redirect(url, 307);
 }
 

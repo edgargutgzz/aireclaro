@@ -35,7 +35,7 @@ export default async function Ticker() {
   if (outage && municipios.length > 0) {
     const items: TickerItem[] = municipios
       .sort((a, b) => b.pm25 - a.pm25 || a.nombre.localeCompare(b.nombre, "es"))
-      .map((m) => ({ id: m.key, href: `/mapa?sensor=${m.sensorId}`, nombre: m.nombre, pm25: m.pm25, color: getMarkerFillHex(m.pm25) }));
+      .map((m) => ({ id: m.key, href: `/calidad-del-aire?sensor=${m.sensorId}`, nombre: m.nombre, pm25: m.pm25, color: getMarkerFillHex(m.pm25) }));
     return <Strip hora={horaDeLectura(municipios)} items={items} />;
   }
   // No station with a reading at all and no citizen sensor either: we're not
@@ -54,7 +54,7 @@ export default async function Ticker() {
       const pm25 = lecturas.get(e.sensorId) ?? null;
       return {
         id: e.sensorId,
-        href: `/mapa?sensor=${e.sensorId}`,
+        href: `/calidad-del-aire?sensor=${e.sensorId}`,
         nombre: e.nombre,
         pm25,
         color: pm25 === null ? null : getMarkerFillHex(pm25),
@@ -74,7 +74,7 @@ function Strip({ hora, items }: { hora: string; items: TickerItem[] }) {
   return (
     <section aria-label="PM2.5 en vivo" className="flex h-10 items-stretch bg-white text-[13px]">
       <Link
-        href="/mapa"
+        href="/calidad-del-aire"
         className={`flex shrink-0 items-center gap-2 px-4 text-xs font-semibold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 lg:px-8 ${FOCUS}`}
       >
         <span className="relative flex h-2 w-2" aria-hidden>

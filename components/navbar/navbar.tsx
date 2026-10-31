@@ -47,7 +47,7 @@ const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-
 // Every section, in the same order on desktop and mobile; Quiénes somos last.
 // The icons are for the mobile menu's tiles only.
 const SECCIONES = [
-  { href: "/mapa", label: "Calidad del aire", Icon: Wind },
+  { href: "/calidad-del-aire", label: "Calidad del aire", Icon: Wind },
   { href: "/datos", label: "Datos", Icon: BarChart3 },
   { href: "/publicaciones", label: "Publicaciones", Icon: BookOpen },
   { href: "/proyectos", label: "Proyectos", Icon: FolderOpen },
