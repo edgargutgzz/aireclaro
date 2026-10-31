@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { BarChart3, BookOpen, FolderOpen, Map as MapIcon, Users } from "lucide-react";
+import { BarChart3, BookOpen, FolderOpen, Users, Wind } from "lucide-react";
 
 // The site's one navbar, on every page including the map. Copied from
 // observatoriodelaire.com's navbar (components/navbar.tsx there), markup and
@@ -47,7 +47,7 @@ const FOCUS = "rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-
 // Every section, in the same order on desktop and mobile; Quiénes somos last.
 // The icons are for the mobile menu's tiles only.
 const SECCIONES = [
-  { href: "/mapa", label: "Calidad del aire", Icon: MapIcon },
+  { href: "/mapa", label: "Calidad del aire", Icon: Wind },
   { href: "/datos", label: "Datos", Icon: BarChart3 },
   { href: "/publicaciones", label: "Publicaciones", Icon: BookOpen },
   { href: "/proyectos", label: "Proyectos", Icon: FolderOpen },

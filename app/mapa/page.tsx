@@ -12,7 +12,7 @@ import { getQualityInfo, roundPM25 } from "@/lib/air-quality";
 import LiveRefresh from "@/components/data/live-refresh";
 import type { Data } from "@/components/mapa/types";
 
-const BASE_TITLE = "Mapa";
+const BASE_TITLE = "Calidad del aire";
 const BASE_DESCRIPTION =
   "Consulta en tiempo real la calidad del aire en la Zona Metropolitana de Monterrey.";
 
@@ -108,7 +108,7 @@ export default async function Mapa() {
 
   return (
     <>
-      <h1 className="sr-only">Mapa de calidad del aire en la Zona Metropolitana de Monterrey</h1>
+      <h1 className="sr-only">Calidad del aire en la Zona Metropolitana de Monterrey</h1>
       <MapaSensors sensors={sensors} data={data} />
       <LiveRefresh />
     </>
