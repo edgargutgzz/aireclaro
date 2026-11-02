@@ -959,7 +959,7 @@ export default function MapaSensors({
           station is a quiet note under the value): it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
-      <aside aria-label="Calidad del aire ahora" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-white md:flex">
+      <aside aria-label="Calidad del aire" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-white md:flex">
         {defaultSelection && (
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             <AirNowPanel subject={defaultSelection} onShowInfo={() => setCuidarmeQuality(getQualityInfo(defaultSelection.pm25))} />

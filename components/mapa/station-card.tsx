@@ -209,7 +209,7 @@ export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; 
 
   return (
     <div className="flex flex-col px-6 py-6">
-      <h2 className="text-sm font-medium text-neutral-500">Calidad del aire ahora</h2>
+      <h2 className="text-sm font-medium text-neutral-500">Calidad del aire</h2>
 
       {quality ? (
         <p className="mt-3 text-5xl font-bold leading-none tracking-tight" style={{ color: quality.textColor ?? subject.textColor }}>
