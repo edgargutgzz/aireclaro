@@ -30,9 +30,10 @@ const SENSITIVE_GROUPS = [
 // The advice for each sensitive group, behind a disclosure (the general
 // advice already sits in the reading, StationReading). The header row carries
 // the label, its info icon and the chevron; nothing below it renders until it
-// is opened. Collapsed on the desktop card and the mobile sheet alike.
-export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; onShowInfo: () => void }) {
-  const [open, setOpen] = useState(false);
+// is opened. Open by default in the desktop sidebar (it has the room),
+// collapsed on the mobile sheet.
+export function GroupRecommendations({ info, onShowInfo, defaultOpen = false }: { info: QualityInfo; onShowInfo: () => void; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   // useId() contains colons, which are not valid in an id fragment reference.
   const bodyId = `health-recs-${useId().replace(/:/g, "")}`;
 

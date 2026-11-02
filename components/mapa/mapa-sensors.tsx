@@ -975,10 +975,10 @@ export default function MapaSensors({
                   />
                 </div>
 
-                {/* The sensitive groups' advice, collapsed (the general advice is in the reading). */}
+                {/* The sensitive groups' advice, open by default here (the general advice is in the reading). */}
                 {sensorQuality && (
                   <div className="disclosure-in relative z-[1] mt-5 border-t border-stone-100 px-6 pb-6 pt-5">
-                    <GroupRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
+                    <GroupRecommendations defaultOpen info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
                   </div>
                 )}
               </div>
@@ -988,13 +988,25 @@ export default function MapaSensors({
         })()}
       </aside>
 
-      {/* Map container: the whole screen on mobile, the rest of the row
-          beside the sidebar on desktop. */}
-      <div
-        ref={mapContainer}
-        className="absolute inset-0 md:relative md:inset-auto md:h-full md:min-w-0 md:flex-1"
-        style={{ backgroundColor: BASEMAP_GROUND }}
-      />
+      {/* Map area: the whole screen on mobile, the rest of the row beside the
+          sidebar on desktop. Overlays anchored to the map itself (the legend)
+          live in here so they sit on the map, not over the sidebar. */}
+      <div className="absolute inset-0 md:relative md:inset-auto md:h-full md:min-w-0 md:flex-1">
+        <div
+          ref={mapContainer}
+          className="absolute inset-0"
+          style={{ backgroundColor: BASEMAP_GROUND }}
+        />
+
+        {/* The air-quality scale, desktop: bottom-left of the map, feet level
+            with the freshness pill at the foot of the right column. Mobile
+            carries it as the Wind button's bottom sheet. */}
+        <div className="glass pointer-events-auto absolute bottom-14 left-6 z-10 hidden w-panel-filters rounded-2xl md:block">
+          <div className="px-5 py-4">
+            <AirQualityLegend collapsible />
+          </div>
+        </div>
+      </div>
 
       {/* Keyboard / screen-reader equivalent for the GL marker field. */}
       <div className="sr-only">
@@ -1129,16 +1141,15 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column: the Capas panel and the air-quality legend at
-          the top, the data-freshness pill at the foot. An open panel grows
+      {/* Desktop right column: the Capas panel at the top, the
+          data-freshness pill at the foot. An open panel grows
           down into whatever is left over. On mobile the panel and legend are
           bottom sheets and freshness rides the Capas button's row. */}
       <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-filters flex-col items-end gap-2 md:flex">
         <div className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
           {/* The header carries the filter state, in the same "label · summary"
               idiom the rows inside the panel already use, and the legend
-              card's uppercase label below it, so the two stacked cards read
-              as one set. The panel is "Sensores" on screen (it picks which
+              card's uppercase label, so the two cards read as one set. The panel is "Sensores" on screen (it picks which
               sensors show); "Capas" stays its name in code. The two
               closed cards stand at the same 56px: min-h-14 here, the legend's
               min-h-6 row inside its py-4 (its bar + end labels run ~23px,
@@ -1158,7 +1169,7 @@ export default function MapaSensors({
             /* Only the body scrolls, so the "Capas" header stays in place, and
                overscroll-contain stops a scroll that reaches the end from
                panning the map underneath. flex-1 min-h-0 takes whatever the
-               column has left after the legend + badge. No padding: the
+               column has left after the badge. No padding: the
                list sits flush, like the estación card's sections. */
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               <LayersFilterContent
@@ -1177,14 +1188,6 @@ export default function MapaSensors({
               />
             </div>
           )}
-        </div>
-
-        {/* The air-quality scale, right under the Capas panel at the same
-            w-panel-filters width, open or shut. */}
-        <div className="glass pointer-events-auto w-full flex-shrink-0 rounded-2xl">
-          <div className="px-5 py-4">
-            <AirQualityLegend collapsible />
-          </div>
         </div>
 
         {/* Foot of the column, desktop: the data-freshness pill. */}
