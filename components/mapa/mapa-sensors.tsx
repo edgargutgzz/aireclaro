@@ -947,11 +947,52 @@ export default function MapaSensors({
   }, []);
 
   return (
-    <div className="relative h-below-header">
-      {/* Map container */}
+    <div className="relative h-below-header md:flex">
+      {/* Desktop left column: the estación card as a full-height sidebar,
+          docked beside the map (the map takes the rest of the row). It rests
+          on the default station (the worst official one) and swaps to a
+          picked marker or a ?sensor= link; a click on empty map or Escape
+          returns it to the default. Only its body scrolls. Mobile carries the
+          card as the bottom sheet. */}
+      <aside aria-label="Estación" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-white md:flex">
+        {cardSubject && (() => {
+          const { sensor } = cardSubject;
+          const pm25 = cardSubject.pm25;
+          const sensorQuality = getQualityInfo(pm25);
+          return (
+            <div className="flex min-h-0 flex-1 flex-col">
+              <div className="flex w-full flex-shrink-0 items-center px-6 pt-6 pb-3">
+                <span className="min-w-0 truncate text-base font-medium text-neutral-700">{displayName(sensor)}</span>
+              </div>
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                <div className={`disclosure-in flex flex-col gap-5 px-6 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
+                  <StationReading
+                    subject={cardSubject}
+                    pm25={pm25}
+                    copied={copied}
+                    onCopyCoords={() => copyCoords(sensor.lat, sensor.lon)}
+                    copyInteractionClass="hover:text-neutral-700"
+                  />
+                </div>
+
+                {/* The sensitive groups' advice, collapsed (the general advice is in the reading). */}
+                {sensorQuality && (
+                  <div className="disclosure-in relative z-[1] mt-5 border-t border-stone-100 px-6 pb-6 pt-5">
+                    <GroupRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
+                  </div>
+                )}
+              </div>
+              <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
+            </div>
+          );
+        })()}
+      </aside>
+
+      {/* Map container: the whole screen on mobile, the rest of the row
+          beside the sidebar on desktop. */}
       <div
         ref={mapContainer}
-        className="absolute left-0 top-0 h-full w-full"
+        className="absolute inset-0 md:relative md:inset-auto md:h-full md:min-w-0 md:flex-1"
         style={{ backgroundColor: BASEMAP_GROUND }}
       />
 
@@ -1086,46 +1127,6 @@ export default function MapaSensors({
           <ScaleBar />
           <LegendDetail className="mt-4 border-t border-stone-100 pt-4" />
         </div>
-      </div>
-
-      {/* Desktop left column: the estación card, always on screen. It rests on
-          the default station (the worst official one) and swaps to a picked
-          marker or a ?sensor= link; a click on empty map or Escape returns it
-          to the default. The card sizes to its content and is bounded by the
-          column, so its own overflow-y-auto body scrolls when the
-          recommendations are expanded. Mobile carries it as the bottom sheet. */}
-      <div className="pointer-events-none absolute bottom-14 left-6 top-6 z-10 hidden w-panel-lg flex-col md:flex">
-        {cardSubject && (() => {
-          const { sensor } = cardSubject;
-          const pm25 = cardSubject.pm25;
-          const sensorQuality = getQualityInfo(pm25);
-          return (
-            <div className="glass pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl">
-              <div className="flex w-full flex-shrink-0 items-center px-5 pt-4 pb-3">
-                <span className="min-w-0 truncate text-base font-medium text-neutral-700">{displayName(sensor)}</span>
-              </div>
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                <div className={`disclosure-in flex flex-col gap-5 px-5 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
-                  <StationReading
-                    subject={cardSubject}
-                    pm25={pm25}
-                    copied={copied}
-                    onCopyCoords={() => copyCoords(sensor.lat, sensor.lon)}
-                    copyInteractionClass="hover:text-neutral-700"
-                  />
-                </div>
-
-                {/* The sensitive groups' advice, collapsed (the general advice is in the reading). */}
-                {sensorQuality && (
-                  <div className="disclosure-in relative z-[1] mt-5 border-t border-stone-100 px-5 pb-5 pt-5">
-                    <GroupRecommendations info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
-                  </div>
-                )}
-              </div>
-              <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
-            </div>
-          );
-        })()}
       </div>
 
       {/* Desktop right column: the Capas panel and the air-quality legend at
