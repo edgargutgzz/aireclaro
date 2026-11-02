@@ -959,8 +959,8 @@ export default function MapaSensors({
           (the map takes the rest of the row). It always shows the air right
           now and what to do about it: the default station's reading (the
           worst official one, pickDefaultSensor) with the advice for everyone,
-          then the sensitive groups' advice, open. No station header: it is
-          the page's summary, and a pick on the map never changes it (the
+          then the sensitive groups' advice, open. No station header (the
+          station is a quiet note under the value): it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
       <aside aria-label="Calidad del aire ahora" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-white md:flex">
@@ -969,7 +969,21 @@ export default function MapaSensors({
           return (
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
               <div className="px-6 pt-6">
-                <QualityReading pm25={defaultSelection.pm25} fallbackColor={defaultSelection.textColor} />
+                {/* Where the number comes from, quietly: the worst official
+                    station, or (none live) the citizen sensor fallback. */}
+                <QualityReading
+                  pm25={defaultSelection.pm25}
+                  fallbackColor={defaultSelection.textColor}
+                  note={
+                    <>
+                      {defaultSelection.sensor.source === "sima"
+                        ? "Lectura más alta de las estaciones del SIMA"
+                        : "Sensor ciudadano, sin estaciones del SIMA en vivo"}
+                      {" · "}
+                      <span className="text-neutral-700">{displayName(defaultSelection.sensor)}</span>
+                    </>
+                  }
+                />
               </div>
               {quality && (
                 <div className="relative z-[1] mt-5 border-t border-stone-100 px-6 pb-6 pt-5">

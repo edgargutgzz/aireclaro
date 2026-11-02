@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope } from "lucide-react";
 import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
@@ -124,8 +124,9 @@ export function GroupRecommendations({ info, onShowInfo, defaultOpen = false }: 
 
 // "Calidad del Aire" with a reading: the band label, the µg/m³ value and, under
 // it, the advice for everyone. Shared by the station card (StationReading) and
-// the desktop sidebar, which shows it on its own for the air right now.
-export function QualityReading({ pm25, fallbackColor }: { pm25: number | null; fallbackColor?: string }) {
+// the desktop sidebar, which shows it on its own for the air right now and
+// passes `note`: a quiet line under the value saying where the reading is from.
+export function QualityReading({ pm25, fallbackColor, note }: { pm25: number | null; fallbackColor?: string; note?: ReactNode }) {
   const quality = getQualityInfo(pm25);
   // The groups' advice is GroupRecommendations, below it at each call site.
   return (
@@ -141,6 +142,7 @@ export function QualityReading({ pm25, fallbackColor }: { pm25: number | null; f
           </span>
         )}
       </div>
+      {note && <p className="mt-2 text-xs leading-relaxed text-neutral-500">{note}</p>}
       {quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
     </div>
   );
