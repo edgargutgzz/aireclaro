@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { ChevronRight, Layers, Wind, X } from "lucide-react";
+import { ChevronRight, Layers, Wind } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -44,7 +44,7 @@ import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
 
 // The station the estación card shows at rest, before any marker is picked
-// (the mobile sheet; on desktop the left-column banner): the official station with
+// (the mobile sheet and the desktop left-column card): the official station with
 // the highest live PM2.5 right now, FIN excluded (it's Saltillo). Rule decided
 // 2026-10-31: people open this page to learn how the air is, and the worst
 // official reading is the one to act on. Ties go to the first name
@@ -158,9 +158,8 @@ export default function MapaSensors({
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
 
-  // Desktop's right column is empty at rest (the default station rides the
-  // left-column banner instead) and the card closes; mobile's sheet never
-  // closes. Tracked in state (not just a CSS `md:` toggle) because the
+  // An empty-map click or Escape drops the pick on desktop (the card returns
+  // to the default station); on mobile it only collapses the sheet. Tracked in state (not just a CSS `md:` toggle) because the
   // empty-map click and Escape behave differently. Starts false so SSR and the
   // first client render agree; the effect promotes it on a wide viewport.
   const [isDesktop, setIsDesktop] = useState(false);
@@ -379,7 +378,7 @@ export default function MapaSensors({
   }, [cardSubject, latestReading, now]);
 
   // The marker that wears the pulse: the card's station (the pick, else the
-  // default the mobile sheet / desktop banner rests on). Mirrored into refs
+  // default the mobile sheet / desktop card rests on). Mirrored into refs
   // so the map event handlers read the current value without being rebuilt on
   // each pick.
   const activeSensorId = cardSubject?.sensor.sensor_id ?? null;
@@ -864,16 +863,15 @@ export default function MapaSensors({
     writeFilterParams({ showOccamm, showOtros, showSima, hiddenMunicipios });
   }, [showOccamm, showOtros, showSima, hiddenMunicipios]);
 
-  // Close the estación card. **Desktop only** — the right column goes empty and
-  // the map stands alone. On mobile there is no "close": the sheet always rests
-  // on a station (a pick, else the default station); the most a mobile gesture
-  // does is collapse it back to `peek`.
+  // Drop the pick, so the card returns to the default station. **Desktop only**
+  // (empty-map click, Escape); the left-column card is always on screen. On
+  // mobile the most a gesture does is collapse the sheet back to `peek`.
   const closeCard = useCallback(() => {
     setSelectedSensor(null);
     setSheetState('peek');
   }, []);
 
-  // Clicking empty map: on desktop it dismisses the pick (back to a bare map);
+  // Clicking empty map: on desktop it dismisses the pick (back to the default);
   // on mobile it just collapses the sheet to peek, never dropping the card.
   // MapLibre fires `click` only on a genuine click, not a drag/pan; a hit on the
   // disc layer means the field handler already owns this click, so bail.
@@ -920,8 +918,8 @@ export default function MapaSensors({
     [],
   );
 
-  // Escape dismisses a picked sensor too — desktop only, matching the X (mobile
-  // has no close), and only when a dialog isn't open (it owns Escape first).
+  // Escape dismisses a picked sensor too — desktop only, like the empty-map
+  // click, and only when a dialog isn't open (it owns Escape first).
   useEffect(() => {
     if (!selectedSensor || !isDesktop) return;
     const onKey = (e: KeyboardEvent) => {
@@ -1090,36 +1088,26 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column. Empty at rest (the default station rides the
-          left-column banner); a picked marker, the banner or a ?sensor= link
-          opens its card, and the X / Escape / a click on empty map close it. */}
-      <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
-
-        {/* flex-1 so the wrapper takes the full column height; that bounds the
-            card, so its own overflow-y-auto body scrolls instead of the card
-            overrunning the column when the recommendations are expanded. */}
-        <div className="flex min-h-0 w-panel-lg flex-1 flex-col">
-        {selectedSensor && (() => {
-          const { sensor } = selectedSensor;
-          const pm25 = selectedSensor.pm25;
+      {/* Desktop left column: the estación card, always on screen. It rests on
+          the default station (the worst official one) and swaps to a picked
+          marker or a ?sensor= link; a click on empty map or Escape returns it
+          to the default. The card sizes to its content and is bounded by the
+          column, so its own overflow-y-auto body scrolls when the
+          recommendations are expanded. Mobile carries it as the bottom sheet. */}
+      <div className="pointer-events-none absolute bottom-14 left-6 top-6 z-10 hidden w-panel-lg flex-col md:flex">
+        {cardSubject && (() => {
+          const { sensor } = cardSubject;
+          const pm25 = cardSubject.pm25;
           const sensorQuality = getQualityInfo(pm25);
           return (
             <div className="glass pointer-events-auto flex min-h-0 flex-col overflow-hidden rounded-2xl">
-              <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
-                <span className="min-w-0 flex-1 truncate text-base font-medium text-neutral-700">{displayName(sensor)}</span>
-                <button
-                  type="button"
-                  onClick={closeCard}
-                  aria-label="Cerrar"
-                  className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-                >
-                  <X aria-hidden="true" className="h-4 w-4" />
-                </button>
+              <div className="flex w-full flex-shrink-0 items-center px-5 pt-4 pb-3">
+                <span className="min-w-0 truncate text-base font-medium text-neutral-700">{displayName(sensor)}</span>
               </div>
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <div className={`disclosure-in flex flex-col gap-5 px-5 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
                   <StationReading
-                    subject={selectedSensor}
+                    subject={cardSubject}
                     pm25={pm25}
                     copied={copied}
                     onCopyCoords={() => copyCoords(sensor.lat, sensor.lon)}
@@ -1138,46 +1126,14 @@ export default function MapaSensors({
             </div>
           );
         })()}
-        </div>{/* end card width wrapper */}
-
-        {/* Foot of the column, desktop: the data-freshness pill. */}
-        {freshness && <FreshnessBadge freshness={freshness} />}
       </div>
 
-      {/* Left column (desktop): the Capas panel and the air-quality legend
-          (freshness sits bottom-right). On mobile the panel
-          and legend are bottom sheets and freshness is the top-left pill, so
-          this column renders nothing there.
-
-          The column runs the whole height; the pair sits at the bottom, the
-          panel stacked right on top of the legend (md:mt-auto on the panel),
-          and an open panel grows up into whatever is left over. */}
-      <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-14 md:left-6 md:top-6 md:w-panel-filters">
-        {/* Desktop twin of the mobile peek: at rest (nothing picked) the
-            default station's name and level, at the top of the column.
-            Clicking it opens that station's card on the right, which hides
-            the banner until the card closes. */}
-        {!selectedSensor && defaultSelection && (() => {
-          const quality = getQualityInfo(defaultSelection.pm25);
-          return (
-            <button
-              type="button"
-              onClick={() => selectFromList(defaultSelection.sensor)}
-              className="glass pointer-events-auto hidden min-h-14 w-full flex-shrink-0 items-baseline justify-between gap-3 rounded-2xl px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 md:flex"
-            >
-              <span className="min-w-0 flex-1 truncate text-base font-medium text-neutral-700">
-                {displayName(defaultSelection.sensor)}
-              </span>
-              {quality && (
-                <span className="flex-shrink-0 text-2xl font-bold" style={{ color: quality.textColor }}>
-                  {quality.label}
-                </span>
-              )}
-            </button>
-          );
-        })()}
-
-        <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:mt-auto md:flex">
+      {/* Desktop right column: the Capas panel and the air-quality legend at
+          the top, the data-freshness pill at the foot. An open panel grows
+          down into whatever is left over. On mobile the panel and legend are
+          bottom sheets and freshness rides the Capas button's row. */}
+      <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-filters flex-col items-end gap-2 md:flex">
+        <div className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
           {/* The header carries the filter state, in the same "label · summary"
               idiom the rows inside the panel already use, and the legend
               card's uppercase label below it, so the two stacked cards read
@@ -1222,16 +1178,16 @@ export default function MapaSensors({
           )}
         </div>
 
-        {/* The air-quality scale sits at the foot of this rail on desktop. Same
-            w-panel-filters width as the Capas panel, which sits right above
-            it, open or shut. Desktop only: on mobile
-            the legend floats bottom-left of the map and freshness is the
-            top-left pill. */}
-        <div className="glass pointer-events-auto hidden w-full flex-shrink-0 rounded-2xl md:block">
+        {/* The air-quality scale, right under the Capas panel at the same
+            w-panel-filters width, open or shut. */}
+        <div className="glass pointer-events-auto w-full flex-shrink-0 rounded-2xl">
           <div className="px-5 py-4">
             <AirQualityLegend collapsible />
           </div>
         </div>
+
+        {/* Foot of the column, desktop: the data-freshness pill. */}
+        {freshness && <div className="mt-auto flex-shrink-0"><FreshnessBadge freshness={freshness} /></div>}
       </div>
 
       {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
