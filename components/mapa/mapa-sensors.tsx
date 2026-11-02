@@ -961,9 +961,7 @@ export default function MapaSensors({
           as the bottom sheet's resting station. */}
       <aside aria-label="Calidad del aire" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-stone-50 md:flex">
         {defaultSelection && (
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-            <AirNowPanel subject={defaultSelection} onShowInfo={() => setCuidarmeQuality(getQualityInfo(defaultSelection.pm25))} />
-          </div>
+          <AirNowPanel subject={defaultSelection} onShowInfo={() => setCuidarmeQuality(getQualityInfo(defaultSelection.pm25))} />
         )}
       </aside>
 

@@ -196,61 +196,71 @@ export function StationReading({
   );
 }
 
-// The desktop sidebar: the air right now and what to do about it, the page's
-// summary rather than a station card. Reading first (the level word large in
-// its band's ink, then value and hour; no source note, user call 2026-11-02),
-// then the advice for everyone, then each sensitive group's advice as plain
-// rows, always open (the sidebar has the room, so no disclosure and no boxed
-// card). `subject` is the default station (pickDefaultSensor).
+// The desktop sidebar, in two parts. Header: the reading (the label with the
+// reading's hour, the level word large in its band's ink, the PM2.5 value).
+// Body, the only part that scrolls: Recomendaciones de salud, first for the
+// población general, then for each sensitive group as plain open rows (the
+// sidebar has the room: no disclosure, no boxed card). `subject` is the
+// default station (pickDefaultSensor); no station name or source note
+// (user call 2026-11-02).
 export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; onShowInfo: () => void }) {
   const quality = getQualityInfo(subject.pm25);
   const readingAt = subject.readingAt ? new Date(subject.readingAt) : null;
+  const hasTime = readingAt !== null && !Number.isNaN(readingAt.getTime());
   const sectionLabel = "text-xs font-medium uppercase leading-none tracking-wide text-neutral-400";
 
   return (
-    <div className="flex flex-col px-6 py-6">
-      <h2 className="text-sm font-medium text-neutral-500">Calidad del aire</h2>
-
-      {quality ? (
-        <p className="mt-3 text-5xl font-bold leading-none tracking-tight" style={{ color: quality.textColor ?? subject.textColor }}>
-          {quality.label}
-        </p>
-      ) : (
-        <p className="mt-3 text-2xl font-medium text-neutral-400">No disponible</p>
-      )}
-
-      {/* The chips' idiom: the number is the value (neutral-700), the rest is
-          the quiet half. */}
-      {subject.pm25 !== null && (
-        <p className="mt-3 text-sm text-neutral-500">
-          <span className="font-medium text-neutral-700">{roundPM25(subject.pm25)}</span> μg/m³ PM2.5
-          {readingAt && !Number.isNaN(readingAt.getTime()) && (
-            <> · <time dateTime={readingAt.toISOString()}>{readingTimeLabel(readingAt)}</time></>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <header className="flex-shrink-0 border-b border-stone-200 px-6 pb-6 pt-6">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-sm font-medium text-neutral-500">Calidad del aire</h2>
+          {hasTime && (
+            <time dateTime={readingAt!.toISOString()} className="flex-shrink-0 text-sm text-neutral-500">
+              {readingTimeLabel(readingAt!)}
+            </time>
           )}
-        </p>
-      )}
+        </div>
+
+        {quality ? (
+          <p className="mt-3 text-5xl font-bold leading-none tracking-tight" style={{ color: quality.textColor ?? subject.textColor }}>
+            {quality.label}
+          </p>
+        ) : (
+          <p className="mt-3 text-2xl font-medium text-neutral-400">No disponible</p>
+        )}
+
+        {/* The chips' idiom: the number is the value (neutral-700), the unit
+            and pollutant the quiet half. */}
+        {subject.pm25 !== null && (
+          <p className="mt-3 text-sm text-neutral-500">
+            <span className="font-medium text-neutral-700">{roundPM25(subject.pm25)}</span> μg/m³ PM2.5
+          </p>
+        )}
+      </header>
 
       {quality && (
-        <>
-          <div className="mt-6 border-t border-stone-100 pt-6">
-            <h3 className={sectionLabel}>Qué hacer</h3>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-700">{quality.generalRec}</p>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pb-8 pt-6">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-base font-medium text-neutral-700">Recomendaciones de salud</h3>
+            {/* p-1 with a matching negative margin: a real hit area, the
+                glyph keeps its optical position. */}
+            <button
+              type="button"
+              onClick={onShowInfo}
+              className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+              aria-label="Más información sobre las recomendaciones de salud"
+            >
+              <Info aria-hidden="true" className="h-3.5 w-3.5" />
+            </button>
           </div>
 
-          <div className="mt-6 border-t border-stone-100 pt-6">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className={sectionLabel}>Grupos sensibles</h3>
-              {/* p-1 with a matching negative margin: a real hit area, the
-                  glyph keeps its optical position. */}
-              <button
-                type="button"
-                onClick={onShowInfo}
-                className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-                aria-label="Más información sobre las recomendaciones de salud"
-              >
-                <Info aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </div>
+          <section className="mt-5">
+            <h4 className={sectionLabel}>Población general</h4>
+            <p className="mt-3 text-sm leading-relaxed text-neutral-700">{quality.generalRec}</p>
+          </section>
+
+          <section className="mt-6 border-t border-stone-200 pt-6">
+            <h4 className={sectionLabel}>Grupos sensibles</h4>
             {/* Content, not controls: no hover, ring or chevron. The paragraph
                 is indented to the label's left edge (ml-7: a 16px icon plus
                 gap-3) so the icons read as a column. */}
@@ -265,8 +275,8 @@ export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; 
                 </li>
               ))}
             </ul>
-          </div>
-        </>
+          </section>
+        </div>
       )}
     </div>
   );
