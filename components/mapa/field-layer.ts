@@ -1,7 +1,9 @@
 // The metro's centre: where the map opens when there is no station to open
 // on. It opens straight on its resting view, with no fly-in (see the map's
 // init effect in mapa-sensors.tsx).
-export const OPENING_CENTER: [number, number] = [-100.301, 25.685];
+// Nudged east of the metro's middle (was -100.301) on 2026-11-02, a user
+// framing call.
+export const OPENING_CENTER: [number, number] = [-100.271, 25.685];
 
 // The marker field is a single native MapLibre GL circle layer, not ~180 DOM
 // markers: the GPU sizes every disc per zoom, resolves overlap/hit-testing
