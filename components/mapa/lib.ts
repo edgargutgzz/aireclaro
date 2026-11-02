@@ -74,6 +74,15 @@ export function getRelativeDayLabel(date: Date) {
   return dayDiff === 0 ? "Hoy" : dayDiff === 1 ? "Ayer" : format(date, "d MMM", { locale: es });
 }
 
+// A reading's hour as the page says it: "5:00 PM" today, "ayer 5:00 PM" or
+// "1 nov 5:00 PM" before. Readings are hourly, so minutes always read :00.
+// Shared by the freshness pill and the desktop sidebar.
+export function readingTimeLabel(reading: Date) {
+  const hour = `${format(reading, "h")}:00 ${format(reading, "a")}`;
+  const day = getRelativeDayLabel(reading);
+  return day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`;
+}
+
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;

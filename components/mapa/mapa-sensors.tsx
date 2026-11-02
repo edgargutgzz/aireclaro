@@ -6,7 +6,6 @@ import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { format } from "date-fns";
 import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
@@ -15,7 +14,7 @@ import {
   PULSE_FALLBACK_COLOR,
   municipioKey,
   estadoKey,
-  getRelativeDayLabel,
+  readingTimeLabel,
   prefersReducedMotion,
   buildSelection,
   displayName,
@@ -38,7 +37,7 @@ import {
 } from "./field-layer";
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
-import { GroupRecommendations, QualityReading, StationReading } from "./station-card";
+import { AirNowPanel, GroupRecommendations, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
@@ -376,11 +375,9 @@ export default function MapaSensors({
     if (!reading || Number.isNaN(reading.getTime())) return null;
 
     const age = now - reading.getTime();
-    const hour = `${format(reading, "h")}:00 ${format(reading, "a")}`;
-    const day = getRelativeDayLabel(reading);
     return {
       dateTime: reading.toISOString(),
-      when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
+      when: readingTimeLabel(reading),
       status: age < 90 * 60 * 1000 ? "fresh" : "delayed",
     };
   }, [activeSubject, latestReading, now]);
@@ -957,42 +954,17 @@ export default function MapaSensors({
     <div className="relative h-below-header md:flex">
       {/* Desktop left column: a full-height sidebar docked beside the map
           (the map takes the rest of the row). It always shows the air right
-          now and what to do about it: the default station's reading (the
-          worst official one, pickDefaultSensor) with the advice for everyone,
-          then the sensitive groups' advice, open. No station header (the
+          now and what to do about it (AirNowPanel, from the default station:
+          the worst official one, pickDefaultSensor). No station header (the
           station is a quiet note under the value): it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
       <aside aria-label="Calidad del aire ahora" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-white md:flex">
-        {defaultSelection && (() => {
-          const quality = getQualityInfo(defaultSelection.pm25);
-          return (
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="px-6 pt-6">
-                {/* Where the number comes from, quietly: the worst official
-                    station, or (none live) the citizen sensor fallback. */}
-                <QualityReading
-                  pm25={defaultSelection.pm25}
-                  fallbackColor={defaultSelection.textColor}
-                  note={
-                    <>
-                      {defaultSelection.sensor.source === "sima"
-                        ? "Lectura más alta de las estaciones del SIMA"
-                        : "Sensor ciudadano, sin estaciones del SIMA en vivo"}
-                      {" · "}
-                      <span className="text-neutral-700">{displayName(defaultSelection.sensor)}</span>
-                    </>
-                  }
-                />
-              </div>
-              {quality && (
-                <div className="relative z-[1] mt-5 border-t border-stone-100 px-6 pb-6 pt-5">
-                  <GroupRecommendations defaultOpen info={quality} onShowInfo={() => setCuidarmeQuality(quality)} />
-                </div>
-              )}
-            </div>
-          );
-        })()}
+        {defaultSelection && (
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <AirNowPanel subject={defaultSelection} onShowInfo={() => setCuidarmeQuality(getQualityInfo(defaultSelection.pm25))} />
+          </div>
+        )}
       </aside>
 
       {/* Map area: the whole screen on mobile, the rest of the row beside the

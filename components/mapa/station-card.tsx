@@ -1,10 +1,10 @@
 "use client";
 
-import { useId, useState, type ReactNode } from "react";
+import { useId, useState } from "react";
 import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope } from "lucide-react";
 import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
-import { getSourceIcon, getSourceLabel } from "./lib";
+import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
@@ -30,10 +30,10 @@ const SENSITIVE_GROUPS = [
 // The advice for each sensitive group, behind a disclosure (the general
 // advice already sits in the reading, StationReading). The header row carries
 // the label, its info icon and the chevron; nothing below it renders until it
-// is opened. Open by default in the desktop sidebar (it has the room),
-// collapsed on the mobile sheet.
-export function GroupRecommendations({ info, onShowInfo, defaultOpen = false }: { info: QualityInfo; onShowInfo: () => void; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
+// is opened. The mobile sheet; the desktop sidebar lists the groups open
+// (AirNowPanel).
+export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; onShowInfo: () => void }) {
+  const [open, setOpen] = useState(false);
   // useId() contains colons, which are not valid in an id fragment reference.
   const bodyId = `health-recs-${useId().replace(/:/g, "")}`;
 
@@ -123,10 +123,8 @@ export function GroupRecommendations({ info, onShowInfo, defaultOpen = false }: 
 }
 
 // "Calidad del Aire" with a reading: the band label, the µg/m³ value and, under
-// it, the advice for everyone. Shared by the station card (StationReading) and
-// the desktop sidebar, which shows it on its own for the air right now and
-// passes `note`: a quiet line under the value saying where the reading is from.
-export function QualityReading({ pm25, fallbackColor, note }: { pm25: number | null; fallbackColor?: string; note?: ReactNode }) {
+// it, the advice for everyone. The station card's reading (StationReading).
+export function QualityReading({ pm25, fallbackColor }: { pm25: number | null; fallbackColor?: string }) {
   const quality = getQualityInfo(pm25);
   // The groups' advice is GroupRecommendations, below it at each call site.
   return (
@@ -142,7 +140,6 @@ export function QualityReading({ pm25, fallbackColor, note }: { pm25: number | n
           </span>
         )}
       </div>
-      {note && <p className="mt-2 text-xs leading-relaxed text-neutral-500">{note}</p>}
       {quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
     </div>
   );
@@ -196,5 +193,91 @@ export function StationReading({
 
       <QualityReading pm25={pm25} fallbackColor={subject.textColor} />
     </>
+  );
+}
+
+// The desktop sidebar: the air right now and what to do about it, the page's
+// summary rather than a station card. Reading first (the level word large in
+// its band's ink, then value and hour, then a quiet note on where it is from),
+// then the advice for everyone, then each sensitive group's advice as plain
+// rows, always open (the sidebar has the room, so no disclosure and no boxed
+// card). `subject` is the default station (pickDefaultSensor).
+export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; onShowInfo: () => void }) {
+  const quality = getQualityInfo(subject.pm25);
+  const readingAt = subject.readingAt ? new Date(subject.readingAt) : null;
+  const sectionLabel = "text-xs font-medium uppercase leading-none tracking-wide text-neutral-400";
+
+  return (
+    <div className="flex flex-col px-6 py-6">
+      <h2 className="text-sm font-medium text-neutral-500">Calidad del aire ahora</h2>
+
+      {quality ? (
+        <p className="mt-3 text-5xl font-bold leading-none tracking-tight" style={{ color: quality.textColor ?? subject.textColor }}>
+          {quality.label}
+        </p>
+      ) : (
+        <p className="mt-3 text-2xl font-medium text-neutral-400">No disponible</p>
+      )}
+
+      {/* The chips' idiom: the number is the value (neutral-700), the rest is
+          the quiet half. */}
+      {subject.pm25 !== null && (
+        <p className="mt-3 text-sm text-neutral-500">
+          <span className="font-medium text-neutral-700">{roundPM25(subject.pm25)}</span> μg/m³ PM2.5
+          {readingAt && !Number.isNaN(readingAt.getTime()) && (
+            <> · <time dateTime={readingAt.toISOString()}>{readingTimeLabel(readingAt)}</time></>
+          )}
+        </p>
+      )}
+
+      {/* Where the number comes from: the worst official station, or (none
+          live) the citizen-sensor fallback. */}
+      <p className="mt-2 text-xs leading-relaxed text-neutral-500">
+        {subject.sensor.source === "sima"
+          ? "Lectura más alta de las estaciones del SIMA"
+          : "Sensor ciudadano, sin estaciones del SIMA en vivo"}
+        {" · "}
+        <span className="text-neutral-700">{displayName(subject.sensor)}</span>
+      </p>
+
+      {quality && (
+        <>
+          <div className="mt-6 border-t border-stone-100 pt-6">
+            <h3 className={sectionLabel}>Qué hacer</h3>
+            <p className="mt-3 text-sm leading-relaxed text-neutral-700">{quality.generalRec}</p>
+          </div>
+
+          <div className="mt-6 border-t border-stone-100 pt-6">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className={sectionLabel}>Grupos sensibles</h3>
+              {/* p-1 with a matching negative margin: a real hit area, the
+                  glyph keeps its optical position. */}
+              <button
+                type="button"
+                onClick={onShowInfo}
+                className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                aria-label="Más información sobre las recomendaciones de salud"
+              >
+                <Info aria-hidden="true" className="h-3 w-3" />
+              </button>
+            </div>
+            {/* Content, not controls: no hover, ring or chevron. The paragraph
+                is indented to the label's left edge (ml-7: a 16px icon plus
+                gap-3) so the icons read as a column. */}
+            <ul className="mt-4 flex flex-col gap-5">
+              {SENSITIVE_GROUPS.map((g) => (
+                <li key={g.key}>
+                  <div className="flex items-center gap-3">
+                    <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400" />
+                    <p className="text-sm font-semibold text-neutral-800">{g.label}</p>
+                  </div>
+                  <p className="ml-7 mt-1 text-sm leading-relaxed text-neutral-500">{quality.sensitiveRecs[g.key]}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
