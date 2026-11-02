@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { ChevronRight, Layers, Wind } from "lucide-react";
+import { ChevronRight, Layers, Wind, X } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -38,7 +38,7 @@ import {
 } from "./field-layer";
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
-import { GroupRecommendations, StationReading } from "./station-card";
+import { GroupRecommendations, QualityReading, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
@@ -64,10 +64,13 @@ function trackStationOpen(sensor: Sensor) {
   });
 }
 
-// The view a normal load opens on:
-// the metro field, centred on the default station so its pulse is in frame.
+// The view a normal load opens on. Desktop: the metro field, centred on the
+// city, nothing picked (the sidebar carries the air right now). Mobile: centred
+// on the default station so the pulse of the station its sheet rests on is in
+// frame.
 function restingFocus(defaultSelection: SelectedSensor | null) {
-  return defaultSelection
+  const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
+  return defaultSelection && !desktop
     ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 10.5 }
     : { center: OPENING_CENTER, zoom: 10 };
 }
@@ -158,8 +161,9 @@ export default function MapaSensors({
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
 
-  // An empty-map click or Escape drops the pick on desktop (the card returns
-  // to the default station); on mobile it only collapses the sheet. Tracked in state (not just a CSS `md:` toggle) because the
+  // Desktop: the pick is its own card over the map (an empty-map click or
+  // Escape closes it) and the pulse / camera ignore the default station;
+  // mobile's sheet rests on the default and a click only collapses it. Tracked in state (not just a CSS `md:` toggle) because the
   // empty-map click and Escape behave differently. Starts false so SSR and the
   // first client render agree; the effect promotes it on a wide viewport.
   const [isDesktop, setIsDesktop] = useState(false);
@@ -335,6 +339,10 @@ export default function MapaSensors({
     return def ? buildSelection(def, data) : null;
   }, [visibleSensors, data]);
   const cardSubject = selectedSensor ?? defaultSelection;
+  // The station the map itself points at (pulse, freshness readout). Mobile:
+  // the sheet's station. Desktop: only an explicit pick, since the sidebar's
+  // reading is the summary of the air right now, not a selection on the map.
+  const activeSubject = isDesktop ? selectedSensor : cardSubject;
 
   // Null until mounted, so the server and the first client render agree on a
   // value that is by definition different on each; then re-read on a timer,
@@ -363,8 +371,8 @@ export default function MapaSensors({
     if (now === null) return null;
     // A station on screen with no reading (a gray disc) says so, rather than
     // borrowing the network's newest time and looking up to date.
-    if (cardSubject && !cardSubject.readingAt) return { status: "nodata" };
-    const reading = cardSubject?.readingAt ? new Date(cardSubject.readingAt) : latestReading;
+    if (activeSubject && !activeSubject.readingAt) return { status: "nodata" };
+    const reading = activeSubject?.readingAt ? new Date(activeSubject.readingAt) : latestReading;
     if (!reading || Number.isNaN(reading.getTime())) return null;
 
     const age = now - reading.getTime();
@@ -375,13 +383,13 @@ export default function MapaSensors({
       when: day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`,
       status: age < 90 * 60 * 1000 ? "fresh" : "delayed",
     };
-  }, [cardSubject, latestReading, now]);
+  }, [activeSubject, latestReading, now]);
 
-  // The marker that wears the pulse: the card's station (the pick, else the
-  // default the mobile sheet / desktop card rests on). Mirrored into refs
+  // The marker that wears the pulse: activeSubject (mobile: the pick, else the
+  // default the sheet rests on; desktop: the pick only). Mirrored into refs
   // so the map event handlers read the current value without being rebuilt on
   // each pick.
-  const activeSensorId = cardSubject?.sensor.sensor_id ?? null;
+  const activeSensorId = activeSubject?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
 
   // The pulse halo is a large soft translucent fill, so it takes the official
@@ -583,8 +591,7 @@ export default function MapaSensors({
 
   // Initialize the map once, already on its resting view: a shared ?sensor=
   // link opens close (zoom 13) on the station it's about; a normal load opens
-  // on the metro field, centred on the default station so its pulse is in
-  // frame. No fly-in: it used to open at zoom 8 and fly in for 4.5 s, which
+  // on the metro field (restingFocus). No fly-in: it used to open at zoom 8 and fly in for 4.5 s, which
   // fetched tiles for every zoom on the way and kept the numbers hidden until
   // it landed (removed 2026-10-09 for load speed).
   useEffect(() => {
@@ -863,15 +870,15 @@ export default function MapaSensors({
     writeFilterParams({ showOccamm, showOtros, showSima, hiddenMunicipios });
   }, [showOccamm, showOtros, showSima, hiddenMunicipios]);
 
-  // Drop the pick, so the card returns to the default station. **Desktop only**
-  // (empty-map click, Escape); the left-column card is always on screen. On
+  // Drop the pick. **Desktop only** (the X, empty-map click, Escape): the
+  // picked station's card over the map closes; the sidebar is unaffected. On
   // mobile the most a gesture does is collapse the sheet back to `peek`.
   const closeCard = useCallback(() => {
     setSelectedSensor(null);
     setSheetState('peek');
   }, []);
 
-  // Clicking empty map: on desktop it dismisses the pick (back to the default);
+  // Clicking empty map: on desktop it closes the picked station's card;
   // on mobile it just collapses the sheet to peek, never dropping the card.
   // MapLibre fires `click` only on a genuine click, not a drag/pan; a hit on the
   // disc layer means the field handler already owns this click, so bail.
@@ -948,41 +955,27 @@ export default function MapaSensors({
 
   return (
     <div className="relative h-below-header md:flex">
-      {/* Desktop left column: the estación card as a full-height sidebar,
-          docked beside the map (the map takes the rest of the row). It rests
-          on the default station (the worst official one) and swaps to a
-          picked marker or a ?sensor= link; a click on empty map or Escape
-          returns it to the default. Only its body scrolls. Mobile carries the
-          card as the bottom sheet. */}
-      <aside aria-label="Estación" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-white md:flex">
-        {cardSubject && (() => {
-          const { sensor } = cardSubject;
-          const pm25 = cardSubject.pm25;
-          const sensorQuality = getQualityInfo(pm25);
+      {/* Desktop left column: a full-height sidebar docked beside the map
+          (the map takes the rest of the row). It always shows the air right
+          now and what to do about it: the default station's reading (the
+          worst official one, pickDefaultSensor) with the advice for everyone,
+          then the sensitive groups' advice, open. No station header: it is
+          the page's summary, and a pick on the map never changes it (the
+          picked station gets its own card over the map). Mobile carries this
+          as the bottom sheet's resting station. */}
+      <aside aria-label="Calidad del aire ahora" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-white md:flex">
+        {defaultSelection && (() => {
+          const quality = getQualityInfo(defaultSelection.pm25);
           return (
-            <div className="flex min-h-0 flex-1 flex-col">
-              <div className="flex w-full flex-shrink-0 items-center px-6 pt-6 pb-3">
-                <span className="min-w-0 truncate text-base font-medium text-neutral-700">{displayName(sensor)}</span>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <div className="px-6 pt-6">
+                <QualityReading pm25={defaultSelection.pm25} fallbackColor={defaultSelection.textColor} />
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                <div className={`disclosure-in flex flex-col gap-5 px-6 pt-3 ${sensorQuality ? 'pb-0' : 'pb-6'}`}>
-                  <StationReading
-                    subject={cardSubject}
-                    pm25={pm25}
-                    copied={copied}
-                    onCopyCoords={() => copyCoords(sensor.lat, sensor.lon)}
-                    copyInteractionClass="hover:text-neutral-700"
-                  />
+              {quality && (
+                <div className="relative z-[1] mt-5 border-t border-stone-100 px-6 pb-6 pt-5">
+                  <GroupRecommendations defaultOpen info={quality} onShowInfo={() => setCuidarmeQuality(quality)} />
                 </div>
-
-                {/* The sensitive groups' advice, open by default here (the general advice is in the reading). */}
-                {sensorQuality && (
-                  <div className="disclosure-in relative z-[1] mt-5 border-t border-stone-100 px-6 pb-6 pt-5">
-                    <GroupRecommendations defaultOpen info={sensorQuality} onShowInfo={() => setCuidarmeQuality(sensorQuality)} />
-                  </div>
-                )}
-              </div>
-              <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
+              )}
             </div>
           );
         })()}
@@ -1189,6 +1182,37 @@ export default function MapaSensors({
             </div>
           )}
         </div>
+
+        {/* A picked station's card, under the Sensores panel. Opened by a
+            marker or a ?sensor= link; the X, Escape or a click on empty map
+            close it. The sidebar never changes with it. */}
+        {selectedSensor && (
+          <div className="glass pointer-events-auto flex min-h-0 w-full flex-shrink flex-col overflow-hidden rounded-2xl">
+            <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
+              <span className="min-w-0 flex-1 truncate text-base font-medium text-neutral-700">{displayName(selectedSensor.sensor)}</span>
+              <button
+                type="button"
+                onClick={closeCard}
+                aria-label="Cerrar"
+                className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+              >
+                <X aria-hidden="true" className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <div className="disclosure-in flex flex-col gap-5 px-5 pb-5 pt-3">
+                <StationReading
+                  subject={selectedSensor}
+                  pm25={selectedSensor.pm25}
+                  copied={copied}
+                  onCopyCoords={() => copyCoords(selectedSensor.sensor.lat, selectedSensor.sensor.lon)}
+                  copyInteractionClass="hover:text-neutral-700"
+                />
+              </div>
+            </div>
+            <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
+          </div>
+        )}
 
         {/* Foot of the column, desktop: the data-freshness pill. */}
         {freshness && <div className="mt-auto flex-shrink-0"><FreshnessBadge freshness={freshness} /></div>}

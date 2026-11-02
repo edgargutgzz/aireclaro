@@ -122,6 +122,30 @@ export function GroupRecommendations({ info, onShowInfo, defaultOpen = false }: 
   );
 }
 
+// "Calidad del Aire" with a reading: the band label, the µg/m³ value and, under
+// it, the advice for everyone. Shared by the station card (StationReading) and
+// the desktop sidebar, which shows it on its own for the air right now.
+export function QualityReading({ pm25, fallbackColor }: { pm25: number | null; fallbackColor?: string }) {
+  const quality = getQualityInfo(pm25);
+  // The groups' advice is GroupRecommendations, below it at each call site.
+  return (
+    <div>
+      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del Aire</p>
+      <div className="flex items-baseline justify-between gap-3">
+        <QualityHeadline info={quality} fallbackColor={fallbackColor} />
+        {/* The chips' idiom: the number is the value and carries neutral-700,
+            the unit is the quiet half. */}
+        {pm25 !== null && (
+          <span className="flex-shrink-0 whitespace-nowrap text-sm text-neutral-500">
+            <span className="font-medium text-neutral-700">{roundPM25(pm25)}</span> μg/m³ PM2.5
+          </span>
+        )}
+      </div>
+      {quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
+    </div>
+  );
+}
+
 // The shared middle of the estación card: the source line closed off by a
 // rule, then "Calidad del Aire" with the current reading. The desktop card and
 // the mobile sheet both render this; they differ only in the header above it
@@ -146,7 +170,6 @@ export function StationReading({
   const { sensor } = subject;
   const isSima = sensor.source === "sima";
   const SourceIcon = getSourceIcon(isSima);
-  const quality = getQualityInfo(pm25);
 
   return (
     <>
@@ -169,23 +192,7 @@ export function StationReading({
         </button>
       </div>
 
-      {/* The current reading: the band label, then the µg/m³ value, and
-          under it the advice for everyone, as one more line of the reading
-          (the groups' advice is behind GroupRecommendations below). */}
-      <div>
-        <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del Aire</p>
-        <div className="flex items-baseline justify-between gap-3">
-          <QualityHeadline info={quality} fallbackColor={subject.textColor} />
-          {/* The chips' idiom: the number is the value and carries neutral-700,
-              the unit is the quiet half. */}
-          {pm25 !== null && (
-            <span className="flex-shrink-0 whitespace-nowrap text-sm text-neutral-500">
-              <span className="font-medium text-neutral-700">{roundPM25(pm25)}</span> μg/m³ PM2.5
-            </span>
-          )}
-        </div>
-        {quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
-      </div>
+      <QualityReading pm25={pm25} fallbackColor={subject.textColor} />
     </>
   );
 }
