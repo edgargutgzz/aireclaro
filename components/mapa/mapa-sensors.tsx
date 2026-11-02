@@ -955,8 +955,8 @@ export default function MapaSensors({
       {/* Desktop left column: a full-height sidebar docked beside the map
           (the map takes the rest of the row). It always shows the air right
           now and what to do about it (AirNowPanel, from the default station:
-          the worst official one, pickDefaultSensor). No station header (the
-          station is a quiet note under the value): it is the page's summary, and a pick on the map never changes it (the
+          the worst official one, pickDefaultSensor). No station header or
+          source note: it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
       <aside aria-label="Calidad del aire" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-white md:flex">

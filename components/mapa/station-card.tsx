@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope } from "lucide-react";
 import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
-import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
+import { getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
@@ -198,7 +198,7 @@ export function StationReading({
 
 // The desktop sidebar: the air right now and what to do about it, the page's
 // summary rather than a station card. Reading first (the level word large in
-// its band's ink, then value and hour, then a quiet note on where it is from),
+// its band's ink, then value and hour; no source note, user call 2026-11-02),
 // then the advice for everyone, then each sensitive group's advice as plain
 // rows, always open (the sidebar has the room, so no disclosure and no boxed
 // card). `subject` is the default station (pickDefaultSensor).
@@ -229,16 +229,6 @@ export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; 
           )}
         </p>
       )}
-
-      {/* Where the number comes from: the worst official station, or (none
-          live) the citizen-sensor fallback. */}
-      <p className="mt-2 text-xs leading-relaxed text-neutral-500">
-        {subject.sensor.source === "sima"
-          ? "Lectura más alta de las estaciones del SIMA"
-          : "Sensor ciudadano, sin estaciones del SIMA en vivo"}
-        {" · "}
-        <span className="text-neutral-700">{displayName(subject.sensor)}</span>
-      </p>
 
       {quality && (
         <>
