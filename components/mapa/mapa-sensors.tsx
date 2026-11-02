@@ -999,9 +999,12 @@ export default function MapaSensors({
           sidebar on desktop. Overlays anchored to the map itself (the legend)
           live in here so they sit on the map, not over the sidebar. */}
       <div className="absolute inset-0 md:relative md:inset-auto md:h-full md:min-w-0 md:flex-1">
+        {/* h-full w-full, not inset-0: MapLibre's own CSS puts
+            position: relative on its container, which drops the insets and
+            collapses the map to zero height. */}
         <div
           ref={mapContainer}
-          className="absolute inset-0"
+          className="h-full w-full"
           style={{ backgroundColor: BASEMAP_GROUND }}
         />
 
