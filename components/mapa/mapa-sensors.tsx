@@ -44,7 +44,7 @@ import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
 
 // The station the estación card shows at rest, before any marker is picked
-// (the mobile sheet; desktop opens without a card): the official station with
+// (the mobile sheet; on desktop the left-column banner): the official station with
 // the highest live PM2.5 right now, FIN excluded (it's Saltillo). Rule decided
 // 2026-10-31: people open this page to learn how the air is, and the worst
 // official reading is the one to act on. Ties go to the first name
@@ -158,12 +158,11 @@ export default function MapaSensors({
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
 
-  // Desktop drops the default-station card at rest: the right column is empty
-  // and the map stands alone until a marker is picked. Mobile still rests its
-  // sheet on the default station, so the fallback applies there. Tracked in
-  // state (not just a CSS `md:` toggle) because the active-marker pulse has to
-  // follow the card — no card, no pulse. Starts false so SSR and the first
-  // client render agree; the effect promotes it on a wide viewport.
+  // Desktop's right column is empty at rest (the default station rides the
+  // left-column banner instead) and the card closes; mobile's sheet never
+  // closes. Tracked in state (not just a CSS `md:` toggle) because the
+  // empty-map click and Escape behave differently. Starts false so SSR and the
+  // first client render agree; the effect promotes it on a wide viewport.
   const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -379,13 +378,11 @@ export default function MapaSensors({
     };
   }, [cardSubject, latestReading, now]);
 
-  // The marker that wears the pulse: the card's station. On desktop that is the
-  // explicit pick only (empty right column and no pulse at rest); on mobile the
-  // sheet still rests on the default station, so the fallback carries. Mirrored into refs
+  // The marker that wears the pulse: the card's station (the pick, else the
+  // default the mobile sheet / desktop banner rests on). Mirrored into refs
   // so the map event handlers read the current value without being rebuilt on
   // each pick.
-  const pulseSubject = isDesktop ? selectedSensor : cardSubject;
-  const activeSensorId = pulseSubject?.sensor.sensor_id ?? null;
+  const activeSensorId = cardSubject?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
 
   // The pulse halo is a large soft translucent fill, so it takes the official
@@ -836,8 +833,8 @@ export default function MapaSensors({
   // own air-quality ink (yellow and green barely register as a ring on
   // a light map; the darker tone also keeps the ring off the circle it wraps).
   // syncActive owns the DOM writes; the field-build effect calls it too, this
-  // re-runs it when only the pick changes (including desktop dropping to no
-  // pick, which clears the pulse). No resize, no dimming of the rest.
+  // re-runs it when only the pick changes (including a close, which hands
+  // the pulse back to the default station). No resize, no dimming of the rest.
   useEffect(() => {
     if (!styleReady) return;
     syncActive();
@@ -1093,9 +1090,9 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column. Empty at rest (the map stands alone); a picked
-          marker or a ?sensor= link opens its card, and the X / Escape / a
-          click on empty map close it. */}
+      {/* Desktop right column. Empty at rest (the default station rides the
+          left-column banner); a picked marker, the banner or a ?sensor= link
+          opens its card, and the X / Escape / a click on empty map close it. */}
       <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden flex-col items-end gap-2 md:flex">
 
         {/* flex-1 so the wrapper takes the full column height; that bounds the
@@ -1156,6 +1153,30 @@ export default function MapaSensors({
           panel stacked right on top of the legend (md:mt-auto on the panel),
           and an open panel grows up into whatever is left over. */}
       <div className="pointer-events-none absolute left-4 top-4 z-10 flex w-panel-md flex-col items-start gap-2 md:bottom-14 md:left-6 md:top-6 md:w-panel-filters">
+        {/* Desktop twin of the mobile peek: at rest (nothing picked) the
+            default station's name and level, at the top of the column.
+            Clicking it opens that station's card on the right, which hides
+            the banner until the card closes. */}
+        {!selectedSensor && defaultSelection && (() => {
+          const quality = getQualityInfo(defaultSelection.pm25);
+          return (
+            <button
+              type="button"
+              onClick={() => selectFromList(defaultSelection.sensor)}
+              className="glass pointer-events-auto hidden min-h-14 w-full flex-shrink-0 items-baseline justify-between gap-3 rounded-2xl px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 md:flex"
+            >
+              <span className="min-w-0 flex-1 truncate text-base font-medium text-neutral-700">
+                {displayName(defaultSelection.sensor)}
+              </span>
+              {quality && (
+                <span className="flex-shrink-0 text-2xl font-bold" style={{ color: quality.textColor }}>
+                  {quality.label}
+                </span>
+              )}
+            </button>
+          );
+        })()}
+
         <div className="glass pointer-events-auto hidden min-h-0 w-full flex-col overflow-hidden rounded-2xl md:mt-auto md:flex">
           {/* The header carries the filter state, in the same "label · summary"
               idiom the rows inside the panel already use, and the legend
