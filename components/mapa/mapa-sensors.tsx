@@ -1153,25 +1153,14 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column: the air-quality legend at the top, a picked
-          station's card under it; at the foot,
-          the Sensores icon button (the mobile button's shape, 2026-11-02;
-          it was a header card at the top), and the Sensores panel above it
-          while open. No freshness pill on desktop (removed 2026-11-03): the
+      {/* Desktop right column: a picked station's card at the top; at the
+          foot, stacked bottom-up, the air-quality legend, the Sensores icon
+          button (the mobile button's shape, 2026-11-02; it was a header card
+          at the top), and the Sensores panel above it while open. No freshness pill on desktop (removed 2026-11-03): the
           sidebar's header carries the time. On mobile the panel and legend
           are bottom sheets and freshness rides the Capas button's row. */}
       <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-filters flex-col items-end gap-2 md:flex">
-        {/* The air-quality scale, desktop: at the top of the right column
-            (moved from the bottom-left 2026-11-02), opening downward; a
-            picked station's card sits under it. Mobile carries it as the Wind
-            button's bottom sheet. */}
-        <div className="glass pointer-events-auto w-full flex-shrink-0 rounded-2xl">
-          <div className="px-5 py-4">
-            <AirQualityLegend collapsible />
-          </div>
-        </div>
-
-        {/* A picked station's card, under the legend. Opened by a marker or a
+        {/* A picked station's card, at the top. Opened by a marker or a
             ?sensor= link; the X, Escape or a click on empty map close it.
             The sidebar never changes with it. */}
         {selectedSensor && (
@@ -1250,6 +1239,15 @@ export default function MapaSensors({
             icon={Layers}
             className="pointer-events-auto flex-shrink-0"
           />
+          {/* The air-quality scale, desktop: at the foot of the right column,
+              under the Sensores button (2026-11-03; it sat at the top since
+              2026-11-02). Opens upward. Mobile carries it as the Wind
+              button's bottom sheet. */}
+          <div className="glass pointer-events-auto w-full flex-shrink-0 rounded-2xl">
+            <div className="px-5 py-4">
+              <AirQualityLegend collapsible />
+            </div>
+          </div>
         </div>
       </div>
 
