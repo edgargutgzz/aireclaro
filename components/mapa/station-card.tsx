@@ -285,16 +285,24 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
             </div>
             {/* When the reading is from, as a strip at the card's foot (option
                 D, picked 2026-11-03 from the header mockups): a shade of the
-                level's own fill, "Actualizado" left, day and hour right. No
-                dot (removed 2026-11-03: a dark pulse on the level colour looked
-                wrong); the day and hour carry how current it is. */}
+                level's own fill, "Actualizado" left, day and hour right. The
+                dot is white on every level (2026-11-03: the card's dark ink
+                looked wrong on the fill); it pulses while fresh, dims once late. */}
             {freshness && freshness.status !== "nodata" && (
               <p
                 className={`flex items-center justify-between gap-3 px-6 py-[11px] text-xs font-medium leading-none ${
                   onFill === "#ffffff" ? "bg-white/15" : "bg-black/[0.07]"
                 }`}
               >
-                <span>Actualizado</span>
+                <span className="flex items-center gap-1.5">
+                  <span aria-hidden="true" className="relative flex h-2 w-2">
+                    {freshness.status === "fresh" && (
+                      <span className="absolute inset-0 animate-ping rounded-full bg-white opacity-75 motion-reduce:animate-none" />
+                    )}
+                    <span className={`relative h-2 w-2 rounded-full bg-white ${freshness.status === "fresh" ? "" : "opacity-50"}`} />
+                  </span>
+                  Actualizado
+                </span>
                 <time dateTime={freshness.dateTime} className="whitespace-nowrap">
                   {readingDayTimeLabel(new Date(freshness.dateTime))}
                 </time>
