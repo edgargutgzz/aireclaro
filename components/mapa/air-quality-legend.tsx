@@ -148,9 +148,7 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
         aria-controls={detailId}
         className="flex min-h-6 w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
       >
-        {/* Closed, the bar speaks for itself (2026-11-03): the name shows
-            only once the detail is open; screen readers always get it. */}
-        <span className={open ? "flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400" : "sr-only"}>
+        <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">
           Calidad del aire
         </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
