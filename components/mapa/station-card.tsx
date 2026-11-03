@@ -327,9 +327,11 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
               groups that share an advice share one row, their discs
               overlapping, so the join reads from the icons however the names
               wrap. Content, not controls: no hover, ring or chevron. */}
-          <section>
-            <h3 className="mx-2 text-base font-semibold text-neutral-500">Recomendaciones de salud</h3>
-            <div className="mt-2.5 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+          {/* No visible title (removed 2026-11-03, option D of the title
+              mockups): each row names who it is for, and the footnote names
+              the source. Screen readers still get the section name. */}
+          <section aria-label="Recomendaciones de salud">
+            <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
               <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
             </div>
           </section>
