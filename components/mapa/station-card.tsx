@@ -28,6 +28,9 @@ const SENSITIVE_GROUPS = [
   { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
 
+// "A, B y C" for a block's group names.
+const GROUP_LIST = new Intl.ListFormat("es", { style: "long", type: "conjunction" });
+
 // The sensitive groups bucketed by identical advice, in SENSITIVE_GROUPS order
 // of first appearance: the desktop sidebar's one-sentence-per-block list.
 function groupByAdvice(info: QualityInfo) {
@@ -266,26 +269,20 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
           <section className="mt-8">
             <h4 className={sectionLabel}>Grupos sensibles</h4>
             {/* One block per distinct advice: the groups it applies to as a
-                row of icon + name tags, then the sentence once. The official
+                phrase of names, then the sentence once. The official
                 texts repeat across groups (at Mala two sentences cover all
                 four), so this halves the reading without hiding or rewording
-                anything. Order follows SENSITIVE_GROUPS by first appearance.
+                anything; groups join only on an exact match. Order follows
+                SENSITIVE_GROUPS by first appearance.
                 Content, not controls: no hover, ring or chevron. */}
             <ul className="mt-4 flex flex-col gap-6">
               {groupByAdvice(quality).map(({ advice, groups }) => (
                 <li key={advice}>
-                  {/* Chips, not bare labels: when a long name wraps the row, bare
-                      labels stacked and read as separate rows; pills keep the
-                      set reading as one. */}
-                  <div className="flex flex-wrap gap-2">
-                    {groups.map((g) => (
-                      <span key={g.key} className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1 text-sm font-medium text-neutral-700">
-                        <g.icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
-                        {g.label}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="mt-2.5 text-sm leading-relaxed text-neutral-500">{advice}</p>
+                  {/* The names as one phrase ("A, B y C"), so a long one
+                      wrapping can't split the set into what reads as separate
+                      rows (bare labels and chips both did). */}
+                  <p className="text-sm font-semibold text-neutral-800">{GROUP_LIST.format(groups.map((g) => g.label))}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-neutral-500">{advice}</p>
                 </li>
               ))}
             </ul>
