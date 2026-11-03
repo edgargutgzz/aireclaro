@@ -236,10 +236,9 @@ function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[
   );
 }
 
-// The desktop sidebar. Header: the level's solid fill as a rounded card inset
-// in the glass ("Tarjeta"), the label and level word left, the value right, all
-// in the level's numberInk (the marker's own ink on that fill; white on
-// Extremadamente mala). Body, the only part that
+// The desktop sidebar. Header ("Marcador"): a large disc drawn like the map's
+// markers with the number inside, the label, level word (in its ink) and unit
+// beside it. Body, the only part that
 // scrolls: Recomendaciones de salud (población general) and Grupos sensibles,
 // each a grouped list of RecRow (the "B" list from the same mockups).
 // Then a footnote: which station the reading is and where the advice comes
@@ -251,22 +250,31 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {/* "Tarjeta" header (picked 2026-11-02 from the mix-and-match page): the
-          level's solid block as a rounded card inset in the glass, the level
-          word left, the value right, text in numberInk. Quieter than the
-          full-bleed block it replaces, and the glass shows around it. */}
-      <header className="flex-shrink-0 px-4 pt-4">
-        {quality ? (
-          <div
-            className="flex items-end justify-between gap-3 rounded-2xl p-6"
-            style={{ backgroundColor: quality.color, color: onFill }}
-          >
-            <div className="min-w-0">
-              <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
-              {/* "Extremadamente mala" can't fit at 44px beside the number, so
-                  it shows as "Extrem. mala", the legend's own short form;
-                  screen readers get the full name. */}
-              <p className="mt-2.5 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
+      {/* "Marcador" header (tried 2026-11-02 from the mix-and-match page): a
+          large disc drawn like the map's own markers (the level's fill, the
+          number in numberInk, a white ring and lift) with the label, level
+          word in the level's ink and unit beside it, on the glass. It ties
+          the sidebar's reading to the field of markers on the map. */}
+      <header className="grid flex-shrink-0 grid-cols-[auto_1fr] items-center gap-5 border-b border-black/5 px-7 pb-6 pt-7">
+        <span
+          aria-hidden="true"
+          className="flex h-[104px] w-[104px] items-center justify-center rounded-full text-[40px] font-bold tracking-tight"
+          style={
+            quality && subject.pm25 !== null
+              ? { backgroundColor: quality.color, color: onFill, boxShadow: "inset 0 0 0 2px rgba(0,0,0,.06), 0 0 0 5px #fff, 0 4px 14px rgba(0,0,0,.12)" }
+              : { backgroundColor: "#d6d3d1", color: "#ffffff", boxShadow: "0 0 0 5px #fff, 0 4px 14px rgba(0,0,0,.08)" }
+          }
+        >
+          {subject.pm25 !== null && quality ? roundPM25(subject.pm25) : "–"}
+        </span>
+        <div className="min-w-0">
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
+          {quality ? (
+            <>
+              {/* "Extremadamente mala" can't fit at 40px in this column, so it
+                  shows as "Extrem. mala", the legend's own short form; screen
+                  readers get the full name. */}
+              <p className="mt-2 whitespace-nowrap text-[40px] font-extrabold leading-none tracking-tight" style={{ color: quality.textColor }}>
                 {quality.label === "Extremadamente mala" ? (
                   <>
                     <span aria-hidden="true">Extrem. mala</span>
@@ -276,20 +284,16 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
                   quality.label
                 )}
               </p>
-            </div>
-            {subject.pm25 !== null && (
-              <p className="flex-shrink-0 text-right">
-                <span className="block text-[40px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
-                <span className="text-[13px]">μg/m³ PM2.5</span>
-              </p>
-            )}
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-stone-200 bg-white p-6">
-            <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
-            <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
-          </div>
-        )}
+              {subject.pm25 !== null && (
+                <p className="mt-2 text-sm text-neutral-500">
+                  <span className="sr-only">{roundPM25(subject.pm25)} </span>μg/m³ PM2.5
+                </p>
+              )}
+            </>
+          ) : (
+            <p className="mt-2 text-2xl font-medium text-neutral-400">No disponible</p>
+          )}
+        </div>
       </header>
 
       {quality && (
