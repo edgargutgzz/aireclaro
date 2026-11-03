@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
-import { displayName, getSourceIcon, getSourceLabel, readingDayTimeLabel } from "./lib";
+import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
 import { DialogLink } from "./info-dialog";
 import { FreshnessDot, type Freshness } from "@/components/data/freshness";
 
@@ -290,12 +290,14 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
             {freshness && freshness.status !== "nodata" && (
               <p className="flex items-center gap-1.5 bg-white px-6 py-3 text-[13px] leading-none">
                 <FreshnessDot status={freshness.status} />
-                {/* No visible "Actualizado" (dropped 2026-11-03): the pulsing
-                    dot beside the time says it; screen readers hear it. */}
-                <span className="sr-only">Actualizado </span>
-                <time dateTime={freshness.dateTime} className="whitespace-nowrap font-medium text-neutral-800">
-                  {readingDayTimeLabel(new Date(freshness.dateTime))}
-                </time>
+                {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
+                    a past day still shows: "Actualizado ayer 11:00 PM". */}
+                <span className="whitespace-nowrap text-neutral-600">
+                  Actualizado{" "}
+                  <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
+                    {readingTimeLabel(new Date(freshness.dateTime))}
+                  </time>
+                </span>
               </p>
             )}
           </div>
