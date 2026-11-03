@@ -22,6 +22,7 @@ import {
 } from "./lib";
 import {
   OPENING_CENTER,
+  OPENING_ZOOM,
   FIELD_SOURCE,
   FIELD_LAYER,
   FIELD_LABEL_LAYER,
@@ -71,7 +72,7 @@ function restingFocus(defaultSelection: SelectedSensor | null) {
   const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
   return defaultSelection && !desktop
     ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 10.5 }
-    : { center: OPENING_CENTER, zoom: 10 };
+    : { center: OPENING_CENTER, zoom: OPENING_ZOOM };
 }
 
 function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefined {
