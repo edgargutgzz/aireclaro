@@ -4,7 +4,8 @@ import { useId, useState } from "react";
 import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
-import { getSourceIcon, getSourceLabel } from "./lib";
+import { displayName, getSourceIcon, getSourceLabel } from "./lib";
+import { DialogLink } from "./info-dialog";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
@@ -236,18 +237,17 @@ function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[
 }
 
 // The desktop sidebar ("A · Bloque de color", picked 2026-11-02 from three
-// mockups). Header: a solid block in the level's fill, the label + info, the
+// mockups). Header: a solid block in the level's fill, the label, the
 // level word large and the value, all in the level's numberInk (the marker's
 // own ink on that fill; white on Extremadamente mala). Body, the only part that
 // scrolls: Recomendaciones de salud (población general) and Grupos sensibles,
 // each a grouped list of RecRow (the "B" list from the same mockups).
-// `subject` is the default station (pickDefaultSensor); no station name,
-// source note or hour on the sidebar (the ⓘ names the station, the freshness
-// pill on the map carries the hour).
-export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subject: SelectedSensor; onShowInfo: () => void; onShowReadingInfo: () => void }) {
+// Then a footnote: which station the reading is and where the advice comes
+// from. `subject` is the default station (pickDefaultSensor); no hour (the
+// freshness pill on the map carries it).
+export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
-  const focus = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -255,17 +255,7 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
         className={`flex-shrink-0 px-7 pb-8 pt-7 ${quality ? "" : "border-b border-stone-200"}`}
         style={quality ? { backgroundColor: quality.color, color: onFill } : undefined}
       >
-        <div className={`flex items-center gap-1 ${quality ? "" : "text-neutral-500"}`}>
-          <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
-          <button
-            type="button"
-            onClick={onShowReadingInfo}
-            className={`-my-1 flex-shrink-0 rounded-xl p-1 opacity-75 transition-opacity hover:opacity-100 ${focus}`}
-            aria-label="Más información sobre esta lectura"
-          >
-            <Info aria-hidden="true" className="h-3 w-3" />
-          </button>
-        </div>
+        <p className={`text-xs font-medium uppercase leading-none tracking-wide ${quality ? "" : "text-neutral-500"}`}>Calidad del aire</p>
         {quality ? (
           <>
             <p className="mt-4 text-6xl font-extrabold leading-none tracking-tight">{quality.label}</p>
@@ -289,17 +279,7 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
               overlapping, so the join reads from the icons however the names
               wrap. Content, not controls: no hover, ring or chevron. */}
           <section>
-            <div className="mx-2 flex items-center gap-1">
-              <h3 className="text-base font-semibold text-neutral-900">Recomendaciones de salud</h3>
-              <button
-                type="button"
-                onClick={onShowInfo}
-                className={`-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 ${focus}`}
-                aria-label="Más información sobre las recomendaciones de salud"
-              >
-                <Info aria-hidden="true" className="h-3 w-3" />
-              </button>
-            </div>
+            <h3 className="mx-2 text-base font-semibold text-neutral-900">Recomendaciones de salud</h3>
             <div className="mt-2.5 overflow-hidden rounded-2xl border border-stone-200 bg-white">
               <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
             </div>
@@ -318,6 +298,21 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
               ))}
             </ul>
           </section>
+
+          {/* Where the reading and the advice come from, always visible as a
+              quiet footnote (they were two info-button popups; removed
+              2026-11-02, the user disliked the floating icons and the
+              popup). */}
+          <p className="mx-2 mt-8 border-t border-stone-200 pt-5 text-xs leading-relaxed text-neutral-500">
+            {subject.sensor.source === "sima" ? (
+              <>Nivel más alto entre las estaciones del SIMA, en {displayName(subject.sensor)}.</>
+            ) : (
+              <>Ninguna estación del SIMA tiene lectura reciente. Se muestra el sensor ciudadano más cercano a Obispado, {displayName(subject.sensor)}.</>
+            )}{" "}
+            Recomendaciones oficiales del Índice de Aire y Salud (
+            <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
+            ).
+          </p>
         </div>
       )}
     </div>

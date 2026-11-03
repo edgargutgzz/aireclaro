@@ -160,8 +160,6 @@ export default function MapaSensors({
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
   const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
-  // The desktop sidebar's reading info dialog (which station the reading is).
-  const [showReadingInfo, setShowReadingInfo] = useState(false);
 
   // Desktop: the pick is its own card over the map (an empty-map click or
   // Escape closes it) and the pulse / camera ignore the default station;
@@ -964,11 +962,7 @@ export default function MapaSensors({
           as the bottom sheet's resting station. */}
       <aside aria-label="Calidad del aire" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-stone-50 md:flex">
         {defaultSelection && (
-          <AirNowPanel
-            subject={defaultSelection}
-            onShowInfo={() => setCuidarmeQuality(getQualityInfo(defaultSelection.pm25))}
-            onShowReadingInfo={() => setShowReadingInfo(true)}
-          />
+          <AirNowPanel subject={defaultSelection} />
         )}
       </aside>
 
@@ -1306,30 +1300,6 @@ export default function MapaSensors({
               NOM-172-SEMARNAT-2023
             </DialogLink>
             , para la población general y grupos sensibles.
-          </p>
-        </InfoDialog>
-      )}
-
-      {/* The sidebar reading's info popup: it is the highest level among the
-          SIMA stations, and which station that is right now (or the citizen
-          fallback when no SIMA station is live). */}
-      {showReadingInfo && defaultSelection && (
-        <InfoDialog title="Calidad del aire" onClose={() => setShowReadingInfo(false)}>
-          <p className="text-sm leading-relaxed text-neutral-600">
-            {defaultSelection.sensor.source === "sima" ? (
-              <>
-                Muestra el nivel más alto registrado entre las estaciones del SIMA, con el
-                promedio de PM2.5 de la última hora. En este momento corresponde a la
-                estación <span className="font-medium text-neutral-800">{displayName(defaultSelection.sensor)}</span>.
-              </>
-            ) : (
-              <>
-                Ninguna estación del SIMA tiene lectura reciente, así que se muestra el
-                sensor ciudadano más cercano a Obispado,{" "}
-                <span className="font-medium text-neutral-800">{displayName(defaultSelection.sensor)}</span>,
-                con el promedio de PM2.5 de la última hora.
-              </>
-            )}
           </p>
         </InfoDialog>
       )}
