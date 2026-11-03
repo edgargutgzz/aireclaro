@@ -988,8 +988,8 @@ export default function MapaSensors({
     // under the map, 2026-11-02).
     <div className="relative h-below-header overflow-hidden">
       {/* Desktop left column: a floating glass panel over the map, inset like
-          every other map panel (top-6, left-6, and bottom-14 so its foot lines
-          up with the legend and the freshness pill). Floating, not flush:
+          every other map panel (top-6, left-6, bottom-6: the same gap top and
+          bottom, 2026-11-03). Floating, not flush:
           flush to the top, the glass ran into the stone navbar with no edge
           (2026-11-02). The map runs under it; the map's padding keeps the
           view centred in the visible part. Solid header block and white cards inside keep the
@@ -999,7 +999,7 @@ export default function MapaSensors({
           source note: it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
-      <aside aria-label="Calidad del aire" className="glass absolute bottom-14 left-6 top-6 z-20 hidden w-panel-lg flex-col overflow-hidden rounded-2xl md:flex">
+      <aside aria-label="Calidad del aire" className="glass absolute bottom-6 left-6 top-6 z-20 hidden w-panel-lg flex-col overflow-hidden rounded-2xl md:flex">
         {summarySelection && (
           <AirNowPanel subject={summarySelection} />
         )}
