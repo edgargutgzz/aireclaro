@@ -1,8 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope } from "lucide-react";
-import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
+import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound } from "lucide-react";
+import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { getSourceIcon, getSourceLabel } from "./lib";
 
@@ -210,92 +210,101 @@ export function StationReading({
   );
 }
 
-// The desktop sidebar, in two parts. Header (no tint: a level-coloured wash was
-// tried and removed 2026-11-02): the station card's reading row one step up (label + info, the level
-// word, the value; a scale bar under it was tried and removed 2026-11-02).
-// Body, the
-// only part that scrolls: Recomendaciones de salud, first for the población
-// general, then the sensitive groups bucketed by identical advice
-// (groupByAdvice), each block on a left rule in the level's ink, so every
-// recommendation visibly belongs to the reading. `subject` is the default
-// station (pickDefaultSensor); no station name, source note or hour on the
-// sidebar (user call 2026-11-02; the ⓘ names the station, the freshness pill
-// on the map carries the hour).
+// The desktop sidebar ("A · Bloque de color", picked 2026-11-02 from three
+// mockups). Header: a solid block in the level's fill, the label + info, the
+// level word large and the value, all in the level's numberInk (the marker's
+// own ink on that fill; white on Extremadamente mala). Body, the only part that
+// scrolls: Recomendaciones de salud as white cards, the población general first
+// (outlined in the level's fill, the lead message), then one card per distinct
+// sensitive-group advice (groupByAdvice), group icons in the level's ink.
+// `subject` is the default station (pickDefaultSensor); no station name,
+// source note or hour on the sidebar (the ⓘ names the station, the freshness
+// pill on the map carries the hour).
 export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subject: SelectedSensor; onShowInfo: () => void; onShowReadingInfo: () => void }) {
   const quality = getQualityInfo(subject.pm25);
   const ink = quality?.textColor ?? subject.textColor;
+  const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   const sectionLabel = "text-xs font-medium uppercase leading-none tracking-wide text-neutral-500";
-  const infoButton = "-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
+  const focus = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <header className="flex-shrink-0 border-b border-stone-200 px-6 pb-6 pt-6">
-        <div className="flex items-center gap-1">
-          <p className={sectionLabel}>Calidad del aire</p>
-          <button type="button" onClick={onShowReadingInfo} className={infoButton} aria-label="Más información sobre esta lectura">
+      <header
+        className={`flex-shrink-0 px-7 pb-8 pt-7 ${quality ? "" : "border-b border-stone-200"}`}
+        style={quality ? { backgroundColor: quality.color, color: onFill } : undefined}
+      >
+        <div className={`flex items-center gap-1 ${quality ? "" : "text-neutral-500"}`}>
+          <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+          <button
+            type="button"
+            onClick={onShowReadingInfo}
+            className={`-my-1 flex-shrink-0 rounded-xl p-1 opacity-75 transition-opacity hover:opacity-100 ${focus}`}
+            aria-label="Más información sobre esta lectura"
+          >
             <Info aria-hidden="true" className="h-3 w-3" />
           </button>
         </div>
-        <div className="mt-3 flex items-baseline justify-between gap-3">
-          {quality ? (
-            <span className="min-w-0 flex-1 truncate text-4xl font-bold tracking-tight" style={{ color: ink }}>
-              {quality.label}
-            </span>
-          ) : (
-            <span className="min-w-0 flex-1 truncate text-2xl font-medium text-neutral-400">No disponible</span>
-          )}
-          {/* The chips' idiom, scaled up: the number is the value, the unit
-              and pollutant the quiet half. */}
-          {subject.pm25 !== null && (
-            <span className="flex-shrink-0 whitespace-nowrap text-sm text-neutral-500">
-              <span className="text-2xl font-semibold text-neutral-800">{roundPM25(subject.pm25)}</span> μg/m³ PM2.5
-            </span>
-          )}
-        </div>
+        {quality ? (
+          <>
+            <p className="mt-4 text-6xl font-extrabold leading-none tracking-tight">{quality.label}</p>
+            {subject.pm25 !== null && (
+              <p className="mt-3 text-base">
+                <span className="text-2xl font-bold">{roundPM25(subject.pm25)}</span> μg/m³ PM2.5
+              </p>
+            )}
+          </>
+        ) : (
+          <p className="mt-4 text-2xl font-medium text-neutral-400">No disponible</p>
+        )}
       </header>
 
       {quality && (
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pb-8 pt-6">
-          {/* The info button sits right after the title it explains, like the
-              reading's label above and the legend's PM2.5 line. */}
+          {/* The info button sits right after the title it explains. */}
           <div className="flex items-center gap-1">
-            <h3 className="text-lg font-semibold text-neutral-800">Recomendaciones de salud</h3>
-            <button type="button" onClick={onShowInfo} className={infoButton} aria-label="Más información sobre las recomendaciones de salud">
+            <h3 className="text-lg font-semibold text-neutral-900">Recomendaciones de salud</h3>
+            <button
+              type="button"
+              onClick={onShowInfo}
+              className={`-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 ${focus}`}
+              aria-label="Más información sobre las recomendaciones de salud"
+            >
               <Info aria-hidden="true" className="h-3 w-3" />
             </button>
           </div>
 
-          <section className="mt-5">
-            <h4 className={sectionLabel}>Población general</h4>
-            <p className="mt-3 border-l-2 pl-4 text-base leading-relaxed text-neutral-800" style={{ borderColor: ink }}>
-              {quality.generalRec}
-            </p>
+          {/* The lead card: outlined in the level's fill (an inset ring, so
+              it doesn't shift the card's size against the plain ones). */}
+          <section
+            className="mt-4 rounded-2xl bg-white p-5"
+            style={{ boxShadow: `inset 0 0 0 1.5px ${quality.color}` }}
+          >
+            <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+              <UsersRound aria-hidden="true" className="h-[18px] w-[18px] flex-shrink-0" style={{ color: ink }} />
+              Población general
+            </h4>
+            <p className="mt-2 text-base leading-relaxed text-neutral-900">{quality.generalRec}</p>
           </section>
 
-          <section className="mt-10">
+          <section className="mt-6">
             <h4 className={sectionLabel}>Grupos sensibles</h4>
-            {/* One block per distinct advice: the groups it applies to as a
-                row of icon + name tags, then the sentence once. The official
-                texts repeat across groups (at Mala two sentences cover all
-                four), so this halves the reading without hiding or rewording
-                anything; groups join only on an exact match. Order follows
-                SENSITIVE_GROUPS by first appearance. Content, not controls:
-                no hover, ring or chevron. */}
-            <ul className="mt-3 flex flex-col gap-6">
+            {/* One card per distinct advice: the groups it applies to, then the
+                sentence once. The official texts repeat across groups (at Mala
+                two sentences cover all four); groups join only on an exact
+                match, nothing is reworded. The card is what holds a wrapped
+                name in its set. Content, not controls: no hover or ring. */}
+            <ul className="mt-3 flex flex-col gap-3">
               {groupByAdvice(quality).map(({ advice, groups }) => (
-                // The left rule brackets the names and the sentence as one
-                // block, so a long name wrapping onto its own line still
-                // reads as part of the set.
-                <li key={advice} className="border-l-2 pl-4" style={{ borderColor: ink }}>
+                <li key={advice} className="rounded-2xl border border-stone-200 bg-white p-5">
                   <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                     {groups.map((g) => (
-                      <span key={g.key} className="flex items-center gap-1.5 text-sm font-semibold text-neutral-800">
-                        <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-500" />
+                      <span key={g.key} className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                        <g.icon aria-hidden="true" className="h-[18px] w-[18px] flex-shrink-0" style={{ color: ink }} />
                         {g.label}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-2 text-base leading-relaxed text-neutral-600">{advice}</p>
+                  <p className="mt-2 text-base leading-relaxed text-neutral-700">{advice}</p>
                 </li>
               ))}
             </ul>
