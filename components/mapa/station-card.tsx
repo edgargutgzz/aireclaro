@@ -6,7 +6,7 @@ import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from 
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingDayTimeLabel } from "./lib";
 import { DialogLink } from "./info-dialog";
-import type { Freshness } from "@/components/data/freshness";
+import { FreshnessDot, type Freshness } from "@/components/data/freshness";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
@@ -258,7 +258,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           full-bleed block it replaces, and the glass shows around it. */}
       <header className="flex-shrink-0 px-4 pt-4">
         {quality ? (
-          <div className="overflow-hidden rounded-xl" style={{ backgroundColor: quality.color, color: onFill }}>
+          <div className="overflow-hidden rounded-xl border border-stone-200" style={{ backgroundColor: quality.color, color: onFill }}>
             <div className="flex items-baseline-last justify-between gap-3 p-6">
               <div className="min-w-0">
                 <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
@@ -283,27 +283,17 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
                 </p>
               )}
             </div>
-            {/* When the reading is from, as a strip at the card's foot (option
-                D, picked 2026-11-03 from the header mockups): a shade of the
-                level's own fill, "Actualizado" left, day and hour right. The
-                dot is white on every level (2026-11-03: the card's dark ink
-                looked wrong on the fill); it pulses while fresh, dims once late. */}
+            {/* When the reading is from, as a white foot on the card (option B
+                of the second header round, 2026-11-03): the colour says only
+                the level; the time sits on white, gray, with the map's usual
+                blue freshness dot, which never clashes with the level fill. */}
             {freshness && freshness.status !== "nodata" && (
-              <p
-                className={`flex items-center justify-between gap-3 px-6 py-[11px] text-xs font-medium leading-none ${
-                  onFill === "#ffffff" ? "bg-white/15" : "bg-black/[0.07]"
-                }`}
-              >
+              <p className="flex items-center justify-between gap-3 bg-white px-6 py-3 text-[13px] leading-none text-neutral-600">
                 <span className="flex items-center gap-1.5">
-                  <span aria-hidden="true" className="relative flex h-2 w-2">
-                    {freshness.status === "fresh" && (
-                      <span className="absolute inset-0 animate-ping rounded-full bg-white opacity-75 motion-reduce:animate-none" />
-                    )}
-                    <span className={`relative h-2 w-2 rounded-full bg-white ${freshness.status === "fresh" ? "" : "opacity-50"}`} />
-                  </span>
+                  <FreshnessDot status={freshness.status} />
                   Actualizado
                 </span>
-                <time dateTime={freshness.dateTime} className="whitespace-nowrap">
+                <time dateTime={freshness.dateTime} className="whitespace-nowrap font-semibold text-neutral-900">
                   {readingDayTimeLabel(new Date(freshness.dateTime))}
                 </time>
               </p>
