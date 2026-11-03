@@ -138,14 +138,27 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
 
 // "Calidad del Aire" with a reading: the band label, the µg/m³ value and, under
 // it, the advice for everyone. The station card's reading (StationReading) and
-// the desktop sidebar's header (AirNowPanel: `large`, and no advice, which its
-// body lists under Recomendaciones de salud).
-export function QualityReading({ pm25, fallbackColor, large = false, withAdvice = true }: { pm25: number | null; fallbackColor?: string; large?: boolean; withAdvice?: boolean }) {
+// the desktop sidebar's header (AirNowPanel: `large`, no advice, which its body
+// lists under Recomendaciones de salud, and `onShowInfo`, an info button on the
+// label row explaining which reading this is).
+export function QualityReading({ pm25, fallbackColor, large = false, withAdvice = true, onShowInfo }: { pm25: number | null; fallbackColor?: string; large?: boolean; withAdvice?: boolean; onShowInfo?: () => void }) {
   const quality = getQualityInfo(pm25);
   // The groups' advice is GroupRecommendations, below it at each call site.
   return (
     <div>
-      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del Aire</p>
+      <div className="mb-2 flex items-center gap-1.5">
+        <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del Aire</p>
+        {onShowInfo && (
+          <button
+            type="button"
+            onClick={onShowInfo}
+            className="-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+            aria-label="Más información sobre esta lectura"
+          >
+            <Info aria-hidden="true" className="h-3 w-3" />
+          </button>
+        )}
+      </div>
       <div className="flex items-baseline justify-between gap-3">
         <QualityHeadline info={quality} fallbackColor={fallbackColor} large={large} />
         {/* The chips' idiom: the number is the value and carries neutral-700,
@@ -219,14 +232,14 @@ export function StationReading({
 // (groupByAdvice), all open: no disclosure, no boxed card. `subject` is the
 // default station (pickDefaultSensor); no station name, source note or hour
 // (user call 2026-11-02: the freshness pill on the map carries the hour).
-export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; onShowInfo: () => void }) {
+export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subject: SelectedSensor; onShowInfo: () => void; onShowReadingInfo: () => void }) {
   const quality = getQualityInfo(subject.pm25);
   const sectionLabel = "text-xs font-medium uppercase leading-none tracking-wide text-neutral-400";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="flex-shrink-0 border-b border-stone-200 px-6 pb-6 pt-6">
-        <QualityReading pm25={subject.pm25} fallbackColor={subject.textColor} large withAdvice={false} />
+        <QualityReading pm25={subject.pm25} fallbackColor={subject.textColor} large withAdvice={false} onShowInfo={onShowReadingInfo} />
       </header>
 
       {quality && (
