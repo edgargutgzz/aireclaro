@@ -72,12 +72,11 @@ async function getAirNow() {
 export default async function Home() {
   const airNow = await getAirNow().catch(() => null);
   return (
-    // The live card first (it replaced the ticker under the navbar), then the
-    // hero, centered in what's left of the screen. Ends like every page
-    // (pb-24 lg:pb-32 before the footer).
+    // The hero, centered in the screen below the navbar, with the live card
+    // under the headline. Ends like every page (pb-24 lg:pb-32 before the
+    // footer).
     <div className="flex min-h-below-header flex-col">
       <JsonLd data={websiteSchema} />
-      <AirNowCard subject={airNow} />
       <LiveRefresh />
       <div className="flex flex-1 items-center pb-24 lg:pb-32">
         <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-16 lg:grid-cols-2 lg:px-8">
@@ -86,11 +85,9 @@ export default async function Home() {
               Trabajamos por una mejor{" "}
               <span className="text-[#226caf]">calidad del aire.</span>
             </h1>
-            <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl">
-              Somos una organización de la sociedad civil dedicada a generar
-              esfuerzos colaborativos y fundamento técnico para mejorar la calidad
-              del aire en la Zona Metropolitana de Monterrey.
-            </p>
+            {/* The live card in place of the mission paragraph (2026-11-03);
+                /quienes-somos carries who we are. */}
+            <AirNowCard subject={airNow} />
           </div>
 
           <div className="w-full">

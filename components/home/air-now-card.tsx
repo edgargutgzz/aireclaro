@@ -8,8 +8,8 @@ import { AirNowHeader, RecRow, groupByAdvice } from "@/components/mapa/station-c
 import { toFreshness } from "@/components/mapa/lib";
 import type { SelectedSensor } from "@/components/mapa/types";
 
-// The homepage's live card, at the top of the page (replaced the ticker
-// 2026-11-03, option D of the home-card mockups). In order of importance:
+// The homepage's live card, in the hero under the headline (replaced the
+// ticker 2026-11-03). In order of importance:
 // the air right now (the map sidebar's level card, AirNowHeader, same station
 // rule, pickDefaultSensor), the health advice (Población general shown, the
 // sensitive groups one tap away in the same card, the official text as on the
@@ -32,18 +32,17 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
   const freshness = toFreshness(subject, null, now);
 
   return (
-    // A white band from edge to edge under the navbar, where the ticker lived
-    // (option C of the fit mockups, 2026-11-03), its two pieces on the hero's
-    // own two columns and gap so they line up with the headline and photo.
-    <section aria-label="Calidad del aire ahora" className="border-y border-stone-200 bg-white">
-      <div className="mx-auto grid w-full max-w-7xl items-stretch gap-4 px-6 py-6 lg:grid-cols-2 lg:gap-12 lg:px-8">
+    // Inside the hero, under the headline, in place of the paragraph (option D
+    // of the fit mockups, 2026-11-03): the page is one two-column block again
+    // and nothing pushes the headline down.
+    <section aria-label="Calidad del aire ahora" className="flex flex-col gap-3">
         {/* The level card opens the map (2026-11-03, in place of a "Ver el
             mapa" link): the reading leads to where it comes from. */}
         <Link
           href="/calidad-del-aire"
-          className="block h-full rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
+          className="block rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
         >
-          <AirNowHeader subject={subject} freshness={freshness} stretch />
+          <AirNowHeader subject={subject} freshness={freshness} />
           <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>
@@ -52,7 +51,6 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
             <SensitiveGroups info={quality} />
           </div>
         </div>
-      </div>
     </section>
   );
 }
