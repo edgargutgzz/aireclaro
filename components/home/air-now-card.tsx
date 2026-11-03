@@ -19,6 +19,7 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
   // The reading's age needs the visitor's clock: null until mounted, then
   // re-read every minute, as on the map.
   const [now, setNow] = useState<number | null>(null);
+  const [groupsOpen, setGroupsOpen] = useState(false);
   useEffect(() => {
     const tick = () => setNow(Date.now());
     tick();
@@ -35,24 +36,24 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
     // At the top of the page, above the hero (option B of the fit mockups,
     // 2026-11-03, its title removed the same day): the two pieces on the hero's own two
     // columns and gap, so they line up with the headline and the photo below.
-    // Top-aligned, each at its own height: opening the sensitive groups grows
-    // the advice card only (a stretched level card turned into a tall orange
-    // slab).
+    // Same height at rest; while the sensitive groups are open the level card
+    // drops back to its own height and only the advice card grows (stretched,
+    // it turned into a tall orange slab).
     <section aria-label="Calidad del aire ahora" className="mx-auto w-full max-w-7xl px-6 pt-8 lg:px-8">
-      <div className="grid items-start gap-4 lg:grid-cols-2 lg:gap-12">
+      <div className={`grid gap-4 lg:grid-cols-2 lg:gap-12 ${groupsOpen ? "items-start" : "items-stretch"}`}>
         {/* The level card opens the map (2026-11-03, in place of a "Ver el
             mapa" link): the reading leads to where it comes from. */}
         <Link
           href="/calidad-del-aire"
-          className="block rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
+          className="block h-full rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
         >
-          <AirNowHeader subject={subject} freshness={freshness} />
+          <AirNowHeader subject={subject} freshness={freshness} stretch={!groupsOpen} />
           <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>
           <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
             <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
-            <SensitiveGroups info={quality} />
+            <SensitiveGroups info={quality} open={groupsOpen} onToggle={() => setGroupsOpen((v) => !v)} />
           </div>
         </div>
       </div>
@@ -63,8 +64,7 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
 // The sensitive groups behind a row in the same card: their icons overlapped
 // in the level-tinted discs, the label, a chevron. Open, one row per distinct
 // advice (groupByAdvice), exactly as the map sidebar lists them.
-function SensitiveGroups({ info }: { info: QualityInfo }) {
-  const [open, setOpen] = useState(false);
+function SensitiveGroups({ info, open, onToggle }: { info: QualityInfo; open: boolean; onToggle: () => void }) {
   const bodyId = `home-grupos-${useId().replace(/:/g, "")}`;
   const blocks = groupByAdvice(info);
 
@@ -72,7 +72,7 @@ function SensitiveGroups({ info }: { info: QualityInfo }) {
     <div className="border-t border-stone-100">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={onToggle}
         aria-expanded={open}
         aria-controls={bodyId}
         className="flex w-full items-center gap-3.5 px-[18px] py-3 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
