@@ -244,17 +244,18 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
 
       {quality && (
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pb-8 pt-6">
-          <div className="flex items-center justify-between gap-3">
+          {/* The info button sits right after the title it explains, like the
+              reading's label above and the legend's PM2.5 line. p-1 with a
+              negative margin: a real hit area, the glyph keeps its place. */}
+          <div className="flex items-center gap-1">
             <h3 className="text-base font-medium text-neutral-700">Recomendaciones de salud</h3>
-            {/* p-1 with a matching negative margin: a real hit area, the
-                glyph keeps its optical position. */}
             <button
               type="button"
               onClick={onShowInfo}
-              className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+              className="-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
               aria-label="Más información sobre las recomendaciones de salud"
             >
-              <Info aria-hidden="true" className="h-3.5 w-3.5" />
+              <Info aria-hidden="true" className="h-3 w-3" />
             </button>
           </div>
 
@@ -273,7 +274,11 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
                 Content, not controls: no hover, ring or chevron. */}
             <ul className="mt-4 flex flex-col gap-6">
               {groupByAdvice(quality).map(({ advice, groups }) => (
-                <li key={advice}>
+                // The left rule brackets the names and the sentence as one
+                // block, so a long name wrapping onto its own line still
+                // reads as part of the set (without it, it read as a
+                // separate row).
+                <li key={advice} className="border-l-2 border-stone-300 pl-4">
                   <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                     {groups.map((g) => (
                       <span key={g.key} className="flex items-center gap-1.5 text-sm font-medium text-neutral-700">
