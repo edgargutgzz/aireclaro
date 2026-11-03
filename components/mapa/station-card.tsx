@@ -333,10 +333,11 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
             {/* One row per distinct advice (groupByAdvice): groups join only
                 on an exact match of the official text, nothing is reworded.
                 No visible title (removed 2026-11-02): the group names lead
-                each row. */}
-            <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+                each row. One card per advice (2026-11-03), the same card as
+                Población general's. */}
+            <ul className="space-y-3">
               {groupByAdvice(quality).map(({ advice, groups }) => (
-                <li key={advice} className="border-t border-stone-100 first:border-t-0">
+                <li key={advice} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
                   <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label).join(", ")} advice={advice} info={quality} />
                 </li>
               ))}
