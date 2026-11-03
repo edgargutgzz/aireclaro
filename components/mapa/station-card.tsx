@@ -6,7 +6,7 @@ import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from 
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel } from "./lib";
 import { DialogLink } from "./info-dialog";
-import { FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
+import type { Freshness } from "@/components/data/freshness";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
@@ -258,16 +258,30 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           full-bleed block it replaces, and the glass shows around it. */}
       <header className="flex-shrink-0 px-4 pt-4">
         {quality ? (
-          <div
-            className="flex items-end justify-between gap-3 rounded-xl p-6"
-            style={{ backgroundColor: quality.color, color: onFill }}
-          >
-            <div className="min-w-0">
-              <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+          <div className="rounded-xl p-6" style={{ backgroundColor: quality.color, color: onFill }}>
+            {/* Top row: the label left, when the reading is from right
+                (2026-11-03; a line under the card looked bolted on). The dot
+                is the card's own ink: it pulses while fresh, dims once late. */}
+            <div className="flex items-center justify-between gap-3 text-xs font-medium leading-none">
+              <p className="uppercase tracking-wide">Calidad del aire</p>
+              {freshness && freshness.status !== "nodata" && (
+                <p className="flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap">
+                  <span aria-hidden="true" className="relative flex h-2 w-2">
+                    {freshness.status === "fresh" && (
+                      <span className="absolute inset-0 animate-ping rounded-full bg-current opacity-60 motion-reduce:animate-none" />
+                    )}
+                    <span className={`relative h-2 w-2 rounded-full bg-current ${freshness.status === "fresh" ? "" : "opacity-40"}`} />
+                  </span>
+                  <span className="sr-only">Actualizado </span>
+                  <time dateTime={freshness.dateTime}>{freshness.when}</time>
+                </p>
+              )}
+            </div>
+            <div className="mt-2.5 flex items-end justify-between gap-3">
               {/* "Extremadamente mala" can't fit at 44px beside the number, so
                   it shows as "Extrem. mala", the legend's own short form;
                   screen readers get the full name. */}
-              <p className="mt-2.5 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
+              <p className="min-w-0 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
                 {quality.label === "Extremadamente mala" ? (
                   <>
                     <span aria-hidden="true">Extrem. mala</span>
@@ -277,28 +291,19 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
                   quality.label
                 )}
               </p>
+              {subject.pm25 !== null && (
+                <p className="flex-shrink-0 text-right">
+                  <span className="block text-[40px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
+                  <span className="text-[13px]">μg/m³ PM2.5</span>
+                </p>
+              )}
             </div>
-            {subject.pm25 !== null && (
-              <p className="flex-shrink-0 text-right">
-                <span className="block text-[40px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
-                <span className="text-[13px]">μg/m³ PM2.5</span>
-              </p>
-            )}
           </div>
         ) : (
           <div className="rounded-2xl border border-stone-200 bg-white p-6">
             <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
             <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
           </div>
-        )}
-        {/* When the reading is from, right under it (2026-11-03): the map's
-            freshness dot + time as a plain line, not a pill, so the summary
-            says it is current on its own. */}
-        {freshness && freshness.status !== "nodata" && (
-          <p className="mx-2 mt-3 flex items-center gap-1.5">
-            <FreshnessDot status={freshness.status} />
-            <FreshnessText freshness={freshness} labeled />
-          </p>
         )}
       </header>
 
