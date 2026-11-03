@@ -263,10 +263,19 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
           >
             <div className="min-w-0">
               <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
-              {/* "Extremadamente mala" can't fit at 44px beside the number;
-                  it steps down to 3xl and wraps to two lines instead of
-                  truncating. */}
-              <p className={`mt-2.5 font-extrabold tracking-tight ${quality.label.length > 12 ? "text-3xl leading-tight" : "text-[44px] leading-none"}`}>{quality.label}</p>
+              {/* "Extremadamente mala" can't fit at 44px beside the number, so
+                  it shows as "Extrem. mala", the legend's own short form;
+                  screen readers get the full name. */}
+              <p className="mt-2.5 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
+                {quality.label === "Extremadamente mala" ? (
+                  <>
+                    <span aria-hidden="true">Extrem. mala</span>
+                    <span className="sr-only">Extremadamente mala</span>
+                  </>
+                ) : (
+                  quality.label
+                )}
+              </p>
             </div>
             {subject.pm25 !== null && (
               <p className="flex-shrink-0 text-right">
