@@ -293,7 +293,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
                   <FreshnessDot status={freshness.status} />
                   Actualizado
                 </span>
-                <time dateTime={freshness.dateTime} className="whitespace-nowrap font-semibold text-neutral-900">
+                <time dateTime={freshness.dateTime} className="whitespace-nowrap font-medium text-neutral-800">
                   {readingDayTimeLabel(new Date(freshness.dateTime))}
                 </time>
               </p>
