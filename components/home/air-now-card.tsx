@@ -33,15 +33,12 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
 
   return (
     // At the top of the page, above the hero (option B of the fit mockups,
-    // 2026-11-03): a small title, then the two pieces on the hero's own two
+    // 2026-11-03, its title removed the same day): the two pieces on the hero's own two
     // columns and gap, so they line up with the headline and the photo below.
     // Top-aligned, each at its own height: opening the sensitive groups grows
     // the advice card only (a stretched level card turned into a tall orange
     // slab).
-    <section aria-labelledby="aire-ahora" className="mx-auto w-full max-w-7xl px-6 pt-8 lg:px-8">
-      <h2 id="aire-ahora" className="mx-1 mb-3 text-sm font-semibold text-neutral-700">
-        La calidad del aire ahora en la ZMM
-      </h2>
+    <section aria-label="Calidad del aire ahora" className="mx-auto w-full max-w-7xl px-6 pt-8 lg:px-8">
       <div className="grid items-start gap-4 lg:grid-cols-2 lg:gap-12">
         {/* The level card opens the map (2026-11-03, in place of a "Ver el
             mapa" link): the reading leads to where it comes from. */}
