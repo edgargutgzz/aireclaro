@@ -259,7 +259,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
       <header className="flex-shrink-0 px-4 pt-4">
         {quality ? (
           <div className="overflow-hidden rounded-xl" style={{ backgroundColor: quality.color, color: onFill }}>
-            <div className="flex items-end justify-between gap-3 p-6">
+            <div className="flex items-baseline-last justify-between gap-3 p-6">
               <div className="min-w-0">
                 <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
                 {/* "Extremadamente mala" can't fit at 44px beside the number, so
