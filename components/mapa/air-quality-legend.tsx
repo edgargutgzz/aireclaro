@@ -14,7 +14,8 @@ import { DialogLink, InfoDialog } from "./info-dialog";
 // All spans, so the bar is valid phrasing content inside the disclosure
 // <button>. Decorative: the level list is the readable key.
 //
-// `value` (the desktop sidebar) adds a marker at that PM2.5 reading: placed
+// `value` (the desktop sidebar) adds a marker at that PM2.5 reading, a thin
+// dark tick across the bar (a white-and-ink dot was tried and dropped): placed
 // within its level's segment by where it falls in the level's span, the open
 // top level read up to 2× its floor so the marker never runs off the end.
 export function ScaleBar({ className = "", labels = "thresholds", value }: { className?: string; labels?: "thresholds" | "ends"; value?: number | null }) {
@@ -29,8 +30,8 @@ export function ScaleBar({ className = "", labels = "thresholds", value }: { cla
         </span>
         {value != null && Number.isFinite(value) && (
           <span
-            className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-white shadow-sm"
-            style={{ left: `${scalePosition(value) * 100}%`, borderColor: getLevel(value).ink }}
+            className="absolute top-1/2 h-4 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-800 ring-2 ring-stone-50"
+            style={{ left: `${scalePosition(value) * 100}%` }}
           />
         )}
       </span>
