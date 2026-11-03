@@ -283,12 +283,15 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
                 </p>
               )}
             </div>
-            {/* When the reading is from, as a white foot on the card (option B
-                of the second header round, 2026-11-03): the colour says only
-                the level; the time sits on white, gray, with the map's usual
-                blue freshness dot, which never clashes with the level fill. */}
+            {/* When the reading is from, as a foot on the card in a pale tint
+                of the level (2026-11-03: white read as too prominent; the tint
+                matches the icon discs below). Gray text with the map's usual
+                blue freshness dot. */}
             {freshness && freshness.status !== "nodata" && (
-              <p className="flex items-center gap-1.5 bg-white px-6 py-3 text-[13px] leading-none">
+              <p
+                className="flex items-center gap-1.5 px-6 py-3 text-[13px] leading-none"
+                style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
+              >
                 <FreshnessDot status={freshness.status} />
                 {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
                     a past day still shows: "Actualizado ayer 11:00 PM". */}
