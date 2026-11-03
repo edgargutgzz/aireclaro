@@ -77,19 +77,6 @@ export function LegendDetail({ className = "" }: { className?: string }) {
 
   return (
     <div className={className}>
-      <div className="mb-2 flex items-center gap-1">
-        {/* Both sources are hourly averages (docs/mapa-data-pipeline.md); the
-            state's own map shows the índice instead, so its numbers differ. */}
-        <p className="text-[11px] leading-none text-neutral-400">PM2.5 · μg/m³ · promedio de la última hora</p>
-        <button
-          type="button"
-          onClick={() => setShowPM25Info(true)}
-          className="-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-          aria-label="Qué es PM2.5"
-        >
-          <Info aria-hidden="true" className="h-3 w-3" />
-        </button>
-      </div>
       <LevelList />
       {showPM25Info && (
         <InfoDialog title="PM2.5" onClose={() => setShowPM25Info(false)}>
@@ -110,6 +97,21 @@ export function LegendDetail({ className = "" }: { className?: string }) {
         </DialogLink>
         .
       </p>
+      {/* Second footnote, under the citation (moved from above the level list
+          2026-11-03). Both sources are hourly averages
+          (docs/mapa-data-pipeline.md); the state's own map shows the índice
+          instead, so its numbers differ. */}
+      <div className="mt-1 flex items-center gap-1">
+        <p className="text-[11px] leading-relaxed text-neutral-400">PM2.5 · μg/m³ · promedio de la última hora</p>
+        <button
+          type="button"
+          onClick={() => setShowPM25Info(true)}
+          className="-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          aria-label="Qué es PM2.5"
+        >
+          <Info aria-hidden="true" className="h-3 w-3" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -152,8 +154,7 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
           Calidad del aire
         </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
-            now framed by the "PM2.5 · μg/m³" line the disclosure reveals just
-            above, so the bar reads as the axis for the list's bounds. */}
+            framed by the "PM2.5 · μg/m³" footnote the disclosure reveals, so the bar reads as the axis for the list's bounds. */}
         <ScaleBar labels={open ? "thresholds" : "ends"} className="min-w-0 flex-1" />
         {/* Rotates up when open, toward the detail it reveals: every downward
             panel points its chevron down, so this one points the other way. */}
