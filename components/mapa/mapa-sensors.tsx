@@ -343,6 +343,14 @@ export default function MapaSensors({
     return def ? buildSelection(def, data) : null;
   }, [visibleSensors, data]);
   const cardSubject = selectedSensor ?? defaultSelection;
+  // The desktop sidebar's reading: the same rule over every sensor, ignoring
+  // the Sensores filters. The filters choose what the map draws; the air right
+  // now is the air right now (user call 2026-11-02). The mobile sheet keeps
+  // the filtered default, since its station is also the map's pulse.
+  const summarySelection = useMemo<SelectedSensor | null>(() => {
+    const def = pickDefaultSensor(sensors, data);
+    return def ? buildSelection(def, data) : null;
+  }, [sensors, data]);
   // The station the map itself points at (pulse, freshness readout). Mobile:
   // the sheet's station. Desktop: only an explicit pick, since the sidebar's
   // reading is the summary of the air right now, not a selection on the map.
@@ -975,8 +983,8 @@ export default function MapaSensors({
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
       <aside aria-label="Calidad del aire" className="glass absolute bottom-14 left-6 top-6 z-20 hidden w-panel-lg flex-col overflow-hidden rounded-2xl md:flex">
-        {defaultSelection && (
-          <AirNowPanel subject={defaultSelection} />
+        {summarySelection && (
+          <AirNowPanel subject={summarySelection} />
         )}
       </aside>
 
