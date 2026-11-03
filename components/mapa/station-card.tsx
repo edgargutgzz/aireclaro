@@ -273,7 +273,7 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
             </p>
           </section>
 
-          <section className="mt-8">
+          <section className="mt-10">
             <h4 className={sectionLabel}>Grupos sensibles</h4>
             {/* One block per distinct advice: the groups it applies to as a
                 row of icon + name tags, then the sentence once. The official
