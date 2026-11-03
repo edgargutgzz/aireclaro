@@ -3,6 +3,20 @@ import JsonLd from "@/components/json-ld";
 import { OG_BASE, SITE_DESCRIPTION, SITE_NAME, sectionCard } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
 import AirQualitySlider from "@/components/home/air-quality-slider";
+import AirNowCard from "@/components/home/air-now-card";
+import LiveRefresh from "@/components/data/live-refresh";
+import PurpleAirSensors from "@/components/data/purple-air-sensors";
+import PurpleAirData from "@/components/data/purple-air-data";
+import SimaSensors from "@/components/data/sima-sensors";
+import SimaData from "@/components/data/sima-data";
+import { fetchWithFallback } from "@/utils/fetch";
+import { buildSelection, pickDefaultSensor } from "@/components/mapa/lib";
+import type { Data, Sensor } from "@/components/mapa/types";
+
+// The live card reads the map's own cached feeds (components/data/cache.ts);
+// the page re-renders at most every 5 minutes, and LiveRefresh keeps an open
+// tab current.
+export const revalidate = 300;
 
 // Homepage. The hero is ported from observatoriodelaire.com's homepage. The map
 // lives at /calidad-del-aire; proxy.ts sends embeds and legacy map links that still point
@@ -36,28 +50,52 @@ const websiteSchema = {
   url: `${SITE_URL}/`,
 };
 
-export default function Home() {
-  return (
-    // Ends like every page (pb-24 lg:pb-32 before the footer), centered in
-    // the screen below the navbar. That bottom padding lifts the centered
-    // hero; lg:pt-8 brings it back down a little on desktop.
-    <div className="flex min-h-below-header items-center pb-24 lg:pb-32 lg:pt-8">
-      <JsonLd data={websiteSchema} />
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-16 lg:grid-cols-2 lg:px-8">
-        <div className="flex flex-col gap-8">
-          <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl lg:text-7xl">
-            Trabajamos por una mejor{" "}
-            <span className="text-[#226caf]">calidad del aire.</span>
-          </h1>
-          <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl">
-            Somos una organización de la sociedad civil dedicada a generar
-            esfuerzos colaborativos y fundamento técnico para mejorar la calidad
-            del aire en la Zona Metropolitana de Monterrey.
-          </p>
-        </div>
+// The station the live card shows: the map sidebar's rule (pickDefaultSensor)
+// over the same data the map gets, so the two always agree.
+async function getAirNow() {
+  const [paSensors, paData, simaSensors, simaData] = await Promise.all([
+    fetchWithFallback(PurpleAirSensors, []),
+    fetchWithFallback(PurpleAirData, []),
+    fetchWithFallback(SimaSensors, []),
+    fetchWithFallback(SimaData, []),
+  ]);
+  const reporting = new Set(paData.map((r) => r.sensor_id));
+  const sensors = [
+    ...paSensors.filter((s) => reporting.has(s.sensor_id)).map((s) => ({ ...s, source: "purpleAir" })),
+    ...simaSensors.map((s) => ({ ...s, source: "sima" })),
+  ] as Sensor[];
+  const data = [...paData, ...simaData] as Data[];
+  const def = pickDefaultSensor(sensors, data);
+  return def ? buildSelection(def, data) : null;
+}
 
-        <div className="w-full">
-          <AirQualitySlider />
+export default async function Home() {
+  const airNow = await getAirNow().catch(() => null);
+  return (
+    // The live card first (it replaced the ticker under the navbar), then the
+    // hero, centered in what's left of the screen. Ends like every page
+    // (pb-24 lg:pb-32 before the footer).
+    <div className="flex min-h-below-header flex-col">
+      <JsonLd data={websiteSchema} />
+      <AirNowCard subject={airNow} />
+      <LiveRefresh />
+      <div className="flex flex-1 items-center pb-24 lg:pb-32">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-16 lg:grid-cols-2 lg:px-8">
+          <div className="flex flex-col gap-8">
+            <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl lg:text-7xl">
+              Trabajamos por una mejor{" "}
+              <span className="text-[#226caf]">calidad del aire.</span>
+            </h1>
+            <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl">
+              Somos una organización de la sociedad civil dedicada a generar
+              esfuerzos colaborativos y fundamento técnico para mejorar la calidad
+              del aire en la Zona Metropolitana de Monterrey.
+            </p>
+          </div>
+
+          <div className="w-full">
+            <AirQualitySlider />
+          </div>
         </div>
       </div>
     </div>

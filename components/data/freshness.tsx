@@ -6,7 +6,7 @@
 // bucket) is computed in mapa-sensors.tsx where the sensor data lives.
 // "nodata": the station on screen has no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts); there is no time to show ("No disponible", the same
-// words as the card's headline and the ticker).
+// words as the card's headline).
 export type Freshness =
   | { dateTime: string; when: string; status: "fresh" | "delayed" }
   | { status: "nodata" };

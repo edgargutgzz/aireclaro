@@ -14,7 +14,8 @@ import {
   PULSE_FALLBACK_COLOR,
   municipioKey,
   estadoKey,
-  readingTimeLabel,
+  pickDefaultSensor,
+  toFreshness,
   prefersReducedMotion,
   buildSelection,
   displayName,
@@ -43,17 +44,6 @@ import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
 
-// The station the estación card shows at rest, before any marker is picked
-// (the mobile sheet and the desktop left-column card): the official station with
-// the highest live PM2.5 right now, FIN excluded (it's Saltillo). Rule decided
-// 2026-10-31: people open this page to learn how the air is, and the worst
-// official reading is the one to act on. Ties go to the first name
-// alphabetically, so the pick doesn't flicker. When no official station has a
-// live reading (lib/live-readings.ts), the default is the PurpleAir sensor
-// nearest to Obispado ("CE", the central reference station) that has one, so
-// the map never opens on an empty or stale card (fallback since a SINAICA
-// outage, 2026-10-06). Filtered out (Capas) → the card is simply empty.
-const DEFAULT_SENSOR_ID = "CE";
 
 // Analytics: a station the visitor picked (map tap or the station list). The
 // default card and ?sensor= links aren't picks, so they aren't counted.
@@ -67,21 +57,6 @@ function trackStationOpen(sensor: Sensor) {
 // What the desktop sidebar covers of the map's left edge: its 24px inset
 // (left-6) + its width (tailwind.config's panel-lg). The map is padded by it.
 const SIDEBAR_WIDTH = 24 + 460;
-
-// A subject's reading time as a Freshness. A subject with no reading (a gray
-// disc) says so, rather than borrowing the network's newest time and looking
-// up to date; no subject falls back to the newest reading anywhere.
-function toFreshness(subject: SelectedSensor | null, latestReading: Date | null, now: number | null): Freshness | null {
-  if (now === null) return null;
-  if (subject && !subject.readingAt) return { status: "nodata" };
-  const reading = subject?.readingAt ? new Date(subject.readingAt) : latestReading;
-  if (!reading || Number.isNaN(reading.getTime())) return null;
-  return {
-    dateTime: reading.toISOString(),
-    when: readingTimeLabel(reading),
-    status: now - reading.getTime() < 90 * 60 * 1000 ? "fresh" : "delayed",
-  };
-}
 
 // The view a normal load opens on. Desktop: the metro field, centred on the
 // city, nothing picked (the sidebar carries the air right now). Mobile: centred
@@ -109,28 +84,6 @@ function MapIconButton({ active, onClick, label, icon: Icon, className = "" }: {
       <Icon aria-hidden="true" className={`h-5 w-5 ${active ? "text-neutral-900" : "text-neutral-700"}`} />
     </button>
   );
-}
-
-function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefined {
-  // `data` holds only live, valid readings (lib/live-readings.ts).
-  const pm25 = new globalThis.Map(data.map((d) => [String(d.sensor_id), d.pm25]));
-  const name = (s: Sensor) => s.nombre_display || s.nombre;
-  const worst = candidates
-    .filter((s) => s.source === "sima" && String(s.sensor_id) !== "FIN" && Number.isFinite(pm25.get(String(s.sensor_id))))
-    .sort((a, b) => pm25.get(String(b.sensor_id))! - pm25.get(String(a.sensor_id))! || name(a).localeCompare(name(b), "es"))[0];
-  if (worst) return worst;
-
-  const obispado = candidates.find((s) => String(s.sensor_id) === DEFAULT_SENSOR_ID);
-  if (!obispado) return undefined;
-
-  // Nearest by a flat-earth distance (fine at city scale), longitude scaled
-  // by the latitude so east-west and north-south count alike.
-  const k = Math.cos((obispado.lat * Math.PI) / 180);
-  const dist = (s: Sensor) => Math.hypot((s.lon - obispado.lon) * k, s.lat - obispado.lat);
-  const nearest = candidates
-    .filter((s) => s.source === "purpleAir" && pm25.has(String(s.sensor_id)))
-    .sort((a, b) => dist(a) - dist(b))[0];
-  return nearest ?? obispado;
 }
 
 export default function MapaSensors({

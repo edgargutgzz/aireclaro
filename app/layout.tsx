@@ -77,12 +77,8 @@ const organizationSchema = {
 
 export default function RootLayout({
   children,
-  strip,
 }: Readonly<{
   children: React.ReactNode;
-  // Parallel route (app/@strip): the homepage's live ticker under the navbar,
-  // null everywhere else.
-  strip: React.ReactNode;
 }>) {
   return (
     <html lang="es-MX">
@@ -99,7 +95,6 @@ export default function RootLayout({
             Saltar al contenido
           </a>
           <Navbar />
-          {strip}
           {/* Content - no padding */}
           <MainContent>{children}</MainContent>
         </div>

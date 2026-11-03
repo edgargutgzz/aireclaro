@@ -31,7 +31,7 @@ const SENSITIVE_GROUPS = [
 
 // The sensitive groups bucketed by identical advice, in SENSITIVE_GROUPS order
 // of first appearance: the desktop sidebar's one-sentence-per-block list.
-function groupByAdvice(info: QualityInfo) {
+export function groupByAdvice(info: QualityInfo) {
   const blocks: { advice: string; groups: (typeof SENSITIVE_GROUPS)[number][] }[] = [];
   for (const g of SENSITIVE_GROUPS) {
     const advice = info.sensitiveRecs[g.key];
@@ -215,7 +215,7 @@ export function StationReading({
 // One recommendation row of the sidebar's grouped list: the group icon(s) in
 // pale level-tinted discs (overlapping when groups share the advice), the
 // name(s), then the official sentence.
-function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[]; who: string; advice: string; info: QualityInfo; lead?: boolean }) {
+export function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[]; who: string; advice: string; info: QualityInfo; lead?: boolean }) {
   return (
     <div className="grid grid-cols-[auto_1fr] gap-3.5 px-[18px] py-4">
       <div aria-hidden="true" className="flex">
@@ -237,6 +237,70 @@ function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[
   );
 }
 
+// The level card: the level's solid fill, the label and level word left, the
+// value right, in the level's numberInk, with a pale-tint foot carrying the
+// reading's time. Shared by the map's desktop sidebar (AirNowPanel) and the
+// homepage card (components/home/air-now-card.tsx).
+export function AirNowHeader({ subject, freshness }: { subject: SelectedSensor; freshness: Freshness | null }) {
+  const quality = getQualityInfo(subject.pm25);
+  const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
+  return (
+    quality ? (
+      <div className="overflow-hidden rounded-xl border border-stone-200" style={{ backgroundColor: quality.color, color: onFill }}>
+        <div className="flex items-baseline-last justify-between gap-3 p-6">
+          <div className="min-w-0">
+            <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+            {/* "Extremadamente mala" can't fit at 44px beside the number, so
+                it shows as "Extrem. mala", the legend's own short form;
+                screen readers get the full name. */}
+            <p className="mt-2.5 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
+              {quality.label === "Extremadamente mala" ? (
+                <>
+                  <span aria-hidden="true">Extrem. mala</span>
+                  <span className="sr-only">Extremadamente mala</span>
+                </>
+              ) : (
+                quality.label
+              )}
+            </p>
+          </div>
+          {subject.pm25 !== null && (
+            <p className="flex-shrink-0 text-right">
+              <span className="block text-[40px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
+              <span className="text-[13px]">μg/m³ PM2.5</span>
+            </p>
+          )}
+        </div>
+        {/* When the reading is from, as a foot on the card in a pale tint
+            of the level (2026-11-03: white read as too prominent; the tint
+            matches the icon discs below). Gray text with the map's usual
+            blue freshness dot. */}
+        {freshness && freshness.status !== "nodata" && (
+          <p
+            className="flex items-center gap-1.5 px-6 py-3 text-[13px] leading-none"
+            style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
+          >
+            <FreshnessDot status={freshness.status} />
+            {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
+                a past day still shows: "Actualizado ayer 11:00 PM". */}
+            <span className="whitespace-nowrap text-neutral-600">
+              Actualizado{" "}
+              <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
+                {readingTimeLabel(new Date(freshness.dateTime))}
+              </time>
+            </span>
+          </p>
+        )}
+      </div>
+    ) : (
+      <div className="rounded-2xl border border-stone-200 bg-white p-6">
+        <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
+        <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
+      </div>
+    )
+  );
+}
+
 // The desktop sidebar. Header: the level's solid fill as a rounded card inset
 // in the glass ("Tarjeta"), the label and level word left, the value right, all
 // in the level's numberInk (the marker's own ink on that fill; white on
@@ -248,7 +312,6 @@ function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[
 // its reading's time, top right in the header.
 export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; freshness: Freshness | null }) {
   const quality = getQualityInfo(subject.pm25);
-  const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -257,59 +320,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           word left, the value right, text in numberInk. Quieter than the
           full-bleed block it replaces, and the glass shows around it. */}
       <header className="flex-shrink-0 px-4 pt-4">
-        {quality ? (
-          <div className="overflow-hidden rounded-xl border border-stone-200" style={{ backgroundColor: quality.color, color: onFill }}>
-            <div className="flex items-baseline-last justify-between gap-3 p-6">
-              <div className="min-w-0">
-                <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
-                {/* "Extremadamente mala" can't fit at 44px beside the number, so
-                    it shows as "Extrem. mala", the legend's own short form;
-                    screen readers get the full name. */}
-                <p className="mt-2.5 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
-                  {quality.label === "Extremadamente mala" ? (
-                    <>
-                      <span aria-hidden="true">Extrem. mala</span>
-                      <span className="sr-only">Extremadamente mala</span>
-                    </>
-                  ) : (
-                    quality.label
-                  )}
-                </p>
-              </div>
-              {subject.pm25 !== null && (
-                <p className="flex-shrink-0 text-right">
-                  <span className="block text-[40px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
-                  <span className="text-[13px]">μg/m³ PM2.5</span>
-                </p>
-              )}
-            </div>
-            {/* When the reading is from, as a foot on the card in a pale tint
-                of the level (2026-11-03: white read as too prominent; the tint
-                matches the icon discs below). Gray text with the map's usual
-                blue freshness dot. */}
-            {freshness && freshness.status !== "nodata" && (
-              <p
-                className="flex items-center gap-1.5 px-6 py-3 text-[13px] leading-none"
-                style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
-              >
-                <FreshnessDot status={freshness.status} />
-                {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
-                    a past day still shows: "Actualizado ayer 11:00 PM". */}
-                <span className="whitespace-nowrap text-neutral-600">
-                  Actualizado{" "}
-                  <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
-                    {readingTimeLabel(new Date(freshness.dateTime))}
-                  </time>
-                </span>
-              </p>
-            )}
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-stone-200 bg-white p-6">
-            <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
-            <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
-          </div>
-        )}
+        <AirNowHeader subject={subject} freshness={freshness} />
       </header>
 
       {quality && (

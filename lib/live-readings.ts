@@ -7,9 +7,9 @@ import { channelsDisagree, correctPurpleAirReadings } from "@/lib/purpleair-corr
 // last 90 minutes, i.e. the latest hour that should be posted by now is there.
 // SIMA posts hour H by about H:25 (measured 2026-10-19), so 90 minutes after
 // the reading's hour is the moment the next one is overdue; PurpleAir writes
-// every hour at :01. Older = gray disc on the map, "sin actualizar" in the
-// ticker (user's call 2026-10-24, was 3 hours). The map (both sources), its
-// default card, the homepage ticker and the /mapa link card all go through it.
+// every hour at :01. Older = gray disc on the map (user's call 2026-10-24,
+// was 3 hours). The map (both sources), its
+// default card, the homepage card and the /mapa link card all go through it.
 export const LIVE_MINUTES = 90;
 
 export interface LiveReading<Id extends string | number> {
