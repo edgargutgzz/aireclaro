@@ -249,13 +249,15 @@ export function AirNowHeader({ subject, freshness, stretch = false }: { subject:
   return (
     quality ? (
       <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
-        <div className={`flex items-baseline-last justify-between gap-3 p-6 ${stretch ? "flex-1" : ""}`}>
+        <div className={`flex items-baseline-last justify-between gap-3 p-5 sm:p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
             <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
             {/* "Extremadamente mala" can't fit at 44px beside the number, so
                 it shows as "Extrem. mala", the legend's own short form;
                 screen readers get the full name. */}
-            <p className="mt-2.5 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
+            {/* 36px under sm: on a phone the homepage card is ~320px wide and
+              "Aceptable" at 44px ran into the unit. */}
+          <p className="mt-2.5 whitespace-nowrap text-[36px] font-extrabold leading-none tracking-tight sm:text-[44px]">
               {quality.label === "Extremadamente mala" ? (
                 <>
                   <span aria-hidden="true">Extrem. mala</span>
@@ -268,7 +270,7 @@ export function AirNowHeader({ subject, freshness, stretch = false }: { subject:
           </div>
           {subject.pm25 !== null && (
             <p className="flex-shrink-0 text-right">
-              <span className="block text-[40px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
+              <span className="block text-[34px] font-bold leading-none tracking-tight sm:text-[40px]">{roundPM25(subject.pm25)}</span>
               <span className="text-[13px]">μg/m³ PM2.5</span>
             </p>
           )}
@@ -279,7 +281,7 @@ export function AirNowHeader({ subject, freshness, stretch = false }: { subject:
             blue freshness dot. */}
         {freshness && freshness.status !== "nodata" && (
           <p
-            className="flex items-center gap-1.5 px-6 py-3 text-[13px] leading-none"
+            className="flex items-center gap-1.5 px-5 py-3 text-[13px] leading-none sm:px-6"
             style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
           >
             <FreshnessDot status={freshness.status} />
