@@ -5,17 +5,17 @@ import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethosco
 import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { getSourceIcon, getSourceLabel } from "./lib";
+import { ScaleBar } from "./air-quality-legend";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
 // not the huge coloured headline.
-// `large` is the desktop sidebar's step up (text-3xl), same row otherwise.
-export function QualityHeadline({ info, fallbackColor, large = false }: { info: QualityInfo | null; fallbackColor?: string; large?: boolean }) {
+export function QualityHeadline({ info, fallbackColor }: { info: QualityInfo | null; fallbackColor?: string }) {
   if (!info) {
     return <span className="min-w-0 flex-1 truncate text-lg font-medium text-neutral-400">No disponible</span>;
   }
   return (
-    <span className={`min-w-0 flex-1 truncate font-bold ${large ? "text-3xl" : "text-2xl"}`} style={{ color: info.textColor ?? fallbackColor }}>
+    <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: info.textColor ?? fallbackColor }}>
       {info.label}
     </span>
   );
@@ -138,29 +138,15 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
 
 // "Calidad del Aire" with a reading: the band label, the µg/m³ value and, under
 // it, the advice for everyone. The station card's reading (StationReading) and
-// the desktop sidebar's header (AirNowPanel: `large`, no advice, which its body
-// lists under Recomendaciones de salud, and `onShowInfo`, an info button on the
-// label row explaining which reading this is).
-export function QualityReading({ pm25, fallbackColor, large = false, withAdvice = true, onShowInfo }: { pm25: number | null; fallbackColor?: string; large?: boolean; withAdvice?: boolean; onShowInfo?: () => void }) {
+// The desktop sidebar (AirNowPanel) uses the same row, one step up.
+export function QualityReading({ pm25, fallbackColor }: { pm25: number | null; fallbackColor?: string }) {
   const quality = getQualityInfo(pm25);
   // The groups' advice is GroupRecommendations, below it at each call site.
   return (
     <div>
-      <div className="mb-2 flex items-center gap-1.5">
-        <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del Aire</p>
-        {onShowInfo && (
-          <button
-            type="button"
-            onClick={onShowInfo}
-            className="-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-            aria-label="Más información sobre esta lectura"
-          >
-            <Info aria-hidden="true" className="h-3 w-3" />
-          </button>
-        )}
-      </div>
+      <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del Aire</p>
       <div className="flex items-baseline justify-between gap-3">
-        <QualityHeadline info={quality} fallbackColor={fallbackColor} large={large} />
+        <QualityHeadline info={quality} fallbackColor={fallbackColor} />
         {/* The chips' idiom: the number is the value and carries neutral-700,
             the unit is the quiet half. */}
         {pm25 !== null && (
@@ -169,7 +155,7 @@ export function QualityReading({ pm25, fallbackColor, large = false, withAdvice 
           </span>
         )}
       </div>
-      {withAdvice && quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
+      {quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
     </div>
   );
 }
@@ -225,43 +211,73 @@ export function StationReading({
   );
 }
 
-// The desktop sidebar, in two parts. Header: the station card's reading row
-// (QualityReading, one step larger), without the advice.
-// Body, the only part that scrolls: Recomendaciones de salud, first for the
-// población general, then the sensitive groups bucketed by identical advice
-// (groupByAdvice), all open: no disclosure, no boxed card. `subject` is the
-// default station (pickDefaultSensor); no station name, source note or hour
-// (user call 2026-11-02: the freshness pill on the map carries the hour).
+// The desktop sidebar, in two parts. Header, on a pale tint of the level's
+// colour: the station card's reading row one step up (label + info, the level
+// word, the value), then the scale bar with today's reading marked. Body, the
+// only part that scrolls: Recomendaciones de salud, first for the población
+// general, then the sensitive groups bucketed by identical advice
+// (groupByAdvice), each block on a left rule in the level's ink, so every
+// recommendation visibly belongs to the reading. `subject` is the default
+// station (pickDefaultSensor); no station name, source note or hour on the
+// sidebar (user call 2026-11-02; the ⓘ names the station, the freshness pill
+// on the map carries the hour).
 export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subject: SelectedSensor; onShowInfo: () => void; onShowReadingInfo: () => void }) {
   const quality = getQualityInfo(subject.pm25);
-  const sectionLabel = "text-xs font-medium uppercase leading-none tracking-wide text-neutral-400";
+  const ink = quality?.textColor ?? subject.textColor;
+  const sectionLabel = "text-xs font-medium uppercase leading-none tracking-wide text-neutral-500";
+  const infoButton = "-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <header className="flex-shrink-0 border-b border-stone-200 px-6 pb-6 pt-6">
-        <QualityReading pm25={subject.pm25} fallbackColor={subject.textColor} large withAdvice={false} onShowInfo={onShowReadingInfo} />
+      {/* The tint is the level's fill at 6% over the sidebar's stone-50 (Mala:
+          #faf3ea). 6% is the ceiling: the inks are tuned to 3:1 on near-white,
+          and at 8% Mala's ink drops under it (2.94); at 6% the tightest level
+          holds 3.01. */}
+      <header
+        className="flex-shrink-0 border-b border-black/5 px-6 pb-6 pt-6"
+        style={quality ? { backgroundColor: `color-mix(in srgb, ${quality.color} 6%, #fafaf9)` } : undefined}
+      >
+        <div className="flex items-center gap-1">
+          <p className={sectionLabel}>Calidad del aire</p>
+          <button type="button" onClick={onShowReadingInfo} className={infoButton} aria-label="Más información sobre esta lectura">
+            <Info aria-hidden="true" className="h-3 w-3" />
+          </button>
+        </div>
+        <div className="mt-3 flex items-baseline justify-between gap-3">
+          {quality ? (
+            <span className="min-w-0 flex-1 truncate text-4xl font-bold tracking-tight" style={{ color: ink }}>
+              {quality.label}
+            </span>
+          ) : (
+            <span className="min-w-0 flex-1 truncate text-2xl font-medium text-neutral-400">No disponible</span>
+          )}
+          {/* The chips' idiom, scaled up: the number is the value, the unit
+              and pollutant the quiet half. */}
+          {subject.pm25 !== null && (
+            <span className="flex-shrink-0 whitespace-nowrap text-sm text-neutral-500">
+              <span className="text-2xl font-semibold text-neutral-800">{roundPM25(subject.pm25)}</span> μg/m³ PM2.5
+            </span>
+          )}
+        </div>
+        {quality && <ScaleBar className="mt-5" value={subject.pm25} />}
       </header>
 
       {quality && (
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pb-8 pt-6">
           {/* The info button sits right after the title it explains, like the
-              reading's label above and the legend's PM2.5 line. p-1 with a
-              negative margin: a real hit area, the glyph keeps its place. */}
+              reading's label above and the legend's PM2.5 line. */}
           <div className="flex items-center gap-1">
-            <h3 className="text-base font-medium text-neutral-700">Recomendaciones de salud</h3>
-            <button
-              type="button"
-              onClick={onShowInfo}
-              className="-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-              aria-label="Más información sobre las recomendaciones de salud"
-            >
+            <h3 className="text-lg font-semibold text-neutral-800">Recomendaciones de salud</h3>
+            <button type="button" onClick={onShowInfo} className={infoButton} aria-label="Más información sobre las recomendaciones de salud">
               <Info aria-hidden="true" className="h-3 w-3" />
             </button>
           </div>
 
           <section className="mt-5">
             <h4 className={sectionLabel}>Población general</h4>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-700">{quality.generalRec}</p>
+            <p className="mt-3 border-l-2 pl-4 text-base leading-relaxed text-neutral-800" style={{ borderColor: ink }}>
+              {quality.generalRec}
+            </p>
           </section>
 
           <section className="mt-8">
@@ -270,24 +286,24 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
                 row of icon + name tags, then the sentence once. The official
                 texts repeat across groups (at Mala two sentences cover all
                 four), so this halves the reading without hiding or rewording
-                anything. Order follows SENSITIVE_GROUPS by first appearance.
-                Content, not controls: no hover, ring or chevron. */}
-            <ul className="mt-4 flex flex-col gap-6">
+                anything; groups join only on an exact match. Order follows
+                SENSITIVE_GROUPS by first appearance. Content, not controls:
+                no hover, ring or chevron. */}
+            <ul className="mt-3 flex flex-col gap-6">
               {groupByAdvice(quality).map(({ advice, groups }) => (
                 // The left rule brackets the names and the sentence as one
                 // block, so a long name wrapping onto its own line still
-                // reads as part of the set (without it, it read as a
-                // separate row).
-                <li key={advice} className="border-l-2 border-stone-300 pl-4">
+                // reads as part of the set.
+                <li key={advice} className="border-l-2 pl-4" style={{ borderColor: ink }}>
                   <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                     {groups.map((g) => (
-                      <span key={g.key} className="flex items-center gap-1.5 text-sm font-medium text-neutral-700">
-                        <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400" />
+                      <span key={g.key} className="flex items-center gap-1.5 text-sm font-semibold text-neutral-800">
+                        <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-500" />
                         {g.label}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-neutral-500">{advice}</p>
+                  <p className="mt-2 text-base leading-relaxed text-neutral-600">{advice}</p>
                 </li>
               ))}
             </ul>
