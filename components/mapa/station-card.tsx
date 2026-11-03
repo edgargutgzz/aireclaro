@@ -346,7 +346,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
             <dt className="font-medium text-neutral-500">Calidad del aire</dt>
             <dd className="text-neutral-600">
               {subject.sensor.source === "sima"
-                ? "Nivel máximo registrado"
+                ? "Nivel máximo registrado en la ZMM"
                 : "Sensor ciudadano más cercano a Obispado, sin estaciones del SIMA en vivo"}
             </dd>
             <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación de Gobierno" : "Sensor"}</dt>
