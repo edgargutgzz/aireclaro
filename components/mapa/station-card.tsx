@@ -300,19 +300,23 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
           </section>
 
           {/* Where the reading and the advice come from, always visible as a
-              quiet footnote (they were two info-button popups; removed
-              2026-11-02, the user disliked the floating icons and the
-              popup). */}
-          <p className="mx-2 mt-8 border-t border-stone-200 pt-5 text-xs leading-relaxed text-neutral-500">
-            {subject.sensor.source === "sima" ? (
-              <>Nivel más alto entre las estaciones del SIMA, en {displayName(subject.sensor)}.</>
-            ) : (
-              <>Ninguna estación del SIMA tiene lectura reciente. Se muestra el sensor ciudadano más cercano a Obispado, {displayName(subject.sensor)}.</>
-            )}{" "}
-            Recomendaciones oficiales del Índice de Aire y Salud (
-            <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
-            ).
-          </p>
+              quiet footnote in label / value rows (they were two info-button
+              popups, then a run-on sentence; both replaced 2026-11-02). */}
+          <dl className="mx-2 mt-8 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-5 text-xs leading-relaxed">
+            <dt className="font-medium text-neutral-500">Calidad del aire</dt>
+            <dd className="text-neutral-600">
+              {subject.sensor.source === "sima"
+                ? "Nivel más alto entre las estaciones del SIMA"
+                : "Sensor ciudadano más cercano a Obispado, sin estaciones del SIMA en vivo"}
+            </dd>
+            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación" : "Sensor"}</dt>
+            <dd className="text-neutral-600">{displayName(subject.sensor)}</dd>
+            <dt className="font-medium text-neutral-500">Recomendaciones</dt>
+            <dd className="text-neutral-600">
+              Índice de Aire y Salud,{" "}
+              <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
+            </dd>
+          </dl>
         </div>
       )}
     </div>
