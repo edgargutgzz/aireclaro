@@ -288,11 +288,11 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
                 the level; the time sits on white, gray, with the map's usual
                 blue freshness dot, which never clashes with the level fill. */}
             {freshness && freshness.status !== "nodata" && (
-              <p className="flex items-center justify-between gap-3 bg-white px-6 py-3 text-[13px] leading-none text-neutral-600">
-                <span className="flex items-center gap-1.5">
-                  <FreshnessDot status={freshness.status} />
-                  Actualizado
-                </span>
+              <p className="flex items-center gap-1.5 bg-white px-6 py-3 text-[13px] leading-none">
+                <FreshnessDot status={freshness.status} />
+                {/* No visible "Actualizado" (dropped 2026-11-03): the pulsing
+                    dot beside the time says it; screen readers hear it. */}
+                <span className="sr-only">Actualizado </span>
                 <time dateTime={freshness.dateTime} className="whitespace-nowrap font-medium text-neutral-800">
                   {readingDayTimeLabel(new Date(freshness.dateTime))}
                 </time>
