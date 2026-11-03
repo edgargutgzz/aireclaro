@@ -211,8 +211,8 @@ export function StationReading({
   );
 }
 
-// The desktop sidebar, in two parts. Header, on a pale tint of the level's
-// colour: the station card's reading row one step up (label + info, the level
+// The desktop sidebar, in two parts. Header (no tint: a level-coloured wash was
+// tried and removed 2026-11-02): the station card's reading row one step up (label + info, the level
 // word, the value), then the scale bar with today's reading marked. Body, the
 // only part that scrolls: Recomendaciones de salud, first for the población
 // general, then the sensitive groups bucketed by identical advice
@@ -229,14 +229,7 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {/* The tint is the level's fill at 6% over the sidebar's stone-50 (Mala:
-          #faf3ea). 6% is the ceiling: the inks are tuned to 3:1 on near-white,
-          and at 8% Mala's ink drops under it (2.94); at 6% the tightest level
-          holds 3.01. */}
-      <header
-        className="flex-shrink-0 border-b border-black/5 px-6 pb-6 pt-6"
-        style={quality ? { backgroundColor: `color-mix(in srgb, ${quality.color} 6%, #fafaf9)` } : undefined}
-      >
+      <header className="flex-shrink-0 border-b border-stone-200 px-6 pb-6 pt-6">
         <div className="flex items-center gap-1">
           <p className={sectionLabel}>Calidad del aire</p>
           <button type="button" onClick={onShowReadingInfo} className={infoButton} aria-label="Más información sobre esta lectura">
