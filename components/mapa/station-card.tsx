@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope } from "lucide-react";
 import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
-import { getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
+import { getSourceIcon, getSourceLabel } from "./lib";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
@@ -196,30 +196,20 @@ export function StationReading({
   );
 }
 
-// The desktop sidebar, in two parts. Header: the reading (the label with the
-// reading's hour, the level word large in its band's ink, the PM2.5 value).
+// The desktop sidebar, in two parts. Header: the reading (the label, the level word large in its band's ink, the PM2.5 value).
 // Body, the only part that scrolls: Recomendaciones de salud, first for the
 // población general, then for each sensitive group as plain open rows (the
 // sidebar has the room: no disclosure, no boxed card). `subject` is the
-// default station (pickDefaultSensor); no station name or source note
-// (user call 2026-11-02).
+// default station (pickDefaultSensor); no station name, source note or hour
+// (user call 2026-11-02: the freshness pill on the map carries the hour).
 export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; onShowInfo: () => void }) {
   const quality = getQualityInfo(subject.pm25);
-  const readingAt = subject.readingAt ? new Date(subject.readingAt) : null;
-  const hasTime = readingAt !== null && !Number.isNaN(readingAt.getTime());
   const sectionLabel = "text-xs font-medium uppercase leading-none tracking-wide text-neutral-400";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="flex-shrink-0 border-b border-stone-200 px-6 pb-6 pt-6">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-sm font-medium text-neutral-500">Calidad del aire</h2>
-          {hasTime && (
-            <time dateTime={readingAt!.toISOString()} className="flex-shrink-0 text-sm text-neutral-500">
-              {readingTimeLabel(readingAt!)}
-            </time>
-          )}
-        </div>
+        <h2 className="text-sm font-medium text-neutral-500">Calidad del aire</h2>
 
         {quality ? (
           <p className="mt-3 text-5xl font-bold leading-none tracking-tight" style={{ color: quality.textColor ?? subject.textColor }}>
