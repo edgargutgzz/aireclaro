@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import Link from "next/link";
-import { ArrowRight, ChevronDown, UsersRound } from "lucide-react";
+import { ChevronDown, UsersRound } from "lucide-react";
 import { getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { AirNowHeader, RecRow, groupByAdvice } from "@/components/mapa/station-card";
 import { toFreshness } from "@/components/mapa/lib";
@@ -13,7 +12,7 @@ import type { SelectedSensor } from "@/components/mapa/types";
 // the air right now (the map sidebar's level card, AirNowHeader, same station
 // rule, pickDefaultSensor), the health advice (Población general shown, the
 // sensitive groups one tap away in the same card, the official text as on the
-// map), then the way to see more (the map). `subject` is null when no reading
+// map). No map link (removed 2026-11-03); the navbar carries it. `subject` is null when no reading
 // is live anywhere: the card is hidden rather than shown empty.
 export default function AirNowCard({ subject }: { subject: SelectedSensor | null }) {
   // The reading's age needs the visitor's clock: null until mounted, then
@@ -35,18 +34,11 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
     <section aria-label="Calidad del aire ahora" className="mx-auto w-full max-w-7xl px-6 pt-6 lg:px-8">
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
         <AirNowHeader subject={subject} freshness={freshness} />
-        <div className="flex flex-col gap-3">
+        <div>
           <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
             <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
             <SensitiveGroups info={quality} />
           </div>
-          <Link
-            href="/calidad-del-aire"
-            className="inline-flex items-center gap-1.5 self-end rounded-xl px-1 py-1 text-sm font-semibold text-[#226caf] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-          >
-            Ver el mapa
-            <ArrowRight aria-hidden="true" className="h-4 w-4" />
-          </Link>
         </div>
       </div>
     </section>
