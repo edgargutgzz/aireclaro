@@ -274,15 +274,18 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
             <ul className="mt-4 flex flex-col gap-6">
               {groupByAdvice(quality).map(({ advice, groups }) => (
                 <li key={advice}>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                  {/* Chips, not bare labels: when a long name wraps the row, bare
+                      labels stacked and read as separate rows; pills keep the
+                      set reading as one. */}
+                  <div className="flex flex-wrap gap-2">
                     {groups.map((g) => (
-                      <span key={g.key} className="flex items-center gap-1.5 text-sm font-medium text-neutral-700">
-                        <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400" />
+                      <span key={g.key} className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1 text-sm font-medium text-neutral-700">
+                        <g.icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
                         {g.label}
                       </span>
                     ))}
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-neutral-500">{advice}</p>
+                  <p className="mt-2.5 text-sm leading-relaxed text-neutral-500">{advice}</p>
                 </li>
               ))}
             </ul>
