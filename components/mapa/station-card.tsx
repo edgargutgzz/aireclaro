@@ -305,11 +305,12 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
             </div>
           </section>
 
-          <section className="mt-6">
-            <h3 className="mx-2 text-base font-semibold text-neutral-900">Grupos sensibles</h3>
+          <section className="mt-3" aria-label="Grupos sensibles">
             {/* One row per distinct advice (groupByAdvice): groups join only
-                on an exact match of the official text, nothing is reworded. */}
-            <ul className="mt-2.5 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+                on an exact match of the official text, nothing is reworded.
+                No visible title (removed 2026-11-02): the group names lead
+                each row. */}
+            <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
               {groupByAdvice(quality).map(({ advice, groups }) => (
                 <li key={advice} className="border-t border-stone-100 first:border-t-0">
                   <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label).join(", ")} advice={advice} info={quality} />
