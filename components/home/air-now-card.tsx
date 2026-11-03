@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, UsersRound } from "lucide-react";
 import { getQualityInfo, type QualityInfo } from "@/lib/air-quality";
@@ -20,6 +20,17 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
   // re-read every minute, as on the map.
   const [now, setNow] = useState<number | null>(null);
   const [groupsOpen, setGroupsOpen] = useState(false);
+  // The advice card's height with the groups closed, tracked while closed, so
+  // the level card can hold it while they're open.
+  const adviceRef = useRef<HTMLDivElement>(null);
+  const [closedHeight, setClosedHeight] = useState<number | null>(null);
+  useEffect(() => {
+    const el = adviceRef.current;
+    if (!el || groupsOpen) return;
+    const ro = new ResizeObserver(() => setClosedHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [groupsOpen]);
   useEffect(() => {
     const tick = () => setNow(Date.now());
     tick();
@@ -36,22 +47,23 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
     // At the top of the page, above the hero (option B of the fit mockups,
     // 2026-11-03, its title removed the same day): the two pieces on the hero's own two
     // columns and gap, so they line up with the headline and the photo below.
-    // Same height at rest; while the sensitive groups are open the level card
-    // drops back to its own height and only the advice card grows (stretched,
-    // it turned into a tall orange slab).
+    // Same height at rest; opening the sensitive groups grows the advice card
+    // only, the level card holding its closed height (stretched it turned into
+    // a tall orange slab; at its own height it shrank).
     <section aria-label="Calidad del aire ahora" className="mx-auto w-full max-w-7xl px-6 pt-8 lg:px-8">
       <div className={`grid gap-4 lg:grid-cols-2 lg:gap-12 ${groupsOpen ? "items-start" : "items-stretch"}`}>
         {/* The level card opens the map (2026-11-03, in place of a "Ver el
             mapa" link): the reading leads to where it comes from. */}
         <Link
           href="/calidad-del-aire"
+          style={groupsOpen && closedHeight ? { height: closedHeight } : undefined}
           className="block h-full rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
         >
-          <AirNowHeader subject={subject} freshness={freshness} stretch={!groupsOpen} />
+          <AirNowHeader subject={subject} freshness={freshness} stretch />
           <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>
-          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+          <div ref={adviceRef} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
             <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
             <SensitiveGroups info={quality} open={groupsOpen} onToggle={() => setGroupsOpen((v) => !v)} />
           </div>
