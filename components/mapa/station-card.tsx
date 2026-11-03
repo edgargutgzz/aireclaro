@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Heart, Info, PanelLeftClose, PersonStanding, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel } from "./lib";
@@ -245,7 +245,7 @@ function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[
 // Then a footnote: which station the reading is and where the advice comes
 // from. `subject` is the default station (pickDefaultSensor); no hour (the
 // freshness pill on the map carries it).
-export function AirNowPanel({ subject, onHide }: { subject: SelectedSensor; onHide: () => void }) {
+export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
 
@@ -255,21 +255,7 @@ export function AirNowPanel({ subject, onHide }: { subject: SelectedSensor; onHi
         className={`flex-shrink-0 px-7 pb-8 pt-7 ${quality ? "" : "border-b border-stone-200"}`}
         style={quality ? { backgroundColor: quality.color, color: onFill } : undefined}
       >
-        {/* The label row carries the hide button (power users exploring the
-            map); it trails on the header's right edge in the header's ink. */}
-        <div className="flex items-center justify-between gap-3">
-          <p className={`text-xs font-medium uppercase leading-none tracking-wide ${quality ? "" : "text-neutral-500"}`}>Calidad del aire</p>
-          <button
-            type="button"
-            onClick={onHide}
-            aria-label="Ocultar panel"
-            aria-controls="calidad-sidebar"
-            aria-expanded
-            className={`-my-1.5 -mr-1.5 flex-shrink-0 rounded-xl p-1.5 opacity-75 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/20 ${quality ? "" : "text-neutral-500"}`}
-          >
-            <PanelLeftClose aria-hidden="true" className="h-5 w-5" />
-          </button>
-        </div>
+        <p className={`text-xs font-medium uppercase leading-none tracking-wide ${quality ? "" : "text-neutral-500"}`}>Calidad del aire</p>
         {quality ? (
           <>
             <p className="mt-4 text-6xl font-extrabold leading-none tracking-tight">{quality.label}</p>

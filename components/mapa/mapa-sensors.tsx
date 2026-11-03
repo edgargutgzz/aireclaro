@@ -65,9 +65,8 @@ function trackStationOpen(sensor: Sensor) {
 }
 
 // The desktop sidebar's width (tailwind.config's panel-lg); the map is padded
-// by it since the sidebar sits over the map (0 while it is hidden).
+// by it since the sidebar sits over the map.
 const SIDEBAR_WIDTH = 460;
-const SIDEBAR_STORAGE_KEY = "calidad-del-aire:sidebar";
 
 // The view a normal load opens on. Desktop: the metro field, centred on the
 // city, nothing picked (the sidebar carries the air right now). Mobile: centred
@@ -178,24 +177,6 @@ export default function MapaSensors({
     sync();
     mq.addEventListener("change", sync);
     return () => mq.removeEventListener("change", sync);
-  }, []);
-
-  // Desktop sidebar open / hidden. Open by default; someone who hides it to
-  // explore the map keeps it hidden on their next visit (a per-browser
-  // convenience in localStorage, nothing breaks without it). Starts open so
-  // SSR and the first render agree; the effect applies a stored choice.
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  useEffect(() => {
-    try {
-      if (localStorage.getItem(SIDEBAR_STORAGE_KEY) === "closed") setSidebarOpen(false);
-    } catch {}
-  }, []);
-  const toggleSidebar = useCallback((open: boolean) => {
-    setSidebarOpen(open);
-    try {
-      if (open) localStorage.removeItem(SIDEBAR_STORAGE_KEY);
-      else localStorage.setItem(SIDEBAR_STORAGE_KEY, "closed");
-    } catch {}
   }, []);
 
   // The picked station's card holds a copy of its reading (buildSelection), so
@@ -361,7 +342,6 @@ export default function MapaSensors({
     const def = pickDefaultSensor(visibleSensors, data);
     return def ? buildSelection(def, data) : null;
   }, [visibleSensors, data]);
-  const defaultQuality = getQualityInfo(defaultSelection?.pm25 ?? null);
   const cardSubject = selectedSensor ?? defaultSelection;
   // The station the map itself points at (pulse, freshness readout). Mobile:
   // the sheet's station. Desktop: only an explicit pick, since the sidebar's
@@ -652,17 +632,6 @@ export default function MapaSensors({
       setStyleReady(false);
     };
   }, []);
-
-  // Hiding / showing the desktop sidebar re-pads the map, so the view
-  // re-centres on the space the sidebar frees or takes.
-  useEffect(() => {
-    const m = map.current;
-    if (!m || !isDesktop) return;
-    m.easeTo({
-      padding: { top: 0, bottom: 0, left: sidebarOpen ? SIDEBAR_WIDTH : 0, right: 280 },
-      duration: prefersReducedMotion() ? 0 : 300,
-    });
-  }, [sidebarOpen, isDesktop]);
 
   // Stand up the GL marker field once the style is ready: one geojson source
   // and one circle layer, plus the hover/click handlers. No clustering — every
@@ -1003,35 +972,11 @@ export default function MapaSensors({
           source note: it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
-      <aside
-        id="calidad-sidebar"
-        aria-label="Calidad del aire"
-        inert={!sidebarOpen}
-        className={`glass absolute inset-y-0 left-0 z-20 hidden w-panel-lg flex-col border-y-0 border-l-0 transition-transform duration-300 ease-out motion-reduce:transition-none md:flex ${sidebarOpen ? "" : "-translate-x-full"}`}
-      >
+      <aside aria-label="Calidad del aire" className="glass absolute inset-y-0 left-0 z-20 hidden w-panel-lg flex-col border-y-0 border-l-0 md:flex">
         {defaultSelection && (
-          <AirNowPanel subject={defaultSelection} onHide={() => toggleSidebar(false)} />
+          <AirNowPanel subject={defaultSelection} />
         )}
       </aside>
-
-      {/* Hidden sidebar's way back, desktop: the Sensores header's shape
-          ("label · summary" + chevron, min-h-14), top-left of the map, the
-          level word in its ink so the reading is still one glance away. */}
-      {!sidebarOpen && (
-        <button
-          type="button"
-          onClick={() => toggleSidebar(true)}
-          aria-controls="calidad-sidebar"
-          aria-expanded={false}
-          className="glass absolute left-6 top-6 z-20 hidden min-h-14 items-center gap-1.5 rounded-2xl px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 md:flex"
-        >
-          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del aire</span>
-          {defaultQuality && (
-            <span className="text-xs font-semibold leading-none" style={{ color: defaultQuality.textColor }}>· {defaultQuality.label}</span>
-          )}
-          <ChevronRight aria-hidden="true" className="ml-3 h-4 w-4 flex-shrink-0 text-neutral-400" />
-        </button>
-      )}
 
       {/* Map area: the whole screen at every width (on desktop it runs under
           the glass sidebar). */}
@@ -1046,11 +991,10 @@ export default function MapaSensors({
         />
 
         {/* The air-quality scale, desktop: bottom-left of the visible map,
-            just right of the sidebar (panel-lg 460px + the 24px margin; the
-            plain 24px margin while the sidebar is hidden), feet
+            just right of the sidebar (panel-lg 460px + the 24px margin), feet
             level with the freshness pill. Mobile carries it as the Wind
             button's bottom sheet. */}
-        <div className={`glass pointer-events-auto absolute bottom-14 z-10 hidden w-panel-filters rounded-2xl transition-[left] duration-300 ease-out motion-reduce:transition-none md:block ${sidebarOpen ? "left-[484px]" : "left-6"}`}>
+        <div className="glass pointer-events-auto absolute bottom-14 left-[484px] z-10 hidden w-panel-filters rounded-2xl md:block">
           <div className="px-5 py-4">
             <AirQualityLegend collapsible />
           </div>
