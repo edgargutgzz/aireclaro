@@ -236,10 +236,10 @@ function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[
   );
 }
 
-// The desktop sidebar ("A · Bloque de color", picked 2026-11-02 from three
-// mockups). Header: a solid block in the level's fill, the label, the
-// level word large and the value, all in the level's numberInk (the marker's
-// own ink on that fill; white on Extremadamente mala). Body, the only part that
+// The desktop sidebar. Header: the level's solid fill as a rounded card inset
+// in the glass ("Tarjeta"), the label and level word left, the value right, all
+// in the level's numberInk (the marker's own ink on that fill; white on
+// Extremadamente mala). Body, the only part that
 // scrolls: Recomendaciones de salud (población general) and Grupos sensibles,
 // each a grouped list of RecRow (the "B" list from the same mockups).
 // Then a footnote: which station the reading is and where the advice comes
@@ -251,22 +251,35 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <header
-        className={`flex-shrink-0 px-7 pb-8 pt-7 ${quality ? "" : "border-b border-stone-200"}`}
-        style={quality ? { backgroundColor: quality.color, color: onFill } : undefined}
-      >
-        <p className={`text-xs font-medium uppercase leading-none tracking-wide ${quality ? "" : "text-neutral-500"}`}>Calidad del aire</p>
+      {/* "Tarjeta" header (picked 2026-11-02 from the mix-and-match page): the
+          level's solid block as a rounded card inset in the glass, the level
+          word left, the value right, text in numberInk. Quieter than the
+          full-bleed block it replaces, and the glass shows around it. */}
+      <header className="flex-shrink-0 px-4 pt-4">
         {quality ? (
-          <>
-            <p className="mt-4 text-6xl font-extrabold leading-none tracking-tight">{quality.label}</p>
+          <div
+            className="flex items-end justify-between gap-3 rounded-2xl p-6"
+            style={{ backgroundColor: quality.color, color: onFill }}
+          >
+            <div className="min-w-0">
+              <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+              {/* "Extremadamente mala" can't fit at 44px beside the number;
+                  it steps down to 3xl and wraps to two lines instead of
+                  truncating. */}
+              <p className={`mt-2.5 font-extrabold tracking-tight ${quality.label.length > 12 ? "text-3xl leading-tight" : "text-[44px] leading-none"}`}>{quality.label}</p>
+            </div>
             {subject.pm25 !== null && (
-              <p className="mt-3 text-base">
-                <span className="text-2xl font-bold">{roundPM25(subject.pm25)}</span> μg/m³ PM2.5
+              <p className="flex-shrink-0 text-right">
+                <span className="block text-[40px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
+                <span className="text-[13px]">μg/m³ PM2.5</span>
               </p>
             )}
-          </>
+          </div>
         ) : (
-          <p className="mt-4 text-2xl font-medium text-neutral-400">No disponible</p>
+          <div className="rounded-2xl border border-stone-200 bg-white p-6">
+            <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
+            <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
+          </div>
         )}
       </header>
 
