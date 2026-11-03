@@ -38,10 +38,10 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
             mapa" link): the reading leads to where it comes from. */}
         <Link
           href="/calidad-del-aire"
-          aria-label={`Calidad del aire ${quality.label.toLowerCase()}, ver el mapa`}
           className="block rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
         >
           <AirNowHeader subject={subject} freshness={freshness} />
+          <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>
           <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
