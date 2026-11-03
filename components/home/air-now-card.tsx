@@ -32,15 +32,18 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
   const freshness = toFreshness(subject, null, now);
 
   return (
-    <section aria-label="Calidad del aire ahora" className="mx-auto w-full max-w-7xl px-6 pt-6 lg:px-8">
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+    // A white band from edge to edge under the navbar, where the ticker lived
+    // (option C of the fit mockups, 2026-11-03), its two pieces on the hero's
+    // own two columns and gap so they line up with the headline and photo.
+    <section aria-label="Calidad del aire ahora" className="border-y border-stone-200 bg-white">
+      <div className="mx-auto grid w-full max-w-7xl items-stretch gap-4 px-6 py-6 lg:grid-cols-2 lg:gap-12 lg:px-8">
         {/* The level card opens the map (2026-11-03, in place of a "Ver el
             mapa" link): the reading leads to where it comes from. */}
         <Link
           href="/calidad-del-aire"
-          className="block rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
+          className="block h-full rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
         >
-          <AirNowHeader subject={subject} freshness={freshness} />
+          <AirNowHeader subject={subject} freshness={freshness} stretch />
           <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>

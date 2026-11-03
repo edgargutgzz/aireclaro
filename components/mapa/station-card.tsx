@@ -241,13 +241,15 @@ export function RecRow({ icons, who, advice, info, lead = false }: { icons: Luci
 // value right, in the level's numberInk, with a pale-tint foot carrying the
 // reading's time. Shared by the map's desktop sidebar (AirNowPanel) and the
 // homepage card (components/home/air-now-card.tsx).
-export function AirNowHeader({ subject, freshness }: { subject: SelectedSensor; freshness: Freshness | null }) {
+// `stretch` fills its container's height (the homepage band, beside the
+// advice card), the level block growing and the foot staying at the bottom.
+export function AirNowHeader({ subject, freshness, stretch = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   return (
     quality ? (
-      <div className="overflow-hidden rounded-xl border border-stone-200" style={{ backgroundColor: quality.color, color: onFill }}>
-        <div className="flex items-baseline-last justify-between gap-3 p-6">
+      <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
+        <div className={`flex items-baseline-last justify-between gap-3 p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
             <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
             {/* "Extremadamente mala" can't fit at 44px beside the number, so
