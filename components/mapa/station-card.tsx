@@ -9,12 +9,13 @@ import { getSourceIcon, getSourceLabel } from "./lib";
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
 // not the huge coloured headline.
-export function QualityHeadline({ info, fallbackColor }: { info: QualityInfo | null; fallbackColor?: string }) {
+// `large` is the desktop sidebar's step up (text-3xl), same row otherwise.
+export function QualityHeadline({ info, fallbackColor, large = false }: { info: QualityInfo | null; fallbackColor?: string; large?: boolean }) {
   if (!info) {
     return <span className="min-w-0 flex-1 truncate text-lg font-medium text-neutral-400">No disponible</span>;
   }
   return (
-    <span className="min-w-0 flex-1 truncate text-2xl font-bold" style={{ color: info.textColor ?? fallbackColor }}>
+    <span className={`min-w-0 flex-1 truncate font-bold ${large ? "text-3xl" : "text-2xl"}`} style={{ color: info.textColor ?? fallbackColor }}>
       {info.label}
     </span>
   );
@@ -123,15 +124,17 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
 }
 
 // "Calidad del Aire" with a reading: the band label, the µg/m³ value and, under
-// it, the advice for everyone. The station card's reading (StationReading).
-export function QualityReading({ pm25, fallbackColor }: { pm25: number | null; fallbackColor?: string }) {
+// it, the advice for everyone. The station card's reading (StationReading) and
+// the desktop sidebar's header (AirNowPanel: `large`, and no advice, which its
+// body lists under Recomendaciones de salud).
+export function QualityReading({ pm25, fallbackColor, large = false, withAdvice = true }: { pm25: number | null; fallbackColor?: string; large?: boolean; withAdvice?: boolean }) {
   const quality = getQualityInfo(pm25);
   // The groups' advice is GroupRecommendations, below it at each call site.
   return (
     <div>
       <p className="mb-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Calidad del Aire</p>
       <div className="flex items-baseline justify-between gap-3">
-        <QualityHeadline info={quality} fallbackColor={fallbackColor} />
+        <QualityHeadline info={quality} fallbackColor={fallbackColor} large={large} />
         {/* The chips' idiom: the number is the value and carries neutral-700,
             the unit is the quiet half. */}
         {pm25 !== null && (
@@ -140,7 +143,7 @@ export function QualityReading({ pm25, fallbackColor }: { pm25: number | null; f
           </span>
         )}
       </div>
-      {quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
+      {withAdvice && quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
     </div>
   );
 }
@@ -196,7 +199,8 @@ export function StationReading({
   );
 }
 
-// The desktop sidebar, in two parts. Header: the reading (the label, the level word large in its band's ink, the PM2.5 value).
+// The desktop sidebar, in two parts. Header: the station card's reading row
+// (QualityReading, one step larger), without the advice.
 // Body, the only part that scrolls: Recomendaciones de salud, first for the
 // población general, then for each sensitive group as plain open rows (the
 // sidebar has the room: no disclosure, no boxed card). `subject` is the
@@ -209,23 +213,7 @@ export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="flex-shrink-0 border-b border-stone-200 px-6 pb-6 pt-6">
-        <h2 className="text-sm font-medium text-neutral-500">Calidad del aire</h2>
-
-        {quality ? (
-          <p className="mt-3 text-5xl font-bold leading-none tracking-tight" style={{ color: quality.textColor ?? subject.textColor }}>
-            {quality.label}
-          </p>
-        ) : (
-          <p className="mt-3 text-2xl font-medium text-neutral-400">No disponible</p>
-        )}
-
-        {/* The chips' idiom: the number is the value (neutral-700), the unit
-            and pollutant the quiet half. */}
-        {subject.pm25 !== null && (
-          <p className="mt-3 text-sm text-neutral-500">
-            <span className="font-medium text-neutral-700">{roundPM25(subject.pm25)}</span> μg/m³ PM2.5
-          </p>
-        )}
+        <QualityReading pm25={subject.pm25} fallbackColor={subject.textColor} large withAdvice={false} />
       </header>
 
       {quality && (
