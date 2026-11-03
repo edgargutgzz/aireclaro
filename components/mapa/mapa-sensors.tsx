@@ -64,6 +64,10 @@ function trackStationOpen(sensor: Sensor) {
   });
 }
 
+// The desktop sidebar's width (tailwind.config's panel-lg); the map is padded
+// by it since the sidebar sits over the map.
+const SIDEBAR_WIDTH = 460;
+
 // The view a normal load opens on. Desktop: the metro field, centred on the
 // city, nothing picked (the sidebar carries the air right now). Mobile: centred
 // on the default station so the pulse of the station its sheet rests on is in
@@ -610,11 +614,13 @@ export default function MapaSensors({
     });
     map.current = m;
 
-    // Card clearance on desktop, bottom sheet on mobile; the jump re-centres
-    // the focus inside the padded viewport.
+    // Bottom sheet on mobile. Desktop: the glass sidebar covers the map's
+    // left SIDEBAR_WIDTH px (the map runs under it), plus card clearance on the
+    // right; the jump re-centres the focus inside the padded viewport, so the
+    // opening view and every ease-to land in the visible part.
     const initialIsMobile = window.innerWidth < 768;
     m.setPadding(
-      initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 280 }
+      initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: SIDEBAR_WIDTH, right: 280 }
     );
     m.jumpTo(focus);
 
@@ -952,24 +958,26 @@ export default function MapaSensors({
   }, []);
 
   return (
-    <div className="relative h-below-header md:flex">
-      {/* Desktop left column: a full-height sidebar docked beside the map
-          (the map takes the rest of the row). It always shows the air right
+    <div className="relative h-below-header">
+      {/* Desktop left column: a full-height glass sidebar over the map's left
+          edge (the map runs under it, blurred, so the page reads as one map
+          with panels on it; the map's padding keeps the view centred in the
+          visible part). Solid header block and white cards inside keep the
+          text's contrast. It always shows the air right
           now and what to do about it (AirNowPanel, from the default station:
           the worst official one, pickDefaultSensor). No station header or
           source note: it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
-      <aside aria-label="Calidad del aire" className="relative z-10 hidden h-full w-panel-lg flex-shrink-0 flex-col border-r border-stone-200 bg-stone-50 md:flex">
+      <aside aria-label="Calidad del aire" className="glass absolute inset-y-0 left-0 z-20 hidden w-panel-lg flex-col border-y-0 border-l-0 md:flex">
         {defaultSelection && (
           <AirNowPanel subject={defaultSelection} />
         )}
       </aside>
 
-      {/* Map area: the whole screen on mobile, the rest of the row beside the
-          sidebar on desktop. Overlays anchored to the map itself (the legend)
-          live in here so they sit on the map, not over the sidebar. */}
-      <div className="absolute inset-0 md:relative md:inset-auto md:h-full md:min-w-0 md:flex-1">
+      {/* Map area: the whole screen at every width (on desktop it runs under
+          the glass sidebar). */}
+      <div className="absolute inset-0">
         {/* h-full w-full, not inset-0: MapLibre's own CSS puts
             position: relative on its container, which drops the insets and
             collapses the map to zero height. */}
@@ -979,10 +987,11 @@ export default function MapaSensors({
           style={{ backgroundColor: BASEMAP_GROUND }}
         />
 
-        {/* The air-quality scale, desktop: bottom-left of the map, feet level
-            with the freshness pill at the foot of the right column. Mobile
-            carries it as the Wind button's bottom sheet. */}
-        <div className="glass pointer-events-auto absolute bottom-14 left-6 z-10 hidden w-panel-filters rounded-2xl md:block">
+        {/* The air-quality scale, desktop: bottom-left of the visible map,
+            just right of the sidebar (panel-lg 460px + the 24px margin), feet
+            level with the freshness pill. Mobile carries it as the Wind
+            button's bottom sheet. */}
+        <div className="glass pointer-events-auto absolute bottom-14 left-[484px] z-10 hidden w-panel-filters rounded-2xl md:block">
           <div className="px-5 py-4">
             <AirQualityLegend collapsible />
           </div>
