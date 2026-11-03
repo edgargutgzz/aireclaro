@@ -2,9 +2,10 @@
 // on. It opens straight on its resting view, with no fly-in (see the map's
 // init effect in mapa-sensors.tsx).
 // Framing calls 2026-11-02: nudged east of the metro's middle (-100.301 →
-// -100.271), then back west a little with a closer zoom (OPENING_ZOOM).
+// -100.271), then back west a little with a closer zoom (OPENING_ZOOM 10.5,
+// then 10.25).
 export const OPENING_CENTER: [number, number] = [-100.286, 25.685];
-export const OPENING_ZOOM = 10.5;
+export const OPENING_ZOOM = 10.25;
 
 // The marker field is a single native MapLibre GL circle layer, not ~180 DOM
 // markers: the GPU sizes every disc per zoom, resolves overlap/hit-testing
