@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
-import { displayName, getSourceIcon, getSourceLabel } from "./lib";
+import { displayName, getSourceIcon, getSourceLabel, readingDayTimeLabel } from "./lib";
 import { DialogLink } from "./info-dialog";
 import type { Freshness } from "@/components/data/freshness";
 
@@ -258,39 +258,24 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           full-bleed block it replaces, and the glass shows around it. */}
       <header className="flex-shrink-0 px-4 pt-4">
         {quality ? (
-          <div className="rounded-xl p-6" style={{ backgroundColor: quality.color, color: onFill }}>
-            {/* Top row: the label left, when the reading is from right
-                (2026-11-03; a line under the card looked bolted on). The dot
-                is the card's own ink: it pulses while fresh, dims once late. */}
-            <div className="flex items-center justify-between gap-3 text-xs font-medium leading-none">
-              <p className="uppercase tracking-wide">Calidad del aire</p>
-              {freshness && freshness.status !== "nodata" && (
-                <p className="flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap">
-                  <span aria-hidden="true" className="relative flex h-2 w-2">
-                    {freshness.status === "fresh" && (
-                      <span className="absolute inset-0 animate-ping rounded-full bg-current opacity-60 motion-reduce:animate-none" />
-                    )}
-                    <span className={`relative h-2 w-2 rounded-full bg-current ${freshness.status === "fresh" ? "" : "opacity-40"}`} />
-                  </span>
-                  <span className="sr-only">Actualizado </span>
-                  <time dateTime={freshness.dateTime}>{freshness.when}</time>
+          <div className="overflow-hidden rounded-xl" style={{ backgroundColor: quality.color, color: onFill }}>
+            <div className="flex items-end justify-between gap-3 p-6">
+              <div className="min-w-0">
+                <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+                {/* "Extremadamente mala" can't fit at 44px beside the number, so
+                    it shows as "Extrem. mala", the legend's own short form;
+                    screen readers get the full name. */}
+                <p className="mt-2.5 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
+                  {quality.label === "Extremadamente mala" ? (
+                    <>
+                      <span aria-hidden="true">Extrem. mala</span>
+                      <span className="sr-only">Extremadamente mala</span>
+                    </>
+                  ) : (
+                    quality.label
+                  )}
                 </p>
-              )}
-            </div>
-            <div className="mt-2.5 flex items-end justify-between gap-3">
-              {/* "Extremadamente mala" can't fit at 44px beside the number, so
-                  it shows as "Extrem. mala", the legend's own short form;
-                  screen readers get the full name. */}
-              <p className="min-w-0 whitespace-nowrap text-[44px] font-extrabold leading-none tracking-tight">
-                {quality.label === "Extremadamente mala" ? (
-                  <>
-                    <span aria-hidden="true">Extrem. mala</span>
-                    <span className="sr-only">Extremadamente mala</span>
-                  </>
-                ) : (
-                  quality.label
-                )}
-              </p>
+              </div>
               {subject.pm25 !== null && (
                 <p className="flex-shrink-0 text-right">
                   <span className="block text-[40px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
@@ -298,6 +283,30 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
                 </p>
               )}
             </div>
+            {/* When the reading is from, as a strip at the card's foot (option
+                D, picked 2026-11-03 from the header mockups): a shade of the
+                level's own fill, "Actualizado" left, day and hour right. The
+                dot is the card's ink: it pulses while fresh, dims once late. */}
+            {freshness && freshness.status !== "nodata" && (
+              <p
+                className={`flex items-center justify-between gap-3 px-6 py-[11px] text-xs font-medium leading-none ${
+                  onFill === "#ffffff" ? "bg-white/15" : "bg-black/[0.07]"
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <span aria-hidden="true" className="relative flex h-2 w-2">
+                    {freshness.status === "fresh" && (
+                      <span className="absolute inset-0 animate-ping rounded-full bg-current opacity-60 motion-reduce:animate-none" />
+                    )}
+                    <span className={`relative h-2 w-2 rounded-full bg-current ${freshness.status === "fresh" ? "" : "opacity-40"}`} />
+                  </span>
+                  Actualizado
+                </span>
+                <time dateTime={freshness.dateTime} className="whitespace-nowrap">
+                  {readingDayTimeLabel(new Date(freshness.dateTime))}
+                </time>
+              </p>
+            )}
           </div>
         ) : (
           <div className="rounded-2xl border border-stone-200 bg-white p-6">

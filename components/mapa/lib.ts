@@ -82,6 +82,12 @@ export function readingTimeLabel(reading: Date) {
   return day === "Hoy" ? hour : `${day.toLowerCase()} ${hour}`;
 }
 
+// The same hour with its day always named: "Hoy, 5:00 PM", "Ayer, 5:00 PM",
+// "1 nov, 5:00 PM" (the sidebar's Actualizado strip).
+export function readingDayTimeLabel(reading: Date) {
+  return `${getRelativeDayLabel(reading)}, ${format(reading, "h")}:00 ${format(reading, "a")}`;
+}
+
 export const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
