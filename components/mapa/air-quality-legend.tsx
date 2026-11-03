@@ -78,6 +78,15 @@ function LevelList() {
 }
 
 export function LegendDetail({ className = "" }: { className?: string }) {
+  return (
+    <div className={className}>
+      <LevelList />
+      <LegendNotes className="mt-4" />
+    </div>
+  );
+}
+
+function LegendNotes({ className = "" }: { className?: string }) {
   // The map only shows PM2.5, and it's the deliberate choice, not a limitation
   // (methodology.md) — so the "what is it" text lives here, next to the unit
   // line, rather than as a filter row for a filter with one option.
@@ -85,7 +94,6 @@ export function LegendDetail({ className = "" }: { className?: string }) {
 
   return (
     <div className={className}>
-      <LevelList />
       {showPM25Info && (
         <InfoDialog title="PM2.5" onClose={() => setShowPM25Info(false)}>
           <p className="text-sm leading-relaxed text-neutral-600">
@@ -100,7 +108,7 @@ export function LegendDetail({ className = "" }: { className?: string }) {
           (2026-11-03). Both sources are hourly averages
           (docs/mapa-data-pipeline.md); the state's own map shows the índice
           instead, so its numbers differ. */}
-      <dl className="mx-2 mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-xs leading-relaxed">
+      <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-xs leading-relaxed">
         <dt className="font-medium text-neutral-500">Unidad</dt>
         <dd className="text-neutral-600">
           PM2.5 en μg/m³, promedio de la última hora
@@ -146,12 +154,13 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
   }
 
   // Pinned to the foot of its column, so it opens upward: the button row holds
-  // its place on the bottom edge and the detail unfolds into the gap above it,
-  // instead of shoving the row you just clicked ~150px up. flex-col-reverse
-  // paints the button last while keeping it first in the DOM, so tab and
-  // screen-reader order stay trigger-then-detail.
+  // its place and the level list unfolds into the gap above it; the notes go
+  // under the button, at the very bottom (2026-11-03: between the list and the
+  // bar they sat mid-panel). The button stays first in the DOM, so tab and
+  // screen-reader order stay trigger-then-detail; `order` paints the list
+  // above it.
   return (
-    <div className={`flex flex-col-reverse ${className}`}>
+    <div className={`flex flex-col ${className}`}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -174,9 +183,12 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
       </button>
       {/* Kept mounted so aria-controls always resolves; `hidden` keeps the shut
           content out of the tab order. */}
-      <div id={detailId} hidden={!open}>
-        <LegendDetail className="disclosure-in-up mb-4" />
+      <div id={detailId} hidden={!open} className="order-first">
+        <div className="disclosure-in-up mb-4">
+          <LevelList />
+        </div>
       </div>
+      {open && <LegendNotes className="mt-4" />}
     </div>
   );
 }
