@@ -31,8 +31,9 @@ export function FreshnessDot({ status }: { status: Freshness["status"] }) {
 // The time is the information, shown beside the dot with no label (a bare
 // colour cannot say how old "old" is); screen readers still hear
 // "Actualizado". `compact` just drops the type a notch for the mobile map
-// pill, which should sit quietly.
-export function FreshnessText({ freshness, compact = false }: { freshness: Freshness; compact?: boolean }) {
+// pill, which should sit quietly. `labeled` shows "Actualizado" (the desktop
+// sidebar's line, where the time stands alone under the reading).
+export function FreshnessText({ freshness, compact = false, labeled = false }: { freshness: Freshness; compact?: boolean; labeled?: boolean }) {
   if (freshness.status === "nodata") {
     return (
       <span className={`whitespace-nowrap font-medium text-neutral-700 ${compact ? "text-[11px]" : "text-[13px]"}`}>
@@ -42,7 +43,7 @@ export function FreshnessText({ freshness, compact = false }: { freshness: Fresh
   }
   return (
     <span className={`whitespace-nowrap text-neutral-500 ${compact ? "text-[11px]" : "text-[13px]"}`}>
-      <span className="sr-only">Actualizado </span>
+      <span className={labeled ? undefined : "sr-only"}>Actualizado </span>
       <time dateTime={freshness.dateTime} className="font-medium text-neutral-700">
         {freshness.when}
       </time>

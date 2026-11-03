@@ -68,6 +68,21 @@ function trackStationOpen(sensor: Sensor) {
 // (left-6) + its width (tailwind.config's panel-lg). The map is padded by it.
 const SIDEBAR_WIDTH = 24 + 460;
 
+// A subject's reading time as a Freshness. A subject with no reading (a gray
+// disc) says so, rather than borrowing the network's newest time and looking
+// up to date; no subject falls back to the newest reading anywhere.
+function toFreshness(subject: SelectedSensor | null, latestReading: Date | null, now: number | null): Freshness | null {
+  if (now === null) return null;
+  if (subject && !subject.readingAt) return { status: "nodata" };
+  const reading = subject?.readingAt ? new Date(subject.readingAt) : latestReading;
+  if (!reading || Number.isNaN(reading.getTime())) return null;
+  return {
+    dateTime: reading.toISOString(),
+    when: readingTimeLabel(reading),
+    status: now - reading.getTime() < 90 * 60 * 1000 ? "fresh" : "delayed",
+  };
+}
+
 // The view a normal load opens on. Desktop: the metro field, centred on the
 // city, nothing picked (the sidebar carries the air right now). Mobile: centred
 // on the default station so the pulse of the station its sheet rests on is in
@@ -396,21 +411,9 @@ export default function MapaSensors({
   // ("nodata"). "delayed" only covers the few minutes between a reading
   // aging out here and the next refresh dropping it. Past today the label picks up the day, so "11:00 AM" can never be
   // yesterday's 11:00 AM wearing a green dot.
-  const freshness = useMemo<Freshness | null>(() => {
-    if (now === null) return null;
-    // A station on screen with no reading (a gray disc) says so, rather than
-    // borrowing the network's newest time and looking up to date.
-    if (activeSubject && !activeSubject.readingAt) return { status: "nodata" };
-    const reading = activeSubject?.readingAt ? new Date(activeSubject.readingAt) : latestReading;
-    if (!reading || Number.isNaN(reading.getTime())) return null;
-
-    const age = now - reading.getTime();
-    return {
-      dateTime: reading.toISOString(),
-      when: readingTimeLabel(reading),
-      status: age < 90 * 60 * 1000 ? "fresh" : "delayed",
-    };
-  }, [activeSubject, latestReading, now]);
+  const freshness = useMemo(() => toFreshness(activeSubject, latestReading, now), [activeSubject, latestReading, now]);
+  // The desktop sidebar's own time line: its station's reading, by the same rule.
+  const summaryFreshness = useMemo(() => toFreshness(summarySelection, latestReading, now), [summarySelection, latestReading, now]);
 
   // The marker that wears the pulse: activeSubject (mobile: the pick, else the
   // default the sheet rests on; desktop: the pick only). Mirrored into refs
@@ -1001,7 +1004,7 @@ export default function MapaSensors({
           as the bottom sheet's resting station. */}
       <aside aria-label="Calidad del aire" className="glass absolute bottom-6 left-6 top-6 z-20 hidden w-panel-lg flex-col overflow-hidden rounded-2xl md:flex">
         {summarySelection && (
-          <AirNowPanel subject={summarySelection} />
+          <AirNowPanel subject={summarySelection} freshness={summaryFreshness} />
         )}
       </aside>
 

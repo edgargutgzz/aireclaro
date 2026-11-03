@@ -6,6 +6,7 @@ import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from 
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel } from "./lib";
 import { DialogLink } from "./info-dialog";
+import { FreshnessDot, FreshnessText, type Freshness } from "@/components/data/freshness";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
@@ -245,7 +246,7 @@ function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[
 // Then a footnote: which station the reading is and where the advice comes
 // from. `subject` is the default station (pickDefaultSensor); no hour (the
 // freshness pill on the map carries it).
-export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
+export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; freshness: Freshness | null }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
 
@@ -294,6 +295,15 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
             <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
             <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
           </div>
+        )}
+        {/* When the reading is from, right under it (2026-11-03): the map's
+            freshness dot + time as a plain line, not a pill, so the summary
+            says it is current on its own. */}
+        {freshness && freshness.status !== "nodata" && (
+          <p className="mx-2 mt-3 flex items-center gap-1.5">
+            <FreshnessDot status={freshness.status} />
+            <FreshnessText freshness={freshness} labeled />
+          </p>
         )}
       </header>
 
