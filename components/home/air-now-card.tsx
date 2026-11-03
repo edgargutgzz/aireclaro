@@ -56,8 +56,9 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
             mapa" link): the reading leads to where it comes from. */}
         <Link
           href="/calidad-del-aire"
-          style={groupsOpen && closedHeight ? { height: closedHeight } : undefined}
-          className="block h-full rounded-xl transition-[filter] hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2"
+          // Desktop only (lg:): stacked on a phone, the cards don't sit side by side.
+          style={groupsOpen && closedHeight ? ({ "--closed-h": `${closedHeight}px` } as React.CSSProperties) : undefined}
+          className={`block h-full rounded-xl transition-[filter] ${groupsOpen && closedHeight ? "lg:h-[var(--closed-h)]" : ""} hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2`}
         >
           <AirNowHeader subject={subject} freshness={freshness} stretch />
           <span className="sr-only">Ver el mapa</span>
