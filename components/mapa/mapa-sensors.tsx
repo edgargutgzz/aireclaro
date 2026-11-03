@@ -1016,17 +1016,6 @@ export default function MapaSensors({
           className="h-full w-full"
           style={{ backgroundColor: BASEMAP_GROUND }}
         />
-
-        {/* The air-quality scale, desktop: bottom-left of the visible map,
-            just right of the sidebar (24px margin + panel-lg 460px + a 16px
-            gap), feet
-            level with the freshness pill. Mobile carries it as the Wind
-            button's bottom sheet. */}
-        <div className="glass pointer-events-auto absolute bottom-14 left-[500px] z-10 hidden w-panel-filters rounded-2xl md:block">
-          <div className="px-5 py-4">
-            <AirQualityLegend collapsible />
-          </div>
-        </div>
       </div>
 
       {/* Keyboard / screen-reader equivalent for the GL marker field. */}
@@ -1161,14 +1150,25 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column: a picked station's card at the top; at the foot,
+      {/* Desktop right column: the air-quality legend at the top, a picked
+          station's card under it; at the foot,
           stacked bottom-up, the data-freshness pill, the Sensores icon button
           on top of it (the mobile button's shape, 2026-11-02; it was a
           header card at the top), and the Sensores panel above the button
           while open. On mobile the panel and legend are bottom sheets and
           freshness rides the Capas button's row. */}
       <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-filters flex-col items-end gap-2 md:flex">
-        {/* A picked station's card, at the top. Opened by a marker or a
+        {/* The air-quality scale, desktop: at the top of the right column
+            (moved from the bottom-left 2026-11-02), opening downward; a
+            picked station's card sits under it. Mobile carries it as the Wind
+            button's bottom sheet. */}
+        <div className="glass pointer-events-auto w-full flex-shrink-0 rounded-2xl">
+          <div className="px-5 py-4">
+            <AirQualityLegend collapsible />
+          </div>
+        </div>
+
+        {/* A picked station's card, under the legend. Opened by a marker or a
             ?sensor= link; the X, Escape or a click on empty map close it.
             The sidebar never changes with it. */}
         {selectedSensor && (
