@@ -958,7 +958,10 @@ export default function MapaSensors({
   }, []);
 
   return (
-    <div className="relative h-below-header">
+    // overflow-hidden: the map page never scrolls; nothing positioned inside
+    // may push <main> taller than the screen (it showed as a stone strip
+    // under the map, 2026-11-02).
+    <div className="relative h-below-header overflow-hidden">
       {/* Desktop left column: a full-height glass sidebar over the map's left
           edge (the map runs under it, blurred, so the page reads as one map
           with panels on it; the map's padding keeps the view centred in the

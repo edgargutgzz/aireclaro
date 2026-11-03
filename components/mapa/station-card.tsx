@@ -271,7 +271,10 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
       </header>
 
       {quality && (
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-6">
+        // `relative`: the scroll box must be the positioning context, or an
+        // absolutely positioned descendant (the footnote link's sr-only
+        // label) escapes its clip and makes the whole page scroll.
+        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-6">
           {/* The Capas panel's grouped-list material ("B" list, picked
               2026-11-02): a white bordered card, rows divided by hairlines.
               Each row leads with its group icon in a pale level-tinted disc;
