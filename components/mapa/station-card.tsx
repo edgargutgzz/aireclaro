@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { getSourceIcon, getSourceLabel } from "./lib";
@@ -210,21 +210,43 @@ export function StationReading({
   );
 }
 
+// One recommendation row of the sidebar's grouped list: the group icon(s) in
+// pale level-tinted discs (overlapping when groups share the advice), the
+// name(s), then the official sentence.
+function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[]; who: string; advice: string; info: QualityInfo; lead?: boolean }) {
+  return (
+    <div className="grid grid-cols-[auto_1fr] gap-3.5 px-[18px] py-4">
+      <div aria-hidden="true" className="flex">
+        {icons.map((Icon, i) => (
+          <span
+            key={i}
+            className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white ${i > 0 ? "-ml-2.5" : ""}`}
+            style={{ backgroundColor: `color-mix(in srgb, ${info.color} 14%, white)`, color: info.textColor }}
+          >
+            <Icon className="h-[18px] w-[18px]" />
+          </span>
+        ))}
+      </div>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold leading-snug text-neutral-900">{who}</p>
+        <p className={`mt-1 text-[15px] leading-relaxed ${lead ? "text-neutral-800" : "text-neutral-600"}`}>{advice}</p>
+      </div>
+    </div>
+  );
+}
+
 // The desktop sidebar ("A · Bloque de color", picked 2026-11-02 from three
 // mockups). Header: a solid block in the level's fill, the label + info, the
 // level word large and the value, all in the level's numberInk (the marker's
 // own ink on that fill; white on Extremadamente mala). Body, the only part that
-// scrolls: Recomendaciones de salud as white cards, the población general first
-// (outlined in the level's fill, the lead message), then one card per distinct
-// sensitive-group advice (groupByAdvice), group icons in the level's ink.
+// scrolls: Recomendaciones de salud (población general) and Grupos sensibles,
+// each a grouped list of RecRow (the "B" list from the same mockups).
 // `subject` is the default station (pickDefaultSensor); no station name,
 // source note or hour on the sidebar (the ⓘ names the station, the freshness
 // pill on the map carries the hour).
 export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subject: SelectedSensor; onShowInfo: () => void; onShowReadingInfo: () => void }) {
   const quality = getQualityInfo(subject.pm25);
-  const ink = quality?.textColor ?? subject.textColor;
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
-  const sectionLabel = "text-xs font-medium uppercase leading-none tracking-wide text-neutral-500";
   const focus = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15";
 
   return (
@@ -259,52 +281,38 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
       </header>
 
       {quality && (
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pb-8 pt-6">
-          {/* The info button sits right after the title it explains. */}
-          <div className="flex items-center gap-1">
-            <h3 className="text-lg font-semibold text-neutral-900">Recomendaciones de salud</h3>
-            <button
-              type="button"
-              onClick={onShowInfo}
-              className={`-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 ${focus}`}
-              aria-label="Más información sobre las recomendaciones de salud"
-            >
-              <Info aria-hidden="true" className="h-3 w-3" />
-            </button>
-          </div>
-
-          {/* The lead card: outlined in the level's fill (an inset ring, so
-              it doesn't shift the card's size against the plain ones). */}
-          <section
-            className="mt-4 rounded-2xl bg-white p-5"
-            style={{ boxShadow: `inset 0 0 0 1.5px ${quality.color}` }}
-          >
-            <h4 className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
-              <UsersRound aria-hidden="true" className="h-[18px] w-[18px] flex-shrink-0" style={{ color: ink }} />
-              Población general
-            </h4>
-            <p className="mt-2 text-base leading-relaxed text-neutral-900">{quality.generalRec}</p>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 pt-6">
+          {/* The Capas panel's grouped-list material ("B" list, picked
+              2026-11-02): a white bordered card, rows divided by hairlines.
+              Each row leads with its group icon in a pale level-tinted disc;
+              groups that share an advice share one row, their discs
+              overlapping, so the join reads from the icons however the names
+              wrap. Content, not controls: no hover, ring or chevron. */}
+          <section>
+            <div className="mx-2 flex items-center gap-1">
+              <h3 className="text-base font-semibold text-neutral-900">Recomendaciones de salud</h3>
+              <button
+                type="button"
+                onClick={onShowInfo}
+                className={`-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 ${focus}`}
+                aria-label="Más información sobre las recomendaciones de salud"
+              >
+                <Info aria-hidden="true" className="h-3 w-3" />
+              </button>
+            </div>
+            <div className="mt-2.5 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+              <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
+            </div>
           </section>
 
           <section className="mt-6">
-            <h4 className={sectionLabel}>Grupos sensibles</h4>
-            {/* One card per distinct advice: the groups it applies to, then the
-                sentence once. The official texts repeat across groups (at Mala
-                two sentences cover all four); groups join only on an exact
-                match, nothing is reworded. The card is what holds a wrapped
-                name in its set. Content, not controls: no hover or ring. */}
-            <ul className="mt-3 flex flex-col gap-3">
+            <h3 className="mx-2 text-base font-semibold text-neutral-900">Grupos sensibles</h3>
+            {/* One row per distinct advice (groupByAdvice): groups join only
+                on an exact match of the official text, nothing is reworded. */}
+            <ul className="mt-2.5 overflow-hidden rounded-2xl border border-stone-200 bg-white">
               {groupByAdvice(quality).map(({ advice, groups }) => (
-                <li key={advice} className="rounded-2xl border border-stone-200 bg-white p-5">
-                  <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                    {groups.map((g) => (
-                      <span key={g.key} className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
-                        <g.icon aria-hidden="true" className="h-[18px] w-[18px] flex-shrink-0" style={{ color: ink }} />
-                        {g.label}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="mt-2 text-base leading-relaxed text-neutral-700">{advice}</p>
+                <li key={advice} className="border-t border-stone-100 first:border-t-0">
+                  <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label).join(", ")} advice={advice} info={quality} />
                 </li>
               ))}
             </ul>
