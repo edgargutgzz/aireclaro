@@ -244,8 +244,8 @@ function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[
 // scrolls: Recomendaciones de salud (población general) and Grupos sensibles,
 // each a grouped list of RecRow (the "B" list from the same mockups).
 // Then a footnote: which station the reading is and where the advice comes
-// from. `subject` is the default station (pickDefaultSensor); no hour (the
-// freshness pill on the map carries it).
+// from. `subject` is the default station (pickDefaultSensor); `freshness` is
+// its reading's time, top right in the header.
 export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; freshness: Freshness | null }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;

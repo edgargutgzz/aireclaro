@@ -1155,11 +1155,11 @@ export default function MapaSensors({
 
       {/* Desktop right column: the air-quality legend at the top, a picked
           station's card under it; at the foot,
-          stacked bottom-up, the data-freshness pill, the Sensores icon button
-          on top of it (the mobile button's shape, 2026-11-02; it was a
-          header card at the top), and the Sensores panel above the button
-          while open. On mobile the panel and legend are bottom sheets and
-          freshness rides the Capas button's row. */}
+          the Sensores icon button (the mobile button's shape, 2026-11-02;
+          it was a header card at the top), and the Sensores panel above it
+          while open. No freshness pill on desktop (removed 2026-11-03): the
+          sidebar's header carries the time. On mobile the panel and legend
+          are bottom sheets and freshness rides the Capas button's row. */}
       <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-filters flex-col items-end gap-2 md:flex">
         {/* The air-quality scale, desktop: at the top of the right column
             (moved from the bottom-left 2026-11-02), opening downward; a
@@ -1250,7 +1250,6 @@ export default function MapaSensors({
             icon={Layers}
             className="pointer-events-auto flex-shrink-0"
           />
-          {freshness && <div className="flex-shrink-0"><FreshnessBadge freshness={freshness} /></div>}
         </div>
       </div>
 
