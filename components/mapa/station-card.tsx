@@ -258,7 +258,7 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
       <header className="flex-shrink-0 px-4 pt-4">
         {quality ? (
           <div
-            className="flex items-end justify-between gap-3 rounded-2xl p-6"
+            className="flex items-end justify-between gap-3 rounded-xl p-6"
             style={{ backgroundColor: quality.color, color: onFill }}
           >
             <div className="min-w-0">

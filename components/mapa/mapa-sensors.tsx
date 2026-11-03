@@ -64,9 +64,9 @@ function trackStationOpen(sensor: Sensor) {
   });
 }
 
-// The desktop sidebar's width (tailwind.config's panel-lg); the map is padded
-// by it since the sidebar sits over the map.
-const SIDEBAR_WIDTH = 460;
+// What the desktop sidebar covers of the map's left edge: its 24px inset
+// (left-6) + its width (tailwind.config's panel-lg). The map is padded by it.
+const SIDEBAR_WIDTH = 24 + 460;
 
 // The view a normal load opens on. Desktop: the metro field, centred on the
 // city, nothing picked (the sidebar carries the air right now). Mobile: centred
@@ -962,17 +962,19 @@ export default function MapaSensors({
     // may push <main> taller than the screen (it showed as a stone strip
     // under the map, 2026-11-02).
     <div className="relative h-below-header overflow-hidden">
-      {/* Desktop left column: a full-height glass sidebar over the map's left
-          edge (the map runs under it, blurred, so the page reads as one map
-          with panels on it; the map's padding keeps the view centred in the
-          visible part). Solid header block and white cards inside keep the
+      {/* Desktop left column: a floating glass panel over the map, inset like
+          every other map panel (top-6, left-6, and bottom-14 so its foot lines
+          up with the legend and the freshness pill). Floating, not flush:
+          flush to the top, the glass ran into the stone navbar with no edge
+          (2026-11-02). The map runs under it; the map's padding keeps the
+          view centred in the visible part. Solid header block and white cards inside keep the
           text's contrast. It always shows the air right
           now and what to do about it (AirNowPanel, from the default station:
           the worst official one, pickDefaultSensor). No station header or
           source note: it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
-      <aside aria-label="Calidad del aire" className="glass absolute inset-y-0 left-0 z-20 hidden w-panel-lg flex-col border-y-0 border-l-0 md:flex">
+      <aside aria-label="Calidad del aire" className="glass absolute bottom-14 left-6 top-6 z-20 hidden w-panel-lg flex-col overflow-hidden rounded-2xl md:flex">
         {defaultSelection && (
           <AirNowPanel subject={defaultSelection} />
         )}
@@ -991,10 +993,11 @@ export default function MapaSensors({
         />
 
         {/* The air-quality scale, desktop: bottom-left of the visible map,
-            just right of the sidebar (panel-lg 460px + the 24px margin), feet
+            just right of the sidebar (24px margin + panel-lg 460px + a 16px
+            gap), feet
             level with the freshness pill. Mobile carries it as the Wind
             button's bottom sheet. */}
-        <div className="glass pointer-events-auto absolute bottom-14 left-[484px] z-10 hidden w-panel-filters rounded-2xl md:block">
+        <div className="glass pointer-events-auto absolute bottom-14 left-[500px] z-10 hidden w-panel-filters rounded-2xl md:block">
           <div className="px-5 py-4">
             <AirQualityLegend collapsible />
           </div>
