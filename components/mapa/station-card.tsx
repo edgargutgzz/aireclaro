@@ -262,7 +262,12 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
             style={{ backgroundColor: quality.color, color: onFill }}
           >
             <div className="min-w-0">
-              <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+              {/* SIMA: the worst live station, so it says so (2026-11-03,
+                  replaced "Calidad del aire" + a footnote row). The citizen
+                  sensor fallback is not a maximum and keeps the old label. */}
+              <p className="text-xs font-medium uppercase leading-none tracking-wide">
+                {subject.sensor.source === "sima" ? "Nivel máximo registrado" : "Calidad del aire"}
+              </p>
               {/* "Extremadamente mala" can't fit at 44px beside the number, so
                   it shows as "Extrem. mala", the legend's own short form;
                   screen readers get the full name. */}
@@ -328,12 +333,12 @@ export function AirNowPanel({ subject }: { subject: SelectedSensor }) {
               quiet footnote in label / value rows (they were two info-button
               popups, then a run-on sentence; both replaced 2026-11-02). */}
           <dl className="mx-2 mt-8 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-5 text-xs leading-relaxed">
-            <dt className="font-medium text-neutral-500">Calidad del aire</dt>
-            <dd className="text-neutral-600">
-              {subject.sensor.source === "sima"
-                ? "Nivel más alto entre las estaciones del SIMA"
-                : "Sensor ciudadano más cercano a Obispado, sin estaciones del SIMA en vivo"}
-            </dd>
+            {subject.sensor.source !== "sima" && (
+              <>
+                <dt className="font-medium text-neutral-500">Calidad del aire</dt>
+                <dd className="text-neutral-600">Sensor ciudadano más cercano a Obispado, sin estaciones del SIMA en vivo</dd>
+              </>
+            )}
             <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación" : "Sensor"}</dt>
             <dd className="text-neutral-600">{displayName(subject.sensor)}</dd>
             <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
