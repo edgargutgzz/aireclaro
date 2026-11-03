@@ -249,7 +249,7 @@ export function AirNowPanel({ subject, onShowInfo }: { subject: SelectedSensor; 
             <p className="mt-3 text-sm leading-relaxed text-neutral-700">{quality.generalRec}</p>
           </section>
 
-          <section className="mt-6 border-t border-stone-200 pt-6">
+          <section className="mt-8">
             <h4 className={sectionLabel}>Grupos sensibles</h4>
             {/* Content, not controls: no hover, ring or chevron. The paragraph
                 is indented to the label's left edge (ml-7: a 16px icon plus
