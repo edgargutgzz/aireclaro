@@ -1,5 +1,6 @@
 // How current the reading on screen is: a colour dot plus the reading's
-// time. Three states, because a dot that is only ever green cannot tell
+// time (blue when fresh: green read as the "Buena" level). Three states,
+// because a dot that is only ever one colour cannot tell
 // you anything — and the timestamp, not the colour, is what actually carries
 // the state. The value itself (floored hour, day label past today, status
 // bucket) is computed in mapa-sensors.tsx where the sensor data lives.
@@ -13,14 +14,14 @@ export type Freshness =
 export function FreshnessDot({ status }: { status: Freshness["status"] }) {
   // Late and missing share the grey: the time (or "No disponible") beside
   // the dot tells them apart.
-  const dot = status === "fresh" ? "bg-green-500" : "bg-stone-400";
+  const dot = status === "fresh" ? "bg-blue-500" : "bg-stone-400";
 
   return (
     <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
       {/* Only fresh data pulses. A dot that keeps ticking in grey
           reads as "working on it" when the truth is "this is late". */}
       {status === "fresh" && (
-        <span className="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75 motion-reduce:animate-none" />
+        <span className="absolute h-2 w-2 animate-ping rounded-full bg-blue-400 opacity-75 motion-reduce:animate-none" />
       )}
       <span className={`relative h-2 w-2 rounded-full ${dot}`} />
     </span>
