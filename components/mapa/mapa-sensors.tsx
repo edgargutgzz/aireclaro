@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { ChevronRight, Layers, Wind, X } from "lucide-react";
+import { Layers, Wind, X } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -77,6 +77,23 @@ function restingFocus(defaultSelection: SelectedSensor | null) {
   return defaultSelection && !desktop
     ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 10.5 }
     : { center: OPENING_CENTER, zoom: OPENING_ZOOM };
+}
+
+// The map's round-cornered icon button (mobile's Calidad del aire / Sensores
+// buttons, desktop's Sensores button): Glass at rest, a firmer white with a
+// darker hairline while its panel is open.
+function MapIconButton({ active, onClick, label, icon: Icon, className = "" }: { active: boolean; onClick: () => void; label: string; icon: typeof Layers; className?: string }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      aria-expanded={active}
+      className={`rounded-xl p-3 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${active ? "border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md" : "glass"} ${className}`}
+    >
+      <Icon aria-hidden="true" className={`h-5 w-5 ${active ? "text-neutral-900" : "text-neutral-700"}`} />
+    </button>
+  );
 }
 
 function pickDefaultSensor(candidates: Sensor[], data: Data[]): Sensor | undefined {
@@ -1037,23 +1054,22 @@ export default function MapaSensors({
           style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
         >
           <div className="pointer-events-auto flex flex-col items-end gap-3">
-            <button
+            <MapIconButton
+              active={showLegend}
               onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
-              className={`rounded-xl p-3 transition-colors duration-200 ${showLegend ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
-              aria-label="Calidad del aire"
-            >
-              <Wind className={`h-5 w-5 ${showLegend ? 'text-neutral-900' : 'text-neutral-700'}`} />
-            </button>
+              label="Calidad del aire"
+              icon={Wind}
+            />
           </div>
           <div className="flex w-full items-end justify-between">
             {freshness ? <FreshnessBadge freshness={freshness} compact /> : <span />}
-            <button
+            <MapIconButton
+              active={showFilters}
               onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
-              className={`pointer-events-auto rounded-xl p-3 transition-colors duration-200 ${showFilters ? 'border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md' : 'glass'}`}
-              aria-label="Sensores"
-            >
-              <Layers className={`h-5 w-5 ${showFilters ? 'text-neutral-900' : 'text-neutral-700'}`} />
-            </button>
+              label="Sensores"
+              icon={Layers}
+              className="pointer-events-auto"
+            />
           </div>
         </div>
       )}
@@ -1145,58 +1161,16 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column: the Capas panel at the top, the
-          data-freshness pill at the foot. An open panel grows
-          down into whatever is left over. On mobile the panel and legend are
-          bottom sheets and freshness rides the Capas button's row. */}
+      {/* Desktop right column: a picked station's card at the top; at the foot,
+          stacked bottom-up, the data-freshness pill, the Sensores icon button
+          on top of it (the mobile button's shape, 2026-11-02; it was a
+          header card at the top), and the Sensores panel above the button
+          while open. On mobile the panel and legend are bottom sheets and
+          freshness rides the Capas button's row. */}
       <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-filters flex-col items-end gap-2 md:flex">
-        <div className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
-          {/* The header carries the filter state, in the same "label · summary"
-              idiom the rows inside the panel already use, and the legend
-              card's uppercase label, so the two cards read as one set. The panel is "Sensores" on screen (it picks which
-              sensors show); "Capas" stays its name in code. The two
-              closed cards stand at the same 56px: min-h-14 here, the legend's
-              min-h-6 row inside its py-4 (its bar + end labels run ~23px,
-              this row's chevron only 16px). */}
-          <button
-            onClick={() => setShowFiltrosContent((v) => !v)}
-            aria-expanded={showFiltrosContent}
-            className="flex min-h-14 w-full flex-shrink-0 items-center gap-1.5 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
-          >
-            <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Sensores</span>
-            {capasSummary && (
-              <span className="min-w-0 flex-1 truncate text-xs leading-none text-neutral-500">· {capasSummary}</span>
-            )}
-            <ChevronRight className={`ml-auto h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${showFiltrosContent ? 'rotate-90' : ''}`} />
-          </button>
-          {showFiltrosContent && (
-            /* Only the body scrolls, so the "Capas" header stays in place, and
-               overscroll-contain stops a scroll that reaches the end from
-               panning the map underneath. flex-1 min-h-0 takes whatever the
-               column has left after the badge. No padding: the
-               list sits flush, like the estación card's sections. */
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <LayersFilterContent
-                showOtros={showOtros}
-                setShowOtros={setShowOtros}
-                showOccamm={showOccamm}
-                setShowOccamm={setShowOccamm}
-                showSima={showSima}
-                setShowSima={setShowSima}
-                estados={estados}
-                sourceCounts={sourceCounts}
-                hiddenMunicipios={hiddenMunicipios}
-                setHiddenMunicipios={setHiddenMunicipios}
-                onShowOccammInfo={() => setShowOccammInfo(true)}
-                onShowFuenteInfo={() => setShowFuenteInfo(true)}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* A picked station's card, under the Sensores panel. Opened by a
-            marker or a ?sensor= link; the X, Escape or a click on empty map
-            close it. The sidebar never changes with it. */}
+        {/* A picked station's card, at the top. Opened by a marker or a
+            ?sensor= link; the X, Escape or a click on empty map close it.
+            The sidebar never changes with it. */}
         {selectedSensor && (
           <div className="glass pointer-events-auto flex min-h-0 w-full flex-shrink flex-col overflow-hidden rounded-2xl">
             <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
@@ -1225,8 +1199,56 @@ export default function MapaSensors({
           </div>
         )}
 
-        {/* Foot of the column, desktop: the data-freshness pill. */}
-        {freshness && <div className="mt-auto flex-shrink-0"><FreshnessBadge freshness={freshness} /></div>}
+
+        <div className="mt-auto flex min-h-0 w-full flex-col items-end gap-2">
+          {showFiltrosContent && (
+            <div id="sensores-panel" className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
+              {/* Header in the "label · summary" idiom, with a close X. The
+                  panel is "Sensores" on screen; "Capas" stays its name in
+                  code. */}
+              <div className="flex min-h-14 w-full flex-shrink-0 items-center gap-1.5 px-5 py-4">
+                <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Sensores</span>
+                {capasSummary && (
+                  <span className="min-w-0 flex-1 truncate text-xs leading-none text-neutral-500">· {capasSummary}</span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowFiltrosContent(false)}
+                  aria-label="Cerrar sensores"
+                  className="-my-1 -mr-1 ml-auto flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+                >
+                  <X aria-hidden="true" className="h-4 w-4" />
+                </button>
+              </div>
+              {/* Only the body scrolls; overscroll-contain stops a scroll
+                  that reaches the end from panning the map underneath. */}
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <LayersFilterContent
+                showOtros={showOtros}
+                setShowOtros={setShowOtros}
+                showOccamm={showOccamm}
+                setShowOccamm={setShowOccamm}
+                showSima={showSima}
+                setShowSima={setShowSima}
+                estados={estados}
+                sourceCounts={sourceCounts}
+                hiddenMunicipios={hiddenMunicipios}
+                setHiddenMunicipios={setHiddenMunicipios}
+                onShowOccammInfo={() => setShowOccammInfo(true)}
+                onShowFuenteInfo={() => setShowFuenteInfo(true)}
+              />
+              </div>
+            </div>
+          )}
+          <MapIconButton
+            active={showFiltrosContent}
+            onClick={() => setShowFiltrosContent((v) => !v)}
+            label="Sensores"
+            icon={Layers}
+            className="pointer-events-auto flex-shrink-0"
+          />
+          {freshness && <div className="flex-shrink-0"><FreshnessBadge freshness={freshness} /></div>}
+        </div>
       </div>
 
       {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
