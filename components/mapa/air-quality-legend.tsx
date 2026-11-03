@@ -49,20 +49,28 @@ export function ScaleBar({ className = "", labels = "thresholds" }: { className?
   );
 }
 
-// Swatch in the level's `color` with an `ink` hairline, the same pairing the
-// marker's own rim uses, so a disc on the map reads straight back to a row.
+// A white grouped list, the left sidebar's recommendation-card material
+// (option C of the legend mockups, 2026-11-03): each level leads with a pale
+// level-tinted disc, like the recommendation rows' icon discs, holding a dot
+// in the level's `color` with its `ink` hairline (the marker's own rim
+// pairing, so a disc on the map reads straight back to a row).
 function LevelList() {
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
       {IMECA_LEVELS.map((level) => (
-        <li key={level.label} className="flex items-center gap-2.5">
+        <li key={level.label} className="flex items-center gap-3 border-t border-stone-100 px-4 py-3 first:border-t-0">
           <span
             aria-hidden="true"
-            className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-            style={{ backgroundColor: level.color, boxShadow: `inset 0 0 0 1px ${level.ink}` }}
-          />
-          <span className="min-w-0 flex-1 truncate text-sm text-neutral-700">{level.label}</span>
-          <span className="flex-shrink-0 text-sm text-neutral-500">{level.bounds}</span>
+            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
+            style={{ backgroundColor: `color-mix(in srgb, ${level.color} 18%, white)` }}
+          >
+            <span
+              className="h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: level.color, boxShadow: `inset 0 0 0 1px ${level.ink}` }}
+            />
+          </span>
+          <span className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-900">{level.label}</span>
+          <span className="flex-shrink-0 text-sm tabular-nums text-neutral-500">{level.bounds}</span>
         </li>
       ))}
     </ul>
@@ -88,30 +96,31 @@ export function LegendDetail({ className = "" }: { className?: string }) {
           </p>
         </InfoDialog>
       )}
-      {/* More air under the citation on mobile, where the level list runs right
-          up against it in the bottom sheet; the desktop rail keeps mt-3. */}
-      <p className="mt-5 text-[11px] leading-relaxed text-neutral-400 md:mt-3">
-        Índice de Aire y Salud Mexicano&nbsp;{" "}
-        <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
-          NOM-172-SEMARNAT-2023
-        </DialogLink>
-        .
-      </p>
-      {/* Second footnote, under the citation (moved from above the level list
-          2026-11-03). Both sources are hourly averages
+      {/* The notes as label / value rows, the sidebar footnote's format
+          (2026-11-03). Both sources are hourly averages
           (docs/mapa-data-pipeline.md); the state's own map shows the índice
           instead, so its numbers differ. */}
-      <div className="mt-1 flex items-center gap-1">
-        <p className="text-[11px] leading-relaxed text-neutral-400">PM2.5 · μg/m³ · promedio de la última hora</p>
-        <button
-          type="button"
-          onClick={() => setShowPM25Info(true)}
-          className="-my-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-          aria-label="Qué es PM2.5"
-        >
-          <Info aria-hidden="true" className="h-3 w-3" />
-        </button>
-      </div>
+      <dl className="mx-2 mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-xs leading-relaxed">
+        <dt className="font-medium text-neutral-500">Unidad</dt>
+        <dd className="text-neutral-600">
+          PM2.5 en μg/m³, promedio de la última hora
+          <button
+            type="button"
+            onClick={() => setShowPM25Info(true)}
+            className="-my-1 ml-0.5 inline-flex rounded-xl p-1 align-middle text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+            aria-label="Qué es PM2.5"
+          >
+            <Info aria-hidden="true" className="h-3 w-3" />
+          </button>
+        </dd>
+        <dt className="font-medium text-neutral-500">Escala</dt>
+        <dd className="text-neutral-600">
+          Índice de Aire y Salud,{" "}
+          <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
+            NOM-172-SEMARNAT-2023
+          </DialogLink>
+        </dd>
+      </dl>
     </div>
   );
 }
@@ -148,9 +157,9 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={detailId}
-        className="flex min-h-6 w-full items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+        className="flex min-h-6 w-full items-center gap-4 rounded-2xl border border-stone-200 bg-white px-4 py-3.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
       >
-        <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">
+        <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
           Calidad del aire
         </span>
         {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
@@ -166,7 +175,7 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
       {/* Kept mounted so aria-controls always resolves; `hidden` keeps the shut
           content out of the tab order. */}
       <div id={detailId} hidden={!open}>
-        <LegendDetail className="disclosure-in-up mb-3 border-b border-stone-100 pb-3" />
+        <LegendDetail className="disclosure-in-up mb-4" />
       </div>
     </div>
   );

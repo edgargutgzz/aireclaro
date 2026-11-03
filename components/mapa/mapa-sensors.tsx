@@ -1149,7 +1149,7 @@ export default function MapaSensors({
           style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}
         >
           <ScaleBar />
-          <LegendDetail className="mt-4 border-t border-stone-100 pt-4" />
+          <LegendDetail className="mt-4" />
         </div>
       </div>
 
@@ -1244,7 +1244,7 @@ export default function MapaSensors({
               2026-11-02). Opens upward. Mobile carries it as the Wind
               button's bottom sheet. */}
           <div className="glass pointer-events-auto w-full flex-shrink-0 rounded-2xl">
-            <div className="px-5 py-4">
+            <div className="p-4">
               <AirQualityLegend collapsible />
             </div>
           </div>
