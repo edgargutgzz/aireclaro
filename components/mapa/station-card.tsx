@@ -28,6 +28,19 @@ const SENSITIVE_GROUPS = [
   { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
 
+// The sensitive groups bucketed by identical advice, in SENSITIVE_GROUPS order
+// of first appearance: the desktop sidebar's one-sentence-per-block list.
+function groupByAdvice(info: QualityInfo) {
+  const blocks: { advice: string; groups: (typeof SENSITIVE_GROUPS)[number][] }[] = [];
+  for (const g of SENSITIVE_GROUPS) {
+    const advice = info.sensitiveRecs[g.key];
+    const block = blocks.find((b) => b.advice === advice);
+    if (block) block.groups.push(g);
+    else blocks.push({ advice, groups: [g] });
+  }
+  return blocks;
+}
+
 // The advice for each sensitive group, behind a disclosure (the general
 // advice already sits in the reading, StationReading). The header row carries
 // the label, its info icon and the chevron; nothing below it renders until it
@@ -215,8 +228,8 @@ export function StationReading({
 // The desktop sidebar, in two parts. Header: the station card's reading row
 // (QualityReading, one step larger), without the advice.
 // Body, the only part that scrolls: Recomendaciones de salud, first for the
-// población general, then for each sensitive group as plain open rows (the
-// sidebar has the room: no disclosure, no boxed card). `subject` is the
+// población general, then the sensitive groups bucketed by identical advice
+// (groupByAdvice), all open: no disclosure, no boxed card. `subject` is the
 // default station (pickDefaultSensor); no station name, source note or hour
 // (user call 2026-11-02: the freshness pill on the map carries the hour).
 export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subject: SelectedSensor; onShowInfo: () => void; onShowReadingInfo: () => void }) {
@@ -252,17 +265,24 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
 
           <section className="mt-8">
             <h4 className={sectionLabel}>Grupos sensibles</h4>
-            {/* Content, not controls: no hover, ring or chevron. The paragraph
-                is indented to the label's left edge (ml-7: a 16px icon plus
-                gap-3) so the icons read as a column. */}
-            <ul className="mt-4 flex flex-col gap-5">
-              {SENSITIVE_GROUPS.map((g) => (
-                <li key={g.key}>
-                  <div className="flex items-center gap-3">
-                    <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400" />
-                    <p className="text-sm font-semibold text-neutral-800">{g.label}</p>
+            {/* One block per distinct advice: the groups it applies to as a
+                row of icon + name tags, then the sentence once. The official
+                texts repeat across groups (at Mala two sentences cover all
+                four), so this halves the reading without hiding or rewording
+                anything. Order follows SENSITIVE_GROUPS by first appearance.
+                Content, not controls: no hover, ring or chevron. */}
+            <ul className="mt-4 flex flex-col gap-6">
+              {groupByAdvice(quality).map(({ advice, groups }) => (
+                <li key={advice}>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                    {groups.map((g) => (
+                      <span key={g.key} className="flex items-center gap-1.5 text-sm font-medium text-neutral-700">
+                        <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400" />
+                        {g.label}
+                      </span>
+                    ))}
                   </div>
-                  <p className="ml-7 mt-1 text-sm leading-relaxed text-neutral-500">{quality.sensitiveRecs[g.key]}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-neutral-500">{advice}</p>
                 </li>
               ))}
             </ul>
