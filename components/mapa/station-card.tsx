@@ -5,7 +5,6 @@ import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethosco
 import { getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { getSourceIcon, getSourceLabel } from "./lib";
-import { ScaleBar } from "./air-quality-legend";
 
 // The card's big quality line. With no live reading (the site's 90-minute
 // cutoff, lib/live-readings.ts) it reads "No disponible" in the quiet gray treatment,
@@ -213,7 +212,8 @@ export function StationReading({
 
 // The desktop sidebar, in two parts. Header (no tint: a level-coloured wash was
 // tried and removed 2026-11-02): the station card's reading row one step up (label + info, the level
-// word, the value), then the scale bar with today's reading marked. Body, the
+// word, the value; a scale bar under it was tried and removed 2026-11-02).
+// Body, the
 // only part that scrolls: Recomendaciones de salud, first for the población
 // general, then the sensitive groups bucketed by identical advice
 // (groupByAdvice), each block on a left rule in the level's ink, so every
@@ -252,7 +252,6 @@ export function AirNowPanel({ subject, onShowInfo, onShowReadingInfo }: { subjec
             </span>
           )}
         </div>
-        {quality && <ScaleBar className="mt-5" value={subject.pm25} />}
       </header>
 
       {quality && (

@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { ChevronRight, Info } from "lucide-react";
-import { IMECA_LEVELS, getLevel } from "@/lib/air-quality";
+import { IMECA_LEVELS } from "@/lib/air-quality";
 import { DialogLink, InfoDialog } from "./info-dialog";
 
 // The measurement itself, not just a colour key: a segmented PM2.5 scale with
@@ -13,27 +13,14 @@ import { DialogLink, InfoDialog } from "./info-dialog";
 // The break numbers under the joins carry the real spacing.
 // All spans, so the bar is valid phrasing content inside the disclosure
 // <button>. Decorative: the level list is the readable key.
-//
-// `value` (the desktop sidebar) adds a marker at that PM2.5 reading, a thin
-// dark tick across the bar (a white-and-ink dot was tried and dropped): placed
-// within its level's segment by where it falls in the level's span, the open
-// top level read up to 2× its floor so the marker never runs off the end.
-export function ScaleBar({ className = "", labels = "thresholds", value }: { className?: string; labels?: "thresholds" | "ends"; value?: number | null }) {
+export function ScaleBar({ className = "", labels = "thresholds" }: { className?: string; labels?: "thresholds" | "ends" }) {
   const count = IMECA_LEVELS.length;
   return (
     <span aria-hidden="true" className={`block ${className}`}>
-      <span className="relative block">
-        <span className="flex h-2 overflow-hidden rounded-full ring-1 ring-inset ring-black/[0.08]">
-          {IMECA_LEVELS.map((level) => (
-            <span key={level.label} className="flex-1" style={{ backgroundColor: level.color }} />
-          ))}
-        </span>
-        {value != null && Number.isFinite(value) && (
-          <span
-            className="absolute top-1/2 h-4 w-[3px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-800 ring-2 ring-stone-50"
-            style={{ left: `${scalePosition(value) * 100}%` }}
-          />
-        )}
+      <span className="flex h-2 overflow-hidden rounded-full ring-1 ring-inset ring-black/[0.08]">
+        {IMECA_LEVELS.map((level) => (
+          <span key={level.label} className="flex-1" style={{ backgroundColor: level.color }} />
+        ))}
       </span>
       {labels === "ends" ? (
         // Collapsed state: the two ends carry the direction and the worst case,
@@ -60,16 +47,6 @@ export function ScaleBar({ className = "", labels = "thresholds", value }: { cla
       )}
     </span>
   );
-}
-
-// 0–1 along the equal-width bar for a PM2.5 value.
-function scalePosition(value: number) {
-  const count = IMECA_LEVELS.length;
-  const i = IMECA_LEVELS.indexOf(getLevel(value));
-  const lo = i === 0 ? 0 : IMECA_LEVELS[i - 1].limit;
-  const hi = Number.isFinite(IMECA_LEVELS[i].limit) ? IMECA_LEVELS[i].limit : lo * 2;
-  const frac = Math.min(Math.max((value - lo) / (hi - lo), 0), 1);
-  return (i + frac) / count;
 }
 
 // Swatch in the level's `color` with an `ink` hairline, the same pairing the
