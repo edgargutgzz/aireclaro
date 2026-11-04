@@ -92,7 +92,7 @@ export default async function Home() {
                 Trabajamos por una mejor{" "}
                 <span className="text-[#226caf]">calidad del aire.</span>
               </h1>
-              <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl lg:text-lg">
+              <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl lg:text-base">
                   Somos una organización de la sociedad civil dedicada a generar
                   esfuerzos colaborativos y fundamento técnico para mejorar la calidad
                   del aire en la Zona Metropolitana de Monterrey.
