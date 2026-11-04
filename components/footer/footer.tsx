@@ -42,8 +42,10 @@ const EYEBROW = "mb-3 text-xs font-medium uppercase leading-none tracking-wide t
 
 export default function Footer() {
   return (
-    <footer className="border-t border-stone-200 bg-stone-50">
-      <div className="mx-auto max-w-7xl px-6 pt-12 pb-8 lg:px-8">
+    <footer className="bg-stone-50">
+      {/* The top line spans the content width, not the screen (2026-11-04),
+          as the navbar's bottom line does. */}
+      <div className="relative mx-auto max-w-7xl px-6 pt-12 pb-8 before:absolute before:inset-x-6 before:top-0 before:h-px before:bg-stone-200 lg:px-8 lg:before:inset-x-8">
       {/* lg+: one row, the two link columns first (the site's sections:
           this is a data platform), then the ways to reach us (contact,
           socials), each as wide as its content and spread with equal gaps
