@@ -69,7 +69,7 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
               groups row staying at the bottom. */}
           <div ref={adviceRef} className="flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white">
             <div className="flex flex-1 flex-col justify-center">
-              <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
+              <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} full={quality.generalFull} info={quality} lead />
             </div>
             <SensitiveGroups info={quality} open={groupsOpen} onToggle={() => setGroupsOpen((v) => !v)} />
           </div>

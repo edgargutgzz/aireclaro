@@ -205,6 +205,8 @@ export interface QualityInfo {
   color: string;
   textColor: string;
   generalRec: string;
+  // The norm's full message for población general, behind "Ver más" (AdviceText).
+  generalFull?: string;
   // The two sensitive groups of NOM-172-SEMARNAT-2023, Tabla 12.
   sensitiveRecs: {
     menoresGestantes: string;
@@ -212,7 +214,7 @@ export interface QualityInfo {
   };
   // The norm's full message for a group, verbatim from Tabla 12, shown behind
   // a "Ver más" after the short one (AdviceText). Only where it
-  // says more than the short text (2026-11-04: enfermedadesMayores only).
+  // says more than the short text.
   sensitiveFull?: Partial<Record<keyof QualityInfo["sensitiveRecs"], string>>;
 }
 
@@ -232,11 +234,13 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   if (pm25 <= 25) return {
     label: IMECA_LEVELS[1].label, color: IMECA_LEVELS[1].color, textColor: IMECA_LEVELS[1].ink,
     generalRec: "Disfruta las actividades al aire libre.",
+    generalFull: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menoresGestantes: "Disfruta las actividades al aire libre.",
       enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
     },
     sensitiveFull: {
+      menoresGestantes: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
       enfermedadesMayores: "Es posible realizar actividades físicas al aire libre como trotar suave, caminar a paso rápido o moverse en bicicleta, monopatín/scooter, patines y patinetas. Reduce las actividades físicas vigorosas al aire libre como ejercicios aeróbicos, jugar fútbol, básquetbol, voleibol, atletismo, ciclismo deportivo o correr. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
     },
   };

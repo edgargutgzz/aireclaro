@@ -185,7 +185,7 @@ export function QualityReading({ pm25, fallbackColor }: { pm25: number | null; f
           </span>
         )}
       </div>
-      {quality && <p className="mt-3 text-sm leading-relaxed text-neutral-600">{quality.generalRec}</p>}
+      {quality && <AdviceText advice={quality.generalRec} full={quality.generalFull} className="mt-3 text-sm leading-relaxed text-neutral-600" />}
     </div>
   );
 }
@@ -376,7 +376,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
               the source. Screen readers still get the section name. */}
           <section aria-label="Recomendaciones de salud">
             <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-              <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
+              <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} full={quality.generalFull} info={quality} lead />
             </div>
           </section>
 
