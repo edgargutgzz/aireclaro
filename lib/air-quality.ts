@@ -229,7 +229,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     label: IMECA_LEVELS[1].label, color: IMECA_LEVELS[1].color, textColor: IMECA_LEVELS[1].ink,
     generalRec: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
-      menoresGestantes: "Disfruta las actividades al aire libre.",
+      menoresGestantes: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
       enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
     },
   };
