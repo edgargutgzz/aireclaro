@@ -25,7 +25,7 @@ export function QualityHeadline({ info, fallbackColor }: { info: QualityInfo | n
 const SENSITIVE_GROUPS = [
   { key: "menores", label: "Menores de 12 años", icon: Baby },
   { key: "adultos", label: "Adultos mayores", icon: PersonStanding },
-  { key: "embarazadas", label: "Personas embarazadas", icon: Heart },
+  { key: "embarazadas", label: "Personas gestantes", icon: Heart },
   { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
 
