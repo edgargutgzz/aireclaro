@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Info, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Info, MapPin, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
@@ -276,8 +276,8 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // homepage card (components/home/air-now-card.tsx).
 // `stretch` fills its container's height (the homepage card, beside the
 // advice card), the level block growing and the foot staying at the bottom.
-// `place` (the homepage, 2026-11-04) names the area after the label; the map
-// doesn't need it.
+// `place` (the homepage, 2026-11-04) names the area in the foot, right of the
+// time, with a pin; the map doesn't need it.
 export function AirNowHeader({ subject, freshness, stretch = false, place }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
@@ -286,7 +286,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
       <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
         <div className={`flex items-baseline-last justify-between gap-3 p-5 sm:p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
-            <p className={`text-xs font-medium uppercase tracking-wide ${place ? "leading-snug" : "leading-none"}`}>Calidad del aire{place && ` en la ${place}`}</p>
+            <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
             {/* "Extremadamente mala" can't fit at 44px beside the number, so
                 it shows as "Extrem. mala", the legend's own short form;
                 screen readers get the full name. */}
@@ -315,20 +315,28 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
             matches the icon discs below). Gray text with the map's usual
             blue freshness dot. */}
         {freshness && freshness.status !== "nodata" && (
-          <p
-            className="flex items-center gap-1.5 px-5 py-3 text-[13px] leading-none sm:px-6"
+          <div
+            className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-3 text-[13px] leading-none sm:px-6"
             style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
           >
-            <FreshnessDot status={freshness.status} />
-            {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
-                a past day still shows: "Actualizado ayer 11:00 PM". */}
-            <span className="whitespace-nowrap text-neutral-600">
-              Actualizado{" "}
-              <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
-                {readingTimeLabel(new Date(freshness.dateTime))}
-              </time>
-            </span>
-          </p>
+            <p className="flex items-center gap-1.5">
+              <FreshnessDot status={freshness.status} />
+              {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
+                  a past day still shows: "Actualizado ayer 11:00 PM". */}
+              <span className="whitespace-nowrap text-neutral-600">
+                Actualizado{" "}
+                <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
+                  {readingTimeLabel(new Date(freshness.dateTime))}
+                </time>
+              </span>
+            </p>
+            {place && (
+              <p className="flex items-center gap-1.5 text-neutral-600">
+                <MapPin aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
+                {place}
+              </p>
+            )}
+          </div>
         )}
       </div>
     ) : (
