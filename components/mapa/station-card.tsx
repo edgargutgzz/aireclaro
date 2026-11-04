@@ -276,7 +276,9 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // homepage card (components/home/air-now-card.tsx).
 // `stretch` fills its container's height (the homepage card, beside the
 // advice card), the level block growing and the foot staying at the bottom.
-export function AirNowHeader({ subject, freshness, stretch = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean }) {
+// `place` (the homepage, 2026-11-04) names the area after the label; the map
+// doesn't need it.
+export function AirNowHeader({ subject, freshness, stretch = false, place }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   return (
@@ -284,7 +286,7 @@ export function AirNowHeader({ subject, freshness, stretch = false }: { subject:
       <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
         <div className={`flex items-baseline-last justify-between gap-3 p-5 sm:p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
-            <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+            <p className={`text-xs font-medium uppercase tracking-wide ${place ? "leading-snug" : "leading-none"}`}>Calidad del aire{place && ` en la ${place}`}</p>
             {/* "Extremadamente mala" can't fit at 44px beside the number, so
                 it shows as "Extrem. mala", the legend's own short form;
                 screen readers get the full name. */}
