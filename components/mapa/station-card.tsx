@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Info, Map as MapIcon, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
@@ -277,7 +277,7 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // `stretch` fills its container's height (the homepage card, beside the
 // advice card), the level block growing and the foot staying at the bottom.
 // `place` (the homepage, 2026-11-04) names the area in the foot, right of the
-// time, with a map icon; the map doesn't need it.
+// time, with the location arrow; the map doesn't need it.
 export function AirNowHeader({ subject, freshness, stretch = false, place }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
@@ -332,7 +332,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
             </p>
             {place && (
               <p className="flex items-center gap-1.5 text-neutral-600">
-                <MapIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
+                <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
                 {place}
               </p>
             )}
