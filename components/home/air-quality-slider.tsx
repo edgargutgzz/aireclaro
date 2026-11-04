@@ -6,9 +6,10 @@ import Image from "next/image";
 // Ported from observatoriodelaire.com's homepage hero (same component, same
 // photos), with next/image in place of <img> so the photos ship resized.
 
-const SIZES = "(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw";
+const SIZES = "(min-width: 1280px) 1216px, 100vw";
 
-// The box is narrower than the 16:9 photos, so they're cropped near the left
+// On desktop the box is 16:9 like the photos, so they show whole (2026-11-04).
+// On phones the box is narrower than the 16:9 photos, so they're cropped near the left
 // edge, where the Cerro de la Silla is: the clean photo a tenth in, the
 // polluted one from the edge itself and enlarged 10% from there, which nudges
 // its scene to the right (it has no more photo to its left to show).
@@ -145,7 +146,7 @@ export default function AirQualitySlider() {
       aria-valuenow={cleanPercent}
       aria-valuetext={`${cleanPercent}% aire limpio, ${100 - cleanPercent}% aire contaminado`}
       onKeyDown={handleKeyDown}
-      className="group relative h-[400px] w-full cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-3xl shadow-2xl focus-visible:outline-none md:h-[500px] lg:h-[550px]"
+      className="group relative h-[400px] w-full cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-3xl shadow-2xl focus-visible:outline-none md:h-[500px] lg:aspect-video lg:h-auto"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -159,7 +160,7 @@ export default function AirQualitySlider() {
         fill
         preload
         sizes={SIZES}
-        className="origin-left scale-110 object-cover object-left"
+        className="origin-left scale-110 object-cover object-left lg:scale-100 lg:object-center"
         draggable={false}
       />
 
@@ -174,7 +175,7 @@ export default function AirQualitySlider() {
           fill
           preload
           sizes={SIZES}
-          className="object-cover object-[10%_50%]"
+          className="object-cover object-[10%_50%] lg:object-center"
           draggable={false}
         />
       </div>

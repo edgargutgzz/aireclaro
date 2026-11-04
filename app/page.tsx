@@ -78,10 +78,14 @@ export default async function Home() {
       <JsonLd data={websiteSchema} />
       <AirNowCard subject={airNow} />
       <LiveRefresh />
-      <div className="flex flex-1 items-center pb-24 lg:pb-32">
-        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-12 px-6 pt-16 lg:grid-cols-2 lg:px-8">
-          <div className="flex flex-col gap-8">
-            <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl lg:text-7xl">
+      {/* Desktop (2026-11-04, option F of the hero mockups): the photo whole,
+          uncropped 16:9 across the grid under the live card, then headline and
+          paragraph side by side below it. Phones keep the stacked hero
+          (headline, paragraph, cropped photo). */}
+      <div className="flex flex-1 items-center pb-24 lg:block lg:pb-32">
+        <div className="mx-auto flex w-full max-w-7xl flex-col px-6 pt-16 lg:px-8 lg:pt-14">
+          <div className="grid grid-cols-1 gap-8 lg:mt-12 lg:grid-cols-2 lg:items-start lg:gap-12">
+            <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl">
               Trabajamos por una mejor{" "}
               <span className="text-[#226caf]">calidad del aire.</span>
             </h1>
@@ -92,7 +96,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="w-full">
+          <div className="mt-12 w-full lg:order-first lg:mt-0">
             <AirQualitySlider />
           </div>
         </div>
