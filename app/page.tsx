@@ -84,8 +84,8 @@ export default async function Home() {
           under the live card (no longer centered in the leftover screen) as
           two cards on the live card's columns, the text in a white card with
           its border and the photo as a card of its own. */}
-      <div className="flex flex-1 items-center pb-24 lg:block lg:pb-32">
-        <div className="mx-auto w-full max-w-7xl px-6 pt-16 lg:px-8 lg:pt-14">
+      <div className="flex flex-1 items-center pb-24 lg:mt-12 lg:block lg:border-t lg:border-stone-200 lg:pb-32">
+        <div className="mx-auto w-full max-w-7xl px-6 pt-16 lg:px-8 lg:pt-12">
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:items-stretch">
             <div className="flex flex-col gap-8 lg:justify-center lg:gap-6 lg:rounded-2xl lg:border lg:border-stone-200 lg:bg-white lg:p-10">
               <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl lg:text-5xl">
