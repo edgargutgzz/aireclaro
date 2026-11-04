@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import JsonLd from "@/components/json-ld";
 import { OG_BASE, SITE_DESCRIPTION, SITE_NAME, sectionCard } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
@@ -93,21 +91,11 @@ export default async function Home() {
                 Trabajamos por una mejor{" "}
                 <span className="text-[#226caf]">calidad del aire.</span>
               </h1>
-              <div>
-                <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl lg:text-lg">
+              <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl lg:text-lg">
                   Somos una organización de la sociedad civil dedicada a generar
                   esfuerzos colaborativos y fundamento técnico para mejorar la calidad
                   del aire en la Zona Metropolitana de Monterrey.
                 </p>
-                {/* The /proyectos card link's shape. */}
-                <Link
-                  href="/quienes-somos"
-                  className="group mt-5 inline-flex items-center gap-1.5 text-base font-medium text-neutral-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
-                >
-                  Conoce quiénes somos
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
-                </Link>
-              </div>
             </div>
 
             <div className="w-full">
