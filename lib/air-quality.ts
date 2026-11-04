@@ -210,6 +210,10 @@ export interface QualityInfo {
     menoresGestantes: string;
     enfermedadesMayores: string;
   };
+  // The norm's full message for a group, verbatim from Tabla 12, shown behind
+  // a closed "Texto completo" disclosure under the short one. Only where it
+  // says more than the short text (2026-11-04: enfermedadesMayores only).
+  sensitiveFull?: Partial<Record<keyof QualityInfo["sensitiveRecs"], string>>;
 }
 
 // `color` is the official NOM-172 fill; `textColor` is the level's `ink`, the
@@ -232,6 +236,9 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
       menoresGestantes: "Disfruta las actividades al aire libre.",
       enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
     },
+    sensitiveFull: {
+      enfermedadesMayores: "Es posible realizar actividades físicas al aire libre como trotar suave, caminar a paso rápido o moverse en bicicleta, monopatín/scooter, patines y patinetas. Reduce las actividades físicas vigorosas al aire libre como ejercicios aeróbicos, jugar fútbol, básquetbol, voleibol, atletismo, ciclismo deportivo o correr. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
+    },
   };
   if (pm25 <= 79) return {
     label: IMECA_LEVELS[2].label, color: IMECA_LEVELS[2].color, textColor: IMECA_LEVELS[2].ink,
@@ -239,6 +246,9 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     sensitiveRecs: {
       menoresGestantes: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
       enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
+    },
+    sensitiveFull: {
+      enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre como ejercicios aeróbicos, jugar fútbol, básquetbol, voleibol, atletismo, ciclismo deportivo o correr, trotar suave, caminar a paso rápido o moverse en bicicleta, monopatín/scooter, patines y patinetas. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
     },
   };
   if (pm25 <= 130) return {
@@ -248,6 +258,9 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
       menoresGestantes: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
       enfermedadesMayores: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
     },
+    sensitiveFull: {
+      enfermedadesMayores: "Es posible realizar actividades físicas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita las actividades físicas vigorosas y moderadas, así como el tiempo de estancia al aire libre. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
+    },
   };
   return {
     label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].ink,
@@ -255,6 +268,9 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     sensitiveRecs: {
       menoresGestantes: "Permanece en interiores. Acude al médico si presentas síntomas.",
       enfermedadesMayores: "Permanece en interiores. Acude al médico si presentas síntomas.",
+    },
+    sensitiveFull: {
+      enfermedadesMayores: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico. Infórmate sobre la evolución de la calidad del aire.",
     },
   };
 };

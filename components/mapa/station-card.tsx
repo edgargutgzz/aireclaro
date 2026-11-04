@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Info, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronDown, ChevronRight, Copy, Info, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
@@ -30,15 +30,35 @@ const SENSITIVE_GROUPS = [
 
 // The sensitive groups bucketed by identical advice, in SENSITIVE_GROUPS order
 // of first appearance: the desktop sidebar's one-sentence-per-block list.
+// `full` is the norm's whole message for the row, when a group in it has one
+// (QualityInfo.sensitiveFull).
 export function groupByAdvice(info: QualityInfo) {
-  const blocks: { advice: string; groups: (typeof SENSITIVE_GROUPS)[number][] }[] = [];
+  const blocks: { advice: string; groups: (typeof SENSITIVE_GROUPS)[number][]; full?: string }[] = [];
   for (const g of SENSITIVE_GROUPS) {
     const advice = info.sensitiveRecs[g.key];
+    const full = info.sensitiveFull?.[g.key];
     const block = blocks.find((b) => b.advice === advice);
-    if (block) block.groups.push(g);
-    else blocks.push({ advice, groups: [g] });
+    if (block) {
+      block.groups.push(g);
+      block.full ??= full;
+    } else blocks.push({ advice, groups: [g], full });
   }
   return blocks;
+}
+
+// The norm's full message behind a closed, quiet disclosure under the short
+// advice (2026-11-04): there for whoever wants the detail, never opened by
+// default. Native <details>, so it needs no state and works without JS.
+export function FullNormText({ text, className = "" }: { text: string; className?: string }) {
+  return (
+    <details className={`group ${className}`}>
+      <summary className="inline-flex cursor-pointer list-none items-center gap-1 rounded text-[13px] text-neutral-500 transition-colors hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 [&::-webkit-details-marker]:hidden">
+        Texto completo de la norma
+        <ChevronDown aria-hidden="true" className="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-180" />
+      </summary>
+      <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{text}</p>
+    </details>
+  );
 }
 
 // The advice for each sensitive group, behind a disclosure (the general
@@ -128,6 +148,7 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
                 <p className="text-sm font-semibold text-neutral-800">{g.label}</p>
               </div>
               <p className="ml-7 text-sm leading-relaxed text-neutral-500">{info.sensitiveRecs[g.key]}</p>
+              {info.sensitiveFull?.[g.key] && <FullNormText text={info.sensitiveFull[g.key]!} className="ml-7 mt-1.5" />}
             </div>
           ))}
         </div>
@@ -216,7 +237,7 @@ export function StationReading({
 // name(s), then the official sentence.
 // `who` takes several names when groups share the advice: one name per line
 // (2026-11-04, a comma-joined run-on read as one long group).
-export function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[]; who: string | string[]; advice: string; info: QualityInfo; lead?: boolean }) {
+export function RecRow({ icons, who, advice, info, lead = false, full }: { icons: LucideIcon[]; who: string | string[]; advice: string; info: QualityInfo; lead?: boolean; full?: string }) {
   return (
     <div className="grid grid-cols-[auto_1fr] gap-3.5 px-[18px] py-4">
       <div aria-hidden="true" className="flex">
@@ -235,6 +256,7 @@ export function RecRow({ icons, who, advice, info, lead = false }: { icons: Luci
           {Array.isArray(who) ? who.map((name) => <span key={name} className="block">{name}</span>) : who}
         </p>
         <p className={`mt-1 text-[15px] leading-relaxed ${lead ? "text-neutral-800" : "text-neutral-600"}`}>{advice}</p>
+        {full && <FullNormText text={full} className="mt-1.5" />}
       </div>
     </div>
   );
@@ -357,9 +379,9 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
                 each row. One card per advice (2026-11-03), the same card as
                 Población general's. */}
             <ul className="space-y-3">
-              {groupByAdvice(quality).map(({ advice, groups }) => (
+              {groupByAdvice(quality).map(({ advice, groups, full }) => (
                 <li key={advice} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-                  <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} />
+                  <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} full={full} />
                 </li>
               ))}
             </ul>

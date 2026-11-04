@@ -110,9 +110,9 @@ function SensitiveGroups({ info, open, onToggle }: { info: QualityInfo; open: bo
         <ChevronDown aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
       <ul id={bodyId} hidden={!open}>
-        {blocks.map(({ advice, groups }) => (
+        {blocks.map(({ advice, groups, full }) => (
           <li key={advice} className="border-t border-stone-100">
-            <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={info} />
+            <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={info} full={full} />
           </li>
         ))}
       </ul>
