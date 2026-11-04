@@ -82,11 +82,11 @@ export default async function Home() {
           400 px): the live card above is the page's main content now. Same
           day, "E" of the section mockups: on desktop it sits a fixed distance
           under the live card (no longer centered in the leftover screen),
-          past a content-width line, in one white card with the live card's
+          in one white card with the live card's
           border, the photo flat inside it. */}
       <div className="flex flex-1 items-center pb-24 lg:block lg:pb-32">
-        <div className="mx-auto w-full max-w-7xl px-6 pt-16 lg:px-8 lg:pt-12">
-          <div className="lg:border-t lg:border-stone-200 lg:pt-12">
+        <div className="mx-auto w-full max-w-7xl px-6 pt-16 lg:px-8 lg:pt-14">
+          <div>
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:rounded-2xl lg:border lg:border-stone-200 lg:bg-white lg:py-6 lg:pl-10 lg:pr-6">
               <div className="flex flex-col gap-8 lg:gap-6">
                 <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl lg:text-5xl">
