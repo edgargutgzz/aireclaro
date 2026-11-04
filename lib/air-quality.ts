@@ -211,7 +211,7 @@ export interface QualityInfo {
     enfermedadesMayores: string;
   };
   // The norm's full message for a group, verbatim from Tabla 12, shown behind
-  // a closed "Texto completo" disclosure under the short one. Only where it
+  // a "Ver más" after the short one (AdviceText). Only where it
   // says more than the short text (2026-11-04: enfermedadesMayores only).
   sensitiveFull?: Partial<Record<keyof QualityInfo["sensitiveRecs"], string>>;
 }

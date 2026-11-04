@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronDown, ChevronRight, Copy, Info, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Info, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
@@ -46,18 +46,28 @@ export function groupByAdvice(info: QualityInfo) {
   return blocks;
 }
 
-// The norm's full message behind a closed, quiet disclosure under the short
-// advice (2026-11-04): there for whoever wants the detail, never opened by
-// default. Native <details>, so it needs no state and works without JS.
-export function FullNormText({ text, className = "" }: { text: string; className?: string }) {
+// The advice text, with the norm's full message one tap away (2026-11-04, "B"
+// of the options page): a quiet "Ver más" after the short sentence swaps it
+// for the full text, "Ver menos" swaps back. Closed by default.
+export function AdviceText({ advice, full, className }: { advice: string; full?: string; className: string }) {
+  const [open, setOpen] = useState(false);
   return (
-    <details className={`group ${className}`}>
-      <summary className="inline-flex cursor-pointer list-none items-center gap-1 rounded text-[13px] text-neutral-500 transition-colors hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 [&::-webkit-details-marker]:hidden">
-        Texto completo de la norma
-        <ChevronDown aria-hidden="true" className="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-180" />
-      </summary>
-      <p className="mt-1.5 text-sm leading-relaxed text-neutral-600">{text}</p>
-    </details>
+    <p className={className}>
+      {open && full ? full : advice}
+      {full && (
+        <>
+          {" "}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            className="whitespace-nowrap rounded text-neutral-500 underline decoration-stone-300 underline-offset-[3px] transition-colors hover:text-neutral-800 hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          >
+            {open ? "Ver menos" : "Ver más"}
+          </button>
+        </>
+      )}
+    </p>
   );
 }
 
@@ -147,8 +157,7 @@ export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; 
                 <g.icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400" />
                 <p className="text-sm font-semibold text-neutral-800">{g.label}</p>
               </div>
-              <p className="ml-7 text-sm leading-relaxed text-neutral-500">{info.sensitiveRecs[g.key]}</p>
-              {info.sensitiveFull?.[g.key] && <FullNormText text={info.sensitiveFull[g.key]!} className="ml-7 mt-1.5" />}
+              <AdviceText advice={info.sensitiveRecs[g.key]} full={info.sensitiveFull?.[g.key]} className="ml-7 text-sm leading-relaxed text-neutral-500" />
             </div>
           ))}
         </div>
@@ -255,8 +264,7 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
         <p className="text-sm font-semibold leading-snug text-neutral-900">
           {Array.isArray(who) ? who.map((name) => <span key={name} className="block">{name}</span>) : who}
         </p>
-        <p className={`mt-1 text-[15px] leading-relaxed ${lead ? "text-neutral-800" : "text-neutral-600"}`}>{advice}</p>
-        {full && <FullNormText text={full} className="mt-1.5" />}
+        <AdviceText advice={advice} full={full} className={`mt-1 text-[15px] leading-relaxed ${lead ? "text-neutral-800" : "text-neutral-600"}`} />
       </div>
     </div>
   );
