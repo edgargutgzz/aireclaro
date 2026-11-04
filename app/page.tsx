@@ -78,31 +78,29 @@ export default async function Home() {
       <JsonLd data={websiteSchema} />
       <AirNowCard subject={airNow} />
       <LiveRefresh />
-      {/* Desktop hero toned down 2026-11-04 (headline 72 → 48 px, photo 550 →
-          400 px): the live card above is the page's main content now. Same
-          day, "E" of the section mockups: on desktop it sits a fixed distance
-          under the live card (no longer centered in the leftover screen),
-          in one white card with the live card's
-          border, the photo flat inside it. */}
-      <div className="flex flex-1 items-center pb-24 lg:block lg:pb-32">
-        <div className="mx-auto w-full max-w-7xl px-6 pt-16 lg:px-8 lg:pt-14">
-          <div>
-            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:rounded-2xl lg:border lg:border-stone-200 lg:bg-white lg:py-6 lg:pl-10 lg:pr-6">
-              <div className="flex flex-col gap-8 lg:gap-6">
-                <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl lg:text-5xl">
-                  Trabajamos por una mejor{" "}
-                  <span className="text-[#226caf]">calidad del aire.</span>
-                </h1>
-                <p className="max-w-prose text-lg leading-relaxed text-neutral-700 md:text-xl lg:max-w-[45ch] lg:text-base">
-                  Somos una organización de la sociedad civil dedicada a generar
-                  esfuerzos colaborativos y fundamento técnico para mejorar la calidad
-                  del aire en la Zona Metropolitana de Monterrey.
-                </p>
-              </div>
+      {/* The hero, toned down 2026-11-04: the live card above is the page's
+          main content now. It sits a fixed distance under the live card (no
+          longer centered in the leftover screen), in one white card with the
+          live card's border, the photo flat inside it ("E" of the section
+          mockups). Text and photo side by side from lg, stacked below. The
+          paragraph is measured in ch (about 55 characters a line). */}
+      <div className="pb-24 lg:pb-32">
+        <div className="mx-auto w-full max-w-7xl px-6 pt-10 lg:px-8 lg:pt-14">
+          <div className="grid grid-cols-1 items-center gap-6 rounded-2xl border border-stone-200 bg-white p-4 sm:p-6 lg:grid-cols-2 lg:gap-12 lg:py-6 lg:pl-10 lg:pr-6">
+            <div className="flex flex-col gap-4 px-1 pt-2 sm:px-0 sm:pt-0 lg:gap-6">
+              <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-5xl">
+                Trabajamos por una mejor{" "}
+                <span className="text-[#226caf]">calidad del aire.</span>
+              </h1>
+              <p className="max-w-[45ch] text-base leading-relaxed text-neutral-700">
+                Somos una organización de la sociedad civil dedicada a generar
+                esfuerzos colaborativos y fundamento técnico para mejorar la calidad
+                del aire en la Zona Metropolitana de Monterrey.
+              </p>
+            </div>
 
-              <div className="w-full">
-                <AirQualitySlider />
-              </div>
+            <div className="w-full">
+              <AirQualitySlider />
             </div>
           </div>
         </div>
