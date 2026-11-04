@@ -60,7 +60,7 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
           style={groupsOpen && closedHeight ? ({ "--closed-h": `${closedHeight}px` } as React.CSSProperties) : undefined}
           className={`block h-full rounded-xl transition-[filter] ${groupsOpen && closedHeight ? "lg:h-[var(--closed-h)]" : ""} hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2`}
         >
-          <AirNowHeader subject={subject} freshness={freshness} stretch banner />
+          <AirNowHeader subject={subject} freshness={freshness} stretch />
           <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>

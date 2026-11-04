@@ -243,41 +243,21 @@ export function RecRow({ icons, who, advice, info, lead = false }: { icons: Luci
 // homepage card (components/home/air-now-card.tsx).
 // `stretch` fills its container's height (the homepage card, beside the
 // advice card), the level block growing and the foot staying at the bottom.
-// `banner` (homepage only, trial 2026-11-04): the pale-tint strip moves to the
-// top as a header, "Calidad del aire" left and the reading's time right; the
-// solid block keeps only the level word and the value, and there's no foot.
-export function AirNowHeader({ subject, freshness, stretch = false, banner = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; banner?: boolean }) {
+export function AirNowHeader({ subject, freshness, stretch = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
-  const hasTime = freshness && freshness.status !== "nodata";
   return (
     quality ? (
       <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
-        {banner && (
-          <div
-            className="flex items-center justify-between gap-3 px-5 py-3 leading-none sm:px-6"
-            style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
-          >
-            <p className="text-xs font-medium uppercase tracking-wide text-neutral-700">Calidad del aire</p>
-            {hasTime && (
-              <p className="flex items-center gap-1.5 whitespace-nowrap text-[13px]">
-                <FreshnessDot status={freshness.status} />
-                <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
-                  {readingTimeLabel(new Date(freshness.dateTime))}
-                </time>
-              </p>
-            )}
-          </div>
-        )}
-        <div className={`flex justify-between gap-3 p-5 sm:p-6 ${stretch ? "flex-1" : ""} ${banner ? "items-baseline" : "items-baseline-last"}`}>
+        <div className={`flex items-baseline-last justify-between gap-3 p-5 sm:p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
-            {!banner && <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>}
+            <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
             {/* "Extremadamente mala" can't fit at 44px beside the number, so
                 it shows as "Extrem. mala", the legend's own short form;
                 screen readers get the full name. */}
             {/* 36px under sm: on a phone the homepage card is ~320px wide and
               "Aceptable" at 44px ran into the unit. */}
-          <p className={`whitespace-nowrap text-[36px] ${banner ? "" : "mt-2.5"} font-extrabold leading-none tracking-tight sm:text-[44px]`}>
+          <p className="mt-2.5 whitespace-nowrap text-[36px] font-extrabold leading-none tracking-tight sm:text-[44px]">
               {quality.label === "Extremadamente mala" ? (
                 <>
                   <span aria-hidden="true">Extrem. mala</span>
@@ -299,7 +279,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, banner = fal
             of the level (2026-11-03: white read as too prominent; the tint
             matches the icon discs below). Gray text with the map's usual
             blue freshness dot. */}
-        {!banner && hasTime && (
+        {freshness && freshness.status !== "nodata" && (
           <p
             className="flex items-center gap-1.5 px-5 py-3 text-[13px] leading-none sm:px-6"
             style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
