@@ -64,8 +64,13 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
           <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>
-          <div ref={adviceRef} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-            <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
+          {/* Fills the row's height at rest, so both cards match whichever is
+              taller; the extra space goes around Población general, the
+              groups row staying at the bottom. */}
+          <div ref={adviceRef} className="flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            <div className="flex flex-1 flex-col justify-center">
+              <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} info={quality} lead />
+            </div>
             <SensitiveGroups info={quality} open={groupsOpen} onToggle={() => setGroupsOpen((v) => !v)} />
           </div>
         </div>
