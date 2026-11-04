@@ -214,7 +214,9 @@ export function StationReading({
 // One recommendation row of the sidebar's grouped list: the group icon(s) in
 // pale level-tinted discs (overlapping when groups share the advice), the
 // name(s), then the official sentence.
-export function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[]; who: string; advice: string; info: QualityInfo; lead?: boolean }) {
+// `who` takes several names when groups share the advice: one name per line
+// (2026-11-04, a comma-joined run-on read as one long group).
+export function RecRow({ icons, who, advice, info, lead = false }: { icons: LucideIcon[]; who: string | string[]; advice: string; info: QualityInfo; lead?: boolean }) {
   return (
     <div className="grid grid-cols-[auto_1fr] gap-3.5 px-[18px] py-4">
       <div aria-hidden="true" className="flex">
@@ -229,7 +231,9 @@ export function RecRow({ icons, who, advice, info, lead = false }: { icons: Luci
         ))}
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-semibold leading-snug text-neutral-900">{who}</p>
+        <p className="text-sm font-semibold leading-snug text-neutral-900">
+          {Array.isArray(who) ? who.map((name) => <span key={name} className="block">{name}</span>) : who}
+        </p>
         <p className={`mt-1 text-[15px] leading-relaxed ${lead ? "text-neutral-800" : "text-neutral-600"}`}>{advice}</p>
       </div>
     </div>
@@ -355,7 +359,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
             <ul className="space-y-3">
               {groupByAdvice(quality).map(({ advice, groups }) => (
                 <li key={advice} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-                  <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label).join(", ")} advice={advice} info={quality} />
+                  <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} />
                 </li>
               ))}
             </ul>

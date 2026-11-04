@@ -112,7 +112,7 @@ function SensitiveGroups({ info, open, onToggle }: { info: QualityInfo; open: bo
       <ul id={bodyId} hidden={!open}>
         {blocks.map(({ advice, groups }) => (
           <li key={advice} className="border-t border-stone-100">
-            <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label).join(", ")} advice={advice} info={info} />
+            <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={info} />
           </li>
         ))}
       </ul>
