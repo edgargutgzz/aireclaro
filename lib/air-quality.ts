@@ -255,7 +255,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
       menores: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
       adultos: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
       embarazadas: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
-      enfermedades: "Evita las actividades físicas al aire libre. Acude al médico si presentas síntomas.",
+      enfermedades: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
     },
   };
   return {
