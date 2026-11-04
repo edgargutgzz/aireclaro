@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import JsonLd from "@/components/json-ld";
 import { OG_BASE, SITE_DESCRIPTION, SITE_NAME, sectionCard } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site";
@@ -80,20 +82,31 @@ export default async function Home() {
       <LiveRefresh />
       {/* Desktop (2026-11-04, option F of the hero mockups): the photo whole,
           uncropped 16:9 across the grid under the live card, then headline and
-          paragraph side by side below it. Phones keep the stacked hero
-          (headline, paragraph, cropped photo). */}
+          paragraph side by side in a white card with the live card's border
+          (option D of the text mockups), so the text doesn't float. Phones
+          keep the stacked hero (headline, paragraph, cropped photo). */}
       <div className="flex flex-1 items-center pb-24 lg:block lg:pb-32">
         <div className="mx-auto flex w-full max-w-7xl flex-col px-6 pt-16 lg:px-8 lg:pt-14">
-          <div className="grid grid-cols-1 gap-8 lg:mt-12 lg:grid-cols-2 lg:items-start lg:gap-12">
-            <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl">
+          <div className="grid grid-cols-1 gap-8 lg:mt-10 lg:grid-cols-2 lg:items-start lg:gap-12 lg:rounded-2xl lg:border lg:border-stone-200 lg:bg-white lg:p-10">
+            <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-6xl lg:text-5xl">
               Trabajamos por una mejor{" "}
               <span className="text-[#226caf]">calidad del aire.</span>
             </h1>
-            <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl">
-              Somos una organización de la sociedad civil dedicada a generar
-              esfuerzos colaborativos y fundamento técnico para mejorar la calidad
-              del aire en la Zona Metropolitana de Monterrey.
-            </p>
+            <div>
+              <p className="max-w-lg text-lg leading-relaxed text-neutral-700 md:text-xl">
+                Somos una organización de la sociedad civil dedicada a generar
+                esfuerzos colaborativos y fundamento técnico para mejorar la calidad
+                del aire en la Zona Metropolitana de Monterrey.
+              </p>
+              {/* The /proyectos card link's shape. */}
+              <Link
+                href="/quienes-somos"
+                className="group mt-5 inline-flex items-center gap-1.5 text-base font-medium text-neutral-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+              >
+                Conoce quiénes somos
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
+              </Link>
+            </div>
           </div>
 
           <div className="mt-12 w-full lg:order-first lg:mt-0">
