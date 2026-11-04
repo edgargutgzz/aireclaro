@@ -108,11 +108,12 @@ export default function Navbar() {
   const handleLinkClick = () => setIsOpen(false);
 
   return (
-    // The bottom line (2026-11-04) is the footer's border-t, drawn as an
-    // overlay so the header keeps its exact --header-h height.
-    <header ref={headerRef} className="relative z-50 bg-stone-50 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-stone-200">
+    <header ref={headerRef} className="relative z-50 bg-stone-50">
+      {/* The bottom line (2026-11-04) matches the footer's top line: content
+          width, stone-200, drawn as an overlay so the header keeps its exact
+          --header-h height. */}
       <div
-        className="h-header mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
+        className="h-header relative mx-auto flex max-w-7xl items-center justify-between px-6 after:pointer-events-none after:absolute after:inset-x-6 after:bottom-0 after:h-px after:bg-stone-200 lg:px-8 lg:after:inset-x-8"
         ref={menuRef}
       >
         {/* Logo */}
