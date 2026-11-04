@@ -108,7 +108,9 @@ export default function Navbar() {
   const handleLinkClick = () => setIsOpen(false);
 
   return (
-    <header ref={headerRef} className="relative z-50 bg-stone-50">
+    // The bottom line (2026-11-04) is the footer's border-t, drawn as an
+    // overlay so the header keeps its exact --header-h height.
+    <header ref={headerRef} className="relative z-50 bg-stone-50 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-stone-200">
       <div
         className="h-header mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8"
         ref={menuRef}
