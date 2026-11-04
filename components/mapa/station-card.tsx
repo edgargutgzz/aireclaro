@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronDown, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
@@ -46,9 +46,10 @@ export function groupByAdvice(info: QualityInfo) {
   return blocks;
 }
 
-// The advice text, with the norm's full message one tap away (2026-11-04, "B"
-// of the options page): a quiet "Ver más" after the short sentence swaps it
-// for the full text, "Ver menos" swaps back. Closed by default.
+// The advice text, with the norm's full message one tap away (2026-11-04): a
+// small down chevron after the short sentence swaps it for the full text and
+// turns up; tapped again, it swaps back. Closed by default. (Was a "Ver más"
+// text link the same day.)
 export function AdviceText({ advice, full, className }: { advice: string; full?: string; className: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -61,9 +62,10 @@ export function AdviceText({ advice, full, className }: { advice: string; full?:
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="whitespace-nowrap rounded text-neutral-500 underline decoration-stone-300 underline-offset-[3px] transition-colors hover:text-neutral-800 hover:decoration-current focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+            aria-label={open ? "Ver menos" : "Ver texto completo"}
+            className="inline-flex h-5 w-5 items-center justify-center rounded-full align-[-0.2em] text-neutral-500 transition-colors hover:bg-stone-100 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
           >
-            {open ? "Ver menos" : "Ver más"}
+            <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
           </button>
         </>
       )}
