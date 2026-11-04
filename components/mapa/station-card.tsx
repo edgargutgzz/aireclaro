@@ -276,7 +276,7 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // homepage card (components/home/air-now-card.tsx).
 // `stretch` fills its container's height (the homepage card, beside the
 // advice card), the level block growing and the foot staying at the bottom.
-// `place` (the homepage, 2026-11-04) names the area in the foot, left of the
+// `place` (the homepage, 2026-11-04) names the area in the foot, right of the
 // time, with the location arrow; the map doesn't need it.
 export function AirNowHeader({ subject, freshness, stretch = false, place }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string }) {
   const quality = getQualityInfo(subject.pm25);
@@ -319,12 +319,6 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
             className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-5 py-3 text-[13px] leading-none sm:px-6"
             style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
           >
-            {place && (
-              <p className="flex items-center gap-1.5 text-neutral-600">
-                <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
-                {place}
-              </p>
-            )}
             <p className="flex items-center gap-1.5">
               <FreshnessDot status={freshness.status} />
               {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
@@ -336,6 +330,12 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
                 </time>
               </span>
             </p>
+            {place && (
+              <p className="flex items-center gap-1.5 text-neutral-600">
+                <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
+                {place}
+              </p>
+            )}
           </div>
         )}
       </div>
