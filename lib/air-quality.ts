@@ -205,11 +205,10 @@ export interface QualityInfo {
   color: string;
   textColor: string;
   generalRec: string;
+  // The two sensitive groups of NOM-172-SEMARNAT-2023, Tabla 12.
   sensitiveRecs: {
-    menores: string;
-    adultos: string;
-    embarazadas: string;
-    enfermedades: string;
+    menoresGestantes: string;
+    enfermedadesMayores: string;
   };
 }
 
@@ -222,50 +221,40 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     label: IMECA_LEVELS[0].label, color: IMECA_LEVELS[0].color, textColor: IMECA_LEVELS[0].ink,
     generalRec: "Disfruta las actividades al aire libre.",
     sensitiveRecs: {
-      menores: "Disfruta las actividades al aire libre.",
-      adultos: "Disfruta las actividades al aire libre.",
-      embarazadas: "Disfruta las actividades al aire libre.",
-      enfermedades: "Disfruta las actividades al aire libre.",
+      menoresGestantes: "Disfruta las actividades al aire libre.",
+      enfermedadesMayores: "Disfruta las actividades al aire libre.",
     },
   };
   if (pm25 <= 25) return {
     label: IMECA_LEVELS[1].label, color: IMECA_LEVELS[1].color, textColor: IMECA_LEVELS[1].ink,
     generalRec: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
-      menores: "Disfruta las actividades al aire libre.",
-      adultos: "Reduce las actividades físicas vigorosas al aire libre.",
-      embarazadas: "Disfruta las actividades al aire libre.",
-      enfermedades: "Reduce las actividades físicas vigorosas al aire libre.",
+      menoresGestantes: "Disfruta las actividades al aire libre.",
+      enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
     },
   };
   if (pm25 <= 79) return {
     label: IMECA_LEVELS[2].label, color: IMECA_LEVELS[2].color, textColor: IMECA_LEVELS[2].ink,
     generalRec: "Es posible realizar actividades al aire libre. Si presentas síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas.",
     sensitiveRecs: {
-      menores: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
-      adultos: "Reduce las actividades físicas vigorosas al aire libre.",
-      embarazadas: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
-      enfermedades: "Reduce las actividades físicas vigorosas al aire libre.",
+      menoresGestantes: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
+      enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
     },
   };
   if (pm25 <= 130) return {
     label: IMECA_LEVELS[3].label, color: IMECA_LEVELS[3].color, textColor: IMECA_LEVELS[3].ink,
     generalRec: "Reduce las actividades físicas al aire libre. Evita la actividad física vigorosa o prolongada en exteriores.",
     sensitiveRecs: {
-      menores: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
-      adultos: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
-      embarazadas: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
-      enfermedades: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
+      menoresGestantes: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
+      enfermedadesMayores: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
     },
   };
   return {
     label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].ink,
     generalRec: "Permanece en interiores. Si presentas síntomas respiratorios o cardiacos acude al médico.",
     sensitiveRecs: {
-      menores: "Permanece en interiores. Acude al médico si presentas síntomas.",
-      adultos: "Permanece en interiores. Acude al médico si presentas síntomas.",
-      embarazadas: "Permanece en interiores. Acude al médico si presentas síntomas.",
-      enfermedades: "Permanece en interiores. Acude al médico si presentas síntomas.",
+      menoresGestantes: "Permanece en interiores. Acude al médico si presentas síntomas.",
+      enfermedadesMayores: "Permanece en interiores. Acude al médico si presentas síntomas.",
     },
   };
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { Baby, Check, ChevronRight, Copy, Heart, Info, PersonStanding, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Info, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
@@ -22,11 +22,10 @@ export function QualityHeadline({ info, fallbackColor }: { info: QualityInfo | n
   );
 }
 
+// The norm's two sensitive groups (NOM-172-SEMARNAT-2023, Tabla 12), one icon each.
 const SENSITIVE_GROUPS = [
-  { key: "menores", label: "Menores de 12 años", icon: Baby },
-  { key: "adultos", label: "Mayores de 60 años", icon: PersonStanding },
-  { key: "embarazadas", label: "Personas gestantes", icon: Heart },
-  { key: "enfermedades", label: "Condiciones cardiovasculares o respiratorias", icon: Stethoscope },
+  { key: "menoresGestantes", label: "Menores de 12 años y personas gestantes", icon: Baby },
+  { key: "enfermedadesMayores", label: "Condiciones cardiovasculares o respiratorias y mayores de 60 años", icon: Stethoscope },
 ] as const;
 
 // The sensitive groups bucketed by identical advice, in SENSITIVE_GROUPS order
