@@ -48,7 +48,7 @@ export function groupByAdvice(info: QualityInfo) {
 
 // The advice text, with the norm's full message one tap away. "Ver más"
 // after the short sentence opens the norm's text below it, in a box that ends
-// with the norm's name, while the short sentence stays in place (2026-11-05).
+// with the norm's name on its own line, while the short sentence stays in place (2026-11-05).
 // Closed by default.
 export function AdviceText({ advice, full, className }: { advice: string; full?: string; className: string }) {
   const [open, setOpen] = useState(false);
@@ -74,7 +74,8 @@ export function AdviceText({ advice, full, className }: { advice: string; full?:
       </p>
       {full && open && (
         <div id={id} className="mt-2 rounded-lg bg-stone-100 px-3 py-2.5 text-sm leading-relaxed text-neutral-600">
-          {full} <span className="whitespace-nowrap text-xs text-neutral-400">NOM-172-SEMARNAT-2023</span>
+          {full}
+          <span className="mt-1.5 block text-xs text-neutral-400">NOM-172-SEMARNAT-2023</span>
         </div>
       )}
     </div>
