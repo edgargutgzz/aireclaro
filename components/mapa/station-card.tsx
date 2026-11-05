@@ -295,34 +295,33 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
   return (
     quality ? (
       <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
-        {/* Two rows, each on one baseline (2026-11-05): the eyebrow beside
-            the unit, the level beside the number. Stretched (the homepage),
-            the rows sit at the bottom of the card. */}
-        <div className={`grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-3 gap-y-2.5 p-5 sm:p-6 ${stretch ? "flex-1 content-end lg:gap-y-3" : ""}`}>
-          <p className={`col-start-1 row-start-1 text-xs font-medium uppercase leading-none tracking-wide ${stretch ? "lg:text-sm" : ""}`}>Calidad del aire</p>
+        <div className={`flex items-baseline-last justify-between gap-3 p-5 sm:p-6 ${stretch ? "flex-1" : ""}`}>
+          <div className="min-w-0">
+            <p className={`text-xs font-medium uppercase leading-none tracking-wide ${stretch ? "lg:text-sm" : ""}`}>Calidad del aire</p>
+            {/* "Extremadamente mala" can't fit at 44px beside the number, so
+                it shows as "Extrem. mala", the legend's own short form;
+                screen readers get the full name. */}
+            {/* 36px under sm: on a phone the homepage card is ~320px wide and
+              "Aceptable" at 44px ran into the unit. On the homepage's
+              desktop card (stretch), which is taller than its text, the
+              level, number and unit grow to fill it (2026-11-05); "Extrem.
+              mala" a size smaller so it clears the number. */}
+          <p className={`mt-2.5 whitespace-nowrap text-[36px] font-extrabold leading-none tracking-tight sm:text-[44px] ${stretch ? (quality.label === "Extremadamente mala" ? "lg:mt-3 lg:text-[52px]" : "lg:mt-3 lg:text-[64px]") : ""}`}>
+              {quality.label === "Extremadamente mala" ? (
+                <>
+                  <span aria-hidden="true">Extrem. mala</span>
+                  <span className="sr-only">Extremadamente mala</span>
+                </>
+              ) : (
+                quality.label
+              )}
+            </p>
+          </div>
           {subject.pm25 !== null && (
-            <p className={`col-start-2 row-start-1 text-right text-[13px] leading-none ${stretch ? "lg:text-[15px]" : ""}`}>μg/m³ PM2.5</p>
-          )}
-          {/* "Extremadamente mala" can't fit at 44px beside the number, so
-              it shows as "Extrem. mala", the legend's own short form;
-              screen readers get the full name. 36px under sm: on a phone
-              the homepage card is ~320px wide and "Aceptable" at 44px ran
-              into the unit. On the homepage's desktop card (stretch), which
-              is taller than its text, the level, number and unit grow to
-              fill it (2026-11-05); "Extrem. mala" a size smaller so it
-              clears the number. */}
-          <p className={`col-start-1 row-start-2 min-w-0 whitespace-nowrap text-[36px] font-extrabold leading-none tracking-tight sm:text-[44px] ${stretch ? (quality.label === "Extremadamente mala" ? "lg:text-[52px]" : "lg:text-[64px]") : ""}`}>
-            {quality.label === "Extremadamente mala" ? (
-              <>
-                <span aria-hidden="true">Extrem. mala</span>
-                <span className="sr-only">Extremadamente mala</span>
-              </>
-            ) : (
-              quality.label
-            )}
-          </p>
-          {subject.pm25 !== null && (
-            <p className={`col-start-2 row-start-2 text-right text-[34px] font-bold leading-none tracking-tight sm:text-[40px] ${stretch ? "lg:text-[56px]" : ""}`}>{roundPM25(subject.pm25)}</p>
+            <p className="flex-shrink-0 text-right">
+              <span className={`block text-[34px] font-bold leading-none tracking-tight sm:text-[40px] ${stretch ? "lg:text-[56px]" : ""}`}>{roundPM25(subject.pm25)}</span>
+              <span className={`text-[13px] ${stretch ? "lg:text-[15px]" : ""}`}>μg/m³ PM2.5</span>
+            </p>
           )}
         </div>
         {/* When the reading is from, as a foot on the card in a pale tint
