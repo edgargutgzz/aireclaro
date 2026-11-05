@@ -249,8 +249,8 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     generalRec: "Es posible realizar actividades al aire libre. Si presentas síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas.",
     generalFull: "Es posible realizar actividades al aire libre. Si presenta síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
-      menoresGestantes: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
-      enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
+      menoresGestantes: "Es posible caminar o andar en bicicleta al aire libre, con más descansos. Reduce las actividades vigorosas, como correr o hacer deporte.",
+      enfermedadesMayores: "Reduce las actividades físicas al aire libre, incluso caminar a paso rápido o andar en bicicleta.",
     },
     sensitiveFull: {
       menoresGestantes: "Es posible realizar actividades físicas al aire libre como trotar suave, caminar a paso rápido o moverse en bicicleta, monopatín/scooter, patines y patinetas; aumenta los períodos de descanso. Reduce las actividades físicas vigorosas al aire libre como ejercicios aeróbicos, jugar fútbol, básquetbol, voleibol, atletismo, ciclismo deportivo, etc. Si se presentan síntomas respiratorios o cardiacos, suspende la actividad y acude a tu médico. Infórmate sobre la evolución de la calidad del aire.",
