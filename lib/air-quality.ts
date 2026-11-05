@@ -263,11 +263,10 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     generalFull: "Reduce las actividades físicas al aire libre y de preferencia realízalas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita la actividad física vigorosa o prolongada al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menoresGestantes: "Reduce las actividades físicas al aire libre y de preferencia realízalas en espacios interiores.",
-      enfermedadesMayores: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
+      enfermedadesMayores: "Es posible realizar actividades físicas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita las actividades físicas vigorosas y moderadas, así como el tiempo de estancia al aire libre. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
     },
     sensitiveFull: {
       menoresGestantes: "Reduce las actividades físicas al aire libre y de preferencia realízalas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita la actividad física vigorosa o prolongada al aire libre. Infórmate sobre la evolución de la calidad del aire.",
-      enfermedadesMayores: "Es posible realizar actividades físicas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita las actividades físicas vigorosas y moderadas, así como el tiempo de estancia al aire libre. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
     },
   };
   return {
