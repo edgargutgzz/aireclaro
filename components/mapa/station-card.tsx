@@ -295,16 +295,18 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
   return (
     quality ? (
       <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
-        <div className={`flex items-baseline-last justify-between gap-3 p-5 sm:p-6 ${stretch ? "flex-1" : ""}`}>
+        <div className={`flex items-baseline-last justify-between gap-3 p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
             <p className={`text-xs font-medium uppercase leading-none tracking-wide ${stretch ? "lg:text-[13px]" : ""}`}>Calidad del aire</p>
             {/* "Extremadamente mala" can't fit at 44px beside the number, so
                 it shows as "Extrem. mala", the legend's own short form;
                 screen readers get the full name. */}
-            {/* 36px under sm: on a phone the homepage card is ~320px wide and
-              "Aceptable" at 44px ran into the unit. A step larger on the
+            {/* Under sm the level and number grow with the screen (2026-11-05):
+              36 to 44px and 34 to 40px, sized so "Aceptable" plus the unit
+              fit a 320px phone; "Extrem. mala" follows its own width so it
+              never runs into the unit. 24px padding and a 12px label gap. A step larger on the
               homepage's desktop card (stretch, 2026-11-05). */}
-          <p className={`mt-2.5 whitespace-nowrap text-[36px] font-extrabold leading-none tracking-tight sm:text-[44px] ${stretch ? "lg:mt-3 lg:text-[52px]" : ""}`}>
+          <p className={`mt-3 whitespace-nowrap font-extrabold leading-none tracking-tight sm:mt-2.5 sm:text-[44px] ${quality.label === "Extremadamente mala" ? "text-[clamp(28px,calc((100vw_-_180px)/5.6),44px)]" : "text-[clamp(36px,10vw,44px)]"} ${stretch ? "lg:mt-3 lg:text-[52px]" : ""}`}>
               {quality.label === "Extremadamente mala" ? (
                 <>
                   <span aria-hidden="true">Extrem. mala</span>
@@ -317,7 +319,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
           </div>
           {subject.pm25 !== null && (
             <p className="flex-shrink-0 text-right">
-              <span className={`block text-[34px] font-bold leading-none tracking-tight sm:text-[40px] ${stretch ? "lg:text-[46px]" : ""}`}>{roundPM25(subject.pm25)}</span>
+              <span className={`block text-[clamp(34px,9vw,40px)] font-bold leading-none tracking-tight sm:text-[40px] ${stretch ? "lg:text-[46px]" : ""}`}>{roundPM25(subject.pm25)}</span>
               <span className={`text-[13px] ${stretch ? "lg:text-sm" : ""}`}>μg/m³ PM2.5</span>
             </p>
           )}
