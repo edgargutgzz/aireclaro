@@ -20,17 +20,29 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
   // re-read every minute, as on the map.
   const [now, setNow] = useState<number | null>(null);
   const [groupsOpen, setGroupsOpen] = useState(false);
-  // The advice card's height with the groups closed, tracked while closed, so
-  // the level card can hold it while they're open.
+  // Whether anything in the advice card is open (the sensitive groups or a
+  // "Ver más" norm box): read off the card's own aria-expanded buttons, so
+  // every toggle inside counts without threading state through RecRow.
   const adviceRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    const el = adviceRef.current;
+    if (!el) return;
+    const read = () => setExpanded(el.querySelector('[aria-expanded="true"]') !== null);
+    const mo = new MutationObserver(read);
+    mo.observe(el, { subtree: true, attributes: true, attributeFilter: ["aria-expanded"] });
+    return () => mo.disconnect();
+  }, []);
+  // The advice card's height with nothing open, tracked while closed, so the
+  // level card can hold it while something is open.
   const [closedHeight, setClosedHeight] = useState<number | null>(null);
   useEffect(() => {
     const el = adviceRef.current;
-    if (!el || groupsOpen) return;
+    if (!el || expanded) return;
     const ro = new ResizeObserver(() => setClosedHeight(el.offsetHeight));
     ro.observe(el);
     return () => ro.disconnect();
-  }, [groupsOpen]);
+  }, [expanded]);
   useEffect(() => {
     const tick = () => setNow(Date.now());
     tick();
@@ -47,18 +59,18 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
     // At the top of the page, above the hero (option B of the fit mockups,
     // 2026-11-03, its title removed the same day): the two pieces on the hero's own two
     // columns and gap, so they line up with the headline and the photo below.
-    // Same height at rest; opening the sensitive groups grows the advice card
-    // only, the level card holding its closed height (stretched it turned into
+    // Same height at rest; opening the sensitive groups or a "Ver más" grows
+    // the advice card only, the level card holding its closed height (stretched it turned into
     // a tall orange slab; at its own height it shrank).
     <section aria-label="Calidad del aire ahora" className="mx-auto w-full max-w-7xl px-6 pt-8 lg:px-8">
-      <div className={`grid gap-4 lg:grid-cols-2 lg:gap-12 ${groupsOpen ? "items-start" : "items-stretch"}`}>
+      <div className={`grid gap-4 lg:grid-cols-2 lg:gap-12 ${expanded ? "items-start" : "items-stretch"}`}>
         {/* The level card opens the map (2026-11-03, in place of a "Ver el
             mapa" link): the reading leads to where it comes from. */}
         <Link
           href="/calidad-del-aire"
           // Desktop only (lg:): stacked on a phone, the cards don't sit side by side.
-          style={groupsOpen && closedHeight ? ({ "--closed-h": `${closedHeight}px` } as React.CSSProperties) : undefined}
-          className={`block h-full rounded-xl transition-[filter] ${groupsOpen && closedHeight ? "lg:h-[var(--closed-h)]" : ""} hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2`}
+          style={expanded && closedHeight ? ({ "--closed-h": `${closedHeight}px` } as React.CSSProperties) : undefined}
+          className={`block h-full rounded-xl transition-[filter] ${expanded && closedHeight ? "lg:h-[var(--closed-h)]" : ""} hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2`}
         >
           <AirNowHeader subject={subject} freshness={freshness} stretch place="Zona Metropolitana de Monterrey" />
           <span className="sr-only">Ver el mapa</span>
