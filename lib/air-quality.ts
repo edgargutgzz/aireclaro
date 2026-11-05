@@ -247,6 +247,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   if (pm25 <= 79) return {
     label: IMECA_LEVELS[2].label, color: IMECA_LEVELS[2].color, textColor: IMECA_LEVELS[2].ink,
     generalRec: "Es posible realizar actividades al aire libre. Si presentas síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas.",
+    generalFull: "Es posible realizar actividades al aire libre. Si presenta síntomas como tos o falta de aire, toma más descansos y realiza actividades menos vigorosas. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menoresGestantes: "Reduce las actividades físicas vigorosas al aire libre. Es posible hacer actividades moderadas en el exterior.",
       enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
@@ -258,6 +259,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   if (pm25 <= 130) return {
     label: IMECA_LEVELS[3].label, color: IMECA_LEVELS[3].color, textColor: IMECA_LEVELS[3].ink,
     generalRec: "Reduce las actividades físicas al aire libre. Evita la actividad física vigorosa o prolongada en exteriores.",
+    generalFull: "Reduce las actividades físicas al aire libre y de preferencia realízalas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita la actividad física vigorosa o prolongada al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menoresGestantes: "Evita la actividad física al aire libre. Consulta a tu médico si presentas síntomas.",
       enfermedadesMayores: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
@@ -269,6 +271,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   return {
     label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].ink,
     generalRec: "Permanece en interiores. Si presentas síntomas respiratorios o cardiacos acude al médico.",
+    generalFull: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menoresGestantes: "Permanece en interiores. Acude al médico si presentas síntomas.",
       enfermedadesMayores: "Permanece en interiores. Acude al médico si presentas síntomas.",
