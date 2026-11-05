@@ -237,7 +237,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     generalFull: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menoresGestantes: "Disfruta las actividades al aire libre.",
-      enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
+      enfermedadesMayores: "Es posible caminar o andar en bicicleta al aire libre. Reduce las actividades vigorosas, como correr o hacer deporte.",
     },
     sensitiveFull: {
       menoresGestantes: "Disfruta las actividades al aire libre. Infórmate sobre la evolución de la calidad del aire.",
