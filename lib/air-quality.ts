@@ -263,19 +263,20 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
     generalFull: "Reduce las actividades físicas al aire libre y de preferencia realízalas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita la actividad física vigorosa o prolongada al aire libre. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
       menoresGestantes: "Reduce las actividades físicas al aire libre y de preferencia realízalas en espacios interiores.",
-      enfermedadesMayores: "Es posible realizar actividades físicas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita las actividades físicas vigorosas y moderadas, así como el tiempo de estancia al aire libre. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
+      enfermedadesMayores: "Evita las actividades físicas y el tiempo al aire libre. Acude al médico si presentas síntomas.",
     },
     sensitiveFull: {
       menoresGestantes: "Reduce las actividades físicas al aire libre y de preferencia realízalas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita la actividad física vigorosa o prolongada al aire libre. Infórmate sobre la evolución de la calidad del aire.",
+      enfermedadesMayores: "Es posible realizar actividades físicas en espacios interiores, siempre y cuando se trate de un espacio libre de humo de tabaco. Evita las actividades físicas vigorosas y moderadas, así como el tiempo de estancia al aire libre. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
     },
   };
   return {
     label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].ink,
-    generalRec: "Permanece en interiores. Si presentas síntomas respiratorios o cardiacos acude al médico.",
+    generalRec: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico.",
     generalFull: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
-      menoresGestantes: "Permanece en interiores. Acude al médico si presentas síntomas.",
-      enfermedadesMayores: "Permanece en interiores. Acude al médico si presentas síntomas.",
+      menoresGestantes: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico.",
+      enfermedadesMayores: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico.",
     },
     sensitiveFull: {
       enfermedadesMayores: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico. Infórmate sobre la evolución de la calidad del aire.",
