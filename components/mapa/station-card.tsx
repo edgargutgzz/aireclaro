@@ -297,16 +297,13 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
       <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
         <div className={`flex items-baseline-last justify-between gap-3 p-5 sm:p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
-            <p className={`text-xs font-medium uppercase leading-none tracking-wide ${stretch ? "lg:text-sm" : ""}`}>Calidad del aire</p>
+            <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
             {/* "Extremadamente mala" can't fit at 44px beside the number, so
                 it shows as "Extrem. mala", the legend's own short form;
                 screen readers get the full name. */}
             {/* 36px under sm: on a phone the homepage card is ~320px wide and
-              "Aceptable" at 44px ran into the unit. On the homepage's
-              desktop card (stretch), which is taller than its text, the
-              level, number and unit grow to fill it (2026-11-05); "Extrem.
-              mala" a size smaller so it clears the number. */}
-          <p className={`mt-2.5 whitespace-nowrap text-[36px] font-semibold leading-none tracking-tight sm:text-[44px] ${stretch ? (quality.label === "Extremadamente mala" ? "lg:mt-3 lg:text-[52px]" : "lg:mt-3 lg:text-[64px]") : ""}`}>
+              "Aceptable" at 44px ran into the unit. */}
+          <p className="mt-2.5 whitespace-nowrap text-[36px] font-semibold leading-none tracking-tight sm:text-[44px]">
               {quality.label === "Extremadamente mala" ? (
                 <>
                   <span aria-hidden="true">Extrem. mala</span>
@@ -319,8 +316,8 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
           </div>
           {subject.pm25 !== null && (
             <p className="flex-shrink-0 text-right">
-              <span className={`block text-[34px] font-semibold leading-none tracking-tight sm:text-[40px] ${stretch ? "lg:text-[56px]" : ""}`}>{roundPM25(subject.pm25)}</span>
-              <span className={`text-[13px] ${stretch ? "lg:text-[15px]" : ""}`}>μg/m³ PM2.5</span>
+              <span className="block text-[34px] font-semibold leading-none tracking-tight sm:text-[40px]">{roundPM25(subject.pm25)}</span>
+              <span className="text-[13px]">μg/m³ PM2.5</span>
             </p>
           )}
         </div>
