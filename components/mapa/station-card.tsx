@@ -303,7 +303,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
                 screen readers get the full name. */}
             {/* 36px under sm: on a phone the homepage card is ~320px wide and
               "Aceptable" at 44px ran into the unit. */}
-          <p className="mt-2.5 whitespace-nowrap text-[36px] font-semibold leading-none tracking-tight sm:text-[44px]">
+          <p className="mt-2.5 whitespace-nowrap text-[36px] font-extrabold leading-none tracking-tight sm:text-[44px]">
               {quality.label === "Extremadamente mala" ? (
                 <>
                   <span aria-hidden="true">Extrem. mala</span>
@@ -316,7 +316,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
           </div>
           {subject.pm25 !== null && (
             <p className="flex-shrink-0 text-right">
-              <span className="block text-[34px] font-semibold leading-none tracking-tight sm:text-[40px]">{roundPM25(subject.pm25)}</span>
+              <span className="block text-[34px] font-bold leading-none tracking-tight sm:text-[40px]">{roundPM25(subject.pm25)}</span>
               <span className="text-[13px]">μg/m³ PM2.5</span>
             </p>
           )}
