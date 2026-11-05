@@ -205,7 +205,7 @@ export interface QualityInfo {
   color: string;
   textColor: string;
   generalRec: string;
-  // The norm's full message for población general, behind "Ver recomendación completa" (AdviceText).
+  // The norm's full message for población general, behind "Ver más" (AdviceText).
   generalFull?: string;
   // The two sensitive groups of NOM-172-SEMARNAT-2023, Tabla 12.
   sensitiveRecs: {
@@ -213,7 +213,7 @@ export interface QualityInfo {
     enfermedadesMayores: string;
   };
   // The norm's full message for a group, verbatim from Tabla 12, shown behind
-  // a "Ver recomendación completa" after the short one (AdviceText). Only where it
+  // a "Ver más" after the short one (AdviceText). Only where it
   // says more than the short text.
   sensitiveFull?: Partial<Record<keyof QualityInfo["sensitiveRecs"], string>>;
 }

@@ -21,7 +21,7 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
   const [now, setNow] = useState<number | null>(null);
   const [groupsOpen, setGroupsOpen] = useState(false);
   // Whether anything in the advice card is open (the sensitive groups or a
-  // "Ver recomendación completa" norm box): read off the card's own aria-expanded buttons, so
+  // "Ver más" norm box): read off the card's own aria-expanded buttons, so
   // every toggle inside counts without threading state through RecRow.
   const adviceRef = useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
@@ -59,7 +59,7 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
     // At the top of the page, above the hero (option B of the fit mockups,
     // 2026-11-03, its title removed the same day): the two pieces on the hero's own two
     // columns and gap, so they line up with the headline and the photo below.
-    // Same height at rest; opening the sensitive groups or a "Ver recomendación completa" grows
+    // Same height at rest; opening the sensitive groups or a "Ver más" grows
     // the advice card only, the level card holding its closed height (stretched it turned into
     // a tall orange slab; at its own height it shrank).
     <section aria-label="Calidad del aire ahora" className="mx-auto w-full max-w-7xl px-6 pt-8 lg:px-8">
