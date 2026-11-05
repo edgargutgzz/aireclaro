@@ -253,6 +253,7 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
       enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre.",
     },
     sensitiveFull: {
+      menoresGestantes: "Es posible realizar actividades físicas al aire libre como trotar suave, caminar a paso rápido o moverse en bicicleta, monopatín/scooter, patines y patinetas; aumenta los períodos de descanso. Reduce las actividades físicas vigorosas al aire libre como ejercicios aeróbicos, jugar fútbol, básquetbol, voleibol, atletismo, ciclismo deportivo, etc. Si se presentan síntomas respiratorios o cardiacos, suspende la actividad y acude a tu médico. Infórmate sobre la evolución de la calidad del aire.",
       enfermedadesMayores: "Reduce las actividades físicas vigorosas al aire libre como ejercicios aeróbicos, jugar fútbol, básquetbol, voleibol, atletismo, ciclismo deportivo o correr, trotar suave, caminar a paso rápido o moverse en bicicleta, monopatín/scooter, patines y patinetas. Si presentas algún síntoma o molestia o tienes dudas, busca el consejo de tu médico. Infórmate sobre la evolución de la calidad del aire.",
     },
   };
