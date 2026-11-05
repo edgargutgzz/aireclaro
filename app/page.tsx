@@ -81,13 +81,14 @@ export default async function Home() {
       {/* The hero, toned down 2026-11-04: the live card above is the page's
           main content now. It sits a fixed distance under the live card (no
           longer centered in the leftover screen), in one white card with the
-          live card's border, the photo flat inside it ("E" of the section
-          mockups). Text and photo side by side from lg, stacked below. The
-          paragraph is measured in ch (about 55 characters a line). */}
+          live card's border. The photo bleeds to the card's edges (no
+          padding on its side, 2026-11-05); the card clips its corners. Text
+          and photo side by side from lg, stacked below. The paragraph is
+          measured in ch. */}
       <div className="pb-24 lg:pb-32">
         <div className="mx-auto w-full max-w-7xl px-6 pt-10 lg:px-8 lg:pt-14">
-          <div className="grid grid-cols-1 items-center gap-6 rounded-2xl border border-stone-200 bg-white p-4 sm:p-6 lg:grid-cols-2 lg:gap-12 lg:py-6 lg:pl-10 lg:pr-6">
-            <div className="flex flex-col gap-4 px-1 pt-2 sm:px-0 sm:pt-0 lg:gap-6">
+          <div className="grid grid-cols-1 overflow-hidden rounded-2xl border border-stone-200 bg-white lg:grid-cols-2">
+            <div className="flex flex-col justify-center gap-4 px-5 py-6 sm:p-6 lg:gap-6 lg:py-10 lg:pl-10 lg:pr-12">
               <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-5xl">
                 Trabajamos por una mejor{" "}
                 <span className="text-[#226caf]">calidad del aire.</span>

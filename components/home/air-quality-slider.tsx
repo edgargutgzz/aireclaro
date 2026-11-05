@@ -145,7 +145,7 @@ export default function AirQualitySlider() {
       aria-valuenow={cleanPercent}
       aria-valuetext={`${cleanPercent}% aire limpio, ${100 - cleanPercent}% aire contaminado`}
       onKeyDown={handleKeyDown}
-      className="group relative h-[260px] w-full cursor-ew-resize touch-pan-y select-none overflow-hidden rounded-xl focus-visible:outline-none md:h-[400px]"
+      className="group relative h-[260px] w-full cursor-ew-resize touch-pan-y select-none overflow-hidden focus-visible:outline-none md:h-[400px]"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
