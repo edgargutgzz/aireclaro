@@ -272,11 +272,11 @@ export const getQualityInfo = (pm25: number | null): QualityInfo | null => {
   };
   return {
     label: IMECA_LEVELS[4].label, color: IMECA_LEVELS[4].color, textColor: IMECA_LEVELS[4].ink,
-    generalRec: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico.",
+    generalRec: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas acude al médico.",
     generalFull: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico. Infórmate sobre la evolución de la calidad del aire.",
     sensitiveRecs: {
-      menoresGestantes: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico.",
-      enfermedadesMayores: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico.",
+      menoresGestantes: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas acude al médico.",
+      enfermedadesMayores: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas acude al médico.",
     },
     sensitiveFull: {
       enfermedadesMayores: "Permanece en espacios interiores en donde puedes realizar actividades físicas, reprograma tus actividades al aire libre y si presentas síntomas respiratorios y/o cardiacos acude al médico. Infórmate sobre la evolución de la calidad del aire.",
