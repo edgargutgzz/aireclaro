@@ -3,8 +3,8 @@
 // init effect in mapa-sensors.tsx).
 // Framing calls 2026-11-02: nudged east of the metro's middle (-100.301 →
 // -100.271), then back west in steps (-100.286, -100.301) with a closer zoom
-// (OPENING_ZOOM 10.5, then 10.25). 2026-11-03: a step further west (-100.316), then -100.331, then -100.346 with zoom 10, then -100.354, then -100.369.
-export const OPENING_CENTER: [number, number] = [-100.369, 25.685];
+// (OPENING_ZOOM 10.5, then 10.25). 2026-11-03: a step further west (-100.316), then -100.331, then -100.346 with zoom 10, then -100.354, then -100.369. 2026-11-05: a step northeast (-100.369, 25.685 → -100.354, 25.700).
+export const OPENING_CENTER: [number, number] = [-100.354, 25.700];
 export const OPENING_ZOOM = 10;
 
 // The marker field is a single native MapLibre GL circle layer, not ~180 DOM
