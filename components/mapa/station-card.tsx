@@ -25,7 +25,7 @@ export function QualityHeadline({ info, fallbackColor }: { info: QualityInfo | n
 // The norm's two sensitive groups (NOM-172-SEMARNAT-2023, Tabla 12), one icon each.
 const SENSITIVE_GROUPS = [
   { key: "menoresGestantes", label: "Menores de 12 años y personas gestantes", icon: Baby },
-  { key: "enfermedadesMayores", label: "Condiciones cardiovasculares o respiratorias y mayores de 60 años", icon: Stethoscope },
+  { key: "enfermedadesMayores", label: "Mayores de 60 años y condiciones cardiovasculares o respiratorias", icon: Stethoscope },
 ] as const;
 
 // The sensitive groups bucketed by identical advice, in SENSITIVE_GROUPS order
