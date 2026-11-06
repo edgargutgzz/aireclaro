@@ -6,7 +6,7 @@ import Image from "next/image";
 // Ported from observatoriodelaire.com's homepage hero (same component, same
 // photos), with next/image in place of <img> so the photos ship resized.
 
-const SIZES = "(min-width: 1280px) 600px, (min-width: 1024px) 50vw, 100vw";
+const SIZES = "(min-width: 1280px) 820px, (min-width: 1024px) 67vw, 100vw";
 
 // The box is narrower than the 16:9 photos, so they're cropped near the left
 // edge, where the Cerro de la Silla is: the clean photo a tenth in, the

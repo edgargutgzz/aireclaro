@@ -83,11 +83,12 @@ export default async function Home() {
           longer centered in the leftover screen), in one white card with the
           live card's border. The photo bleeds to the card's edges (no
           padding on its side, 2026-11-05); the card clips its corners. Text
-          and photo side by side from lg, stacked below. The paragraph is
+          and photo side by side from lg (photo two thirds, 2026-11-05),
+          stacked below. The paragraph is
           measured in ch. */}
       <div className="pb-24 lg:pb-32">
         <div className="mx-auto w-full max-w-7xl px-6 pt-10 lg:px-8 lg:pt-14">
-          <div className="grid grid-cols-1 overflow-hidden rounded-2xl border border-stone-200 bg-white lg:grid-cols-2">
+          <div className="grid grid-cols-1 overflow-hidden rounded-2xl border border-stone-200 bg-white lg:grid-cols-3">
             <div className="flex flex-col justify-center gap-4 px-5 py-6 sm:p-6 lg:gap-6 lg:py-10 lg:pl-10 lg:pr-12">
               <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-5xl">
                 Trabajamos por una mejor{" "}
@@ -100,7 +101,7 @@ export default async function Home() {
               </p>
             </div>
 
-            <div className="w-full">
+            <div className="w-full lg:col-span-2">
               <AirQualitySlider />
             </div>
           </div>
