@@ -90,7 +90,7 @@ export default async function Home() {
         <div className="mx-auto w-full max-w-7xl px-6 pt-10 lg:px-8 lg:pt-14">
           <div className="grid grid-cols-1 overflow-hidden rounded-2xl border border-stone-200 bg-white lg:grid-cols-3">
             <div className="flex flex-col justify-center gap-4 px-5 py-6 sm:p-6 lg:gap-6 lg:py-10 lg:pl-10 lg:pr-12">
-              <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-5xl">
+              <h1 className="text-3xl font-extrabold leading-[1.1] tracking-tight text-neutral-900 md:text-4xl">
                 Trabajamos por una mejor{" "}
                 <span className="text-[#226caf]">calidad del aire.</span>
               </h1>
