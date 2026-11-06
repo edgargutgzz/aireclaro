@@ -11,19 +11,26 @@ export type Freshness =
   | { dateTime: string; when: string; status: "fresh" | "delayed" }
   | { status: "nodata" };
 
-export function FreshnessDot({ status }: { status: Freshness["status"] }) {
+// `color`: a fresh dot in that colour instead of blue (the level card's foot
+// uses the current level's colour, 2026-11-05).
+export function FreshnessDot({ status, color }: { status: Freshness["status"]; color?: string }) {
   // Late and missing share the grey: the time (or "No disponible") beside
   // the dot tells them apart.
-  const dot = status === "fresh" ? "bg-blue-500" : "bg-stone-400";
+  const fresh = status === "fresh";
+  const dot = fresh ? (color ? "" : "bg-blue-500") : "bg-stone-400";
+  const fill = fresh && color ? { backgroundColor: color } : undefined;
 
   return (
     <span aria-hidden="true" className="relative flex h-4 w-4 flex-shrink-0 items-center justify-center">
       {/* Only fresh data pulses. A dot that keeps ticking in grey
           reads as "working on it" when the truth is "this is late". */}
       {status === "fresh" && (
-        <span className="absolute h-2 w-2 animate-ping rounded-full bg-blue-400 opacity-75 motion-reduce:animate-none" />
+        <span
+          className={`absolute h-2 w-2 animate-ping rounded-full opacity-75 motion-reduce:animate-none ${color ? "" : "bg-blue-400"}`}
+          style={fill}
+        />
       )}
-      <span className={`relative h-2 w-2 rounded-full ${dot}`} />
+      <span className={`relative h-2 w-2 rounded-full ${dot}`} style={fill} />
     </span>
   );
 }

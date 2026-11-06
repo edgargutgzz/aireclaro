@@ -327,15 +327,15 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
         </div>
         {/* When the reading is from, as a foot on the card in a pale tint
             of the level (2026-11-03: white read as too prominent; the tint
-            matches the icon discs below). Gray text with the map's usual
-            blue freshness dot. */}
+            matches the icon discs below). Gray text; the freshness dot in
+            the level's colour (2026-11-05, was the map's blue). */}
         {freshness && freshness.status !== "nodata" && (
           <div
             className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3 text-sm leading-none"
             style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
           >
             <p className="flex items-center gap-1.5">
-              <FreshnessDot status={freshness.status} />
+              <FreshnessDot status={freshness.status} color={quality.color} />
               {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
                   a past day still shows: "Actualizado ayer 11:00 PM". */}
               <span className="whitespace-nowrap text-neutral-600">
