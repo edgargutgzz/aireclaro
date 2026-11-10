@@ -869,10 +869,14 @@ export default function MapaSensors({
     if (shown.length === 0) return;
     const lons = shown.map((s) => s.lon);
     const lats = shown.map((s) => s.lat);
-    m.fitBounds(
+    // The tight fit, then half a zoom step back so the municipality sits
+    // in some context (2026-11-10).
+    const fit = m.cameraForBounds(
       [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
-      { padding: { top: 64, right: 64, bottom: 120, left: 64 }, maxZoom: 13, ...motion },
+      { padding: { top: 64, right: 64, bottom: 120, left: 64 }, maxZoom: 13 },
     );
+    if (!fit) return;
+    m.easeTo({ ...fit, zoom: (fit.zoom ?? m.getZoom()) - 0.5, ...motion });
   }, [hiddenMunicipios, sensors, defaultSelection]);
 
   // Drop the pick. **Desktop only** (the X, empty-map click, Escape): the
