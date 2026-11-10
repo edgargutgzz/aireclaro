@@ -423,22 +423,27 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
             </ul>
           </section>
 
-          {/* Where the reading and the advice come from, always visible as a
-              quiet footnote in label / value rows (they were two info-button
-              popups, then a run-on sentence; both replaced 2026-11-02). */}
-          <dl className="mx-2 mt-8 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-5 text-xs leading-relaxed">
+          {/* Where the reading and the advice come from, always visible, in
+              the advice cards' own material (option A of the footer
+              mockups, 2026-11-10): a white bordered card, label left, value
+              right, rows split by a hairline. */}
+          <dl className="mt-6 overflow-hidden rounded-2xl border border-stone-200 bg-white text-[13px] leading-normal">
             {/* The station's name is in the card's foot (2026-11-09); this
                 row says why it is the one shown. */}
-            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
-            <dd className="text-neutral-600">
-              {subject.sensor.source === "sima"
-                ? "Nivel más alto de la ZMM"
-                : "Ciudadano, el más cercano a Obispado, sin estaciones del SIMA en vivo"}
-            </dd>
-            <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
-            <dd className="text-neutral-600">
-              <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
-            </dd>
+            <div className="flex justify-between gap-4 px-[18px] py-3.5">
+              <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
+              <dd className="text-right text-neutral-700">
+                {subject.sensor.source === "sima"
+                  ? "Nivel más alto de la ZMM"
+                  : "Ciudadano, el más cercano a Obispado, sin estaciones del SIMA en vivo"}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-4 border-t border-stone-100 px-[18px] py-3.5">
+              <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
+              <dd className="text-right text-neutral-600">
+                <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
+              </dd>
+            </div>
           </dl>
         </div>
       )}
