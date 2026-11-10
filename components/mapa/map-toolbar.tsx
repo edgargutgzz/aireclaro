@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { ChevronRight, Info, Landmark, Users } from "lucide-react";
+import { ChevronRight, Info, Landmark, MapPin, Users } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
 
@@ -13,13 +13,14 @@ import { LayerCheckbox } from "./layers-filter";
 // content in place. Mobile keeps its own buttons and bottom sheets.
 //
 // Sensores: Gobierno, then Sensores Ciudadanos with OCCAMM and Otros always
-// shown under it (no hidden sub-rows, 2026-11-09), and the location as one
-// native municipality select instead of a nested state / municipality list.
+// shown under it (no hidden sub-rows, 2026-11-09). Ubicación, its own button
+// since 2026-11-10: one native municipality select instead of a nested
+// state / municipality list.
 // Same filter state as mobile, so the URL (?src= / ?hide=) is unchanged.
 
 type Estado = { key: string; label: string; count: number; municipios: { key: string; label: string; count: number }[] };
 
-type Panel = "aire" | "sensores" | null;
+type Panel = "aire" | "sensores" | "ubicacion" | null;
 
 export function MapToolbar({
   showSima,
@@ -71,6 +72,8 @@ export function MapToolbar({
               <LevelList />
               <LegendNotes className="mt-8" />
             </div>
+          ) : open === "ubicacion" ? (
+            <UbicacionPanel estados={estados} hiddenMunicipios={hiddenMunicipios} setHiddenMunicipios={setHiddenMunicipios} />
           ) : (
             <SensoresPanel
               showSima={showSima}
@@ -80,9 +83,6 @@ export function MapToolbar({
               showOtros={showOtros}
               setShowOtros={setShowOtros}
               sourceCounts={sourceCounts}
-              estados={estados}
-              hiddenMunicipios={hiddenMunicipios}
-              setHiddenMunicipios={setHiddenMunicipios}
               onShowFuenteInfo={onShowFuenteInfo}
             />
           )}
@@ -133,6 +133,79 @@ export function MapToolbar({
             </span>
           </span>
         </button>
+        <span aria-hidden="true" className={`w-px flex-shrink-0 bg-stone-900/10 ${open ? "" : "my-3"}`} />
+        {/* Ubicación as its own button (2026-11-10, it was the foot of the
+            Sensores panel): the closed bar names the municipality shown. */}
+        <button
+          type="button"
+          onClick={() => toggle("ubicacion")}
+          aria-expanded={open === "ubicacion"}
+          aria-controls={open === "ubicacion" ? "map-toolbar-panel" : undefined}
+          className={`flex flex-shrink-0 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("ubicacion")}`}
+        >
+          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+            Ubicación
+          </span>
+          <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-none text-neutral-600">
+            <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
+            {municipioLabel(estados, hiddenMunicipios)}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// The municipality the map shows: one, all of them, or a ?hide= mix.
+function municipioValue(estados: Estado[], hiddenMunicipios: string[]) {
+  const allKeys = estados.flatMap((e) => e.municipios.map((m) => m.key));
+  const shown = allKeys.filter((k) => !hiddenMunicipios.includes(k));
+  const value = hiddenMunicipios.length === 0 ? "" : shown.length === 1 ? shown[0] : "varios";
+  return { allKeys, value };
+}
+
+function municipioLabel(estados: Estado[], hiddenMunicipios: string[]) {
+  const { value } = municipioValue(estados, hiddenMunicipios);
+  if (value === "") return "Todos";
+  if (value === "varios") return "Varios";
+  return estados.flatMap((e) => e.municipios).find((m) => m.key === value)?.label ?? "Todos";
+}
+
+function UbicacionPanel({
+  estados,
+  hiddenMunicipios,
+  setHiddenMunicipios,
+}: Pick<Parameters<typeof MapToolbar>[0], "estados" | "hiddenMunicipios" | "setHiddenMunicipios">) {
+  // The select shows one municipality or all of them. A ?hide= link with any
+  // other mix reads as "Varios municipios" until a choice replaces it.
+  const { allKeys, value } = municipioValue(estados, hiddenMunicipios);
+  const choose = (key: string) => setHiddenMunicipios(key === "" ? [] : allKeys.filter((k) => k !== key));
+
+  return (
+    <div className="p-4">
+      <label htmlFor="map-toolbar-municipio" className="block px-1 pb-3 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+        Municipio
+      </label>
+      <div className="relative">
+        <select
+          id="map-toolbar-municipio"
+          value={value}
+          onChange={(e) => choose(e.target.value)}
+          className="w-full appearance-none rounded-xl border border-stone-200 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+        >
+          <option value="">Todos los municipios</option>
+          {value === "varios" && <option value="varios" disabled>Varios municipios</option>}
+          {estados.map((estado) => (
+            <optgroup key={estado.key} label={estado.label}>
+              {estado.municipios.map((m) => (
+                <option key={m.key} value={m.key}>
+                  {m.label} ({m.count})
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+        <ChevronRight aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-400" />
       </div>
     </div>
   );
@@ -146,11 +219,8 @@ function SensoresPanel({
   showOtros,
   setShowOtros,
   sourceCounts,
-  estados,
-  hiddenMunicipios,
-  setHiddenMunicipios,
   onShowFuenteInfo,
-}: Parameters<typeof MapToolbar>[0]) {
+}: Omit<Parameters<typeof MapToolbar>[0], "estados" | "hiddenMunicipios" | "setHiddenMunicipios">) {
   // Sensores Ciudadanos is the parent of its two networks: its box checks or
   // clears both, and reads as mixed when only one is on.
   const citizen = showOccamm && showOtros ? "checked" : !showOccamm && !showOtros ? "unchecked" : "indeterminate";
@@ -165,13 +235,6 @@ function SensoresPanel({
     { label: "OCCAMM", state: showOccamm ? "checked" : "unchecked", onClick: () => setShowOccamm((v) => !v), count: sourceCounts.occamm, child: true },
     { label: "Otros", state: showOtros ? "checked" : "unchecked", onClick: () => setShowOtros((v) => !v), count: sourceCounts.otros, child: true },
   ];
-
-  // The select shows one municipality or all of them. A ?hide= link with any
-  // other mix reads as "Varios municipios" until a choice replaces it.
-  const allKeys = estados.flatMap((e) => e.municipios.map((m) => m.key));
-  const shown = allKeys.filter((k) => !hiddenMunicipios.includes(k));
-  const value = hiddenMunicipios.length === 0 ? "" : shown.length === 1 ? shown[0] : "varios";
-  const choose = (key: string) => setHiddenMunicipios(key === "" ? [] : allKeys.filter((k) => k !== key));
 
   return (
     <div className="p-4">
@@ -201,31 +264,6 @@ function SensoresPanel({
             <SourceRow {...rows[3]} />
           </div>
         </div>
-      </div>
-
-      <label htmlFor="map-toolbar-municipio" className="block px-1 pb-3 pt-5 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-        Ubicación
-      </label>
-      <div className="relative">
-        <select
-          id="map-toolbar-municipio"
-          value={value}
-          onChange={(e) => choose(e.target.value)}
-          className="w-full appearance-none rounded-xl border border-stone-200 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-        >
-          <option value="">Todos los municipios</option>
-          {value === "varios" && <option value="varios" disabled>Varios municipios</option>}
-          {estados.map((estado) => (
-            <optgroup key={estado.key} label={estado.label}>
-              {estado.municipios.map((m) => (
-                <option key={m.key} value={m.key}>
-                  {m.label} ({m.count})
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-        <ChevronRight aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-400" />
       </div>
     </div>
   );
