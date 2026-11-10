@@ -1146,11 +1146,11 @@ export default function MapaSensors({
 
       </div>
 
-      {/* Desktop toolbar column, bottom-left beside the sidebar (2026-11-09,
+      {/* Desktop toolbar column, bottom-left, 24px from the sidebar (2026-11-09,
           it was the right column's foot): the toolbar's bottom edge lines up
           with the sidebar's, and the Sensores panel opens above it. Narrow
           desktops cap its width so it never runs off the map. */}
-      <div className="pointer-events-none absolute bottom-6 left-[496px] top-6 z-10 hidden w-[min(460px,calc(100%-520px))] flex-col md:flex">
+      <div className="pointer-events-none absolute bottom-6 left-[508px] top-6 z-10 hidden w-[min(460px,calc(100%-532px))] flex-col md:flex">
         <div className="mt-auto flex min-h-0 w-full flex-col gap-2">
           {showFiltrosContent && (
             <div id="sensores-panel" className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
