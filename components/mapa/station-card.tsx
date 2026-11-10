@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
@@ -382,21 +382,6 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
 export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: { subject: SelectedSensor; freshness: Freshness | null; groupsOpen: boolean; onToggleGroups: () => void }) {
   const quality = getQualityInfo(subject.pm25);
 
-  // The footnote shows its first row and the top of the next under a fade,
-  // the rest a scroll away inside it (2026-11-10): there is more, it just
-  // does not take the room.
-  const footRef = useRef<HTMLDivElement>(null);
-  const [footHeight, setFootHeight] = useState<number | null>(null);
-  const [footMore, setFootMore] = useState(false);
-  const checkFootMore = () => {
-    const el = footRef.current;
-    setFootMore(!!el && el.scrollHeight - el.scrollTop - el.clientHeight > 1);
-  };
-  useLayoutEffect(() => {
-    const second = footRef.current?.querySelectorAll("dt")[1] as HTMLElement | undefined;
-    setFootHeight(second ? second.offsetTop + 6 : null);
-  }, [subject.sensor.source]);
-  useLayoutEffect(checkFootMore, [footHeight]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -464,13 +449,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
           footnote, pinned to the sidebar's foot outside the scroll
           (2026-11-10), its text on the cards' rail (24px in). */}
       {quality && (
-        <div
-          ref={footRef}
-          onScroll={checkFootMore}
-          className="relative mx-6 flex-shrink-0 overflow-y-auto overscroll-contain"
-          style={footHeight ? { maxHeight: footHeight } : undefined}
-        >
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pb-5 pt-4 text-xs leading-relaxed">
+        <dl className="relative mx-6 grid flex-shrink-0 grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pb-5 pt-4 text-xs leading-relaxed">
           {/* The station's name is in the card's foot (2026-11-09); this
               row says why it is the one shown. */}
           <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
@@ -484,10 +463,6 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
             <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
           </dd>
         </dl>
-        {footMore && (
-          <div aria-hidden="true" className="pointer-events-none sticky bottom-0 -mt-6 h-6 bg-gradient-to-t from-white to-white/0" />
-        )}
-        </div>
       )}
     </div>
   );
