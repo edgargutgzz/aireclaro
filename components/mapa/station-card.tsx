@@ -465,7 +465,8 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
           </section>
           {/* Where the reading and the advice come from: the quiet footnote
               at the body's foot, its text on the cards' rail (24px in). */}
-          <dl ref={footRef} className="relative mx-2 mt-auto grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 pt-8 text-xs leading-relaxed">
+          <div className="mt-auto pt-8">
+          <dl ref={footRef} className="relative mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
             {/* The station's name is in the card's foot (2026-11-09); this
                 row says why it is the one shown. */}
             <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
@@ -479,6 +480,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
               <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
             </dd>
           </dl>
+          </div>
           </div>
           {/* Sticky to the body's bottom edge, taking no space of its own. */}
           {moreBelow && (
