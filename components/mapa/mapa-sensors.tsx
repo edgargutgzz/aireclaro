@@ -976,8 +976,8 @@ export default function MapaSensors({
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
       {/* The left column (2026-11-10): the sidebar, then the map toolbar as
-          its own glass card 8px under it, the same width. */}
-      <div className="absolute bottom-6 left-6 top-6 z-20 hidden w-panel-lg flex-col gap-2 md:flex">
+          its own glass card 16px under it, the same width. */}
+      <div className="absolute bottom-6 left-6 top-6 z-20 hidden w-panel-lg flex-col gap-4 md:flex">
       <aside aria-label="Calidad del aire" className="glass flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
         {summarySelection && (
           <AirNowPanel subject={summarySelection} freshness={summaryFreshness} />
