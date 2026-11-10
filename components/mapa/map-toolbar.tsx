@@ -278,13 +278,13 @@ function MunicipioRow({ label, count, checked, onClick }: { label: string; count
 function SourceNotes() {
   return (
     <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
-      <dt className="font-medium text-neutral-500">Estaciones de gobierno</dt>
+      <dt className="font-medium text-neutral-500">Estaciones de Gobierno</dt>
       <dd className="text-neutral-600">
         Estaciones de monitoreo que forman parte del{" "}
         <DialogLink href="https://aire.nl.gob.mx/">Sistema Integral de Monitoreo Ambiental (SIMA)</DialogLink>, operado por el
         Gobierno de Nuevo León.
       </dd>
-      <dt className="font-medium text-neutral-500">Sensores ciudadanos</dt>
+      <dt className="font-medium text-neutral-500">Sensores Ciudadanos</dt>
       <dd className="text-neutral-600">
         <AdviceText
           advice="PurpleAir, red global de monitoreo comunitario"
