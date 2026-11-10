@@ -37,6 +37,7 @@ export function MapToolbar({
   estados,
   hiddenMunicipios,
   setHiddenMunicipios,
+  currentPm25 = null,
 }: {
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
@@ -48,6 +49,8 @@ export function MapToolbar({
   estados: Estado[];
   hiddenMunicipios: string[];
   setHiddenMunicipios: Dispatch<SetStateAction<string[]>>;
+  // The sidebar's reading, marked on the scale.
+  currentPm25?: number | null;
 }) {
   const [open, setOpen] = useState<Panel>(null);
   const toggle = (p: Exclude<Panel, null>) => setOpen((cur) => (cur === p ? null : p));
@@ -166,7 +169,7 @@ export function MapToolbar({
             <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
           </span>
           {/* Open, the bar shows the breaks, the axis for the list's bounds. */}
-          <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} />
+          <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} current={currentPm25} />
         </button>
       </div>
     </div>

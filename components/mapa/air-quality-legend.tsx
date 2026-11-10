@@ -12,14 +12,28 @@ import { AdviceText } from "./station-card";
 // The break numbers under the joins carry the real spacing.
 // All spans, so the bar is valid phrasing content inside the disclosure
 // <button>. Decorative: the level list is the readable key.
-export function ScaleBar({ className = "", labels = "thresholds" }: { className?: string; labels?: "thresholds" | "ends" }) {
+// `current`: a PM2.5 reading to mark on the bar (the sidebar's, 2026-11-10),
+// a dot in its level's colour at the middle of that level's segment. The
+// segments are equal width, so the dot names the level, not a position
+// within it.
+export function ScaleBar({ className = "", labels = "thresholds", current = null }: { className?: string; labels?: "thresholds" | "ends"; current?: number | null }) {
   const count = IMECA_LEVELS.length;
+  const currentIndex = current != null ? IMECA_LEVELS.findIndex((level) => current <= level.limit) : -1;
+  const currentLevel = currentIndex >= 0 ? IMECA_LEVELS[currentIndex] : null;
   return (
     <span aria-hidden="true" className={`block ${className}`}>
-      <span className="flex h-2 overflow-hidden rounded-full ring-1 ring-inset ring-black/[0.08]">
-        {IMECA_LEVELS.map((level) => (
-          <span key={level.label} className="flex-1" style={{ backgroundColor: level.color }} />
-        ))}
+      <span className="relative block">
+        <span className="flex h-2 overflow-hidden rounded-full ring-1 ring-inset ring-black/[0.08]">
+          {IMECA_LEVELS.map((level) => (
+            <span key={level.label} className="flex-1" style={{ backgroundColor: level.color }} />
+          ))}
+        </span>
+        {currentLevel && (
+          <span
+            className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white"
+            style={{ left: `${((currentIndex + 0.5) / count) * 100}%`, backgroundColor: currentLevel.color, boxShadow: `0 0 0 1px ${currentLevel.ink}, 0 1px 2px rgba(0,0,0,0.15)` }}
+          />
+        )}
       </span>
       {labels === "ends" ? (
         // Collapsed state: the two ends carry the direction and the worst case,

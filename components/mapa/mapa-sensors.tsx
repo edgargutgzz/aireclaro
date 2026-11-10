@@ -1012,6 +1012,7 @@ export default function MapaSensors({
           estados={estados}
           hiddenMunicipios={hiddenMunicipios}
           setHiddenMunicipios={setHiddenMunicipios}
+          currentPm25={summarySelection?.pm25 ?? null}
         />
       </div>
 
