@@ -67,7 +67,7 @@ export function MapToolbar({
         // the map; overscroll-contain keeps the scroll from panning the map.
         <div id="map-toolbar-panel" className="disclosure-in-up min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {open === "aire" ? (
-            <div className="p-4">
+            <div className="px-4 pb-8 pt-4">
               <LevelList />
               <LegendNotes className="mt-8" />
             </div>
