@@ -419,7 +419,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
         // `relative`: the scroll box must be the positioning context, or an
         // absolutely positioned descendant (the footnote link's sr-only
         // label) escapes its clip and makes the whole page scroll.
-        <div ref={bodyRef} onScroll={checkMoreBelow} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-8">
+        <div ref={bodyRef} onScroll={checkMoreBelow} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-6">
           <div className="flex flex-col" style={{ minHeight: `calc(100% + ${footHidden}px)` }}>
           {/* The Capas panel's grouped-list material ("B" list, picked
               2026-11-02): a white bordered card, rows divided by hairlines.
