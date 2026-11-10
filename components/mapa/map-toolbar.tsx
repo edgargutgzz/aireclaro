@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { ChevronRight, Info, Landmark, MapPin, Users } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
@@ -50,19 +50,31 @@ export function MapToolbar({
   const [open, setOpen] = useState<Panel>(null);
   const toggle = (p: Exclude<Panel, null>) => setOpen((cur) => (cur === p ? null : p));
 
-  // Escape closes the panel, as it closes the station card.
+  // Escape closes the panel, as it closes the station card; so does a click
+  // anywhere outside the toolbar (2026-11-10), except inside an open dialog
+  // (the Fuente info opens one from the panel).
+  const rootRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
+    const onPointer = (e: PointerEvent) => {
+      const target = e.target as Element | null;
+      if (!target || rootRef.current?.contains(target) || target.closest("dialog[open]")) return;
+      setOpen(null);
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onPointer);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", onPointer);
+    };
   }, [open]);
 
   const tab = (p: Exclude<Panel, null>) =>
     `transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${open === p ? "bg-stone-900/[0.05]" : "hover:bg-stone-900/[0.03]"}`;
 
   return (
-    <div className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
+    <div ref={rootRef} className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
       {open && (
         // Only the panel scrolls, so a short window never pushes the bar off
         // the map; overscroll-contain keeps the scroll from panning the map.
