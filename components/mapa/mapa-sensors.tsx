@@ -357,10 +357,13 @@ export default function MapaSensors({
 
   // The marker that wears the pulse: activeSubject (mobile: the pick, else the
   // default the sheet rests on; desktop: the pick, else the sidebar's station,
-  // which its card names, 2026-11-09). Mirrored into refs
-  // so the map event handlers read the current value without being rebuilt on
-  // each pick.
-  const activeSensorId = (activeSubject ?? (isDesktop ? summarySelection : null))?.sensor.sensor_id ?? null;
+  // which its card names, 2026-11-09), unless the filters hide that station:
+  // the sidebar still reports it, but the map draws only what the filters
+  // show (2026-11-10). Mirrored into refs so the map event handlers read the
+  // current value without being rebuilt on each pick.
+  const summaryOnMap =
+    summarySelection != null && visibleSensors.some((s) => s.sensor_id === summarySelection.sensor.sensor_id);
+  const activeSensorId = (activeSubject ?? (isDesktop && summaryOnMap ? summarySelection : null))?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
 
   // The pulse halo is a large soft translucent fill, so it takes the official
