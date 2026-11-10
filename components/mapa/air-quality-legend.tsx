@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { ChevronRight, Info } from "lucide-react";
 import { IMECA_LEVELS } from "@/lib/air-quality";
 import { DialogLink, InfoDialog } from "./info-dialog";
@@ -137,7 +137,7 @@ function LegendNotes({ className = "" }: { className?: string }) {
 // stay visible, the labelled list sits behind a chevron. On mobile it's a
 // bottom sheet (see the `showLegend` panel below), so the map only carries an
 // icon button. Inside the Capas sheet it renders fully expanded with no toggle.
-export function AirQualityLegend({ className = "", collapsible = false }: { className?: string; collapsible?: boolean }) {
+export function AirQualityLegend({ className = "", collapsible = false, trailing }: { className?: string; collapsible?: boolean; trailing?: ReactNode }) {
   const [open, setOpen] = useState(false);
   const detailId = `aq-legend-detail-${useId().replace(/:/g, "")}`;
 
@@ -158,37 +158,47 @@ export function AirQualityLegend({ className = "", collapsible = false }: { clas
   // under the button, at the very bottom (2026-11-03: between the list and the
   // bar they sat mid-panel). The button stays first in the DOM, so tab and
   // screen-reader order stay trigger-then-detail; `order` paints the list
-  // above it.
+  // above it. The component pads itself (no padding on its card) so
+  // `trailing`, another control sharing the row behind a hairline (the map's
+  // Sensores button, 2026-11-09), can run to the card's edge.
   return (
     <div className={`flex flex-col ${className}`}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        aria-controls={detailId}
-        className="flex min-h-6 w-full items-center gap-4 px-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
-      >
-        <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-          Calidad del aire
-        </span>
-        {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
-            framed by the "PM2.5 · μg/m³" footnote the disclosure reveals, so the bar reads as the axis for the list's bounds. */}
-        <ScaleBar labels={open ? "thresholds" : "ends"} className="min-w-0 flex-1" />
-        {/* Rotates up when open, toward the detail it reveals: every downward
-            panel points its chevron down, so this one points the other way. */}
-        <ChevronRight
-          aria-hidden="true"
-          className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${open ? "-rotate-90" : ""}`}
-        />
-      </button>
+      <div className="flex items-stretch">
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls={detailId}
+          className="flex min-h-6 min-w-0 flex-1 items-center gap-4 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+        >
+          <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+            Calidad del aire
+          </span>
+          {/* Closed: the ends carry direction, no unit needed. Open: the breaks,
+              framed by the "PM2.5 · μg/m³" footnote the disclosure reveals, so the bar reads as the axis for the list's bounds. */}
+          <ScaleBar labels={open ? "thresholds" : "ends"} className="min-w-0 flex-1" />
+          {/* Rotates up when open, toward the detail it reveals: every downward
+              panel points its chevron down, so this one points the other way. */}
+          <ChevronRight
+            aria-hidden="true"
+            className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${open ? "-rotate-90" : ""}`}
+          />
+        </button>
+        {trailing && (
+          <>
+            <span aria-hidden="true" className="my-3 w-px flex-shrink-0 bg-stone-900/10" />
+            {trailing}
+          </>
+        )}
+      </div>
       {/* Kept mounted so aria-controls always resolves; `hidden` keeps the shut
           content out of the tab order. */}
-      <div id={detailId} hidden={!open} className="order-first">
-        <div className="disclosure-in-up mb-4">
+      <div id={detailId} hidden={!open} className="order-first px-4 pt-4">
+        <div className="disclosure-in-up">
           <LevelList />
         </div>
       </div>
-      {open && <LegendNotes className="mt-4" />}
+      {open && <LegendNotes className="px-4 pb-4" />}
     </div>
   );
 }

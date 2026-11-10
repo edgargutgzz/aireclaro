@@ -1107,10 +1107,8 @@ export default function MapaSensors({
         </div>
       </div>
 
-      {/* Desktop right column: a picked station's card at the top; at the
-          foot, stacked bottom-up, the air-quality legend, the Sensores icon
-          button (the mobile button's shape, 2026-11-02; it was a header card
-          at the top), and the Sensores panel above it while open. No freshness pill on desktop (removed 2026-11-03): the
+      {/* Desktop right column: a picked station's card at the top (the
+          toolbar moved to the bottom-left, 2026-11-09). No freshness pill on desktop (removed 2026-11-03): the
           sidebar's header carries the time. On mobile the panel and legend
           are bottom sheets and freshness rides the Capas button's row. */}
       <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-filters flex-col items-end gap-2 md:flex">
@@ -1146,7 +1144,14 @@ export default function MapaSensors({
         )}
 
 
-        <div className="mt-auto flex min-h-0 w-full flex-col items-end gap-2">
+      </div>
+
+      {/* Desktop toolbar column, bottom-left beside the sidebar (2026-11-09,
+          it was the right column's foot): the toolbar's bottom edge lines up
+          with the sidebar's, and the Sensores panel opens above it. Narrow
+          desktops cap its width so it never runs off the map. */}
+      <div className="pointer-events-none absolute bottom-6 left-[496px] top-6 z-10 hidden w-[min(460px,calc(100%-520px))] flex-col md:flex">
+        <div className="mt-auto flex min-h-0 w-full flex-col gap-2">
           {showFiltrosContent && (
             <div id="sensores-panel" className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
               {/* Header in the "label · summary" idiom, with a close X. The
@@ -1186,21 +1191,27 @@ export default function MapaSensors({
               </div>
             </div>
           )}
-          <MapIconButton
-            active={showFiltrosContent}
-            onClick={() => setShowFiltrosContent((v) => !v)}
-            label="Sensores"
-            icon={Layers}
-            className="pointer-events-auto flex-shrink-0"
-          />
-          {/* The air-quality scale, desktop: at the foot of the right column,
-              under the Sensores button (2026-11-03; it sat at the top since
-              2026-11-02). Opens upward. Mobile carries it as the Wind
-              button's bottom sheet. */}
-          <div className="glass pointer-events-auto w-full flex-shrink-0 rounded-2xl">
-            <div className="p-4">
-              <AirQualityLegend collapsible />
-            </div>
+          {/* The map's toolbar, desktop (option C, 2026-11-09): one glass bar
+              at the foot of the right column, the air-quality scale on the
+              left (opens upward) and the Sensores button on the right behind
+              a hairline (it was an icon button stacked above the scale).
+              Mobile carries the scale as the Wind button's bottom sheet. */}
+          <div className="glass pointer-events-auto w-full flex-shrink-0 overflow-hidden rounded-2xl">
+            <AirQualityLegend
+              collapsible
+              trailing={
+                <button
+                  type="button"
+                  onClick={() => setShowFiltrosContent((v) => !v)}
+                  aria-expanded={showFiltrosContent}
+                  aria-controls="sensores-panel"
+                  className={`flex flex-shrink-0 items-center gap-2 px-5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${showFiltrosContent ? "bg-stone-900/[0.04] text-neutral-900" : "text-neutral-700 hover:text-neutral-900"}`}
+                >
+                  <Layers aria-hidden="true" className="h-5 w-5" />
+                  Sensores
+                </button>
+              }
+            />
           </div>
         </div>
       </div>
