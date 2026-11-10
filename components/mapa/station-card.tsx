@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
@@ -51,7 +51,7 @@ export function groupByAdvice(info: QualityInfo) {
 // with the norm's name on its own line, while the short sentence stays in place (2026-11-05).
 // Closed by default. Also the map legend's PM2.5 explainer (2026-11-10, it
 // was an info icon and a dialog), with `source` null: no norm line.
-export function AdviceText({ advice, full, className, source = "NOM-172-SEMARNAT-2023" }: { advice: string; full?: string; className: string; source?: string | null }) {
+export function AdviceText({ advice, full, className, source = "NOM-172-SEMARNAT-2023" }: { advice: string; full?: ReactNode; className: string; source?: string | null }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   return (

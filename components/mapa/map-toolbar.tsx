@@ -287,17 +287,29 @@ function SourceNotes() {
       <dd className="text-neutral-600">
         <AdviceText
           advice="PurpleAir, red global de monitoreo comunitario"
-          full="Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones independientes. Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula de corrección de la EPA de EE. UU."
+          full={
+            <>
+              <p>
+                Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones independientes. Pueden
+                sobreestimar las PM2.5 cuando hay mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula
+                de corrección de la EPA de EE. UU.
+              </p>
+              {/* The two networks inside Sensores Ciudadanos (2026-11-10, they
+                  were rows of their own). */}
+              <p className="mt-2">
+                <span className="font-medium text-neutral-700">OCCAMM:</span> red del{" "}
+                <DialogLink href="/quienes-somos">Observatorio Ciudadano de la Calidad del Aire</DialogLink>.
+              </p>
+              <p className="mt-2">
+                <span className="font-medium text-neutral-700">Otros:</span> sensores de PurpleAir que no forman parte de
+                la red de OCCAMM.
+              </p>
+            </>
+          }
           source={null}
           className=""
         />
       </dd>
-      <dt className="font-medium text-neutral-500">OCCAMM</dt>
-      <dd className="text-neutral-600">
-        Red del <DialogLink href="/quienes-somos">Observatorio Ciudadano de la Calidad del Aire</DialogLink>
-      </dd>
-      <dt className="font-medium text-neutral-500">Otros</dt>
-      <dd className="text-neutral-600">Sensores de PurpleAir que no forman parte de la red de OCCAMM.</dd>
     </dl>
   );
 }
