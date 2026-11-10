@@ -901,6 +901,17 @@ export default function MapaSensors({
     return () => { m?.off("click", handler); };
   }, [styleReady, closeCard, isDesktop]);
 
+  // Any click on the map, empty or on a marker, closes the Grupos sensibles
+  // card beside the sidebar (2026-11-10); the toolbar's card closes on any
+  // click outside it already (MapToolbar).
+  useEffect(() => {
+    if (!styleReady || !map.current) return;
+    const m = map.current;
+    const handler = () => setGroupsOpen(false);
+    m.on("click", handler);
+    return () => { m.off("click", handler); };
+  }, [styleReady]);
+
   // Keyboard / screen-reader path into the field: the GL discs are canvas-drawn
   // and not tabbable, so every markerable station is also a visually-hidden
   // button that selects it (opens the card) and eases the camera to it. Labels
