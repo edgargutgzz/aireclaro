@@ -109,7 +109,7 @@ export function LegendNotes({ className = "" }: { className?: string }) {
           (docs/mapa-data-pipeline.md); the state's own map shows the índice
           instead, so its numbers differ. */}
       <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-xs leading-relaxed">
-        <dt className="font-medium text-neutral-500">Unidad</dt>
+        <dt className="font-medium text-neutral-500">Contaminante</dt>
         <dd className="text-neutral-600">
           PM2.5 en μg/m³, promedio de la última hora
           <button
