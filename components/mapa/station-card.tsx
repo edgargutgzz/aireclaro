@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, type ReactNode } from "react";
+import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
@@ -382,6 +382,26 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
 export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: { subject: SelectedSensor; freshness: Freshness | null; groupsOpen: boolean; onToggleGroups: () => void }) {
   const quality = getQualityInfo(subject.pm25);
 
+  // The footnote ends the scroll and sits at its foot, the map cards' notes
+  // effect (2026-11-10): its first row shows, the top of the next peeks under
+  // a fade, the rest is a scroll of the whole body away. The body's content
+  // is given just enough extra height to push that much of the footnote
+  // below the fold (the 24px is the body's own bottom padding).
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const footRef = useRef<HTMLDListElement>(null);
+  const [footHidden, setFootHidden] = useState(0);
+  const [moreBelow, setMoreBelow] = useState(false);
+  const checkMoreBelow = () => {
+    const el = bodyRef.current;
+    setMoreBelow(!!el && el.scrollHeight - el.scrollTop - el.clientHeight > 1);
+  };
+  useLayoutEffect(() => {
+    const foot = footRef.current;
+    const second = foot?.querySelectorAll("dt")[1] as HTMLElement | undefined;
+    setFootHidden(foot && second ? Math.max(0, foot.offsetHeight - (second.offsetTop + 14) + 24) : 0);
+  }, [subject.sensor.source, quality?.label]);
+  useLayoutEffect(checkMoreBelow, [footHidden]);
+
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -399,7 +419,8 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
         // `relative`: the scroll box must be the positioning context, or an
         // absolutely positioned descendant (the footnote link's sr-only
         // label) escapes its clip and makes the whole page scroll.
-        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-6">
+        <div ref={bodyRef} onScroll={checkMoreBelow} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-6">
+          <div className="flex flex-col" style={{ minHeight: `calc(100% + ${footHidden}px)` }}>
           {/* The Capas panel's grouped-list material ("B" list, picked
               2026-11-02): a white bordered card, rows divided by hairlines.
               Each row leads with its group icon in a pale level-tinted disc;
@@ -442,27 +463,28 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
               <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 transition-colors group-hover:text-neutral-600 ${groupsOpen ? "text-neutral-600" : "text-neutral-400"}`} />
             </button>
           </section>
+          {/* Where the reading and the advice come from: the quiet footnote
+              at the body's foot, its text on the cards' rail (24px in). */}
+          <dl ref={footRef} className="relative mx-2 mt-auto grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 pt-8 text-xs leading-relaxed">
+            {/* The station's name is in the card's foot (2026-11-09); this
+                row says why it is the one shown. */}
+            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
+            <dd className="text-neutral-600">
+              {subject.sensor.source === "sima"
+                ? "Nivel más alto de la ZMM"
+                : "Ciudadano, el más cercano a Obispado, sin estaciones del SIMA en vivo"}
+            </dd>
+            <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
+            <dd className="text-neutral-600">
+              <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
+            </dd>
+          </dl>
+          </div>
+          {/* Sticky to the body's bottom edge, taking no space of its own. */}
+          {moreBelow && (
+            <div aria-hidden="true" className="pointer-events-none sticky -bottom-6 -mx-4 -mt-10 h-10 bg-gradient-to-t from-white to-white/0" />
+          )}
         </div>
-      )}
-
-      {/* Where the reading and the advice come from: the quiet hairline
-          footnote, pinned to the sidebar's foot outside the scroll
-          (2026-11-10), its text on the cards' rail (24px in). */}
-      {quality && (
-        <dl className="relative mx-6 grid flex-shrink-0 grid-cols-[auto_1fr] gap-x-4 gap-y-2 pb-5 pt-4 text-xs leading-relaxed">
-          {/* The station's name is in the card's foot (2026-11-09); this
-              row says why it is the one shown. */}
-          <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
-          <dd className="text-neutral-600">
-            {subject.sensor.source === "sima"
-              ? "Nivel más alto de la ZMM"
-              : "Ciudadano, el más cercano a Obispado, sin estaciones del SIMA en vivo"}
-          </dd>
-          <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
-          <dd className="text-neutral-600">
-            <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
-          </dd>
-        </dl>
       )}
     </div>
   );
