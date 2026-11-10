@@ -69,7 +69,7 @@ export function MapToolbar({
           {open === "aire" ? (
             <div className="p-4">
               <LevelList />
-              <LegendNotes className="mt-4" />
+              <LegendNotes className="mt-8" />
             </div>
           ) : (
             <SensoresPanel
