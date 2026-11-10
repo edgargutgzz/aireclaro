@@ -98,7 +98,7 @@ export function MapToolbar({
           onClick={() => toggle("aire")}
           aria-expanded={open === "aire"}
           aria-controls={open === "aire" ? "map-toolbar-panel" : undefined}
-          className={`flex min-w-0 flex-[1.4] flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
+          className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
         >
           <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
             Calidad del aire
@@ -112,7 +112,7 @@ export function MapToolbar({
           onClick={() => toggle("sensores")}
           aria-expanded={open === "sensores"}
           aria-controls={open === "sensores" ? "map-toolbar-panel" : undefined}
-          className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("sensores")}`}
+          className={`flex flex-shrink-0 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("sensores")}`}
         >
           <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
             Sensores
