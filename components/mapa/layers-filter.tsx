@@ -8,7 +8,7 @@ type CheckState = 'checked' | 'indeterminate' | 'unchecked';
 // Styled after shadcn/ui's Checkbox (rounded-sm, border always in the
 // "primary" tone, filled + shadow only once checked) rather than a plain
 // light-gray box that suddenly turns dark.
-function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
+export function LayerCheckbox({ state, size }: { state: CheckState; size: number }) {
   if (state === 'unchecked') {
     return (
       <div

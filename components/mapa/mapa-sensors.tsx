@@ -38,7 +38,8 @@ import {
   fieldRadiusAt,
 } from "./field-layer";
 import { LayersFilterContent } from "./layers-filter";
-import { ScaleBar, LegendDetail, AirQualityLegend } from "./air-quality-legend";
+import { ScaleBar, LegendDetail } from "./air-quality-legend";
+import { MapToolbar } from "./map-toolbar";
 import { AirNowPanel, GroupRecommendations, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
@@ -132,7 +133,6 @@ export default function MapaSensors({
 
   const [showFilters, setShowFilters] = useState(false);
   const [showLegend, setShowLegend] = useState(false); // mobile only — the air-quality legend as a bottom sheet
-  const [showFiltrosContent, setShowFiltrosContent] = useState(false); // desktop only — Filtros body starts collapsed
   // The style is parsed, so the marker field can be added and drawn; the
   // stations don't wait on a single basemap tile.
   const [styleReady, setStyleReady] = useState(false);
@@ -290,19 +290,6 @@ export default function MapaSensors({
   markerableIdsRef.current = markerableIds;
   const dataRef = useRef(data);
   dataRef.current = data;
-
-  // What the panel says about itself in its own header, so the collapsed card
-  // answers "is the map filtered?" rather than holding 380px of empty glass
-  // around one word. Counted over sensors that actually have a reading, since
-  // those are the only ones drawn: a total that included silent sensors would
-  // never match the dots you can see.
-  const capasSummary = useMemo(() => {
-    const reporting = new Set(data.map((d) => d.sensor_id));
-    const mapped = sensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
-    if (!mapped) return null;
-    const shown = visibleSensors.filter((sensor) => reporting.has(sensor.sensor_id)).length;
-    return shown === mapped ? "Todos" : `${shown} de ${mapped}`;
-  }, [sensors, visibleSensors, data]);
 
   // The newest reading anywhere in the data set, which is what the freshness
   // badge reports. Kept as a Date rather than a formatted string: the badge needs to know how
@@ -1148,71 +1135,24 @@ export default function MapaSensors({
 
       {/* Desktop toolbar column, bottom-left, 24px from the sidebar (2026-11-09,
           it was the right column's foot): the toolbar's bottom edge lines up
-          with the sidebar's, and the Sensores panel opens above it. Narrow
-          desktops cap its width so it never runs off the map. */}
+          with the sidebar's, and its panel opens upward out of the bar
+          (MapToolbar). Narrow desktops cap its width so it never runs off
+          the map. */}
       <div className="pointer-events-none absolute bottom-6 left-[508px] top-6 z-10 hidden w-[min(460px,calc(100%-532px))] flex-col md:flex">
         <div className="mt-auto flex min-h-0 w-full flex-col gap-2">
-          {showFiltrosContent && (
-            <div id="sensores-panel" className="glass pointer-events-auto flex min-h-0 w-full flex-col overflow-hidden rounded-2xl">
-              {/* Header in the "label · summary" idiom, with a close X. The
-                  panel is "Sensores" on screen; "Capas" stays its name in
-                  code. */}
-              <div className="flex min-h-14 w-full flex-shrink-0 items-center gap-1.5 px-5 py-4">
-                <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-400">Sensores</span>
-                {capasSummary && (
-                  <span className="min-w-0 flex-1 truncate text-xs leading-none text-neutral-500">· {capasSummary}</span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setShowFiltrosContent(false)}
-                  aria-label="Cerrar sensores"
-                  className="-my-1 -mr-1 ml-auto flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-                >
-                  <X aria-hidden="true" className="h-4 w-4" />
-                </button>
-              </div>
-              {/* Only the body scrolls; overscroll-contain stops a scroll
-                  that reaches the end from panning the map underneath. */}
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <LayersFilterContent
-                showOtros={showOtros}
-                setShowOtros={setShowOtros}
-                showOccamm={showOccamm}
-                setShowOccamm={setShowOccamm}
-                showSima={showSima}
-                setShowSima={setShowSima}
-                estados={estados}
-                sourceCounts={sourceCounts}
-                hiddenMunicipios={hiddenMunicipios}
-                setHiddenMunicipios={setHiddenMunicipios}
-                onShowOccammInfo={() => setShowOccammInfo(true)}
-                onShowFuenteInfo={() => setShowFuenteInfo(true)}
-              />
-              </div>
-            </div>
-          )}
-          {/* The map's toolbar, desktop (option C, 2026-11-09): one glass bar
-              at the foot of the right column, the air-quality scale on the
-              left (opens upward) and the Sensores button on the right behind
-              a hairline (it was an icon button stacked above the scale).
-              Mobile carries the scale as the Wind button's bottom sheet. */}
-          <div className="glass pointer-events-auto w-full flex-shrink-0 overflow-hidden rounded-2xl">
-            <AirQualityLegend
-              collapsible
-              trailing={
-                <button
-                  type="button"
-                  onClick={() => setShowFiltrosContent((v) => !v)}
-                  aria-expanded={showFiltrosContent}
-                  aria-controls="sensores-panel"
-                  className={`flex flex-shrink-0 items-center gap-2 px-5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${showFiltrosContent ? "bg-stone-900/[0.04] text-neutral-900" : "text-neutral-700 hover:text-neutral-900"}`}
-                >
-                  <Layers aria-hidden="true" className="h-5 w-5" />
-                  Sensores
-                </button>
-              }
-            />
-          </div>
+          <MapToolbar
+            showSima={showSima}
+            setShowSima={setShowSima}
+            showOccamm={showOccamm}
+            setShowOccamm={setShowOccamm}
+            showOtros={showOtros}
+            setShowOtros={setShowOtros}
+            sourceCounts={sourceCounts}
+            estados={estados}
+            hiddenMunicipios={hiddenMunicipios}
+            setHiddenMunicipios={setHiddenMunicipios}
+            onShowFuenteInfo={() => setShowFuenteInfo(true)}
+          />
         </div>
       </div>
 
@@ -1361,6 +1301,19 @@ export default function MapaSensors({
                     mucha humedad. Por eso, sus lecturas se ajustan con la fórmula
                     de corrección de la EPA de EE. UU.
                   </p>
+                </>
+              ),
+            },
+            {
+              title: "OCCAMM",
+              body: (
+                <>
+                  Red de sensores del{" "}
+                  <DialogLink href="/quienes-somos">
+                    Observatorio Ciudadano de la Calidad del Aire
+                  </DialogLink>
+                  , una organización de la sociedad civil dedicada a mejorar la
+                  calidad del aire en la Zona Metropolitana de Monterrey.
                 </>
               ),
             },
