@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import { ChevronRight, Info, Landmark, MapPin, Users } from "lucide-react";
+import { Check, Info, Landmark, MapPin, Users } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
 
@@ -14,8 +14,8 @@ import { LayerCheckbox } from "./layers-filter";
 //
 // Sensores: Gobierno, then Sensores Ciudadanos with OCCAMM and Otros always
 // shown under it (no hidden sub-rows, 2026-11-09). Ubicación, its own button
-// since 2026-11-10: one native municipality select instead of a nested
-// state / municipality list.
+// since 2026-11-10: one list of municipalities grouped by state, a single
+// choice.
 // Same filter state as mobile, so the URL (?src= / ?hide=) is unchanged.
 
 type Estado = { key: string; label: string; count: number; municipios: { key: string; label: string; count: number }[] };
@@ -85,7 +85,7 @@ export function MapToolbar({
               <LegendNotes className="mt-8" />
             </div>
           ) : open === "ubicacion" ? (
-            <UbicacionPanel estados={estados} hiddenMunicipios={hiddenMunicipios} setHiddenMunicipios={setHiddenMunicipios} />
+            <UbicacionPanel estados={estados} hiddenMunicipios={hiddenMunicipios} setHiddenMunicipios={setHiddenMunicipios} onChosen={() => setOpen(null)} />
           ) : (
             <SensoresPanel
               showSima={showSima}
@@ -187,39 +187,55 @@ function UbicacionPanel({
   estados,
   hiddenMunicipios,
   setHiddenMunicipios,
-}: Pick<Parameters<typeof MapToolbar>[0], "estados" | "hiddenMunicipios" | "setHiddenMunicipios">) {
-  // The select shows one municipality or all of them. A ?hide= link with any
-  // other mix reads as "Varios municipios" until a choice replaces it.
+  onChosen,
+}: Pick<Parameters<typeof MapToolbar>[0], "estados" | "hiddenMunicipios" | "setHiddenMunicipios"> & { onChosen: () => void }) {
+  // One municipality or all of them, as a list in the Sensores panel's card
+  // material (2026-11-10, it was a native select whose OS popup broke the
+  // panel's look). A ?hide= link with any other mix checks no row until a
+  // choice replaces it. Choosing closes the panel so the map can frame it.
   const { allKeys, value } = municipioValue(estados, hiddenMunicipios);
-  const choose = (key: string) => setHiddenMunicipios(key === "" ? [] : allKeys.filter((k) => k !== key));
+  const choose = (key: string) => {
+    setHiddenMunicipios(key === "" ? [] : allKeys.filter((k) => k !== key));
+    onChosen();
+  };
 
   return (
-    <div className="p-4">
-      <label htmlFor="map-toolbar-municipio" className="block px-1 pb-3 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-        Municipio
-      </label>
-      <div className="relative">
-        <select
-          id="map-toolbar-municipio"
-          value={value}
-          onChange={(e) => choose(e.target.value)}
-          className="w-full appearance-none rounded-xl border border-stone-200 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-        >
-          <option value="">Todos los municipios</option>
-          {value === "varios" && <option value="varios" disabled>Varios municipios</option>}
-          {estados.map((estado) => (
-            <optgroup key={estado.key} label={estado.label}>
-              {estado.municipios.map((m) => (
-                <option key={m.key} value={m.key}>
-                  {m.label} ({m.count})
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-        <ChevronRight aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-400" />
+    <div role="radiogroup" aria-label="Ubicación" className="p-4">
+      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+        <MunicipioRow label="Todos los municipios" checked={value === ""} onClick={() => choose("")} />
       </div>
+      {estados.map((estado) => (
+        <div key={estado.key}>
+          <p className="px-1 pb-3 pt-5 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{estado.label}</p>
+          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            {estado.municipios.map((m) => (
+              <MunicipioRow key={m.key} label={m.label} count={m.count} checked={value === m.key} onClick={() => choose(m.key)} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
+  );
+}
+
+// One choice in the Ubicación list: a check in a fixed lead column (so every
+// label sits on one rail), the name, its sensor count; rows split by a
+// hairline, the source rows' type and hover.
+function MunicipioRow({ label, count, checked, onClick }: { label: string; count?: number; checked: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={checked}
+      onClick={onClick}
+      className="flex w-full items-center gap-3 border-t border-stone-100 py-3 pl-4 pr-4 text-left transition-colors first:border-t-0 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+    >
+      <span className="flex w-4 flex-shrink-0 justify-center">
+        {checked && <Check aria-hidden="true" className="h-4 w-4 text-neutral-900" />}
+      </span>
+      <span className={`min-w-0 flex-1 truncate text-sm ${checked ? "font-semibold text-neutral-900" : "font-medium text-neutral-700"}`}>{label}</span>
+      {count !== undefined && <span className="flex-shrink-0 text-sm tabular-nums text-neutral-500">{count}</span>}
+    </button>
   );
 }
 
