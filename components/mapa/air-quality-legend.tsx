@@ -13,7 +13,8 @@ import { AdviceText } from "./station-card";
 // All spans, so the bar is valid phrasing content inside the disclosure
 // <button>. Decorative: the level list is the readable key.
 // `current`: a PM2.5 reading to mark on the bar (the sidebar's, 2026-11-10),
-// a dot in its level's colour at the middle of that level's segment. The
+// a small white dot wholly inside the bar at the middle of that level's
+// segment. The
 // segments are equal width, so the dot names the level, not a position
 // within it.
 export function ScaleBar({ className = "", labels = "thresholds", current = null }: { className?: string; labels?: "thresholds" | "ends"; current?: number | null }) {
@@ -30,8 +31,8 @@ export function ScaleBar({ className = "", labels = "thresholds", current = null
         </span>
         {currentLevel && (
           <span
-            className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white"
-            style={{ left: `${((currentIndex + 0.5) / count) * 100}%`, backgroundColor: currentLevel.color, boxShadow: `0 0 0 1px ${currentLevel.ink}, 0 1px 2px rgba(0,0,0,0.15)` }}
+            className="absolute top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
+            style={{ left: `${((currentIndex + 0.5) / count) * 100}%`, boxShadow: "0 0 0 1px rgba(0,0,0,0.25)" }}
           />
         )}
       </span>
