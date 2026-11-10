@@ -55,6 +55,16 @@ export function MapToolbar({
   // (the Fuente info opens one from the panel).
   const rootRef = useRef<HTMLDivElement>(null);
 
+  // Sensores opens down to its notes' first row (2026-11-10): the
+  // Estaciones de Gobierno line shows, the next one peeks under the fade,
+  // and the rest is a scroll away.
+  const sourceNotesRef = useRef<HTMLDivElement>(null);
+  const [sensoresHeight, setSensoresHeight] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    const second = sourceNotesRef.current?.querySelectorAll("dt")[1] as HTMLElement | undefined;
+    setSensoresHeight(open === "sensores" && second ? second.offsetTop + 14 : null);
+  }, [open]);
+
   // Any open panel that has more below its fold fades out at the bottom
   // edge; the fade goes once it is scrolled to the end.
   const panelRef = useRef<HTMLDivElement>(null);
@@ -63,7 +73,7 @@ export function MapToolbar({
     const el = panelRef.current;
     setMoreBelow(!!el && el.scrollHeight - el.scrollTop - el.clientHeight > 1);
   };
-  useLayoutEffect(checkMoreBelow, [open]);
+  useLayoutEffect(checkMoreBelow, [open, sensoresHeight]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
@@ -92,10 +102,10 @@ export function MapToolbar({
           ref={panelRef}
           id="map-toolbar-panel"
           onScroll={checkMoreBelow}
-          className="disclosure-in-up min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          className="disclosure-in-up relative min-h-0 flex-1 overflow-y-auto overscroll-contain"
           // Ubicación is capped too (2026-11-10): the list of municipalities
           // never needs the whole column; the rest scrolls under the fade.
-          style={open === "ubicacion" ? { maxHeight: 360 } : undefined}
+          style={open === "ubicacion" ? { maxHeight: 360 } : open === "sensores" && sensoresHeight ? { maxHeight: sensoresHeight } : undefined}
         >
           {open === "aire" ? (
             <div className="p-4">
@@ -114,6 +124,11 @@ export function MapToolbar({
               sourceCounts={sourceCounts}
             />
           )}
+          {open === "sensores" && (
+            <div ref={sourceNotesRef} className="px-4 pb-5">
+              <SourceNotes />
+            </div>
+          )}
           {/* Sticky to the panel's bottom edge, taking no space of its own. */}
           {moreBelow && (
             <div aria-hidden="true" className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-gradient-to-t from-white to-white/0" />
@@ -127,13 +142,7 @@ export function MapToolbar({
           <LegendNotes />
         </div>
       )}
-      {/* What each source is, pinned the same way (2026-11-10, it was an
-          info icon opening the Fuente dialog, which mobile keeps). */}
-      {open === "sensores" && (
-        <div className="flex-shrink-0 px-4 pb-5">
-          <SourceNotes />
-        </div>
-      )}
+
 
       <div className={`flex flex-shrink-0 items-stretch ${open ? "border-t border-stone-900/10" : ""}`}>
         {/* Closed-bar option D (2026-11-09): both halves share one shape, the
