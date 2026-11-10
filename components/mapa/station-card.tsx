@@ -449,7 +449,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
           footnote, pinned to the sidebar's foot outside the scroll
           (2026-11-10), its text on the cards' rail (24px in). */}
       {quality && (
-        <dl className="relative mx-6 grid flex-shrink-0 grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pb-5 pt-4 text-xs leading-relaxed">
+        <dl className="relative mx-6 grid flex-shrink-0 grid-cols-[auto_1fr] gap-x-4 gap-y-2 pb-5 pt-4 text-xs leading-relaxed">
           {/* The station's name is in the card's foot (2026-11-09); this
               row says why it is the one shown. */}
           <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
