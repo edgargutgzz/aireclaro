@@ -394,7 +394,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
   };
   useLayoutEffect(() => {
     const second = footRef.current?.querySelectorAll("dt")[1] as HTMLElement | undefined;
-    setFootHeight(second ? second.offsetTop + 14 : null);
+    setFootHeight(second ? second.offsetTop + 6 : null);
   }, [subject.sensor.source]);
   useLayoutEffect(checkFootMore, [footHeight]);
 
@@ -470,7 +470,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
           className="relative mx-6 flex-shrink-0 overflow-y-auto overscroll-contain"
           style={footHeight ? { maxHeight: footHeight } : undefined}
         >
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pb-3 pt-4 text-xs leading-relaxed">
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pb-5 pt-4 text-xs leading-relaxed">
           {/* The station's name is in the card's foot (2026-11-09); this
               row says why it is the one shown. */}
           <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
