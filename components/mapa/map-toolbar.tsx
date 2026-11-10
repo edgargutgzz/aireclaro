@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import { Check, ChevronRight, Landmark, MapPin, Users } from "lucide-react";
+import { Check, ChevronRight, Landmark, MapPin, Users, X } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
 import { DialogLink } from "./info-dialog";
@@ -23,6 +23,8 @@ import { AdviceText } from "./station-card";
 type Estado = { key: string; label: string; count: number; municipios: { key: string; label: string; count: number }[] };
 
 type Panel = "aire" | "sensores" | "ubicacion" | null;
+
+const PANEL_TITLE = { aire: "Calidad del aire", sensores: "Sensores", ubicacion: "Ubicación" } as const;
 
 export function MapToolbar({
   showSima,
@@ -54,6 +56,7 @@ export function MapToolbar({
   // anywhere outside the toolbar (2026-11-10), except inside an open dialog
   // (the Fuente info opens one from the panel).
   const rootRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
 
   // Sensores opens down to its notes' first row (2026-11-10): the
   // Estaciones de Gobierno line shows, the next one peeks under the fade,
@@ -79,7 +82,7 @@ export function MapToolbar({
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
     const onPointer = (e: PointerEvent) => {
       const target = e.target as Element | null;
-      if (!target || rootRef.current?.contains(target) || target.closest("dialog[open]")) return;
+      if (!target || rootRef.current?.contains(target) || cardRef.current?.contains(target) || target.closest("dialog[open]")) return;
       setOpen(null);
     };
     window.addEventListener("keydown", onKey);
@@ -94,17 +97,107 @@ export function MapToolbar({
     `transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${open === p ? "bg-stone-900/[0.05]" : "hover:bg-stone-900/[0.03]"}`;
 
   return (
-    // Its own glass card under the desktop sidebar (2026-11-10), an open panel
-    // capped at 70% of the column so the air card above stays in view.
-    <div ref={rootRef} className="glass flex max-h-[70%] min-h-0 w-full flex-shrink-0 flex-col overflow-hidden rounded-2xl">
-      {open && (
-        // Only the panel scrolls, so a short window never pushes the bar off
-        // the map; overscroll-contain keeps the scroll from panning the map.
+    <>
+    {/* Its own glass card under the desktop sidebar (2026-11-10). */}
+    <div ref={rootRef} className="glass flex w-full flex-shrink-0 flex-col overflow-hidden rounded-2xl">
+      {/* Two rows (2026-11-10): Sensores and Ubicación side by side on top,
+          Calidad del aire's scale full width under them. */}
+      <div className="flex flex-shrink-0 flex-col">
+        <div className="flex items-stretch">
+          <button
+            type="button"
+            onClick={() => toggle("sensores")}
+            aria-expanded={open === "sensores"}
+            aria-controls={open === "sensores" ? "map-toolbar-panel" : undefined}
+            className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("sensores")}`}
+          >
+            <span className="flex items-center justify-between gap-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+              Sensores
+              <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
+            </span>
+            {/* The map's two source icons and their counts; a source switched
+                off in the panel fades here too, so the bar says the map is
+                filtered without opening it. */}
+            <span className="flex items-center gap-4 text-[13px] leading-none tabular-nums text-neutral-600">
+              <span className={`flex items-center gap-1.5 ${showSima ? "" : "opacity-40"}`}>
+                <Landmark aria-hidden="true" className="h-3.5 w-3.5" />
+                <span className="sr-only">Estaciones de Gobierno:</span>
+                {sourceCounts.gobierno}
+              </span>
+              <span className={`flex items-center gap-1.5 ${showOccamm || showOtros ? "" : "opacity-40"}`}>
+                <Users aria-hidden="true" className="h-3.5 w-3.5" />
+                <span className="sr-only">Sensores Ciudadanos:</span>
+                {sourceCounts.ciudadanos}
+              </span>
+            </span>
+          </button>
+          <span aria-hidden="true" className={`w-px flex-shrink-0 bg-stone-900/10 ${open ? "" : "my-3"}`} />
+          {/* Ubicación as its own button (2026-11-10, it was the foot of the
+              Sensores panel): the closed bar names the municipality shown. */}
+          <button
+            type="button"
+            onClick={() => toggle("ubicacion")}
+            aria-expanded={open === "ubicacion"}
+            aria-controls={open === "ubicacion" ? "map-toolbar-panel" : undefined}
+            className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("ubicacion")}`}
+          >
+            <span className="flex items-center justify-between gap-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+              Ubicación
+              <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
+            </span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-none text-neutral-600">
+              <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
+              {municipioLabel(estados, hiddenMunicipios)}
+            </span>
+          </button>
+        </div>
+        <span aria-hidden="true" className="mx-5 h-px bg-stone-900/10" />
+        {/* Every button shares one shape, the label on top and a small key
+            to the map below it (option D, 2026-11-09). */}
+        <button
+          type="button"
+          onClick={() => toggle("aire")}
+          aria-expanded={open === "aire"}
+          aria-controls={open === "aire" ? "map-toolbar-panel" : undefined}
+          className={`flex w-full flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
+        >
+          <span className="flex items-center justify-between gap-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+            Calidad del aire
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
+          </span>
+          {/* Open, the bar shows the breaks, the axis for the list's bounds. */}
+          <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} />
+        </button>
+      </div>
+    </div>
+    {/* An open panel is a glass card of its own 16px right of the left
+        column, its bottom on the bar's (2026-11-10, it unfolded upward out
+        of the bar), the Grupos sensibles card's width and header. Absolute
+        to the left column, at most its height. */}
+    {open && (
+      <section
+        ref={cardRef}
+        aria-label={PANEL_TITLE[open]}
+        className="glass absolute bottom-0 left-[calc(100%+16px)] flex max-h-full w-full flex-col overflow-hidden rounded-2xl"
+      >
+        <div className="flex flex-shrink-0 items-center justify-between gap-3 px-5 pb-1 pt-4">
+          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{PANEL_TITLE[open]}</span>
+          <button
+            type="button"
+            onClick={() => setOpen(null)}
+            aria-label="Cerrar"
+            className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          >
+            <X aria-hidden="true" className="h-4 w-4" />
+          </button>
+        </div>
+        {/* Only the panel scrolls; overscroll-contain keeps the scroll from
+            panning the map. */}
         <div
           ref={panelRef}
           id="map-toolbar-panel"
           onScroll={checkMoreBelow}
-          className="disclosure-in-up relative min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          className="disclosure-in relative min-h-0 flex-1 overflow-y-auto overscroll-contain"
           // Ubicación is capped too (2026-11-10): the list of municipalities
           // never needs the whole column; the rest scrolls under the fade.
           style={open === "ubicacion" ? { maxHeight: 360 } : open === "sensores" && sensoresHeight ? { maxHeight: sensoresHeight } : undefined}
@@ -136,83 +229,16 @@ export function MapToolbar({
             <div aria-hidden="true" className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-gradient-to-t from-white to-white/0" />
           )}
         </div>
-      )}
-      {/* The legend's notes, pinned under the level list outside the scroll
-          (2026-11-10), like the sidebar's footnote. */}
-      {open === "aire" && (
-        <div className="flex-shrink-0 px-4 pb-5">
-          <LegendNotes />
-        </div>
-      )}
-
-
-      {/* Two rows (2026-11-10): Sensores and Ubicación side by side on top,
-          Calidad del aire's scale full width under them. */}
-      <div className={`flex flex-shrink-0 flex-col ${open ? "border-t border-stone-900/10" : ""}`}>
-        <div className="flex items-stretch">
-          <button
-            type="button"
-            onClick={() => toggle("sensores")}
-            aria-expanded={open === "sensores"}
-            aria-controls={open === "sensores" ? "map-toolbar-panel" : undefined}
-            className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("sensores")}`}
-          >
-            <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-              Sensores
-            </span>
-            {/* The map's two source icons and their counts; a source switched
-                off in the panel fades here too, so the bar says the map is
-                filtered without opening it. */}
-            <span className="flex items-center gap-4 text-[13px] leading-none tabular-nums text-neutral-600">
-              <span className={`flex items-center gap-1.5 ${showSima ? "" : "opacity-40"}`}>
-                <Landmark aria-hidden="true" className="h-3.5 w-3.5" />
-                <span className="sr-only">Estaciones de Gobierno:</span>
-                {sourceCounts.gobierno}
-              </span>
-              <span className={`flex items-center gap-1.5 ${showOccamm || showOtros ? "" : "opacity-40"}`}>
-                <Users aria-hidden="true" className="h-3.5 w-3.5" />
-                <span className="sr-only">Sensores Ciudadanos:</span>
-                {sourceCounts.ciudadanos}
-              </span>
-            </span>
-          </button>
-          <span aria-hidden="true" className={`w-px flex-shrink-0 bg-stone-900/10 ${open ? "" : "my-3"}`} />
-          {/* Ubicación as its own button (2026-11-10, it was the foot of the
-              Sensores panel): the closed bar names the municipality shown. */}
-          <button
-            type="button"
-            onClick={() => toggle("ubicacion")}
-            aria-expanded={open === "ubicacion"}
-            aria-controls={open === "ubicacion" ? "map-toolbar-panel" : undefined}
-            className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("ubicacion")}`}
-          >
-            <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-              Ubicación
-            </span>
-            <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-none text-neutral-600">
-              <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
-              {municipioLabel(estados, hiddenMunicipios)}
-            </span>
-          </button>
-        </div>
-        <span aria-hidden="true" className="mx-5 h-px bg-stone-900/10" />
-        {/* Every button shares one shape, the label on top and a small key
-            to the map below it (option D, 2026-11-09). */}
-        <button
-          type="button"
-          onClick={() => toggle("aire")}
-          aria-expanded={open === "aire"}
-          aria-controls={open === "aire" ? "map-toolbar-panel" : undefined}
-          className={`flex w-full flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
-        >
-          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-            Calidad del aire
-          </span>
-          {/* Open, the bar shows the breaks, the axis for the list's bounds. */}
-          <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} />
-        </button>
-      </div>
-    </div>
+        {/* The legend's notes, pinned under the level list outside the
+            scroll, like the sidebar's footnote. */}
+        {open === "aire" && (
+          <div className="flex-shrink-0 px-4 pb-5">
+            <LegendNotes />
+          </div>
+        )}
+      </section>
+    )}
+    </>
   );
 }
 
