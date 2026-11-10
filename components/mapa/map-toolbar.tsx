@@ -325,7 +325,6 @@ function SensoresPanel({
 
   return (
     <div className="p-4">
-      <p className="px-1 pb-3 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Fuente</p>
       {/* Lista de fuentes option A (2026-11-09): one card per source, the
           legend's grouped-list material. Ciudadanos keeps its two networks
           under its own row on a pale ground, no dividers, smaller type, their
