@@ -297,6 +297,8 @@ function SourceNotes() {
       <dd className="text-neutral-600">
         Red del <DialogLink href="/quienes-somos">Observatorio Ciudadano de la Calidad del Aire</DialogLink>
       </dd>
+      <dt className="font-medium text-neutral-500">Otros</dt>
+      <dd className="text-neutral-600">Sensores de PurpleAir que no forman parte de la red de OCCAMM.</dd>
     </dl>
   );
 }
