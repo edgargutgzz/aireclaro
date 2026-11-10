@@ -1133,13 +1133,14 @@ export default function MapaSensors({
 
       </div>
 
-      {/* Desktop toolbar column, bottom-left, 64px from the sidebar (2026-11-09,
-          it was the right column's foot): the toolbar's bottom edge lines up
-          with the sidebar's, and its panel opens upward out of the bar
-          (MapToolbar). Narrow desktops cap its width so it never runs off
-          the map. */}
-      <div className="pointer-events-none absolute bottom-6 left-[548px] top-6 z-10 hidden w-[min(520px,calc(100%-572px))] flex-col md:flex">
-        <div className="mt-auto flex min-h-0 w-full flex-col gap-2">
+      {/* Desktop toolbar, centred on the map area right of the sidebar
+          (2026-11-10): the column spans from the sidebar's edge to the map's
+          right edge and centres the bar in it. The toolbar's bottom edge lines
+          up with the sidebar's, and its panel opens upward out of the bar
+          (MapToolbar). Narrow desktops cap its width so it keeps a 24px gap
+          on both sides. */}
+      <div className="pointer-events-none absolute bottom-6 left-[484px] right-0 top-6 z-10 hidden flex-col items-center md:flex">
+        <div className="mt-auto flex min-h-0 w-[min(520px,calc(100%-48px))] flex-col gap-2">
           <MapToolbar
             showSima={showSima}
             setShowSima={setShowSima}
