@@ -55,17 +55,6 @@ export function MapToolbar({
   // (the Fuente info opens one from the panel).
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // The legend opens showing only the level list; its notes wait below, a
-  // scroll away (2026-11-10). The panel's height is capped at the list's
-  // bottom plus 56px: the top padding and a peek of the notes' hairline
-  // under a fade, so the panel reads as having more below.
-  const levelsRef = useRef<HTMLDivElement>(null);
-  const [aireHeight, setAireHeight] = useState<number | null>(null);
-  useLayoutEffect(() => {
-    if (open !== "aire" || !levelsRef.current) return;
-    setAireHeight(levelsRef.current.offsetHeight + 56);
-  }, [open]);
-
   // Any open panel that has more below its fold fades out at the bottom
   // edge; the fade goes once it is scrolled to the end.
   const panelRef = useRef<HTMLDivElement>(null);
@@ -74,7 +63,7 @@ export function MapToolbar({
     const el = panelRef.current;
     setMoreBelow(!!el && el.scrollHeight - el.scrollTop - el.clientHeight > 1);
   };
-  useLayoutEffect(checkMoreBelow, [open, aireHeight]);
+  useLayoutEffect(checkMoreBelow, [open]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
@@ -106,14 +95,11 @@ export function MapToolbar({
           className="disclosure-in-up min-h-0 flex-1 overflow-y-auto overscroll-contain"
           // Ubicación is capped too (2026-11-10): the list of municipalities
           // never needs the whole column; the rest scrolls under the fade.
-          style={open === "aire" && aireHeight ? { maxHeight: aireHeight } : open === "ubicacion" ? { maxHeight: 360 } : undefined}
+          style={open === "ubicacion" ? { maxHeight: 360 } : undefined}
         >
           {open === "aire" ? (
-            <div className="px-4 pb-8 pt-4">
-              <div ref={levelsRef}>
-                <LevelList />
-              </div>
-              <LegendNotes className="mt-8" />
+            <div className="p-4">
+              <LevelList />
             </div>
           ) : open === "ubicacion" ? (
             <UbicacionPanel estados={estados} hiddenMunicipios={hiddenMunicipios} setHiddenMunicipios={setHiddenMunicipios} onChosen={() => setOpen(null)} />
@@ -133,6 +119,13 @@ export function MapToolbar({
           {moreBelow && (
             <div aria-hidden="true" className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-gradient-to-t from-white to-white/0" />
           )}
+        </div>
+      )}
+      {/* The legend's notes, pinned under the level list outside the scroll
+          (2026-11-10), like the sidebar's footnote. */}
+      {open === "aire" && (
+        <div className="flex-shrink-0 px-4 pb-5">
+          <LegendNotes />
         </div>
       )}
 
