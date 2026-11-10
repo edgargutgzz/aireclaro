@@ -1138,7 +1138,7 @@ export default function MapaSensors({
           with the sidebar's, and its panel opens upward out of the bar
           (MapToolbar). Narrow desktops cap its width so it never runs off
           the map. */}
-      <div className="pointer-events-none absolute bottom-6 left-[508px] top-6 z-10 hidden w-[min(600px,calc(100%-532px))] flex-col md:flex">
+      <div className="pointer-events-none absolute bottom-6 left-[508px] top-6 z-10 hidden w-[min(520px,calc(100%-532px))] flex-col md:flex">
         <div className="mt-auto flex min-h-0 w-full flex-col gap-2">
           <MapToolbar
             showSima={showSima}
