@@ -86,7 +86,7 @@ export function AdviceText({ advice, full, className, source = "NOM-172-SEMARNAT
 // The advice for each sensitive group, behind a disclosure (the general
 // advice already sits in the reading, StationReading). The header row carries
 // the label, its info icon and the chevron; nothing below it renders until it
-// is opened. The mobile sheet; the desktop sidebar lists the groups open
+// is opened. The mobile sheet; the desktop sidebar has its own, as cards
 // (AirNowPanel).
 export function GroupRecommendations({ info, onShowInfo }: { info: QualityInfo; onShowInfo: () => void }) {
   const [open, setOpen] = useState(false);
@@ -376,6 +376,10 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
 // its reading's time, top right in the header.
 export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; freshness: Freshness | null }) {
   const quality = getQualityInfo(subject.pm25);
+  // Grupos sensibles starts closed (2026-11-10): Población general leads,
+  // the groups are one tap away.
+  const [groupsOpen, setGroupsOpen] = useState(false);
+  const groupsId = `grupos-sensibles-${useId().replace(/:/g, "")}`;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -393,7 +397,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
         // `relative`: the scroll box must be the positioning context, or an
         // absolutely positioned descendant (the footnote link's sr-only
         // label) escapes its clip and makes the whole page scroll.
-        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8 pt-6">
+        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-6">
           {/* The Capas panel's grouped-list material ("B" list, picked
               2026-11-02): a white bordered card, rows divided by hairlines.
               Each row leads with its group icon in a pale level-tinted disc;
@@ -410,12 +414,34 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           </section>
 
           <section className="mt-3" aria-label="Grupos sensibles">
-            {/* One row per distinct advice (groupByAdvice): groups join only
+            {/* The disclosure row, in the advice cards' material: both
+                groups' icons in their level-tinted discs, the label, a
+                chevron that turns when open. */}
+            <button
+              type="button"
+              onClick={() => setGroupsOpen((v) => !v)}
+              aria-expanded={groupsOpen}
+              aria-controls={groupsId}
+              className="group flex w-full items-center gap-3.5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+            >
+              <span aria-hidden="true" className="flex">
+                {SENSITIVE_GROUPS.map((g, i) => (
+                  <span
+                    key={g.key}
+                    className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white ${i > 0 ? "-ml-2.5" : ""}`}
+                    style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 14%, white)`, color: quality.textColor }}
+                  >
+                    <g.icon className="h-[18px] w-[18px]" />
+                  </span>
+                ))}
+              </span>
+              <span className="min-w-0 flex-1 text-sm font-semibold text-neutral-900">Grupos sensibles</span>
+              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-[color,transform] duration-200 group-hover:text-neutral-600 ${groupsOpen ? "rotate-90" : ""}`} />
+            </button>
+            {/* One card per distinct advice (groupByAdvice): groups join only
                 on an exact match of the official text, nothing is reworded.
-                No visible title (removed 2026-11-02): the group names lead
-                each row. One card per advice (2026-11-03), the same card as
-                Población general's. */}
-            <ul className="space-y-3">
+                Kept mounted so aria-controls always resolves. */}
+            <ul id={groupsId} hidden={!groupsOpen} className="disclosure-in mt-3 space-y-3">
               {groupByAdvice(quality).map(({ advice, groups, full }) => (
                 <li key={advice} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
                   <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} full={full} />
@@ -423,25 +449,27 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
               ))}
             </ul>
           </section>
-
-          {/* Where the reading and the advice come from, always visible as a
-              quiet footnote in label / value rows (they were two info-button
-              popups, then a run-on sentence; both replaced 2026-11-02). */}
-          <dl className="mx-2 mt-8 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-5 text-xs leading-relaxed">
-            {/* The station's name is in the card's foot (2026-11-09); this
-                row says why it is the one shown. */}
-            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
-            <dd className="text-neutral-600">
-              {subject.sensor.source === "sima"
-                ? "Nivel más alto de la ZMM"
-                : "Ciudadano, el más cercano a Obispado, sin estaciones del SIMA en vivo"}
-            </dd>
-            <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
-            <dd className="text-neutral-600">
-              <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
-            </dd>
-          </dl>
         </div>
+      )}
+
+      {/* Where the reading and the advice come from: the quiet hairline
+          footnote, pinned to the sidebar's foot outside the scroll
+          (2026-11-10), its text on the cards' rail (24px in). */}
+      {quality && (
+        <dl className="relative mx-6 grid flex-shrink-0 grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pb-5 pt-4 text-xs leading-relaxed">
+          {/* The station's name is in the card's foot (2026-11-09); this
+              row says why it is the one shown. */}
+          <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
+          <dd className="text-neutral-600">
+            {subject.sensor.source === "sima"
+              ? "Nivel más alto de la ZMM"
+              : "Ciudadano, el más cercano a Obispado, sin estaciones del SIMA en vivo"}
+          </dd>
+          <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
+          <dd className="text-neutral-600">
+            <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
+          </dd>
+        </dl>
       )}
     </div>
   );
