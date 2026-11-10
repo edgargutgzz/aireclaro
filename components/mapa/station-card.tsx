@@ -437,7 +437,6 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
             </dd>
             <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
             <dd className="text-neutral-600">
-              Índice de Aire y Salud,{" "}
               <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
             </dd>
           </dl>
