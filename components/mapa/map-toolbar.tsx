@@ -280,7 +280,7 @@ function SourceNotes() {
     <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
       <dt className="font-medium text-neutral-500">Estaciones de Gobierno</dt>
       <dd className="text-neutral-600">
-        Estaciones de monitoreo que forman parte del{" "}
+        Estaciones de monitoreo oficiales que forman parte del{" "}
         <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>.
       </dd>
       <dt className="font-medium text-neutral-500">Sensores Ciudadanos</dt>
