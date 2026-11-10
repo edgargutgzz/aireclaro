@@ -1329,7 +1329,7 @@ export default function MapaSensors({
                   </p>
                   <p className="mt-2">
                     Al ser de bajo costo, pueden sobreestimar las PM2.5 cuando hay
-                    mucha humedad. Por eso, sus lecturas se ajustan con la fórmula
+                    mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula
                     de corrección de la EPA de EE. UU.
                   </p>
                 </>

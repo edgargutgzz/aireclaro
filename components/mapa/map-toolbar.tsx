@@ -286,7 +286,7 @@ function SourceNotes() {
       <dd className="text-neutral-600">
         <AdviceText
           advice="PurpleAir, red global de monitoreo comunitario"
-          full="Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones independientes. Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por eso, sus lecturas se ajustan con la fórmula de corrección de la EPA de EE. UU."
+          full="Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones independientes. Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula de corrección de la EPA de EE. UU."
           source={null}
           className=""
         />
