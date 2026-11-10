@@ -32,7 +32,7 @@ export function ScaleBar({ className = "", labels = "thresholds", current = null
         {currentLevel && (
           <span
             className="absolute top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
-            style={{ left: `${((currentIndex + 0.5) / count) * 100}%`, boxShadow: "0 0 0 1px rgba(0,0,0,0.25)" }}
+            style={{ left: `${((currentIndex + 0.5) / count) * 100}%`, boxShadow: "0 0 0 1px #000" }}
           />
         )}
       </span>
