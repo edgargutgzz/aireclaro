@@ -369,10 +369,11 @@ export default function MapaSensors({
   const summaryFreshness = useMemo(() => toFreshness(summarySelection, latestReading, now), [summarySelection, latestReading, now]);
 
   // The marker that wears the pulse: activeSubject (mobile: the pick, else the
-  // default the sheet rests on; desktop: the pick only). Mirrored into refs
+  // default the sheet rests on; desktop: the pick, else the sidebar's station,
+  // which its card names, 2026-11-09). Mirrored into refs
   // so the map event handlers read the current value without being rebuilt on
   // each pick.
-  const activeSensorId = activeSubject?.sensor.sensor_id ?? null;
+  const activeSensorId = (activeSubject ?? (isDesktop ? summarySelection : null))?.sensor.sensor_id ?? null;
   activeSensorIdRef.current = activeSensorId;
 
   // The pulse halo is a large soft translucent fill, so it takes the official

@@ -287,8 +287,9 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // homepage card (components/home/air-now-card.tsx).
 // `stretch` fills its container's height (the homepage card, beside the
 // advice card), the level block growing and the foot staying at the bottom.
-// `place` (the homepage, 2026-11-04) names the area in the foot, right of the
-// time, with the location arrow; the map doesn't need it.
+// `place` names where the reading stands for in the foot, right of the time,
+// with the location arrow: the metro area on the homepage (2026-11-04), the
+// station on the map (2026-11-09).
 export function AirNowHeader({ subject, freshness, stretch = false, place }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
@@ -382,7 +383,9 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           word left, the value right, text in numberInk. Quieter than the
           full-bleed block it replaces, and the glass shows around it. */}
       <header className="flex-shrink-0 px-4 pt-4">
-        <AirNowHeader subject={subject} freshness={freshness} />
+        {/* The map names the station in the foot (2026-11-09); the homepage
+            says only the metro area, which is what the level stands for. */}
+        <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} />
       </header>
 
       {quality && (
@@ -424,14 +427,14 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
               quiet footnote in label / value rows (they were two info-button
               popups, then a run-on sentence; both replaced 2026-11-02). */}
           <dl className="mx-2 mt-8 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-5 text-xs leading-relaxed">
-            <dt className="font-medium text-neutral-500">Calidad del aire</dt>
+            {/* The station's name is in the card's foot (2026-11-09); this
+                row says why it is the one shown. */}
+            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación" : "Sensor"}</dt>
             <dd className="text-neutral-600">
               {subject.sensor.source === "sima"
-                ? "Nivel máximo registrado en la ZMM"
-                : "Sensor ciudadano más cercano a Obispado, sin estaciones del SIMA en vivo"}
+                ? "Nivel más alto de la ZMM"
+                : "Ciudadano, el más cercano a Obispado, sin estaciones del SIMA en vivo"}
             </dd>
-            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación de Gobierno" : "Sensor"}</dt>
-            <dd className="text-neutral-600">{displayName(subject.sensor)}</dd>
             <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
             <dd className="text-neutral-600">
               Índice de Aire y Salud,{" "}
