@@ -429,7 +429,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           <dl className="mx-2 mt-8 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-5 text-xs leading-relaxed">
             {/* The station's name is in the card's foot (2026-11-09); this
                 row says why it is the one shown. */}
-            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación" : "Sensor"}</dt>
+            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
             <dd className="text-neutral-600">
               {subject.sensor.source === "sima"
                 ? "Nivel más alto de la ZMM"
