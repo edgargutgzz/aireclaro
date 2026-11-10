@@ -286,10 +286,14 @@ function SourceNotes() {
       <dt className="font-medium text-neutral-500">Sensores Ciudadanos</dt>
       <dd className="text-neutral-600">
         <AdviceText
-          advice="Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones independientes que forman parte de la red PurpleAir."
+          advice="Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones independientes."
           full={
             <>
               <p>
+                Los datos provienen de <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>, la
+                plataforma donde se registran estos sensores.
+              </p>
+              <p className="mt-2">
                 Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula
                 de corrección de la EPA de EE. UU.
               </p>
