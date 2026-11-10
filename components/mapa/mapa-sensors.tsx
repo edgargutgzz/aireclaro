@@ -1183,7 +1183,6 @@ export default function MapaSensors({
             estados={estados}
             hiddenMunicipios={hiddenMunicipios}
             setHiddenMunicipios={setHiddenMunicipios}
-            onShowFuenteInfo={() => setShowFuenteInfo(true)}
           />
         </div>
       </div>

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import { Check, Info, Landmark, MapPin, Users } from "lucide-react";
+import { Check, Landmark, MapPin, Users } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
+import { DialogLink } from "./info-dialog";
+import { AdviceText } from "./station-card";
 
 // The desktop map's toolbar (option A of the opened-state mockups,
 // 2026-11-09): one glass piece at the bottom-left, beside the sidebar. The bar
@@ -33,7 +35,6 @@ export function MapToolbar({
   estados,
   hiddenMunicipios,
   setHiddenMunicipios,
-  onShowFuenteInfo,
 }: {
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
@@ -45,7 +46,6 @@ export function MapToolbar({
   estados: Estado[];
   hiddenMunicipios: string[];
   setHiddenMunicipios: Dispatch<SetStateAction<string[]>>;
-  onShowFuenteInfo: () => void;
 }) {
   const [open, setOpen] = useState<Panel>(null);
   const toggle = (p: Exclude<Panel, null>) => setOpen((cur) => (cur === p ? null : p));
@@ -112,7 +112,6 @@ export function MapToolbar({
               showOtros={showOtros}
               setShowOtros={setShowOtros}
               sourceCounts={sourceCounts}
-              onShowFuenteInfo={onShowFuenteInfo}
             />
           )}
           {/* Sticky to the panel's bottom edge, taking no space of its own. */}
@@ -126,6 +125,13 @@ export function MapToolbar({
       {open === "aire" && (
         <div className="flex-shrink-0 px-4 pb-5">
           <LegendNotes />
+        </div>
+      )}
+      {/* What each source is, pinned the same way (2026-11-10, it was an
+          info icon opening the Fuente dialog, which mobile keeps). */}
+      {open === "sensores" && (
+        <div className="flex-shrink-0 px-4 pb-5">
+          <SourceNotes />
         </div>
       )}
 
@@ -267,6 +273,32 @@ function MunicipioRow({ label, count, checked, onClick }: { label: string; count
   );
 }
 
+// The Fuente dialog's text as the legend notes' label / value rows; the
+// citizen sensors' humidity caveat behind the advice text's "Ver más".
+function SourceNotes() {
+  return (
+    <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
+      <dt className="font-medium text-neutral-500">Gobierno</dt>
+      <dd className="text-neutral-600">
+        <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>, Gobierno de Nuevo León
+      </dd>
+      <dt className="font-medium text-neutral-500">Ciudadanos</dt>
+      <dd className="text-neutral-600">
+        <AdviceText
+          advice="PurpleAir, red global de monitoreo comunitario"
+          full="Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones independientes. Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por eso, sus lecturas se ajustan con la fórmula de corrección de la EPA de EE. UU."
+          source={null}
+          className=""
+        />
+      </dd>
+      <dt className="font-medium text-neutral-500">OCCAMM</dt>
+      <dd className="text-neutral-600">
+        Red del <DialogLink href="/quienes-somos">Observatorio Ciudadano de la Calidad del Aire</DialogLink>
+      </dd>
+    </dl>
+  );
+}
+
 function SensoresPanel({
   showSima,
   setShowSima,
@@ -275,7 +307,6 @@ function SensoresPanel({
   showOtros,
   setShowOtros,
   sourceCounts,
-  onShowFuenteInfo,
 }: Omit<Parameters<typeof MapToolbar>[0], "estados" | "hiddenMunicipios" | "setHiddenMunicipios">) {
   // Sensores Ciudadanos is the parent of its two networks: its box checks or
   // clears both, and reads as mixed when only one is on.
@@ -294,17 +325,7 @@ function SensoresPanel({
 
   return (
     <div className="p-4">
-      <div className="flex items-center gap-1 px-1 pb-3">
-        <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Fuente</span>
-        <button
-          type="button"
-          onClick={onShowFuenteInfo}
-          aria-label="Más información sobre las fuentes de datos"
-          className="-my-1 rounded-xl p-1.5 text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-        >
-          <Info aria-hidden="true" className="h-3 w-3" />
-        </button>
-      </div>
+      <p className="px-1 pb-3 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Fuente</p>
       {/* Lista de fuentes option A (2026-11-09): one card per source, the
           legend's grouped-list material. Ciudadanos keeps its two networks
           under its own row on a pale ground, no dividers, smaller type, their
