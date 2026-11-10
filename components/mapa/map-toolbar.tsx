@@ -104,7 +104,9 @@ export function MapToolbar({
           id="map-toolbar-panel"
           onScroll={checkMoreBelow}
           className="disclosure-in-up min-h-0 flex-1 overflow-y-auto overscroll-contain"
-          style={open === "aire" && aireHeight ? { maxHeight: aireHeight } : undefined}
+          // Ubicación is capped too (2026-11-10): the list of municipalities
+          // never needs the whole column; the rest scrolls under the fade.
+          style={open === "aire" && aireHeight ? { maxHeight: aireHeight } : open === "ubicacion" ? { maxHeight: 360 } : undefined}
         >
           {open === "aire" ? (
             <div className="px-4 pb-8 pt-4">
