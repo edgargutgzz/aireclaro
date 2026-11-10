@@ -281,8 +281,7 @@ function SourceNotes() {
       <dt className="font-medium text-neutral-500">Estaciones de Gobierno</dt>
       <dd className="text-neutral-600">
         Estaciones de monitoreo que forman parte del{" "}
-        <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>, operado por el
-        Gobierno de Nuevo León.
+        <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>.
       </dd>
       <dt className="font-medium text-neutral-500">Sensores Ciudadanos</dt>
       <dd className="text-neutral-600">
