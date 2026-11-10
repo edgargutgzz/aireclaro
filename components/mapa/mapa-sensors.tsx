@@ -857,9 +857,12 @@ export default function MapaSensors({
     framedMunicipiosRef.current = hiddenMunicipios;
     const m = map.current;
     if (!m) return;
-    const duration = prefersReducedMotion() ? 0 : undefined;
+    // Only set when reduced motion asks for a jump: an explicit
+    // `duration: undefined` overrides MapLibre's default and the camera
+    // never moves (Saltillo did not frame, 2026-11-10).
+    const motion = prefersReducedMotion() ? { duration: 0 } : {};
     if (hiddenMunicipios.length === 0) {
-      m.easeTo({ ...restingFocus(defaultSelection), duration });
+      m.easeTo({ ...restingFocus(defaultSelection), ...motion });
       return;
     }
     const shown = sensors.filter((s) => !hiddenMunicipios.includes(municipioKey(s.municipio) ?? ""));
@@ -868,7 +871,7 @@ export default function MapaSensors({
     const lats = shown.map((s) => s.lat);
     m.fitBounds(
       [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
-      { padding: { top: 64, right: 64, bottom: 120, left: 64 }, maxZoom: 13, duration },
+      { padding: { top: 64, right: 64, bottom: 120, left: 64 }, maxZoom: 13, ...motion },
     );
   }, [hiddenMunicipios, sensors, defaultSelection]);
 
@@ -1167,7 +1170,7 @@ export default function MapaSensors({
           sidebar's edge instead, and narrow desktops cap its width so it never
           runs off the map. The toolbar's bottom edge lines up with the
           sidebar's, and its panel opens upward out of the bar (MapToolbar). */}
-      <div className="pointer-events-none absolute bottom-6 left-[max(508px,calc(50%-340px))] top-6 z-10 hidden w-[min(680px,calc(100%-532px))] flex-col md:flex">
+      <div className="pointer-events-none absolute bottom-6 left-[max(508px,calc(50%-320px))] top-6 z-10 hidden w-[min(640px,calc(100%-532px))] flex-col md:flex">
         <div className="mt-auto flex min-h-0 w-full flex-col gap-2">
           <MapToolbar
             showSima={showSima}
