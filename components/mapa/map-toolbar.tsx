@@ -12,8 +12,8 @@ import { LayerCheckbox } from "./layers-filter";
 // active button shaded, and switching between the two swaps the panel's
 // content in place. Mobile keeps its own buttons and bottom sheets.
 //
-// Sensores, flattened here: three sources (Gobierno, OCCAMM, Otros) instead of
-// "Sensores Ciudadanos" with two hidden sub-rows, and the location as one
+// Sensores: Gobierno, then Sensores Ciudadanos with OCCAMM and Otros always
+// shown under it (no hidden sub-rows, 2026-11-09), and the location as one
 // native municipality select instead of a nested state / municipality list.
 // Same filter state as mobile, so the URL (?src= / ?hide=) is unchanged.
 
@@ -40,7 +40,7 @@ export function MapToolbar({
   setShowOccamm: Dispatch<SetStateAction<boolean>>;
   showOtros: boolean;
   setShowOtros: Dispatch<SetStateAction<boolean>>;
-  sourceCounts: { occamm: number; otros: number; gobierno: number };
+  sourceCounts: { occamm: number; otros: number; ciudadanos: number; gobierno: number };
   estados: Estado[];
   hiddenMunicipios: string[];
   setHiddenMunicipios: Dispatch<SetStateAction<string[]>>;
@@ -132,10 +132,19 @@ function SensoresPanel({
   setHiddenMunicipios,
   onShowFuenteInfo,
 }: Parameters<typeof MapToolbar>[0]) {
-  const sources = [
-    { key: "sima", label: "Estaciones de Gobierno", icon: Landmark, on: showSima, set: setShowSima, count: sourceCounts.gobierno },
-    { key: "occamm", label: "OCCAMM", icon: Users, on: showOccamm, set: setShowOccamm, count: sourceCounts.occamm },
-    { key: "otros", label: "Otros sensores ciudadanos", icon: Users, on: showOtros, set: setShowOtros, count: sourceCounts.otros },
+  // Sensores Ciudadanos is the parent of its two networks: its box checks or
+  // clears both, and reads as mixed when only one is on.
+  const citizen = showOccamm && showOtros ? "checked" : !showOccamm && !showOtros ? "unchecked" : "indeterminate";
+  const toggleCitizen = () => {
+    const next = citizen !== "checked";
+    setShowOccamm(next);
+    setShowOtros(next);
+  };
+  const rows: { key: string; label: string; icon?: typeof Users; state: "checked" | "unchecked" | "indeterminate"; onClick: () => void; count: number; child?: boolean }[] = [
+    { key: "sima", label: "Estaciones de Gobierno", icon: Landmark, state: showSima ? "checked" : "unchecked", onClick: () => setShowSima((v) => !v), count: sourceCounts.gobierno },
+    { key: "ciudadanos", label: "Sensores Ciudadanos", icon: Users, state: citizen, onClick: toggleCitizen, count: sourceCounts.ciudadanos },
+    { key: "occamm", label: "OCCAMM", state: showOccamm ? "checked" : "unchecked", onClick: () => setShowOccamm((v) => !v), count: sourceCounts.occamm, child: true },
+    { key: "otros", label: "Otros", state: showOtros ? "checked" : "unchecked", onClick: () => setShowOtros((v) => !v), count: sourceCounts.otros, child: true },
   ];
 
   // The select shows one municipality or all of them. A ?hide= link with any
@@ -160,18 +169,20 @@ function SensoresPanel({
       </div>
       {/* The legend's grouped-list card, so both panels share one material. */}
       <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-        {sources.map(({ key, label, icon: Icon, on, set, count }) => (
+        {rows.map(({ key, label, icon: Icon, state, onClick, count, child }) => (
           <li key={key} className="border-t border-stone-100 first:border-t-0">
+            {/* The two networks sit under Sensores Ciudadanos, their boxes on
+                the parent's label rail (16 + 18 + 12 + 16 + 12 = pl-[74px]). */}
             <button
               type="button"
               role="checkbox"
-              aria-checked={on}
-              onClick={() => set((v) => !v)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+              aria-checked={state === "indeterminate" ? "mixed" : state === "checked"}
+              onClick={onClick}
+              className={`flex w-full items-center gap-3 py-3 pr-4 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${child ? "pl-[74px]" : "pl-4"}`}
             >
-              <LayerCheckbox state={on ? "checked" : "unchecked"} size={18} />
-              <Icon aria-hidden="true" className={`h-4 w-4 flex-shrink-0 ${on ? "text-neutral-500" : "text-neutral-300"}`} />
-              <span className={`min-w-0 flex-1 truncate text-sm font-semibold ${on ? "text-neutral-900" : "text-neutral-400"}`}>{label}</span>
+              <LayerCheckbox state={state} size={18} />
+              {Icon && <Icon aria-hidden="true" className={`h-4 w-4 flex-shrink-0 ${state === "unchecked" ? "text-neutral-300" : "text-neutral-500"}`} />}
+              <span className={`min-w-0 flex-1 truncate text-sm ${child ? "font-medium" : "font-semibold"} ${state === "unchecked" ? "text-neutral-400" : child ? "text-neutral-600" : "text-neutral-900"}`}>{label}</span>
               <span className="flex-shrink-0 text-sm tabular-nums text-neutral-500">{count}</span>
             </button>
           </li>
