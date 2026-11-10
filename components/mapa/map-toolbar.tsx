@@ -159,7 +159,7 @@ function SensoresPanel({
     setShowOccamm(next);
     setShowOtros(next);
   };
-  const rows: { key: string; label: string; icon?: typeof Users; state: "checked" | "unchecked" | "indeterminate"; onClick: () => void; count: number; child?: boolean }[] = [
+  const rows: { key: string; label: string; icon?: typeof Users; state: CheckState; onClick: () => void; count: number; child?: boolean }[] = [
     { key: "sima", label: "Estaciones de Gobierno", icon: Landmark, state: showSima ? "checked" : "unchecked", onClick: () => setShowSima((v) => !v), count: sourceCounts.gobierno },
     { key: "ciudadanos", label: "Sensores Ciudadanos", icon: Users, state: citizen, onClick: toggleCitizen, count: sourceCounts.ciudadanos },
     { key: "occamm", label: "OCCAMM", state: showOccamm ? "checked" : "unchecked", onClick: () => setShowOccamm((v) => !v), count: sourceCounts.occamm, child: true },
@@ -186,27 +186,22 @@ function SensoresPanel({
           <Info aria-hidden="true" className="h-3 w-3" />
         </button>
       </div>
-      {/* The legend's grouped-list card, so both panels share one material. */}
-      <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-        {rows.map(({ key, label, icon: Icon, state, onClick, count, child }) => (
-          <li key={key} className="border-t border-stone-100 first:border-t-0">
-            {/* The two networks sit under Sensores Ciudadanos, their boxes on
-                the parent's label rail (16 + 18 + 12 + 16 + 12 = pl-[74px]). */}
-            <button
-              type="button"
-              role="checkbox"
-              aria-checked={state === "indeterminate" ? "mixed" : state === "checked"}
-              onClick={onClick}
-              className={`flex w-full items-center gap-3 py-3 pr-4 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${child ? "pl-[74px]" : "pl-4"}`}
-            >
-              <LayerCheckbox state={state} size={18} />
-              {Icon && <Icon aria-hidden="true" className={`h-4 w-4 flex-shrink-0 ${state === "unchecked" ? "text-neutral-300" : "text-neutral-500"}`} />}
-              <span className={`min-w-0 flex-1 truncate text-sm ${child ? "font-medium" : "font-semibold"} ${state === "unchecked" ? "text-neutral-400" : child ? "text-neutral-600" : "text-neutral-900"}`}>{label}</span>
-              <span className="flex-shrink-0 text-sm tabular-nums text-neutral-500">{count}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+      {/* Lista de fuentes option A (2026-11-09): one card per source, the
+          legend's grouped-list material. Ciudadanos keeps its two networks
+          under its own row on a pale ground, no dividers, smaller type, their
+          boxes under the parent's icon so every box sits on one of two rails. */}
+      <div className="flex flex-col gap-2">
+        <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+          <SourceRow {...rows[0]} />
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+          <SourceRow {...rows[1]} />
+          <div role="group" aria-label="Redes de sensores ciudadanos" className="border-t border-stone-100 bg-stone-50 py-1">
+            <SourceRow {...rows[2]} />
+            <SourceRow {...rows[3]} />
+          </div>
+        </div>
+      </div>
 
       <label htmlFor="map-toolbar-municipio" className="block px-1 pb-3 pt-5 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
         Ubicación
@@ -233,5 +228,26 @@ function SensoresPanel({
         <ChevronRight aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-neutral-400" />
       </div>
     </div>
+  );
+}
+
+type CheckState = "checked" | "unchecked" | "indeterminate";
+
+// One source as a checkbox row. `child`: a network under Sensores Ciudadanos,
+// smaller, its box under the parent's icon (16 + 18 + 12 = pl-[46px]).
+function SourceRow({ label, icon: Icon, state, onClick, count, child }: { label: string; icon?: typeof Users; state: CheckState; onClick: () => void; count: number; child?: boolean }) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={state === "indeterminate" ? "mixed" : state === "checked"}
+      onClick={onClick}
+      className={`flex w-full items-center gap-3 pr-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${child ? "py-2 pl-[46px] hover:bg-stone-100" : "py-3 pl-4 hover:bg-stone-50"}`}
+    >
+      <LayerCheckbox state={state} size={child ? 16 : 18} />
+      {Icon && <Icon aria-hidden="true" className={`h-4 w-4 flex-shrink-0 ${state === "unchecked" ? "text-neutral-300" : "text-neutral-500"}`} />}
+      <span className={`min-w-0 flex-1 truncate ${child ? "text-[13px] font-medium" : "text-sm font-semibold"} ${state === "unchecked" ? "text-neutral-400" : child ? "text-neutral-600" : "text-neutral-900"}`}>{label}</span>
+      <span className={`flex-shrink-0 tabular-nums text-neutral-500 ${child ? "text-[13px]" : "text-sm"}`}>{count}</span>
+    </button>
   );
 }
