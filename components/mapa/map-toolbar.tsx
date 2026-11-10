@@ -226,7 +226,7 @@ function municipioValue(estados: Estado[], hiddenMunicipios: string[]) {
 
 function municipioLabel(estados: Estado[], hiddenMunicipios: string[]) {
   const { value } = municipioValue(estados, hiddenMunicipios);
-  if (value === "") return "Todos";
+  if (value === "") return "Todos los municipios";
   if (value === "varios") return "Varios";
   return estados.flatMap((e) => e.municipios).find((m) => m.key === value)?.label ?? "Todos";
 }
