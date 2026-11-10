@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
@@ -376,12 +376,11 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
 // Then a footnote: which station the reading is and where the advice comes
 // from. `subject` is the default station (pickDefaultSensor); `freshness` is
 // its reading's time, top right in the header.
-export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; freshness: Freshness | null }) {
+// `groupsOpen` / `onToggleGroups`: the Grupos sensibles row opens its advice
+// in a card of its own beside the sidebar (SensitiveGroupsCard, placed by the
+// map page, 2026-11-10); closed by default.
+export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: { subject: SelectedSensor; freshness: Freshness | null; groupsOpen: boolean; onToggleGroups: () => void }) {
   const quality = getQualityInfo(subject.pm25);
-  // Grupos sensibles starts closed (2026-11-10): Población general leads,
-  // the groups are one tap away.
-  const [groupsOpen, setGroupsOpen] = useState(false);
-  const groupsId = `grupos-sensibles-${useId().replace(/:/g, "")}`;
 
   // The footnote shows its first row and the top of the next under a fade,
   // the rest a scroll away inside it (2026-11-10): there is more, it just
@@ -432,15 +431,16 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           </section>
 
           <section className="mt-3" aria-label="Grupos sensibles">
-            {/* The disclosure row, in the advice cards' material: both
-                groups' icons in their level-tinted discs, the label, a
-                chevron that turns when open. */}
+            {/* The row that opens the groups' card, in the advice cards'
+                material: both groups' icons in their level-tinted discs, the
+                label, a chevron pointing to where the card opens; shaded
+                while it is open. */}
             <button
               type="button"
-              onClick={() => setGroupsOpen((v) => !v)}
+              onClick={onToggleGroups}
               aria-expanded={groupsOpen}
-              aria-controls={groupsId}
-              className="group flex w-full items-center gap-3.5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+              aria-controls={groupsOpen ? "grupos-sensibles" : undefined}
+              className={`group flex w-full items-center gap-3.5 rounded-2xl border border-stone-200 px-[18px] py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${groupsOpen ? "bg-stone-100" : "bg-white hover:bg-stone-50"}`}
             >
               <span aria-hidden="true" className="flex">
                 {SENSITIVE_GROUPS.map((g, i) => (
@@ -454,18 +454,8 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
                 ))}
               </span>
               <span className="min-w-0 flex-1 text-sm font-semibold text-neutral-900">Grupos sensibles</span>
-              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-[color,transform] duration-200 group-hover:text-neutral-600 ${groupsOpen ? "rotate-90" : ""}`} />
+              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 transition-colors group-hover:text-neutral-600 ${groupsOpen ? "text-neutral-600" : "text-neutral-400"}`} />
             </button>
-            {/* One card per distinct advice (groupByAdvice): groups join only
-                on an exact match of the official text, nothing is reworded.
-                Kept mounted so aria-controls always resolves. */}
-            <ul id={groupsId} hidden={!groupsOpen} className="disclosure-in mt-3 space-y-3">
-              {groupByAdvice(quality).map(({ advice, groups, full }) => (
-                <li key={advice} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-                  <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} full={full} />
-                </li>
-              ))}
-            </ul>
           </section>
         </div>
       )}
@@ -480,7 +470,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
           className="relative mx-6 flex-shrink-0 overflow-y-auto overscroll-contain"
           style={footHeight ? { maxHeight: footHeight } : undefined}
         >
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pb-5 pt-4 text-xs leading-relaxed">
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pb-3 pt-4 text-xs leading-relaxed">
           {/* The station's name is in the card's foot (2026-11-09); this
               row says why it is the one shown. */}
           <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
@@ -500,5 +490,36 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
         </div>
       )}
     </div>
+  );
+}
+
+// The sensitive groups' advice as a glass card of its own, opened from the
+// sidebar's Grupos sensibles row and placed beside the sidebar by the map
+// page (2026-11-10). One card per distinct advice (groupByAdvice): groups
+// join only on an exact match of the official text, nothing is reworded.
+export function SensitiveGroupsCard({ subject, onClose }: { subject: SelectedSensor; onClose: () => void }) {
+  const quality = getQualityInfo(subject.pm25);
+  if (!quality) return null;
+  return (
+    <section id="grupos-sensibles" aria-label="Grupos sensibles" className="glass pointer-events-auto flex max-h-full min-h-0 flex-col overflow-hidden rounded-2xl">
+      <div className="flex flex-shrink-0 items-center justify-between gap-3 px-5 pb-3 pt-4">
+        <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Grupos sensibles</span>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Cerrar"
+          className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+        >
+          <X aria-hidden="true" className="h-4 w-4" />
+        </button>
+      </div>
+      <ul className="disclosure-in min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-4">
+        {groupByAdvice(quality).map(({ advice, groups, full }) => (
+          <li key={advice} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} full={full} />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

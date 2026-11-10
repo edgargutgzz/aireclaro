@@ -40,7 +40,7 @@ import {
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail } from "./air-quality-legend";
 import { MapToolbar } from "./map-toolbar";
-import { AirNowPanel, GroupRecommendations, StationReading } from "./station-card";
+import { AirNowPanel, GroupRecommendations, SensitiveGroupsCard, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
@@ -139,6 +139,8 @@ export default function MapaSensors({
   const [showOtros, setShowOtros] = useState(() => seedSource("otros"));
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
+  // The sidebar's Grupos sensibles card, beside the sidebar (desktop).
+  const [groupsOpen, setGroupsOpen] = useState(false);
   const [showSima, setShowSima] = useState(() => seedSource("gob"));
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>(seedHidden);
   const [showOccamm, setShowOccamm] = useState(() => seedSource("occamm"));
@@ -980,7 +982,12 @@ export default function MapaSensors({
       <div className="absolute bottom-6 left-6 top-6 z-20 hidden w-panel-lg flex-col gap-4 md:flex">
       <aside aria-label="Calidad del aire" className="glass flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
         {summarySelection && (
-          <AirNowPanel subject={summarySelection} freshness={summaryFreshness} />
+          <AirNowPanel
+            subject={summarySelection}
+            freshness={summaryFreshness}
+            groupsOpen={groupsOpen}
+            onToggleGroups={() => setGroupsOpen((v) => !v)}
+          />
         )}
       </aside>
         <MapToolbar
@@ -996,6 +1003,14 @@ export default function MapaSensors({
           setHiddenMunicipios={setHiddenMunicipios}
         />
       </div>
+
+      {/* Grupos sensibles, opened from the sidebar: a glass card 16px right
+          of the left column, at its top (2026-11-10). */}
+      {groupsOpen && summarySelection && (
+        <div className="pointer-events-none absolute bottom-6 left-[500px] top-6 z-20 hidden w-[380px] md:block">
+          <SensitiveGroupsCard subject={summarySelection} onClose={() => setGroupsOpen(false)} />
+        </div>
+      )}
 
       {/* Map area: the whole screen at every width (on desktop it runs under
           the glass sidebar). */}
