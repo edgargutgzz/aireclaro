@@ -947,22 +947,6 @@ export default function MapaSensors({
         {summarySelection && (
           <AirNowPanel subject={summarySelection} freshness={summaryFreshness} />
         )}
-        {/* The map toolbar, docked as the sidebar's foot (2026-11-10, it
-            floated over the map beside the sidebar): one surface with the
-            air right now, its panel opening upward inside the sidebar. */}
-        <MapToolbar
-          showSima={showSima}
-          setShowSima={setShowSima}
-          showOccamm={showOccamm}
-          setShowOccamm={setShowOccamm}
-          showOtros={showOtros}
-          setShowOtros={setShowOtros}
-          sourceCounts={sourceCounts}
-          estados={estados}
-          hiddenMunicipios={hiddenMunicipios}
-          setHiddenMunicipios={setHiddenMunicipios}
-          onShowFuenteInfo={() => setShowFuenteInfo(true)}
-        />
       </aside>
 
       {/* Map area: the whole screen at every width (on desktop it runs under
@@ -1147,6 +1131,29 @@ export default function MapaSensors({
         )}
 
 
+      </div>
+
+      {/* Desktop toolbar, centred on the page (2026-11-10). On a screen too
+          narrow to centre it clear of the sidebar it stops 24px from the
+          sidebar's edge instead, and narrow desktops cap its width so it never
+          runs off the map. The toolbar's bottom edge lines up with the
+          sidebar's, and its panel opens upward out of the bar (MapToolbar). */}
+      <div className="pointer-events-none absolute bottom-6 left-[max(508px,calc(50%-260px))] top-6 z-10 hidden w-[min(520px,calc(100%-532px))] flex-col md:flex">
+        <div className="mt-auto flex min-h-0 w-full flex-col gap-2">
+          <MapToolbar
+            showSima={showSima}
+            setShowSima={setShowSima}
+            showOccamm={showOccamm}
+            setShowOccamm={setShowOccamm}
+            showOtros={showOtros}
+            setShowOtros={setShowOtros}
+            sourceCounts={sourceCounts}
+            estados={estados}
+            hiddenMunicipios={hiddenMunicipios}
+            setHiddenMunicipios={setHiddenMunicipios}
+            onShowFuenteInfo={() => setShowFuenteInfo(true)}
+          />
+        </div>
       </div>
 
       {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
