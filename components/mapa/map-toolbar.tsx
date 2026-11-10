@@ -278,11 +278,11 @@ function MunicipioRow({ label, count, checked, onClick }: { label: string; count
 function SourceNotes() {
   return (
     <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
-      <dt className="font-medium text-neutral-500">Gobierno</dt>
+      <dt className="font-medium text-neutral-500">Estaciones de gobierno</dt>
       <dd className="text-neutral-600">
         <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>, Gobierno de Nuevo León
       </dd>
-      <dt className="font-medium text-neutral-500">Ciudadanos</dt>
+      <dt className="font-medium text-neutral-500">Sensores ciudadanos</dt>
       <dd className="text-neutral-600">
         <AdviceText
           advice="PurpleAir, red global de monitoreo comunitario"
