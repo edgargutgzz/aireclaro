@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Info } from "lucide-react";
 import { IMECA_LEVELS } from "@/lib/air-quality";
-import { DialogLink, InfoDialog } from "./info-dialog";
+import { DialogLink } from "./info-dialog";
+import { AdviceText } from "./station-card";
 
 // The measurement itself, not just a colour key: a segmented PM2.5 scale with
 // the μg/m³ thresholds printed at the breaks, then a labelled row per level.
@@ -88,22 +87,11 @@ export function LegendDetail({ className = "" }: { className?: string }) {
 
 export function LegendNotes({ className = "" }: { className?: string }) {
   // The map only shows PM2.5, and it's the deliberate choice, not a limitation
-  // (methodology.md) — so the "what is it" text lives here, next to the unit
-  // line, rather than as a filter row for a filter with one option.
-  const [showPM25Info, setShowPM25Info] = useState(false);
-
+  // (methodology.md) — so the "what is it" text lives here, next to the
+  // pollutant line, behind the advice text's own "Ver más" (2026-11-10, it
+  // was an info icon opening a dialog).
   return (
     <div className={className}>
-      {showPM25Info && (
-        <InfoDialog title="PM2.5" onClose={() => setShowPM25Info(false)}>
-          <p className="text-sm leading-relaxed text-neutral-600">
-            Partículas en suspensión en el aire con un diámetro de 2.5
-            micrómetros o menos, unas 30 veces más delgadas que un cabello
-            humano. Evaden las defensas de la nariz y la garganta, por lo que son
-            las más peligrosas para la salud.
-          </p>
-        </InfoDialog>
-      )}
       {/* The notes as label / value rows, the sidebar footnote's format
           (2026-11-03). Both sources are hourly averages
           (docs/mapa-data-pipeline.md); the state's own map shows the índice
@@ -111,15 +99,12 @@ export function LegendNotes({ className = "" }: { className?: string }) {
       <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-xs leading-relaxed">
         <dt className="font-medium text-neutral-500">Contaminante</dt>
         <dd className="text-neutral-600">
-          PM2.5 en μg/m³, promedio de la última hora
-          <button
-            type="button"
-            onClick={() => setShowPM25Info(true)}
-            className="-my-1 ml-0.5 inline-flex rounded-xl p-1 align-middle text-neutral-400 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-            aria-label="Qué es PM2.5"
-          >
-            <Info aria-hidden="true" className="h-3 w-3" />
-          </button>
+          <AdviceText
+            advice="PM2.5 en μg/m³, promedio de la última hora"
+            full="Partículas en suspensión en el aire con un diámetro de 2.5 micrómetros o menos, unas 30 veces más delgadas que un cabello humano. Evaden las defensas de la nariz y la garganta, por lo que son las más peligrosas para la salud."
+            source={null}
+            className=""
+          />
         </dd>
         <dt className="font-medium text-neutral-500">Escala</dt>
         <dd className="text-neutral-600">
