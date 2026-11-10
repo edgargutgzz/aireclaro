@@ -310,6 +310,7 @@ function SourceNotes() {
             </>
           }
           source={null}
+            boxText="text-xs"
           className=""
         />
       </dd>

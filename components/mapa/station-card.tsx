@@ -51,7 +51,9 @@ export function groupByAdvice(info: QualityInfo) {
 // with the norm's name on its own line, while the short sentence stays in place (2026-11-05).
 // Closed by default. Also the map legend's PM2.5 explainer (2026-11-10, it
 // was an info icon and a dialog), with `source` null: no norm line.
-export function AdviceText({ advice, full, className, source = "NOM-172-SEMARNAT-2023" }: { advice: string; full?: ReactNode; className: string; source?: string | null }) {
+// `boxText`: the open box's type size, 14px beside the advice; the map's
+// 12px notes pass text-xs so the box matches the line it opens from.
+export function AdviceText({ advice, full, className, source = "NOM-172-SEMARNAT-2023", boxText = "text-sm" }: { advice: string; full?: ReactNode; className: string; source?: string | null; boxText?: string }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   return (
@@ -74,7 +76,7 @@ export function AdviceText({ advice, full, className, source = "NOM-172-SEMARNAT
         )}
       </p>
       {full && open && (
-        <div id={id} className="mt-2 rounded-lg bg-stone-100 px-3 py-2.5 text-sm leading-relaxed text-neutral-600">
+        <div id={id} className={`mt-2 rounded-lg bg-stone-100 px-3 py-2.5 leading-relaxed text-neutral-600 ${boxText}`}>
           {full}
           {source && <span className="mt-1.5 block text-xs text-neutral-400">{source}</span>}
         </div>

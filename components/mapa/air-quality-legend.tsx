@@ -103,6 +103,7 @@ export function LegendNotes({ className = "" }: { className?: string }) {
             advice="PM2.5 en μg/m³, promedio de la última hora"
             full="Partículas en suspensión en el aire con un diámetro de 2.5 micrómetros o menos, unas 30 veces más delgadas que un cabello humano. Evaden las defensas de la nariz y la garganta, por lo que son las más peligrosas para la salud."
             source={null}
+            boxText="text-xs"
             className=""
           />
         </dd>
