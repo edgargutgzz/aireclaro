@@ -243,7 +243,7 @@ function UbicacionPanel({
   return (
     <div role="radiogroup" aria-label="Ubicación" className="flex flex-col gap-2 p-4">
       <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-        <MunicipioRow label="Todos los municipios" checked={value === ""} onClick={() => choose("")} />
+        <MunicipioRow label="Todos" checked={value === ""} onClick={() => choose("")} />
       </div>
       {estados.map((estado) => {
         const isOpen = openStates.includes(estado.key);
