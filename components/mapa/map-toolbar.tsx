@@ -291,10 +291,7 @@ function SourceNotes() {
             <>
               <p>
                 Los datos provienen de <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>, la
-                plataforma donde se registran estos sensores.
-              </p>
-              <p className="mt-2">
-                Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula
+                plataforma donde se registran estos sensores. Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula
                 de corrección de la EPA de EE. UU.
               </p>
               {/* The two networks inside Sensores Ciudadanos (2026-11-10, they
