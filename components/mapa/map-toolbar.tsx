@@ -350,8 +350,8 @@ function SensoresPanel({
         <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
           <SourceRow {...rows[1]} />
           <div role="group" aria-label="Redes de sensores ciudadanos" className="border-t border-stone-100 bg-stone-50 py-1">
-            <SourceRow {...rows[2]} />
-            <SourceRow {...rows[3]} />
+            <SourceRow {...rows[2]} first />
+            <SourceRow {...rows[3]} last />
           </div>
         </div>
       </div>
@@ -363,15 +363,28 @@ type CheckState = "checked" | "unchecked" | "indeterminate";
 
 // One source as a checkbox row. `child`: a network under Sensores Ciudadanos,
 // smaller, its box under the parent's icon (16 + 18 + 12 = pl-[46px]).
-function SourceRow({ label, icon: Icon, state, onClick, count, child }: { label: string; icon?: typeof Users; state: CheckState; onClick: () => void; count: number; child?: boolean }) {
+function SourceRow({ label, icon: Icon, state, onClick, count, child, first, last }: { label: string; icon?: typeof Users; state: CheckState; onClick: () => void; count: number; child?: boolean; first?: boolean; last?: boolean }) {
   return (
     <button
       type="button"
       role="checkbox"
       aria-checked={state === "indeterminate" ? "mixed" : state === "checked"}
       onClick={onClick}
-      className={`flex w-full items-center gap-3 pr-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${child ? "py-2 pl-[46px] hover:bg-stone-100" : "py-3 pl-4 hover:bg-stone-50"}`}
+      className={`relative flex w-full items-center gap-3 pr-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${child ? "py-2 pl-[46px] hover:bg-stone-100" : "py-3 pl-4 hover:bg-stone-50"}`}
     >
+      {/* Tree line (2026-11-10): from under the parent's box (its centre,
+          16 + 9 = 25px in) down the networks, with a stub into each child's
+          box; it stops at the last child's middle with a rounded elbow. The
+          first child's segment reaches up through the group's 4px padding. */}
+      {child && (
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute left-[25px] w-[13px] border-l border-stone-300 ${first ? "-top-1" : "top-0"} ${last ? "h-1/2 rounded-bl-md border-b" : "bottom-0"}`}
+        />
+      )}
+      {child && !last && (
+        <span aria-hidden="true" className="pointer-events-none absolute left-[25px] top-1/2 w-[13px] border-t border-stone-300" />
+      )}
       <LayerCheckbox state={state} size={child ? 16 : 18} />
       {Icon && <Icon aria-hidden="true" className={`h-4 w-4 flex-shrink-0 ${state === "unchecked" ? "text-neutral-300" : "text-neutral-500"}`} />}
       <span className={`min-w-0 flex-1 truncate ${child ? "text-[13px] font-medium" : "text-sm font-semibold"} ${state === "unchecked" ? "text-neutral-400" : child ? "text-neutral-600" : "text-neutral-900"}`}>{label}</span>
