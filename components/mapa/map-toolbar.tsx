@@ -281,7 +281,7 @@ function SourceNotes() {
       <dt className="font-medium text-neutral-500">Estaciones de Gobierno</dt>
       <dd className="text-neutral-600">
         Estaciones de monitoreo que forman parte del{" "}
-        <DialogLink href="https://aire.nl.gob.mx/">Sistema Integral de Monitoreo Ambiental (SIMA)</DialogLink>, operado por el
+        <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>, operado por el
         Gobierno de Nuevo León.
       </dd>
       <dt className="font-medium text-neutral-500">Sensores Ciudadanos</dt>
