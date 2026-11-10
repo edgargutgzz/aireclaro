@@ -144,67 +144,70 @@ export function MapToolbar({
       )}
 
 
-      <div className={`flex flex-shrink-0 items-stretch ${open ? "border-t border-stone-900/10" : ""}`}>
-        {/* Closed-bar option D (2026-11-09): both halves share one shape, the
-            label on top and a small key to the map below it: the level scale
-            here, the two sources with their counts on the right. */}
+      {/* Two rows (2026-11-10): Sensores and Ubicación side by side on top,
+          Calidad del aire's scale full width under them. */}
+      <div className={`flex flex-shrink-0 flex-col ${open ? "border-t border-stone-900/10" : ""}`}>
+        <div className="flex items-stretch">
+          <button
+            type="button"
+            onClick={() => toggle("sensores")}
+            aria-expanded={open === "sensores"}
+            aria-controls={open === "sensores" ? "map-toolbar-panel" : undefined}
+            className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("sensores")}`}
+          >
+            <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+              Sensores
+            </span>
+            {/* The map's two source icons and their counts; a source switched
+                off in the panel fades here too, so the bar says the map is
+                filtered without opening it. */}
+            <span className="flex items-center gap-4 text-[13px] leading-none tabular-nums text-neutral-600">
+              <span className={`flex items-center gap-1.5 ${showSima ? "" : "opacity-40"}`}>
+                <Landmark aria-hidden="true" className="h-3.5 w-3.5" />
+                <span className="sr-only">Estaciones de Gobierno:</span>
+                {sourceCounts.gobierno}
+              </span>
+              <span className={`flex items-center gap-1.5 ${showOccamm || showOtros ? "" : "opacity-40"}`}>
+                <Users aria-hidden="true" className="h-3.5 w-3.5" />
+                <span className="sr-only">Sensores Ciudadanos:</span>
+                {sourceCounts.ciudadanos}
+              </span>
+            </span>
+          </button>
+          <span aria-hidden="true" className={`w-px flex-shrink-0 bg-stone-900/10 ${open ? "" : "my-3"}`} />
+          {/* Ubicación as its own button (2026-11-10, it was the foot of the
+              Sensores panel): the closed bar names the municipality shown. */}
+          <button
+            type="button"
+            onClick={() => toggle("ubicacion")}
+            aria-expanded={open === "ubicacion"}
+            aria-controls={open === "ubicacion" ? "map-toolbar-panel" : undefined}
+            className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("ubicacion")}`}
+          >
+            <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+              Ubicación
+            </span>
+            <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-none text-neutral-600">
+              <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
+              {municipioLabel(estados, hiddenMunicipios)}
+            </span>
+          </button>
+        </div>
+        <span aria-hidden="true" className="mx-5 h-px bg-stone-900/10" />
+        {/* Every button shares one shape, the label on top and a small key
+            to the map below it (option D, 2026-11-09). */}
         <button
           type="button"
           onClick={() => toggle("aire")}
           aria-expanded={open === "aire"}
           aria-controls={open === "aire" ? "map-toolbar-panel" : undefined}
-          className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
+          className={`flex w-full flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
         >
           <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
             Calidad del aire
           </span>
           {/* Open, the bar shows the breaks, the axis for the list's bounds. */}
           <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} />
-        </button>
-        <span aria-hidden="true" className={`w-px flex-shrink-0 bg-stone-900/10 ${open ? "" : "my-3"}`} />
-        <button
-          type="button"
-          onClick={() => toggle("sensores")}
-          aria-expanded={open === "sensores"}
-          aria-controls={open === "sensores" ? "map-toolbar-panel" : undefined}
-          className={`flex flex-shrink-0 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("sensores")}`}
-        >
-          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-            Sensores
-          </span>
-          {/* The map's two source icons and their counts; a source switched
-              off in the panel fades here too, so the bar says the map is
-              filtered without opening it. */}
-          <span className="flex items-center gap-4 text-[13px] leading-none tabular-nums text-neutral-600">
-            <span className={`flex items-center gap-1.5 ${showSima ? "" : "opacity-40"}`}>
-              <Landmark aria-hidden="true" className="h-3.5 w-3.5" />
-              <span className="sr-only">Estaciones de Gobierno:</span>
-              {sourceCounts.gobierno}
-            </span>
-            <span className={`flex items-center gap-1.5 ${showOccamm || showOtros ? "" : "opacity-40"}`}>
-              <Users aria-hidden="true" className="h-3.5 w-3.5" />
-              <span className="sr-only">Sensores Ciudadanos:</span>
-              {sourceCounts.ciudadanos}
-            </span>
-          </span>
-        </button>
-        <span aria-hidden="true" className={`w-px flex-shrink-0 bg-stone-900/10 ${open ? "" : "my-3"}`} />
-        {/* Ubicación as its own button (2026-11-10, it was the foot of the
-            Sensores panel): the closed bar names the municipality shown. */}
-        <button
-          type="button"
-          onClick={() => toggle("ubicacion")}
-          aria-expanded={open === "ubicacion"}
-          aria-controls={open === "ubicacion" ? "map-toolbar-panel" : undefined}
-          className={`flex flex-shrink-0 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("ubicacion")}`}
-        >
-          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-            Ubicación
-          </span>
-          <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-none text-neutral-600">
-            <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
-            {municipioLabel(estados, hiddenMunicipios)}
-          </span>
         </button>
       </div>
     </div>
