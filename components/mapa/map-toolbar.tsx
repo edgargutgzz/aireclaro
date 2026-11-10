@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { Check, Info, Landmark, MapPin, Users } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
@@ -54,6 +54,16 @@ export function MapToolbar({
   // anywhere outside the toolbar (2026-11-10), except inside an open dialog
   // (the Fuente info opens one from the panel).
   const rootRef = useRef<HTMLDivElement>(null);
+
+  // The legend opens showing only the level list; its notes wait below, a
+  // scroll away (2026-11-10). The panel's height is capped at the list's
+  // bottom plus the panel's 16px padding on both sides.
+  const levelsRef = useRef<HTMLDivElement>(null);
+  const [aireHeight, setAireHeight] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    if (open !== "aire" || !levelsRef.current) return;
+    setAireHeight(levelsRef.current.offsetHeight + 32);
+  }, [open]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
@@ -78,10 +88,16 @@ export function MapToolbar({
       {open && (
         // Only the panel scrolls, so a short window never pushes the bar off
         // the map; overscroll-contain keeps the scroll from panning the map.
-        <div id="map-toolbar-panel" className="disclosure-in-up min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div
+          id="map-toolbar-panel"
+          className="disclosure-in-up min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          style={open === "aire" && aireHeight ? { maxHeight: aireHeight } : undefined}
+        >
           {open === "aire" ? (
             <div className="px-4 pb-8 pt-4">
-              <LevelList />
+              <div ref={levelsRef}>
+                <LevelList />
+              </div>
               <LegendNotes className="mt-8" />
             </div>
           ) : open === "ubicacion" ? (
