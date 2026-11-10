@@ -1007,7 +1007,7 @@ export default function MapaSensors({
       {/* Grupos sensibles, opened from the sidebar: a glass card 16px right
           of the left column, at its top (2026-11-10). */}
       {groupsOpen && summarySelection && (
-        <div className="pointer-events-none absolute bottom-6 left-[500px] top-6 z-20 hidden w-[380px] md:block">
+        <div className="pointer-events-none absolute bottom-6 left-[500px] top-6 z-20 hidden w-panel-lg md:block">
           <SensitiveGroupsCard subject={summarySelection} onClose={() => setGroupsOpen(false)} />
         </div>
       )}
