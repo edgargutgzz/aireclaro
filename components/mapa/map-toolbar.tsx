@@ -58,14 +58,14 @@ export function MapToolbar({
   const rootRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLElement>(null);
 
-  // Sensores opens down to its notes' first row (2026-11-10): the
-  // Estaciones de Gobierno line shows, the next one peeks under the fade,
-  // and the rest is a scroll away.
-  const sourceNotesRef = useRef<HTMLDivElement>(null);
-  const [sensoresHeight, setSensoresHeight] = useState<number | null>(null);
+  // A panel with notes (Sensores, Calidad del aire) opens down to the
+  // notes' first row (2026-11-10): that line shows, the next one peeks under
+  // the fade, and the rest is a scroll away.
+  const notesRef = useRef<HTMLDivElement>(null);
+  const [notesHeight, setNotesHeight] = useState<number | null>(null);
   useLayoutEffect(() => {
-    const second = sourceNotesRef.current?.querySelectorAll("dt")[1] as HTMLElement | undefined;
-    setSensoresHeight(open === "sensores" && second ? second.offsetTop + 14 : null);
+    const second = notesRef.current?.querySelectorAll("dt")[1] as HTMLElement | undefined;
+    setNotesHeight(second ? second.offsetTop + 14 : null);
   }, [open]);
 
   // Any open panel that has more below its fold fades out at the bottom
@@ -76,7 +76,7 @@ export function MapToolbar({
     const el = panelRef.current;
     setMoreBelow(!!el && el.scrollHeight - el.scrollTop - el.clientHeight > 1);
   };
-  useLayoutEffect(checkMoreBelow, [open, sensoresHeight]);
+  useLayoutEffect(checkMoreBelow, [open, notesHeight]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
@@ -200,7 +200,7 @@ export function MapToolbar({
           className="disclosure-in relative min-h-0 flex-1 overflow-y-auto overscroll-contain"
           // Ubicación is capped too (2026-11-10): the list of municipalities
           // never needs the whole column; the rest scrolls under the fade.
-          style={open === "ubicacion" ? { maxHeight: 360 } : open === "sensores" && sensoresHeight ? { maxHeight: sensoresHeight } : undefined}
+          style={open === "ubicacion" ? { maxHeight: 360 } : notesHeight ? { maxHeight: notesHeight } : undefined}
         >
           {open === "aire" ? (
             <div className="p-4">
@@ -219,9 +219,9 @@ export function MapToolbar({
               sourceCounts={sourceCounts}
             />
           )}
-          {open === "sensores" && (
-            <div ref={sourceNotesRef} className="px-4 pb-5">
-              <SourceNotes />
+          {open !== "ubicacion" && (
+            <div ref={notesRef} className="px-4 pb-5">
+              {open === "aire" ? <LegendNotes /> : <SourceNotes />}
             </div>
           )}
           {/* Sticky to the panel's bottom edge, taking no space of its own. */}
@@ -229,13 +229,6 @@ export function MapToolbar({
             <div aria-hidden="true" className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-gradient-to-t from-white to-white/0" />
           )}
         </div>
-        {/* The legend's notes, pinned under the level list outside the
-            scroll, like the sidebar's footnote. */}
-        {open === "aire" && (
-          <div className="flex-shrink-0 px-4 pb-5">
-            <LegendNotes />
-          </div>
-        )}
       </section>
     )}
     </>
