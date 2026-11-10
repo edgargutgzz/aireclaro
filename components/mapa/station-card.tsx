@@ -392,7 +392,7 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
         // `relative`: the scroll box must be the positioning context, or an
         // absolutely positioned descendant (the footnote link's sr-only
         // label) escapes its clip and makes the whole page scroll.
-        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-4 pt-6">
+        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-8 pt-6">
           {/* The Capas panel's grouped-list material ("B" list, picked
               2026-11-02): a white bordered card, rows divided by hairlines.
               Each row leads with its group icon in a pale level-tinted disc;
@@ -422,32 +422,25 @@ export function AirNowPanel({ subject, freshness }: { subject: SelectedSensor; f
               ))}
             </ul>
           </section>
-        </div>
-      )}
 
-      {/* Where the reading and the advice come from: a pale panel pinned to
-          the sidebar's foot, outside the scroll, so it is always in view
-          (option B of the footer mockups, 2026-11-10; it was a hairline
-          footnote at the end of the scroll). Label left, value right. */}
-      {quality && (
-        <dl className="relative mx-4 mb-4 flex flex-shrink-0 flex-col gap-2 rounded-xl border border-stone-200 bg-stone-50 px-[18px] py-3 text-[13px] leading-snug">
-          {/* The station's name is in the card's foot (2026-11-09); this
-              row says why it is the one shown. */}
-          <div className="flex justify-between gap-4">
-            <dt className="text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
-            <dd className="text-right text-neutral-700">
+          {/* Where the reading and the advice come from, always visible as a
+              quiet footnote in label / value rows (they were two info-button
+              popups, then a run-on sentence; both replaced 2026-11-02). */}
+          <dl className="mx-2 mt-8 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-5 text-xs leading-relaxed">
+            {/* The station's name is in the card's foot (2026-11-09); this
+                row says why it is the one shown. */}
+            <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
+            <dd className="text-neutral-600">
               {subject.sensor.source === "sima"
                 ? "Nivel más alto de la ZMM"
                 : "Ciudadano, el más cercano a Obispado, sin estaciones del SIMA en vivo"}
             </dd>
-          </div>
-          <div className="flex justify-between gap-4">
-            <dt className="text-neutral-500">Recomendaciones de salud</dt>
-            <dd className="text-right text-neutral-600">
+            <dt className="font-medium text-neutral-500">Recomendaciones de salud</dt>
+            <dd className="text-neutral-600">
               <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
             </dd>
-          </div>
-        </dl>
+          </dl>
+        </div>
       )}
     </div>
   );
