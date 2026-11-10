@@ -975,13 +975,14 @@ export default function MapaSensors({
           source note: it is the page's summary, and a pick on the map never changes it (the
           picked station gets its own card over the map). Mobile carries this
           as the bottom sheet's resting station. */}
-      <aside aria-label="Calidad del aire" className="glass absolute bottom-6 left-6 top-6 z-20 hidden w-panel-lg flex-col overflow-hidden rounded-2xl md:flex">
+      {/* The left column (2026-11-10): the sidebar, then the map toolbar as
+          its own glass card 8px under it, the same width. */}
+      <div className="absolute bottom-6 left-6 top-6 z-20 hidden w-panel-lg flex-col gap-2 md:flex">
+      <aside aria-label="Calidad del aire" className="glass flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
         {summarySelection && (
           <AirNowPanel subject={summarySelection} freshness={summaryFreshness} />
         )}
-        {/* The map toolbar, docked as the sidebar's foot (2026-11-10, it
-            floated over the map): one surface with the air right now, its
-            panels opening upward inside the sidebar. */}
+      </aside>
         <MapToolbar
           showSima={showSima}
           setShowSima={setShowSima}
@@ -994,7 +995,7 @@ export default function MapaSensors({
           hiddenMunicipios={hiddenMunicipios}
           setHiddenMunicipios={setHiddenMunicipios}
         />
-      </aside>
+      </div>
 
       {/* Map area: the whole screen at every width (on desktop it runs under
           the glass sidebar). */}

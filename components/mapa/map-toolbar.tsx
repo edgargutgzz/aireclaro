@@ -8,7 +8,7 @@ import { DialogLink } from "./info-dialog";
 import { AdviceText } from "./station-card";
 
 // The desktop map's toolbar (option A of the opened-state mockups,
-// 2026-11-09): the foot of the desktop sidebar since 2026-11-10. The bar
+// 2026-11-09): a card under the desktop sidebar since 2026-11-10. The bar
 // holds the air-quality scale and the Sensores button behind a hairline; either
 // one unfolds a single panel out of the bar itself (same card, no gap), the
 // active button shaded, and switching between the two swaps the panel's
@@ -94,10 +94,9 @@ export function MapToolbar({
     `transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15 ${open === p ? "bg-stone-900/[0.05]" : "hover:bg-stone-900/[0.03]"}`;
 
   return (
-    // Docked as the desktop sidebar's foot (2026-11-10): no glass of its own
-    // (the sidebar's is the surface), a hairline above it, and an open panel
-    // capped at 70% of the sidebar so the air card above stays in view.
-    <div ref={rootRef} className="flex max-h-[70%] min-h-0 w-full flex-shrink-0 flex-col border-t border-stone-900/10">
+    // Its own glass card under the desktop sidebar (2026-11-10), an open panel
+    // capped at 70% of the column so the air card above stays in view.
+    <div ref={rootRef} className="glass flex max-h-[70%] min-h-0 w-full flex-shrink-0 flex-col overflow-hidden rounded-2xl">
       {open && (
         // Only the panel scrolls, so a short window never pushes the bar off
         // the map; overscroll-contain keeps the scroll from panning the map.
