@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
-import { Check, Landmark, MapPin, Users } from "lucide-react";
+import { Check, ChevronRight, Landmark, MapPin, Users } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
 import { DialogLink } from "./info-dialog";
@@ -227,27 +227,48 @@ function UbicacionPanel({
   // material (2026-11-10, it was a native select whose OS popup broke the
   // panel's look). A ?hide= link with any other mix checks no row until a
   // choice replaces it. Choosing closes the panel so the map can frame it.
+  // Each state is a card that opens to its municipalities (2026-11-10), so
+  // both states show at once; the chosen municipality's state starts open.
   const { allKeys, value } = municipioValue(estados, hiddenMunicipios);
+  const [openStates, setOpenStates] = useState<string[]>(() =>
+    estados.filter((e) => e.municipios.some((m) => m.key === value)).map((e) => e.key),
+  );
+  const toggleState = (key: string) =>
+    setOpenStates((cur) => (cur.includes(key) ? cur.filter((k) => k !== key) : [...cur, key]));
   const choose = (key: string) => {
     setHiddenMunicipios(key === "" ? [] : allKeys.filter((k) => k !== key));
     onChosen();
   };
 
   return (
-    <div role="radiogroup" aria-label="Ubicación" className="p-4">
+    <div role="radiogroup" aria-label="Ubicación" className="flex flex-col gap-2 p-4">
       <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
         <MunicipioRow label="Todos los municipios" checked={value === ""} onClick={() => choose("")} />
       </div>
-      {estados.map((estado) => (
-        <div key={estado.key}>
-          <p className="px-1 pb-3 pt-5 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{estado.label}</p>
-          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-            {estado.municipios.map((m) => (
-              <MunicipioRow key={m.key} label={m.label} count={m.count} checked={value === m.key} onClick={() => choose(m.key)} />
-            ))}
+      {estados.map((estado) => {
+        const isOpen = openStates.includes(estado.key);
+        const bodyId = `ubicacion-${estado.key}`;
+        return (
+          <div key={estado.key} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            <button
+              type="button"
+              onClick={() => toggleState(estado.key)}
+              aria-expanded={isOpen}
+              aria-controls={bodyId}
+              className="group flex w-full items-center gap-3 py-3 pl-4 pr-4 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+            >
+              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-[color,transform] duration-200 group-hover:text-neutral-600 ${isOpen ? "rotate-90" : ""}`} />
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-900">{estado.label}</span>
+              <span className="flex-shrink-0 text-sm tabular-nums text-neutral-500">{estado.count}</span>
+            </button>
+            <div id={bodyId} hidden={!isOpen} className="border-t border-stone-100">
+              {estado.municipios.map((m) => (
+                <MunicipioRow key={m.key} label={m.label} count={m.count} checked={value === m.key} onClick={() => choose(m.key)} />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
