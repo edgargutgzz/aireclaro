@@ -102,11 +102,6 @@ export function MapToolbar({
           </span>
           {/* Open, the bar shows the breaks, the axis for the list's bounds. */}
           <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} className="min-w-0 flex-1" />
-          {/* Points up, toward the panel it opens; flips down while open. */}
-          <ChevronRight
-            aria-hidden="true"
-            className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${open === "aire" ? "rotate-90" : "-rotate-90"}`}
-          />
         </button>
         <span aria-hidden="true" className={`w-px flex-shrink-0 bg-stone-900/10 ${open ? "" : "my-3"}`} />
         <button
