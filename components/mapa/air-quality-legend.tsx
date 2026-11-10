@@ -112,6 +112,13 @@ export function LegendNotes({ className = "" }: { className?: string }) {
           (docs/mapa-data-pipeline.md); the state's own map shows the índice
           instead, so its numbers differ. */}
       <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
+        <dt className="font-medium text-neutral-500">Escala</dt>
+        <dd className="text-neutral-600">
+          Índice de Aire y Salud,{" "}
+          <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
+            NOM-172-SEMARNAT-2023
+          </DialogLink>
+        </dd>
         <dt className="font-medium text-neutral-500">Contaminante</dt>
         <dd className="text-neutral-600">
           <AdviceText
@@ -121,13 +128,6 @@ export function LegendNotes({ className = "" }: { className?: string }) {
             boxText="text-xs"
             className=""
           />
-        </dd>
-        <dt className="font-medium text-neutral-500">Escala</dt>
-        <dd className="text-neutral-600">
-          Índice de Aire y Salud,{" "}
-          <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
-            NOM-172-SEMARNAT-2023
-          </DialogLink>
         </dd>
       </dl>
     </div>
