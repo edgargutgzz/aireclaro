@@ -846,6 +846,32 @@ export default function MapaSensors({
     writeFilterParams({ showOccamm, showOtros, showSima, hiddenMunicipios });
   }, [showOccamm, showOtros, showSima, hiddenMunicipios]);
 
+  // Choosing a municipality frames it (2026-11-10): the camera fits every
+  // sensor in the shown municipalities, whatever the source toggles; "Todos"
+  // goes back to the opening view. Only on a change, never on mount, so a
+  // ?hide= or ?sensor= link still opens on its own view. The fit's padding
+  // adds to the map's own (sidebar / sheet), plus room for the toolbar.
+  const framedMunicipiosRef = useRef(hiddenMunicipios);
+  useEffect(() => {
+    if (framedMunicipiosRef.current === hiddenMunicipios) return;
+    framedMunicipiosRef.current = hiddenMunicipios;
+    const m = map.current;
+    if (!m) return;
+    const duration = prefersReducedMotion() ? 0 : undefined;
+    if (hiddenMunicipios.length === 0) {
+      m.easeTo({ ...restingFocus(defaultSelection), duration });
+      return;
+    }
+    const shown = sensors.filter((s) => !hiddenMunicipios.includes(municipioKey(s.municipio) ?? ""));
+    if (shown.length === 0) return;
+    const lons = shown.map((s) => s.lon);
+    const lats = shown.map((s) => s.lat);
+    m.fitBounds(
+      [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
+      { padding: { top: 64, right: 64, bottom: 120, left: 64 }, maxZoom: 13, duration },
+    );
+  }, [hiddenMunicipios, sensors, defaultSelection]);
+
   // Drop the pick. **Desktop only** (the X, empty-map click, Escape): the
   // picked station's card over the map closes; the sidebar is unaffected. On
   // mobile the most a gesture does is collapse the sheet back to `peek`.
