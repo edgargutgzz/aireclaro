@@ -57,13 +57,24 @@ export function MapToolbar({
 
   // The legend opens showing only the level list; its notes wait below, a
   // scroll away (2026-11-10). The panel's height is capped at the list's
-  // bottom plus the panel's 16px padding on both sides.
+  // bottom plus 56px: the top padding and a peek of the notes' hairline
+  // under a fade, so the panel reads as having more below.
   const levelsRef = useRef<HTMLDivElement>(null);
   const [aireHeight, setAireHeight] = useState<number | null>(null);
   useLayoutEffect(() => {
     if (open !== "aire" || !levelsRef.current) return;
-    setAireHeight(levelsRef.current.offsetHeight + 32);
+    setAireHeight(levelsRef.current.offsetHeight + 56);
   }, [open]);
+
+  // Any open panel that has more below its fold fades out at the bottom
+  // edge; the fade goes once it is scrolled to the end.
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [moreBelow, setMoreBelow] = useState(false);
+  const checkMoreBelow = () => {
+    const el = panelRef.current;
+    setMoreBelow(!!el && el.scrollHeight - el.scrollTop - el.clientHeight > 1);
+  };
+  useLayoutEffect(checkMoreBelow, [open, aireHeight]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
@@ -89,7 +100,9 @@ export function MapToolbar({
         // Only the panel scrolls, so a short window never pushes the bar off
         // the map; overscroll-contain keeps the scroll from panning the map.
         <div
+          ref={panelRef}
           id="map-toolbar-panel"
+          onScroll={checkMoreBelow}
           className="disclosure-in-up min-h-0 flex-1 overflow-y-auto overscroll-contain"
           style={open === "aire" && aireHeight ? { maxHeight: aireHeight } : undefined}
         >
@@ -113,6 +126,10 @@ export function MapToolbar({
               sourceCounts={sourceCounts}
               onShowFuenteInfo={onShowFuenteInfo}
             />
+          )}
+          {/* Sticky to the panel's bottom edge, taking no space of its own. */}
+          {moreBelow && (
+            <div aria-hidden="true" className="pointer-events-none sticky bottom-0 -mt-10 h-10 bg-gradient-to-t from-white to-white/0" />
           )}
         </div>
       )}
