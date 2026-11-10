@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import { ChevronRight, Info, Landmark, Layers, Users } from "lucide-react";
+import { ChevronRight, Info, Landmark, Users } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
 
@@ -90,18 +90,21 @@ export function MapToolbar({
       )}
 
       <div className={`flex flex-shrink-0 items-stretch ${open ? "border-t border-stone-900/10" : ""}`}>
+        {/* Closed-bar option D (2026-11-09): both halves share one shape, the
+            label on top and a small key to the map below it: the level scale
+            here, the two sources with their counts on the right. */}
         <button
           type="button"
           onClick={() => toggle("aire")}
           aria-expanded={open === "aire"}
           aria-controls={open === "aire" ? "map-toolbar-panel" : undefined}
-          className={`flex min-w-0 flex-1 items-center gap-4 px-5 py-4 text-left ${tab("aire")}`}
+          className={`flex min-w-0 flex-[1.4] flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
         >
-          <span className="flex-shrink-0 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
             Calidad del aire
           </span>
           {/* Open, the bar shows the breaks, the axis for the list's bounds. */}
-          <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} className="min-w-0 flex-1" />
+          <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} />
         </button>
         <span aria-hidden="true" className={`w-px flex-shrink-0 bg-stone-900/10 ${open ? "" : "my-3"}`} />
         <button
@@ -109,10 +112,26 @@ export function MapToolbar({
           onClick={() => toggle("sensores")}
           aria-expanded={open === "sensores"}
           aria-controls={open === "sensores" ? "map-toolbar-panel" : undefined}
-          className={`flex flex-shrink-0 items-center gap-2 px-5 text-sm font-medium ${open === "sensores" ? "text-neutral-900" : "text-neutral-700"} ${tab("sensores")}`}
+          className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("sensores")}`}
         >
-          <Layers aria-hidden="true" className="h-5 w-5" />
-          Sensores
+          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+            Sensores
+          </span>
+          {/* The map's two source icons and their counts; a source switched
+              off in the panel fades here too, so the bar says the map is
+              filtered without opening it. */}
+          <span className="flex items-center gap-4 text-[13px] leading-none tabular-nums text-neutral-600">
+            <span className={`flex items-center gap-1.5 ${showSima ? "" : "opacity-40"}`}>
+              <Landmark aria-hidden="true" className="h-3.5 w-3.5" />
+              <span className="sr-only">Estaciones de Gobierno:</span>
+              {sourceCounts.gobierno}
+            </span>
+            <span className={`flex items-center gap-1.5 ${showOccamm || showOtros ? "" : "opacity-40"}`}>
+              <Users aria-hidden="true" className="h-3.5 w-3.5" />
+              <span className="sr-only">Sensores Ciudadanos:</span>
+              {sourceCounts.ciudadanos}
+            </span>
+          </span>
         </button>
       </div>
     </div>
