@@ -26,6 +26,8 @@ import {
   OPENING_ZOOM,
   FIELD_SOURCE,
   FIELD_LAYER,
+  FIELD_EDGE_LAYER,
+  FIELD_EDGE_RADIUS,
   FIELD_LABEL_LAYER,
   SIMA_BADGE_LAYER,
   SIMA_BADGE_IMAGE,
@@ -624,6 +626,26 @@ export default function MapaSensors({
           type: "geojson",
           data: buildFieldData(frameReadingsRef.current),
           promoteId: "fid",
+        });
+      }
+      // Under the discs, same source and sort key, so each edge sits with its
+      // own disc in an overlap. Hidden for the selected station (its DOM
+      // marker stands in).
+      if (!m.getLayer(FIELD_EDGE_LAYER)) {
+        m.addLayer({
+          id: FIELD_EDGE_LAYER,
+          type: "circle",
+          source: FIELD_SOURCE,
+          layout: { "circle-sort-key": ["get", "sortKey"] as any },
+          paint: {
+            "circle-color": "#1c1917",
+            "circle-radius": FIELD_EDGE_RADIUS as any,
+            "circle-opacity": [
+              "case",
+              ["boolean", ["feature-state", "selected"], false], 0,
+              0.22,
+            ] as any,
+          },
         });
       }
       if (!m.getLayer(FIELD_LAYER)) {

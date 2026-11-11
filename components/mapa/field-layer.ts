@@ -14,6 +14,10 @@ export const OPENING_ZOOM = 10;
 // the expanding CSS pulse halo GL can't draw (see syncActive).
 export const FIELD_SOURCE = "sensor-field";
 export const FIELD_LAYER = "sensor-field-dots";
+// A faint near-black edge just outside every disc, drawn under FIELD_LAYER
+// (2026-11-11): Aceptable yellow with only its white stroke faded into the
+// pale basemap. A separation line, not a shadow: flat, no blur.
+export const FIELD_EDGE_LAYER = "sensor-field-edge";
 // Every disc's PM2.5 reading, printed straight on its fill — a second
 // `symbol` layer over the same source, text-only (no icon). The selected
 // station hides its label here (feature-state `selected`) the same way it
@@ -129,6 +133,12 @@ export function fieldRadiusAt(zoom: number): number {
 export const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, stopR(radius)]),
+];
+// The edge layer's radius: the disc's, 2.25px wider, so 2px of edge shows
+// past the disc's own 1.5px white stroke (which straddles the radius).
+export const FIELD_EDGE_RADIUS = [
+  "interpolate", ["linear"], ["zoom"],
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, ["+", stopR(radius), 2.25]]),
 ];
 
 // The SIMA badge (makeSimaBadge, a ~20px-core raster inside a 22px canvas)
