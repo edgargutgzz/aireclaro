@@ -31,6 +31,9 @@ import {
   FIELD_EDGE_LAYER,
   FIELD_EDGE_RADIUS,
   FIELD_LABEL_LAYER,
+  FIELD_LABEL_BOX_IMAGE,
+  FIELD_LABEL_BOX_SIZE,
+  makeLabelBox,
   SIMA_BADGE_LAYER,
   SIMA_BADGE_IMAGE,
   makeSimaBadge,
@@ -627,6 +630,9 @@ export default function MapaSensors({
           promoteId: "fid",
         });
       }
+      if (!m.hasImage(FIELD_LABEL_BOX_IMAGE)) {
+        m.addImage(FIELD_LABEL_BOX_IMAGE, makeLabelBox());
+      }
       // The field draws in two stacks, citizen sensors first and government
       // stations over them (2026-11-11): edge, disc, number per stack, so no
       // citizen disc, edge or number can ever sit on a government station.
@@ -723,6 +729,13 @@ export default function MapaSensors({
             "text-font": [LABEL_FONT],
             "text-allow-overlap": false,
             "text-ignore-placement": false,
+            // The disc-sized collision box (FIELD_LABEL_BOX_IMAGE): no number
+            // on a disc another disc overlaps.
+            "icon-image": FIELD_LABEL_BOX_IMAGE,
+            "icon-size": FIELD_LABEL_BOX_SIZE as any,
+            "icon-allow-overlap": false,
+            "icon-ignore-placement": false,
+            "icon-optional": false,
             "symbol-sort-key": ["get", "labelSortKey"] as any,
           },
           paint: {
