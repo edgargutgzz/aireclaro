@@ -1225,7 +1225,7 @@ export default function MapaSensors({
         {selectedSensor && (
           <div role="region" aria-label={`Estación ${displayName(selectedSensor.sensor)}`} className="glass pointer-events-auto flex min-h-0 w-full flex-shrink flex-col overflow-hidden rounded-2xl">
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="disclosure-in p-4 pb-5">
+              <div className="disclosure-in px-4 pb-6 pt-4">
                 <StationPanel
                   subject={selectedSensor}
                   freshness={freshness}

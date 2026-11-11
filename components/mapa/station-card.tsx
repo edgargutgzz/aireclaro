@@ -539,19 +539,21 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
   const groupsId = `station-groups-${useId().replace(/:/g, "")}`;
 
   return (
-    <div className="flex flex-col gap-3">
+    // The sidebar's spacing, exactly: level card, 24px, the advice cards
+    // 12px apart, 32px, the footnote (AirNowPanel's pt-6 / mt-3 / pt-8).
+    <div className="flex flex-col">
       {/* The left column's own level card, solid fill and all (2026-11-11,
           the pale tint was tried first), the station named in its foot. */}
       <AirNowHeader subject={subject} freshness={freshness} place={displayName(sensor)} />
 
       {quality && (
-        <>
+        <div className="pt-6">
           <section aria-label="Recomendaciones de salud" className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
             <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} full={quality.generalFull} info={quality} lead />
           </section>
           {/* The sidebar's Grupos sensibles row; here it opens in place,
               under itself, since the card already floats over the map. */}
-          <section aria-label="Grupos sensibles" className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+          <section aria-label="Grupos sensibles" className="mt-3 overflow-hidden rounded-2xl border border-stone-200 bg-white">
             <button
               type="button"
               onClick={() => setGroupsOpen((v) => !v)}
@@ -581,12 +583,12 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
               ))}
             </div>
           </section>
-        </>
+        </div>
       )}
 
       {/* The sidebar's footnote: where the reading comes from, and the
           station's coordinates to copy. */}
-      <dl className="mx-2 mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
+      <dl className="mx-2 mt-8 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
         <dt className="font-medium text-neutral-500">Fuente</dt>
         <dd className="text-neutral-600">
           {isSima ? (
