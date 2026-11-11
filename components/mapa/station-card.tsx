@@ -523,11 +523,9 @@ export function SensitiveGroupsCard({ subject, onClose }: { subject: SelectedSen
   );
 }
 
-// The desktop station card's body (2026-11-11, option D "quiet twin" of the
-// station-card mockups): the left column's parts in the same order, its level
-// card in the pale tint instead of the solid fill, so the sidebar's summary
-// stays the loudest thing on screen and a picked station reads as secondary.
-// Level card (time and the station's name in its foot), Población general, Grupos
+// The desktop station card's body (2026-11-11): the left column's parts in
+// the same order and colouring. Level card (AirNowHeader, the station's name
+// in its foot), Población general, Grupos
 // sensibles opening in place, then a footnote with the source and the
 // coordinates. Mobile keeps StationReading in its bottom sheet.
 export function StationPanel({ subject, freshness, copied, onCopyCoords }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void }) {
@@ -539,52 +537,9 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
 
   return (
     <div className="flex flex-col gap-3">
-      {quality && subject.pm25 !== null ? (
-        <div className="overflow-hidden rounded-xl border border-stone-200" style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 22%, white)` }}>
-          <div className="flex items-end justify-between gap-3 p-5">
-            <div className="min-w-0">
-              <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-600">Calidad del aire</p>
-              <p className="mt-2.5 whitespace-nowrap text-[36px] font-extrabold leading-none tracking-tight" style={{ color: quality.textColor }}>
-                {quality.label === "Extremadamente mala" ? (
-                  <>
-                    <span aria-hidden="true">Extrem. mala</span>
-                    <span className="sr-only">Extremadamente mala</span>
-                  </>
-                ) : (
-                  quality.label
-                )}
-              </p>
-            </div>
-            <p className="flex-shrink-0 text-right text-neutral-800">
-              <span className="block text-[36px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
-              <span className="text-sm text-neutral-600">μg/m³ PM2.5</span>
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-black/5 px-5 py-3 text-sm leading-none text-neutral-600">
-            {freshness && freshness.status !== "nodata" ? (
-              <span className="whitespace-nowrap">
-                Actualizado{" "}
-                <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
-                  {readingTimeLabel(new Date(freshness.dateTime))}
-                </time>
-              </span>
-            ) : (
-              <span />
-            )}
-            {/* The station's name, bottom right with the location arrow, as
-                the sidebar's foot names its station (2026-11-11). */}
-            <span className="flex min-w-0 items-center gap-1.5">
-              <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
-              <span className="truncate">{displayName(sensor)}</span>
-            </span>
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-xl border border-stone-200 bg-white p-5">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
-          <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
-        </div>
-      )}
+      {/* The left column's own level card, solid fill and all (2026-11-11,
+          the pale tint was tried first), the station named in its foot. */}
+      <AirNowHeader subject={subject} freshness={freshness} place={displayName(sensor)} />
 
       {quality && (
         <>
