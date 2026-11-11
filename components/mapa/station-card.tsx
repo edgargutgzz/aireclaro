@@ -522,3 +522,137 @@ export function SensitiveGroupsCard({ subject, onClose }: { subject: SelectedSen
     </section>
   );
 }
+
+// The desktop station card's body (2026-11-11, option D "quiet twin" of the
+// station-card mockups): the left column's parts in the same order, its level
+// card in the pale tint instead of the solid fill, so the sidebar's summary
+// stays the loudest thing on screen and a picked station reads as secondary.
+// Level card (time and network in its foot), Población general, Grupos
+// sensibles opening in place, then a footnote with the source and the
+// coordinates. Mobile keeps StationReading in its bottom sheet.
+export function StationPanel({ subject, freshness, copied, onCopyCoords }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void }) {
+  const { sensor } = subject;
+  const isSima = sensor.source === "sima";
+  const SourceIcon = getSourceIcon(isSima);
+  const quality = getQualityInfo(subject.pm25);
+  const [groupsOpen, setGroupsOpen] = useState(false);
+  const groupsId = `station-groups-${useId().replace(/:/g, "")}`;
+
+  return (
+    <div className="flex flex-col gap-3">
+      {quality && subject.pm25 !== null ? (
+        <div className="overflow-hidden rounded-xl border border-stone-200" style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 22%, white)` }}>
+          <div className="flex items-end justify-between gap-3 p-5">
+            <div className="min-w-0">
+              <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-600">Calidad del aire</p>
+              <p className="mt-2.5 whitespace-nowrap text-[36px] font-extrabold leading-none tracking-tight" style={{ color: quality.textColor }}>
+                {quality.label === "Extremadamente mala" ? (
+                  <>
+                    <span aria-hidden="true">Extrem. mala</span>
+                    <span className="sr-only">Extremadamente mala</span>
+                  </>
+                ) : (
+                  quality.label
+                )}
+              </p>
+            </div>
+            <p className="flex-shrink-0 text-right text-neutral-800">
+              <span className="block text-[36px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
+              <span className="text-sm text-neutral-600">μg/m³ PM2.5</span>
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-black/5 px-5 py-3 text-sm leading-none text-neutral-600">
+            {freshness && freshness.status !== "nodata" ? (
+              <span className="whitespace-nowrap">
+                Actualizado{" "}
+                <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
+                  {readingTimeLabel(new Date(freshness.dateTime))}
+                </time>
+              </span>
+            ) : (
+              <span />
+            )}
+            <span className="flex items-center gap-1.5">
+              <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
+              {isSima ? "Gobierno" : "Ciudadano"}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-stone-200 bg-white p-5">
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
+          <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
+        </div>
+      )}
+
+      {quality && (
+        <>
+          <section aria-label="Recomendaciones de salud" className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} full={quality.generalFull} info={quality} lead />
+          </section>
+          {/* The sidebar's Grupos sensibles row; here it opens in place,
+              under itself, since the card already floats over the map. */}
+          <section aria-label="Grupos sensibles" className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+            <button
+              type="button"
+              onClick={() => setGroupsOpen((v) => !v)}
+              aria-expanded={groupsOpen}
+              aria-controls={groupsId}
+              className="group flex w-full items-center gap-3.5 px-[18px] py-3 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+            >
+              <span aria-hidden="true" className="flex">
+                {SENSITIVE_GROUPS.map((g, i) => (
+                  <span
+                    key={g.key}
+                    className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white ${i > 0 ? "-ml-2.5" : ""}`}
+                    style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 14%, white)`, color: quality.textColor }}
+                  >
+                    <g.icon className="h-[18px] w-[18px]" />
+                  </span>
+                ))}
+              </span>
+              <span className="min-w-0 flex-1 text-sm font-semibold text-neutral-900">Grupos sensibles</span>
+              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-[color,transform] duration-200 group-hover:text-neutral-600 ${groupsOpen ? "rotate-90" : ""}`} />
+            </button>
+            <div id={groupsId} hidden={!groupsOpen} className="border-t border-stone-100">
+              {groupByAdvice(quality).map(({ advice, groups, full }) => (
+                <div key={advice} className="border-t border-stone-100 first:border-t-0">
+                  <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} full={full} />
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+
+      {/* The sidebar's footnote: where the reading comes from, and the
+          station's coordinates to copy. */}
+      <dl className="mx-2 mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
+        <dt className="font-medium text-neutral-500">Fuente</dt>
+        <dd className="text-neutral-600">
+          {isSima ? (
+            <>
+              <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>, Gobierno de Nuevo León
+            </>
+          ) : (
+            <>
+              <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
+              {sensor.red ? `, red ${sensor.red}` : ""}, con la corrección de la EPA
+            </>
+          )}
+        </dd>
+        <dt className="font-medium text-neutral-500">Ubicación</dt>
+        <dd>
+          <button
+            type="button"
+            onClick={onCopyCoords}
+            className="-mx-1 flex items-center gap-1 rounded-lg px-1 text-neutral-600 transition-colors hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+          >
+            {copied ? <Check aria-hidden="true" className="h-3 w-3 text-neutral-400" /> : <Copy aria-hidden="true" className="h-3 w-3 text-neutral-400" />}
+            {copied ? "Copiado" : "Copiar coordenadas"}
+          </button>
+        </dd>
+      </dl>
+    </div>
+  );
+}

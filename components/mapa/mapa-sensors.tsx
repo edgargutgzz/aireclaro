@@ -47,7 +47,7 @@ import {
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail } from "./air-quality-legend";
 import { MapToolbar } from "./map-toolbar";
-import { AirNowPanel, GroupRecommendations, SensitiveGroupsCard, StationReading } from "./station-card";
+import { AirNowPanel, GroupRecommendations, SensitiveGroupsCard, StationPanel, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
@@ -1235,13 +1235,12 @@ export default function MapaSensors({
               </button>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="disclosure-in flex flex-col gap-5 px-5 pb-5 pt-3">
-                <StationReading
+              <div className="disclosure-in px-4 pb-5 pt-1">
+                <StationPanel
                   subject={selectedSensor}
-                  pm25={selectedSensor.pm25}
+                  freshness={freshness}
                   copied={copied}
                   onCopyCoords={() => copyCoords(selectedSensor.sensor.lat, selectedSensor.sensor.lon)}
-                  copyInteractionClass="hover:text-neutral-700"
                 />
               </div>
             </div>
