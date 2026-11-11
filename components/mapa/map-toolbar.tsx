@@ -103,9 +103,26 @@ export function MapToolbar({
     <>
     {/* Its own glass card under the desktop sidebar (2026-11-10). */}
     <div ref={rootRef} className="glass flex w-full flex-shrink-0 flex-col overflow-hidden rounded-2xl">
-      {/* Two rows (2026-11-10): Sensores and Ubicación side by side on top,
-          Calidad del aire's scale full width under them. */}
+      {/* Two rows: Calidad del aire's scale full width on top (2026-11-11,
+          it was under them), Sensores and Ubicación side by side below. */}
       <div className="flex flex-shrink-0 flex-col">
+        {/* Every button shares one shape, the label on top and a small key
+            to the map below it (option D, 2026-11-09). */}
+        <button
+          type="button"
+          onClick={() => toggle("aire")}
+          aria-expanded={open === "aire"}
+          aria-controls={open === "aire" ? "map-toolbar-panel" : undefined}
+          className={`flex w-full flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
+        >
+          <span className="flex items-center justify-between gap-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
+            Calidad del aire
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
+          </span>
+          {/* Open, the bar shows the breaks, the axis for the list's bounds. */}
+          <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} current={currentPm25} />
+        </button>
+        <span aria-hidden="true" className="mx-5 h-px bg-stone-900/10" />
         <div className="flex items-stretch">
           <button
             type="button"
@@ -154,23 +171,6 @@ export function MapToolbar({
             </span>
           </button>
         </div>
-        <span aria-hidden="true" className="mx-5 h-px bg-stone-900/10" />
-        {/* Every button shares one shape, the label on top and a small key
-            to the map below it (option D, 2026-11-09). */}
-        <button
-          type="button"
-          onClick={() => toggle("aire")}
-          aria-expanded={open === "aire"}
-          aria-controls={open === "aire" ? "map-toolbar-panel" : undefined}
-          className={`flex w-full flex-col gap-2.5 px-5 py-3.5 text-left ${tab("aire")}`}
-        >
-          <span className="flex items-center justify-between gap-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-            Calidad del aire
-            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
-          </span>
-          {/* Open, the bar shows the breaks, the axis for the list's bounds. */}
-          <ScaleBar labels={open === "aire" ? "thresholds" : "ends"} current={currentPm25} />
-        </button>
       </div>
     </div>
     {/* An open panel is a glass card of its own 16px right of the left
