@@ -142,6 +142,21 @@ export const FIELD_EDGE_RADIUS = [
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, ["+", stopR(radius), 2.25]]),
 ];
 
+// A number shows only where its disc is clear (2026-11-11): the label layer
+// carries an invisible square icon the size of the disc (90% of its
+// diameter, so discs that merely touch keep both numbers), and an icon that
+// collides hides its text with it. Where discs overlap, the one placed first
+// (the top one, labelSortKey) keeps its number; the ones under it go blank.
+export const FIELD_LABEL_BOX_IMAGE = "sensor-field-label-box";
+const LABEL_BOX_PX = 20;
+export function makeLabelBox(): ImageData {
+  return new ImageData(LABEL_BOX_PX, LABEL_BOX_PX);
+}
+export const FIELD_LABEL_BOX_SIZE = [
+  "interpolate", ["linear"], ["zoom"],
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, (radius * 2 * 0.9) / LABEL_BOX_PX]),
+];
+
 // The SIMA badge (makeSimaBadge, a ~20px-core raster inside a 22px canvas)
 // tracks the same radius curve as the (now-unified, smaller) disc size:
 // badge radius ≈0.425x disc radius, offset distance ≈1.2x disc radius (user:
