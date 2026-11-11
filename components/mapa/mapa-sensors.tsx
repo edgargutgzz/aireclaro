@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Layers, Wind, X } from "lucide-react";
+import { Layers, Wind } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -20,8 +20,6 @@ import {
   buildSelection,
   displayName,
   markerLabel,
-  getSourceIcon,
-  getSourceLabel,
 } from "./lib";
 import {
   OPENING_CENTER,
@@ -923,7 +921,7 @@ export default function MapaSensors({
     );
   }, [hiddenMunicipios, sensors, defaultSelection]);
 
-  // Drop the pick. **Desktop only** (the X, empty-map click, Escape): the
+  // Drop the pick. **Desktop only** (empty-map click, Escape, re-click): the
   // picked station's card over the map closes; the sidebar is unaffected. On
   // mobile the most a gesture does is collapse the sheet back to `peek`.
   const closeCard = useCallback(() => {
@@ -1221,36 +1219,13 @@ export default function MapaSensors({
           are bottom sheets and freshness rides the Capas button's row. */}
       <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-lg flex-col items-end gap-2 md:flex">
         {/* A picked station's card, at the top. Opened by a marker or a
-            ?sensor= link; the X, Escape or a click on empty map close it.
-            The sidebar never changes with it. */}
+            ?sensor= link; Escape, a click on empty map or on the same marker
+            close it (no header or X since 2026-11-11). The sidebar never
+            changes with it. */}
         {selectedSensor && (
-          <div className="glass pointer-events-auto flex min-h-0 w-full flex-shrink flex-col overflow-hidden rounded-2xl">
-            <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
-              {/* The network up here; the name is in the level card's foot
-                  (2026-11-11). */}
-              <span className="flex min-w-0 flex-1 items-center gap-1.5 text-sm font-medium text-neutral-600">
-                {(() => {
-                  const isSima = selectedSensor.sensor.source === "sima";
-                  const Icon = getSourceIcon(isSima);
-                  return (
-                    <>
-                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-500" />
-                      <span className="truncate">{getSourceLabel(isSima, selectedSensor.sensor.red)}</span>
-                    </>
-                  );
-                })()}
-              </span>
-              <button
-                type="button"
-                onClick={closeCard}
-                aria-label="Cerrar"
-                className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-              >
-                <X aria-hidden="true" className="h-4 w-4" />
-              </button>
-            </div>
+          <div role="region" aria-label={`Estación ${displayName(selectedSensor.sensor)}`} className="glass pointer-events-auto flex min-h-0 w-full flex-shrink flex-col overflow-hidden rounded-2xl">
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="disclosure-in px-4 pb-5 pt-1">
+              <div className="disclosure-in p-4 pb-5">
                 <StationPanel
                   subject={selectedSensor}
                   freshness={freshness}
