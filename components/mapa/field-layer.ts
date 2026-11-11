@@ -83,10 +83,9 @@ export function makeSimaBadge(): ImageData {
 }
 
 // Resting disc radius (px) by zoom, before the hover multiplier. Government
-// and citizen discs are the same size at every zoom (2026-11-11, after a
-// day of small citizen dots); the networks split by the number instead:
-// citizen discs print theirs only from CITIZEN_FULL_FROM (FIELD_LABEL_TEXT).
-// The stroke width stays flat (below).
+// and citizen discs are the same size at every zoom, each printing its
+// number (small unnumbered citizen dots were tried 2026-11-11 and reverted
+// the same day). The stroke width stays flat (below).
 // radius = base * (hovered ? 1.14 : 1), evaluated per stop. The zoom
 // `interpolate` MUST stay top-level in the paint value — MapLibre (like Mapbox before it) silently
 // drops a layer whose zoom expression is nested inside `*` (this repo hit
@@ -127,8 +126,6 @@ export function fieldRadiusAt(zoom: number): number {
   }
   return stops[stops.length - 1][1];
 }
-// Zoom from which citizen discs print their number too.
-export const CITIZEN_FULL_FROM = 12.5;
 export const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, stopR(radius)]),
@@ -138,13 +135,6 @@ export const FIELD_RADIUS = [
 export const FIELD_EDGE_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
   ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, ["+", stopR(radius), 2.25]]),
-];
-// The printed number: government discs always; citizen discs from
-// CITIZEN_FULL_FROM. A zoom `step` at the top level, like the radius.
-export const FIELD_LABEL_TEXT = [
-  "step", ["zoom"],
-  ["case", ["boolean", ["get", "isSima"], false], ["get", "label"], ""],
-  CITIZEN_FULL_FROM, ["get", "label"],
 ];
 
 // The SIMA badge (makeSimaBadge, a ~20px-core raster inside a 22px canvas)

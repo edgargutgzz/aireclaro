@@ -29,7 +29,6 @@ import {
   FIELD_EDGE_LAYER,
   FIELD_EDGE_RADIUS,
   FIELD_LABEL_LAYER,
-  FIELD_LABEL_TEXT,
   SIMA_BADGE_LAYER,
   SIMA_BADGE_IMAGE,
   makeSimaBadge,
@@ -708,7 +707,7 @@ export default function MapaSensors({
           type: "symbol",
           source: FIELD_SOURCE,
           layout: {
-            "text-field": FIELD_LABEL_TEXT as any,
+            "text-field": ["get", "label"] as any,
             "text-size": FIELD_LABEL_SIZE as any,
             "text-font": [LABEL_FONT],
             "text-allow-overlap": false,
