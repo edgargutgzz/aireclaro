@@ -1217,7 +1217,7 @@ export default function MapaSensors({
           toolbar moved to the bottom-left, 2026-11-09). No freshness pill on desktop (removed 2026-11-03): the
           sidebar's header carries the time. On mobile the panel and legend
           are bottom sheets and freshness rides the Capas button's row. */}
-      <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-filters flex-col items-end gap-2 md:flex">
+      <div className="pointer-events-none absolute bottom-14 right-6 top-6 z-10 hidden w-panel-lg flex-col items-end gap-2 md:flex">
         {/* A picked station's card, at the top. Opened by a marker or a
             ?sensor= link; the X, Escape or a click on empty map close it.
             The sidebar never changes with it. */}
