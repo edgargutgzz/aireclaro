@@ -14,6 +14,11 @@ export const OPENING_ZOOM = 10;
 // the expanding CSS pulse halo GL can't draw (see syncActive).
 export const FIELD_SOURCE = "sensor-field";
 export const FIELD_LAYER = "sensor-field-dots";
+// Government stations draw as their own stack over the citizen field: each
+// field layer id plus this suffix, filtered to isSima (mapa-sensors.tsx).
+export const GOB_SUFFIX = "-gob";
+// Both disc layers, for pointer events and hit tests: government first.
+export const FIELD_LAYERS = [FIELD_LAYER + GOB_SUFFIX, FIELD_LAYER];
 // A faint near-black edge just outside every disc, drawn under FIELD_LAYER
 // (2026-11-11): Aceptable yellow with only its white stroke faded into the
 // pale basemap. A separation line, not a shadow: flat, no blur.

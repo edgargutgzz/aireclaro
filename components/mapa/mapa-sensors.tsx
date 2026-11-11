@@ -26,6 +26,8 @@ import {
   OPENING_ZOOM,
   FIELD_SOURCE,
   FIELD_LAYER,
+  FIELD_LAYERS,
+  GOB_SUFFIX,
   FIELD_EDGE_LAYER,
   FIELD_EDGE_RADIUS,
   FIELD_LABEL_LAYER,
@@ -625,14 +627,21 @@ export default function MapaSensors({
           promoteId: "fid",
         });
       }
+      // The field draws in two stacks, citizen sensors first and government
+      // stations over them (2026-11-11): edge, disc, number per stack, so no
+      // citizen disc, edge or number can ever sit on a government station.
+      // Within a stack, sortKey still decides overlaps by latitude only.
+      for (const [suffix, isSima] of [["", false], [GOB_SUFFIX, true]] as const) {
+      const network = ["==", ["get", "isSima"], isSima] as any;
       // Under the discs, same source and sort key, so each edge sits with its
       // own disc in an overlap. Hidden for the selected station (its DOM
       // marker stands in).
-      if (!m.getLayer(FIELD_EDGE_LAYER)) {
+      if (!m.getLayer(FIELD_EDGE_LAYER + suffix)) {
         m.addLayer({
-          id: FIELD_EDGE_LAYER,
+          id: FIELD_EDGE_LAYER + suffix,
           type: "circle",
           source: FIELD_SOURCE,
+          filter: network,
           layout: { "circle-sort-key": ["get", "sortKey"] as any },
           paint: {
             "circle-color": "#1c1917",
@@ -645,11 +654,12 @@ export default function MapaSensors({
           },
         });
       }
-      if (!m.getLayer(FIELD_LAYER)) {
+      if (!m.getLayer(FIELD_LAYER + suffix)) {
       m.addLayer({
-        id: FIELD_LAYER,
+        id: FIELD_LAYER + suffix,
         type: "circle",
         source: FIELD_SOURCE,
+          filter: network,
         layout: { "circle-sort-key": ["get", "sortKey"] as any },
         paint: {
           "circle-color": ["get", "fill"] as any,
@@ -701,11 +711,12 @@ export default function MapaSensors({
       // (map/Google POI labels). symbol-sort-key reuses the same
       // provenance+latitude key the circle draw order uses, so which label
       // wins a collision is still never a function of the reading.
-      if (!m.getLayer(FIELD_LABEL_LAYER)) {
+      if (!m.getLayer(FIELD_LABEL_LAYER + suffix)) {
         m.addLayer({
-          id: FIELD_LABEL_LAYER,
+          id: FIELD_LABEL_LAYER + suffix,
           type: "symbol",
           source: FIELD_SOURCE,
+          filter: network,
           layout: {
             "text-field": ["get", "label"] as any,
             "text-size": FIELD_LABEL_SIZE as any,
@@ -719,6 +730,7 @@ export default function MapaSensors({
             "text-opacity": FIELD_LABEL_OPACITY as any,
           },
         });
+      }
       }
       // Landmark badge on every SIMA station (grey no-data ones included) —
       // hidden only while it's the selected station, whose DOM marker carries
@@ -794,9 +806,9 @@ export default function MapaSensors({
       if (selectedIdRef.current !== sensor.sensor_id) trackStationOpen(sensor);
       setSelectedSensor(buildSelection(sensor, dataRef.current));
     };
-    m.on("mousemove", FIELD_LAYER, onMove);
-    m.on("mouseleave", FIELD_LAYER, onLeave);
-    m.on("click", FIELD_LAYER, onClick);
+    m.on("mousemove", FIELD_LAYERS, onMove);
+    m.on("mouseleave", FIELD_LAYERS, onLeave);
+    m.on("click", FIELD_LAYERS, onClick);
     // Keeps the selected marker's own size tracking the field's zoom curve —
     // see resizeSelectedMarker's comment for why this has to be continuous,
     // not just re-run on selection change.
@@ -806,9 +818,9 @@ export default function MapaSensors({
     syncActive();
 
     return () => {
-      m.off("mousemove", FIELD_LAYER, onMove);
-      m.off("mouseleave", FIELD_LAYER, onLeave);
-      m.off("click", FIELD_LAYER, onClick);
+      m.off("mousemove", FIELD_LAYERS, onMove);
+      m.off("mouseleave", FIELD_LAYERS, onLeave);
+      m.off("click", FIELD_LAYERS, onClick);
       m.off("zoom", resizeSelectedMarker);
     };
   }, [styleReady, buildFieldData, updateField, syncActive, resizeSelectedMarker]);
@@ -912,7 +924,7 @@ export default function MapaSensors({
     if (!styleReady || !map.current) return;
     const m = map.current as any;
     const handler = (e: any) => {
-      if (m.getLayer(FIELD_LAYER) && m.queryRenderedFeatures(e.point, { layers: [FIELD_LAYER] }).length) return;
+      if (m.getLayer(FIELD_LAYER) && m.queryRenderedFeatures(e.point, { layers: FIELD_LAYERS }).length) return;
       if (isDesktop) closeCard();
       else setSheetState('peek');
     };
