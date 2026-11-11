@@ -355,7 +355,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
             {place && (
               <p className="flex min-w-0 items-center gap-1.5 text-neutral-600">
                 <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
-                <span className="min-w-0 overflow-x-auto whitespace-nowrap py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{place}</span>
+                <span className="-my-1 min-w-0 overflow-x-auto whitespace-nowrap py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{place}</span>
               </p>
             )}
           </div>
