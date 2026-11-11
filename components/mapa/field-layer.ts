@@ -129,7 +129,7 @@ export function fieldRadiusAt(zoom: number): number {
   }
   return stops[stops.length - 1][1];
 }
-export const CITIZEN_DOT_RADIUS = 5.5;
+export const CITIZEN_DOT_RADIUS = 7;
 // Zoom at which a citizen sensor is a full numbered disc; it starts growing
 // one zoom level before. Labels switch on at the same zoom (citizenLabel).
 export const CITIZEN_FULL_FROM = 12.5;
