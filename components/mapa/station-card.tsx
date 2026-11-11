@@ -527,13 +527,12 @@ export function SensitiveGroupsCard({ subject, onClose }: { subject: SelectedSen
 // station-card mockups): the left column's parts in the same order, its level
 // card in the pale tint instead of the solid fill, so the sidebar's summary
 // stays the loudest thing on screen and a picked station reads as secondary.
-// Level card (time and network in its foot), Población general, Grupos
+// Level card (time and the station's name in its foot), Población general, Grupos
 // sensibles opening in place, then a footnote with the source and the
 // coordinates. Mobile keeps StationReading in its bottom sheet.
 export function StationPanel({ subject, freshness, copied, onCopyCoords }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void }) {
   const { sensor } = subject;
   const isSima = sensor.source === "sima";
-  const SourceIcon = getSourceIcon(isSima);
   const quality = getQualityInfo(subject.pm25);
   const [groupsOpen, setGroupsOpen] = useState(false);
   const groupsId = `station-groups-${useId().replace(/:/g, "")}`;
@@ -572,9 +571,11 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
             ) : (
               <span />
             )}
-            <span className="flex items-center gap-1.5">
-              <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
-              {isSima ? "Gobierno" : "Ciudadano"}
+            {/* The station's name, bottom right with the location arrow, as
+                the sidebar's foot names its station (2026-11-11). */}
+            <span className="flex min-w-0 items-center gap-1.5">
+              <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
+              <span className="truncate">{displayName(sensor)}</span>
             </span>
           </div>
         </div>

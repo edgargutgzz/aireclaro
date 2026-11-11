@@ -20,6 +20,8 @@ import {
   buildSelection,
   displayName,
   markerLabel,
+  getSourceIcon,
+  getSourceLabel,
 } from "./lib";
 import {
   OPENING_CENTER,
@@ -1224,7 +1226,20 @@ export default function MapaSensors({
         {selectedSensor && (
           <div className="glass pointer-events-auto flex min-h-0 w-full flex-shrink flex-col overflow-hidden rounded-2xl">
             <div className="flex w-full flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 pb-3">
-              <span className="min-w-0 flex-1 truncate text-base font-medium text-neutral-700">{displayName(selectedSensor.sensor)}</span>
+              {/* The network up here; the name is in the level card's foot
+                  (2026-11-11). */}
+              <span className="flex min-w-0 flex-1 items-center gap-1.5 text-sm font-medium text-neutral-600">
+                {(() => {
+                  const isSima = selectedSensor.sensor.source === "sima";
+                  const Icon = getSourceIcon(isSima);
+                  return (
+                    <>
+                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-500" />
+                      <span className="truncate">{getSourceLabel(isSima, selectedSensor.sensor.red)}</span>
+                    </>
+                  );
+                })()}
+              </span>
               <button
                 type="button"
                 onClick={closeCard}
