@@ -335,10 +335,10 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
             the level's colour (2026-11-05, was the map's blue). */}
         {freshness && freshness.status !== "nodata" && (
           <div
-            className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 py-3 text-sm leading-none"
+            className="flex items-center justify-between gap-4 px-6 py-3 text-sm leading-none"
             style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
           >
-            <p className="flex items-center gap-1.5">
+            <p className="flex flex-shrink-0 items-center gap-1.5">
               <FreshnessDot status={freshness.status} color={quality.color} />
               {/* "Actualizado 1:00 PM" (2026-11-03, replaced "Hoy, 1:00 PM");
                   a past day still shows: "Actualizado ayer 11:00 PM". */}
@@ -349,10 +349,13 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
                 </time>
               </span>
             </p>
+            {/* A name too long for the foot scrolls sideways in place
+                (2026-11-11), no wrap and no ellipsis; the scrollbar is
+                hidden, the trackpad or a drag moves it. */}
             {place && (
-              <p className="flex items-center gap-1.5 text-neutral-600">
+              <p className="flex min-w-0 items-center gap-1.5 text-neutral-600">
                 <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
-                {place}
+                <span className="min-w-0 overflow-x-auto whitespace-nowrap py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{place}</span>
               </p>
             )}
           </div>
