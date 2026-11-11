@@ -82,13 +82,11 @@ export function makeSimaBadge(): ImageData {
   return ctx.getImageData(0, 0, cvs.width, cvs.height);
 }
 
-// Resting disc radius (px) by zoom, before the hover multiplier. The two
-// networks split by size (2026-11-11, the AirNow Fire and Smoke Map
-// convention: official monitors are large numbered circles, sensors small
-// plain ones). Government stations follow FIELD_RADIUS_STOPS at every zoom;
-// citizen sensors are a CITIZEN_DOT_RADIUS dot with no number up to zoom
-// CITIZEN_FULL_FROM - 1, then grow into the same numbered disc by
-// CITIZEN_FULL_FROM. The stroke width stays flat (below).
+// Resting disc radius (px) by zoom, before the hover multiplier. Government
+// and citizen discs are the same size at every zoom (2026-11-11, after a
+// day of small citizen dots); the networks split by the number instead:
+// citizen discs print theirs only from CITIZEN_FULL_FROM (FIELD_LABEL_TEXT).
+// The stroke width stays flat (below).
 // radius = base * (hovered ? 1.14 : 1), evaluated per stop. The zoom
 // `interpolate` MUST stay top-level in the paint value — MapLibre (like Mapbox before it) silently
 // drops a layer whose zoom expression is nested inside `*` (this repo hit
@@ -129,28 +127,20 @@ export function fieldRadiusAt(zoom: number): number {
   }
   return stops[stops.length - 1][1];
 }
-export const CITIZEN_DOT_RADIUS = 7;
-// Zoom at which a citizen sensor is a full numbered disc; it starts growing
-// one zoom level before. Labels switch on at the same zoom (citizenLabel).
+// Zoom from which citizen discs print their number too.
 export const CITIZEN_FULL_FROM = 12.5;
-const RADIUS_ZOOMS = [8, 11, CITIZEN_FULL_FROM - 1, CITIZEN_FULL_FROM, 13.5, 16];
-// Per stop: the government radius or the citizen one, hover folded in.
-const networkR = (zoom: number) => {
-  const citizen = zoom < CITIZEN_FULL_FROM ? CITIZEN_DOT_RADIUS : fieldRadiusAt(zoom);
-  return ["case", ["boolean", ["get", "isSima"], false], stopR(fieldRadiusAt(zoom)), stopR(citizen)];
-};
 export const FIELD_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
-  ...RADIUS_ZOOMS.flatMap((zoom) => [zoom, networkR(zoom)]),
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, stopR(radius)]),
 ];
 // The edge layer's radius: the disc's, 2.25px wider, so 2px of edge shows
 // past the disc's own 1.5px white stroke (which straddles the radius).
 export const FIELD_EDGE_RADIUS = [
   "interpolate", ["linear"], ["zoom"],
-  ...RADIUS_ZOOMS.flatMap((zoom) => [zoom, ["+", networkR(zoom), 2.25]]),
+  ...FIELD_RADIUS_STOPS.flatMap(([zoom, radius]) => [zoom, ["+", stopR(radius), 2.25]]),
 ];
-// The printed number: government discs always; citizen discs only once
-// they are full size. A zoom `step` at the top level, like the radius.
+// The printed number: government discs always; citizen discs from
+// CITIZEN_FULL_FROM. A zoom `step` at the top level, like the radius.
 export const FIELD_LABEL_TEXT = [
   "step", ["zoom"],
   ["case", ["boolean", ["get", "isSima"], false], ["get", "label"], ""],
