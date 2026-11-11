@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
@@ -382,7 +382,10 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
 // `groupsOpen` / `onToggleGroups`: the Grupos sensibles row opens its advice
 // in a card of its own beside the sidebar (SensitiveGroupsCard, placed by the
 // map page, 2026-11-10); closed by default.
-export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: { subject: SelectedSensor; freshness: Freshness | null; groupsOpen: boolean; onToggleGroups: () => void }) {
+// `groups` / `foot` (2026-11-11): the station card reuses this whole panel,
+// its spacing, footnote peek and bottom fade, swapping in its own Grupos
+// sensibles section and footnote rows.
+export function AirNowPanel({ subject, freshness, groupsOpen = false, onToggleGroups, groups, foot }: { subject: SelectedSensor; freshness: Freshness | null; groupsOpen?: boolean; onToggleGroups?: () => void; groups?: ReactNode; foot?: ReactNode }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -402,8 +405,17 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
     const foot = footRef.current;
     const second = foot?.querySelectorAll("dt")[1] as HTMLElement | undefined;
     setFootHidden(foot && second ? Math.max(0, foot.offsetHeight - (second.offsetTop + 14) + 24) : 0);
-  }, [subject.sensor.source, quality?.label]);
+  }, [subject.sensor.sensor_id, subject.sensor.source, quality?.label]);
   useLayoutEffect(checkMoreBelow, [footHidden]);
+  // Content that grows in place (the station card's Grupos sensibles opening)
+  // re-checks the fade.
+  useEffect(() => {
+    const inner = bodyRef.current?.firstElementChild;
+    if (!inner) return;
+    const ro = new ResizeObserver(checkMoreBelow);
+    ro.observe(inner);
+    return () => ro.disconnect();
+  }, []);
 
 
   return (
@@ -439,6 +451,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
             </div>
           </section>
 
+          {groups ?? (
           <section className="mt-3" aria-label="Grupos sensibles">
             {/* The row that opens the groups' card, in the advice cards'
                 material: both groups' icons in their level-tinted discs, the
@@ -466,10 +479,13 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
               <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 transition-colors group-hover:text-neutral-600 ${groupsOpen ? "text-neutral-600" : "text-neutral-400"}`} />
             </button>
           </section>
+          )}
           {/* Where the reading and the advice come from: the quiet footnote
               at the body's foot, its text on the cards' rail (24px in). */}
           <div className="mt-auto pt-8">
           <dl ref={footRef} className="relative mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
+            {foot ?? (
+            <>
             {/* The station's name is in the card's foot (2026-11-09); this
                 row says why it is the one shown. */}
             <dt className="font-medium text-neutral-500">{subject.sensor.source === "sima" ? "Estación mostrada" : "Sensor"}</dt>
@@ -482,6 +498,8 @@ export function AirNowPanel({ subject, freshness, groupsOpen, onToggleGroups }: 
             <dd className="text-neutral-600">
               <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">NOM-172-SEMARNAT-2023</DialogLink>
             </dd>
+            </>
+            )}
           </dl>
           </div>
           </div>
@@ -526,11 +544,10 @@ export function SensitiveGroupsCard({ subject, onClose }: { subject: SelectedSen
   );
 }
 
-// The desktop station card's body (2026-11-11): the left column's parts in
-// the same order and colouring. Level card (AirNowHeader, the station's name
-// in its foot), Población general, Grupos
-// sensibles opening in place, then a footnote with the source and the
-// coordinates. Mobile keeps StationReading in its bottom sheet.
+// The desktop station card's body (2026-11-11): the left column's panel
+// itself (AirNowPanel), the station named in its level card's foot, with
+// Grupos sensibles opening in place and a footnote naming the source and
+// holding the coordinates. Mobile keeps StationReading in its bottom sheet.
 export function StationPanel({ subject, freshness, copied, onCopyCoords }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void }) {
   const { sensor } = subject;
   const isSima = sensor.source === "sima";
@@ -538,84 +555,67 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
   const [groupsOpen, setGroupsOpen] = useState(false);
   const groupsId = `station-groups-${useId().replace(/:/g, "")}`;
 
-  return (
-    // The sidebar's spacing, exactly: level card, 24px, the advice cards
-    // 12px apart, 32px, the footnote (AirNowPanel's pt-6 / mt-3 / pt-8).
-    <div className="flex flex-1 flex-col">
-      {/* The left column's own level card, solid fill and all (2026-11-11,
-          the pale tint was tried first), the station named in its foot. */}
-      <AirNowHeader subject={subject} freshness={freshness} place={displayName(sensor)} />
-
-      {quality && (
-        <div className="pt-6">
-          <section aria-label="Recomendaciones de salud" className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-            <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} full={quality.generalFull} info={quality} lead />
-          </section>
-          {/* The sidebar's Grupos sensibles row; here it opens in place,
-              under itself, since the card already floats over the map. */}
-          <section aria-label="Grupos sensibles" className="mt-3 overflow-hidden rounded-2xl border border-stone-200 bg-white">
-            <button
-              type="button"
-              onClick={() => setGroupsOpen((v) => !v)}
-              aria-expanded={groupsOpen}
-              aria-controls={groupsId}
-              className="group flex w-full items-center gap-3.5 px-[18px] py-3 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+  const groups = quality && (
+    <section aria-label="Grupos sensibles" className="mt-3 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+      <button
+        type="button"
+        onClick={() => setGroupsOpen((v) => !v)}
+        aria-expanded={groupsOpen}
+        aria-controls={groupsId}
+        className="group flex w-full items-center gap-3.5 px-[18px] py-3 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+      >
+        <span aria-hidden="true" className="flex">
+          {SENSITIVE_GROUPS.map((g, i) => (
+            <span
+              key={g.key}
+              className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white ${i > 0 ? "-ml-2.5" : ""}`}
+              style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 14%, white)`, color: quality.textColor }}
             >
-              <span aria-hidden="true" className="flex">
-                {SENSITIVE_GROUPS.map((g, i) => (
-                  <span
-                    key={g.key}
-                    className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white ${i > 0 ? "-ml-2.5" : ""}`}
-                    style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 14%, white)`, color: quality.textColor }}
-                  >
-                    <g.icon className="h-[18px] w-[18px]" />
-                  </span>
-                ))}
-              </span>
-              <span className="min-w-0 flex-1 text-sm font-semibold text-neutral-900">Grupos sensibles</span>
-              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-[color,transform] duration-200 group-hover:text-neutral-600 ${groupsOpen ? "rotate-90" : ""}`} />
-            </button>
-            <div id={groupsId} hidden={!groupsOpen} className="border-t border-stone-100">
-              {groupByAdvice(quality).map(({ advice, groups, full }) => (
-                <div key={advice} className="border-t border-stone-100 first:border-t-0">
-                  <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} full={full} />
-                </div>
-              ))}
-            </div>
-          </section>
-        </div>
-      )}
-
-      {/* The sidebar's footnote: where the reading comes from, and the
-          station's coordinates to copy. */}
-      <div className="mt-auto pt-8">
-      <dl className="mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
-        <dt className="font-medium text-neutral-500">Fuente</dt>
-        <dd className="text-neutral-600">
-          {isSima ? (
-            <>
-              <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>, Gobierno de Nuevo León
-            </>
-          ) : (
-            <>
-              <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
-              {sensor.red ? `, red ${sensor.red}` : ""}, con la corrección de la EPA
-            </>
-          )}
-        </dd>
-        <dt className="font-medium text-neutral-500">Ubicación</dt>
-        <dd>
-          <button
-            type="button"
-            onClick={onCopyCoords}
-            className="-mx-1 flex items-center gap-1 rounded-lg px-1 text-neutral-600 transition-colors hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-          >
-            {copied ? <Check aria-hidden="true" className="h-3 w-3 text-neutral-400" /> : <Copy aria-hidden="true" className="h-3 w-3 text-neutral-400" />}
-            {copied ? "Copiado" : "Copiar coordenadas"}
-          </button>
-        </dd>
-      </dl>
+              <g.icon className="h-[18px] w-[18px]" />
+            </span>
+          ))}
+        </span>
+        <span className="min-w-0 flex-1 text-sm font-semibold text-neutral-900">Grupos sensibles</span>
+        <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-[color,transform] duration-200 group-hover:text-neutral-600 ${groupsOpen ? "rotate-90" : ""}`} />
+      </button>
+      <div id={groupsId} hidden={!groupsOpen} className="border-t border-stone-100">
+        {groupByAdvice(quality).map(({ advice, groups, full }) => (
+          <div key={advice} className="border-t border-stone-100 first:border-t-0">
+            <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} full={full} />
+          </div>
+        ))}
       </div>
-    </div>
+    </section>
   );
+
+  const foot = (
+    <>
+      <dt className="font-medium text-neutral-500">Fuente</dt>
+      <dd className="text-neutral-600">
+        {isSima ? (
+          <>
+            <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>, Gobierno de Nuevo León
+          </>
+        ) : (
+          <>
+            <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
+            {sensor.red ? `, red ${sensor.red}` : ""}
+          </>
+        )}
+      </dd>
+      <dt className="font-medium text-neutral-500">Ubicación</dt>
+      <dd>
+        <button
+          type="button"
+          onClick={onCopyCoords}
+          className="-mx-1 flex items-center gap-1 rounded-lg px-1 text-neutral-600 transition-colors hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+        >
+          {copied ? <Check aria-hidden="true" className="h-3 w-3 text-neutral-400" /> : <Copy aria-hidden="true" className="h-3 w-3 text-neutral-400" />}
+          {copied ? "Copiado" : "Copiar coordenadas"}
+        </button>
+      </dd>
+    </>
+  );
+
+  return <AirNowPanel subject={subject} freshness={freshness} groups={groups} foot={foot} />;
 }

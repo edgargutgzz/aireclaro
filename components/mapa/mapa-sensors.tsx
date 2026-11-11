@@ -1242,16 +1242,12 @@ export default function MapaSensors({
             // at its foot like the sidebar's.
             style={asideHeight ? { height: asideHeight } : undefined}
           >
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-              <div className="disclosure-in flex min-h-full flex-col px-4 pb-6 pt-4">
-                <StationPanel
-                  subject={selectedSensor}
-                  freshness={freshness}
-                  copied={copied}
-                  onCopyCoords={() => copyCoords(selectedSensor.sensor.lat, selectedSensor.sensor.lon)}
-                />
-              </div>
-            </div>
+            <StationPanel
+              subject={selectedSensor}
+              freshness={freshness}
+              copied={copied}
+              onCopyCoords={() => copyCoords(selectedSensor.sensor.lat, selectedSensor.sensor.lon)}
+            />
             <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
           </div>
         )}
