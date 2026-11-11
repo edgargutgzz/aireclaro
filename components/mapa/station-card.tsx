@@ -335,7 +335,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
             the level's colour (2026-11-05, was the map's blue). */}
         {freshness && freshness.status !== "nodata" && (
           <div
-            className="flex items-center justify-between gap-6 px-6 py-3 text-sm leading-none"
+            className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-3 text-sm leading-none md:flex-nowrap"
             style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
           >
             <p className="flex flex-shrink-0 items-center gap-1.5">
@@ -349,13 +349,15 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
                 </time>
               </span>
             </p>
-            {/* A name too long for the foot scrolls sideways in place
-                (2026-11-11), no wrap and no ellipsis; the scrollbar is
-                hidden, the trackpad or a drag moves it. */}
+            {/* Under md (the homepage card on a phone) the foot wraps, the
+                name on its own line. From md a name too long for the foot
+                scrolls sideways in place (2026-11-11), no wrap and no
+                ellipsis; the scrollbar is hidden, the trackpad or a drag
+                moves it. */}
             {place && (
               <p className="flex min-w-0 items-center gap-1.5 text-neutral-600">
                 <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
-                <span className="-my-1 min-w-0 overflow-x-auto whitespace-nowrap py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{place}</span>
+                <span className="min-w-0 md:-my-1 md:overflow-x-auto md:whitespace-nowrap md:py-1 md:[scrollbar-width:none] md:[&::-webkit-scrollbar]:hidden">{place}</span>
               </p>
             )}
           </div>
