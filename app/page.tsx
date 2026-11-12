@@ -4,7 +4,6 @@ import { OG_BASE, SITE_DESCRIPTION, SITE_NAME, sectionCard } from "@/lib/metadat
 import { SITE_URL } from "@/lib/site";
 import AirQualitySlider from "@/components/home/air-quality-slider";
 import AirNowCard from "@/components/home/air-now-card";
-import { stripDots } from "@/components/home/map-strip";
 import LiveRefresh from "@/components/data/live-refresh";
 import PurpleAirSensors from "@/components/data/purple-air-sensors";
 import PurpleAirData from "@/components/data/purple-air-data";
@@ -52,8 +51,7 @@ const websiteSchema = {
 };
 
 // The station the live card shows: the map sidebar's rule (pickDefaultSensor)
-// over the same data the map gets, so the two always agree; and the live
-// discs for its map strip.
+// over the same data the map gets, so the two always agree.
 async function getAirNow() {
   const [paSensors, paData, simaSensors, simaData] = await Promise.all([
     fetchWithFallback(PurpleAirSensors, []),
@@ -68,7 +66,7 @@ async function getAirNow() {
   ] as Sensor[];
   const data = [...paData, ...simaData] as Data[];
   const def = pickDefaultSensor(sensors, data);
-  return { subject: def ? buildSelection(def, data) : null, dots: stripDots(sensors, data) };
+  return def ? buildSelection(def, data) : null;
 }
 
 export default async function Home() {
@@ -78,7 +76,7 @@ export default async function Home() {
     // screen. Ends like every page (pb-24 lg:pb-32 before the footer).
     <div className="flex min-h-below-header flex-col">
       <JsonLd data={websiteSchema} />
-      <AirNowCard subject={airNow?.subject ?? null} dots={airNow?.dots ?? []} />
+      <AirNowCard subject={airNow} />
       <LiveRefresh />
       {/* The hero, toned down 2026-11-04: the live card above is the page's
           main content now. It sits a fixed distance under the live card (no

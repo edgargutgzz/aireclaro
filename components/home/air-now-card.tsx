@@ -7,7 +7,6 @@ import { getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { AirNowHeader, RecRow, groupByAdvice } from "@/components/mapa/station-card";
 import { toFreshness } from "@/components/mapa/lib";
 import type { SelectedSensor } from "@/components/mapa/types";
-import { MapStrip, type StripDot } from "./map-strip";
 
 // The homepage's live card, at the top of the page (replaced the ticker
 // 2026-11-03). In order of importance:
@@ -16,7 +15,7 @@ import { MapStrip, type StripDot } from "./map-strip";
 // sensitive groups one tap away in the same card, the official text as on the
 // map). The level card itself opens the map. `subject` is null when no reading
 // is live anywhere: the card is hidden rather than shown empty.
-export default function AirNowCard({ subject, dots }: { subject: SelectedSensor | null; dots: StripDot[] }) {
+export default function AirNowCard({ subject }: { subject: SelectedSensor | null }) {
   // The reading's age needs the visitor's clock: null until mounted, then
   // re-read every minute, as on the map.
   const [now, setNow] = useState<number | null>(null);
@@ -65,20 +64,16 @@ export default function AirNowCard({ subject, dots }: { subject: SelectedSensor 
     // a tall orange slab; at its own height it shrank).
     <section aria-label="Calidad del aire ahora" className="mx-auto w-full max-w-7xl px-6 pt-8 lg:px-8">
       <div className={`grid gap-4 lg:grid-cols-2 lg:gap-12 ${expanded ? "items-start" : "items-stretch"}`}>
-        {/* The level card opens the map (2026-11-03): the reading leads to
-            where it comes from; its map strip says so (2026-11-12). */}
+        {/* The level card opens the map (2026-11-03, in place of a "Ver el
+            mapa" link): the reading leads to where it comes from. */}
         <Link
           href="/calidad-del-aire"
           // Desktop only (lg:): stacked on a phone, the cards don't sit side by side.
           style={expanded && closedHeight ? ({ "--closed-h": `${closedHeight}px` } as React.CSSProperties) : undefined}
           className={`block h-full rounded-xl transition-[filter] ${expanded && closedHeight ? "lg:h-[var(--closed-h)]" : ""} hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2`}
         >
-          <AirNowHeader subject={subject} freshness={freshness} stretch place="Zona Metropolitana de Monterrey" placeIcon={MapPin}>
-            {/* A strip of the map with its live discs and a "Ver el mapa"
-                pill (2026-11-12): says the card opens the map, and shows
-                what is there. */}
-            <MapStrip dots={dots} />
-          </AirNowHeader>
+          <AirNowHeader subject={subject} freshness={freshness} stretch place="Zona Metropolitana de Monterrey" placeIcon={MapPin} />
+          <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>
           {/* Fills the row's height at rest, so both cards match whichever is

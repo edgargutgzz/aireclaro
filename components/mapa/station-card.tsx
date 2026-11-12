@@ -294,8 +294,7 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // with the location arrow: the metro area on the homepage (2026-11-04), the
 // station on the map (2026-11-09). `placeIcon` marks it: the location arrow
 // on the map, a pin on the homepage's metro-area card (2026-11-12).
-// `children` goes under the foot, inside the card (the homepage's map strip).
-export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = Navigation, children }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; children?: ReactNode }) {
+export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = Navigation }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   return (
@@ -364,7 +363,6 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
             )}
           </div>
         )}
-        {children}
       </div>
     ) : (
       <div className="rounded-2xl border border-stone-200 bg-white p-6">
