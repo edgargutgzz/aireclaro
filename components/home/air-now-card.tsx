@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, UsersRound } from "lucide-react";
+import { ChevronDown, MapPin, UsersRound } from "lucide-react";
 import { getQualityInfo, type QualityInfo } from "@/lib/air-quality";
 import { AirNowHeader, RecRow, groupByAdvice } from "@/components/mapa/station-card";
 import { toFreshness } from "@/components/mapa/lib";
@@ -72,7 +72,7 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
           style={expanded && closedHeight ? ({ "--closed-h": `${closedHeight}px` } as React.CSSProperties) : undefined}
           className={`block h-full rounded-xl transition-[filter] ${expanded && closedHeight ? "lg:h-[var(--closed-h)]" : ""} hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 focus-visible:ring-offset-2`}
         >
-          <AirNowHeader subject={subject} freshness={freshness} stretch place="Zona Metropolitana de Monterrey" />
+          <AirNowHeader subject={subject} freshness={freshness} stretch place="Zona Metropolitana de Monterrey" placeIcon={MapPin} />
           <span className="sr-only">Ver el mapa</span>
         </Link>
         <div>

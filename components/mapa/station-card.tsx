@@ -292,8 +292,9 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // advice card), the level block growing and the foot staying at the bottom.
 // `place` names where the reading stands for in the foot, right of the time,
 // with the location arrow: the metro area on the homepage (2026-11-04), the
-// station on the map (2026-11-09).
-export function AirNowHeader({ subject, freshness, stretch = false, place }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string }) {
+// station on the map (2026-11-09). `placeIcon` marks it: the location arrow
+// on the map, a pin on the homepage's metro-area card (2026-11-12).
+export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = Navigation }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   return (
@@ -356,7 +357,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
                 moves it. */}
             {place && (
               <p className="flex min-w-0 items-center gap-1.5 text-neutral-600">
-                <Navigation aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
+                <PlaceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
                 <span className="min-w-0 md:-my-1 md:overflow-x-auto md:whitespace-nowrap md:py-1 md:[scrollbar-width:none] md:[&::-webkit-scrollbar]:hidden">{place}</span>
               </p>
             )}
