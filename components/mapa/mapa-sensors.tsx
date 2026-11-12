@@ -47,7 +47,7 @@ import {
 import { LayersFilterContent } from "./layers-filter";
 import { ScaleBar, LegendDetail } from "./air-quality-legend";
 import { MapToolbar } from "./map-toolbar";
-import { AirNowPanel, GroupRecommendations, SensitiveGroupsCard, StationPanel, StationReading } from "./station-card";
+import { AirNowPanel, GroupRecommendations, StationPanel, StationReading } from "./station-card";
 import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
@@ -146,8 +146,6 @@ export default function MapaSensors({
   const [showOtros, setShowOtros] = useState(() => seedSource("otros"));
   const [showOccammInfo, setShowOccammInfo] = useState(false);
   const [showFuenteInfo, setShowFuenteInfo] = useState(false);
-  // The sidebar's Grupos sensibles card, beside the sidebar (desktop).
-  const [groupsOpen, setGroupsOpen] = useState(false);
   const [showSima, setShowSima] = useState(() => seedSource("gob"));
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>(seedHidden);
   const [showOccamm, setShowOccamm] = useState(() => seedSource("occamm"));
@@ -956,17 +954,6 @@ export default function MapaSensors({
     return () => { m?.off("click", handler); };
   }, [styleReady, closeCard, isDesktop]);
 
-  // Any click on the map, empty or on a marker, closes the Grupos sensibles
-  // card beside the sidebar (2026-11-10); the toolbar's card closes on any
-  // click outside it already (MapToolbar).
-  useEffect(() => {
-    if (!styleReady || !map.current) return;
-    const m = map.current;
-    const handler = () => setGroupsOpen(false);
-    m.on("click", handler);
-    return () => { m.off("click", handler); };
-  }, [styleReady]);
-
   // Keyboard / screen-reader path into the field: the GL discs are canvas-drawn
   // and not tabbable, so every markerable station is also a visually-hidden
   // button that selects it (opens the card) and eases the camera to it. Labels
@@ -1051,8 +1038,6 @@ export default function MapaSensors({
           <AirNowPanel
             subject={summarySelection}
             freshness={summaryFreshness}
-            groupsOpen={groupsOpen}
-            onToggleGroups={() => setGroupsOpen((v) => !v)}
           />
         )}
       </aside>
@@ -1070,14 +1055,6 @@ export default function MapaSensors({
           currentPm25={summarySelection?.pm25 ?? null}
         />
       </div>
-
-      {/* Grupos sensibles, opened from the sidebar: a glass card 16px right
-          of the left column, at its top (2026-11-10). */}
-      {groupsOpen && summarySelection && (
-        <div className="pointer-events-none absolute bottom-6 left-[500px] top-6 z-20 hidden w-panel-lg md:block">
-          <SensitiveGroupsCard subject={summarySelection} onClose={() => setGroupsOpen(false)} />
-        </div>
-      )}
 
       {/* Map area: the whole screen at every width (on desktop it runs under
           the glass sidebar). */}

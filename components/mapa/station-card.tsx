@@ -381,13 +381,11 @@ export function AirNowHeader({ subject, freshness, stretch = false, place }: { s
 // Then a footnote: which station the reading is and where the advice comes
 // from. `subject` is the default station (pickDefaultSensor); `freshness` is
 // its reading's time, top right in the header.
-// `groupsOpen` / `onToggleGroups`: the Grupos sensibles row opens its advice
-// in a card of its own beside the sidebar (SensitiveGroupsCard, placed by the
-// map page, 2026-11-10); closed by default.
-// `groups` / `foot` (2026-11-11): the station card reuses this whole panel,
-// its spacing, footnote peek and bottom fade, swapping in its own Grupos
-// sensibles section and footnote rows.
-export function AirNowPanel({ subject, freshness, groupsOpen = false, onToggleGroups, groups, foot }: { subject: SelectedSensor; freshness: Freshness | null; groupsOpen?: boolean; onToggleGroups?: () => void; groups?: ReactNode; foot?: ReactNode }) {
+// Grupos sensibles opens in place, under its row (SensitiveGroupsSection,
+// 2026-11-12; it opened a card beside the sidebar before).
+// `foot` (2026-11-11): the station card reuses this whole panel, its
+// spacing, footnote peek and bottom fade, swapping in its own footnote rows.
+export function AirNowPanel({ subject, freshness, foot }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -409,7 +407,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen = false, onToggleGr
     setFootHidden(foot && second ? Math.max(0, foot.offsetHeight - (second.offsetTop + 14) + 24) : 0);
   }, [subject.sensor.sensor_id, subject.sensor.source, quality?.label]);
   useLayoutEffect(checkMoreBelow, [footHidden]);
-  // Content that grows in place (the station card's Grupos sensibles opening)
+  // Content that grows in place (Grupos sensibles opening)
   // re-checks the fade.
   useEffect(() => {
     const inner = bodyRef.current?.firstElementChild;
@@ -453,35 +451,7 @@ export function AirNowPanel({ subject, freshness, groupsOpen = false, onToggleGr
             </div>
           </section>
 
-          {groups ?? (
-          <section className="mt-3" aria-label="Grupos sensibles">
-            {/* The row that opens the groups' card, in the advice cards'
-                material: both groups' icons in their level-tinted discs, the
-                label, a chevron pointing to where the card opens; shaded
-                while it is open. */}
-            <button
-              type="button"
-              onClick={onToggleGroups}
-              aria-expanded={groupsOpen}
-              aria-controls={groupsOpen ? "grupos-sensibles" : undefined}
-              className={`group flex w-full items-center gap-3.5 rounded-2xl border border-stone-200 px-[18px] py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${groupsOpen ? "bg-stone-100" : "bg-white hover:bg-stone-50"}`}
-            >
-              <span aria-hidden="true" className="flex">
-                {SENSITIVE_GROUPS.map((g, i) => (
-                  <span
-                    key={g.key}
-                    className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white ${i > 0 ? "-ml-2.5" : ""}`}
-                    style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 14%, white)`, color: quality.textColor }}
-                  >
-                    <g.icon className="h-[18px] w-[18px]" />
-                  </span>
-                ))}
-              </span>
-              <span className="min-w-0 flex-1 text-sm font-semibold text-neutral-900">Grupos sensibles</span>
-              <ChevronRight aria-hidden="true" className={`h-4 w-4 flex-shrink-0 transition-colors group-hover:text-neutral-600 ${groupsOpen ? "text-neutral-600" : "text-neutral-400"}`} />
-            </button>
-          </section>
-          )}
+          <SensitiveGroupsSection quality={quality} />
           {/* Where the reading and the advice come from: the quiet footnote
               at the body's foot, its text on the cards' rail (24px in). */}
           <div className="mt-auto pt-8">
@@ -515,49 +485,15 @@ export function AirNowPanel({ subject, freshness, groupsOpen = false, onToggleGr
   );
 }
 
-// The sensitive groups' advice as a glass card of its own, opened from the
-// sidebar's Grupos sensibles row and placed beside the sidebar by the map
-// page (2026-11-10). One card per distinct advice (groupByAdvice): groups
-// join only on an exact match of the official text, nothing is reworded.
-export function SensitiveGroupsCard({ subject, onClose }: { subject: SelectedSensor; onClose: () => void }) {
-  const quality = getQualityInfo(subject.pm25);
-  if (!quality) return null;
-  return (
-    <section id="grupos-sensibles" aria-label="Grupos sensibles" className="glass pointer-events-auto flex max-h-full min-h-0 flex-col overflow-hidden rounded-2xl">
-      <div className="flex flex-shrink-0 items-center justify-between gap-3 px-5 pb-3 pt-4">
-        <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Grupos sensibles</span>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Cerrar"
-          className="-my-1 -mr-1 flex-shrink-0 rounded-xl p-1 text-neutral-400 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-        >
-          <X aria-hidden="true" className="h-4 w-4" />
-        </button>
-      </div>
-      <ul className="disclosure-in min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-4">
-        {groupByAdvice(quality).map(({ advice, groups, full }) => (
-          <li key={advice} className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-            <RecRow icons={groups.map((g) => g.icon)} who={groups.map((g) => g.label)} advice={advice} info={quality} full={full} />
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-// The desktop station card's body (2026-11-11): the left column's panel
-// itself (AirNowPanel), the station named in its level card's foot, with
-// Grupos sensibles opening in place and a footnote naming the source and
-// holding the coordinates. Mobile keeps StationReading in its bottom sheet.
-export function StationPanel({ subject, freshness, copied, onCopyCoords }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void }) {
-  const { sensor } = subject;
-  const isSima = sensor.source === "sima";
-  const quality = getQualityInfo(subject.pm25);
+// Grupos sensibles, opening in place under its row (2026-11-11 on the
+// station card, 2026-11-12 on the sidebar too): both groups' icons in their
+// level-tinted discs, the label, a chevron that turns down while open. One
+// row per distinct advice (groupByAdvice): groups join only on an exact
+// match of the official text, nothing is reworded.
+function SensitiveGroupsSection({ quality }: { quality: QualityInfo }) {
   const [groupsOpen, setGroupsOpen] = useState(false);
-  const groupsId = `station-groups-${useId().replace(/:/g, "")}`;
-
-  const groups = quality && (
+  const groupsId = `groups-${useId().replace(/:/g, "")}`;
+  return (
     <section aria-label="Grupos sensibles" className="mt-3 overflow-hidden rounded-2xl border border-stone-200 bg-white">
       <button
         type="button"
@@ -589,7 +525,14 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
       </div>
     </section>
   );
+}
 
+// The desktop station card's body (2026-11-11): the left column's panel
+// itself (AirNowPanel), the station named in its level card's foot, with a
+// footnote naming the source and holding the coordinates. Mobile keeps StationReading in its bottom sheet.
+export function StationPanel({ subject, freshness, copied, onCopyCoords }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void }) {
+  const { sensor } = subject;
+  const isSima = sensor.source === "sima";
   const foot = (
     <>
       <dt className="font-medium text-neutral-500">Fuente</dt>
@@ -619,5 +562,5 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
     </>
   );
 
-  return <AirNowPanel subject={subject} freshness={freshness} groups={groups} foot={foot} />;
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} />;
 }
