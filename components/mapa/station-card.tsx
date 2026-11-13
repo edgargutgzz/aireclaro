@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Baby, Check, ChevronRight, Copy, Info, Navigation, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, Info, MapPin, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
@@ -290,11 +290,11 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // homepage card (components/home/air-now-card.tsx).
 // `stretch` fills its container's height (the homepage card, beside the
 // advice card), the level block growing and the foot staying at the bottom.
-// `place` names where the reading stands for in the foot, right of the time,
-// with the location arrow: the metro area on the homepage (2026-11-04), the
-// station on the map (2026-11-09). `placeIcon` marks it: the location arrow
-// on the map, a pin on the homepage's metro-area card (2026-11-12).
-export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = Navigation }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon }) {
+// `place` names where the reading stands for in the foot, right of the time:
+// the metro area on the homepage (2026-11-04), the station on the map
+// (2026-11-09). `placeIcon` marks it: a pin on the homepage, the station's
+// network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
+export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   return (
@@ -428,7 +428,7 @@ export function AirNowPanel({ subject, freshness, foot }: { subject: SelectedSen
       <header className="flex-shrink-0 px-4 pt-4">
         {/* The map names the station in the foot (2026-11-09); the homepage
             says only the metro area, which is what the level stands for. */}
-        <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} />
+        <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} />
       </header>
 
       {quality && (
