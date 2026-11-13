@@ -365,9 +365,25 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
         )}
       </div>
     ) : (
-      <div className="rounded-2xl border border-stone-200 bg-white p-6">
-        <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
-        <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
+      // No live reading (2026-11-12): the same card, quiet, its foot still
+      // naming the station, so a silent station's card says which one it is.
+      <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+        <div className="p-6">
+          <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
+          <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
+        </div>
+        {place && (
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 bg-stone-100 px-6 py-3 text-sm leading-none text-neutral-600">
+            <p className="flex flex-shrink-0 items-center gap-1.5">
+              <FreshnessDot status="nodata" />
+              Sin lectura reciente
+            </p>
+            <p className="flex min-w-0 items-center gap-1.5">
+              <PlaceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
+              <span className="min-w-0">{place}</span>
+            </p>
+          </div>
+        )}
       </div>
     )
   );
@@ -405,7 +421,7 @@ export function AirNowPanel({ subject, freshness, foot }: { subject: SelectedSen
   useLayoutEffect(() => {
     const foot = footRef.current;
     const second = foot?.querySelectorAll("dt")[1] as HTMLElement | undefined;
-    setFootHidden(foot && second ? Math.max(0, foot.offsetHeight - (second.offsetTop + 14) + 24) : 0);
+    setFootHidden(quality && foot && second ? Math.max(0, foot.offsetHeight - (second.offsetTop + 14) + 24) : 0);
   }, [subject.sensor.sensor_id, subject.sensor.source, quality?.label]);
   useLayoutEffect(checkMoreBelow, [footHidden]);
   // Content that grows in place (Grupos sensibles opening)
@@ -431,7 +447,7 @@ export function AirNowPanel({ subject, freshness, foot }: { subject: SelectedSen
         <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} />
       </header>
 
-      {quality && (
+      {(quality || foot) && (
         // `relative`: the scroll box must be the positioning context, or an
         // absolutely positioned descendant (the footnote link's sr-only
         // label) escapes its clip and makes the whole page scroll.
@@ -446,6 +462,10 @@ export function AirNowPanel({ subject, freshness, foot }: { subject: SelectedSen
           {/* No visible title (removed 2026-11-03, option D of the title
               mockups): each row names who it is for, and the footnote names
               the source. Screen readers still get the section name. */}
+          {/* Without a reading there's no advice: the station card keeps just
+              its footnote (source and coordinates). */}
+          {quality && (
+          <>
           <section aria-label="Recomendaciones de salud">
             <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
               <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} full={quality.generalFull} info={quality} lead />
@@ -453,9 +473,11 @@ export function AirNowPanel({ subject, freshness, foot }: { subject: SelectedSen
           </section>
 
           <SensitiveGroupsSection quality={quality} />
+          </>
+          )}
           {/* Where the reading and the advice come from: the quiet footnote
               at the body's foot, its text on the cards' rail (24px in). */}
-          <div className="mt-auto pt-8">
+          <div className={quality ? "mt-auto pt-8" : ""}>
           <dl ref={footRef} className="relative mx-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs leading-relaxed">
             {foot ?? (
             <>
@@ -540,11 +562,11 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
       <dd className="text-neutral-600">
         {isSima ? (
           <>
-            Estación de gobierno, <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>
+            Estación de gobierno: <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>
           </>
         ) : (
           <>
-            Sensor ciudadano, <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
+            Sensor ciudadano: <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
             {sensor.red ? `, red ${sensor.red}` : ""}
           </>
         )}

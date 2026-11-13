@@ -1216,8 +1216,9 @@ export default function MapaSensors({
             aria-label={`Estación ${displayName(selectedSensor.sensor)}`}
             className="glass pointer-events-auto flex min-h-0 w-full flex-shrink flex-col overflow-hidden rounded-2xl"
             // As tall as the left column's card (2026-11-11), the footnote
-            // at its foot like the sidebar's.
-            style={asideHeight ? { height: asideHeight } : undefined}
+            // at its foot like the sidebar's. A station with no live reading
+            // has only its level card and footnote: the card fits them.
+            style={asideHeight && selectedSensor.pm25 !== null ? { height: asideHeight } : undefined}
           >
             <StationPanel
               subject={selectedSensor}
