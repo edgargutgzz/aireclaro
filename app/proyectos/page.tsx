@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
 import type { IconType } from "react-icons";
 import { SiFacebook, SiInstagram, SiWhatsapp } from "react-icons/si";
 import { pageMetadata, sectionCard } from "@/lib/metadata";
@@ -25,8 +25,10 @@ type Project = {
   imagePosition?: string;
   href: string;
   cta: string;
-  /** The project's own channels, as icon links under the CTA (same icon set as the footer). */
-  socials?: { href: string; label: string; Icon: IconType }[];
+  /** The project's own channels, each with what people get there. They come
+   *  before the CTA (they matter more than the site), in one card with a row
+   *  per channel: the map's OCCAMM card recipe. Same icon set as the footer. */
+  channels?: { heading: string; links: { href: string; label: string; description: string; Icon: IconType }[] };
 };
 
 const PROJECTS: Project[] = [
@@ -37,11 +39,15 @@ const PROJECTS: Project[] = [
     image: "/proyectos/alerta-regia.webp",
     href: "https://alerta-regia.com/",
     cta: "Visitar alerta-regia.com",
-    socials: [
-      { href: "https://chat.whatsapp.com/CsWgti3vM88BOVjlDigqh3", label: "WhatsApp", Icon: SiWhatsapp },
-      { href: "https://www.instagram.com/alertaregiaambiental/", label: "Instagram", Icon: SiInstagram },
-      { href: "https://www.facebook.com/profile.php?id=61583510995051", label: "Facebook", Icon: SiFacebook },
-    ],
+    // Descriptions adapted from alerta-regia.com's own "Únete y recibe alertas" cards.
+    channels: {
+      heading: "Únete y recibe alertas",
+      links: [
+        { href: "https://chat.whatsapp.com/CsWgti3vM88BOVjlDigqh3", label: "WhatsApp", description: "Únete a la comunidad de tu municipio y recibe alertas.", Icon: SiWhatsapp },
+        { href: "https://www.instagram.com/alertaregiaambiental/", label: "Instagram", description: "Recomendaciones diarias según la calidad del aire.", Icon: SiInstagram },
+        { href: "https://www.facebook.com/profile.php?id=61583510995051", label: "Facebook", description: "Forma parte de la comunidad y conoce sus recomendaciones.", Icon: SiFacebook },
+      ],
+    },
   },
   {
     title: "Adopta un sensor",
@@ -66,10 +72,37 @@ export default function Proyectos() {
               <div className="grid gap-8 md:grid-cols-2 md:gap-10">
                 <div>
                   <p className="text-lg leading-relaxed text-neutral-700">{project.description}</p>
+                  {project.channels && (
+                    <>
+                      <h3 className="mb-2.5 mt-6 text-xs font-medium uppercase tracking-wide text-neutral-600">{project.channels.heading}</h3>
+                      <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
+                        {project.channels.links.map(({ href, label, description, Icon }) => (
+                          <li key={label} className="border-t border-stone-100 first:border-t-0">
+                            <a
+                              href={href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group flex items-center gap-3.5 px-[18px] py-3.5 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+                            >
+                              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-stone-100 text-neutral-800">
+                                <Icon size={20} aria-hidden />
+                              </span>
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-[15px] font-semibold text-neutral-800">{label}</span>
+                                <span className="mt-0.5 block text-sm leading-snug text-neutral-600">{description}</span>
+                                <span className="sr-only"> (abre en una nueva pestaña)</span>
+                              </span>
+                              <ChevronRight aria-hidden className="h-4 w-4 flex-shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-600" />
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
                   <Link
                     href={project.href}
                     {...(external && { target: "_blank", rel: "noopener noreferrer" })}
-                    className="group mt-5 inline-flex items-center gap-1.5 text-base font-medium text-neutral-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                    className={`group mt-5 inline-flex items-center gap-1.5 underline-offset-4 ${project.channels ? "text-[15px] text-neutral-600 hover:text-neutral-900" : "text-base font-medium text-neutral-800"} hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800`}
                   >
                     {project.cta}
                     {external ? (
@@ -81,24 +114,6 @@ export default function Proyectos() {
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
                     )}
                   </Link>
-                  {project.socials && (
-                    <ul className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2">
-                      {project.socials.map(({ href, label, Icon }) => (
-                        <li key={label}>
-                          <a
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-base text-neutral-700 underline-offset-4 hover:text-neutral-900 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
-                          >
-                            <Icon size={16} aria-hidden />
-                            {label}
-                            <span className="sr-only"> (abre en una nueva pestaña)</span>
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
                 </div>
                 <Image
                   src={project.image}
