@@ -549,7 +549,7 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
           </>
         )}
       </dd>
-      <dt className="font-medium text-neutral-500">Ubicación</dt>
+      <dt className="font-medium text-neutral-500">{isSima ? "Ubicación de la estación" : "Ubicación del sensor"}</dt>
       <dd>
         <button
           type="button"
