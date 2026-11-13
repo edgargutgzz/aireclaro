@@ -566,7 +566,8 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
           </>
         ) : (
           <>
-            <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink> (sensor ciudadano{sensor.red ? `, red ${sensor.red}` : ""})
+            <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
+            {sensor.red ? `, red ${sensor.red}` : ""}
           </>
         )}
       </dd>
