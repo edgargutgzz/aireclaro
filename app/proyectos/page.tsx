@@ -121,7 +121,11 @@ export default function Proyectos() {
                   width={1080}
                   height={1080}
                   sizes="(min-width: 1280px) 420px, (min-width: 768px) 35vw, 100vw"
-                  className={`aspect-[4/3] w-full rounded-xl bg-stone-100 object-cover ${project.imagePosition ?? ""}`}
+                  // With the channel card the text column is the taller one, so
+                  // from md the picture grows to its height (cover crop) instead
+                  // of ending ~200px short. Only there: on shorter rows the 4:3
+                  // picture sets the row's height.
+                  className={`aspect-[4/3] w-full rounded-xl bg-stone-100 object-cover ${project.channels ? "md:aspect-auto md:h-full" : ""} ${project.imagePosition ?? ""}`}
                 />
               </div>
             </Section>
