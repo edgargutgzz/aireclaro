@@ -294,7 +294,9 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // the metro area on the homepage (2026-11-04), the station on the map
 // (2026-11-09). `placeIcon` marks it: a pin on the homepage, the station's
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
-export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon }) {
+// `label`: the card's small top label, "Calidad del aire" by default; the
+// station card puts the station's type there (2026-11-12).
+export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, label = "Calidad del aire" }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; label?: ReactNode }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   return (
@@ -302,7 +304,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
       <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
         <div className={`flex items-baseline-last justify-between gap-3 p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
-            <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+            <p className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide">{label}</p>
             {/* "Extremadamente mala" can't fit at 44px beside the number, so
                 it shows as "Extrem. mala", the legend's own short form;
                 screen readers get the full name. */}
@@ -369,7 +371,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
       // naming the station, so a silent station's card says which one it is.
       <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
         <div className="p-6">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
+          <p className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{label}</p>
           <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
         </div>
         {place && (
@@ -402,7 +404,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
 // 2026-11-12; it opened a card beside the sidebar before).
 // `foot` (2026-11-11): the station card reuses this whole panel, its
 // spacing, footnote peek and bottom fade, swapping in its own footnote rows.
-export function AirNowPanel({ subject, freshness, foot }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode }) {
+export function AirNowPanel({ subject, freshness, foot, label }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; label?: ReactNode }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -444,7 +446,7 @@ export function AirNowPanel({ subject, freshness, foot }: { subject: SelectedSen
       <header className="flex-shrink-0 px-4 pt-4">
         {/* The map names the station in the foot (2026-11-09); the homepage
             says only the metro area, which is what the level stands for. */}
-        <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} />
+        <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} label={label} />
       </header>
 
       {(quality || foot) && (
@@ -585,5 +587,15 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
     </>
   );
 
-  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} />;
+  // The level card's top label names what kind of station this is, with
+  // its network icon (2026-11-12, option B of the mockups).
+  const SourceIcon = getSourceIcon(isSima);
+  const label = (
+    <>
+      <SourceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0" />
+      {isSima ? "Estación de gobierno" : "Sensor ciudadano"}
+    </>
+  );
+
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} />;
 }
