@@ -606,7 +606,7 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
   // OCCAMM's own sensors say whose network they're in, with the logo, and
   // invite people to join it (2026-11-12): one card, two rows divided by a
   // hairline like the Grupos sensibles card, since the invitation is to this
-  // network. The second row opens /adopta-sensor; its text is the program
+  // network. The second row opens /adopta-sensor in a new tab; its text is the program
   // page's own ("de forma gratuita").
   const network = isOccammSensor(sensor) ? (
     <section aria-label="Red OCCAMM" className="mt-3 overflow-hidden rounded-2xl border border-stone-200 bg-white">
@@ -618,10 +618,14 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
       </div>
       <Link
         href="/adopta-sensor"
+        // A new tab (2026-11-12), so the map stays where it was.
+        target="_blank"
+        rel="noopener noreferrer"
         className="group flex items-center gap-3.5 border-t border-stone-100 px-[18px] py-3.5 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
       >
         <span className="min-w-0 flex-1 text-sm leading-relaxed text-neutral-700">
           Adopta un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.
+          <span className="sr-only"> (abre en una nueva pestaña)</span>
         </span>
         <ChevronRight aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-600" />
       </Link>
