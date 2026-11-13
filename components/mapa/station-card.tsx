@@ -298,12 +298,26 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
 // `label`: the card's small top label, "Calidad del aire" by default; the
 // station card puts the station's type there (2026-11-12).
-export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, label = "Calidad del aire" }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; label?: ReactNode }) {
+export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, label = "Calidad del aire", onClose }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; label?: ReactNode; onClose?: () => void }) {
+  // The station card's close button (2026-11-12, option A of the mockups):
+  // top right of the level card, which is empty there (the number sits at
+  // the bottom), in the card's ink on a faint white disc.
+  const close = onClose && (
+    <button
+      type="button"
+      onClick={onClose}
+      aria-label="Cerrar"
+      className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/25 transition-colors hover:bg-white/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/25"
+    >
+      <X aria-hidden="true" className="h-4 w-4" />
+    </button>
+  );
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   return (
     quality ? (
-      <div className={`overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
+      <div className={`relative overflow-hidden rounded-xl border border-stone-200 ${stretch ? "flex h-full flex-col" : ""}`} style={{ backgroundColor: quality.color, color: onFill }}>
+        {close}
         <div className={`flex items-baseline-last justify-between gap-3 p-6 ${stretch ? "flex-1" : ""}`}>
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide">{label}</p>
@@ -371,7 +385,8 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
     ) : (
       // No live reading (2026-11-12): the same card, quiet, its foot still
       // naming the station, so a silent station's card says which one it is.
-      <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+      <div className="relative overflow-hidden rounded-xl border border-stone-200 bg-white text-neutral-500">
+        {close}
         <div className="p-6">
           <p className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{label}</p>
           <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
@@ -408,7 +423,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
 // footnote shows whole, no peek.
 // `foot` (2026-11-11): the station card reuses this whole panel, its
 // spacing, footnote peek and bottom fade, swapping in its own footnote rows.
-export function AirNowPanel({ subject, freshness, foot, label, after, fit = false }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; label?: ReactNode; after?: ReactNode; fit?: boolean }) {
+export function AirNowPanel({ subject, freshness, foot, label, after, fit = false, onClose }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; label?: ReactNode; after?: ReactNode; fit?: boolean; onClose?: () => void }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -450,7 +465,7 @@ export function AirNowPanel({ subject, freshness, foot, label, after, fit = fals
       <header className="flex-shrink-0 px-4 pt-4">
         {/* The map names the station in the foot (2026-11-09); the homepage
             says only the metro area, which is what the level stands for. */}
-        <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} label={label} />
+        <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} label={label} onClose={onClose} />
       </header>
 
       {(quality || foot) && (
@@ -560,7 +575,7 @@ function SensitiveGroupsSection({ quality }: { quality: QualityInfo }) {
 // The desktop station card's body (2026-11-11): the left column's panel
 // itself (AirNowPanel), the station named in its level card's foot, with a
 // footnote naming the source and holding the coordinates. Mobile keeps StationReading in its bottom sheet.
-export function StationPanel({ subject, freshness, copied, onCopyCoords }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void }) {
+export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void; onClose: () => void }) {
   const { sensor } = subject;
   const isSima = sensor.source === "sima";
   const foot = (
@@ -632,5 +647,5 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
     </section>
   ) : undefined;
 
-  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={network} fit />;
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={network} fit onClose={onClose} />;
 }

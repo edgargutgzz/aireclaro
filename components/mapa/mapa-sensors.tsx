@@ -1258,6 +1258,7 @@ export default function MapaSensors({
               freshness={freshness}
               copied={copied}
               onCopyCoords={() => copyCoords(selectedSensor.sensor.lat, selectedSensor.sensor.lon)}
+              onClose={closeCard}
             />
             <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
           </div>
