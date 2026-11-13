@@ -607,7 +607,7 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
     <section aria-label="Red OCCAMM" className="mt-3 flex items-center gap-3.5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3.5">
       <Image src="/navbar/occamm-logo.png" alt="OCCAMM" width={130} height={24} className="h-6 w-auto flex-shrink-0" />
       <p className="text-[13px] leading-snug text-neutral-600">
-        Sensor de la red del Observatorio Ciudadano de la Calidad del Aire.
+        Sensor de la red OCCAMM
       </p>
     </section>
   ) : undefined;
