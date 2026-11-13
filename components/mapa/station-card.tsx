@@ -604,7 +604,7 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
   // OCCAMM's own sensors say whose network they're in, with the logo, in a
   // card after the advice (2026-11-12, option C of the logo mockups).
   const network = isOccammSensor(sensor) ? (
-    <section aria-label="Red OCCAMM" className="mt-3 flex items-center gap-3.5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3.5">
+    <section aria-label="Red OCCAMM" className="mt-3 flex items-center gap-5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3.5">
       <Image src="/navbar/occamm-logo.png" alt="OCCAMM" width={130} height={24} className="h-6 w-auto flex-shrink-0" />
       <p className="text-[13px] leading-snug text-neutral-600">
         Sensor de la red OCCAMM.
