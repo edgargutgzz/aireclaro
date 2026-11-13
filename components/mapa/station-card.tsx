@@ -403,9 +403,11 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
 // its reading's time, top right in the header.
 // Grupos sensibles opens in place, under its row (SensitiveGroupsSection,
 // 2026-11-12; it opened a card beside the sidebar before).
+// `fit` (2026-11-12): the station card sizes to its content, so the
+// footnote shows whole, no peek.
 // `foot` (2026-11-11): the station card reuses this whole panel, its
 // spacing, footnote peek and bottom fade, swapping in its own footnote rows.
-export function AirNowPanel({ subject, freshness, foot, label, after }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; label?: ReactNode; after?: ReactNode }) {
+export function AirNowPanel({ subject, freshness, foot, label, after, fit = false }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; label?: ReactNode; after?: ReactNode; fit?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -424,7 +426,7 @@ export function AirNowPanel({ subject, freshness, foot, label, after }: { subjec
   useLayoutEffect(() => {
     const foot = footRef.current;
     const second = foot?.querySelectorAll("dt")[1] as HTMLElement | undefined;
-    setFootHidden(quality && foot && second ? Math.max(0, foot.offsetHeight - (second.offsetTop + 14) + 24) : 0);
+    setFootHidden(!fit && quality && foot && second ? Math.max(0, foot.offsetHeight - (second.offsetTop + 14) + 24) : 0);
   }, [subject.sensor.sensor_id, subject.sensor.source, quality?.label]);
   useLayoutEffect(checkMoreBelow, [footHidden]);
   // Content that grows in place (Grupos sensibles opening)
@@ -610,5 +612,5 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
     </section>
   ) : undefined;
 
-  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={network} />;
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={network} fit />;
 }

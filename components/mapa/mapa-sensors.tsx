@@ -365,16 +365,6 @@ export default function MapaSensors({
   // The desktop sidebar's own time line: its station's reading, by the same rule.
   const summaryFreshness = useMemo(() => toFreshness(summarySelection, latestReading, now), [summarySelection, latestReading, now]);
 
-  // The desktop sidebar's height, which the station card matches.
-  const asideRef = useRef<HTMLElement>(null);
-  const [asideHeight, setAsideHeight] = useState<number | null>(null);
-  useEffect(() => {
-    const el = asideRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => setAsideHeight(el.offsetHeight));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
 
   // The marker that wears the pulse: activeSubject (mobile: the pick, else the
   // default the sheet rests on; desktop: only a pick). The desktop sidebar's
@@ -1078,7 +1068,7 @@ export default function MapaSensors({
       {/* The left column (2026-11-10): the sidebar, then the map toolbar as
           its own glass card 16px under it, the same width. */}
       <div className="absolute bottom-6 left-6 top-6 z-20 hidden w-panel-lg flex-col gap-4 md:flex">
-      <aside ref={asideRef} aria-label="Calidad del aire" className="glass flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
+      <aside aria-label="Calidad del aire" className="glass flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl">
         {summarySelection && (
           <AirNowPanel
             subject={summarySelection}
@@ -1260,10 +1250,8 @@ export default function MapaSensors({
             role="region"
             aria-label={`Estación ${displayName(selectedSensor.sensor)}`}
             className="glass pointer-events-auto flex min-h-0 w-full flex-shrink flex-col overflow-hidden rounded-2xl"
-            // As tall as the left column's card (2026-11-11), the footnote
-            // at its foot like the sidebar's. A station with no live reading
-            // has only its level card and footnote: the card fits them.
-            style={asideHeight && selectedSensor.pm25 !== null ? { height: asideHeight } : undefined}
+            // Sized by its content (2026-11-12; it matched the left column's
+            // height from 2026-11-11), up to the screen, then it scrolls.
           >
             <StationPanel
               subject={selectedSensor}
