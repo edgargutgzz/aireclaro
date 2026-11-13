@@ -568,7 +568,7 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
       <dd className="text-neutral-600">
         {isSima ? (
           <>
-            <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink> (estación de gobierno)
+            <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>
           </>
         ) : (
           <>
