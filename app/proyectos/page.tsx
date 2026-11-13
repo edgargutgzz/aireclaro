@@ -25,9 +25,9 @@ type Project = {
   imagePosition?: string;
   href: string;
   cta: string;
-  /** The project's own channels, each with what people get there. They come
-   *  before the CTA (they matter more than the site), in one card with a row
-   *  per channel: the map's OCCAMM card recipe. Same icon set as the footer. */
+  /** The project's own channels, each with what people get there: one card
+   *  under the text and picture, a column per channel (the map's OCCAMM card
+   *  recipe, laid sideways). Same icon set as the footer. */
   channels?: { heading: string; links: { href: string; label: string; description: string; Icon: IconType }[] };
 };
 
@@ -72,37 +72,10 @@ export default function Proyectos() {
               <div className="grid gap-8 md:grid-cols-2 md:gap-10">
                 <div>
                   <p className="text-lg leading-relaxed text-neutral-700">{project.description}</p>
-                  {project.channels && (
-                    <>
-                      <h3 className="mb-2.5 mt-6 text-xs font-medium uppercase tracking-wide text-neutral-600">{project.channels.heading}</h3>
-                      <ul className="overflow-hidden rounded-2xl border border-stone-200 bg-white">
-                        {project.channels.links.map(({ href, label, description, Icon }) => (
-                          <li key={label} className="border-t border-stone-100 first:border-t-0">
-                            <a
-                              href={href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="group flex items-center gap-3.5 px-[18px] py-3.5 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
-                            >
-                              <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-stone-100 text-neutral-800">
-                                <Icon size={20} aria-hidden />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-[15px] font-semibold text-neutral-800">{label}</span>
-                                <span className="mt-0.5 block text-sm leading-snug text-neutral-600">{description}</span>
-                                <span className="sr-only"> (abre en una nueva pestaña)</span>
-                              </span>
-                              <ChevronRight aria-hidden className="h-4 w-4 flex-shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-600" />
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
                   <Link
                     href={project.href}
                     {...(external && { target: "_blank", rel: "noopener noreferrer" })}
-                    className={`group mt-5 inline-flex items-center gap-1.5 underline-offset-4 ${project.channels ? "text-[15px] text-neutral-600 hover:text-neutral-900" : "text-base font-medium text-neutral-800"} hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800`}
+                    className="group mt-5 inline-flex items-center gap-1.5 text-base font-medium text-neutral-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                   >
                     {project.cta}
                     {external ? (
@@ -121,12 +94,38 @@ export default function Proyectos() {
                   width={1080}
                   height={1080}
                   sizes="(min-width: 1280px) 420px, (min-width: 768px) 35vw, 100vw"
-                  // With the channel card the text column is the taller one, so
-                  // from md the picture grows to its height (cover crop) instead
-                  // of ending ~200px short. Only there: on shorter rows the 4:3
-                  // picture sets the row's height.
-                  className={`aspect-[4/3] w-full rounded-xl bg-stone-100 object-cover ${project.channels ? "md:aspect-auto md:h-full" : ""} ${project.imagePosition ?? ""}`}
+                  className={`aspect-[4/3] w-full rounded-xl bg-stone-100 object-cover ${project.imagePosition ?? ""}`}
                 />
+                {/* The channels go under both columns, full width, one per
+                    column (stacked on phones), so the text column stays as
+                    short as the picture. */}
+                {project.channels && (
+                  <div className="md:col-span-2">
+                    <h3 className="mb-2.5 text-xs font-medium uppercase tracking-wide text-neutral-600">{project.channels.heading}</h3>
+                    <ul className="grid overflow-hidden rounded-2xl border border-stone-200 bg-white md:grid-cols-3">
+                      {project.channels.links.map(({ href, label, description, Icon }) => (
+                        <li key={label} className="border-t border-stone-100 first:border-t-0 md:border-l md:border-t-0 md:first:border-l-0">
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex h-full items-start gap-3.5 px-[18px] py-3.5 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+                          >
+                            <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-stone-100 text-neutral-800">
+                              <Icon size={20} aria-hidden />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block text-[15px] font-semibold text-neutral-800">{label}</span>
+                              <span className="mt-0.5 block text-sm leading-snug text-neutral-600">{description}</span>
+                              <span className="sr-only"> (abre en una nueva pestaña)</span>
+                            </span>
+                            <ChevronRight aria-hidden className="mt-3 h-4 w-4 flex-shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-600" />
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </Section>
           );
