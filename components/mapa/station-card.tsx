@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Baby, Check, ChevronRight, Copy, Info, MapPin, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
-import { displayName, getSourceIcon, getSourceLabel, readingTimeLabel } from "./lib";
+import { displayName, getSourceIcon, isOccammSensor, getSourceLabel, readingTimeLabel } from "./lib";
 import { DialogLink } from "./info-dialog";
 import { FreshnessDot, type Freshness } from "@/components/data/freshness";
 
@@ -404,7 +405,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
 // 2026-11-12; it opened a card beside the sidebar before).
 // `foot` (2026-11-11): the station card reuses this whole panel, its
 // spacing, footnote peek and bottom fade, swapping in its own footnote rows.
-export function AirNowPanel({ subject, freshness, foot, label }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; label?: ReactNode }) {
+export function AirNowPanel({ subject, freshness, foot, label, after }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; label?: ReactNode; after?: ReactNode }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -475,6 +476,7 @@ export function AirNowPanel({ subject, freshness, foot, label }: { subject: Sele
           </section>
 
           <SensitiveGroupsSection quality={quality} />
+          {after}
           </>
           )}
           {/* Where the reading and the advice come from: the quiet footnote
@@ -597,5 +599,16 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
     </>
   );
 
-  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} />;
+  // OCCAMM's own sensors say whose network they're in, with the logo, in a
+  // card after the advice (2026-11-12, option C of the logo mockups).
+  const network = isOccammSensor(sensor) ? (
+    <section aria-label="Red OCCAMM" className="mt-3 flex items-center gap-3.5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3.5">
+      <Image src="/navbar/occamm-logo.png" alt="OCCAMM" width={130} height={24} className="h-6 w-auto flex-shrink-0" />
+      <p className="text-[13px] leading-snug text-neutral-600">
+        Parte de la red de sensores del Observatorio Ciudadano de la Calidad del Aire.
+      </p>
+    </section>
+  ) : undefined;
+
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={network} />;
 }
