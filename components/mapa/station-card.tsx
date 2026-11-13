@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Baby, Check, ChevronRight, Copy, Info, MapPin, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
 import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
@@ -610,6 +611,20 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
       </p>
     </section>
   ) : undefined;
+  // Under it, the invitation to the program (2026-11-12, option B of the
+  // mockups): the whole card opens /adopta-sensor, chevron like the Grupos
+  // sensibles row. The text is the program page's own ("de forma gratuita").
+  const adopt = network && (
+    <Link
+      href="/adopta-sensor"
+      className="group mt-3 flex items-center gap-3.5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3.5 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+    >
+      <span className="min-w-0 flex-1 text-sm leading-relaxed text-neutral-700">
+        Adopta un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.
+      </span>
+      <ChevronRight aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-600" />
+    </Link>
+  );
 
-  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={network} fit />;
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={<>{network}{adopt}</>} fit />;
 }
