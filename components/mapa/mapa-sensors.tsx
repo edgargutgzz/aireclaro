@@ -20,6 +20,7 @@ import {
   buildSelection,
   displayName,
   markerLabel,
+  isOccammSensor,
 } from "./lib";
 import {
   OPENING_CENTER,
@@ -37,6 +38,8 @@ import {
   SIMA_BADGE_LAYER,
   SIMA_BADGE_IMAGE,
   makeSimaBadge,
+  OCCAMM_BADGE_LAYER,
+  OCCAMM_BADGE_IMAGE,
   FIELD_RADIUS,
   FIELD_LABEL_SIZE,
   FIELD_LABEL_OPACITY,
@@ -418,6 +421,7 @@ export default function MapaSensors({
             label: hasReading ? Math.round(pm25 as number).toString() : "",
             labelInk: hasReading ? getMarkerNumberInk(pm25 as number) : "#171717",
             isSima,
+            isOccamm: isOccammSensor(sensor),
             nodata: !hasReading,
             // Higher wins circle draw order (SIMA always on top). Symbol
             // placement is the opposite convention -- with text-allow-overlap
@@ -557,6 +561,7 @@ export default function MapaSensors({
       markerLabel(sensor, pm25),
       isSima,
       has,
+      isOccammSensor(sensor),
     );
     if (!el) return;
     el.classList.add("sensor-marker--selected");
@@ -787,6 +792,46 @@ export default function MapaSensors({
             ] as any,
           },
         });
+      }
+      // OCCAMM emblem on OCCAMM's citizen sensors (2026-11-12): same size,
+      // offset and selected rule as the SIMA badge, slotted under the
+      // government stack. The image loads async; the layer waits for it.
+      const addOccammBadge = () => {
+        if (m.getLayer(OCCAMM_BADGE_LAYER) || !m.hasImage(OCCAMM_BADGE_IMAGE)) return;
+        m.addLayer({
+          id: OCCAMM_BADGE_LAYER,
+          type: "symbol",
+          source: FIELD_SOURCE,
+          filter: ["==", ["get", "isOccamm"], true] as any,
+          layout: {
+            "icon-image": OCCAMM_BADGE_IMAGE,
+            "icon-size": FIELD_BADGE_SIZE as any,
+            "icon-offset": FIELD_BADGE_OFFSET as any,
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "symbol-sort-key": ["get", "sortKey"] as any,
+          },
+          paint: {
+            "icon-opacity": [
+              "case",
+              ["boolean", ["feature-state", "selected"], false], 0,
+              1,
+            ] as any,
+          },
+        }, m.getLayer(FIELD_EDGE_LAYER + GOB_SUFFIX) ? FIELD_EDGE_LAYER + GOB_SUFFIX : undefined);
+      };
+      if (m.hasImage(OCCAMM_BADGE_IMAGE)) {
+        addOccammBadge();
+      } else {
+        m.loadImage("/mapa/occamm-badge.png")
+          .then(({ data }: { data: HTMLImageElement | ImageBitmap }) => {
+            // The map may have been torn down or restyled while it loaded.
+            try {
+              if (!m.hasImage(OCCAMM_BADGE_IMAGE)) m.addImage(OCCAMM_BADGE_IMAGE, data, { pixelRatio: 2 });
+              addOccammBadge();
+            } catch {}
+          })
+          .catch((err: unknown) => console.error("[map] failed to load the OCCAMM badge", err));
       }
     } catch (err) {
       console.error("[map] failed to add the sensor field layer", err);

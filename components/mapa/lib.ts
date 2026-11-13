@@ -46,6 +46,13 @@ export function getSourceIcon(isSima: boolean) {
   return isSima ? Landmark : Users;
 }
 
+// A citizen sensor in OCCAMM's own network (`red`), marked on the map with
+// the OCCAMM emblem (2026-11-12). By name, so a network added later doesn't
+// pick up OCCAMM's mark.
+export function isOccammSensor(sensor: Sensor) {
+  return sensor.source !== "sima" && /occamm/i.test(sensor.red ?? "");
+}
+
 // The station name to show: SIMA stations carry a friendlier `nombre_display`,
 // everything else just uses `nombre`.
 export function displayName(sensor: Sensor) {

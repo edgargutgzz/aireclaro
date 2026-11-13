@@ -229,6 +229,17 @@
   pointer-events: none;
 }
 
+/* OCCAMM's badge: its round emblem fills the disc, white ring kept. */
+.sensor-marker__badge--occamm {
+  background: #fff;
+  overflow: hidden;
+}
+.sensor-marker__badge--occamm img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .sensor-marker__badge svg {
   width: 0.55em;
   height: 0.9em;

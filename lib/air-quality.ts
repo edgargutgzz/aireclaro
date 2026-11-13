@@ -122,6 +122,7 @@ export const createMarker = (
   label?: string,
   isSima = false,
   hasReading = true,
+  isOccamm = false,
 ): HTMLElement | null => {
   const colorInfo = getPM25Color(pm25);
   if (!colorInfo) return null;
@@ -190,6 +191,15 @@ export const createMarker = (
       '<line x1="12" x2="12" y1="18" y2="11" />' +
       '<line x1="17" x2="17" y1="18" y2="11" />' +
       "</svg>";
+    dot.appendChild(badge);
+  }
+  // OCCAMM's citizen sensors: the OCCAMM emblem in the same badge spot
+  // (2026-11-12), matching the field's OCCAMM_BADGE_LAYER.
+  if (isOccamm) {
+    const badge = document.createElement("span");
+    badge.className = "sensor-marker__badge sensor-marker__badge--occamm";
+    badge.setAttribute("aria-hidden", "true");
+    badge.innerHTML = '<img src="/mapa/occamm-emblem.png" alt="" />';
     dot.appendChild(badge);
   }
 

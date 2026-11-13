@@ -34,6 +34,12 @@ export const FIELD_LABEL_LAYER = "sensor-field-labels";
 // (makeSimaBadge). ~15 stations, spatially spread, so `icon-allow-overlap`.
 export const SIMA_BADGE_LAYER = "sensor-field-sima-badge";
 export const SIMA_BADGE_IMAGE = "sima-badge";
+// OCCAMM's citizen sensors carry the OCCAMM emblem the same way (2026-11-12):
+// a pre-rendered raster (public/mapa/occamm-badge.png, 22px at 2x, emblem in
+// a white ring, the SIMA badge's footprint), same size and offset. Drawn
+// over the citizen stack and under the government one.
+export const OCCAMM_BADGE_LAYER = "sensor-field-occamm-badge";
+export const OCCAMM_BADGE_IMAGE = "occamm-badge";
 
 // The SIMA badge as an ImageData: stone-500 disc, white casing ring, white
 // Landmark glyph — pixel-for-pixel the `.sensor-marker__badge` the DOM markers
