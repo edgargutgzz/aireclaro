@@ -603,28 +603,30 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
 
   // OCCAMM's own sensors say whose network they're in, with the logo, in a
   // card after the advice (2026-11-12, option C of the logo mockups).
+  // OCCAMM's own sensors say whose network they're in, with the logo, and
+  // invite people to join it (2026-11-12): one card, two rows divided by a
+  // hairline like the Grupos sensibles card, since the invitation is to this
+  // network. The second row opens /adopta-sensor; its text is the program
+  // page's own ("de forma gratuita").
   const network = isOccammSensor(sensor) ? (
-    <section aria-label="Red OCCAMM" className="mt-3 flex items-center gap-5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3.5">
-      <Image src="/navbar/occamm-logo.png" alt="OCCAMM" width={130} height={24} className="h-6 w-auto flex-shrink-0" />
-      <p className="text-[13px] leading-snug text-neutral-600">
-        Sensor de la red OCCAMM.
-      </p>
+    <section aria-label="Red OCCAMM" className="mt-3 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+      <div className="flex items-center gap-5 px-[18px] py-3.5">
+        <Image src="/navbar/occamm-logo.png" alt="OCCAMM" width={130} height={24} className="h-6 w-auto flex-shrink-0" />
+        <p className="text-[13px] leading-snug text-neutral-600">
+          Sensor de la red OCCAMM.
+        </p>
+      </div>
+      <Link
+        href="/adopta-sensor"
+        className="group flex items-center gap-3.5 border-t border-stone-100 px-[18px] py-3.5 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
+      >
+        <span className="min-w-0 flex-1 text-sm leading-relaxed text-neutral-700">
+          Adopta un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.
+        </span>
+        <ChevronRight aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-600" />
+      </Link>
     </section>
   ) : undefined;
-  // Under it, the invitation to the program (2026-11-12, option B of the
-  // mockups): the whole card opens /adopta-sensor, chevron like the Grupos
-  // sensibles row. The text is the program page's own ("de forma gratuita").
-  const adopt = network && (
-    <Link
-      href="/adopta-sensor"
-      className="group mt-3 flex items-center gap-3.5 rounded-2xl border border-stone-200 bg-white px-[18px] py-3.5 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-    >
-      <span className="min-w-0 flex-1 text-sm leading-relaxed text-neutral-700">
-        Adopta un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.
-      </span>
-      <ChevronRight aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-neutral-400 transition-colors group-hover:text-neutral-600" />
-    </Link>
-  );
 
-  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={<>{network}{adopt}</>} fit />;
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} label={label} after={network} fit />;
 }
