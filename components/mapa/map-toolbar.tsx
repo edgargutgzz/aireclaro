@@ -343,15 +343,19 @@ function SourceNotes() {
       <dt className="font-medium text-neutral-500">Sensores Ciudadanos</dt>
       <dd className="text-neutral-600">
         <AdviceText
-          advice="Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones independientes."
-          full={
+          // PurpleAir named and linked in plain sight (2026-11-12), as its
+          // attribution guide asks of a map.
+          advice={
             <>
-              <p>
-                Los datos provienen de <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>, la
-                plataforma donde se registran estos sensores. Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula
-                de corrección de la EPA de EE. UU.
-              </p>
+              Sensores de bajo costo instalados por ciudadanos, escuelas y organizaciones, registrados en{" "}
+              <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>.
             </>
+          }
+          full={
+            <p>
+              Pueden sobreestimar las PM2.5 cuando hay mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula
+              de corrección de la EPA de EE. UU.
+            </p>
           }
           source={null}
             boxText="text-xs"

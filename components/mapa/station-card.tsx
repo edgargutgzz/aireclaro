@@ -53,7 +53,7 @@ export function groupByAdvice(info: QualityInfo) {
 // was an info icon and a dialog), with `source` null: no norm line.
 // `boxText`: the open box's type size, 14px beside the advice; the map's
 // 12px notes pass text-xs so the box matches the line it opens from.
-export function AdviceText({ advice, full, className, source = "NOM-172-SEMARNAT-2023", boxText = "text-sm" }: { advice: string; full?: ReactNode; className: string; source?: string | null; boxText?: string }) {
+export function AdviceText({ advice, full, className, source = "NOM-172-SEMARNAT-2023", boxText = "text-sm" }: { advice: ReactNode; full?: ReactNode; className: string; source?: string | null; boxText?: string }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   return (
@@ -540,7 +540,7 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
       <dd className="text-neutral-600">
         {isSima ? (
           <>
-            <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>, Gobierno de Nuevo León
+            <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>
           </>
         ) : (
           <>
