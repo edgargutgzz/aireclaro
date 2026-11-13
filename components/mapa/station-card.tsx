@@ -540,11 +540,11 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords }: { sub
       <dd className="text-neutral-600">
         {isSima ? (
           <>
-            <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>
+            Estación de gobierno, <DialogLink href="https://aire.nl.gob.mx/">SIMA</DialogLink>
           </>
         ) : (
           <>
-            <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
+            Sensor ciudadano, <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
             {sensor.red ? `, red ${sensor.red}` : ""}
           </>
         )}
