@@ -43,6 +43,18 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
     ro.observe(el);
     return () => ro.disconnect();
   }, [expanded]);
+  // Población general's own height at rest (stretched to match the level
+  // card), held while something below it is open, so the top doesn't shrink
+  // when the sensitive groups or a "Ver más" open (2026-11-12).
+  const topRef = useRef<HTMLDivElement>(null);
+  const [topHeight, setTopHeight] = useState<number | null>(null);
+  useEffect(() => {
+    const el = topRef.current;
+    if (!el || expanded) return;
+    const ro = new ResizeObserver(() => setTopHeight(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [expanded]);
   useEffect(() => {
     const tick = () => setNow(Date.now());
     tick();
@@ -80,7 +92,11 @@ export default function AirNowCard({ subject }: { subject: SelectedSensor | null
               taller; the extra space goes around Población general, the
               groups row staying at the bottom. */}
           <div ref={adviceRef} className="flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white">
-            <div className="flex flex-1 flex-col justify-center">
+            <div
+              ref={topRef}
+              className="flex flex-1 flex-col justify-center"
+              style={expanded && topHeight ? { minHeight: topHeight } : undefined}
+            >
               <RecRow icons={[UsersRound]} who="Población general" advice={quality.generalRec} full={quality.generalFull} info={quality} lead />
             </div>
             <SensitiveGroups info={quality} open={groupsOpen} onToggle={() => setGroupsOpen((v) => !v)} />
