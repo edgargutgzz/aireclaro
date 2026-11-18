@@ -1151,18 +1151,17 @@ export default function MapaSensors({
 
       </div>
 
-      {/* Mobile: the legend and filter buttons, a right-edge stack just
-          above the resting sheet, hidden while it is open; the time pill
-          shares the Filtros button's row at the left edge (as before
-          2026-11-17), for the reading the sheet shows. */}
+      {/* Mobile: one row just above the resting sheet, hidden while it is
+          open: the time pill (the reading the sheet shows) at the left edge,
+          the legend and filter buttons side by side at the right. */}
       {sheetSubject && sheetState === 'peek' && (
         <div
-          className="pointer-events-none fixed left-4 right-4 z-[38] flex flex-col items-end gap-3 md:hidden"
+          className="pointer-events-none fixed left-4 right-4 z-[38] flex items-end justify-between md:hidden"
           style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${peekHeight + 12}px)` }}
         >
-          <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Wind} />
-          <div className="flex w-full items-end justify-between">
-            {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
+          {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
+          <div className="flex gap-3">
+            <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Wind} />
             <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Filtros" icon={Layers} />
           </div>
         </div>
