@@ -1141,7 +1141,7 @@ export default function MapaSensors({
             <MapIconButton
               active={showFilters}
               onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
-              label="Sensores"
+              label="Fuente"
               icon={Layers}
               className="pointer-events-auto"
             />
@@ -1172,7 +1172,7 @@ export default function MapaSensors({
           onClick={() => setShowFilters(false)}
         >
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
-          <p className="text-base font-medium text-neutral-700">Sensores</p>
+          <p className="text-base font-medium text-neutral-700">Fuente</p>
         </div>
         <div
           /* A plain block, not a flex column: as a flex item the list would

@@ -24,7 +24,7 @@ type Estado = { key: string; label: string; count: number; municipios: { key: st
 
 type Panel = "aire" | "sensores" | "ubicacion" | null;
 
-const PANEL_TITLE = { aire: "Calidad del aire", sensores: "Sensores", ubicacion: "Ubicación" } as const;
+const PANEL_TITLE = { aire: "Calidad del aire", sensores: "Fuente", ubicacion: "Ubicación" } as const;
 
 export function MapToolbar({
   showSima,
@@ -132,7 +132,7 @@ export function MapToolbar({
             className={`flex min-w-0 flex-1 flex-col gap-2.5 px-5 py-3.5 text-left ${tab("sensores")}`}
           >
             <span className="flex items-center justify-between gap-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">
-              Sensores
+              Fuente
               <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
             </span>
             {/* The map's two source icons and their counts; a source switched
