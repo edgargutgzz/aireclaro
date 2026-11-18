@@ -393,7 +393,7 @@ function SensitiveGroupsSection({ quality }: { quality: QualityInfo }) {
 // itself (AirNowPanel), the station named in its level card's foot, with a
 // footnote naming the source and holding the coordinates. The mobile sheet
 // renders it too when a station is picked (2026-11-17).
-export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose, hideFoot = false }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void; onClose: () => void; hideFoot?: boolean }) {
+export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose, hideFoot = false }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void; onClose?: () => void; hideFoot?: boolean }) {
   const { sensor } = subject;
   const isSima = sensor.source === "sima";
   const foot = (
