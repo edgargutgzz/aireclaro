@@ -1162,7 +1162,7 @@ export default function MapaSensors({
         >
           <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Wind} />
           <div className="flex w-full items-end justify-between">
-            {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} /> : <span />}
+            {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
             <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Fuente" icon={Layers} />
           </div>
         </div>
