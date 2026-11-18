@@ -1161,7 +1161,7 @@ export default function MapaSensors({
       {sheetSubject && sheetState === 'peek' && (
         <div
           className="pointer-events-none fixed left-4 right-4 z-[38] flex items-end justify-between md:hidden"
-          style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${peekHeight + 12}px)` }}
+          style={{ bottom: `${peekHeight + 12}px` }}
         >
           {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
           <div className="flex gap-3">
@@ -1213,9 +1213,14 @@ export default function MapaSensors({
         <div
           ref={sheetRef}
           className={`fixed left-0 right-0 z-[40] flex flex-col overflow-hidden rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 md:hidden ${sheetState === 'peek' ? 'border-t border-white/60 bg-white/80 backdrop-blur-md' : 'bg-white'}`}
+          // Down to the screen's very edge (2026-11-17): it stood on the
+          // phone's safe-area inset before, so on phones with a home bar the
+          // resting card floated ~34px up. The open sheet pads its own
+          // bottom by the inset instead.
           style={{
-            bottom: 'env(safe-area-inset-bottom, 0px)',
+            bottom: 0,
             height: '85dvh',
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             transform: sheetTransform,
             transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
           }}
