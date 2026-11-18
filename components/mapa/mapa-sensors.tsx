@@ -71,9 +71,9 @@ const SIDEBAR_WIDTH = 24 + 460;
 // its sheet's station at zoom 10.5 until 2026-11-17, when the sheet stopped
 // pulsing it; it now opens further out than desktop (9), a step
 // east and a bit north of the desktop centre ([-100.378, 25.700] →
-// [-100.30, 25.715]), since nothing covers its
+// [-100.30, 25.725]), since nothing covers its
 // left edge.
-const MOBILE_CENTER: [number, number] = [-100.30, 25.715];
+const MOBILE_CENTER: [number, number] = [-100.30, 25.725];
 const MOBILE_ZOOM = 9;
 function restingFocus() {
   const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
@@ -1153,7 +1153,7 @@ export default function MapaSensors({
 
       {/* Mobile: the legend and filter buttons, a right-edge stack just
           above the resting sheet, hidden while it is open; the time pill
-          shares the Fuente button's row at the left edge (as before
+          shares the Filtros button's row at the left edge (as before
           2026-11-17), for the reading the sheet shows. */}
       {sheetSubject && sheetState === 'peek' && (
         <div
@@ -1163,7 +1163,7 @@ export default function MapaSensors({
           <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Wind} />
           <div className="flex w-full items-end justify-between">
             {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
-            <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Fuente" icon={Layers} />
+            <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Filtros" icon={Layers} />
           </div>
         </div>
       )}

@@ -27,6 +27,8 @@ type Estado = { key: string; label: string; count: number; municipios: { key: st
 export type Panel = "aire" | "sensores" | "ubicacion" | null;
 
 const PANEL_TITLE = { aire: "Calidad del aire", sensores: "Fuente", ubicacion: "Ubicación" } as const;
+// Mobile's filter sheet holds both filters, Fuente and Ubicación, as sections.
+const SECTION_LABEL = "px-5 pb-1 pt-2 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500";
 
 export function MapToolbar({
   showSima,
@@ -70,6 +72,7 @@ export function MapToolbar({
   const open = onOpenChange ? (openProp ?? null) : ownOpen;
   const setOpen = (p: Panel) => (onOpenChange ? onOpenChange(p) : setOwnOpen(p));
   const toggle = (p: Exclude<Panel, null>) => setOpen(open === p ? null : p);
+  const panelTitle = open ? (sheet && open === "sensores" ? "Filtros" : PANEL_TITLE[open]) : "";
   const portal = (node: ReactNode) => (sheet ? createPortal(node, document.body) : node);
 
   // Escape closes the panel, as it closes the station card; so does a click
@@ -199,13 +202,15 @@ export function MapToolbar({
     {open && portal(
       <section
         ref={cardRef}
-        aria-label={PANEL_TITLE[open]}
+        aria-label={panelTitle}
         className={sheet
           ? "fixed inset-x-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
           : "glass absolute bottom-0 left-[calc(100%+16px)] flex max-h-full w-full flex-col overflow-hidden rounded-2xl"}
       >
-        <div className="flex flex-shrink-0 items-center justify-between gap-3 px-5 pb-1 pt-4">
-          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{PANEL_TITLE[open]}</span>
+        <div className={`flex flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 ${sheet ? "pb-3" : "pb-1"}`}>
+          {/* The mobile sheet's title is a heading over its sections; the
+              desktop card keeps the small label. */}
+          <span className={sheet ? "text-base font-medium text-neutral-700" : "text-xs font-medium uppercase leading-none tracking-wide text-neutral-500"}>{panelTitle}</span>
           <button
             type="button"
             onClick={() => setOpen(null)}
@@ -234,6 +239,8 @@ export function MapToolbar({
           ) : open === "ubicacion" ? (
             <UbicacionPanel estados={estados} hiddenMunicipios={hiddenMunicipios} setHiddenMunicipios={setHiddenMunicipios} onChosen={() => setOpen(null)} />
           ) : (
+            <>
+            {sheet && <p className={SECTION_LABEL}>Fuente</p>}
             <SensoresPanel
               showSima={showSima}
               setShowSima={setShowSima}
@@ -243,6 +250,15 @@ export function MapToolbar({
               setShowOtros={setShowOtros}
               sourceCounts={sourceCounts}
             />
+            </>
+          )}
+          {/* Mobile has no Ubicación button: the Fuente sheet carries it,
+              under the sources and before the notes (2026-11-17). */}
+          {sheet && open === "sensores" && (
+            <section aria-label="Ubicación">
+              <p className={SECTION_LABEL}>Ubicación</p>
+              <UbicacionPanel estados={estados} hiddenMunicipios={hiddenMunicipios} setHiddenMunicipios={setHiddenMunicipios} onChosen={() => setOpen(null)} />
+            </section>
           )}
           {open !== "ubicacion" && (
             <div ref={notesRef} className="px-4 pb-5">
