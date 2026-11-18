@@ -91,15 +91,6 @@ export function LevelList() {
   );
 }
 
-export function LegendDetail({ className = "" }: { className?: string }) {
-  return (
-    <div className={className}>
-      <LevelList />
-      <LegendNotes className="mt-8" />
-    </div>
-  );
-}
-
 export function LegendNotes({ className = "" }: { className?: string }) {
   // The map only shows PM2.5, and it's the deliberate choice, not a limitation
   // (methodology.md) — so the "what is it" text lives here, next to the

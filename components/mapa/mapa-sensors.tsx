@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Layers, Wind } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo, type QualityInfo } from "@/lib/air-quality";
-import { FreshnessBadge, type Freshness } from "@/components/data/freshness";
+import { getMarkerFill, getMarkerFillHex, getLevel, getMarkerNumberInk, createMarker, getQualityInfo } from "@/lib/air-quality";
 import { readSensorParam, writeSensorParam, readFilterParams, writeFilterParams } from "@/lib/map-url-state";
 import type { Sensor, Data, SelectedSensor } from "./types";
 import {
@@ -47,11 +45,8 @@ import {
   FIELD_BADGE_OFFSET,
   fieldRadiusAt,
 } from "./field-layer";
-import { LayersFilterContent } from "./layers-filter";
-import { ScaleBar, LegendDetail } from "./air-quality-legend";
 import { MapToolbar } from "./map-toolbar";
-import { AirNowPanel, GroupRecommendations, StationPanel, StationReading } from "./station-card";
-import { AccordionDialog, DialogLink, InfoDialog } from "./info-dialog";
+import { AirNowPanel, StationPanel } from "./station-card";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
 
@@ -78,23 +73,6 @@ function restingFocus(defaultSelection: SelectedSensor | null) {
   return defaultSelection && !desktop
     ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 10.5 }
     : { center: OPENING_CENTER, zoom: OPENING_ZOOM };
-}
-
-// The map's round-cornered icon button (mobile's Calidad del aire / Sensores
-// buttons, desktop's Sensores button): Glass at rest, a firmer white with a
-// darker hairline while its panel is open.
-function MapIconButton({ active, onClick, label, icon: Icon, className = "" }: { active: boolean; onClick: () => void; label: string; icon: typeof Layers; className?: string }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      aria-expanded={active}
-      className={`rounded-xl p-3 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15 ${active ? "border border-stone-900/30 bg-white/90 shadow-sm backdrop-blur-md" : "glass"} ${className}`}
-    >
-      <Icon aria-hidden="true" className={`h-5 w-5 ${active ? "text-neutral-900" : "text-neutral-700"}`} />
-    </button>
-  );
 }
 
 export default function MapaSensors({
@@ -141,14 +119,10 @@ export default function MapaSensors({
   };
   // -----------------------------------------------------------------------------
 
-  const [showFilters, setShowFilters] = useState(false);
-  const [showLegend, setShowLegend] = useState(false); // mobile only — the air-quality legend as a bottom sheet
   // The style is parsed, so the marker field can be added and drawn; the
   // stations don't wait on a single basemap tile.
   const [styleReady, setStyleReady] = useState(false);
   const [showOtros, setShowOtros] = useState(() => seedSource("otros"));
-  const [showOccammInfo, setShowOccammInfo] = useState(false);
-  const [showFuenteInfo, setShowFuenteInfo] = useState(false);
   const [showSima, setShowSima] = useState(() => seedSource("gob"));
   const [hiddenMunicipios, setHiddenMunicipios] = useState<string[]>(seedHidden);
   const [showOccamm, setShowOccamm] = useState(() => seedSource("occamm"));
@@ -158,11 +132,9 @@ export default function MapaSensors({
   );
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
-  const [cuidarmeQuality, setCuidarmeQuality] = useState<QualityInfo | null>(null);
 
-  // Desktop: the pick is its own card over the map (an empty-map click or
-  // Escape closes it) and the pulse / camera ignore the default station;
-  // mobile's sheet rests on the default and a click only collapses it. Tracked in state (not just a CSS `md:` toggle) because the
+  // Desktop: an empty-map click or Escape closes the picked card; on mobile
+  // an empty-map click only collapses the sheet (its X closes the pick). Tracked in state (not just a CSS `md:` toggle) because the
   // empty-map click and Escape behave differently. Starts false so SSR and the
   // first client render agree; the effect promotes it on a wide viewport.
   const [isDesktop, setIsDesktop] = useState(false);
@@ -319,24 +291,26 @@ export default function MapaSensors({
   // recent reading (see pickDefaultSensor), built the same way a click builds
   // a selection. Null only if no official station is live and Obispado is
   // filtered out or absent from the feed. `cardSubject` is what every card
-  // consumer reads — the explicit pick, else this.
+  // consumer read once; now it only sets the resting camera (restingFocus).
   const defaultSelection = useMemo<SelectedSensor | null>(() => {
     const def = pickDefaultSensor(visibleSensors, data);
     return def ? buildSelection(def, data) : null;
   }, [visibleSensors, data]);
-  const cardSubject = selectedSensor ?? defaultSelection;
   // The desktop sidebar's reading: the same rule over every sensor, ignoring
   // the Sensores filters. The filters choose what the map draws; the air right
-  // now is the air right now (user call 2026-11-02). The mobile sheet keeps
-  // the filtered default, since its station is also the map's pulse.
+  // now is the air right now (user call 2026-11-02). The mobile sheet rests
+  // on it too since 2026-11-17.
   const summarySelection = useMemo<SelectedSensor | null>(() => {
     const def = pickDefaultSensor(sensors, data);
     return def ? buildSelection(def, data) : null;
   }, [sensors, data]);
-  // The station the map itself points at (pulse, freshness readout). Mobile:
-  // the sheet's station. Desktop: only an explicit pick, since the sidebar's
-  // reading is the summary of the air right now, not a selection on the map.
-  const activeSubject = isDesktop ? selectedSensor : cardSubject;
+  // The station the map itself points at (pulse, freshness readout): only an
+  // explicit pick, at every width (2026-11-17; mobile pulsed its resting
+  // station before), since the summary is the air right now, not a
+  // selection on the map.
+  const activeSubject = selectedSensor;
+  // The mobile sheet: the pick, else the air right now.
+  const sheetSubject = selectedSensor ?? summarySelection;
 
   // Null until mounted, so the server and the first client render agree on a
   // value that is by definition different on each; then re-read on a timer,
@@ -602,7 +576,7 @@ export default function MapaSensors({
     // opening view and every ease-to land in the visible part.
     const initialIsMobile = window.innerWidth < 768;
     m.setPadding(
-      initialIsMobile ? { top: 0, bottom: 180, left: 0, right: 0 } : { top: 0, bottom: 0, left: SIDEBAR_WIDTH, right: 280 }
+      initialIsMobile ? { top: 0, bottom: 200, left: 0, right: 0 } : { top: 0, bottom: 0, left: SIDEBAR_WIDTH, right: 280 }
     );
     m.jumpTo(focus);
 
@@ -1031,10 +1005,22 @@ export default function MapaSensors({
     return () => window.removeEventListener("keydown", onKey);
   }, [selectedSensor, isDesktop, closeCard]);
 
-  // 5.5rem of peek showing at the bottom of the screen: the grabber and the summary row (the
-  // default sensor name + its reading). Freshness floats at the top of the map,
-  // so it adds nothing here.
-  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : 'translateY(calc(100% - 5.5rem))';
+  // What peeks is the grabber and the level card (plus the station card's
+  // header row when a station is picked), measured, since the card's
+  // height follows the level word and the screen width.
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const [peekHeight, setPeekHeight] = useState(200);
+  useEffect(() => {
+    const sheet = sheetRef.current;
+    const header = sheet?.querySelector("header");
+    if (!sheet || !header) return;
+    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight + 16));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(header);
+    return () => ro.disconnect();
+  }, [sheetSubject?.sensor.sensor_id, sheetSubject?.sensor.source, !!selectedSensor]);
+  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : `translateY(calc(100% - ${peekHeight}px))`;
 
   const handleSheetTap = useCallback(() => {
     setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
@@ -1116,126 +1102,6 @@ export default function MapaSensors({
         </ul>
       </div>
 
-      {/* Mobile map controls — a right-edge stack, hidden when the sheet is
-          expanded. The air-quality legend sits on top of the Capas button as a
-          matching icon button; each opens its own bottom sheet. Desktop carries
-          the legend at the foot of the left rail instead. The data-freshness
-          pill shares the Capas button's row, at the left edge, bottom edges
-          level (items-end). Low-priority chrome, so it runs small and
-          shadowless. Desktop puts it bottom-right. */}
-      {sheetState === 'peek' && (
-        <div
-          className="pointer-events-none fixed left-4 right-6 z-[45] flex flex-col items-end gap-3 md:hidden"
-          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6.5rem)' }}
-        >
-          <div className="pointer-events-auto flex flex-col items-end gap-3">
-            <MapIconButton
-              active={showLegend}
-              onClick={() => { setShowLegend((v) => !v); setShowFilters(false); }}
-              label="Calidad del aire"
-              icon={Wind}
-            />
-          </div>
-          <div className="flex w-full items-end justify-between">
-            {freshness ? <FreshnessBadge freshness={freshness} compact /> : <span />}
-            <MapIconButton
-              active={showFilters}
-              onClick={() => { setShowFilters((v) => !v); setShowLegend(false); }}
-              label="Fuente"
-              icon={Layers}
-              className="pointer-events-auto"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Layers filter backdrop — mobile only */}
-      <div
-        className={`fixed inset-0 z-[46] bg-black/20 transition-opacity duration-300 md:hidden ${
-          showFilters ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        onClick={() => setShowFilters(false)}
-      />
-
-      {/* Layers filter panel — mobile: slides up from bottom. A flex column with
-          a capped height so only the body scrolls (the header stays put), while
-          the sheet still shrinks to fit a short list. */}
-      <div
-        className="fixed left-0 right-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
-        style={{
-          transform: showFilters ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
-      >
-        <div
-          className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
-          onClick={() => setShowFilters(false)}
-        >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
-          <p className="text-base font-medium text-neutral-700">Fuente</p>
-        </div>
-        <div
-          /* A plain block, not a flex column: as a flex item the list would
-             resolve to min-height:0 and shrink to fit instead of overflowing
-             and scrolling here. The desktop panel body is a plain block for
-             the same reason. No side padding: the list's rows run edge to
-             edge and carry the 20px text rail themselves. */
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
-          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}
-        >
-          <LayersFilterContent
-            showOtros={showOtros}
-            setShowOtros={setShowOtros}
-            showOccamm={showOccamm}
-            setShowOccamm={setShowOccamm}
-            showSima={showSima}
-            setShowSima={setShowSima}
-            estados={estados}
-            sourceCounts={sourceCounts}
-            hiddenMunicipios={hiddenMunicipios}
-            setHiddenMunicipios={setHiddenMunicipios}
-            onShowOccammInfo={() => setShowOccammInfo(true)}
-            onShowFuenteInfo={() => setShowFuenteInfo(true)}
-          />
-        </div>
-      </div>
-
-      {/* Air-quality legend backdrop — mobile only */}
-      <div
-        className={`fixed inset-0 z-[46] bg-black/20 transition-opacity duration-300 md:hidden ${
-          showLegend ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        onClick={() => setShowLegend(false)}
-      />
-
-      {/* Air-quality legend panel — mobile: slides up from bottom, the same
-          sheet as Capas: a capped flex column so only the body scrolls and the
-          sheet still shrinks to fit. The scale bar and its threshold list; no
-          toggle, since the sheet itself is the disclosure. */}
-      <div
-        className="fixed left-0 right-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
-        style={{
-          transform: showLegend ? 'translateY(0)' : 'translateY(100%)',
-          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
-      >
-        <div
-          className="flex-shrink-0 cursor-grab select-none px-5 pb-4 pt-3"
-          onClick={() => setShowLegend(false)}
-        >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
-          <p className="text-base font-medium text-neutral-700">Calidad del aire</p>
-        </div>
-        <div
-          /* Plain block, not a flex column — see the Capas sheet body above. */
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5"
-          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 2rem)' }}
-        >
-          <ScaleBar />
-          <LegendDetail className="mt-4" />
-        </div>
-      </div>
-
       {/* Desktop right column: a picked station's card at the top (the
           toolbar moved to the bottom-left, 2026-11-09). No freshness pill on desktop (removed 2026-11-03): the
           sidebar's header carries the time. On mobile the panel and legend
@@ -1268,168 +1134,76 @@ export default function MapaSensors({
       </div>
 
       {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
-          peek. Tapping it collapses the sheet back to peek; it does NOT close
-          the card (there is no close on mobile). */}
+          peek. Tapping it collapses the sheet back to peek. */}
       <div
         className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
-          cardSubject && sheetState !== 'peek' ? 'opacity-100' : 'pointer-events-none opacity-0'
+          sheetState !== 'peek' ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
         onClick={() => setSheetState('peek')}
       />
 
-      {/* Bottom sheet — mobile twin of the desktop card. At rest it peeks the
-          default station (the worst official one); tapping a marker swaps the subject and the
-          grabber toggles peek/mid. There is no close on mobile — the sheet
-          always rests on a station (that's a desktop-only affordance). */}
-      {(() => {
-        const subj = cardSubject;
-        const s = subj?.sensor;
-        const name = s ? displayName(s) : "";
-        const pm25 = subj ? subj.pm25 : null;
-        const quality = getQualityInfo(pm25);
-
-        return (
-      <div
-        className={`fixed left-0 right-0 z-[40] rounded-t-3xl flex flex-col md:hidden overflow-hidden shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 ${sheetState === 'peek' ? 'bg-white/80 backdrop-blur-md border-t border-white/60' : 'bg-white'}`}
-        style={{
-          bottom: 'env(safe-area-inset-bottom, 0px)',
-          height: '62dvh',
-          transform: subj ? sheetTransform : 'translateY(100%)',
-          transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-        }}
-        aria-hidden={!subj}
-      >
-        {subj && (
-          <>
+      {/* Bottom sheet — mobile: the desktop left column at the bottom
+          (2026-11-17, option 1B of the phone mockups). At rest it peeks the
+          level card of the air right now (summarySelection, as the desktop
+          sidebar); open, the whole column: advice, footnote, then the map
+          toolbar, whose panels open as their own sheets. A tapped marker
+          swaps in the desktop station card, its X back to the summary. A tap
+          on the grabber or the level card toggles peek / open. */}
+      {sheetSubject && (
         <div
-          className="flex-shrink-0 cursor-pointer select-none px-5 pt-3 pb-3"
-          onClick={handleSheetTap}
+          ref={sheetRef}
+          className={`fixed left-0 right-0 z-[40] flex flex-col overflow-hidden rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 md:hidden ${sheetState === 'peek' ? 'border-t border-white/60 bg-white/80 backdrop-blur-md' : 'bg-white'}`}
+          style={{
+            bottom: 'env(safe-area-inset-bottom, 0px)',
+            height: '85dvh',
+            transform: sheetTransform,
+            transition: 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+          }}
+          onClick={(e) => {
+            const t = e.target as Element;
+            if (t.closest('button, a') || !t.closest('header, [data-grabber]')) return;
+            handleSheetTap();
+          }}
         >
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
-          <div className="flex items-baseline justify-between gap-3">
-            <span className="min-w-0 flex-1 truncate text-base font-medium text-neutral-700">
-              {name}
-            </span>
-            <div className="flex flex-shrink-0 items-baseline gap-2">
-              {sheetState === 'peek' && quality && (
-                <span className="text-2xl font-bold" style={{ color: quality.textColor }}>
-                  {quality.label}
-                </span>
-              )}
-            </div>
+          <div data-grabber className="flex-shrink-0 cursor-pointer pt-3">
+            <div className="mx-auto h-1 w-10 rounded-full bg-stone-300/60" />
           </div>
-        </div>
-
-        {/* Scrollable content — visible when expanded to mid. Mirrors the
-            desktop card: a source line closed off by a rule, the reading, then
-            the recommendations behind a rule. */}
-        <div
-          className={`relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-2 pb-8 ${sheetState === 'peek' ? 'invisible' : ''}`}
-        >
-            <div className="flex flex-col gap-5">
-              <StationReading
-                subject={subj}
-                pm25={pm25}
+          {/* Off-screen while peeking: no focus or reading in the hidden part. */}
+          <div className={`flex min-h-0 flex-1 flex-col ${sheetState === 'peek' ? '[&>div>div:last-child]:invisible' : ''}`}>
+            {selectedSensor ? (
+              <StationPanel
+                subject={selectedSensor}
+                freshness={freshness}
                 copied={copied}
-                onCopyCoords={() => copyCoords(s!.lat, s!.lon)}
-                copyInteractionClass="active:opacity-70"
+                onCopyCoords={() => copyCoords(selectedSensor.sensor.lat, selectedSensor.sensor.lon)}
+                onClose={closeCard}
               />
-
-              {quality && (
-                <div className="relative z-[1] border-t border-stone-100 pt-5">
-                  <GroupRecommendations info={quality} onShowInfo={() => setCuidarmeQuality(quality)} />
-                </div>
-              )}
-            </div>
+            ) : (
+              <AirNowPanel
+                subject={sheetSubject}
+                freshness={summaryFreshness}
+                fit
+                end={
+                  <MapToolbar
+                    sheet
+                    showSima={showSima}
+                    setShowSima={setShowSima}
+                    showOccamm={showOccamm}
+                    setShowOccamm={setShowOccamm}
+                    showOtros={showOtros}
+                    setShowOtros={setShowOtros}
+                    sourceCounts={sourceCounts}
+                    estados={estados}
+                    hiddenMunicipios={hiddenMunicipios}
+                    setHiddenMunicipios={setHiddenMunicipios}
+                    currentPm25={summarySelection?.pm25 ?? null}
+                  />
+                }
+              />
+            )}
+          </div>
+          <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
         </div>
-        <span role="status" className="sr-only">{copied ? 'Coordenadas copiadas' : ''}</span>
-          </>
-        )}
-      </div>
-        );
-      })()}
-
-
-      {/* Recomendaciones de salud popup — the same dialog as the rest, rather
-          than a bare div: it was the one popup with no name for assistive
-          tech, no focus handling and no Escape. */}
-      {cuidarmeQuality && (
-        <InfoDialog title="Recomendaciones de salud" onClose={() => setCuidarmeQuality(null)}>
-          <p className="text-sm leading-relaxed text-neutral-600">
-            Recomendaciones oficiales según el Índice de Aire y Salud Mexicano{" "}
-            <DialogLink href="https://dof.gob.mx/nota_detalle.php?codigo=5715154&fecha=25/01/2024#gsc.tab=0">
-              NOM-172-SEMARNAT-2023
-            </DialogLink>
-            , para la población general y grupos sensibles.
-          </p>
-        </InfoDialog>
-      )}
-
-      {/* OCCAMM info popup */}
-      {showOccammInfo && (
-        <InfoDialog title="Red OCCAMM" onClose={() => setShowOccammInfo(false)}>
-          <p className="text-sm leading-relaxed text-neutral-600">
-            Red de sensores del{" "}
-            <DialogLink href="/quienes-somos">
-              Observatorio Ciudadano de la Calidad del Aire
-            </DialogLink>
-            , una organización de la sociedad civil dedicada a mejorar la
-            calidad del aire en la Zona Metropolitana de Monterrey.
-          </p>
-        </InfoDialog>
-      )}
-
-      {/* Fuente info popup — covers both sources in one place instead of a separate icon per row */}
-      {showFuenteInfo && (
-        <AccordionDialog
-          title="Fuente"
-          onClose={() => setShowFuenteInfo(false)}
-          sections={[
-            {
-              title: "Estaciones de Gobierno",
-              body: (
-                <>
-                  Estaciones de monitoreo que forman parte del{" "}
-                  <DialogLink href="https://aire.nl.gob.mx/">
-                    Sistema Integral de Monitoreo Ambiental (SIMA)
-                  </DialogLink>
-                  , operado por el Gobierno de Nuevo León.
-                </>
-              ),
-            },
-            {
-              title: "Sensores Ciudadanos",
-              body: (
-                <>
-                  <p>
-                    Sensores de bajo costo que forman parte de{" "}
-                    <DialogLink href="https://www.purpleair.com/">PurpleAir</DialogLink>
-                    , una red global de monitoreo comunitario instalada por
-                    ciudadanos, escuelas y organizaciones independientes.
-                  </p>
-                  <p className="mt-2">
-                    Al ser de bajo costo, pueden sobreestimar las PM2.5 cuando hay
-                    mucha humedad. Por lo anterior, sus lecturas se ajustan con la fórmula
-                    de corrección de la EPA de EE. UU.
-                  </p>
-                </>
-              ),
-            },
-            {
-              title: "OCCAMM",
-              body: (
-                <>
-                  Red de sensores del{" "}
-                  <DialogLink href="/quienes-somos">
-                    Observatorio Ciudadano de la Calidad del Aire
-                  </DialogLink>
-                  , una organización de la sociedad civil dedicada a mejorar la
-                  calidad del aire en la Zona Metropolitana de Monterrey.
-                </>
-              ),
-            },
-          ]}
-        />
       )}
 
     </div>

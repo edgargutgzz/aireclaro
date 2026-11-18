@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { createPortal } from "react-dom";
 import { Check, ChevronRight, Landmark, MapPin, Users, X } from "lucide-react";
 import { ScaleBar, LevelList, LegendNotes } from "./air-quality-legend";
 import { LayerCheckbox } from "./layers-filter";
@@ -12,7 +13,8 @@ import { AdviceText } from "./station-card";
 // holds the air-quality scale and the Sensores button behind a hairline; either
 // one unfolds a single panel out of the bar itself (same card, no gap), the
 // active button shaded, and switching between the two swaps the panel's
-// content in place. Mobile keeps its own buttons and bottom sheets.
+// content in place. On mobile (`sheet`, 2026-11-17) the same bar ends the
+// bottom sheet and a panel opens as its own bottom sheet.
 //
 // Sensores: Gobierno, then Sensores Ciudadanos with OCCAMM and Otros always
 // shown under it (no hidden sub-rows, 2026-11-09). Ubicación, its own button
@@ -38,6 +40,7 @@ export function MapToolbar({
   hiddenMunicipios,
   setHiddenMunicipios,
   currentPm25 = null,
+  sheet = false,
 }: {
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
@@ -51,9 +54,13 @@ export function MapToolbar({
   setHiddenMunicipios: Dispatch<SetStateAction<string[]>>;
   // The sidebar's reading, marked on the scale.
   currentPm25?: number | null;
+  // Mobile: panels open as a bottom sheet, portalled to <body> (the bar sits
+  // inside the transformed map sheet, which would trap a fixed child).
+  sheet?: boolean;
 }) {
   const [open, setOpen] = useState<Panel>(null);
   const toggle = (p: Exclude<Panel, null>) => setOpen((cur) => (cur === p ? null : p));
+  const portal = (node: ReactNode) => (sheet ? createPortal(node, document.body) : node);
 
   // Escape closes the panel, as it closes the station card; so does a click
   // anywhere outside the toolbar (2026-11-10), except inside an open dialog
@@ -166,7 +173,7 @@ export function MapToolbar({
               <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
             </span>
             <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-none text-neutral-600">
-              <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
+              <MapPin aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0" />
               {municipioLabel(estados, hiddenMunicipios)}
             </span>
           </button>
@@ -177,11 +184,13 @@ export function MapToolbar({
         column, its bottom on the bar's (2026-11-10, it unfolded upward out
         of the bar), the Grupos sensibles card's width and header. Absolute
         to the left column, at most its height. */}
-    {open && (
+    {open && portal(
       <section
         ref={cardRef}
         aria-label={PANEL_TITLE[open]}
-        className="glass absolute bottom-0 left-[calc(100%+16px)] flex max-h-full w-full flex-col overflow-hidden rounded-2xl"
+        className={sheet
+          ? "fixed inset-x-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+          : "glass absolute bottom-0 left-[calc(100%+16px)] flex max-h-full w-full flex-col overflow-hidden rounded-2xl"}
       >
         <div className="flex flex-shrink-0 items-center justify-between gap-3 px-5 pb-1 pt-4">
           <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{PANEL_TITLE[open]}</span>
@@ -203,7 +212,8 @@ export function MapToolbar({
           className="disclosure-in relative min-h-0 flex-1 overflow-y-auto overscroll-contain"
           // Ubicación is capped too (2026-11-10): the list of municipalities
           // never needs the whole column; the rest scrolls under the fade.
-          style={open === "ubicacion" ? { maxHeight: 360 } : notesHeight ? { maxHeight: notesHeight } : undefined}
+          // The mobile sheet shows the panel whole, up to its own cap.
+          style={sheet ? undefined : open === "ubicacion" ? { maxHeight: 360 } : notesHeight ? { maxHeight: notesHeight } : undefined}
         >
           {open === "aire" ? (
             <div className="p-4">
@@ -234,6 +244,9 @@ export function MapToolbar({
         </div>
       </section>
     )}
+    {/* The mobile panel's backdrop: a tap on it is a tap outside, which
+        closes the panel. */}
+    {open && sheet && portal(<div aria-hidden="true" className="fixed inset-0 z-[46] bg-black/20 md:hidden" />)}
     </>
   );
 }

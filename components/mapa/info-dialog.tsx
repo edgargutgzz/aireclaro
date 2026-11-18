@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { ChevronRight, X } from "lucide-react";
+import { useEffect, useId, useRef } from "react";
+import { X } from "lucide-react";
 
 // External links inside a dialog. One place for the underline, the rel
 // hardening, and the note that the link leaves the page, which sighted
@@ -180,80 +180,3 @@ export function InfoDialog({
   );
 }
 
-// A titled block inside an info popup that can fold away, so a long popup
-// opens on the part that matters and keeps the rest one click away.
-export function InfoSection({
-  title,
-  open,
-  onToggle,
-  children,
-}: {
-  title: string;
-  open: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
-}) {
-  const panelId = `section-${useId().replace(/:/g, "")}`;
-
-  return (
-    <div className="[&:not(:first-child)]:border-t [&:not(:first-child)]:border-stone-100">
-      {/* A row in the dialog's list, matching the Capas panel: the hover is
-          the row, and the body opens inside the card on a tinted ground. */}
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        aria-controls={panelId}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-stone-900/15"
-      >
-        <p className="text-sm font-semibold text-neutral-700">{title}</p>
-        <ChevronRight className={`h-4 w-4 flex-shrink-0 text-neutral-400 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
-      </button>
-      {/* Hidden rather than unmounted, so aria-controls always points at a
-          real element. The hidden attribute takes the body and its links out
-          of the tab order and the accessibility tree just as unmounting did,
-          and going from display:none back still runs the open animation. */}
-      <div
-        id={panelId}
-        hidden={!open}
-        className="disclosure-in border-t border-stone-100 bg-stone-50 px-4 py-3.5 text-sm leading-relaxed text-neutral-600"
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
-// An InfoDialog whose body is a single-open accordion — used by the Fuente
-// popup (its one caller since the Contaminante popup was removed 2026-09-03).
-// Owns its own open-section state (keyed by section title); it resets on
-// close because the popup only mounts this while its flag is set. `sections`
-// renders top-to-bottom, the first open by default.
-export function AccordionDialog({
-  title,
-  onClose,
-  sections,
-}: {
-  title: string;
-  onClose: () => void;
-  sections: { title: string; body: React.ReactNode }[];
-}) {
-  const [open, setOpen] = useState<string | null>(sections[0]?.title ?? null);
-
-  return (
-    <InfoDialog title={title} onClose={onClose}>
-      <div className="overflow-hidden rounded-2xl border border-stone-200">
-        {sections.map((section) => (
-          <InfoSection
-            key={section.title}
-            title={section.title}
-            open={open === section.title}
-            onToggle={() => setOpen((v) => (v === section.title ? null : section.title))}
-          >
-            {section.body}
-          </InfoSection>
-        ))}
-      </div>
-    </InfoDialog>
-  );
-}
