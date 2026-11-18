@@ -24,7 +24,7 @@ import { AdviceText } from "./station-card";
 
 type Estado = { key: string; label: string; count: number; municipios: { key: string; label: string; count: number }[] };
 
-type Panel = "aire" | "sensores" | "ubicacion" | null;
+export type Panel = "aire" | "sensores" | "ubicacion" | null;
 
 const PANEL_TITLE = { aire: "Calidad del aire", sensores: "Fuente", ubicacion: "Ubicación" } as const;
 
@@ -41,6 +41,10 @@ export function MapToolbar({
   setHiddenMunicipios,
   currentPm25 = null,
   sheet = false,
+  open: openProp,
+  onOpenChange,
+  showBar = true,
+  showPanel = true,
 }: {
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
@@ -57,9 +61,19 @@ export function MapToolbar({
   // Mobile: panels open as a bottom sheet, portalled to <body> (the bar sits
   // inside the transformed map sheet, which would trap a fixed child).
   sheet?: boolean;
+  // Mobile shares one open panel between the bar in the sheet and the
+  // round buttons over the map (2026-11-17): the state lives in the page,
+  // one instance draws the bar (showPanel false) and an always-mounted one
+  // draws only the panel (showBar false).
+  open?: Panel;
+  onOpenChange?: (p: Panel) => void;
+  showBar?: boolean;
+  showPanel?: boolean;
 }) {
-  const [open, setOpen] = useState<Panel>(null);
-  const toggle = (p: Exclude<Panel, null>) => setOpen((cur) => (cur === p ? null : p));
+  const [ownOpen, setOwnOpen] = useState<Panel>(null);
+  const open = onOpenChange ? (openProp ?? null) : ownOpen;
+  const setOpen = (p: Panel) => (onOpenChange ? onOpenChange(p) : setOwnOpen(p));
+  const toggle = (p: Exclude<Panel, null>) => setOpen(open === p ? null : p);
   const portal = (node: ReactNode) => (sheet ? createPortal(node, document.body) : node);
 
   // Escape closes the panel, as it closes the station card; so does a click
@@ -109,6 +123,7 @@ export function MapToolbar({
   return (
     <>
     {/* Its own glass card under the desktop sidebar (2026-11-10). */}
+    {showBar && (
     <div ref={rootRef} className="glass flex w-full flex-shrink-0 flex-col overflow-hidden rounded-2xl">
       {/* Two rows: Calidad del aire's scale full width on top (2026-11-11,
           it was under them), Sensores and Ubicación side by side below. */}
@@ -180,11 +195,12 @@ export function MapToolbar({
         </div>
       </div>
     </div>
+    )}
     {/* An open panel is a glass card of its own 16px right of the left
         column, its bottom on the bar's (2026-11-10, it unfolded upward out
         of the bar), the Grupos sensibles card's width and header. Absolute
         to the left column, at most its height. */}
-    {open && portal(
+    {showPanel && open && portal(
       <section
         ref={cardRef}
         aria-label={PANEL_TITLE[open]}
@@ -246,7 +262,7 @@ export function MapToolbar({
     )}
     {/* The mobile panel's backdrop: a tap on it is a tap outside, which
         closes the panel. */}
-    {open && sheet && portal(<div aria-hidden="true" className="fixed inset-0 z-[46] bg-black/20 md:hidden" />)}
+    {showPanel && open && sheet && portal(<div aria-hidden="true" className="fixed inset-0 z-[46] bg-black/20 md:hidden" />)}
     </>
   );
 }

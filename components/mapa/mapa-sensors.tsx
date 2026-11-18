@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { Layers, Wind, type LucideIcon } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -45,7 +46,7 @@ import {
   FIELD_BADGE_OFFSET,
   fieldRadiusAt,
 } from "./field-layer";
-import { MapToolbar } from "./map-toolbar";
+import { MapToolbar, type Panel } from "./map-toolbar";
 import { AirNowPanel, StationPanel } from "./station-card";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
@@ -69,13 +70,30 @@ const SIDEBAR_WIDTH = 24 + 460;
 // its sheet's station at zoom 10.5 until 2026-11-17, when the sheet stopped
 // pulsing it; it now opens a step further out than desktop (9.5), a step
 // east and a bit north of the desktop centre ([-100.378, 25.700] →
-// [-100.30, 25.73]), since nothing covers its
+// [-100.30, 25.715]), since nothing covers its
 // left edge.
-const MOBILE_CENTER: [number, number] = [-100.30, 25.73];
+const MOBILE_CENTER: [number, number] = [-100.30, 25.715];
 const MOBILE_ZOOM = 9.5;
 function restingFocus() {
   const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
   return desktop ? { center: OPENING_CENTER, zoom: OPENING_ZOOM } : { center: MOBILE_CENTER, zoom: MOBILE_ZOOM };
+}
+
+// The round icon buttons over the mobile map (back 2026-11-17, same look as
+// before): Calidad del aire's legend and the Fuente filters, each opening the
+// toolbar's own panel as a bottom sheet.
+function MapIconButton({ active, onClick, label, icon: Icon }: { active: boolean; onClick: () => void; label: string; icon: LucideIcon }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      aria-expanded={active}
+      className="glass pointer-events-auto rounded-xl p-3 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
+    >
+      <Icon aria-hidden="true" className="h-5 w-5 text-neutral-700" />
+    </button>
+  );
 }
 
 export default function MapaSensors({
@@ -135,6 +153,8 @@ export default function MapaSensors({
   );
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
+  // Mobile: the toolbar panel open from the round buttons or the sheet's bar.
+  const [mobilePanel, setMobilePanel] = useState<Panel>(null);
 
   // Desktop: an empty-map click or Escape closes the picked card; on mobile
   // an empty-map click only collapses the sheet (its X closes the pick). Tracked in state (not just a CSS `md:` toggle) because the
@@ -1128,6 +1148,39 @@ export default function MapaSensors({
 
       </div>
 
+      {/* Mobile: the legend and filter buttons, a right-edge stack just
+          above the resting sheet, hidden while it is open. */}
+      {sheetSubject && sheetState === 'peek' && (
+        <div
+          className="pointer-events-none fixed right-4 z-[38] flex flex-col gap-3 md:hidden"
+          style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${peekHeight + 12}px)` }}
+        >
+          <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Wind} />
+          <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Fuente" icon={Layers} />
+        </div>
+      )}
+      {/* The panel those buttons and the sheet's bar open, mounted always
+          (the bar is only in the sheet while nothing is picked). */}
+      {!isDesktop && (
+        <MapToolbar
+          sheet
+          showBar={false}
+          open={mobilePanel}
+          onOpenChange={setMobilePanel}
+          showSima={showSima}
+          setShowSima={setShowSima}
+          showOccamm={showOccamm}
+          setShowOccamm={setShowOccamm}
+          showOtros={showOtros}
+          setShowOtros={setShowOtros}
+          sourceCounts={sourceCounts}
+          estados={estados}
+          hiddenMunicipios={hiddenMunicipios}
+          setHiddenMunicipios={setHiddenMunicipios}
+          currentPm25={summarySelection?.pm25 ?? null}
+        />
+      )}
+
       {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
           peek. Tapping it collapses the sheet back to peek. */}
       <div
@@ -1183,6 +1236,9 @@ export default function MapaSensors({
                 end={
                   <MapToolbar
                     sheet
+                    showPanel={false}
+                    open={mobilePanel}
+                    onOpenChange={setMobilePanel}
                     showSima={showSima}
                     setShowSima={setShowSima}
                     showOccamm={showOccamm}
