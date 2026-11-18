@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Layers, Wind, type LucideIcon } from "lucide-react";
+import { Gauge, Layers, type LucideIcon } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -1161,7 +1161,7 @@ export default function MapaSensors({
         >
           {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
           <div className="flex gap-3">
-            <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Wind} />
+            <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Gauge} />
             <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Filtros" icon={Layers} />
           </div>
         </div>
