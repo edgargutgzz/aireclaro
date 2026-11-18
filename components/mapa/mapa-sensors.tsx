@@ -71,9 +71,9 @@ const SIDEBAR_WIDTH = 24 + 460;
 // its sheet's station at zoom 10.5 until 2026-11-17, when the sheet stopped
 // pulsing it; it now opens further out than desktop (9), a step
 // east and a bit north of the desktop centre ([-100.378, 25.700] →
-// [-100.30, 25.725]), since nothing covers its
+// [-100.32, 25.725]), since nothing covers its
 // left edge.
-const MOBILE_CENTER: [number, number] = [-100.30, 25.725];
+const MOBILE_CENTER: [number, number] = [-100.32, 25.725];
 const MOBILE_ZOOM = 9;
 function restingFocus() {
   const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
