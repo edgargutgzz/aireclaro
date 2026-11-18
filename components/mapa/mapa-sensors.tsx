@@ -1032,18 +1032,17 @@ export default function MapaSensors({
     const sheet = sheetRef.current;
     const header = sheet?.querySelector("header");
     if (!sheet || !header) return;
-    // The card ends 12px above the phone's bottom safe area (2026-11-17).
-    // It ran past the screen's edge for a while, but then the coloured
-    // card was what touched the bottom, and Safari's floating toolbar tints
-    // itself from that: the browser bar turned the level's colour. Keep the
-    // map, not the card, at the edge.
-    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight + 12));
+    // The card's bottom 12px run past the screen's edge (2026-11-17, user
+    // asked for it lower three times: 16px under it, then 4, then this):
+    // only its rounded foot and part of its 24px bottom padding are cut, the
+    // level and number stay whole.
+    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight - 12));
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(header);
     return () => ro.disconnect();
   }, [sheetSubject?.sensor.sensor_id, sheetSubject?.sensor.source, !!selectedSensor]);
-  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : `translateY(calc(100% - ${peekHeight}px - env(safe-area-inset-bottom, 0px)))`;
+  const sheetTransform = sheetState === 'mid' ? 'translateY(0)' : `translateY(calc(100% - ${peekHeight}px))`;
 
   const handleSheetTap = useCallback(() => {
     setSheetState((s) => s === 'peek' ? 'mid' : 'peek');
@@ -1162,7 +1161,7 @@ export default function MapaSensors({
       {sheetSubject && sheetState === 'peek' && (
         <div
           className="pointer-events-none fixed left-4 right-4 z-[38] flex items-end justify-between md:hidden"
-          style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${peekHeight + 12}px)` }}
+          style={{ bottom: `${peekHeight + 12}px` }}
         >
           {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
           <div className="flex gap-3">
