@@ -1034,7 +1034,9 @@ export default function MapaSensors({
     const sheet = sheetRef.current;
     const header = sheet?.querySelector("header");
     if (!sheet || !header) return;
-    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight + 16));
+    // 4px under the card (was 16 until 2026-11-17): the card sits low,
+    // nearly on the screen's edge, leaving the map the room.
+    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight + 4));
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(header);
