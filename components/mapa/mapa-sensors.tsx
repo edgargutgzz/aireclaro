@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Gauge, Layers, type LucideIcon } from "lucide-react";
+import { CircleGauge, Layers, type LucideIcon } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -82,10 +82,10 @@ function restingFocus() {
 
 // The round icon buttons over the mobile map (back 2026-11-17, same look as
 // before): Calidad del aire's legend and the Fuente filters, each opening the
-// toolbar's own panel as a bottom sheet. The gauge is drawn at 24px (its
-// open arc reads lighter than the layers glyph at the same size), with a
-// negative margin so the button stays the same size as its neighbour.
-function MapIconButton({ active, onClick, label, icon: Icon, iconClass = "h-5 w-5" }: { active: boolean; onClick: () => void; label: string; icon: LucideIcon; iconClass?: string }) {
+// toolbar's own panel as a bottom sheet. The scale's icon is the closed
+// gauge (circle-gauge, user pick 2026-11-17): the open one read too light
+// beside the layers glyph.
+function MapIconButton({ active, onClick, label, icon: Icon }: { active: boolean; onClick: () => void; label: string; icon: LucideIcon }) {
   return (
     <button
       type="button"
@@ -94,7 +94,7 @@ function MapIconButton({ active, onClick, label, icon: Icon, iconClass = "h-5 w-
       aria-expanded={active}
       className="glass pointer-events-auto rounded-xl p-3 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
     >
-      <Icon aria-hidden="true" className={`${iconClass} text-neutral-700`} />
+      <Icon aria-hidden="true" className="h-5 w-5 text-neutral-700" />
     </button>
   );
 }
@@ -1165,7 +1165,7 @@ export default function MapaSensors({
         >
           {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
           <div className="flex gap-3">
-            <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Gauge} iconClass="-m-0.5 h-6 w-6" />
+            <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={CircleGauge} />
             <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Filtros" icon={Layers} />
           </div>
         </div>
