@@ -156,8 +156,6 @@ export default function MapaSensors({
   );
   const [copied, setCopied] = useState(false);
   const [sheetState, setSheetState] = useState<'peek' | 'mid'>('peek');
-  const sheetStateRef = useRef(sheetState);
-  sheetStateRef.current = sheetState;
   // Mobile: the toolbar panel open from the round buttons or the sheet's bar.
   const [mobilePanel, setMobilePanel] = useState<Panel>(null);
 
@@ -968,9 +966,8 @@ export default function MapaSensors({
     setSheetState('peek');
   }, []);
 
-  // Clicking empty map: on desktop it closes the picked station's card. On
-  // mobile (no X there, 2026-11-17) an open sheet first collapses to peek;
-  // a tap with the sheet resting drops the pick, back to the summary.
+  // Clicking empty map drops the pick, back to the summary, at every width
+  // (mobile since 2026-11-17, when its card lost the X).
   // MapLibre fires `click` only on a genuine click, not a drag/pan; a hit on the
   // disc layer means the field handler already owns this click, so bail.
   useEffect(() => {
@@ -978,8 +975,7 @@ export default function MapaSensors({
     const m = map.current as any;
     const handler = (e: any) => {
       if (m.getLayer(FIELD_LAYER) && m.queryRenderedFeatures(e.point, { layers: FIELD_LAYERS }).length) return;
-      if (isDesktop || sheetStateRef.current === 'peek') closeCard();
-      else setSheetState('peek');
+      closeCard();
     };
     m.on("click", handler);
     return () => { m?.off("click", handler); };
@@ -1197,12 +1193,13 @@ export default function MapaSensors({
       )}
 
       {/* Bottom sheet backdrop — mobile only, only when the sheet is open past
-          peek. Tapping it collapses the sheet back to peek. */}
+          peek. A tap on it is a tap off any sensor: the sheet collapses and
+          a picked station gives way to the summary. */}
       <div
         className={`fixed inset-0 z-[35] bg-black/20 transition-opacity duration-300 md:hidden ${
           sheetState !== 'peek' ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
-        onClick={() => setSheetState('peek')}
+        onClick={closeCard}
       />
 
       {/* Bottom sheet — mobile: the desktop left column at the bottom
@@ -1211,7 +1208,7 @@ export default function MapaSensors({
           sidebar); open, the advice and footnote. The legend and filters
           are the round buttons over the map, not part of the card
           (2026-11-17). A tapped marker
-          swaps in the desktop station card (no X: a tap on empty map goes
+          swaps in the desktop station card (no X: any tap off a sensor goes
           back to the summary). A tap
           on the grabber or the level card toggles peek / open. */}
       {sheetSubject && (
