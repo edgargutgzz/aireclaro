@@ -69,12 +69,12 @@ const SIDEBAR_WIDTH = 24 + 460;
 // The view a normal load opens on: the metro field, nothing picked (the
 // sidebar, or the mobile sheet, carries the air right now). Mobile centred on
 // its sheet's station at zoom 10.5 until 2026-11-17, when the sheet stopped
-// pulsing it; it now opens a step further out than desktop (9.5), a step
+// pulsing it; it now opens further out than desktop (9), a step
 // east and a bit north of the desktop centre ([-100.378, 25.700] →
 // [-100.30, 25.715]), since nothing covers its
 // left edge.
 const MOBILE_CENTER: [number, number] = [-100.30, 25.715];
-const MOBILE_ZOOM = 9.5;
+const MOBILE_ZOOM = 9;
 function restingFocus() {
   const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
   return desktop ? { center: OPENING_CENTER, zoom: OPENING_ZOOM } : { center: MOBILE_CENTER, zoom: MOBILE_ZOOM };
