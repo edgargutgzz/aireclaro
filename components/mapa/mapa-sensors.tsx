@@ -64,11 +64,16 @@ function trackStationOpen(sensor: Sensor) {
 // (left-6) + its width (tailwind.config's panel-lg). The map is padded by it.
 const SIDEBAR_WIDTH = 24 + 460;
 
-// The view a normal load opens on, at every width: the metro field, centred
-// on the city, nothing picked (the sidebar, or the mobile sheet, carries the
-// air right now). Mobile centred on its sheet's station at zoom 10.5 until
-// 2026-11-17, when the sheet stopped pulsing it.
-const RESTING_FOCUS = { center: OPENING_CENTER, zoom: OPENING_ZOOM };
+// The view a normal load opens on: the metro field, nothing picked (the
+// sidebar, or the mobile sheet, carries the air right now). Mobile centred on
+// its sheet's station at zoom 10.5 until 2026-11-17, when the sheet stopped
+// pulsing it; it now opens at the desktop zoom, a step east of the desktop
+// centre (-100.378 → -100.33), since nothing covers its left edge.
+const MOBILE_CENTER: [number, number] = [-100.33, OPENING_CENTER[1]];
+function restingFocus() {
+  const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
+  return { center: desktop ? OPENING_CENTER : MOBILE_CENTER, zoom: OPENING_ZOOM };
+}
 
 export default function MapaSensors({
   sensors,
@@ -536,7 +541,7 @@ export default function MapaSensors({
 
   // Initialize the map once, already on its resting view: a shared ?sensor=
   // link opens close (zoom 13) on the station it's about; a normal load opens
-  // on the metro field (RESTING_FOCUS). No fly-in: it used to open at zoom 8 and fly in for 4.5 s, which
+  // on the metro field (restingFocus). No fly-in: it used to open at zoom 8 and fly in for 4.5 s, which
   // fetched tiles for every zoom on the way and kept the numbers hidden until
   // it landed (removed 2026-10-09 for load speed).
   useEffect(() => {
@@ -544,7 +549,7 @@ export default function MapaSensors({
 
     const focus = linkedSensor
       ? { center: [linkedSensor.lon, linkedSensor.lat] as [number, number], zoom: 13 }
-      : RESTING_FOCUS;
+      : restingFocus();
 
     const m = new Map({
       container: mapContainer.current!,
@@ -913,7 +918,7 @@ export default function MapaSensors({
     // never moves (Saltillo did not frame, 2026-11-10).
     const motion = prefersReducedMotion() ? { duration: 0 } : {};
     if (hiddenMunicipios.length === 0) {
-      m.easeTo({ ...RESTING_FOCUS, ...motion });
+      m.easeTo({ ...restingFocus(), ...motion });
       return;
     }
     const shown = sensors.filter((s) => !hiddenMunicipios.includes(municipioKey(s.municipio) ?? ""));
