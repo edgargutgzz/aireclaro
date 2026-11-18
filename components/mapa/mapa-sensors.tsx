@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import { Layers, type LucideIcon } from "lucide-react";
-import { ScaleBar } from "./air-quality-legend";
+import { CircleGauge, Layers, type LucideIcon } from "lucide-react";
 import { Map, Marker } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
 import { track } from "@vercel/analytics";
@@ -83,8 +82,9 @@ function restingFocus() {
 
 // The round icon buttons over the mobile map (back 2026-11-17, same look as
 // before): Calidad del aire's legend and the Fuente filters, each opening the
-// toolbar's own panel as a bottom sheet. (The scale was a circle-gauge
-// icon here until it became the scale card, 2026-11-17.)
+// toolbar's own panel as a bottom sheet. The scale's icon is the closed
+// gauge (circle-gauge, user pick 2026-11-17): the open one read too light
+// beside the layers glyph.
 function MapIconButton({ active, onClick, label, icon: Icon }: { active: boolean; onClick: () => void; label: string; icon: LucideIcon }) {
   return (
     <button
@@ -1155,28 +1155,17 @@ export default function MapaSensors({
 
       </div>
 
-      {/* Mobile, just above the resting sheet, hidden while it is open: the
-          time pill (the reading the sheet shows) on its own line at the left,
-          then the desktop toolbar's Calidad del aire scale as a glass card
-          (2026-11-17, it was a gauge icon button), bar only, no title row
-          (its name is the button's label), the current level marked,
-          and the Filtros button beside it. */}
+      {/* Mobile: one row just above the resting sheet, hidden while it is
+          open: the time pill (the reading the sheet shows) at the left edge,
+          the legend and filter buttons side by side at the right. */}
       {sheetSubject && sheetState === 'peek' && (
         <div
-          className="pointer-events-none fixed left-4 right-4 z-[38] flex flex-col items-start gap-3 md:hidden"
+          className="pointer-events-none fixed left-4 right-4 z-[38] flex items-end justify-between md:hidden"
           style={{ bottom: `${peekHeight + 12}px` }}
         >
-          {sheetFreshness && <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} />}
-          <div className="flex w-full items-end gap-3">
-            <button
-              type="button"
-              onClick={() => setMobilePanel("aire")}
-              aria-expanded={mobilePanel === "aire"}
-              aria-label="Calidad del aire"
-              className="glass pointer-events-auto flex min-w-0 flex-1 flex-col rounded-xl px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900/15"
-            >
-              <ScaleBar labels="ends" current={sheetSubject.pm25} />
-            </button>
+          {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} color={getQualityInfo(sheetSubject.pm25)?.color} /> : <span />}
+          <div className="flex gap-3">
+            <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={CircleGauge} />
             <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Filtros" icon={Layers} />
           </div>
         </div>
