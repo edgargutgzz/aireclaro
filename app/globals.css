@@ -467,3 +467,24 @@
     background-color: #fff;
   }
 }
+
+/* The mobile map's panel sheets (Calidad del aire, Filtros) rise like the
+   bottom sheet does: same distance, duration and curve. */
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.sheet-in {
+  animation: sheet-in 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-in {
+    animation: none;
+  }
+}

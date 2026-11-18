@@ -204,13 +204,19 @@ export function MapToolbar({
         ref={cardRef}
         aria-label={panelTitle}
         className={sheet
-          ? "fixed inset-x-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
+          ? "sheet-in fixed inset-x-0 bottom-0 z-[47] flex max-h-[85svh] flex-col overflow-hidden rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] md:hidden"
           : "glass absolute bottom-0 left-[calc(100%+16px)] flex max-h-full w-full flex-col overflow-hidden rounded-2xl"}
       >
-        <div className={`flex flex-shrink-0 items-center justify-between gap-3 px-5 pt-4 ${sheet ? "pb-3" : "pb-1"}`}>
-          {/* The mobile sheet's title is a heading over its sections; the
-              desktop card keeps the small label. */}
-          <span className={sheet ? "text-base font-medium text-neutral-700" : "text-xs font-medium uppercase leading-none tracking-wide text-neutral-500"}>{panelTitle}</span>
+        {sheet ? (
+          // Mobile: a grabber like the map's bottom sheet, no X; a tap on it
+          // (or on the backdrop) closes the sheet.
+          <div className="flex-shrink-0 cursor-pointer select-none px-5 pb-3 pt-3" onClick={() => setOpen(null)}>
+            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
+            <p className="text-base font-medium text-neutral-700">{panelTitle}</p>
+          </div>
+        ) : (
+        <div className="flex flex-shrink-0 items-center justify-between gap-3 px-5 pb-1 pt-4">
+          <span className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{panelTitle}</span>
           <button
             type="button"
             onClick={() => setOpen(null)}
@@ -220,6 +226,7 @@ export function MapToolbar({
             <X aria-hidden="true" className="h-4 w-4" />
           </button>
         </div>
+        )}
         {/* Only the panel scrolls; overscroll-contain keeps the scroll from
             panning the map. */}
         <div
