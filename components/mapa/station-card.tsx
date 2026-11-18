@@ -112,7 +112,7 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // the metro area on the homepage (2026-11-04), the station on the map
 // (2026-11-09). `placeIcon` marks it: a pin on the homepage, the station's
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
-export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon }) {
+export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, hideFoot = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; hideFoot?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   return (
@@ -152,7 +152,9 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
             of the level (2026-11-03: white read as too prominent; the tint
             matches the icon discs below). Gray text; the freshness dot in
             the level's colour (2026-11-05, was the map's blue). */}
-        {freshness && freshness.status !== "nodata" && (
+        {/* `hideFoot`: the mobile sheet at rest shows the level alone
+            (2026-11-17); the time and station come with the open sheet. */}
+        {!hideFoot && freshness && freshness.status !== "nodata" && (
           <div
             className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-3 text-sm leading-none md:flex-nowrap"
             style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}
@@ -190,7 +192,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
           <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
           <p className="mt-2.5 text-2xl font-medium text-neutral-400">No disponible</p>
         </div>
-        {place && (
+        {place && !hideFoot && (
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 bg-stone-100 px-6 py-3 text-sm leading-none text-neutral-600">
             <p className="flex flex-shrink-0 items-center gap-1.5">
               <FreshnessDot status="nodata" />
@@ -224,7 +226,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
 // (on desktop the toolbar is its own card under the sidebar).
 // `foot` (2026-11-11): the station card reuses this whole panel, its
 // spacing, footnote peek and bottom fade, swapping in its own footnote rows.
-export function AirNowPanel({ subject, freshness, foot, title, after, end, fit = false, onClose }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; title?: ReactNode; after?: ReactNode; end?: ReactNode; fit?: boolean; onClose?: () => void }) {
+export function AirNowPanel({ subject, freshness, foot, title, after, end, fit = false, onClose, hideFoot = false }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; title?: ReactNode; after?: ReactNode; end?: ReactNode; fit?: boolean; onClose?: () => void; hideFoot?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -282,7 +284,7 @@ export function AirNowPanel({ subject, freshness, foot, title, after, end, fit =
         )}
         {/* The map names the station in the foot (2026-11-09); the homepage
             says only the metro area, which is what the level stands for. */}
-        <AirNowHeader subject={subject} freshness={freshness} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} />
+        <AirNowHeader subject={subject} freshness={freshness} hideFoot={hideFoot} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} />
       </header>
 
       {(quality || foot) && (
@@ -394,7 +396,7 @@ function SensitiveGroupsSection({ quality }: { quality: QualityInfo }) {
 // itself (AirNowPanel), the station named in its level card's foot, with a
 // footnote naming the source and holding the coordinates. The mobile sheet
 // renders it too when a station is picked (2026-11-17).
-export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void; onClose: () => void }) {
+export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose, hideFoot = false }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void; onClose: () => void; hideFoot?: boolean }) {
   const { sensor } = subject;
   const isSima = sensor.source === "sima";
   const foot = (
@@ -466,5 +468,5 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose
     </section>
   ) : undefined;
 
-  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} title={title} after={network} fit onClose={onClose} />;
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} title={title} after={network} fit onClose={onClose} hideFoot={hideFoot} />;
 }

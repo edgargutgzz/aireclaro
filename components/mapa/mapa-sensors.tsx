@@ -1177,11 +1177,13 @@ export default function MapaSensors({
                 copied={copied}
                 onCopyCoords={() => copyCoords(selectedSensor.sensor.lat, selectedSensor.sensor.lon)}
                 onClose={closeCard}
+                hideFoot={sheetState === 'peek'}
               />
             ) : (
               <AirNowPanel
                 subject={sheetSubject}
                 freshness={summaryFreshness}
+                hideFoot={sheetState === 'peek'}
                 fit
                 end={
                   <MapToolbar

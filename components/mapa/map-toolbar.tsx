@@ -172,9 +172,9 @@ export function MapToolbar({
               Ubicación
               <ChevronRight aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-400" />
             </span>
-            <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] leading-none text-neutral-600">
+            <span className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[13px] leading-none text-neutral-600">
               <MapPin aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0" />
-              {municipioLabel(estados, hiddenMunicipios)}
+              <span className="min-w-0 truncate">{municipioLabel(estados, hiddenMunicipios)}</span>
             </span>
           </button>
         </div>
