@@ -35,3 +35,25 @@ export function FreshnessDot({ status, color }: { status: Freshness["status"]; c
   );
 }
 
+
+// The mobile map's status pill (back 2026-11-17), beside the Fuente button:
+// the dot and the reading's time in a small glass pill, shadowless so it
+// reads as a quiet status line rather than a control. The time is the
+// information; screen readers still hear "Actualizado".
+export function FreshnessBadge({ freshness }: { freshness: Freshness }) {
+  return (
+    <div className="glass flex h-7 flex-shrink-0 items-center gap-1.5 rounded-xl px-2.5 shadow-none">
+      <FreshnessDot status={freshness.status} />
+      {freshness.status === "nodata" ? (
+        <span className="whitespace-nowrap text-[11px] font-medium text-neutral-700">No disponible</span>
+      ) : (
+        <span className="whitespace-nowrap text-[11px] text-neutral-500">
+          <span className="sr-only">Actualizado </span>
+          <time dateTime={freshness.dateTime} className="font-medium text-neutral-700">
+            {freshness.when}
+          </time>
+        </span>
+      )}
+    </div>
+  );
+}

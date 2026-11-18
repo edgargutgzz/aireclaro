@@ -47,6 +47,7 @@ import {
   fieldRadiusAt,
 } from "./field-layer";
 import { MapToolbar, type Panel } from "./map-toolbar";
+import { FreshnessBadge } from "@/components/data/freshness";
 import { AirNowPanel, StationPanel } from "./station-card";
 import { BASEMAP_BOUNDS, LABEL_FONT, basemapStyle } from "./basemap";
 import { BASEMAP_GROUND } from "./ground";
@@ -353,6 +354,8 @@ export default function MapaSensors({
   const freshness = useMemo(() => toFreshness(activeSubject, latestReading, now), [activeSubject, latestReading, now]);
   // The desktop sidebar's own time line: its station's reading, by the same rule.
   const summaryFreshness = useMemo(() => toFreshness(summarySelection, latestReading, now), [summarySelection, latestReading, now]);
+  // The mobile time pill: the reading the sheet shows.
+  const sheetFreshness = selectedSensor ? freshness : summaryFreshness;
 
 
   // The marker that wears the pulse: activeSubject (mobile: the pick, else the
@@ -1149,14 +1152,19 @@ export default function MapaSensors({
       </div>
 
       {/* Mobile: the legend and filter buttons, a right-edge stack just
-          above the resting sheet, hidden while it is open. */}
+          above the resting sheet, hidden while it is open; the time pill
+          shares the Fuente button's row at the left edge (as before
+          2026-11-17), for the reading the sheet shows. */}
       {sheetSubject && sheetState === 'peek' && (
         <div
-          className="pointer-events-none fixed right-4 z-[38] flex flex-col gap-3 md:hidden"
+          className="pointer-events-none fixed left-4 right-4 z-[38] flex flex-col items-end gap-3 md:hidden"
           style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + ${peekHeight + 12}px)` }}
         >
           <MapIconButton active={mobilePanel === "aire"} onClick={() => setMobilePanel("aire")} label="Calidad del aire" icon={Wind} />
-          <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Fuente" icon={Layers} />
+          <div className="flex w-full items-end justify-between">
+            {sheetFreshness ? <FreshnessBadge freshness={sheetFreshness} /> : <span />}
+            <MapIconButton active={mobilePanel === "sensores"} onClick={() => setMobilePanel("sensores")} label="Fuente" icon={Layers} />
+          </div>
         </div>
       )}
       {/* The panel those buttons and the sheet's bar open, mounted always
