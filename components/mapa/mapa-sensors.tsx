@@ -1214,10 +1214,7 @@ export default function MapaSensors({
       {sheetSubject && (
         <div
           ref={sheetRef}
-          // At rest only the coloured level block shows (2026-11-17): the
-          // sheet itself is transparent, its grabber hidden, so the card
-          // floats on the map; open, the white sheet is back.
-          className={`fixed left-0 right-0 z-[40] flex flex-col overflow-hidden rounded-t-3xl transition-colors duration-300 md:hidden ${sheetState === 'peek' ? 'pointer-events-none bg-transparent [&_header]:pointer-events-auto' : 'bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.08)]'}`}
+          className={`fixed left-0 right-0 z-[40] flex flex-col overflow-hidden rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-colors duration-300 md:hidden ${sheetState === 'peek' ? 'border-t border-white/60 bg-white/80 backdrop-blur-md' : 'bg-white'}`}
           // Down to the screen's very edge (2026-11-17): it stood on the
           // phone's safe-area inset before, so on phones with a home bar the
           // resting card floated ~34px up. The open sheet pads its own
@@ -1235,7 +1232,7 @@ export default function MapaSensors({
             handleSheetTap();
           }}
         >
-          <div data-grabber className={`flex-shrink-0 cursor-pointer pt-3 ${sheetState === 'peek' ? 'invisible' : ''}`}>
+          <div data-grabber className="flex-shrink-0 cursor-pointer pt-3">
             <div className="mx-auto h-1 w-10 rounded-full bg-stone-300/60" />
           </div>
           {/* Off-screen while peeking: no focus or reading in the hidden part. */}

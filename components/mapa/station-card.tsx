@@ -220,8 +220,6 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
 // its reading's time, top right in the header.
 // Grupos sensibles opens in place, under its row (SensitiveGroupsSection,
 // 2026-11-12; it opened a card beside the sidebar before).
-// `hideFoot` (mobile sheet at rest, 2026-11-17): only the coloured level
-// block shows, no title row and no foot.
 // `fit` (2026-11-12): the station card sizes to its content, so the
 // footnote shows whole, no peek.
 // `foot` (2026-11-11): the station card reuses this whole panel, its
@@ -267,7 +265,7 @@ export function AirNowPanel({ subject, freshness, foot, title, after, fit = fals
       <header className="flex-shrink-0 px-4 pt-4">
         {/* The station card's header row (2026-11-12): what kind of station
             it is, left, and the X, right. */}
-        {(title || onClose) && !hideFoot && (
+        {(title || onClose) && (
           <div className="-mt-1 mb-3 flex items-center justify-between gap-3 pl-2">
             <p className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">{title}</p>
             {onClose && (
