@@ -64,16 +64,11 @@ function trackStationOpen(sensor: Sensor) {
 // (left-6) + its width (tailwind.config's panel-lg). The map is padded by it.
 const SIDEBAR_WIDTH = 24 + 460;
 
-// The view a normal load opens on. Desktop: the metro field, centred on the
-// city, nothing picked (the sidebar carries the air right now). Mobile: centred
-// on the default station so the pulse of the station its sheet rests on is in
-// frame.
-function restingFocus(defaultSelection: SelectedSensor | null) {
-  const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
-  return defaultSelection && !desktop
-    ? { center: [defaultSelection.sensor.lon, defaultSelection.sensor.lat] as [number, number], zoom: 10.5 }
-    : { center: OPENING_CENTER, zoom: OPENING_ZOOM };
-}
+// The view a normal load opens on, at every width: the metro field, centred
+// on the city, nothing picked (the sidebar, or the mobile sheet, carries the
+// air right now). Mobile centred on its sheet's station at zoom 10.5 until
+// 2026-11-17, when the sheet stopped pulsing it.
+const RESTING_FOCUS = { center: OPENING_CENTER, zoom: OPENING_ZOOM };
 
 export default function MapaSensors({
   sensors,
@@ -286,17 +281,9 @@ export default function MapaSensors({
     return newest ? new Date(newest) : null;
   }, [data]);
 
-  // The station the card falls back to when nothing is picked: the worst
-  // official station, or the PurpleAir sensor nearest Obispado when none has a
-  // recent reading (see pickDefaultSensor), built the same way a click builds
-  // a selection. Null only if no official station is live and Obispado is
-  // filtered out or absent from the feed. `cardSubject` is what every card
-  // consumer read once; now it only sets the resting camera (restingFocus).
-  const defaultSelection = useMemo<SelectedSensor | null>(() => {
-    const def = pickDefaultSensor(visibleSensors, data);
-    return def ? buildSelection(def, data) : null;
-  }, [visibleSensors, data]);
-  // The desktop sidebar's reading: the same rule over every sensor, ignoring
+  // The air right now (desktop sidebar, mobile sheet at rest): the worst
+  // official station, or the PurpleAir sensor nearest Obispado when none has
+  // a recent reading (pickDefaultSensor), over every sensor, ignoring
   // the Sensores filters. The filters choose what the map draws; the air right
   // now is the air right now (user call 2026-11-02). The mobile sheet rests
   // on it too since 2026-11-17.
@@ -549,7 +536,7 @@ export default function MapaSensors({
 
   // Initialize the map once, already on its resting view: a shared ?sensor=
   // link opens close (zoom 13) on the station it's about; a normal load opens
-  // on the metro field (restingFocus). No fly-in: it used to open at zoom 8 and fly in for 4.5 s, which
+  // on the metro field (RESTING_FOCUS). No fly-in: it used to open at zoom 8 and fly in for 4.5 s, which
   // fetched tiles for every zoom on the way and kept the numbers hidden until
   // it landed (removed 2026-10-09 for load speed).
   useEffect(() => {
@@ -557,7 +544,7 @@ export default function MapaSensors({
 
     const focus = linkedSensor
       ? { center: [linkedSensor.lon, linkedSensor.lat] as [number, number], zoom: 13 }
-      : restingFocus(defaultSelection);
+      : RESTING_FOCUS;
 
     const m = new Map({
       container: mapContainer.current!,
@@ -926,7 +913,7 @@ export default function MapaSensors({
     // never moves (Saltillo did not frame, 2026-11-10).
     const motion = prefersReducedMotion() ? { duration: 0 } : {};
     if (hiddenMunicipios.length === 0) {
-      m.easeTo({ ...restingFocus(defaultSelection), ...motion });
+      m.easeTo({ ...RESTING_FOCUS, ...motion });
       return;
     }
     const shown = sensors.filter((s) => !hiddenMunicipios.includes(municipioKey(s.municipio) ?? ""));
@@ -937,7 +924,7 @@ export default function MapaSensors({
       [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
       { padding: { top: 64, right: 64, bottom: 120, left: 64 }, maxZoom: 13, ...motion },
     );
-  }, [hiddenMunicipios, sensors, defaultSelection]);
+  }, [hiddenMunicipios, sensors]);
 
   // Drop the pick. **Desktop only** (empty-map click, Escape, re-click): the
   // picked station's card over the map closes; the sidebar is unaffected. On
