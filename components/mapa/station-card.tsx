@@ -222,11 +222,9 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
 // 2026-11-12; it opened a card beside the sidebar before).
 // `fit` (2026-11-12): the station card sizes to its content, so the
 // footnote shows whole, no peek.
-// `end` (2026-11-17): after the footnote, the mobile sheet's map toolbar
-// (on desktop the toolbar is its own card under the sidebar).
 // `foot` (2026-11-11): the station card reuses this whole panel, its
 // spacing, footnote peek and bottom fade, swapping in its own footnote rows.
-export function AirNowPanel({ subject, freshness, foot, title, after, end, fit = false, onClose, hideFoot = false }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; title?: ReactNode; after?: ReactNode; end?: ReactNode; fit?: boolean; onClose?: () => void; hideFoot?: boolean }) {
+export function AirNowPanel({ subject, freshness, foot, title, after, fit = false, onClose, hideFoot = false }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; title?: ReactNode; after?: ReactNode; fit?: boolean; onClose?: () => void; hideFoot?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -338,7 +336,6 @@ export function AirNowPanel({ subject, freshness, foot, title, after, end, fit =
             )}
           </dl>
           </div>
-          {end && <div className="mt-6">{end}</div>}
           </div>
           {/* Sticky to the body's bottom edge, taking no space of its own. */}
           {moreBelow && (

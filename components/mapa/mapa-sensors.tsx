@@ -1167,8 +1167,8 @@ export default function MapaSensors({
           </div>
         </div>
       )}
-      {/* The panel those buttons and the sheet's bar open, mounted always
-          (the bar is only in the sheet while nothing is picked). */}
+      {/* The panel those buttons open: the toolbar's own panels as a bottom
+          sheet, without its bar. */}
       {!isDesktop && (
         <MapToolbar
           sheet
@@ -1201,8 +1201,9 @@ export default function MapaSensors({
       {/* Bottom sheet — mobile: the desktop left column at the bottom
           (2026-11-17, option 1B of the phone mockups). At rest it peeks the
           level card of the air right now (summarySelection, as the desktop
-          sidebar); open, the whole column: advice, footnote, then the map
-          toolbar, whose panels open as their own sheets. A tapped marker
+          sidebar); open, the advice and footnote. The legend and filters
+          are the round buttons over the map, not part of the card
+          (2026-11-17). A tapped marker
           swaps in the desktop station card, its X back to the summary. A tap
           on the grabber or the level card toggles peek / open. */}
       {sheetSubject && (
@@ -1241,25 +1242,6 @@ export default function MapaSensors({
                 freshness={summaryFreshness}
                 hideFoot={sheetState === 'peek'}
                 fit
-                end={
-                  <MapToolbar
-                    sheet
-                    showPanel={false}
-                    open={mobilePanel}
-                    onOpenChange={setMobilePanel}
-                    showSima={showSima}
-                    setShowSima={setShowSima}
-                    showOccamm={showOccamm}
-                    setShowOccamm={setShowOccamm}
-                    showOtros={showOtros}
-                    setShowOtros={setShowOtros}
-                    sourceCounts={sourceCounts}
-                    estados={estados}
-                    hiddenMunicipios={hiddenMunicipios}
-                    setHiddenMunicipios={setHiddenMunicipios}
-                    currentPm25={summarySelection?.pm25 ?? null}
-                  />
-                }
               />
             )}
           </div>

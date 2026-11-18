@@ -13,8 +13,8 @@ import { AdviceText } from "./station-card";
 // holds the air-quality scale and the Sensores button behind a hairline; either
 // one unfolds a single panel out of the bar itself (same card, no gap), the
 // active button shaded, and switching between the two swaps the panel's
-// content in place. On mobile (`sheet`, 2026-11-17) the same bar ends the
-// bottom sheet and a panel opens as its own bottom sheet.
+// content in place. On mobile (`sheet`, 2026-11-17) there is no bar: the
+// map's round buttons open the same panels as bottom sheets.
 //
 // Sensores: Gobierno, then Sensores Ciudadanos with OCCAMM and Otros always
 // shown under it (no hidden sub-rows, 2026-11-09). Ubicación, its own button
@@ -44,7 +44,6 @@ export function MapToolbar({
   open: openProp,
   onOpenChange,
   showBar = true,
-  showPanel = true,
 }: {
   showSima: boolean;
   setShowSima: Dispatch<SetStateAction<boolean>>;
@@ -61,14 +60,11 @@ export function MapToolbar({
   // Mobile: panels open as a bottom sheet, portalled to <body> (the bar sits
   // inside the transformed map sheet, which would trap a fixed child).
   sheet?: boolean;
-  // Mobile shares one open panel between the bar in the sheet and the
-  // round buttons over the map (2026-11-17): the state lives in the page,
-  // one instance draws the bar (showPanel false) and an always-mounted one
-  // draws only the panel (showBar false).
+  // Mobile (2026-11-17): the round buttons over the map open the panels,
+  // so the page holds the open panel and this instance draws no bar.
   open?: Panel;
   onOpenChange?: (p: Panel) => void;
   showBar?: boolean;
-  showPanel?: boolean;
 }) {
   const [ownOpen, setOwnOpen] = useState<Panel>(null);
   const open = onOpenChange ? (openProp ?? null) : ownOpen;
@@ -200,7 +196,7 @@ export function MapToolbar({
         column, its bottom on the bar's (2026-11-10, it unfolded upward out
         of the bar), the Grupos sensibles card's width and header. Absolute
         to the left column, at most its height. */}
-    {showPanel && open && portal(
+    {open && portal(
       <section
         ref={cardRef}
         aria-label={PANEL_TITLE[open]}
@@ -262,7 +258,7 @@ export function MapToolbar({
     )}
     {/* The mobile panel's backdrop: a tap on it is a tap outside, which
         closes the panel. */}
-    {showPanel && open && sheet && portal(<div aria-hidden="true" className="fixed inset-0 z-[46] bg-black/20 md:hidden" />)}
+    {open && sheet && portal(<div aria-hidden="true" className="fixed inset-0 z-[46] bg-black/20 md:hidden" />)}
     </>
   );
 }
