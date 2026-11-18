@@ -1034,9 +1034,11 @@ export default function MapaSensors({
     const sheet = sheetRef.current;
     const header = sheet?.querySelector("header");
     if (!sheet || !header) return;
-    // 4px under the card (was 16 until 2026-11-17): the card sits low,
-    // nearly on the screen's edge, leaving the map the room.
-    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight + 4));
+    // The card's bottom 12px run past the screen's edge (2026-11-17, user
+    // asked for it lower three times: 16px under it, then 4, then this):
+    // only its rounded foot and part of its 24px bottom padding are cut, the
+    // level and number stay whole.
+    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight - 12));
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(header);
