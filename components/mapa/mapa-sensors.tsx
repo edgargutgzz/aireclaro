@@ -67,12 +67,14 @@ const SIDEBAR_WIDTH = 24 + 460;
 // The view a normal load opens on: the metro field, nothing picked (the
 // sidebar, or the mobile sheet, carries the air right now). Mobile centred on
 // its sheet's station at zoom 10.5 until 2026-11-17, when the sheet stopped
-// pulsing it; it now opens at the desktop zoom, a step east of the desktop
-// centre (-100.378 → -100.33), since nothing covers its left edge.
+// pulsing it; it now opens a step further out than desktop (9.5), a step
+// east of the desktop centre (-100.378 → -100.33), since nothing covers its
+// left edge.
 const MOBILE_CENTER: [number, number] = [-100.33, OPENING_CENTER[1]];
+const MOBILE_ZOOM = 9.5;
 function restingFocus() {
   const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
-  return { center: desktop ? OPENING_CENTER : MOBILE_CENTER, zoom: OPENING_ZOOM };
+  return desktop ? { center: OPENING_CENTER, zoom: OPENING_ZOOM } : { center: MOBILE_CENTER, zoom: MOBILE_ZOOM };
 }
 
 export default function MapaSensors({
