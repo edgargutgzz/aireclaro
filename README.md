@@ -68,6 +68,15 @@ interactive piece is hand-built to the house tokens (`.ai-style-guide.md`).
 | [`.ai-style-guide.md`](.ai-style-guide.md) | the visual contract for the UI |
 | [`CLAUDE.md`](CLAUDE.md) | working guidance for AI coding agents |
 
+## License
+
+- **Code:** MIT, see [`LICENSE`](LICENSE).
+- **Data** published on the site (the /datos downloads): CC BY 4.0, citing
+  SINAICA as the original source.
+- **Not covered by MIT:** the logos and brand marks, the team photos, and the
+  publications in `public/` (PDFs, infographics, column images). They remain
+  the property of OCCAMM or their authors.
+
 ## Contact
 
 - Email: contacto@observatoriodelaire.com
