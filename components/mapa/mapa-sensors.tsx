@@ -1244,14 +1244,14 @@ export default function MapaSensors({
                 copied={copied}
                 onCopyCoords={() => copyCoords(selectedSensor.sensor.lat, selectedSensor.sensor.lon)}
                 hideFoot={sheetState === 'peek'}
-                tint
+                tint={sheetState === 'peek'}
               />
             ) : (
               <AirNowPanel
                 subject={sheetSubject}
                 freshness={summaryFreshness}
                 hideFoot={sheetState === 'peek'}
-                tint
+                tint={sheetState === 'peek'}
                 fit
               />
             )}

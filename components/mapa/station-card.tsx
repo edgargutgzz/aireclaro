@@ -112,10 +112,10 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // the metro area on the homepage (2026-11-04), the station on the map
 // (2026-11-09). `placeIcon` marks it: a pin on the homepage, the station's
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
-// `tint` (mobile sheet, 2026-11-19, option A of the mockup): the level as a
-// pale tint (18%) instead of the solid fill, dark text (no level dot,
-// removed 2026-11-19), a step smaller type. The foot is white
-// under a hairline so it still reads apart from the tinted block.
+// `tint` (mobile sheet at rest, 2026-11-19, option A of the mockup): the
+// level as a pale tint (18%) instead of the solid fill, dark text, a step
+// smaller type, no foot. The open sheet shows the solid card (user call,
+// same day).
 export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, hideFoot = false, tint = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; hideFoot?: boolean; tint?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
@@ -141,25 +141,6 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
             <span className="text-[13px] text-neutral-600">μg/m³ PM2.5</span>
           </p>
         </div>
-        {!hideFoot && freshness && freshness.status !== "nodata" && (
-          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-stone-200 bg-white px-6 py-3 text-sm leading-none">
-            <p className="flex flex-shrink-0 items-center gap-1.5">
-              <FreshnessDot status={freshness.status} color={quality.color} />
-              <span className="whitespace-nowrap text-neutral-600">
-                Actualizado{" "}
-                <time dateTime={freshness.dateTime} className="font-medium text-neutral-800">
-                  {readingTimeLabel(new Date(freshness.dateTime))}
-                </time>
-              </span>
-            </p>
-            {place && (
-              <p className="flex min-w-0 items-center gap-1.5 text-neutral-600">
-                <PlaceIcon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-neutral-500" />
-                <span className="min-w-0">{place}</span>
-              </p>
-            )}
-          </div>
-        )}
       </div>
     );
   }
