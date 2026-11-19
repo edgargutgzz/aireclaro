@@ -112,17 +112,18 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // the metro area on the homepage (2026-11-04), the station on the map
 // (2026-11-09). `placeIcon` marks it: a pin on the homepage, the station's
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
-// `compact` (mobile sheet at rest, 2026-11-19, option D of the mockup; option
-// A, a pale tint, tried the same day): one white line, the level's dot,
-// "Calidad del aire <level>", the value (chevron removed same day; a tap opens the
-// sheet). The open sheet shows the solid card (user call, same day).
+// `compact` (mobile sheet at rest, 2026-11-19, option E2 of the mockup; tried
+// the same day: A, a pale tint, and D, a level dot + chevron): one white
+// line, "Calidad del aire <level>" and the value, under a 5px stripe in the
+// marker's colour. A tap opens the sheet, which shows the solid card.
 export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, hideFoot = false, compact = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; hideFoot?: boolean; compact?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
   if (compact && quality && subject.pm25 !== null) {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white px-4 py-3.5">
-        <span aria-hidden="true" className="h-3 w-3 flex-shrink-0 rounded-full shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]" style={{ backgroundColor: getMarkerFill(subject.pm25) ?? quality.color }} />
+      <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+        <div aria-hidden="true" className="h-[5px]" style={{ backgroundColor: getMarkerFill(subject.pm25) ?? quality.color }} />
+        <div className="flex items-center gap-3 px-4 pb-3.5 pt-3">
         <p className="min-w-0 flex-1 truncate text-[15px] leading-tight text-neutral-600">
           Calidad del aire{" "}
           <strong className="font-bold text-neutral-900">
@@ -139,6 +140,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
         <p className="flex-shrink-0 text-[15px] leading-tight text-neutral-600">
           <strong className="text-xl font-bold text-neutral-900">{roundPM25(subject.pm25)}</strong> μg/m³
         </p>
+        </div>
       </div>
     );
   }
