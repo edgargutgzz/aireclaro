@@ -16,7 +16,8 @@ async function fetchPurpleAirSensors() {
 
     .neq("sensor_id", 121825) // Grupo Reforma Sierra Madre
     .neq("sensor_id", 286186) // García Online
-    .neq("sensor_id", 267403); // Montenova International School
+    .neq("sensor_id", 267403) // Montenova International School
+    .neq("sensor_id", 208785); // Colegio Cambridge Campus Anáhuac (stuck at 274, 2026-11-19)
   // purpleair_sensores is a history of every sensor ever registered: when a
   // device moves or is renamed, a new row is added with the same sensor_id and
   // the old row is set to estatus "historico" (kept, never shown, never touched
