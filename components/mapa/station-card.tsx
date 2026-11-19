@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Baby, Check, ChevronRight, ChevronUp, Copy, MapPin, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
+import { Baby, Check, ChevronRight, Copy, MapPin, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
 import { getMarkerFill, getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, isOccammSensor, readingTimeLabel } from "./lib";
@@ -114,7 +114,7 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
 // `compact` (mobile sheet at rest, 2026-11-19, option D of the mockup; option
 // A, a pale tint, tried the same day): one white line, the level's dot,
-// "Calidad del aire <level>", the value, a chevron up (a tap opens the
+// "Calidad del aire <level>", the value (chevron removed same day; a tap opens the
 // sheet). The open sheet shows the solid card (user call, same day).
 export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, hideFoot = false, compact = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; hideFoot?: boolean; compact?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
@@ -139,7 +139,6 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
         <p className="flex-shrink-0 text-[15px] leading-tight text-neutral-600">
           <strong className="text-xl font-bold text-neutral-900">{roundPM25(subject.pm25)}</strong> μg/m³
         </p>
-        <ChevronUp aria-hidden="true" className="h-[18px] w-[18px] flex-shrink-0 text-neutral-400" />
       </div>
     );
   }
