@@ -210,11 +210,11 @@ export function MapToolbar({
         {sheet ? (
           // Mobile: a grabber like the map's bottom sheet, no X; a tap on it
           // (or on the backdrop) closes the sheet.
-          // The filter sheet shows no title (2026-11-19, user call): its
-          // Fuente / Ubicación section labels say what it is.
-          <div className={`flex-shrink-0 cursor-pointer select-none px-5 pt-3 ${open === "sensores" ? "pb-1" : "pb-3"}`} onClick={() => setOpen(null)}>
-            <div className={`mx-auto h-1 w-10 rounded-full bg-stone-300/60 ${open === "sensores" ? "" : "mb-3"}`} />
-            {open !== "sensores" && <p className="text-base font-medium text-neutral-700">{panelTitle}</p>}
+          // No sheet title (2026-11-19, user call): both sheets open on a
+          // small section label in the panel itself (Calidad del aire;
+          // Fuente, then Ubicación), the same size and place in each.
+          <div className="flex-shrink-0 cursor-pointer select-none px-5 pb-1 pt-3" onClick={() => setOpen(null)}>
+            <div className="mx-auto h-1 w-10 rounded-full bg-stone-300/60" />
           </div>
         ) : (
         <div className="flex flex-shrink-0 items-center justify-between gap-3 px-5 pb-1 pt-4">
@@ -244,9 +244,12 @@ export function MapToolbar({
           style={sheet ? (open === "aire" && notesHeight ? { maxHeight: notesHeight } : undefined) : open === "ubicacion" ? { maxHeight: 360 } : notesHeight ? { maxHeight: notesHeight } : undefined}
         >
           {open === "aire" ? (
+            <>
+            {sheet && <p className={SECTION_LABEL}>Calidad del aire</p>}
             <div className="p-4">
               <LevelList />
             </div>
+            </>
           ) : open === "ubicacion" ? (
             <UbicacionPanel estados={estados} hiddenMunicipios={hiddenMunicipios} setHiddenMunicipios={setHiddenMunicipios} onChosen={() => setOpen(null)} />
           ) : (
