@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Baby, Check, ChevronRight, Copy, MapPin, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
-import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
+import { Baby, Check, ChevronRight, ChevronUp, Copy, MapPin, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
+import { getMarkerFill, getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, isOccammSensor, readingTimeLabel } from "./lib";
 import { DialogLink } from "./info-dialog";
@@ -112,35 +112,34 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // the metro area on the homepage (2026-11-04), the station on the map
 // (2026-11-09). `placeIcon` marks it: a pin on the homepage, the station's
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
-// `tint` (mobile sheet at rest, 2026-11-19, option A of the mockup): the
-// level as a pale tint (18%) instead of the solid fill, dark text, a step
-// smaller type, no foot. The open sheet shows the solid card (user call,
-// same day).
-export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, hideFoot = false, tint = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; hideFoot?: boolean; tint?: boolean }) {
+// `compact` (mobile sheet at rest, 2026-11-19, option D of the mockup; option
+// A, a pale tint, tried the same day): one white line, the level's dot,
+// "Calidad del aire <level>", the value, a chevron up (a tap opens the
+// sheet). The open sheet shows the solid card (user call, same day).
+export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, hideFoot = false, compact = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; hideFoot?: boolean; compact?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
   const onFill = quality && subject.pm25 !== null ? getMarkerNumberInk(subject.pm25) : undefined;
-  if (tint && quality && subject.pm25 !== null) {
+  if (compact && quality && subject.pm25 !== null) {
     return (
-      <div className="overflow-hidden rounded-xl border border-stone-200">
-        <div className="flex items-end justify-between gap-3 px-6 py-5" style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}>
-          <div className="min-w-0">
-            <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-600">Calidad del aire</p>
-            <p className="mt-2.5 whitespace-nowrap text-[32px] font-bold leading-none tracking-tight text-neutral-900">
-              {quality.label === "Extremadamente mala" ? (
-                <>
-                  <span aria-hidden="true">Extrem. mala</span>
-                  <span className="sr-only">Extremadamente mala</span>
-                </>
-              ) : (
-                quality.label
-              )}
-            </p>
-          </div>
-          <p className="flex-shrink-0 text-right text-neutral-900">
-            <span className="block text-[32px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
-            <span className="text-[13px] text-neutral-600">μg/m³ PM2.5</span>
-          </p>
-        </div>
+      <div className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white px-4 py-3.5">
+        <span aria-hidden="true" className="h-3 w-3 flex-shrink-0 rounded-full shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]" style={{ backgroundColor: getMarkerFill(subject.pm25) ?? quality.color }} />
+        <p className="min-w-0 flex-1 truncate text-[15px] leading-tight text-neutral-600">
+          Calidad del aire{" "}
+          <strong className="font-bold text-neutral-900">
+            {quality.label === "Extremadamente mala" ? (
+              <>
+                <span aria-hidden="true">Extrem. mala</span>
+                <span className="sr-only">Extremadamente mala</span>
+              </>
+            ) : (
+              quality.label
+            )}
+          </strong>
+        </p>
+        <p className="flex-shrink-0 text-[15px] leading-tight text-neutral-600">
+          <strong className="text-xl font-bold text-neutral-900">{roundPM25(subject.pm25)}</strong> μg/m³
+        </p>
+        <ChevronUp aria-hidden="true" className="h-[18px] w-[18px] flex-shrink-0 text-neutral-400" />
       </div>
     );
   }
@@ -253,7 +252,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
 // footnote shows whole, no peek.
 // `foot` (2026-11-11): the station card reuses this whole panel, its
 // spacing, footnote peek and bottom fade, swapping in its own footnote rows.
-export function AirNowPanel({ subject, freshness, foot, title, after, fit = false, onClose, hideFoot = false, tint = false }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; title?: ReactNode; after?: ReactNode; fit?: boolean; onClose?: () => void; hideFoot?: boolean; tint?: boolean }) {
+export function AirNowPanel({ subject, freshness, foot, title, after, fit = false, onClose, hideFoot = false, compact = false }: { subject: SelectedSensor; freshness: Freshness | null; foot?: ReactNode; title?: ReactNode; after?: ReactNode; fit?: boolean; onClose?: () => void; hideFoot?: boolean; compact?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
 
   // The footnote ends the scroll and sits at its foot, the map cards' notes
@@ -311,7 +310,7 @@ export function AirNowPanel({ subject, freshness, foot, title, after, fit = fals
         )}
         {/* The map names the station in the foot (2026-11-09); the homepage
             says only the metro area, which is what the level stands for. */}
-        <AirNowHeader subject={subject} freshness={freshness} hideFoot={hideFoot} tint={tint} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} />
+        <AirNowHeader subject={subject} freshness={freshness} hideFoot={hideFoot} compact={compact} place={displayName(subject.sensor)} placeIcon={getSourceIcon(subject.sensor.source === "sima")} />
       </header>
 
       {(quality || foot) && (
@@ -422,7 +421,7 @@ function SensitiveGroupsSection({ quality }: { quality: QualityInfo }) {
 // itself (AirNowPanel), the station named in its level card's foot, with a
 // footnote naming the source and holding the coordinates. The mobile sheet
 // renders it too when a station is picked (2026-11-17).
-export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose, hideFoot = false, tint = false }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void; onClose?: () => void; hideFoot?: boolean; tint?: boolean }) {
+export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose, hideFoot = false, compact = false }: { subject: SelectedSensor; freshness: Freshness | null; copied: boolean; onCopyCoords: () => void; onClose?: () => void; hideFoot?: boolean; compact?: boolean }) {
   const { sensor } = subject;
   const isSima = sensor.source === "sima";
   const foot = (
@@ -494,5 +493,5 @@ export function StationPanel({ subject, freshness, copied, onCopyCoords, onClose
     </section>
   ) : undefined;
 
-  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} title={title} after={network} fit onClose={onClose} hideFoot={hideFoot} tint={tint} />;
+  return <AirNowPanel subject={subject} freshness={freshness} foot={foot} title={title} after={network} fit onClose={onClose} hideFoot={hideFoot} compact={compact} />;
 }
