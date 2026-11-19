@@ -1032,11 +1032,10 @@ export default function MapaSensors({
     const sheet = sheetRef.current;
     const header = sheet?.querySelector("header");
     if (!sheet || !header) return;
-    // The card's bottom 12px run past the screen's edge (2026-11-17, user
-    // asked for it lower three times: 16px under it, then 4, then this):
-    // only its rounded foot and part of its 24px bottom padding are cut, the
-    // level and number stay whole.
-    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight - 12));
+    // The card ends at the screen's edge, whole (2026-11-19, user: "move up
+    // a bit"; its bottom 12px ran past the edge since 2026-11-17, after
+    // three asks for it lower: 16px under it, then 4, then -12).
+    const measure = () => setPeekHeight(Math.ceil(header.offsetTop + header.offsetHeight));
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(header);
