@@ -86,9 +86,16 @@ export function MapToolbar({
   // the fade, and the rest is a scroll away.
   const notesRef = useRef<HTMLDivElement>(null);
   const [notesHeight, setNotesHeight] = useState<number | null>(null);
+  // The mobile filter sheet stops just into Ubicación (2026-11-19, user: it
+  // opened too far): Fuente whole, Ubicación's label and first rows peeking
+  // under the fade, the rest a scroll away.
+  const ubicacionRef = useRef<HTMLElement>(null);
+  const [filterHeight, setFilterHeight] = useState<number | null>(null);
   useLayoutEffect(() => {
     const second = notesRef.current?.querySelectorAll("dt")[1] as HTMLElement | undefined;
     setNotesHeight(second ? second.offsetTop + 14 : null);
+    const ubicacion = ubicacionRef.current;
+    setFilterHeight(ubicacion ? ubicacion.offsetTop + 110 : null);
   }, [open]);
 
   // Any open panel that has more below its fold fades out at the bottom
@@ -99,7 +106,7 @@ export function MapToolbar({
     const el = panelRef.current;
     setMoreBelow(!!el && el.scrollHeight - el.scrollTop - el.clientHeight > 1);
   };
-  useLayoutEffect(checkMoreBelow, [open, notesHeight]);
+  useLayoutEffect(checkMoreBelow, [open, notesHeight, filterHeight]);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
@@ -238,10 +245,10 @@ export function MapToolbar({
           className="disclosure-in relative min-h-0 flex-1 overflow-y-auto overscroll-contain"
           // Ubicación is capped too (2026-11-10): the list of municipalities
           // never needs the whole column; the rest scrolls under the fade.
-          // The mobile filter sheet shows the panel whole, up to its own cap;
+          // The mobile filter sheet stops just into Ubicación (filterHeight);
           // its Calidad del aire sheet stops where the desktop panel does,
           // at the notes' second entry (2026-11-19, user: it opened too far).
-          style={sheet ? (open === "aire" && notesHeight ? { maxHeight: notesHeight } : undefined) : open === "ubicacion" ? { maxHeight: 360 } : notesHeight ? { maxHeight: notesHeight } : undefined}
+          style={sheet ? (open === "aire" && notesHeight ? { maxHeight: notesHeight } : open === "sensores" && filterHeight ? { maxHeight: filterHeight } : undefined) : open === "ubicacion" ? { maxHeight: 360 } : notesHeight ? { maxHeight: notesHeight } : undefined}
         >
           {open === "aire" ? (
             <>
@@ -269,7 +276,7 @@ export function MapToolbar({
           {/* Mobile has no Ubicación button: the Fuente sheet carries it,
               under the sources and before the notes (2026-11-17). */}
           {sheet && open === "sensores" && (
-            <section aria-label="Ubicación">
+            <section ref={ubicacionRef} aria-label="Ubicación">
               <p className={SECTION_LABEL}>Ubicación</p>
               <UbicacionPanel estados={estados} hiddenMunicipios={hiddenMunicipios} setHiddenMunicipios={setHiddenMunicipios} onChosen={() => setOpen(null)} />
             </section>
