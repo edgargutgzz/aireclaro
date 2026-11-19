@@ -71,8 +71,8 @@ const SIDEBAR_WIDTH = 24 + 460;
 // its sheet's station at zoom 10.5 until 2026-11-17, when the sheet stopped
 // pulsing it; it opened further out (9.5, [-100.30, 25.725]) until
 // 2026-11-19, when the user asked for downtown Monterrey, closer: centred on
-// the Macroplaza at zoom 11.
-const MOBILE_CENTER: [number, number] = [-100.3097, 25.6694];
+// the Macroplaza at zoom 11, then a step north (25.6694 → 25.69, same day).
+const MOBILE_CENTER: [number, number] = [-100.3097, 25.69];
 const MOBILE_ZOOM = 11;
 function restingFocus() {
   const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
