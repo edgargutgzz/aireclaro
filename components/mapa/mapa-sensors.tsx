@@ -72,9 +72,9 @@ const SIDEBAR_WIDTH = 24 + 460;
 // pulsing it; it opened further out (9.5, [-100.30, 25.725]) until
 // 2026-11-19, when the user asked for downtown Monterrey, closer: centred on
 // the Macroplaza at zoom 11, then north twice (25.6694 → 25.69 → 25.705) and a half
-// step out (11 → 10.5), same day.
+// step out twice (11 → 10.5 → 10), same day.
 const MOBILE_CENTER: [number, number] = [-100.3097, 25.705];
-const MOBILE_ZOOM = 10.5;
+const MOBILE_ZOOM = 10;
 function restingFocus() {
   const desktop = typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches;
   return desktop ? { center: OPENING_CENTER, zoom: OPENING_ZOOM } : { center: MOBILE_CENTER, zoom: MOBILE_ZOOM };
