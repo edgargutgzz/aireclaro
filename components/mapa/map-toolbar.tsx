@@ -210,9 +210,11 @@ export function MapToolbar({
         {sheet ? (
           // Mobile: a grabber like the map's bottom sheet, no X; a tap on it
           // (or on the backdrop) closes the sheet.
-          <div className="flex-shrink-0 cursor-pointer select-none px-5 pb-3 pt-3" onClick={() => setOpen(null)}>
-            <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-stone-300/60" />
-            <p className="text-base font-medium text-neutral-700">{panelTitle}</p>
+          // The filter sheet shows no title (2026-11-19, user call): its
+          // Fuente / Ubicación section labels say what it is.
+          <div className={`flex-shrink-0 cursor-pointer select-none px-5 pt-3 ${open === "sensores" ? "pb-1" : "pb-3"}`} onClick={() => setOpen(null)}>
+            <div className={`mx-auto h-1 w-10 rounded-full bg-stone-300/60 ${open === "sensores" ? "" : "mb-3"}`} />
+            {open !== "sensores" && <p className="text-base font-medium text-neutral-700">{panelTitle}</p>}
           </div>
         ) : (
         <div className="flex flex-shrink-0 items-center justify-between gap-3 px-5 pb-1 pt-4">
@@ -236,8 +238,10 @@ export function MapToolbar({
           className="disclosure-in relative min-h-0 flex-1 overflow-y-auto overscroll-contain"
           // Ubicación is capped too (2026-11-10): the list of municipalities
           // never needs the whole column; the rest scrolls under the fade.
-          // The mobile sheet shows the panel whole, up to its own cap.
-          style={sheet ? undefined : open === "ubicacion" ? { maxHeight: 360 } : notesHeight ? { maxHeight: notesHeight } : undefined}
+          // The mobile filter sheet shows the panel whole, up to its own cap;
+          // its Calidad del aire sheet stops where the desktop panel does,
+          // at the notes' second entry (2026-11-19, user: it opened too far).
+          style={sheet ? (open === "aire" && notesHeight ? { maxHeight: notesHeight } : undefined) : open === "ubicacion" ? { maxHeight: 360 } : notesHeight ? { maxHeight: notesHeight } : undefined}
         >
           {open === "aire" ? (
             <div className="p-4">
