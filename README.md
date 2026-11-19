@@ -13,7 +13,6 @@ The principle: Aire Claro reports what named monitoring stations and sensors
 *measured*. On the map every reading is tied to a station; metro-scale views
 (the `/datos` section) are fine but stay well-attributed. It aims to be the
 trustworthy measurement layer that others build their analysis and advocacy on.
-See [`docs/methodology.md`](docs/methodology.md).
 
 ## Status
 
@@ -31,10 +30,7 @@ See [`docs/methodology.md`](docs/methodology.md).
 - **PurpleAir** — [citizen sensor network](https://www.purpleair.com/). ~165
   low-cost sensors.
 
-Reliability, corrections, known gaps, and the metro-vs-Saltillo station scope
-are covered in [`docs/methodology.md`](docs/methodology.md). Both sources are
-ingested by Vercel crons in this repo. See
-[`docs/architecture.md`](docs/architecture.md#the-ingestion-boundary).
+Both sources are ingested by Vercel crons in this repo.
 
 ## Running it
 
@@ -69,10 +65,6 @@ interactive piece is hand-built to the house tokens (`.ai-style-guide.md`).
 
 | Doc | Contents |
 |---|---|
-| [`docs/architecture.md`](docs/architecture.md) | data model, ingestion boundary, domains + routing, map data flow, API routes, the URL-state model, `/datos`, `/publicaciones` |
-| [`docs/methodology.md`](docs/methodology.md) | how readings are presented, data sources and their reliability, known gaps, the FIN/Saltillo exclusion, the PM2.5 / NOM-172 scale, license & citation status |
-| [`docs/sima-data-pipeline.md`](docs/sima-data-pipeline.md) | SIMA tables, the monthly sync, the /datos charts' rules, rounding, the public download |
-| [`docs/mapa-data-pipeline.md`](docs/mapa-data-pipeline.md) | the map's two sources: SIMA stations (live feed, 10-minute job) and PurpleAir sensors (the sensor history, `estatus`, the hourly job), what the map shows |
 | [`.ai-style-guide.md`](.ai-style-guide.md) | the visual contract for the UI |
 | [`CLAUDE.md`](CLAUDE.md) | working guidance for AI coding agents |
 
