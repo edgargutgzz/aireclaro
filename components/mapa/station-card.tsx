@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Baby, Check, ChevronRight, Copy, MapPin, Stethoscope, UsersRound, X, type LucideIcon } from "lucide-react";
-import { getMarkerFill, getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
+import { getMarkerNumberInk, getQualityInfo, roundPM25, type QualityInfo } from "@/lib/air-quality";
 import type { SelectedSensor } from "./types";
 import { displayName, getSourceIcon, isOccammSensor, readingTimeLabel } from "./lib";
 import { DialogLink } from "./info-dialog";
@@ -113,8 +113,8 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // (2026-11-09). `placeIcon` marks it: a pin on the homepage, the station's
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
 // `tint` (mobile sheet, 2026-11-19, option A of the mockup): the level as a
-// pale tint (18%) instead of the solid fill, dark text, a dot in the
-// marker's colour before the label, a step smaller type. The foot is white
+// pale tint (18%) instead of the solid fill, dark text (no level dot,
+// removed 2026-11-19), a step smaller type. The foot is white
 // under a hairline so it still reads apart from the tinted block.
 export function AirNowHeader({ subject, freshness, stretch = false, place, placeIcon: PlaceIcon = MapPin, hideFoot = false, tint = false }: { subject: SelectedSensor; freshness: Freshness | null; stretch?: boolean; place?: string; placeIcon?: LucideIcon; hideFoot?: boolean; tint?: boolean }) {
   const quality = getQualityInfo(subject.pm25);
@@ -124,10 +124,7 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
       <div className="overflow-hidden rounded-xl border border-stone-200">
         <div className="flex items-end justify-between gap-3 px-6 py-5" style={{ backgroundColor: `color-mix(in srgb, ${quality.color} 18%, white)` }}>
           <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-xs font-medium uppercase leading-none tracking-wide text-neutral-600">
-              <span aria-hidden="true" className="h-2 w-2 flex-shrink-0 rounded-full" style={{ backgroundColor: getMarkerFill(subject.pm25) ?? quality.color }} />
-              Calidad del aire
-            </p>
+            <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-600">Calidad del aire</p>
             <p className="mt-2.5 whitespace-nowrap text-[32px] font-bold leading-none tracking-tight text-neutral-900">
               {quality.label === "Extremadamente mala" ? (
                 <>
