@@ -125,10 +125,14 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
     return (
       <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
         <div aria-hidden="true" className="h-[5px]" style={{ backgroundColor: getMarkerFill(subject.pm25) ?? quality.color }} />
-        <div className="px-4 pb-3.5 pt-3">
-          <p className="text-xs font-medium uppercase leading-none tracking-wide text-neutral-500">Calidad del aire</p>
-          <div className="mt-2 flex items-baseline justify-between gap-3">
-            <p className="min-w-0 truncate text-xl font-bold leading-tight text-neutral-900">
+        {/* The open card's type and layout (user call, 2026-11-19: "same
+            font and everything, just smaller"): label 12, level extrabold
+            and number bold at 28 (44 open), unit under the number, 20px
+            padding (24 open). Dark text on white. */}
+        <div className="flex items-baseline-last justify-between gap-3 px-5 pb-4 pt-[15px] text-neutral-900">
+          <div className="min-w-0">
+            <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
+            <p className="mt-2 whitespace-nowrap text-[28px] font-extrabold leading-none tracking-tight">
               {quality.label === "Extremadamente mala" ? (
                 <>
                   <span aria-hidden="true">Extrem. mala</span>
@@ -138,10 +142,11 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
                 quality.label
               )}
             </p>
-            <p className="flex-shrink-0 text-[15px] leading-tight text-neutral-600">
-              <strong className="text-xl font-bold text-neutral-900">{roundPM25(subject.pm25)}</strong> μg/m³
-            </p>
           </div>
+          <p className="flex-shrink-0 text-right">
+            <span className="block text-[28px] font-bold leading-none tracking-tight">{roundPM25(subject.pm25)}</span>
+            <span className="text-[13px]">μg/m³ PM2.5</span>
+          </p>
         </div>
       </div>
     );
