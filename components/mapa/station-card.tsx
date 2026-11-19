@@ -114,7 +114,7 @@ export function RecRow({ icons, who, advice, info, lead = false, full }: { icons
 // network icon on the map (getSourceIcon, 2026-11-12, was the location arrow).
 // `compact` (mobile sheet at rest, 2026-11-19, option E2 of the mockup; tried
 // the same day: A, a pale tint, and D, a level dot + chevron): a white card
-// under a 5px stripe in the marker's colour, two rows (user call, same day:
+// over a 5px stripe in the marker's colour (bottom edge), two rows (user call, same day:
 // one line didn't fit every level): the "Calidad del aire" label, then the
 // level left and the value right. A tap opens the sheet, which shows the
 // solid card.
@@ -124,12 +124,11 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
   if (compact && quality && subject.pm25 !== null) {
     return (
       <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-        <div aria-hidden="true" className="h-[5px]" style={{ backgroundColor: getMarkerFill(subject.pm25) ?? quality.color }} />
         {/* The open card's type and layout (user call, 2026-11-19: "same
             font and everything, just smaller"): label 12, level extrabold
             and number bold at 28 (44 open), unit under the number, 20px
             padding (24 open). Dark text on white. */}
-        <div className="flex items-baseline-last justify-between gap-3 px-5 pb-4 pt-[15px] text-neutral-900">
+        <div className="flex items-baseline-last justify-between gap-3 px-5 pb-[15px] pt-4 text-neutral-900">
           <div className="min-w-0">
             <p className="text-xs font-medium uppercase leading-none tracking-wide">Calidad del aire</p>
             <p className="mt-2 whitespace-nowrap text-[28px] font-extrabold leading-none tracking-tight">
@@ -148,6 +147,8 @@ export function AirNowHeader({ subject, freshness, stretch = false, place, place
             <span className="text-[13px]">μg/m³ PM2.5</span>
           </p>
         </div>
+        {/* The level's colour as a 5px stripe along the bottom (moved from the top, 2026-11-19). */}
+        <div aria-hidden="true" className="h-[5px]" style={{ backgroundColor: getMarkerFill(subject.pm25) ?? quality.color }} />
       </div>
     );
   }
