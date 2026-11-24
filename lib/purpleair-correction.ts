@@ -57,26 +57,11 @@ function median(values: number[]): number | null {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
-// Each PurpleAir has two laser counters (channels A and B). An hour where they
-// disagree by more than 5 µg/m³ AND more than 70% usually means one half has
-// failed, so it isn't shown. The rule's shape is Barkjohn et al. 2021 §3.2.3
-// ("valid if the difference between channels A and B was less than 5 µg m⁻³
-// or 61 %", for 24-h data); 70% is the hourly threshold of the EPA's Fire and
-// Smoke Map. A row without both channels (older rows, one-channel sensors)
-// passes.
-export function channelsDisagree(a: number | null | undefined, b: number | null | undefined): boolean {
-  if (a == null || b == null) return false;
-  const diff = Math.abs(a - b);
-  const mean = (a + b) / 2;
-  return diff > 5 && (mean <= 0 || diff / mean > 0.7);
-}
-
-// The raw value to show for an hour, or null to hide it. PurpleAir's own
-// channel_flags comes first: 1 = A downgraded (show B alone), 2 = B
-// downgraded (show A alone), 3 = both (hide). With no flag (0, or a row from
-// before the column), PurpleAir's combined value, hidden if the two channels
-// disagree (channelsDisagree, the backup for a channel PurpleAir hasn't
-// flagged yet).
+// Each PurpleAir has two laser counters (channels A and B), and PurpleAir
+// flags a failed one in channel_flags. The raw value to show for an hour, or
+// null to hide it: 1 = A downgraded (show B alone), 2 = B downgraded (show A
+// alone), 3 = both (hide); 0 or no flag (rows from before the column) =
+// PurpleAir's combined value.
 export function purpleAirRawValue(r: {
   pm25: number;
   pm25_a?: number | null;
@@ -86,5 +71,5 @@ export function purpleAirRawValue(r: {
   if (r.channel_flags === 1) return r.pm25_b ?? null;
   if (r.channel_flags === 2) return r.pm25_a ?? null;
   if (r.channel_flags === 3) return null;
-  return channelsDisagree(r.pm25_a, r.pm25_b) ? null : r.pm25;
+  return r.pm25;
 }

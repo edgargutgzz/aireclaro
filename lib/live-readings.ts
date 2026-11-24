@@ -54,7 +54,7 @@ export async function fetchLiveReadings<Id extends string | number>(
   }
   if (!isPurpleAir) return [...latest.values()].filter((r) => isValidPM25(r.pm25));
   // Citizen sensors: the healthy channel's value (or none) per PurpleAir's
-  // channel flags and the A/B rule, then EPA-corrected
+  // channel flags, then EPA-corrected
   // (lib/purpleair-correction.ts); validity is judged on the raw value.
   const shown = [...latest.values()]
     .map((r) => ({ ...r, pm25: purpleAirRawValue(r) }))
