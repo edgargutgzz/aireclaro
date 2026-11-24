@@ -70,3 +70,21 @@ export function channelsDisagree(a: number | null | undefined, b: number | null 
   const mean = (a + b) / 2;
   return diff > 5 && (mean <= 0 || diff / mean > 0.7);
 }
+
+// The raw value to show for an hour, or null to hide it. PurpleAir's own
+// channel_flags comes first: 1 = A downgraded (show B alone), 2 = B
+// downgraded (show A alone), 3 = both (hide). With no flag (0, or a row from
+// before the column), PurpleAir's combined value, hidden if the two channels
+// disagree (channelsDisagree, the backup for a channel PurpleAir hasn't
+// flagged yet).
+export function purpleAirRawValue(r: {
+  pm25: number;
+  pm25_a?: number | null;
+  pm25_b?: number | null;
+  channel_flags?: number | null;
+}): number | null {
+  if (r.channel_flags === 1) return r.pm25_b ?? null;
+  if (r.channel_flags === 2) return r.pm25_a ?? null;
+  if (r.channel_flags === 3) return null;
+  return channelsDisagree(r.pm25_a, r.pm25_b) ? null : r.pm25;
+}

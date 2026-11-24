@@ -1,7 +1,7 @@
 import { createPublicClient } from "@/utils/supabase/public";
 import { isValidPM25 } from "@/lib/air-quality";
 import { monterreyNaiveHoursAgo } from "@/lib/monterrey-time";
-import { channelsDisagree, correctPurpleAirReadings } from "@/lib/purpleair-correction";
+import { correctPurpleAirReadings, purpleAirRawValue } from "@/lib/purpleair-correction";
 
 // The site's one "is this live?" rule: a reading counts only if it's from the
 // last 90 minutes, i.e. the latest hour that should be posted by now is there.
@@ -32,24 +32,34 @@ export async function fetchLiveReadings<Id extends string | number>(
   const isPurpleAir = table === "purpleair_mediciones";
   const { data, error } = await createPublicClient()
     .from(table)
-    .select(isPurpleAir ? "id, sensor_id, pm25, time_stamp, humidity, pm25_a, pm25_b" : "id, sensor_id, pm25, time_stamp")
+    .select(
+      isPurpleAir
+        ? "id, sensor_id, pm25, time_stamp, humidity, pm25_a, pm25_b, channel_flags"
+        : "id, sensor_id, pm25, time_stamp",
+    )
     .gte("time_stamp", monterreyNaiveHoursAgo(LIVE_MINUTES / 60))
     .order("time_stamp", { ascending: false });
 
   if (error) throw new Error(`Failed to fetch ${table}: ${error.message}`);
 
-  type Row = LiveReading<Id> & { humidity?: number | null; pm25_a?: number | null; pm25_b?: number | null };
+  type Row = LiveReading<Id> & {
+    humidity?: number | null;
+    pm25_a?: number | null;
+    pm25_b?: number | null;
+    channel_flags?: number | null;
+  };
   const latest = new Map<Id, Row>();
   for (const r of (data ?? []) as unknown as Row[]) {
     if (!latest.has(r.sensor_id)) latest.set(r.sensor_id, r);
   }
-  const valid = [...latest.values()].filter((r) => isValidPM25(r.pm25));
-  // Citizen sensors are shown EPA-corrected, and not at all for an hour when
-  // their two channels disagree (lib/purpleair-correction.ts); validity is
-  // judged on the raw value, before the correction.
-  if (!isPurpleAir) return valid;
-  const agreeing = valid.filter((r) => !channelsDisagree(r.pm25_a, r.pm25_b));
-  return correctPurpleAirReadings(agreeing.map((r) => ({ ...r, humidity: r.humidity ?? null }))).map(
-    ({ humidity: _humidity, pm25_a: _a, pm25_b: _b, ...r }) => r,
+  if (!isPurpleAir) return [...latest.values()].filter((r) => isValidPM25(r.pm25));
+  // Citizen sensors: the healthy channel's value (or none) per PurpleAir's
+  // channel flags and the A/B rule, then EPA-corrected
+  // (lib/purpleair-correction.ts); validity is judged on the raw value.
+  const shown = [...latest.values()]
+    .map((r) => ({ ...r, pm25: purpleAirRawValue(r) }))
+    .filter((r): r is Row => r.pm25 != null && isValidPM25(r.pm25));
+  return correctPurpleAirReadings(shown.map((r) => ({ ...r, humidity: r.humidity ?? null }))).map(
+    ({ humidity: _humidity, pm25_a: _a, pm25_b: _b, channel_flags: _f, ...r }) => r,
   );
 }

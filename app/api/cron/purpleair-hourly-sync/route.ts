@@ -25,8 +25,10 @@ const PURPLEAIR_URL = "https://api.purpleair.com/v1/sensors";
 // pm2.5_60minute is PurpleAir's combined value: both halves averaged when
 // they agree, often one half alone when they don't (not always the right one).
 // _a and _b are each half on its own, kept so the site can drop an hour where
-// they disagree (a failed half, lib/purpleair-correction.ts).
-const FIELDS = "pm2.5_60minute,pm2.5_60minute_a,pm2.5_60minute_b,temperature,humidity,last_seen";
+// they disagree (a failed half, lib/purpleair-correction.ts). channel_flags is
+// PurpleAir's own verdict on the halves (0 ok, 1 A bad, 2 B bad, 3 both).
+const FIELDS =
+  "pm2.5_60minute,pm2.5_60minute_a,pm2.5_60minute_b,channel_flags,temperature,humidity,last_seen";
 const STALE_AFTER_MS = 60 * 60 * 1000;
 // The whole run is one request now, so a transient failure would lose the
 // hour: retry a couple of times before giving up.
@@ -96,6 +98,7 @@ export async function GET(request: NextRequest) {
     pm25: number;
     pm25_a: number | null;
     pm25_b: number | null;
+    channel_flags: number | null;
     temperature: number | null;
     humidity: number | null;
     time_stamp: string;
@@ -127,6 +130,7 @@ export async function GET(request: NextRequest) {
       pm25,
       pm25_a: sensor["pm2.5_60minute_a"] ?? null,
       pm25_b: sensor["pm2.5_60minute_b"] ?? null,
+      channel_flags: sensor.channel_flags ?? null,
       temperature: fahrenheitToCelsius(sensor.temperature),
       humidity: sensor.humidity ?? null,
       time_stamp: timeStamp,
