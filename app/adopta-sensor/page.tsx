@@ -7,7 +7,7 @@ import Section from "@/components/observatorio/section";
 
 // The five steps grouped in three phases, one editorial row each (the shared
 // Section, like /proyectos and /quienes-somos): the phase on the left, its
-// steps as one continuous numbered list and a picture on the right. No visible
+// steps as plain paragraphs and a picture on the right. No visible
 // header: the page opens on the steps; the h1 stays for search engines and
 // screen readers, the lead is the description for Google and link previews.
 
@@ -29,7 +29,6 @@ const linkClass =
 type Fase = {
   eyebrow: string;
   title: string;
-  start: number;
   steps: React.ReactNode[];
   footer?: React.ReactNode;
   image: string;
@@ -41,7 +40,6 @@ const FASES: Fase[] = [
   {
     eyebrow: "Paso 1",
     title: "Solicitud",
-    start: 1,
     steps: [
       <>
         Envía tu solicitud con el{" "}
@@ -59,7 +57,6 @@ const FASES: Fase[] = [
   {
     eyebrow: "Paso 2",
     title: "Visita e instalación",
-    start: 3,
     steps: [
       "Si tu ubicación es aprobada, te contactaremos para agendar una visita de revisión del sitio.",
       "Si tu sitio es aprobado, agendaremos una visita final para instalar el sensor y firmar el acuerdo de adopción.",
@@ -71,7 +68,6 @@ const FASES: Fase[] = [
   {
     eyebrow: "Paso 3",
     title: "Tus datos",
-    start: 5,
     steps: ["Consulta los registros de tu sensor hora con hora en el mapa de calidad del aire."],
     footer: (
       <Link
@@ -96,11 +92,11 @@ export default function AdoptaSensor() {
           <Section key={fase.title} eyebrow={fase.eyebrow} title={fase.title}>
             <div className="grid gap-8 md:grid-cols-2 md:gap-10">
               <div>
-                <ol start={fase.start} className="flex list-decimal flex-col gap-3.5 pl-5 text-lg leading-relaxed text-neutral-700 marker:text-neutral-500">
+                <div className="flex flex-col gap-3.5 text-lg leading-relaxed text-neutral-700">
                   {fase.steps.map((step, i) => (
-                    <li key={i} className="pl-1">{step}</li>
+                    <p key={i}>{step}</p>
                   ))}
-                </ol>
+                </div>
                 {fase.footer}
               </div>
               <Image
