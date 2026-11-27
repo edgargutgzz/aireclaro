@@ -51,7 +51,7 @@ const FASES: Fase[] = [
         </a>
         , toma 2 minutos.
       </>,
-      "Te confirmamos por correo electrónico si tu ubicación cumple con los requisitos.",
+      "Revisaremos tu ubicación y te confirmaremos por correo electrónico si cumple con los requisitos.",
     ],
     image: "/adopta-sensor/paso1.webp",
     imageAlt: "Sensor de calidad del aire instalado en un poste",
@@ -61,8 +61,8 @@ const FASES: Fase[] = [
     title: "Visita e instalación",
     start: 3,
     steps: [
-      "Si es aprobada, te contactamos para agendar una visita de revisión del sitio.",
-      "Si tu sitio es aprobado, agendamos una visita final para instalar el sensor y firmar el acuerdo de adopción.",
+      "Si es aprobada, te contactaremos para agendar una visita de revisión del sitio.",
+      "Si tu sitio es aprobado, agendaremos una visita final para instalar el sensor y firmar el acuerdo de adopción.",
     ],
     image: "/adopta-sensor/paso4.webp",
     imageAlt: "Instalación de un sensor en una pared",
