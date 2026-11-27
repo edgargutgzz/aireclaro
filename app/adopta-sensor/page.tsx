@@ -78,7 +78,7 @@ const FASES: Fase[] = [
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
       </Link>
     ),
-    image: "/adopta-sensor/mapa.webp",
+    image: "/adopta-sensor/mapa-zoom.webp",
     imageAlt: "Mapa de calidad del aire",
   },
 ];
