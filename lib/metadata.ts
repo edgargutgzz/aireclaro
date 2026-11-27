@@ -21,7 +21,7 @@ export const OG_BASE = { type: "website", locale: "es_MX" } as const;
 // (app/api/og/mapa, app/api/og/dias-insalubres?format=link). d= is the design
 // version: bump it on any change, chat apps cache the card per image URL.
 export function sectionCard(section: string, alt: string): OgImages {
-  return [{ url: `/og/card-${section}.jpg?d=1`, width: 1200, height: 630, alt }];
+  return [{ url: `/og/card-${section}.jpg?d=2`, width: 1200, height: 630, alt }];
 }
 
 // Next inherits a layout's openGraph untouched when a page sets none, and
