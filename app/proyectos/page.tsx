@@ -53,7 +53,7 @@ const PROJECTS: Project[] = [
     title: "Adopta un sensor",
     description:
       "Adopta un sensor de forma gratuita y colabora en la medición de la calidad del aire en tu comunidad.",
-    image: "/proyectos/adopta-sensor.webp",
+    image: "/proyectos/adopta-sensor-equipo.webp",
     href: "/adopta-sensor",
     cta: "Cómo adoptar un sensor",
   },
