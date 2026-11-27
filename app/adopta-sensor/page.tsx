@@ -39,7 +39,7 @@ type Fase = {
 
 const FASES: Fase[] = [
   {
-    eyebrow: "Pasos 1 y 2",
+    eyebrow: "Paso 1",
     title: "Solicitud",
     start: 1,
     steps: [
@@ -57,7 +57,7 @@ const FASES: Fase[] = [
     imageAlt: "Sensor de calidad del aire instalado en un poste",
   },
   {
-    eyebrow: "Pasos 3 y 4",
+    eyebrow: "Paso 2",
     title: "Visita e instalación",
     start: 3,
     steps: [
@@ -69,7 +69,7 @@ const FASES: Fase[] = [
     imagePosition: "object-[50%_40%]",
   },
   {
-    eyebrow: "Paso 5",
+    eyebrow: "Paso 3",
     title: "Tus datos",
     start: 5,
     steps: ["Consulta los registros de tu sensor hora con hora en el mapa de calidad del aire."],
