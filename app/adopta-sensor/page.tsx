@@ -44,14 +44,14 @@ const FASES: Fase[] = [
     start: 1,
     steps: [
       <>
-        Llena el{" "}
+        Envía tu solicitud con el{" "}
         <a href={FORMULARIO} target="_blank" rel="noopener noreferrer" className={linkClass}>
           formulario en línea
           <span className="sr-only"> (abre en una nueva pestaña)</span>
         </a>
         , toma 2 minutos.
       </>,
-      "Revisaremos tu ubicación y te confirmaremos por correo electrónico si cumple con los requisitos.",
+      "Revisaremos tu ubicación y te responderemos por correo electrónico.",
     ],
     image: "/adopta-sensor/paso1.webp",
     imageAlt: "Sensor de calidad del aire instalado en un poste",
