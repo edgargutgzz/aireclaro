@@ -2,7 +2,7 @@
 // /adopta-sensor): the section's title in a narrow left column, its content on
 // the right, sections split by a hairline. The first section carries the
 // page's h1 and no hairline above it. `eyebrow` is an optional small line
-// above the title (/adopta-sensor's "Paso 1").
+// above the title (/adopta-sensor's "Pasos 1 y 2").
 export default function Section({
   title,
   eyebrow,
