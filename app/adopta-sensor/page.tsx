@@ -61,7 +61,7 @@ const FASES: Fase[] = [
     title: "Visita e instalación",
     start: 3,
     steps: [
-      "Si es aprobada, te contactaremos para agendar una visita de revisión del sitio.",
+      "Si tu ubicación es aprobada, te contactaremos para agendar una visita de revisión del sitio.",
       "Si tu sitio es aprobado, agendaremos una visita final para instalar el sensor y firmar el acuerdo de adopción.",
     ],
     image: "/adopta-sensor/paso4.webp",
