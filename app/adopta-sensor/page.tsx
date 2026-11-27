@@ -5,9 +5,9 @@ import { ArrowRight } from "lucide-react";
 import { pageMetadata, sectionCard } from "@/lib/metadata";
 import Section from "@/components/observatorio/section";
 
-// The five steps grouped in three phases, one editorial row each (the shared
-// Section, like /proyectos and /quienes-somos): the phase on the left, its
-// steps as one continuous numbered list and a picture on the right. No visible
+// Three steps, one editorial row each (the shared Section, like /proyectos
+// and /quienes-somos): "Paso N" and the step's name on the left, its text and
+// a picture on the right. No visible
 // header: the page opens on the steps; the h1 stays for search engines and
 // screen readers, the lead is the description for Google and link previews.
 
@@ -29,8 +29,7 @@ const linkClass =
 type Fase = {
   eyebrow: string;
   title: string;
-  start: number;
-  steps: React.ReactNode[];
+  text: React.ReactNode;
   footer?: React.ReactNode;
   image: string;
   imageAlt: string;
@@ -39,40 +38,33 @@ type Fase = {
 
 const FASES: Fase[] = [
   {
-    eyebrow: "Pasos 1 y 2",
+    eyebrow: "Paso 1",
     title: "Solicitud",
-    start: 1,
-    steps: [
+    text: (
       <>
         Llena el{" "}
         <a href={FORMULARIO} target="_blank" rel="noopener noreferrer" className={linkClass}>
           formulario en línea
           <span className="sr-only"> (abre en una nueva pestaña)</span>
         </a>
-        , toma 2 minutos.
-      </>,
-      "Te confirmamos por correo electrónico si tu ubicación cumple con los requisitos.",
-    ],
+        , toma 2 minutos. Te confirmamos por correo electrónico si tu ubicación cumple con los requisitos.
+      </>
+    ),
     image: "/adopta-sensor/paso1.webp",
     imageAlt: "Sensor de calidad del aire instalado en un poste",
   },
   {
-    eyebrow: "Pasos 3 y 4",
+    eyebrow: "Paso 2",
     title: "Visita e instalación",
-    start: 3,
-    steps: [
-      "Si es aprobada, te contactamos para agendar una visita de revisión del sitio.",
-      "Si tu sitio es aprobado, agendamos una visita final para instalar el sensor y firmar el acuerdo de adopción.",
-    ],
+    text: "Si tu ubicación es aprobada, te contactamos para agendar una visita de revisión del sitio. Si el sitio es aprobado, agendamos una visita final para instalar el sensor y firmar el acuerdo de adopción.",
     image: "/adopta-sensor/paso4.webp",
     imageAlt: "Instalación de un sensor en una pared",
     imagePosition: "object-[50%_40%]",
   },
   {
-    eyebrow: "Paso 5",
+    eyebrow: "Paso 3",
     title: "Tus datos",
-    start: 5,
-    steps: ["Consulta los registros de tu sensor hora con hora en el mapa de calidad del aire."],
+    text: "Consulta los registros de tu sensor hora con hora en el mapa de calidad del aire.",
     footer: (
       <Link
         href="/calidad-del-aire"
@@ -96,11 +88,7 @@ export default function AdoptaSensor() {
           <Section key={fase.title} eyebrow={fase.eyebrow} title={fase.title}>
             <div className="grid gap-8 md:grid-cols-2 md:gap-10">
               <div>
-                <ol start={fase.start} className="flex list-decimal flex-col gap-3.5 pl-5 text-lg leading-relaxed text-neutral-700 marker:text-neutral-500">
-                  {fase.steps.map((step, i) => (
-                    <li key={i} className="pl-1">{step}</li>
-                  ))}
-                </ol>
+                <p className="text-lg leading-relaxed text-neutral-700">{fase.text}</p>
                 {fase.footer}
               </div>
               <Image
