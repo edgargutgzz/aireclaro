@@ -7,7 +7,7 @@ import Section from "@/components/observatorio/section";
 
 // The five steps grouped in three phases, one editorial row each (the shared
 // Section, like /proyectos and /quienes-somos): the phase on the left, its
-// steps as plain paragraphs and a picture on the right. No visible
+// steps as a small timeline and a picture on the right. No visible
 // header: the page opens on the steps; the h1 stays for search engines and
 // screen readers, the lead is the description for Google and link previews.
 
@@ -72,7 +72,7 @@ const FASES: Fase[] = [
     footer: (
       <Link
         href="/calidad-del-aire"
-        className="group mt-5 inline-flex items-center gap-1.5 text-base font-medium text-neutral-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+        className="group ml-7 mt-5 inline-flex items-center gap-1.5 text-base font-medium text-neutral-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
       >
         Ver el mapa
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
@@ -92,11 +92,22 @@ export default function AdoptaSensor() {
           <Section key={fase.title} eyebrow={fase.eyebrow} title={fase.title}>
             <div className="grid gap-8 md:grid-cols-2 md:gap-10">
               <div>
-                <div className="flex flex-col gap-3.5 text-lg leading-relaxed text-neutral-700">
-                  {fase.steps.map((step, i) => (
-                    <p key={i}>{step}</p>
-                  ))}
-                </div>
+                {/* A small timeline: a ring per sentence, joined by a line
+                    down to the next one (none after the last). */}
+                <ol className="text-lg leading-relaxed text-neutral-700">
+                  {fase.steps.map((step, i) => {
+                    const last = i === fase.steps.length - 1;
+                    return (
+                      <li key={i} className="flex gap-4">
+                        <div aria-hidden className="flex w-3 flex-shrink-0 flex-col items-center">
+                          <span className="mt-[9px] h-3 w-3 rounded-full border-2 border-stone-400 bg-stone-50" />
+                          {!last && <span className="mt-1 w-0.5 flex-1 bg-stone-200" />}
+                        </div>
+                        <p className={last ? "" : "pb-5"}>{step}</p>
+                      </li>
+                    );
+                  })}
+                </ol>
                 {fase.footer}
               </div>
               <Image
